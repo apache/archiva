@@ -335,48 +335,44 @@
 
 <script id="cache-failure-form-tmpl" type="text/html">
 
-  <div class="well">
+  <form class="well form-horizontal" id="cache-failure-form-id">
 
-
-    <form class="form-horizontal" id="cache-failure-form-id">
-
-
-      <div class="control-group">
-        <label class="control-label" for="usersCacheTimeToLiveSeconds">${$.i18n.prop('runtime.cache.timeToLiveSeconds.label')}</label>
-        <div class="controls">
-          <input type="text" class="xlarge required numeric" data-bind="value: archivaRuntimeConfiguration().urlFailureCacheConfiguration().timeToLiveSeconds"
-                 id="usersCacheTimeToLiveSeconds" name="usersCacheTimeToLiveSeconds" />
-        </div>
+    <div class="control-group">
+      <label class="control-label" for="usersCacheTimeToLiveSeconds">${$.i18n.prop('runtime.cache.timeToLiveSeconds.label')}</label>
+      <div class="controls">
+        <input type="text" class="xlarge required digits" data-bind="value: archivaRuntimeConfiguration().urlFailureCacheConfiguration().timeToLiveSeconds"
+               id="usersCacheTimeToLiveSeconds" name="usersCacheTimeToLiveSeconds" />
       </div>
+    </div>
 
-      <div class="control-group">
-        <label class="control-label" for="usersCacheTimeToIdleSeconds">${$.i18n.prop('runtime.cache.timeToIdleSeconds.label')}</label>
-        <div class="controls">
-          <input type="text" class="xlarge required numeric" data-bind="value: archivaRuntimeConfiguration().urlFailureCacheConfiguration().timeToIdleSeconds"
-                 id="usersCacheTimeToIdleSeconds" name="usersCacheTimeToIdleSeconds" />
-        </div>
+    <div class="control-group">
+      <label class="control-label" for="usersCacheTimeToIdleSeconds">${$.i18n.prop('runtime.cache.timeToIdleSeconds.label')}</label>
+      <div class="controls">
+        <input type="text" class="xlarge required digits" data-bind="value: archivaRuntimeConfiguration().urlFailureCacheConfiguration().timeToIdleSeconds"
+               id="usersCacheTimeToIdleSeconds" name="usersCacheTimeToIdleSeconds" />
       </div>
+    </div>
 
-      <div class="control-group">
-        <label class="control-label" for="maxElementsInMemory">${$.i18n.prop('runtime.cache.maxElementsInMemory.label')}</label>
-        <div class="controls">
-          <input type="text" class="xlarge required numeric" data-bind="value: archivaRuntimeConfiguration().urlFailureCacheConfiguration().maxElementsInMemory"
-                 id="maxElementsInMemory" name="maxElementsInMemory" />
-        </div>
+    <div class="control-group">
+      <label class="control-label" for="maxElementsInMemory">${$.i18n.prop('runtime.cache.maxElementsInMemory.label')}</label>
+      <div class="controls">
+        <input type="text" class="xlarge required digits" data-bind="value: archivaRuntimeConfiguration().urlFailureCacheConfiguration().maxElementsInMemory"
+               id="maxElementsInMemory" name="maxElementsInMemory" />
       </div>
+    </div>
 
-      <div class="control-group">
-        <label class="control-label" for="maxElementsOnDisk">${$.i18n.prop('runtime.cache.maxElementsOnDisk.label')}</label>
-        <div class="controls">
-          <input type="text" class="xlarge required numeric" data-bind="value: archivaRuntimeConfiguration().urlFailureCacheConfiguration().maxElementsOnDisk"
-                 id="maxElementsOnDisk" name="maxElementsOnDisk" />
-        </div>
+    <div class="control-group">
+      <label class="control-label" for="maxElementsOnDisk">${$.i18n.prop('runtime.cache.maxElementsOnDisk.label')}</label>
+      <div class="controls">
+        <input type="text" class="xlarge required digits" data-bind="value: archivaRuntimeConfiguration().urlFailureCacheConfiguration().maxElementsOnDisk"
+               id="maxElementsOnDisk" name="maxElementsOnDisk" />
       </div>
+    </div>
 
-    </form>
+    <button id="cache-failure-form-btn-save" data-loading-text="${$.i18n.prop('common.loading')}"
+            data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
 
-
-  </div>
+  </form>
 
 </script>
 

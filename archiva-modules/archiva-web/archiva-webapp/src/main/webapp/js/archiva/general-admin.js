@@ -585,7 +585,12 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         var archivaRuntimeConfiguration=mapArchivaRuntimeConfiguration(data);
         var archivaRuntimeConfigurationViewModel=new ArchivaRuntimeConfigurationViewModel(archivaRuntimeConfiguration);
         ko.applyBindings(archivaRuntimeConfigurationViewModel,mainContent.find("#cache-failure-form").get(0));
-
+        var validator = mainContent.find("#cache-failure-form-id")
+                .validate({
+                            showErrors: function(validator, errorMap, errorList) {
+                              customShowError(mainContent.find("#cache-failure-form-id" ),validator,errorMap,errorMap);
+                            }
+                          });
       }
     });
 
@@ -593,6 +598,31 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   ArchivaRuntimeConfigurationViewModel=function(archivaRuntimeConfiguration){
     var self=this;
     this.archivaRuntimeConfiguration=ko.observable(archivaRuntimeConfiguration);
+
+    save=function(){
+      var userMessages=$("#user-messages");
+
+      var mainContent=$("#main-content");
+
+      if (!mainContent.find("#cache-failure-form-id").valid()){
+        return;
+      }
+      userMessages.html(mediumSpinnerImg());
+      mainContent.find("#cache-failure-form-btn-save" ).button('loading');
+      $.ajax("restServices/archivaServices/archivaRuntimeConfigurationService/archivaRuntimeConfiguration", {
+        type: "PUT",
+        contentType: 'application/json',
+        data: ko.toJSON(self.archivaRuntimeConfiguration),
+        dataType: 'json',
+        success: function(data){
+          displaySuccessMessage( $.i18n.prop("archiva.runtime-configuration.updated"));
+        },
+        complete: function(){
+          removeMediumSpinnerImg(userMessages);
+          mainContent.find("#cache-failure-form-btn-save" ).button('reset');
+        }
+      });
+    }
   }
 
   ArchivaRuntimeConfiguration=function(cacheConfiguration){
