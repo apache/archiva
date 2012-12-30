@@ -98,7 +98,7 @@
         <item name="Using LDAP"              href="/adminguide/ldap.html" />
 -->
       </item>
-      <item name="Runtime Configuration"      href="/adminguide/configuration.html" collapse="true">
+      <item name="Archiva Configuration"      href="/adminguide/configuration.html" collapse="true">
         <item name="Repositories"             href="/adminguide/repositories.html" />
         <item name="Proxy Connectors"         href="/adminguide/proxy-connectors.html" />
         <item name="Proxy Connectors Rules"   href="/adminguide/proxy-connector-rules.html"/>
