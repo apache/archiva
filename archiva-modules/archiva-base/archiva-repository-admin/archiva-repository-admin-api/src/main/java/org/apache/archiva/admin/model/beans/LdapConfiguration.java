@@ -19,6 +19,7 @@ package org.apache.archiva.admin.model.beans;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,8 +29,9 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@XmlRootElement( name = "ldapConfiguration" )
+@XmlRootElement(name = "ldapConfiguration")
 public class LdapConfiguration
+    implements Serializable
 {
 
 
