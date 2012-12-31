@@ -847,12 +847,12 @@ public class Maven2RepositoryStorage
         }
     }
 
-    private class ArtifactDirectoryFilter
+    private static class ArtifactDirectoryFilter
         implements FilenameFilter
     {
         private final Filter<String> filter;
 
-        public ArtifactDirectoryFilter( Filter<String> filter )
+        private ArtifactDirectoryFilter( Filter<String> filter )
         {
             this.filter = filter;
         }
