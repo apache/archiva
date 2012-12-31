@@ -31,7 +31,7 @@ public class PasswordRuleViolations
 {
     private List<MessageReference> violations;
 
-    public class MessageReference
+    public static final class MessageReference
     {
         String key;
 
