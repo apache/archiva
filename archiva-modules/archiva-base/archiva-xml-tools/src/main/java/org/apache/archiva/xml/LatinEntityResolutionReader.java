@@ -127,7 +127,7 @@ public class LatinEntityResolutionReader
         return ( currentRequestedOffset - offset ) + tmpLength;
     }
 
-    private StringBuilder getExpandedBuffer( int minimum_length )
+    private StringBuilder getExpandedBuffer( int minimumLength )
         throws IOException
     {
         StringBuilder buf = null;
@@ -149,7 +149,7 @@ public class LatinEntityResolutionReader
                 buf.append( "\n" );
             }
 
-            if ( buf.length() > minimum_length )
+            if ( buf.length() > minimumLength )
             {
                 done = true;
             }
