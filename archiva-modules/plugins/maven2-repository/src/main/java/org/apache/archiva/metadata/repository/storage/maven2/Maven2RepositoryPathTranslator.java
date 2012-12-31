@@ -226,7 +226,7 @@ public class Maven2RepositoryPathTranslator
             {
                 throw new IllegalArgumentException( "Not a valid artifact path in a Maven 2 repository, filename '" + id
                                                         + "' doesn't contain a timestamped version matching snapshot '"
-                                                        + projectVersion + "'" );
+                                                        + projectVersion + "'", e);
             }
         }
         else

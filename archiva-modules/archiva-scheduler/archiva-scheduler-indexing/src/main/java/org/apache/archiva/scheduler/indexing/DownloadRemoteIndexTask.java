@@ -333,15 +333,17 @@ public class DownloadRemoteIndexTask
             }
             catch ( AuthorizationException e )
             {
-                throw new IOException( e.getMessage() );
+                throw new IOException( e.getMessage(), e );
             }
             catch ( TransferFailedException e )
             {
-                throw new IOException( e.getMessage() );
+                throw new IOException( e.getMessage(), e );
             }
             catch ( ResourceDoesNotExistException e )
             {
-                throw new FileNotFoundException( e.getMessage() );
+                FileNotFoundException fnfe = new FileNotFoundException( e.getMessage() );
+                fnfe.initCause( e );
+                throw fnfe;
             }
         }
 

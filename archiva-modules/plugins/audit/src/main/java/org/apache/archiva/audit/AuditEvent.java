@@ -151,7 +151,7 @@ public class AuditEvent
         }
         catch ( ParseException e )
         {
-            throw new IllegalArgumentException( "Improperly formatted timestamp for audit log event: " + ts );
+            throw new IllegalArgumentException( "Improperly formatted timestamp for audit log event: " + ts, e);
         }
 
         if ( name.length() > TS_LENGTH )

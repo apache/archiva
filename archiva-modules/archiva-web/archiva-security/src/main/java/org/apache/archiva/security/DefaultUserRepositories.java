@@ -202,7 +202,7 @@ public class DefaultUserRepositories
         }
         catch ( AuthorizationException e )
         {
-            throw new ArchivaSecurityException( e.getMessage() );
+            throw new ArchivaSecurityException( e.getMessage(), e);
         }
     }
 
@@ -219,7 +219,7 @@ public class DefaultUserRepositories
         }
         catch ( AuthorizationException e )
         {
-            throw new ArchivaSecurityException( e.getMessage() );
+            throw new ArchivaSecurityException( e.getMessage(), e);
         }
     }
 

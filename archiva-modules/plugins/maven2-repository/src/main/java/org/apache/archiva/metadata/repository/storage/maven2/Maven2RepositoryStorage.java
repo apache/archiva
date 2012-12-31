@@ -378,7 +378,7 @@ public class Maven2RepositoryStorage
         }
         catch ( RepositoryAdminException e )
         {
-            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage() );
+            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage(), e);
         }
     }
 
@@ -524,7 +524,7 @@ public class Maven2RepositoryStorage
         }
         catch ( RepositoryAdminException e )
         {
-            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage() );
+            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage(), e);
         }
     }
 

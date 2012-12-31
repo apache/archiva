@@ -705,7 +705,7 @@ public class DefaultArchivaConfiguration
         catch ( EvaluatorException e )
         {
             throw new RuntimeException(
-                "Unable to evaluate expressions found in " + "userConfigFilename or altConfigFilename." );
+                "Unable to evaluate expressions found in " + "userConfigFilename or altConfigFilename.", e);
         }
         registry.addChangeListener( this );
     }

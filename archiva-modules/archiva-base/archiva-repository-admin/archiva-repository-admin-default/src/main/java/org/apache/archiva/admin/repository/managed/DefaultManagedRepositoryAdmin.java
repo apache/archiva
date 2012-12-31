@@ -339,7 +339,7 @@ public class DefaultManagedRepositoryAdmin
         }
         catch ( Exception e )
         {
-            throw new RepositoryAdminException( "Error saving configuration for delete action" + e.getMessage() );
+            throw new RepositoryAdminException( "Error saving configuration for delete action" + e.getMessage(), e);
         }
 
         return Boolean.TRUE;
