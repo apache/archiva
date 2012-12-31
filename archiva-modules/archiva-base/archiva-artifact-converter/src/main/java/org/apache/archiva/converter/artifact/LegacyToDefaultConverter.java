@@ -265,8 +265,8 @@ public class LegacyToDefaultConverter
                                                  v3Model.getVersion(), v3Model.getPackage() );
 
                     writer = new StringWriter();
-                    MavenXpp3Writer Xpp3Writer = new MavenXpp3Writer();
-                    Xpp3Writer.write( writer, v4Model );
+                    MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
+                    xpp3Writer.write( writer, v4Model );
 
                     transaction.createFile( writer.toString(), targetFile, digesters );
 

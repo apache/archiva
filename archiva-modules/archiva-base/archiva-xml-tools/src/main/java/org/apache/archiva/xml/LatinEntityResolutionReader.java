@@ -58,9 +58,9 @@ public class LatinEntityResolutionReader
     public int read( char[] destbuf, int offset, int length )
         throws IOException
     {
-        int tmp_length;
-        int current_requested_offset = offset;
-        int current_requested_length = length;
+        int tmpLength;
+        int currentRequestedOffset = offset;
+        int currentRequestedLength = length;
 
         // Drain leftover from last read request.
         if ( leftover != null )
@@ -68,7 +68,7 @@ public class LatinEntityResolutionReader
             if ( leftover.length > length )
             {
                 // Copy partial leftover.
-                System.arraycopy( leftover, 0, destbuf, current_requested_offset, length );
+                System.arraycopy( leftover, 0, destbuf, currentRequestedOffset, length );
                 int copyLeftOverLength = leftover.length - length;
 
                 // Create new leftover of remaining.
@@ -82,30 +82,30 @@ public class LatinEntityResolutionReader
             }
             else
             {
-                tmp_length = leftover.length;
+                tmpLength = leftover.length;
 
                 // Copy full leftover
-                System.arraycopy( leftover, 0, destbuf, current_requested_offset, tmp_length );
+                System.arraycopy( leftover, 0, destbuf, currentRequestedOffset, tmpLength );
 
                 // Empty out leftover (as there is now none left)
                 leftover = null;
 
                 // Adjust offset and lengths.
-                current_requested_offset += tmp_length;
-                current_requested_length -= tmp_length;
+                currentRequestedOffset += tmpLength;
+                currentRequestedLength -= tmpLength;
             }
         }
 
-        StringBuilder sbuf = getExpandedBuffer( current_requested_length );
+        StringBuilder sbuf = getExpandedBuffer( currentRequestedLength );
 
         // Have we reached the end of the buffer?
         if ( sbuf == null )
         {
             // Do we have content?
-            if ( current_requested_offset > offset )
+            if ( currentRequestedOffset > offset )
             {
                 // Signal that we do, by calculating length.
-                return ( current_requested_offset - offset );
+                return ( currentRequestedOffset - offset );
             }
 
             // No content. signal end of buffer.
@@ -113,18 +113,18 @@ public class LatinEntityResolutionReader
         }
 
         // Copy from expanded buf whatever length we can accomodate.
-        tmp_length = Math.min( sbuf.length(), current_requested_length );
-        sbuf.getChars( 0, tmp_length, destbuf, current_requested_offset );
+        tmpLength = Math.min( sbuf.length(), currentRequestedLength );
+        sbuf.getChars( 0, tmpLength, destbuf, currentRequestedOffset );
 
         // Create the leftover (if any)
-        if ( tmp_length < sbuf.length() )
+        if ( tmpLength < sbuf.length() )
         {
-            leftover = new char[sbuf.length() - tmp_length];
-            sbuf.getChars( tmp_length, tmp_length + leftover.length, leftover, 0 );
+            leftover = new char[sbuf.length() - tmpLength];
+            sbuf.getChars( tmpLength, tmpLength + leftover.length, leftover, 0 );
         }
 
         // Calculate Actual Length and return.
-        return ( current_requested_offset - offset ) + tmp_length;
+        return ( currentRequestedOffset - offset ) + tmpLength;
     }
 
     private StringBuilder getExpandedBuffer( int minimum_length )
