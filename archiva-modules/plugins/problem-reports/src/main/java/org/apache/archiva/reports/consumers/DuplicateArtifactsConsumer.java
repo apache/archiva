@@ -196,7 +196,7 @@ public class DuplicateArtifactsConsumer
 
             for ( ArtifactMetadata dupArtifact : results )
             {
-                String id = path.substring( path.lastIndexOf( "/" ) + 1 );
+                String id = path.substring( path.lastIndexOf( '/' ) + 1 );
                 if ( dupArtifact.getId().equals( id ) && dupArtifact.getNamespace().equals(
                     originalArtifact.getNamespace() ) && dupArtifact.getProject().equals(
                     originalArtifact.getProject() ) && dupArtifact.getVersion().equals(

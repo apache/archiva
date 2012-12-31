@@ -72,7 +72,7 @@ public class RepositoryURL
         }
 
         // attempt to find the start of the 'path'
-        pos = url.indexOf( "/", postProtocolPos );
+        pos = url.indexOf( '/', postProtocolPos );
 
         // no path specified - ex "http://localhost"
         if ( pos == ( -1 ) )

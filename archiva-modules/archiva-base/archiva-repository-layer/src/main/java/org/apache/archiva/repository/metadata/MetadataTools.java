@@ -334,7 +334,7 @@ public class MetadataTools
     {
         StringBuilder ret = new StringBuilder();
 
-        int idx = path.lastIndexOf( "/" );
+        int idx = path.lastIndexOf( '/' );
         if ( idx > 0 )
         {
             ret.append( path.substring( 0, idx + 1 ) );
