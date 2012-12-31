@@ -54,7 +54,8 @@
         {{if deleteKarma}}
           <li class="browse-list-project">
             <img class="cursor-hand" id="delete-${browseResultEntry.name}" src="images/trash.png"
-                 data-bind="click:function(){deleteProject(groupId,displayEntry(browseResultEntry.name))}"/>
+                 data-bind="click:function(){deleteProject(groupId,displayEntry(browseResultEntry.name))}"
+                 title="${$.i18n.prop('browse.delete')}"/>
             <a href="#" data-bind="click:function(){displayProjectEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
             <a href="${$root.feedsUrl}/${$root.groupId}/${browseResultEntry.name}"><img src="images/atom.gif"/></a>
           </li>
@@ -68,7 +69,8 @@
         {{if deleteKarma}}
           <li class="browse-list">
             <img class="cursor-hand" id="delete-${browseResultEntry.name}" src="images/trash.png"
-                 data-bind="click:function(){deleteGroupId(browseResultEntry.name)}"/>
+                 data-bind="click:function(){deleteGroupId(browseResultEntry.name)}"
+                 title="${$.i18n.prop('browse.delete')}"/>
             <a data-bind="click:function(){displayGroupId(browseResultEntry.name)}" href="#"
                title="folder ${displayEntry(browseResultEntry.name)}">${displayEntry(browseResultEntry.name)}</a>
           </li>
@@ -88,10 +90,10 @@
 <script id="browse-breadcrumb-tmpl" type="text/html">
   <ul class="breadcrumb">
     <li>
-      <img class="cursor-hand" src="images/view-refresh.png" data-bind="click: function(){refreshContent()}"/>
+      <img class="cursor-hand" src="images/view-refresh.png" data-bind="click: function(){refreshContent()}" title="${$.i18n.prop('browse.refresh')}"/>
     </li>
     <li>
-      <a href="#" data-bind="click: function(){ browseRoot()}"><img src="images/go-home.png"/></a>&nbsp;<span
+      <a href="#" data-bind="click: function(){ browseRoot()}"><img src="images/go-home.png" title="${$.i18n.prop('browse.home')}"/></a>&nbsp;<span
             class="divider">/</span>
     </li>
     {{var number=breadCrumbEntries().length}}
@@ -195,7 +197,7 @@
           <tr>
             {{if deleteKarma}}
             <th><a id="delete-${version}" href="#" data-bind="click: function(){deleteVersion(version)}"><img
-                    src="images/trash.png"/></a>&nbsp;<a href="#"
+                    src="images/trash.png" title="${$.i18n.prop('browse.delete')}"/></a>&nbsp;<a href="#"
                                                          data-bind="click: function(){displayArtifactVersionDetail(version)}">${version}</a>
             </th>
             {{else}}
