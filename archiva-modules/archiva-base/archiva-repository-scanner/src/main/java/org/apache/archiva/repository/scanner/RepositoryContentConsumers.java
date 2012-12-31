@@ -261,7 +261,7 @@ public class RepositoryContentConsumers
 
             // MRM-1212/MRM-1197 
             // - do not create missing/fix invalid checksums and update metadata when deploying from webdav since these are uploaded by maven
-            if ( updateRelatedArtifacts == false )
+            if ( !updateRelatedArtifacts )
             {
                 List<KnownRepositoryContentConsumer> clone = new ArrayList<KnownRepositoryContentConsumer>();
                 clone.addAll( selectedKnownConsumers );

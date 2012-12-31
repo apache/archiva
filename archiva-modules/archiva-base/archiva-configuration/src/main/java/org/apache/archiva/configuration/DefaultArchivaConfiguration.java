@@ -601,7 +601,7 @@ public class DefaultArchivaConfiguration
             if ( file.getParentFile() != null )
             {
                 // Check that directory exists
-                if ( ( file.getParentFile().exists() == false ) || ( file.getParentFile().isDirectory() == false ) )
+                if ( ! file.getParentFile().isDirectory() )
                 {
                     // Directory to file must exist for file to be created
                     return false;

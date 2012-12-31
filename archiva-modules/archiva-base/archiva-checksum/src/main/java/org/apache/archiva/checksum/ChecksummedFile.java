@@ -192,7 +192,7 @@ public class ChecksummedFile
                     String rawChecksum = FileUtils.readFileToString( checksumFile );
                     String expectedChecksum = parseChecksum( rawChecksum, checksumAlgorithm, referenceFile.getName() );
 
-                    if ( StringUtils.equalsIgnoreCase( expectedChecksum, checksum.getChecksum() ) == false )
+                    if ( !StringUtils.equalsIgnoreCase( expectedChecksum, checksum.getChecksum() ) )
                     {
                         valid = false;
                     }
