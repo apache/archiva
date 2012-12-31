@@ -124,7 +124,7 @@ public class DefaultCommonServices
         Properties properties = new Properties();
         try
         {
-            is = Thread.currentThread().getContextClassLoader().getResourceAsStream( resourceName.toString() );
+            is = Thread.currentThread().getContextClassLoader().getResourceAsStream( resourceName );
             if ( is != null )
             {
                 properties.load( is );
