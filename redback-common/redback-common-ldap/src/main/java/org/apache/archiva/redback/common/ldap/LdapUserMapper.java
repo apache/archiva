@@ -207,7 +207,7 @@ public class LdapUserMapper
         // however we deal with that via configuration right now so just smoke it.
         if ( encodedPassword != null && encodedPassword.startsWith( "{" ) )
         {
-            encodedPassword = encodedPassword.substring( encodedPassword.indexOf( "}" ) + 1 );
+            encodedPassword = encodedPassword.substring( encodedPassword.indexOf( '}' ) + 1 );
         }
 
         user.setEncodedPassword( encodedPassword );
