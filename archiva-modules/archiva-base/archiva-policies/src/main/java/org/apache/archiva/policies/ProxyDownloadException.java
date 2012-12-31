@@ -51,7 +51,8 @@ public class ProxyDownloadException
 
     private static String constructMessage( String message, Map<String, Exception> failures )
     {
-        StringBuilder msg = new StringBuilder( message + ":" );
+        StringBuilder msg = new StringBuilder( message );
+        msg.append( ":" );
         for ( Map.Entry<String, Exception> entry : failures.entrySet() )
         {
             msg.append( "\n\t" ).append( entry.getKey() ).append( ": " ).append( entry.getValue().getMessage() );
