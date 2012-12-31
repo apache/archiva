@@ -397,12 +397,10 @@ public class DefaultRoleTemplateProcessor
                 }
                 catch ( RbacManagerException e )
                 {
-                    e.printStackTrace();
                     throw new RoleManagerException( "unable to generate templated role: " + e.getMessage(), e );
                 }
                 catch ( RoleTemplateProcessorException e )
                 {
-                    e.printStackTrace();
                     throw new RoleManagerException( "unable to resolve resource: " + resource, e );
                 }
             }
