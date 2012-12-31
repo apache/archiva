@@ -78,7 +78,7 @@ public class DefaultSystemStatusService
         throws ArchivaRestServiceException
     {
         Runtime runtime = Runtime.getRuntime();
-        runtime.gc();
+
         long total = runtime.totalMemory();
         long used = total - runtime.freeMemory();
         long max = runtime.maxMemory();
