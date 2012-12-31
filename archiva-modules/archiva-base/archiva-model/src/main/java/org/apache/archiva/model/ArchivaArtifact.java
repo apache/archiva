@@ -35,6 +35,8 @@ public class ArchivaArtifact
 
     private String baseVersion;
 
+    private static final int PRIME = 31;
+
     public ArchivaArtifact( String groupId, String artifactId, String version,
                             String classifier, String type, String repositoryId )
     {
@@ -146,7 +148,7 @@ public class ArchivaArtifact
     @Override
     public int hashCode()
     {
-        final int PRIME = 31;
+
         int result = 1;
         if ( model != null )
         {
