@@ -158,8 +158,7 @@ public class XMLReader
 
         if ( evaluated instanceof Element )
         {
-            Element evalElem = (Element) evaluated;
-            return evalElem;
+            return (Element) evaluated;
         }
         else
         {

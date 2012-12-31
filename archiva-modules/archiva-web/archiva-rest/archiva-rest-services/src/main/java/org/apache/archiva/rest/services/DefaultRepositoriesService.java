@@ -1063,8 +1063,7 @@ public class DefaultRepositoriesService
 
         try
         {
-            boolean res = userRepositories.isAuthorizedToDeleteArtifacts( userName, repoId );
-            return res;
+            return userRepositories.isAuthorizedToDeleteArtifacts( userName, repoId );
         }
         catch ( ArchivaSecurityException e )
         {

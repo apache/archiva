@@ -89,8 +89,7 @@ public class FileMetadataRepository
     {
         // TODO: should be configurable, like the index
         String basedir = configuration.getConfiguration().getManagedRepositoriesAsMap().get( repoId ).getLocation();
-        File dir = new File( basedir, ".archiva" );
-        return dir;
+        return new File( basedir, ".archiva" );
     }
 
     private File getDirectory( String repoId )
