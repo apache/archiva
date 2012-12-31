@@ -891,7 +891,7 @@ public class Maven2RepositoryStorage
         }
     }
 
-    private static class PomFilenameFilter
+    private static final class PomFilenameFilter
         implements FilenameFilter
     {
 

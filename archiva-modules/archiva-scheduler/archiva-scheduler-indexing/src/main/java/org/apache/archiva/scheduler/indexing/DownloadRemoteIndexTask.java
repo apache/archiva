@@ -236,14 +236,14 @@ public class DownloadRemoteIndexTask
     }
 
 
-    public static class DownloadListener
+    private static final class DownloadListener
         implements TransferListener
     {
         private Logger log = LoggerFactory.getLogger( getClass() );
 
-        String resourceName;
+        private String resourceName;
 
-        long startTime;
+        private long startTime;
 
         public void transferInitiated( TransferEvent transferEvent )
         {
