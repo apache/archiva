@@ -421,7 +421,7 @@ public class LdapUserManager
 
         // REDBACK-289/MRM-1488
         // look for the user in the cache first
-        LdapUser ldapUser = ldapCacheService.getUser( principal.toString() );
+        LdapUser ldapUser = ldapCacheService.getUser( principal );
         if ( ldapUser != null )
         {
             log.debug( "User {} found in cache.", principal );

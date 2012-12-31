@@ -139,7 +139,7 @@ public class DefaultUtilServices
                 resourceName = resourceName + "_" + locale;
             }
             resourceName = resourceName + ".properties";
-            is = Thread.currentThread().getContextClassLoader().getResourceAsStream( resourceName.toString() );
+            is = Thread.currentThread().getContextClassLoader().getResourceAsStream( resourceName );
             if ( is != null )
             {
                 properties.load( is );
