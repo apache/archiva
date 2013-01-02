@@ -3,7 +3,7 @@
  ------
  Olivier Lamy
  ------
- 2012-09-26
+ 2013-01-03
  ------
 
 ~~ Licensed to the Apache Software Foundation (ASF) under one                      
@@ -137,7 +137,19 @@ wrapper.java.command=fullpath to your java executable
 
  [[1]] Place the jar containing the JDBC driver in the <<<lib>>> directory of the Archiva installation.
 
- [[2]] Edit <<<conf/jetty.xml>>>, providing the JDBC driver class
+ [[2]] Edit <<<conf/wrapper.conf>>> to add it in the jetty classpath
+
++------+
+ Find lines with:
+ wrapper.java.classpath.x=%REPO_DIR%/tomcat-juli-7.0.34.jar
+
+ Add one
+
+ wrapper.java.classpath.x+1=%REPO_DIR%/yourjdbcdriver.jar
+
++------+
+
+ [[3]] Edit <<<conf/jetty.xml>>>, providing the JDBC driver class
  name, database url, username, and password.
 
  []
