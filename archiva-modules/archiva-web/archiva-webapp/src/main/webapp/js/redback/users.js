@@ -51,6 +51,9 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
     });
     clearFilters=function(){
       self.users(self.originalUsers());
+      applyAutocompleteOnHeader("username",self);
+      applyAutocompleteOnHeader("fullName",self);
+      applyAutocompleteOnHeader("email",self);
     };
     this.addUser=function() {
       clearUserMessages();
