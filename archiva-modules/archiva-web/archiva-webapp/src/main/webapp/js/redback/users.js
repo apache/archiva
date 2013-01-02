@@ -23,8 +23,9 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
    * view model used for users grid
    */
   UsersViewModel=function() {
-    this.users = ko.observableArray([]);
     var self = this;
+    this.users = ko.observableArray([]);
+    this.originalUsers=ko.observableArray([]);
 
     this.gridViewModel = new ko.simpleGrid.viewModel({
       data: this.users,
@@ -32,17 +33,25 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
       columns: [
         {
           headerText: "User Name",
-          rowText: "username"},
+          rowText: "username",
+          filter: true
+        },
         {
           headerText: "Full Name",
-          rowText: "fullName"},
+          rowText: "fullName",
+          filter: true
+        },
         {
           headerText: "Email",
-          rowText: "email"}
+          rowText: "email",
+          filter: true
+        }
       ],
       pageSize: 10
     });
-
+    clearFilters=function(){
+      self.users(self.originalUsers());
+    };
     this.addUser=function() {
       clearUserMessages();
       var mainContent = $("#main-content");
@@ -227,6 +236,34 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
 
   }
 
+  applyAutocompleteOnHeader=function(property,usersViewModel){
+    $("#main-content").find("#users-grid-filter-auto-"+property ).autocomplete({
+      minLength: 0,
+      source: function(request, response){
+        var founds=[];
+        $.log("source:"+request.term+",users:"+usersViewModel.users().length)
+        $(usersViewModel.users()).each(function(idx,user){
+          if(user[property] && user[property]() && user[property]().indexOf(request.term)>=0){
+            founds.push(user[property]());
+          }
+        });
+        response(unifyArray(founds,true));
+      },
+      select: function( event, ui ) {
+        $.log("property:"+property+','+ui.item.value);
+        var users=[];
+        $(usersViewModel.users()).each(function(idx,user){
+          if(user[property] && user[property]() && user[property]().indexOf(ui.item.value)>=0){
+            users.push(user);
+          }
+        });
+        $.log("property:"+property+','+ui.item.value+",size:"+users.length);
+        usersViewModel.users(users);
+        return false;
+      }
+    });
+  }
+
   /**
    * called from the menu to display tabs with users grid
     */
@@ -245,12 +282,10 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
           });
           var usersViewModel = new UsersViewModel();
           usersViewModel.users(mappedUsers);
+          usersViewModel.originalUsers(mappedUsers);
           ko.applyBindings(usersViewModel,jQuery("#main-content").get(0));
           mainContent.find("#users-view-tabs a:first").tab('show');
           mainContent.find("#users-view-tabs a[data-toggle='tab']").on('show', function (e) {
-            //$.log( $(e.target).attr("href") ); // activated tab
-            //e.relatedTarget // previous tab
-            $.log("tabs shown");
             if ($(e.target).attr("href")=="#createUserForm") {
               usersViewModel.addUser();
             }
@@ -260,6 +295,9 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
 
           })
           mainContent.find("#users-view-tabs-content #users-view").addClass("active");
+          applyAutocompleteOnHeader("username",usersViewModel);
+          applyAutocompleteOnHeader("fullName",usersViewModel);
+          applyAutocompleteOnHeader("email",usersViewModel);
         }
       }
     );

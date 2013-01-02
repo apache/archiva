@@ -178,16 +178,31 @@
 </script>
 
 <script id='ko_usersGrid_grid' type='text/html'>
+
   <thead>
-  <tr>
-    {{each(i, columnDefinition) columns}}
-    <th>${ columnDefinition.headerText }</th>
-    {{/each}}
-    <th>${$.i18n.prop('edit')}</th>
-    <th>${$.i18n.prop('delete')}</th>
-    <th>${$.i18n.prop('user.list.locked')}</th>
-    <th>${$.i18n.prop('user.change.password.required')}</th>
-  </tr>
+    <tr>
+      {{each(i, columnDefinition) columns}}
+      <th>${ columnDefinition.headerText }</th>
+      {{/each}}
+      <th>${$.i18n.prop('edit')}</th>
+      <th>${$.i18n.prop('delete')}</th>
+      <th>${$.i18n.prop('user.list.locked')}</th>
+      <th>${$.i18n.prop('user.change.password.required')}</th>
+    </tr>
+    <tr>
+      {{each(i, columnDefinition) columns}}
+      <th>
+        {{if columnDefinition.filter }}
+        <input type="text" class="form-search input-medium" id="users-grid-filter-auto-${columnDefinition.rowText}"
+               placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
+        {{/if}}
+      </th>
+      {{/each}}
+      <th></th>
+      <th></th>
+      <th>locked ?</th>
+      <th>chg pwd</th>
+    </tr>
   </thead>
   <tbody>
   {{each(i, row) itemsOnCurrentPage()}}
@@ -270,6 +285,7 @@
       <button data-bind='click: sortByName' class="btn">
         ${$.i18n.prop('users.sort.byname')}
       </button>
+      <a href="#" class="btn btn-warning" data-bind="click: clearFilters" id="remove-filter-id">${$.i18n.prop('search.artifact.result.filter')}</a>
       <table class="table table-striped table-bordered" id="usersTable"
              data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_usersGrid_grid',pageLinksId:'usersPagination'">
       </table>
