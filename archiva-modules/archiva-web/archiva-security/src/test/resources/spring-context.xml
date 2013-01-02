@@ -42,7 +42,7 @@
 
 
   <bean name="authorizer#rbac" class="org.apache.archiva.redback.authorization.rbac.RbacAuthorizer">
-    <property name="manager" ref="rBACManager#memory"/>
+    <property name="manager" ref="rbacManager#memory"/>
     <property name="userManager" ref="userManager#memory"/>
     <property name="evaluator" ref="permissionEvaluator"/>
   </bean>
@@ -52,23 +52,23 @@
   </bean>
 
   <bean name="roleManager" class="org.apache.archiva.redback.role.DefaultRoleManager">
-    <property name="rbacManager" ref="rBACManager#memory"/>
+    <property name="rbacManager" ref="rbacManager#memory"/>
     <property name="modelProcessor" ref="roleModelProcessor"/>
     <property name="templateProcessor" ref="roleTemplateProcessor#test"/>
   </bean>
 
-  <bean name="rBACManager#cached" class="org.apache.archiva.redback.rbac.cached.CachedRbacManager">
-    <property name="rbacImpl" ref="rBACManager#memory"/>
+  <bean name="rbacManager#cached" class="org.apache.archiva.redback.rbac.cached.CachedRbacManager">
+    <property name="rbacImpl" ref="rbacManager#memory"/>
   </bean>
 
   <bean name="roleModelProcessor" class="org.apache.archiva.redback.role.processor.DefaultRoleModelProcessor">
-    <property name="rbacManager" ref="rBACManager#memory"/>
+    <property name="rbacManager" ref="rbacManager#memory"/>
   </bean>
 
   <alias name="roleModelProcessor" alias="roleModelProcessor#test"/>
 
   <bean name="roleTemplateProcessor" class="org.apache.archiva.redback.role.template.DefaultRoleTemplateProcessor">
-    <property name="rbacManager" ref="rBACManager#memory"/>
+    <property name="rbacManager" ref="rbacManager#memory"/>
   </bean>
 
   <alias name="roleTemplateProcessor" alias="roleTemplateProcessor#test"/>

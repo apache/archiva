@@ -52,7 +52,7 @@ public class ArchivaLockedAdminEnvironmentCheck
 
 
     @Inject
-    @Named( value = "rBACManager#cached" )
+    @Named( value = "rbacManager#cached" )
     private RBACManager rbacManager;
 
     /**

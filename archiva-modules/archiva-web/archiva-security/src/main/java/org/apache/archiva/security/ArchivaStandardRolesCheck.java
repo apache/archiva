@@ -45,7 +45,7 @@ public class ArchivaStandardRolesCheck
     /**
      *
      */
-    @Inject @Named(value = "rBACManager#cached")
+    @Inject @Named(value = "rbacManager#cached")
     private RBACManager rbacManager;
 
     /**

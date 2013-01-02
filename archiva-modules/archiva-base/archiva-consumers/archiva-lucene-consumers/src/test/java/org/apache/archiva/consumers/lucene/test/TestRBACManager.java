@@ -38,7 +38,7 @@ import java.util.Set;
 /**
  * @author Olivier Lamy
  */
-@Service("rBACManager#cached")
+@Service("rbacManager#cached")
 public class TestRBACManager implements RBACManager
 {
     public void addListener( RBACManagerListener listener )

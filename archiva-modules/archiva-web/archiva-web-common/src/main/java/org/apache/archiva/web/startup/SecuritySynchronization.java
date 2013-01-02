@@ -63,7 +63,7 @@ public class SecuritySynchronization
     private RoleManager roleManager;
 
     @Inject
-    @Named( value = "rBACManager#cached" )
+    @Named( value = "rbacManager#cached" )
     private RBACManager rbacManager;
 
     private Map<String, EnvironmentCheck> checkers;

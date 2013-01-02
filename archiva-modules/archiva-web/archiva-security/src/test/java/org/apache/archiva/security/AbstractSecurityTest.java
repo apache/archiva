@@ -68,7 +68,7 @@ public abstract class AbstractSecurityTest
     protected SecuritySystem securitySystem;
 
     @Inject
-    @Named(value = "rBACManager#memory")
+    @Named(value = "rbacManager#memory")
     protected RBACManager rbacManager;
 
     @Inject
