@@ -194,7 +194,7 @@
       <th>
         {{if columnDefinition.filter }}
         <input type="text" class="form-search input-medium" id="users-grid-filter-auto-${columnDefinition.rowText}"
-               placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
+               placeholder="${$.i18n.prop('users.grid.filter')}"/>
         {{/if}}
       </th>
       {{/each}}
@@ -309,7 +309,7 @@
       <button data-bind='click: sortByName' class="btn">
         ${$.i18n.prop('users.sort.byname')}
       </button>
-      <a href="#" class="btn btn-warning" data-bind="click: clearFilters" id="remove-filter-id">${$.i18n.prop('search.artifact.result.filter')}</a>
+      <a href="#" class="btn btn-warning" data-bind="click: clearFilters" id="remove-filter-id">${$.i18n.prop('users.grid.filter')}</a>
       <table class="table table-striped table-bordered" id="usersTable"
              data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_usersGrid_grid',pageLinksId:'usersPagination'">
       </table>
