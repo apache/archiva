@@ -78,7 +78,7 @@ public class DefaultRoleManagementService
 
     @Inject
     public DefaultRoleManagementService( RoleManager roleManager,
-                                         @Named(value = "rBACManager#cached") RBACManager rbacManager,
+                                         @Named(value = "rbacManager#cached") RBACManager rbacManager,
                                          @Named(value = "userManager#cached") UserManager userManager )
     {
         this.roleManager = roleManager;

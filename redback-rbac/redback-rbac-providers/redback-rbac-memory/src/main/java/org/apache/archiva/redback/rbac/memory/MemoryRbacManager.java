@@ -50,7 +50,7 @@ import java.util.Map;
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  *
  */
-@Service( "rBACManager#memory" )
+@Service( "rbacManager#memory" )
 public class MemoryRbacManager
     extends AbstractRBACManager
     implements RBACManager

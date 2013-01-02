@@ -35,7 +35,7 @@ public class RoleManagerTest
     extends AbstractRoleManagerTest
 {
 
-    @Inject @Named(value = "rBACManager#memory")
+    @Inject @Named(value = "rbacManager#memory")
     RBACManager rbacManagerMemory;
 
     @Inject

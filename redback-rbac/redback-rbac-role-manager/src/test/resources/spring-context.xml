@@ -52,19 +52,19 @@
     <property name="modelValidator" ref="roleModelValidator"/>
     <property name="modelProcessor" ref="modelProcessor#memory"/>
     <property name="templateProcessor" ref="templateProcessor#memory"/>
-    <property name="rbacManager" ref="rBACManager#memory"/>
+    <property name="rbacManager" ref="rbacManager#memory"/>
   </bean>
 
 
 
   <bean name="modelProcessor#memory" class="org.apache.archiva.redback.role.processor.DefaultRoleModelProcessor">
-    <property name="rbacManager" ref="rBACManager#memory"/>
+    <property name="rbacManager" ref="rbacManager#memory"/>
   </bean>
 
 
 
   <bean name="templateProcessor#memory" class="org.apache.archiva.redback.role.template.DefaultRoleTemplateProcessor">
-    <property name="rbacManager" ref="rBACManager#memory"/>
+    <property name="rbacManager" ref="rbacManager#memory"/>
   </bean>
 
   <!--

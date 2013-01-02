@@ -81,7 +81,7 @@ public class DataManagementTest
 
 
     @Inject
-    @Named(value = "rBACManager#jdo")
+    @Named(value = "rbacManager#jdo")
     RBACManager rbacManager;
 
     @Before

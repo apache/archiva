@@ -24,7 +24,7 @@
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
        default-lazy-init="true">
 
-  <bean name="rBACManager#jdo" class="org.apache.archiva.redback.rbac.jdo.JdoRbacManager" init-method="initialize">
+  <bean name="rbacManager#jdo" class="org.apache.archiva.redback.rbac.jdo.JdoRbacManager" init-method="initialize">
     <property name="jdo" ref="jdoTool"/>
   </bean>
 

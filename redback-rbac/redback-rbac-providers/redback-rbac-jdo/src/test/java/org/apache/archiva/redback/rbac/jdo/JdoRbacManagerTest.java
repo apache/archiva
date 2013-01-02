@@ -57,7 +57,7 @@ public class JdoRbacManagerTest
     DefaultConfigurableJdoFactory jdoFactory;
 
     @Inject
-    @Named( value = "rBACManager#jdo" )
+    @Named( value = "rbacManager#jdo" )
     RBACManager rbacManager;
 
     public static int EVENTCOUNT = 2;

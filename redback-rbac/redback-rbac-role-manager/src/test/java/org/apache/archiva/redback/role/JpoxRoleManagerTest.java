@@ -46,7 +46,7 @@ public class JpoxRoleManagerTest
     DefaultConfigurableJdoFactory jdoFactory;
 
     @Inject
-    @Named( value = "rBACManager#jdo" )
+    @Named( value = "rbacManager#jdo" )
     JdoRbacManager rbacManagerJdo;
 
     @Inject @Named(value = "roleManager#jpox")

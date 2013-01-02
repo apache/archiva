@@ -36,7 +36,7 @@ public class CachedRbacManagerTest
 {
 
     @Inject
-    @Named( value = "rBACManager#cached" )
+    @Named( value = "rbacManager#cached" )
     RBACManager rbacManager;
 
     /*

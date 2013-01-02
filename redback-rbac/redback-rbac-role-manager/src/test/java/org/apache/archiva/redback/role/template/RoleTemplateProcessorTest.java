@@ -50,7 +50,7 @@ public class RoleTemplateProcessorTest
 {
 
     @Inject
-    @Named( value = "rBACManager#memory" )
+    @Named( value = "rbacManager#memory" )
     private RBACManager rbacManager;
 
     @Inject @Named(value = "modelProcessor#memory")

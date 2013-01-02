@@ -58,7 +58,7 @@ public class DefaultRoleModelProcessor
     private Logger log = LoggerFactory.getLogger( DefaultRoleModelProcessor.class );
 
     @Inject
-    @Named( value = "rBACManager#cached" )
+    @Named( value = "rbacManager#cached" )
     private RBACManager rbacManager;
 
     private Map<String, Resource> resourceMap = new HashMap<String, Resource>();

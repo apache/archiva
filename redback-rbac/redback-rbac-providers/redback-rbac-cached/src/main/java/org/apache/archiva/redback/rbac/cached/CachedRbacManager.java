@@ -46,7 +46,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  */
-@Service( "rBACManager#cached" )
+@Service( "rbacManager#cached" )
 public class CachedRbacManager
     implements RBACManager, RBACManagerListener
 {
@@ -54,7 +54,7 @@ public class CachedRbacManager
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "rBACManager#jdo" )
+    @Named( value = "rbacManager#jdo" )
     private RBACManager rbacImpl;
 
     @Inject

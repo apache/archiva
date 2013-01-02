@@ -120,7 +120,7 @@ public class DefaultUserService
     private Mailer mailer;
 
     @Inject
-    @Named( value = "rBACManager#cached" )
+    @Named( value = "rbacManager#cached" )
     private RBACManager rbacManager;
 
     private HttpAuthenticator httpAuthenticator;

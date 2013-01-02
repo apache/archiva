@@ -26,13 +26,13 @@
 
 
   <bean name="roleModelProcessor" class="org.apache.archiva.redback.role.processor.DefaultRoleModelProcessor">
-    <property name="rbacManager" ref="rBACManager#jdo"/>
+    <property name="rbacManager" ref="rbacManager#jdo"/>
   </bean>
 
   <alias name="roleModelProcessor" alias="roleModelProcessor#jpox"/>
 
   <bean name="roleTemplateProcessor" class="org.apache.archiva.redback.role.template.DefaultRoleTemplateProcessor">
-    <property name="rbacManager" ref="rBACManager#jdo"/>
+    <property name="rbacManager" ref="rbacManager#jdo"/>
   </bean>
 
   <alias name="roleTemplateProcessor" alias="roleTemplateProcessor#jpox"/>
@@ -41,12 +41,12 @@
     <property name="modelValidator" ref="roleModelValidator"/>
     <property name="modelProcessor" ref="roleModelProcessor#jpox"/>
     <property name="templateProcessor" ref="roleTemplateProcessor#jpox"/>
-    <property name="rbacManager" ref="rBACManager#jdo"/>
+    <property name="rbacManager" ref="rbacManager#jdo"/>
   </bean>
   <alias name="roleManager" alias="roleManager#jpox"/>
 
 
-  <bean name="rBACManager#jdo" class="org.apache.archiva.redback.rbac.jdo.JdoRbacManager">
+  <bean name="rbacManager#jdo" class="org.apache.archiva.redback.rbac.jdo.JdoRbacManager">
     <property name="jdo" ref="jdoTool"/>
     <property name="enableCache" value="false"/>
   </bean>

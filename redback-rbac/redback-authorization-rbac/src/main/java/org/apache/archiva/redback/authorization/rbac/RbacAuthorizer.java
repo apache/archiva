@@ -55,7 +55,7 @@ public class RbacAuthorizer
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named(value = "rBACManager#cached")
+    @Named(value = "rbacManager#cached")
     private RBACManager manager;
 
     @Inject

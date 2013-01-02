@@ -48,7 +48,7 @@ import java.util.List;
  * @author Jesse McConnell <jmcconnell@apache.org>
  *
  */
-@Service( "rBACManager#jdo" )
+@Service( "rbacManager#jdo" )
 public class JdoRbacManager
     extends AbstractRBACManager
     implements RBACManagerListener

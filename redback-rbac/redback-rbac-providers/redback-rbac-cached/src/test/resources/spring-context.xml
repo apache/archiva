@@ -47,8 +47,8 @@
 
   <alias name="commons-configuration" alias="test-conf"/>
 
-  <bean name= "rBACManager#cached" class="org.apache.archiva.redback.rbac.cached.CachedRbacManager">
-    <property name="rbacImpl" ref="rBACManager#memory"/>
+  <bean name= "rbacManager#cached" class="org.apache.archiva.redback.rbac.cached.CachedRbacManager">
+    <property name="rbacImpl" ref="rbacManager#memory"/>
     <property name="effectiveRoleSetCache" ref="cache#effectiveRoleSet"/>
     <property name="operationsCache" ref="cache#operations"/>
     <property name="permissionsCache" ref="cache#permissions"/>

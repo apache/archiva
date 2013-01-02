@@ -39,7 +39,7 @@ public class MemoryRbacManagerTest
 {
 
     @Inject
-    @Named (value = "rBACManager#memory")
+    @Named (value = "rbacManager#memory")
     RBACManager rbacManager;
 
     public static int EVENTCOUNT = 2;

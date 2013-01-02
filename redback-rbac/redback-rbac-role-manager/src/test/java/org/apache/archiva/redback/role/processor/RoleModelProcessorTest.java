@@ -51,7 +51,7 @@ public class RoleModelProcessorTest
     extends TestCase
 {
     @Inject
-    @Named( value = "rBACManager#memory" )
+    @Named( value = "rbacManager#memory" )
     private RBACManager rbacManager;
 
     @Inject
