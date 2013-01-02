@@ -200,8 +200,32 @@
       {{/each}}
       <th></th>
       <th></th>
-      <th>locked ?</th>
-      <th>chg pwd</th>
+      <th>
+        <div class="btn-group" style="vertical-align: top; padding-bottom: 9px;">
+          <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+            Filter
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="#" class="cursor-hand" data-bind="click: clearFilters">${$.i18n.prop('users.grid.filter.all')}</a></li>
+            <li><a href="#" class="cursor-hand" data-bind="click: filterLocked">${$.i18n.prop('users.grid.filter.locked')}</a></li>
+            <li><a href="#" class="cursor-hand" data-bind="click: filterNonLocked">${$.i18n.prop('users.grid.filter.not.locked')}</a></li>
+          </ul>
+        </div>
+      </th>
+      <th>
+        <div class="btn-group" style="vertical-align: top; padding-bottom: 9px;">
+          <a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+            Filter
+            <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="#" class="cursor-hand" data-bind="click: clearFilters">${$.i18n.prop('users.grid.filter.all')}</a></li>
+            <li><a href="#" class="cursor-hand" data-bind="click: filterPasswordChangeRequired">${$.i18n.prop('users.grid.filter.pwd.change.required')}</a></li>
+            <li><a href="#" class="cursor-hand" data-bind="click: filterPasswordChangeNotRequired">${$.i18n.prop('users.grid.filter.pwd.change.not.required')}</a></li>
+          </ul>
+        </div>
+      </th>
     </tr>
   </thead>
   <tbody>

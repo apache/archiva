@@ -51,10 +51,51 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
     });
     clearFilters=function(){
       self.users(self.originalUsers());
-      applyAutocompleteOnHeader("username",self);
-      applyAutocompleteOnHeader("fullName",self);
-      applyAutocompleteOnHeader("email",self);
+      applyAutocompleteOnHeaders(self);
     };
+    filterLocked=function(){
+      var founds=[];
+      $(self.originalUsers()).each(function(idx,user){
+        if(user.locked()){
+          founds.push(user);
+        }
+      });
+      self.users(founds);
+      applyAutocompleteOnHeaders(self);
+    }
+    filterNonLocked=function(){
+      var founds=[];
+      $(self.originalUsers()).each(function(idx,user){
+        if(user.locked()==false){
+          founds.push(user);
+        }
+      });
+      self.users(founds);
+      applyAutocompleteOnHeaders(self);
+    }
+
+    filterPasswordChangeRequired=function(){
+      var founds=[];
+      $(self.originalUsers()).each(function(idx,user){
+        if(user.passwordChangeRequired()){
+          founds.push(user);
+        }
+      });
+      self.users(founds);
+      applyAutocompleteOnHeaders(self);
+    }
+    filterPasswordChangeNotRequired=function(){
+      var founds=[];
+      $(self.originalUsers()).each(function(idx,user){
+        if(user.passwordChangeRequired()==false){
+          founds.push(user);
+        }
+      });
+      self.users(founds);
+      applyAutocompleteOnHeaders(self);
+    }
+
+
     this.addUser=function() {
       clearUserMessages();
       var mainContent = $("#main-content");
@@ -298,13 +339,18 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
 
           })
           mainContent.find("#users-view-tabs-content #users-view").addClass("active");
-          applyAutocompleteOnHeader("username",usersViewModel);
-          applyAutocompleteOnHeader("fullName",usersViewModel);
-          applyAutocompleteOnHeader("email",usersViewModel);
+          applyAutocompleteOnHeaders(usersViewModel);
+          mainContent.find("#usersTable").find('.dropdown-toggle').dropdown();
         }
       }
     );
 
+  }
+
+  applyAutocompleteOnHeaders=function(usersViewModel){
+    applyAutocompleteOnHeader("username",usersViewModel);
+    applyAutocompleteOnHeader("fullName",usersViewModel);
+    applyAutocompleteOnHeader("email",usersViewModel);
   }
 
   activateUsersGridTab=function(){
