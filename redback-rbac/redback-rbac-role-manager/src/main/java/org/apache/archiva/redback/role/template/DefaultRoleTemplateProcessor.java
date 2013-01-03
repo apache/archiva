@@ -49,7 +49,6 @@ import java.util.List;
  * DefaultRoleTemplateProcessor: inserts the components of a template into the rbac manager
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- *
  */
 @Service( "roleTemplateProcessor" )
 public class DefaultRoleTemplateProcessor
@@ -192,9 +191,9 @@ public class DefaultRoleTemplateProcessor
                 role.setAssignable( template.isAssignable() );
 
                 // add any permissions associated with this role
-                for ( Iterator j = permissions.iterator(); j.hasNext(); )
+                for ( Iterator<Permission> j = permissions.iterator(); j.hasNext(); )
                 {
-                    Permission permission = (Permission) j.next();
+                    Permission permission = j.next();
 
                     role.addPermission( permission );
                 }
@@ -202,7 +201,7 @@ public class DefaultRoleTemplateProcessor
                 // add child roles to this role
                 if ( template.getChildRoles() != null )
                 {
-                    for ( String childRoleId : (List<String>) template.getChildRoles() )
+                    for ( String childRoleId : template.getChildRoles() )
                     {
                         ModelRole childRoleProfile = RoleModelUtils.getModelRole( model, childRoleId );
                         role.addChildRoleName( childRoleProfile.getName() );
@@ -212,7 +211,7 @@ public class DefaultRoleTemplateProcessor
                 // add child templates to this role, be nice and make them if they don't exist
                 if ( template.getChildTemplates() != null )
                 {
-                    for ( String childTemplateId : (List<String>) template.getChildTemplates() )
+                    for ( String childTemplateId : template.getChildTemplates() )
                     {
                         ModelTemplate childModelTemplate = RoleModelUtils.getModelTemplate( model, childTemplateId );
 
@@ -251,7 +250,7 @@ public class DefaultRoleTemplateProcessor
                 // add link from parent roles to this new role
                 if ( template.getParentRoles() != null )
                 {
-                    for ( String parentRoleId : (List<String>) template.getParentRoles() )
+                    for ( String parentRoleId : template.getParentRoles() )
                     {
                         ModelRole parentModelRole = RoleModelUtils.getModelRole( model, parentRoleId );
                         Role parentRole = rbacManager.getRole( parentModelRole.getName() );
@@ -263,7 +262,7 @@ public class DefaultRoleTemplateProcessor
                 // add child templates to this role, be nice and make them if they don't exist
                 if ( template.getParentTemplates() != null )
                 {
-                    for ( String parentTemplateId : (List<String>) template.getParentTemplates() )
+                    for ( String parentTemplateId : template.getParentTemplates() )
                     {
                         ModelTemplate parentModelTemplate = RoleModelUtils.getModelTemplate( model, parentTemplateId );
 
@@ -328,8 +327,7 @@ public class DefaultRoleTemplateProcessor
                 {
                     if ( !permissions.contains( permission ) )
                     {
-                        log.info( "Removing old permission '" + permission.getName() + "' from role '" + role.getName()
-                                      + "'" );
+                        log.info( "Removing old permission '{}' from role '{}'", permission.getName(), role.getName() );
                         role.removePermission( permission );
                         changed = true;
                     }
