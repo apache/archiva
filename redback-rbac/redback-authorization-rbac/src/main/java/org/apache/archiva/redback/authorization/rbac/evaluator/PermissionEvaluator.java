@@ -30,6 +30,6 @@ import org.apache.archiva.redback.rbac.Permission;
  */
 public interface PermissionEvaluator
 {
-    boolean evaluate( Permission permission, Object operation, Object resource, Object principal )
+    boolean evaluate( Permission permission, String operation, String resource, String principal )
         throws PermissionEvaluationException;
 }

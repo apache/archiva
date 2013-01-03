@@ -45,7 +45,7 @@ public class DefaultPermissionEvaluator
     @Named(value = "userManager#configurable")
     private UserManager userManager;
 
-    public boolean evaluate( Permission permission, Object operation, Object resource, Object principal )
+    public boolean evaluate( Permission permission, String operation, String resource, String principal )
         throws PermissionEvaluationException
     {
         String permissionResource = permission.getResource().getIdentifier();
@@ -59,7 +59,7 @@ public class DefaultPermissionEvaluator
             {
                 try
                 {
-                    permissionResource = userManager.findUser( principal.toString() ).getUsername();
+                    permissionResource = userManager.findUser( principal ).getUsername();
                 }
                 catch ( UserNotFoundException e )
                 {
@@ -73,7 +73,7 @@ public class DefaultPermissionEvaluator
         }
 
         // check if this permission applies to the operation at all
-        if ( permission.getOperation().getName().equals( operation.toString() ) )
+        if ( permission.getOperation().getName().equals( operation ) )
         {
             // check if it is a global resource, if it is then since the operations match we return true
             if ( Resource.GLOBAL.equals( permission.getResource().getIdentifier() ) )
@@ -89,7 +89,7 @@ public class DefaultPermissionEvaluator
 
             // check if the resource identifier of the permission matches the resource we are checking against
             // if it does then return true
-            if ( permissionResource.equals( resource.toString() ) )
+            if ( permissionResource.equals( resource ) )
             {
                 return true;
             }
