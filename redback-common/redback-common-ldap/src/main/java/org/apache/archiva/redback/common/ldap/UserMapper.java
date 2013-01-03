@@ -61,4 +61,6 @@ public interface UserMapper
 
     String[] getReturningAttributes();
 
+    void initialize();
+
 }
