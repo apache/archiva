@@ -57,9 +57,9 @@ import java.util.Map;
 /**
  * @author Olivier Lamy
  */
-@RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
-@DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class TestLdapRoleMapper
     extends TestCase
 {
@@ -67,11 +67,11 @@ public class TestLdapRoleMapper
     Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "userManager#ldap" )
+    @Named(value = "userManager#ldap")
     private UserManager userManager;
 
     @Inject
-    @Named( value = "apacheDS#test" )
+    @Named(value = "apacheDS#test")
     private ApacheDs apacheDs;
 
     private String suffix;
@@ -84,7 +84,7 @@ public class TestLdapRoleMapper
     private LdapCacheService ldapCacheService;
 
     @Inject
-    @Named( value = "ldapRoleMapper#test" )
+    @Named(value = "ldapRoleMapper#test")
     LdapRoleMapper ldapRoleMapper;
 
     private Map<String, List<String>> usersPerGroup;
@@ -188,7 +188,7 @@ public class TestLdapRoleMapper
         BasicAttribute basicAttribute = new BasicAttribute( "uniquemember" );
         for ( String user : users )
         {
-            basicAttribute.add( "uid=" + user + ",dc=archiva,dc=apache,dc=org" );
+            basicAttribute.add( "uid=" + user + "," + suffix );// dc=archiva,dc=apache,dc=org" );
         }
 
         attributes.put( basicAttribute );
@@ -232,7 +232,6 @@ public class TestLdapRoleMapper
         bindUserObject( context, uid, createDn( uid ) );
         assertExist( context, createDn( uid ), "cn", uid );
     }
-
 
 
     private void assertExist( DirContext context, String dn, String attribute, String value )

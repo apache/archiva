@@ -230,7 +230,7 @@ public class DefaultLdapRoleMapper
     {
         // TODO caching and a filter with uid
 
-        List<String> allGroups = getAllGroups();
+        /*List<String> allGroups = getAllGroups();
         List<String> userGroups = new ArrayList<String>();
         for ( String group : allGroups )
         {
@@ -241,7 +241,8 @@ public class DefaultLdapRoleMapper
             }
         }
         return userGroups;
-        /*
+        */
+
         List<String> userGroups = new ArrayList<String>();
 
         LdapConnection ldapConnection = null;
@@ -258,22 +259,20 @@ public class DefaultLdapRoleMapper
             searchControls.setDerefLinkFlag( true );
             searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
 
-            //String filter =
-            //    "(&(objectClass=" + getLdapGroupClass() + ") (uniquemember=uid" + username + "," + this.getGroupsDn()
-            //        + "))";
-
             String filter =
                 new StringBuilder().append( "(&" ).append( "(objectClass=" + getLdapGroupClass() + ")" ).append(
                     "(uniquemember=" ).append( "uid=" + username + "," + this.getBaseDn() ).append( ")" ).append(
                     ")" ).toString();
 
-            namingEnumeration = context.search( getGroupsDn(), filter, searchControls );
+            log.debug( "filter: {}", filter );
 
-            List<String> allMembers = new ArrayList<String>();
+            namingEnumeration = context.search( getGroupsDn(), filter, searchControls );
 
             while ( namingEnumeration.hasMore() )
             {
                 SearchResult searchResult = namingEnumeration.next();
+
+                List<String> allMembers = new ArrayList<String>();
 
                 Attribute uniqueMemberAttr = searchResult.getAttributes().get( "uniquemember" );
 
@@ -291,6 +290,15 @@ public class DefaultLdapRoleMapper
                         allMembers.add( userName );
                     }
                     close( allMembersEnum );
+                }
+
+                if ( allMembers.contains( username ) )
+                {
+                    String groupName = searchResult.getName();
+                    // cn=blabla we only want bla bla
+                    groupName = StringUtils.substringAfter( groupName, "=" );
+                    userGroups.add( groupName );
+
                 }
 
 
@@ -315,7 +323,7 @@ public class DefaultLdapRoleMapper
             }
             close( namingEnumeration );
         }
-        */
+
     }
 
     private void close( NamingEnumeration namingEnumeration )
