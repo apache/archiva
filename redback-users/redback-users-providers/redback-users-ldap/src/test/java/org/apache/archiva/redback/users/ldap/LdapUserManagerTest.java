@@ -54,18 +54,17 @@ import java.util.List;
 
 
 /**
- * LdapUserManagerTest 
+ * LdapUserManagerTest
  *
  * @author <a href="mailto:jesse@codehaus.org">Jesse McConnell</a>
- *
- */  
+ */
 
-@RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" })
 public class LdapUserManagerTest
     extends TestCase
 {
-    
+
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
@@ -73,7 +72,7 @@ public class LdapUserManagerTest
     private UserManager userManager;
 
     @Inject
-    @Named( value = "apacheDS#test" )
+    @Named(value = "apacheDS#test")
     private ApacheDs apacheDs;
 
     private String suffix;
@@ -101,13 +100,13 @@ public class LdapUserManagerTest
 
         passwordEncoder = new SHA1PasswordEncoder();
 
-        suffix = apacheDs.addSimplePartition( "test", new String[] { "redback", "plexus", "codehaus", "org" } )
-            .getSuffix();
+        suffix =
+            apacheDs.addSimplePartition( "test", new String[]{ "redback", "plexus", "codehaus", "org" } ).getSuffix();
 
         log.info( "DN Suffix: " + suffix );
 
         apacheDs.startServer();
-        
+
         clearManyUsers();
 
         makeUsers();
@@ -153,17 +152,19 @@ public class LdapUserManagerTest
     {
         assertNotNull( connectionFactory );
 
-        LdapConnection connection = null; 
+        LdapConnection connection = null;
         try
         {
-        connection = connectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
 
-        assertNotNull( connection );
+            assertNotNull( connection );
 
-        DirContext context = connection.getDirContext();
+            DirContext context = connection.getDirContext();
 
-        assertNotNull( context );
-        } finally {
+            assertNotNull( context );
+        }
+        finally
+        {
             connection.close();
         }
     }
@@ -172,19 +173,21 @@ public class LdapUserManagerTest
     public void testDirectUsersExistence()
         throws Exception
     {
-        LdapConnection connection = null; 
+        LdapConnection connection = null;
         try
         {
-        connection = connectionFactory.getConnection();
+            connection = connectionFactory.getConnection();
 
-        DirContext context = connection.getDirContext();
+            DirContext context = connection.getDirContext();
 
-        assertExist( context, createDn( "jesse" ), "cn", "jesse" );
-        assertExist( context, createDn( "joakim" ), "cn", "joakim" );
-        } finally {
+            assertExist( context, createDn( "jesse" ), "cn", "jesse" );
+            assertExist( context, createDn( "joakim" ), "cn", "joakim" );
+        }
+        finally
+        {
             connection.close();
         }
-        
+
     }
 
     @Test
@@ -212,8 +215,8 @@ public class LdapUserManagerTest
         assertEquals( "jesse", jesse.getUsername() );
         assertEquals( "jesse@apache.org", jesse.getEmail() );
         assertEquals( "foo", jesse.getFullName() );
-        log.info( "=====>{}",jesse.getEncodedPassword());
-        log.info( "=====>{}",passwordEncoder.encodePassword( "foo" ));
+        log.info( "=====>{}", jesse.getEncodedPassword() );
+        log.info( "=====>{}", passwordEncoder.encodePassword( "foo" ) );
         assertTrue( passwordEncoder.isPasswordValid( jesse.getEncodedPassword(), "foo" ) );
 
     }
@@ -238,7 +241,7 @@ public class LdapUserManagerTest
         throws Exception
     {
         makeManyUsers();
-        
+
         assertNotNull( userManager );
 
         assertTrue( userManager.userExists( "user10" ) );
@@ -253,28 +256,28 @@ public class LdapUserManagerTest
 
         assertNotNull( user10 );
     }
-    
+
     private void makeManyUsers()
         throws Exception
     {
         InitialDirContext context = apacheDs.getAdminContext();
-        
-        for ( int i = 0 ; i < 10000 ; i++ )
-        {    
-            String cn = "user"+i;
+
+        for ( int i = 0; i < 10000; i++ )
+        {
+            String cn = "user" + i;
             bindUserObject( context, cn, createDn( cn ) );
         }
-    
+
     }
-    
+
     private void clearManyUsers()
         throws Exception
     {
         InitialDirContext context = apacheDs.getAdminContext();
-        
-        for ( int i = 0 ; i < 10000 ; i++ )
-        {    
-            String cn = "user"+i;
+
+        for ( int i = 0; i < 10000; i++ )
+        {
+            String cn = "user" + i;
             try
             {
                 context.unbind( createDn( cn ) );
@@ -284,9 +287,9 @@ public class LdapUserManagerTest
                 // OK lets try with next one
             }
         }
-    
+
     }
-    
+
     private void bindUserObject( DirContext context, String cn, String dn )
         throws Exception
     {
@@ -299,7 +302,7 @@ public class LdapUserManagerTest
         attributes.put( objectClass );
         attributes.put( "cn", cn );
         attributes.put( "sn", "foo" );
-        attributes.put( "mail", cn+"@apache.org" );
+        attributes.put( "mail", cn + "@apache.org" );
         attributes.put( "userPassword", passwordEncoder.encodePassword( "foo" ) );
         attributes.put( "givenName", "foo" );
         context.createSubcontext( dn, attributes );
@@ -317,7 +320,7 @@ public class LdapUserManagerTest
 
         ctls.setDerefLinkFlag( true );
         ctls.setSearchScope( SearchControls.ONELEVEL_SCOPE );
-        ctls.setReturningAttributes( new String[] { "*" } );
+        ctls.setReturningAttributes( new String[]{ "*" } );
 
         BasicAttributes matchingAttributes = new BasicAttributes();
         matchingAttributes.put( attribute, value );
