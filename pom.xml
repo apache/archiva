@@ -84,7 +84,7 @@
 
     <plexusUtilsPluginsVersion>3.0.8</plexusUtilsPluginsVersion>
 
-    <jacksonVersion>1.9.9</jacksonVersion>
+    <jacksonVersion>1.9.11</jacksonVersion>
     <enunciate.docsDir></enunciate.docsDir>
     <enunciate.version>1.26.2</enunciate.version>
     <enunciate.debug>false</enunciate.debug>
