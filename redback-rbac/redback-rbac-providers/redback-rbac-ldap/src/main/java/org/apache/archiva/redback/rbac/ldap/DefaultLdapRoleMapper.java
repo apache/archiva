@@ -89,7 +89,6 @@ public class DefaultLdapRoleMapper
     public List<String> getAllGroups()
         throws MappingException
     {
-        // TODO caching
         LdapConnection ldapConnection = null;
 
         NamingEnumeration<SearchResult> namingEnumeration = null;
@@ -158,7 +157,6 @@ public class DefaultLdapRoleMapper
     public List<String> getGroupsMember( String group )
         throws MappingException
     {
-        // TODO caching
         LdapConnection ldapConnection = null;
 
         NamingEnumeration<SearchResult> namingEnumeration = null;
@@ -228,20 +226,6 @@ public class DefaultLdapRoleMapper
     public List<String> getGroups( String username )
         throws MappingException
     {
-        // TODO caching and a filter with uid
-
-        /*List<String> allGroups = getAllGroups();
-        List<String> userGroups = new ArrayList<String>();
-        for ( String group : allGroups )
-        {
-            List<String> users = getGroupsMember( group );
-            if ( users.contains( username ) )
-            {
-                userGroups.add( group );
-            }
-        }
-        return userGroups;
-        */
 
         List<String> userGroups = new ArrayList<String>();
 
@@ -285,8 +269,6 @@ public class DefaultLdapRoleMapper
                         // uid=blabla we only want bla bla
                         userName = StringUtils.substringAfter( userName, "=" );
                         userName = StringUtils.substringBefore( userName, "," );
-                        //log.debug( "found group for username {}: '{}", group, userName );
-
                         allMembers.add( userName );
                     }
                     close( allMembersEnum );
