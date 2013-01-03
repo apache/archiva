@@ -40,9 +40,9 @@ public class MemoryAuthorizer
     public AuthorizationResult isAuthorized( AuthorizationDataSource source )
         throws AuthorizationException
     {
-        Object principal = source.getPrincipal();
+        String principal = source.getPrincipal();
 
-        Object permission = source.getPermission();
+        String permission = source.getPermission();
 
         // TODO: Actually use a real permission!
         if ( "foo".equals( permission.toString() ) )
