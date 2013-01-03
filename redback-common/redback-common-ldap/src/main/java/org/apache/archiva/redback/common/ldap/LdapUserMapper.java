@@ -193,7 +193,7 @@ public class LdapUserMapper
         String nameAttribute = getUserFullNameAttribute();
         String passwordAttribute = getPasswordAttribute();
 
-        String userId = ( LdapUtils.getAttributeValue( attributes, userIdAttribute, "username" ) );
+        String userId = LdapUtils.getAttributeValue( attributes, userIdAttribute, "username" );
 
         LdapUser user = new LdapUser( userId );
         user.setOriginalAttributes( attributes );

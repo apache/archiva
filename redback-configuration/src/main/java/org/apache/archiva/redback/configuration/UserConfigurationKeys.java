@@ -72,6 +72,12 @@ public interface UserConfigurationKeys
 
     String LDAP_BINDDN = "ldap.config.bind.dn";
 
+    String LDAP_GROUPS_CLASS = "ldap.config.groups.class";
+
+    String LDAP_GROUPS_BASEDN = "ldap.config.groups.base.dn";
+
+    String LDAP_GROUPS_ROLE_START_KEY = "ldap.config.groups.role.";
+
     String APPLICATION_URL = "application.url";
 
     String EMAIL_URL_PATH = "email.url.path";
