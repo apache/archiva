@@ -69,12 +69,16 @@ public class DefaultLdapRoleMapper
 
     private String groupsDn;
 
+    private String baseDn;
+
     @PostConstruct
     public void initialize()
     {
         this.ldapGroupClass = userConf.getString( UserConfigurationKeys.LDAP_GROUPS_CLASS, this.ldapGroupClass );
 
         this.groupsDn = userConf.getString( UserConfigurationKeys.LDAP_GROUPS_BASEDN, this.groupsDn );
+
+        this.baseDn = userConf.getString( UserConfigurationKeys.LDAP_BASEDN, this.baseDn );
     }
 
     public String getLdapGroup( String role )
@@ -225,6 +229,7 @@ public class DefaultLdapRoleMapper
         throws MappingException
     {
         // TODO caching and a filter with uid
+
         List<String> allGroups = getAllGroups();
         List<String> userGroups = new ArrayList<String>();
         for ( String group : allGroups )
@@ -236,6 +241,81 @@ public class DefaultLdapRoleMapper
             }
         }
         return userGroups;
+        /*
+        List<String> userGroups = new ArrayList<String>();
+
+        LdapConnection ldapConnection = null;
+
+        NamingEnumeration<SearchResult> namingEnumeration = null;
+        try
+        {
+            ldapConnection = ldapConnectionFactory.getConnection();
+
+            DirContext context = ldapConnection.getDirContext();
+
+            SearchControls searchControls = new SearchControls();
+
+            searchControls.setDerefLinkFlag( true );
+            searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
+
+            //String filter =
+            //    "(&(objectClass=" + getLdapGroupClass() + ") (uniquemember=uid" + username + "," + this.getGroupsDn()
+            //        + "))";
+
+            String filter =
+                new StringBuilder().append( "(&" ).append( "(objectClass=" + getLdapGroupClass() + ")" ).append(
+                    "(uniquemember=" ).append( "uid=" + username + "," + this.getBaseDn() ).append( ")" ).append(
+                    ")" ).toString();
+
+            namingEnumeration = context.search( getGroupsDn(), filter, searchControls );
+
+            List<String> allMembers = new ArrayList<String>();
+
+            while ( namingEnumeration.hasMore() )
+            {
+                SearchResult searchResult = namingEnumeration.next();
+
+                Attribute uniqueMemberAttr = searchResult.getAttributes().get( "uniquemember" );
+
+                if ( uniqueMemberAttr != null )
+                {
+                    NamingEnumeration<String> allMembersEnum = (NamingEnumeration<String>) uniqueMemberAttr.getAll();
+                    while ( allMembersEnum.hasMore() )
+                    {
+                        String userName = allMembersEnum.next();
+                        // uid=blabla we only want bla bla
+                        userName = StringUtils.substringAfter( userName, "=" );
+                        userName = StringUtils.substringBefore( userName, "," );
+                        //log.debug( "found group for username {}: '{}", group, userName );
+
+                        allMembers.add( userName );
+                    }
+                    close( allMembersEnum );
+                }
+
+
+            }
+
+            return userGroups;
+        }
+        catch ( LdapException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+        }
+        catch ( NamingException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+        }
+
+        finally
+        {
+            if ( ldapConnection != null )
+            {
+                ldapConnection.close();
+            }
+            close( namingEnumeration );
+        }
+        */
     }
 
     private void close( NamingEnumeration namingEnumeration )
@@ -302,5 +382,15 @@ public class DefaultLdapRoleMapper
     public void setLdapConnectionFactory( LdapConnectionFactory ldapConnectionFactory )
     {
         this.ldapConnectionFactory = ldapConnectionFactory;
+    }
+
+    public String getBaseDn()
+    {
+        return baseDn;
+    }
+
+    public void setBaseDn( String baseDn )
+    {
+        this.baseDn = baseDn;
     }
 }

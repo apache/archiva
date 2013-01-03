@@ -37,6 +37,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -110,14 +111,26 @@ public class TestLdapRoleMapper
 
         passwordEncoder = new SHA1PasswordEncoder();
 
-        groupSuffix = "dc=archiva,dc=apache,dc=org";
+        groupSuffix = apacheDs.addSimplePartition( "test", new String[]{ "archiva", "apache", "org" } ).getSuffix();
+
         log.info( "groupSuffix: {}", groupSuffix );
 
-        suffix = apacheDs.addSimplePartition( "test", new String[]{ "archiva", "apache", "org" } ).getSuffix();
+        suffix = "ou=People,dc=archiva,dc=apache,dc=org";
 
         log.info( "DN Suffix: {}", suffix );
 
         apacheDs.startServer();
+
+        BasicAttribute objectClass = new BasicAttribute( "objectClass" );
+        objectClass.add( "top" );
+        objectClass.add( "organizationalUnit" );
+
+        Attributes attributes = new BasicAttributes( true );
+        attributes.put( objectClass );
+        attributes.put( "organizationalUnitName", "foo" );
+        //attributes.put( "ou", "People" );
+
+        apacheDs.getAdminContext().createSubcontext( suffix, attributes );
 
         clearManyUsers();
 
@@ -144,6 +157,8 @@ public class TestLdapRoleMapper
         {
             context.unbind( createGroupDn( group.getKey() ) );
         }
+
+        context.unbind( suffix );
 
         apacheDs.stopServer();
 
