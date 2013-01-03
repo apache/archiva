@@ -149,14 +149,14 @@ public abstract class AbstractRestServicesTest
     {
         return getUserService( null );
     }
-
+    // START SNIPPET: get-user-service
     protected UserService getUserService( String authzHeader )
     {
         UserService service =
             JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/redbackServices/",
                                        UserService.class, Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
-        // for debuging purpose
+        // time out for debuging purpose
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000 );
 
         if ( authzHeader != null )
@@ -168,6 +168,7 @@ public abstract class AbstractRestServicesTest
 
         return service;
     }
+    // END SNIPPET: get-user-service
 
     protected RoleManagementService getRoleManagementService( String authzHeader )
     {
