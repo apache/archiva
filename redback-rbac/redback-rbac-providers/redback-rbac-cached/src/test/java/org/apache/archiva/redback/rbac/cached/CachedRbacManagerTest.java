@@ -58,11 +58,6 @@ public class CachedRbacManagerTest
     public void setUp()
         throws Exception
     {
-        /*
-        CacheManager.getInstance().removeCache( "usersCache" );
-        CacheManager.getInstance().removalAll();
-        CacheManager.getInstance().shutdown();
-        */
         super.setUp();
         CacheManager.getInstance().clearAll();
         setRbacManager( rbacManager );

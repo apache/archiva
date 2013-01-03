@@ -28,6 +28,8 @@ import org.apache.archiva.redback.rbac.RbacPermanentException;
 import org.apache.archiva.redback.tests.utils.RBACDefaults;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -35,17 +37,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * AbstractRbacManagerTestCase
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
-@RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
-@DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class AbstractRbacManagerTestCase
     extends TestCase
 {
@@ -54,6 +56,8 @@ public abstract class AbstractRbacManagerTestCase
     protected RbacManagerEventTracker eventTracker;
 
     private RBACDefaults rbacDefaults;
+
+    protected Logger log = LoggerFactory.getLogger( getClass() );
 
     public void setRbacManager( RBACManager store )
     {
@@ -131,13 +135,12 @@ public abstract class AbstractRbacManagerTestCase
     }
 
     public abstract void assertEventCount();
-    
-    private void assertEventTracker(int addedRoleNameCount, int removedRoleNameCount,
-            int addedPermissionNames, int removedPermissionNames,
-            boolean freshness, boolean eventCount )
+
+    private void assertEventTracker( int addedRoleNameCount, int removedRoleNameCount, int addedPermissionNames,
+                                     int removedPermissionNames, boolean freshness, boolean eventCount )
     {
         assertNotNull( eventTracker );
-        if ( eventCount ) 
+        if ( eventCount )
         {
             assertEventCount();
         }
@@ -147,10 +150,10 @@ public abstract class AbstractRbacManagerTestCase
         assertEquals( removedPermissionNames, eventTracker.removedPermissionNames.size() );
         if ( freshness )
         {
-            assertTrue( eventTracker.lastDbFreshness.booleanValue() ); 
+            assertTrue( eventTracker.lastDbFreshness.booleanValue() );
         }
     }
-    
+
     @Test
     public void testStoreInitialization()
         throws Exception
@@ -204,7 +207,7 @@ public abstract class AbstractRbacManagerTestCase
 
         /* Assert some event tracker stuff */
         assertEventTracker( 0, 0, 0, 0, true, true );
-        
+
     }
 
     @Test
@@ -236,7 +239,7 @@ public abstract class AbstractRbacManagerTestCase
         assertNotNull( fetched );
 
         /* Assert some event tracker stuff */
-        assertEventTracker( 2, 0, 3, 0, true, true);
+        assertEventTracker( 2, 0, 3, 0, true, true );
 
     }
 
@@ -261,7 +264,7 @@ public abstract class AbstractRbacManagerTestCase
         assertEquals( develRole, actualDevel );
 
         /* Assert some event tracker stuff */
-        assertEventTracker( 2, 0, 2, 0, true, true);
+        assertEventTracker( 2, 0, 2, 0, true, true );
     }
 
     @Test
@@ -289,7 +292,7 @@ public abstract class AbstractRbacManagerTestCase
         assertEquals( 0, rbacManager.getAllPermissions().size() );
 
         /* Assert some event tracker stuff */
-        assertEventTracker( 1, 0, 0, 0, true, true);        
+        assertEventTracker( 1, 0, 0, 0, true, true );
     }
 
     @Test
@@ -321,7 +324,7 @@ public abstract class AbstractRbacManagerTestCase
         assertEquals( 3, manager.getAllRoles().size() );
 
         /* Assert some event tracker stuff */
-        assertEventTracker( 3, 0, 3, 0, true, true);                
+        assertEventTracker( 3, 0, 3, 0, true, true );
     }
 
     @Test
@@ -356,7 +359,7 @@ public abstract class AbstractRbacManagerTestCase
         assertEquals( 3, manager.getAllRoles().size() );
 
         /* Assert some event tracker stuff */
-        assertEventTracker( 3, 0, 3, 0, true, true);        
+        assertEventTracker( 3, 0, 3, 0, true, true );
     }
 
     @Test
@@ -390,7 +393,7 @@ public abstract class AbstractRbacManagerTestCase
         assertNotNull( fetched );
 
         /* Assert some event tracker stuff */
-        assertEventTracker( 1, 0, 1, 0, true, true);        
+        assertEventTracker( 1, 0, 1, 0, true, true );
     }
 
     @Test
@@ -447,7 +450,7 @@ public abstract class AbstractRbacManagerTestCase
         assertEquals( 1, assignedPermissions.size() );
 
         /* Assert some event tracker stuff */
-        assertEventTracker( 1, 0, 1, 0, true, true);        
+        assertEventTracker( 1, 0, 1, 0, true, true );
     }
 
     @Test
@@ -476,7 +479,7 @@ public abstract class AbstractRbacManagerTestCase
         assertEquals( 1, manager.getAllResources().size() );
 
         /* Assert some event tracker stuff */
-        assertEventTracker( 0, 0, 2, 0, true, true);
+        assertEventTracker( 0, 0, 2, 0, true, true );
     }
 
     @Test
@@ -492,7 +495,7 @@ public abstract class AbstractRbacManagerTestCase
             manager.createPermission( "Delete Configuration", "delete-configuration", Resource.GLOBAL ) );
 
         /* Assert some event tracker stuff */
-        assertEventTracker( 0, 0, 2, 0, true, true);
+        assertEventTracker( 0, 0, 2, 0, true, true );
     }
 
     @Test
@@ -557,7 +560,7 @@ public abstract class AbstractRbacManagerTestCase
         assertEquals( "Should have 2 assignable roles.", 2, manager.getUnassignedRoles( bob.getPrincipal() ).size() );
 
         /* Assert some event tracker stuff */
-        assertEventTracker( 2, 0, 2, 0, true, true);
+        assertEventTracker( 2, 0, 2, 0, true, true );
 
     }
 
@@ -590,7 +593,7 @@ public abstract class AbstractRbacManagerTestCase
         assertEquals( 1, assignment.getRoleNames().size() );
 
         /* Assert some event tracker stuff */
-        assertEventTracker( 1, 0, 1, 0, true, true);
+        assertEventTracker( 1, 0, 1, 0, true, true );
 
     }
 
@@ -630,7 +633,7 @@ public abstract class AbstractRbacManagerTestCase
         assertEquals( 1, assignment.getRoleNames().size() );
 
         /* Assert some event tracker stuff */
-        assertEventTracker( 2, 0, 1, 0, true, true );        
+        assertEventTracker( 2, 0, 1, 0, true, true );
     }
 
     @Test
@@ -762,10 +765,10 @@ public abstract class AbstractRbacManagerTestCase
         }
 
         /* Assert some event tracker stuff */
-        assertEventTracker( 2, 0, 2, 0, true, true);
+        assertEventTracker( 2, 0, 2, 0, true, true );
 
     }
-        
+
     @Test
     public void testGetRolesDeep()
         throws RbacManagerException
@@ -783,7 +786,7 @@ public abstract class AbstractRbacManagerTestCase
         assertEquals( 1, rbacManager.getAllUserAssignments().size() );
         assertEquals( 4, rbacManager.getAllRoles().size() );
         assertEquals( 6, rbacManager.getAllPermissions().size() );
-        
+
         // Get the List of Assigned Roles for user bob.
         Role devel = rbacManager.getRole( "Developer" );
         assertNotNull( devel );
@@ -888,7 +891,7 @@ public abstract class AbstractRbacManagerTestCase
         }
 
         // Assert some event tracker stuff
-        assertEventTracker( 2, 0, 3, 0, true, true);
+        assertEventTracker( 2, 0, 3, 0, true, true );
 
     }
 
@@ -944,7 +947,7 @@ public abstract class AbstractRbacManagerTestCase
         }
 
         // Assert some event tracker stuff
-        assertEventTracker( 2, 0, 3, 0, true, true);
+        assertEventTracker( 2, 0, 3, 0, true, true );
 
     }
 
