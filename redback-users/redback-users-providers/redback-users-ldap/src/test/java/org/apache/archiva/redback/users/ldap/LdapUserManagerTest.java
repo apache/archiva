@@ -86,11 +86,6 @@ public class LdapUserManagerTest
     @Inject
     private LdapCacheService ldapCacheService;
 
-    public void testFoo()
-        throws Exception
-    {
-
-    }
 
     @Before
     public void setUp()
