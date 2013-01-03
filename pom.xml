@@ -76,7 +76,6 @@
     <slf4jVersion>1.7.2</slf4jVersion>
     <log4j2Version>2.0-beta3</log4j2Version>
 
-    <jacksonVersion>1.9.9</jacksonVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <gpg.useagent>true</gpg.useagent>
     <cxfVersion>2.6.4</cxfVersion>
