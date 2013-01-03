@@ -47,7 +47,11 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -82,11 +86,27 @@ public class TestLdapRoleMapper
     @Named( value = "ldapRoleMapper#test" )
     LdapRoleMapper ldapRoleMapper;
 
+    private Map<String, List<String>> usersPerGroup;
+
+    private List<String> users;
+
     @Before
     public void setUp()
         throws Exception
     {
         super.setUp();
+
+        usersPerGroup = new HashMap<String, List<String>>( 3 );
+
+        usersPerGroup.put( "internal-repo-manager", Arrays.asList( "admin", "user.9" ) );
+        usersPerGroup.put( "internal-repo-observer", Arrays.asList( "admin", "user.7", "user.8" ) );
+        usersPerGroup.put( "archiva-admin", Arrays.asList( "admin", "user.7" ) );
+
+        users = new ArrayList<String>( 4 );
+        users.add( "admin" );
+        users.add( "user.7" );
+        users.add( "user.8" );
+        users.add( "user.9" );
 
         passwordEncoder = new SHA1PasswordEncoder();
 
@@ -115,13 +135,15 @@ public class TestLdapRoleMapper
 
         InitialDirContext context = apacheDs.getAdminContext();
 
-        context.unbind( createDn( "admin" ) );
+        for ( String uid : users )
+        {
+            context.unbind( createDn( uid ) );
+        }
 
-        context.unbind( createDn( "user.7" ) );
-
-        context.unbind( createGroupDn( "internal-repo-manager" ) );
-
-        context.unbind( createGroupDn( "archiva-admin" ) );
+        for ( Map.Entry<String, List<String>> group : usersPerGroup.entrySet() )
+        {
+            context.unbind( createGroupDn( group.getKey() ) );
+        }
 
         apacheDs.stopServer();
 
@@ -133,12 +155,14 @@ public class TestLdapRoleMapper
     {
         InitialDirContext context = apacheDs.getAdminContext();
 
-        createGroup( context, "internal-repo-manager", createGroupDn( "internal-repo-manager" ) );
+        for ( Map.Entry<String, List<String>> group : usersPerGroup.entrySet() )
+        {
+            createGroup( context, group.getKey(), createGroupDn( group.getKey() ), group.getValue() );
+        }
 
-        createGroup( context, "archiva-admin", createGroupDn( "archiva-admin" ) );
     }
 
-    private void createGroup( DirContext context, String groupName, String dn )
+    private void createGroup( DirContext context, String groupName, String dn, List<String> users )
         throws Exception
     {
 
@@ -148,13 +172,13 @@ public class TestLdapRoleMapper
         objectClass.add( "groupOfUniqueNames" );
         attributes.put( objectClass );
         attributes.put( "cn", groupName );
-        BasicAttribute basicAttribute = new BasicAttribute( "uniquemember"  );
-        basicAttribute.add( "uid=admin,dc=archiva,dc=apache,dc=org" );
-        basicAttribute.add( "uid=user.7,dc=archiva,dc=apache,dc=org" );
-        attributes.put( basicAttribute );
-        //attributes.put( "uniquemember", "uid=admin,dc=archiva,dc=apache,dc=org" );
-        //attributes.put( "uniquemember", "uid=user.7,dc=archiva,dc=apache,dc=org" );
+        BasicAttribute basicAttribute = new BasicAttribute( "uniquemember" );
+        for ( String user : users )
+        {
+            basicAttribute.add( "uid=" + user + ",dc=archiva,dc=apache,dc=org" );
+        }
 
+        attributes.put( basicAttribute );
         context.createSubcontext( dn, attributes );
     }
 
@@ -179,16 +203,21 @@ public class TestLdapRoleMapper
     private void makeUsers()
         throws Exception
     {
+
+        for ( String uid : users )
+        {
+            makeUser( uid );
+        }
+
+    }
+
+    private void makeUser( String uid )
+        throws Exception
+    {
         InitialDirContext context = apacheDs.getAdminContext();
 
-        String cn = "admin";
-        bindUserObject( context, cn, createDn( cn ) );
-        assertExist( context, createDn( cn ), "cn", cn );
-
-        cn = "user.7";
-        bindUserObject( context, cn, createDn( cn ) );
-        assertExist( context, createDn( cn ), "cn", cn );
-
+        bindUserObject( context, uid, createDn( uid ) );
+        assertExist( context, createDn( uid ), "cn", uid );
     }
 
     private void clearManyUsers()
@@ -267,7 +296,11 @@ public class TestLdapRoleMapper
 
         log.info( "users for archiva-admin: {}", users );
 
-        Assertions.assertThat( users ).isNotNull().isNotEmpty().contains( "admin", "user.7" );
+        Assertions.assertThat( users ).isNotNull().isNotEmpty().hasSize( 2 ).contains( "admin", "user.7" );
+
+        users = ldapRoleMapper.getGroupsMember( "internal-repo-observer" );
+
+        Assertions.assertThat( users ).isNotNull().isNotEmpty().hasSize( 3 ).contains( "admin", "user.7", "user.8" );
     }
 
     @Test
@@ -278,6 +311,17 @@ public class TestLdapRoleMapper
 
         log.info( "roles for admin: {}", roles );
 
-        Assertions.assertThat( roles ).isNotNull().isNotEmpty().contains( "archiva-admin", "internal-repo-manager" );
+        Assertions.assertThat( roles ).isNotNull().isNotEmpty().hasSize( 3 ).contains( "archiva-admin",
+                                                                                       "internal-repo-manager",
+                                                                                       "internal-repo-observer" );
+
+        roles = ldapRoleMapper.getGroups( "user.8" );
+
+        Assertions.assertThat( roles ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "internal-repo-observer" );
+
+        roles = ldapRoleMapper.getGroups( "user.7" );
+
+        Assertions.assertThat( roles ).isNotNull().isNotEmpty().hasSize( 2 ).contains( "archiva-admin",
+                                                                                       "internal-repo-observer" );
     }
 }
