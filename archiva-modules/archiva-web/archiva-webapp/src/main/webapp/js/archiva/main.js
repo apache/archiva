@@ -97,7 +97,8 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
       url: 'restServices/redbackServices/loginService/logout',
       complete: function(){
         // go to welcome on logout
-        window.sammyArchivaApplication.setLocation("#welcome");
+        //window.sammyArchivaApplication.setLocation("#welcome");
+        displayWelcome();
       }
 
     });
