@@ -20,8 +20,8 @@ package org.apache.archiva.redback.users.ldap;
  */
 
 
-import org.apache.archiva.redback.common.ldap.LdapUser;
-import org.apache.archiva.redback.common.ldap.UserMapper;
+import org.apache.archiva.redback.common.ldap.user.LdapUser;
+import org.apache.archiva.redback.common.ldap.user.UserMapper;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;

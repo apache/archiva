@@ -33,9 +33,9 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
-import org.apache.archiva.redback.common.ldap.LdapUser;
-import org.apache.archiva.redback.common.ldap.LdapUserMapper;
-import org.apache.archiva.redback.common.ldap.UserMapper;
+import org.apache.archiva.redback.common.ldap.user.LdapUser;
+import org.apache.archiva.redback.common.ldap.user.LdapUserMapper;
+import org.apache.archiva.redback.common.ldap.user.UserMapper;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.common.ldap.MappingException;

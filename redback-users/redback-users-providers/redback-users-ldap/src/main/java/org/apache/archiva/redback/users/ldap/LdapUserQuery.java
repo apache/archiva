@@ -19,7 +19,7 @@ package org.apache.archiva.redback.users.ldap;
  * under the License.
  */
 
-import org.apache.archiva.redback.common.ldap.UserMapper;
+import org.apache.archiva.redback.common.ldap.user.UserMapper;
 import org.apache.archiva.redback.users.AbstractUserQuery;
 
 public class LdapUserQuery

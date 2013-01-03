@@ -1,4 +1,4 @@
-package org.apache.archiva.redback.common.ldap;
+package org.apache.archiva.redback.common.ldap.user;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,6 +19,7 @@ package org.apache.archiva.redback.common.ldap;
  * under the License.
  */
 
+import org.apache.archiva.redback.common.ldap.MappingException;
 import org.apache.archiva.redback.users.User;
 
 import javax.naming.directory.Attributes;

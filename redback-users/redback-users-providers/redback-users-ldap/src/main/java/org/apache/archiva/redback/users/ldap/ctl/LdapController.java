@@ -19,7 +19,7 @@ package org.apache.archiva.redback.users.ldap.ctl;
  * under the License.
  */
 
-import org.apache.archiva.redback.common.ldap.LdapUser;
+import org.apache.archiva.redback.common.ldap.user.LdapUser;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.common.ldap.MappingException;
 import org.apache.archiva.redback.users.ldap.LdapUserQuery;

@@ -1,4 +1,4 @@
-package org.apache.archiva.redback.common.ldap;
+package org.apache.archiva.redback.common.ldap.user;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

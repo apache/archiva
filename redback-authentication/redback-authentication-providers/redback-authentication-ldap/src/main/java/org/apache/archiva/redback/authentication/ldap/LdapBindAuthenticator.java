@@ -20,8 +20,7 @@ package org.apache.archiva.redback.authentication.ldap;
  */
 
 import org.apache.archiva.redback.authentication.AbstractAuthenticator;
-import org.apache.archiva.redback.authentication.AuthenticationConstants;
-import org.apache.archiva.redback.common.ldap.UserMapper;
+import org.apache.archiva.redback.common.ldap.user.UserMapper;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.configuration.UserConfigurationKeys;
@@ -45,8 +44,6 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * LdapBindAuthenticator:

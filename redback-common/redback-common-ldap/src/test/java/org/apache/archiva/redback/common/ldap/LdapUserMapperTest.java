@@ -20,7 +20,7 @@ package org.apache.archiva.redback.common.ldap;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.redback.common.ldap.LdapUserMapper;
+import org.apache.archiva.redback.common.ldap.user.LdapUserMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
