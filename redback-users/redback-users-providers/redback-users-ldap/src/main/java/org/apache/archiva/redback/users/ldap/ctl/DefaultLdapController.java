@@ -46,7 +46,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author <a href="jesse@codehaus.org"> jesse
- *
  */
 @Service
 public class DefaultLdapController
@@ -56,12 +55,12 @@ public class DefaultLdapController
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named(value = "userMapper#ldap")
+    @Named( value = "userMapper#ldap" )
     private UserMapper mapper;
 
     /**
-	 * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#removeUser(java.lang.Object, javax.naming.directory.DirContext)
-	 */
+     * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#removeUser(java.lang.Object, javax.naming.directory.DirContext)
+     */
     public void removeUser( Object principal, DirContext context )
         throws LdapControllerException
     {
@@ -69,8 +68,8 @@ public class DefaultLdapController
     }
 
     /**
-	 * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#updateUser(org.apache.archiva.redback.users.User, javax.naming.directory.DirContext)
-	 */
+     * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#updateUser(org.apache.archiva.redback.users.User, javax.naming.directory.DirContext)
+     */
     public void updateUser( User user, DirContext context )
         throws LdapControllerException, MappingException
     {
@@ -78,8 +77,8 @@ public class DefaultLdapController
     }
 
     /**
-	 * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#userExists(java.lang.Object, javax.naming.directory.DirContext)
-	 */
+     * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#userExists(java.lang.Object, javax.naming.directory.DirContext)
+     */
     public boolean userExists( Object key, DirContext context )
         throws LdapControllerException
     {
@@ -96,6 +95,7 @@ public class DefaultLdapController
         finally
         {
             if ( results != null )
+            {
                 try
                 {
                     results.close();
@@ -104,6 +104,7 @@ public class DefaultLdapController
                 {
                     log.warn( "Error closing search results", e );
                 }
+            }
         }
     }
 
@@ -127,7 +128,8 @@ public class DefaultLdapController
         return searchUsers( context, returnAttributes, null );
     }
 
-    protected NamingEnumeration<SearchResult> searchUsers( DirContext context, String[] returnAttributes, LdapUserQuery query )
+    protected NamingEnumeration<SearchResult> searchUsers( DirContext context, String[] returnAttributes,
+                                                           LdapUserQuery query )
         throws NamingException
     {
         if ( query == null )
@@ -141,17 +143,18 @@ public class DefaultLdapController
         ctls.setReturningAttributes( mapper.getReturningAttributes() );
         ctls.setCountLimit( ( (LdapUserMapper) mapper ).getMaxResultCount() );
 
-        String finalFilter = "(&(objectClass=" + mapper.getUserObjectClass() + ")" +
-            ( mapper.getUserFilter() != null ? mapper.getUserFilter() : "" ) + query.getLdapFilter(mapper) + ")";
+        String finalFilter = new StringBuilder( "(&(objectClass=" + mapper.getUserObjectClass() + ")" ).append(
+            ( mapper.getUserFilter() != null ? mapper.getUserFilter() : "" ) ).append(
+            query.getLdapFilter( mapper ) + ")" ).toString();
 
-        log.debug( "Searching for users with filter: '{}'" + " from base dn: {}",finalFilter, mapper.getUserBaseDn() );
+        log.debug( "Searching for users with filter: '{}' from base dn: {}", finalFilter, mapper.getUserBaseDn() );
 
         return context.search( mapper.getUserBaseDn(), finalFilter, ctls );
     }
 
     /**
-	 * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#getUsers(javax.naming.directory.DirContext)
-	 */
+     * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#getUsers(javax.naming.directory.DirContext)
+     */
     public Collection<User> getUsers( DirContext context )
         throws LdapControllerException, MappingException
     {
@@ -179,6 +182,7 @@ public class DefaultLdapController
         finally
         {
             if ( results != null )
+            {
                 try
                 {
                     results.close();
@@ -187,39 +191,41 @@ public class DefaultLdapController
                 {
                     log.warn( "failed to close search results", e );
                 }
+            }
         }
     }
-    
-   /**
-    * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#getUsersByQuery(org.apache.archiva.redback.users.ldap.LdapUserQuery, javax.naming.directory.DirContext)
-    */
-   public List<User> getUsersByQuery( LdapUserQuery query, DirContext context )
-       throws LdapControllerException, MappingException
-   {
-       NamingEnumeration<SearchResult> results = null;
-       try
-       {
-           results = searchUsers( context, null, query );
-           List<User> users = new LinkedList<User>();
 
-           while ( results.hasMoreElements() )
-           {
-               SearchResult result = results.nextElement();
+    /**
+     * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#getUsersByQuery(org.apache.archiva.redback.users.ldap.LdapUserQuery, javax.naming.directory.DirContext)
+     */
+    public List<User> getUsersByQuery( LdapUserQuery query, DirContext context )
+        throws LdapControllerException, MappingException
+    {
+        NamingEnumeration<SearchResult> results = null;
+        try
+        {
+            results = searchUsers( context, null, query );
+            List<User> users = new LinkedList<User>();
 
-               users.add( mapper.getUser( result.getAttributes() ) );
-           }
+            while ( results.hasMoreElements() )
+            {
+                SearchResult result = results.nextElement();
 
-           return users;
-       }
-       catch ( NamingException e )
-       {
-           String message = "Failed to retrieve ldap information for users.";
+                users.add( mapper.getUser( result.getAttributes() ) );
+            }
 
-           throw new LdapControllerException( message, e );
-       }
-       finally
+            return users;
+        }
+        catch ( NamingException e )
+        {
+            String message = "Failed to retrieve ldap information for users.";
+
+            throw new LdapControllerException( message, e );
+        }
+        finally
         {
             if ( results != null )
+            {
                 try
                 {
                     results.close();
@@ -228,12 +234,13 @@ public class DefaultLdapController
                 {
                     log.warn( "failed to close search results", e );
                 }
+            }
         }
-   }
+    }
 
     /**
-	 * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#createUser(org.apache.archiva.redback.users.User, javax.naming.directory.DirContext, boolean)
-	 */
+     * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#createUser(org.apache.archiva.redback.users.User, javax.naming.directory.DirContext, boolean)
+     */
     public void createUser( User user, DirContext context, boolean encodePasswordIfChanged )
         throws LdapControllerException, MappingException
     {
@@ -250,8 +257,8 @@ public class DefaultLdapController
     }
 
     /**
-	 * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#getUser(java.lang.Object, javax.naming.directory.DirContext)
-	 */
+     * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#getUser(java.lang.Object, javax.naming.directory.DirContext)
+     */
     public LdapUser getUser( Object key, DirContext context )
         throws LdapControllerException, MappingException
     {
@@ -289,6 +296,7 @@ public class DefaultLdapController
         finally
         {
             if ( result != null )
+            {
                 try
                 {
                     result.close();
@@ -297,6 +305,7 @@ public class DefaultLdapController
                 {
                     log.warn( "failed to close search results", e );
                 }
+            }
         }
     }
 
