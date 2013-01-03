@@ -46,7 +46,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  */
-@Service( "rbacManager#cached" )
+@Service("rbacManager#cached")
 public class CachedRbacManager
     implements RBACManager, RBACManagerListener
 {
@@ -54,35 +54,35 @@ public class CachedRbacManager
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "rbacManager#jdo" )
+    @Named(value = "rbacManager#jdo")
     private RBACManager rbacImpl;
 
     @Inject
-    @Named( value = "cache#operations" )
+    @Named(value = "cache#operations")
     private Cache operationsCache;
 
     @Inject
-    @Named( value = "cache#permissions" )
+    @Named(value = "cache#permissions")
     private Cache permissionsCache;
 
     @Inject
-    @Named( value = "cache#resources" )
+    @Named(value = "cache#resources")
     private Cache resourcesCache;
 
     @Inject
-    @Named( value = "cache#roles" )
+    @Named(value = "cache#roles")
     private Cache rolesCache;
 
     @Inject
-    @Named( value = "cache#userAssignments" )
+    @Named(value = "cache#userAssignments")
     private Cache userAssignmentsCache;
 
     @Inject
-    @Named( value = "cache#userPermissions" )
+    @Named(value = "cache#userPermissions")
     private Cache userPermissionsCache;
 
     @Inject
-    @Named( value = "cache#effectiveRoleSet" )
+    @Named(value = "cache#effectiveRoleSet")
     private Cache effectiveRoleSetCache;
 
     public void addChildRole( Role role, Role childRole )
@@ -206,7 +206,7 @@ public class CachedRbacManager
     /**
      * @see org.apache.archiva.redback.rbac.RBACManager#getAssignedPermissionMap(java.lang.String)
      */
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Map<String, List<Permission>> getAssignedPermissionMap( String principal )
         throws RbacObjectNotFoundException, RbacManagerException
     {
@@ -217,13 +217,11 @@ public class CachedRbacManager
             log.debug( "using cached user permission map" );
             return el;
         }
-        synchronized ( userPermissionsCache )
-        {
-            log.debug( "building user permission map" );
-            Map<String, List<Permission>> userPermMap = this.rbacImpl.getAssignedPermissionMap( principal );
-            userPermissionsCache.put( principal, userPermMap );
-            return userPermMap;
-        }
+
+        log.debug( "building user permission map" );
+        Map<String, List<Permission>> userPermMap = this.rbacImpl.getAssignedPermissionMap( principal );
+        userPermissionsCache.put( principal, userPermMap );
+        return userPermMap;
 
     }
 
@@ -276,7 +274,7 @@ public class CachedRbacManager
         return this.rbacImpl.getEffectivelyUnassignedRoles( principal );
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public Set<Role> getEffectiveRoles( Role role )
         throws RbacObjectNotFoundException, RbacManagerException
     {
