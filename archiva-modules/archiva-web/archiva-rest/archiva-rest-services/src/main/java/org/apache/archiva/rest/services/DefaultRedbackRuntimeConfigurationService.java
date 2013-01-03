@@ -19,13 +19,12 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.CacheConfiguration;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.Authenticator;
-import org.apache.archiva.redback.common.ldap.LdapUserMapper;
+import org.apache.archiva.redback.common.ldap.user.LdapUserMapper;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionConfiguration;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
@@ -41,7 +40,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.InvalidNameException;
