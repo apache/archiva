@@ -65,3 +65,29 @@
   </div>
 </script>
 
+<script id="welcome" type="text/html">
+  <div class="row-fluid">
+    <div class="row">
+      <img src="images/archiva.png"/>
+    </div>
+    <div class="page-header">
+      <h3>${$.i18n.prop('welcome.title')}</h3>
+    </div>
+    <div class="row">
+      <h5>Type in the name of a project, or artifact into the text box below. Use "Search" on the left for more options.</h5>
+      <span class="span2"></span>
+      <div class="ui-widget">
+        <input type="text" class="ui-autocomplete-input search-query" id="quick-search-autocomplete-welcome"
+               placeholder="${$.i18n.prop('menu.topbar.quicksearch')}"/>
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <span class="span1"></span>
+      <span class="span3"><a href="http://archiva.apache.org/docs/${runtimeInfo.version}" target="_blank">Documentation reference</a></span>
+      <span class="span1"></span>
+      <span class="span3"><a href="http://archiva.apache.org" target="_blank">Web site</a></span>
+    </div>
+  </div>
+</script>
+
