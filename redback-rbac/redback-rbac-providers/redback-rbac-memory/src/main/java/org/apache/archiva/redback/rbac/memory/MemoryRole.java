@@ -79,7 +79,7 @@ public class MemoryRole
             throw new ClassCastException( "MemoryRole.addPermissions(memoryPermission) parameter must be instanceof "
                                               + MemoryPermission.class.getName() );
         }
-        getPermissions().add( ( (MemoryPermission) memoryPermission ) );
+        getPermissions().add( memoryPermission );
     }
 
     /**
@@ -169,7 +169,7 @@ public class MemoryRole
             throw new ClassCastException( "MemoryRole.removePermissions(memoryPermission) parameter must be instanceof "
                                               + MemoryPermission.class.getName() );
         }
-        getPermissions().remove( ( (MemoryPermission) memoryPermission ) );
+        getPermissions().remove( memoryPermission );
     }
 
     /**
