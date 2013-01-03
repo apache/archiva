@@ -132,8 +132,6 @@ public class TestLdapRoleMapper
 
         apacheDs.getAdminContext().createSubcontext( suffix, attributes );
 
-        clearManyUsers();
-
         makeUsers();
 
         createGroups();
@@ -235,25 +233,6 @@ public class TestLdapRoleMapper
         assertExist( context, createDn( uid ), "cn", uid );
     }
 
-    private void clearManyUsers()
-        throws Exception
-    {
-        InitialDirContext context = apacheDs.getAdminContext();
-
-        for ( int i = 0; i < 10000; i++ )
-        {
-            String cn = "user" + i;
-            try
-            {
-                context.unbind( createDn( cn ) );
-            }
-            catch ( NamingException e )
-            {
-                // OK lets try with next one
-            }
-        }
-
-    }
 
 
     private void assertExist( DirContext context, String dn, String attribute, String value )
