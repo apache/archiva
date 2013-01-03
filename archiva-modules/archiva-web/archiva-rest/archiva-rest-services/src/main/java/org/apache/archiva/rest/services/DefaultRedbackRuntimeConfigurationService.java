@@ -25,6 +25,7 @@ import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.Authenticator;
+import org.apache.archiva.redback.common.ldap.LdapUserMapper;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionConfiguration;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
@@ -77,6 +78,9 @@ public class DefaultRedbackRuntimeConfigurationService
     @Inject
     @Named(value = "cache#users")
     private Cache usersCache;
+
+    @Inject
+    private LdapUserMapper ldapUserMapper;
 
 
     public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
@@ -148,6 +152,9 @@ public class DefaultRedbackRuntimeConfigurationService
                 redbackRuntimeConfiguration.getUsersCacheConfiguration().getMaxElementsInMemory() );
             usersCache.setMaxElementsOnDisk(
                 redbackRuntimeConfiguration.getUsersCacheConfiguration().getMaxElementsOnDisk() );
+
+
+            ldapUserMapper.initialize();
 
             return Boolean.TRUE;
         }
