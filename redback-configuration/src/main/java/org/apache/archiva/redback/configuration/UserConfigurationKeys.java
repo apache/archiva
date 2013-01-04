@@ -46,9 +46,9 @@ public interface UserConfigurationKeys
 
     String REMEMBER_ME_ENABLED = "security.rememberme.enabled";
 
-    String REMEMBERME_TIMEOUT = "security.rememberme.timeout";
+    String REMEMBER_ME_TIMEOUT = "security.rememberme.timeout";
 
-    String REMEMBERME_SECURE = "security.rememberme.secure";
+    String REMEMBER_ME_SECURE = "security.rememberme.secure";
 
     String SIGNON_DOMAIN = "security.signon.domain";
 
