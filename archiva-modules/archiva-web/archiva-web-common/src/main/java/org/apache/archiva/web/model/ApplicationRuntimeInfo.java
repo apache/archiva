@@ -21,6 +21,7 @@ package org.apache.archiva.web.model;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.Calendar;
 
 /**
@@ -29,6 +30,7 @@ import java.util.Calendar;
  */
 @XmlRootElement(name = "applicationRuntimeInfo")
 public class ApplicationRuntimeInfo
+    implements Serializable
 {
     private boolean devMode = false;
 
@@ -48,7 +50,7 @@ public class ApplicationRuntimeInfo
 
     private String timestampStr;
 
-    private RedbackRuntimeConfiguration redbackRuntimeConfiguration;
+    private CookieInformation cookieInformation;
 
     public ApplicationRuntimeInfo()
     {
@@ -151,14 +153,14 @@ public class ApplicationRuntimeInfo
         this.timestampStr = timestampStr;
     }
 
-    public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
+    public CookieInformation getCookieInformation()
     {
-        return redbackRuntimeConfiguration;
+        return cookieInformation;
     }
 
-    public void setRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
+    public void setCookieInformation( CookieInformation cookieInformation )
     {
-        this.redbackRuntimeConfiguration = redbackRuntimeConfiguration;
+        this.cookieInformation = cookieInformation;
     }
 
     @Override
@@ -175,7 +177,7 @@ public class ApplicationRuntimeInfo
         sb.append( ", logMissingI18n=" ).append( logMissingI18n );
         sb.append( ", baseUrl='" ).append( baseUrl ).append( '\'' );
         sb.append( ", timestampStr='" ).append( timestampStr ).append( '\'' );
-        sb.append( ", redbackRuntimeConfiguration=" ).append( redbackRuntimeConfiguration );
+        sb.append( ", cookieInformation=" ).append( cookieInformation );
         sb.append( '}' );
         return sb.toString();
     }

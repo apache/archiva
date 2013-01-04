@@ -110,9 +110,7 @@ $.ajax({
               window.archivaJavascriptLog=data.javascriptLog;
               window.archivaRuntimeInfo=data;
 
-              window.redbackRuntimeConfiguration=mapRedbackRuntimeConfiguration(data.redbackRuntimeConfiguration);
-
-              $.log("security.rememberme.enabled key value:"+ window.redbackRuntimeConfiguration.findPropertyValue('security.rememberme.enabled'));
+              window.cookieInformation=mapCookieInformation(data.cookieInformation);
 
               require(['sammy','jquery','i18n','jquery.tmpl','archiva.main','utils','domReady!'],function () {
                   startArchivaApplication();

@@ -1612,7 +1612,6 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          // TODO use window.redbackRuntimeConfiguration ?
           var redbackRuntimeConfiguration = mapRedbackRuntimeConfiguration(data);
           var redbackRuntimeConfigurationViewModel =
               new RedbackRuntimeConfigurationViewModel(redbackRuntimeConfiguration,userManagerImplementationInformations);
@@ -1651,6 +1650,30 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       return new CacheConfiguration();
     }
     return new CacheConfiguration(data.timeToIdleSeconds,data.timeToLiveSeconds,data.maxElementsInMemory,data.maxElementsOnDisk);
+  }
+
+  CookieInformation=function(path,domain,secure,timeout,rememberMeEnabled){
+    //private String path;
+    this.path=path;
+
+    //private String domain;
+    this.domain=domain;
+
+    //private String secure;
+    this.secure=secure;
+
+    //private String timeout;
+    this.timeout=timeout;
+
+    //private boolean rememberMeEnabled;
+    this.rememberMeEnabled=rememberMeEnabled;
+  }
+
+  mapCookieInformation=function(data){
+    if(!data){
+      return new CookieInformation();
+    }
+    return new CookieInformation(data.path,data.domain,data.secure,data.timeout,data.rememberMeEnabled);
   }
 
 });

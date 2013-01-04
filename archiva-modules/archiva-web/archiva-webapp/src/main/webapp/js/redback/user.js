@@ -366,9 +366,9 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
       $.log("user not in cookie");
     }
 
-    var rememberMe=window.redbackRuntimeConfiguration.findPropertyValue('security.rememberme.enabled');
+    var rememberMe=window.cookieInformation.rememberMeEnabled;
     $.log("rememberMe:"+rememberMe);
-    if (rememberMe=='false'){
+    if (rememberMe=='true'){
       $("#user-login-form-rememberme-label" ).hide();
       $("#user-login-form-rememberme" ).attr("disabled","true");
       if($("#user-login-form-rememberme" ).get(0 ).checked){

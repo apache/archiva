@@ -29,13 +29,13 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
    */
   reccordLoginCookie=function(user) {
 
-    var path = window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.path");
+    var path = window.cookieInformation.path;
     path = path ? path : "/";
 
-    var domain = window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.domain");
-    var secure = window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.secure");
+    var domain = window.cookieInformation.domain;
+    var secure = window.cookieInformation.secure;
 
-    var expires= Number(window.redbackRuntimeConfiguration.findPropertyValue("security.rememberme.timeout"));
+    var expires= Number(window.cookieInformation.timeout);
 
     var userJson=ko.toJSON(user);
 
