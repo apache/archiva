@@ -42,7 +42,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
-      <artifactId>redback-rbac-ldap</artifactId>
+      <artifactId>redback-common-ldap</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.annotation</groupId>
