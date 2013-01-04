@@ -1,5 +1,4 @@
-package org.apache.archiva.redback.rbac.memory;
-
+package org.apache.archiva.redback.authorization.ldap;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -26,33 +25,21 @@ import org.apache.archiva.redback.authorization.Authorizer;
 import org.springframework.stereotype.Service;
 
 /**
- * @author: Jesse McConnell <jesse@codehaus.org>
-  */
-@Service("authorizer#memory")
-public class MemoryAuthorizer
+ * @author Olivier Lamy
+ * @since 2.1
+ */
+@Service( "authorizer#ldap" )
+public class LdapAuthorizer
     implements Authorizer
 {
     public String getId()
     {
-        return "memory";
+        return "ldap";
     }
 
     public AuthorizationResult isAuthorized( AuthorizationDataSource source )
         throws AuthorizationException
     {
-        String principal = source.getPrincipal();
-
-        String permission = source.getPermission();
-
-        // TODO: Actually use a real permission!
-        if ( "foo".equals( permission.toString() ) )
-        {
-            return new AuthorizationResult( true, principal, null );
-        }
-        else
-        {
-            return new AuthorizationResult( false, principal, null );
-        }
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
-

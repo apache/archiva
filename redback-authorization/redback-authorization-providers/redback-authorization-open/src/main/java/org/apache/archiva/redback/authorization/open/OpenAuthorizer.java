@@ -29,14 +29,14 @@ import org.springframework.stereotype.Service;
  *
  * 
  */
-@Service("authorizer#rbac")
+@Service("authorizer#open")
 public class OpenAuthorizer
     implements Authorizer
 {
 
     public String getId()
     {
-        return "Open Authorizer";
+        return "open";
     }
 
     public AuthorizationResult isAuthorized( AuthorizationDataSource source )

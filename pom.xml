@@ -279,6 +279,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva.redback</groupId>
+        <artifactId>redback-rbac-ldap</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-rbac-role-manager</artifactId>
         <version>${project.version}</version>
       </dependency>

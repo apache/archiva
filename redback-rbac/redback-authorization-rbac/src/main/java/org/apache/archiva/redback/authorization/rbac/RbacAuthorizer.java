@@ -67,7 +67,7 @@ public class RbacAuthorizer
 
     public String getId()
     {
-        return "RBAC Authorizer - " + this.getClass().getName();
+        return "rbac";
     }
 
     /**
