@@ -1,4 +1,4 @@
-package org.apache.archiva.redback.rbac.ldap;
+package org.apache.archiva.redback.common.ldap.role;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file

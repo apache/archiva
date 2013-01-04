@@ -1,4 +1,4 @@
-package org.apache.archiva.redback.rbac.ldap;
+package org.apache.archiva.redback.common.ldap.role;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,8 +22,6 @@ import junit.framework.TestCase;
 import org.apache.archiva.redback.components.apacheds.ApacheDs;
 import org.apache.archiva.redback.policy.PasswordEncoder;
 import org.apache.archiva.redback.policy.encoders.SHA1PasswordEncoder;
-import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
 import org.fest.assertions.Assertions;
 import org.junit.After;
 import org.junit.Before;
@@ -37,7 +35,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -58,7 +55,8 @@ import java.util.Map;
  * @author Olivier Lamy
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
+@ContextConfiguration(
+    locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-role-mapper.xml" })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class TestLdapRoleMapper
     extends TestCase
@@ -67,11 +65,7 @@ public class TestLdapRoleMapper
     Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named(value = "userManager#ldap")
-    private UserManager userManager;
-
-    @Inject
-    @Named(value = "apacheDS#test")
+    @Named( value = "apacheDS#test" )
     private ApacheDs apacheDs;
 
     private String suffix;
@@ -80,8 +74,8 @@ public class TestLdapRoleMapper
 
     private PasswordEncoder passwordEncoder;
 
-    @Inject
-    private LdapCacheService ldapCacheService;
+    //@Inject
+    //private LdapCacheService ldapCacheService;
 
     @Inject
     @Named(value = "ldapRoleMapper#test")
@@ -142,7 +136,7 @@ public class TestLdapRoleMapper
         throws Exception
     {
         // clear cache
-        ldapCacheService.removeAllUsers();
+        //ldapCacheService.removeAllUsers();
 
         InitialDirContext context = apacheDs.getAdminContext();
 
