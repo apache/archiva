@@ -57,7 +57,7 @@ public class DefaultSecuritySystem
     private AuthenticationManager authnManager;
 
     @Inject
-    @Named(value = "authorizer#rbac")
+    @Named(value = "authorizer#default")
     private Authorizer authorizer;
 
     @Inject
