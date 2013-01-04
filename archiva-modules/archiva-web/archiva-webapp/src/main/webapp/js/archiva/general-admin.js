@@ -1584,8 +1584,6 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     var validator = formSelector.validate({
       rules: {
         ldapHost : {
-          digits: true,
-          min: 1,
           required: true
         },
         ldapPort : {
@@ -1615,9 +1613,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         dataType: 'json',
         success: function(data) {
           // TODO use window.redbackRuntimeConfiguration ?
-          window.redbackRuntimeConfiguration = mapRedbackRuntimeConfiguration(data);
+          var redbackRuntimeConfiguration = mapRedbackRuntimeConfiguration(data);
           var redbackRuntimeConfigurationViewModel =
-              new RedbackRuntimeConfigurationViewModel(window.redbackRuntimeConfiguration,userManagerImplementationInformations);
+              new RedbackRuntimeConfigurationViewModel(redbackRuntimeConfiguration,userManagerImplementationInformations);
           mainContent.html( $("#redback-runtime-configuration-main" ).tmpl() );
           ko.applyBindings(redbackRuntimeConfigurationViewModel,$("#redback-runtime-configuration-content" ).get(0));
           activateRedbackRuntimeGeneralFormValidation();
