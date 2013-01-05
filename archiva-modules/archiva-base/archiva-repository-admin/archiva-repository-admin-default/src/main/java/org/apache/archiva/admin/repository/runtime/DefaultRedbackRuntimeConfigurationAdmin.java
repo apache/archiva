@@ -46,7 +46,7 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "userConfiguration#archiva" )
+@Service("userConfiguration#archiva")
 public class DefaultRedbackRuntimeConfigurationAdmin
     implements RedbackRuntimeConfigurationAdmin, UserConfiguration
 {
@@ -57,11 +57,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
-    @Named( value = "userConfiguration#redback" )
+    @Named(value = "userConfiguration#redback")
     UserConfiguration userConfiguration;
 
     @Inject
-    @Named( value = "cache#users" )
+    @Named(value = "cache#users")
     private Cache usersCache;
 
     @PostConstruct
@@ -78,7 +78,18 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 String userManagerImpl = userConfiguration.getString( UserConfigurationKeys.USER_MANAGER_IMPL );
                 if ( StringUtils.isNotEmpty( userManagerImpl ) )
                 {
-                    redbackRuntimeConfiguration.getUserManagerImpls().add( userManagerImpl );
+                    if ( StringUtils.contains( userManagerImpl, ',' ) )
+                    {
+                        String[] impls = StringUtils.split( userManagerImpl, ',' );
+                        for ( String impl : impls )
+                        {
+                            redbackRuntimeConfiguration.getUserManagerImpls().add( impl );
+                        }
+                    }
+                    else
+                    {
+                        redbackRuntimeConfiguration.getUserManagerImpls().add( userManagerImpl );
+                    }
                 }
 
                 // now ldap
