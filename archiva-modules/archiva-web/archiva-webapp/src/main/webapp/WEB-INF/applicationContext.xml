@@ -32,7 +32,7 @@
 
   <alias name="userConfiguration#archiva" alias="userConfiguration#default" />
 
-  <alias name="authorizer#rbac" alias="authorizer#default"/>
+  <alias name="authorizer#archiva" alias="authorizer#default"/>
 
   <bean id="loggerManager" class="org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager"
         init-method="initialize"/>

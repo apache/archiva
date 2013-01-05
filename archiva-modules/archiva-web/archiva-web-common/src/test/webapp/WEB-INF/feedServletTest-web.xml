@@ -28,11 +28,6 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
-  <context-param>
-    <param-name>contextClass</param-name>
-    <param-value>org.apache.archiva.redback.components.springutils.CachingWebApplicationContext</param-value>
-  </context-param>
-
   <servlet>
     <servlet-name>RssFeedServlet</servlet-name>
     <servlet-class>org.apache.archiva.web.rss.RssFeedServlet</servlet-class>
