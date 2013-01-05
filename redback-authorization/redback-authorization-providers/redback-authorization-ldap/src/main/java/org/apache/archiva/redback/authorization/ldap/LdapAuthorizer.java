@@ -40,6 +40,6 @@ public class LdapAuthorizer
     public AuthorizationResult isAuthorized( AuthorizationDataSource source )
         throws AuthorizationException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 }
