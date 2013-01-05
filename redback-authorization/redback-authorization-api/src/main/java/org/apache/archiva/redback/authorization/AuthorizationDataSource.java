@@ -95,7 +95,8 @@ public class AuthorizationDataSource
         final StringBuilder sb = new StringBuilder();
         sb.append( "AuthorizationDataSource" );
         sb.append( "{principal='" ).append( principal ).append( '\'' );
-        sb.append( ", user=" ).append( user );
+        // not display password in logs
+        //sb.append( ", user=" ).append( user );
         sb.append( ", permission='" ).append( permission ).append( '\'' );
         sb.append( ", resource='" ).append( resource ).append( '\'' );
         sb.append( '}' );
