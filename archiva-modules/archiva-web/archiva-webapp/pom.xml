@@ -412,12 +412,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-applet</artifactId>
-      <!-- TODO: actually, just exclude from WAR plugin -->
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-rss</artifactId>
     </dependency>
 

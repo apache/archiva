@@ -236,11 +236,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-applet</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-artifact-converter</artifactId>
         <version>${project.version}</version>
       </dependency>
