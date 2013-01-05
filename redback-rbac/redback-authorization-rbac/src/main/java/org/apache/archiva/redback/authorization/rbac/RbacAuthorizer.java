@@ -186,4 +186,14 @@ public class RbacAuthorizer
     {
         this.evaluator = evaluator;
     }
+
+    public boolean isFinalImplementation()
+    {
+        return true;
+    }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.authorizer.rbac";
+    }
 }

@@ -35,4 +35,16 @@ public interface Authorizer
 
     AuthorizationResult isAuthorized( AuthorizationDataSource source )
         throws AuthorizationException;
+
+    /**
+     * @return true if this implementation is a final one and not a wrapper
+     * @since 2.1
+     */
+    boolean isFinalImplementation();
+
+    /**
+     * @return a key to be able to customize label in UI
+     * @since 2.1
+     */
+    String getDescriptionKey();
 }

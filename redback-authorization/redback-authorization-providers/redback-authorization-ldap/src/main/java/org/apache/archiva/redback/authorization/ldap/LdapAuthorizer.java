@@ -42,4 +42,14 @@ public class LdapAuthorizer
     {
         return null;
     }
+
+    public boolean isFinalImplementation()
+    {
+        return true;
+    }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.authorizer.ldap";
+    }
 }

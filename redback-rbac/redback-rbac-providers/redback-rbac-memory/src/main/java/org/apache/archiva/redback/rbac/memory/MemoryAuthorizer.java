@@ -54,5 +54,15 @@ public class MemoryAuthorizer
             return new AuthorizationResult( false, principal, null );
         }
     }
+
+    public boolean isFinalImplementation()
+    {
+        return true;
+    }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.authorizer.memory";
+    }
 }
 

@@ -45,4 +45,14 @@ public class OpenAuthorizer
         return new AuthorizationResult( true, source.getPermission(), null );
     }
 
+    public boolean isFinalImplementation()
+    {
+        return true;
+    }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.authorizer.open";
+    }
+
 }
