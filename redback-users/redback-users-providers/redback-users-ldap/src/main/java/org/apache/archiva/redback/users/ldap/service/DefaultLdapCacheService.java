@@ -20,10 +20,11 @@ package org.apache.archiva.redback.users.ldap.service;
  */
 
 import org.apache.archiva.redback.common.ldap.user.LdapUser;
-import org.apache.archiva.redback.components.cache.builder.CacheBuilder;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * DefaultLdapCacheService
@@ -36,7 +37,14 @@ public class DefaultLdapCacheService
     implements LdapCacheService
 {
     @Inject
-    private CacheBuilder cacheBuilder;
+    @Named(value = "cache#ldapUser")
+    private Cache<String, LdapUser> usersCache;
+
+    @Inject
+    @Named(value = "cache#ldapUserDn")
+    private Cache<String, String> ldapCacheDn;
+
+
 
     // LDAP Users
 
@@ -45,7 +53,7 @@ public class DefaultLdapCacheService
      */
     public LdapUser getUser( String username )
     {
-        return (LdapUser) cacheBuilder.getCache( "ldapUser" ).get( username );
+        return usersCache.get( username );
     }
 
     /**
@@ -53,7 +61,7 @@ public class DefaultLdapCacheService
      */
     public boolean removeUser( String username )
     {
-        return ( cacheBuilder.getCache( "ldapUser" ).remove( username ) == null ? false : true );
+        return ( usersCache.remove( username ) == null ? false : true );
     }
 
     /**
@@ -61,7 +69,7 @@ public class DefaultLdapCacheService
      */
     public void removeAllUsers()
     {
-        cacheBuilder.getCache( "ldapUser" ).clear();
+        usersCache.clear();
     }
 
     /**
@@ -69,13 +77,13 @@ public class DefaultLdapCacheService
      */
     public void addUser( LdapUser user )
     {
-        LdapUser existingUser = (LdapUser) cacheBuilder.getCache( "ldapUser" ).get( user.getUsername() );
+        LdapUser existingUser = usersCache.get( user.getUsername() );
         if( existingUser != null )
         {
             removeUser( user.getUsername() );
         }
 
-        cacheBuilder.getCache( "ldapUser" ).put( user.getUsername(), user );
+        usersCache.put( user.getUsername(), user );
     }
 
     // LDAP UserDn
@@ -85,7 +93,7 @@ public class DefaultLdapCacheService
      */
     public String getLdapUserDn( String username )
     {
-        return (String) cacheBuilder.getCache( "ldapUserDn" ).get( username );
+        return ldapCacheDn.get( username );
     }
 
     /**
@@ -93,7 +101,7 @@ public class DefaultLdapCacheService
      */
     public boolean removeLdapUserDn( String username )
     {
-        return ( cacheBuilder.getCache( "ldapUserDn" ).remove( username ) == null ? false : true );
+        return ( ldapCacheDn.remove( username ) == null ? false : true );
     }
 
     /**
@@ -101,7 +109,7 @@ public class DefaultLdapCacheService
      */
     public void removeAllLdapUserDn()
     {
-        cacheBuilder.getCache( "ldapUserDn" ).clear();
+        ldapCacheDn.clear();
     }
 
     /**
@@ -109,13 +117,13 @@ public class DefaultLdapCacheService
      */
     public void addLdapUserDn( String username, String userDn )
     {
-        String existingUserDn = (String) cacheBuilder.getCache( "ldapUserDn" ).get( username );
+        String existingUserDn = ldapCacheDn.get( username );
         if( existingUserDn != null )
         {
             removeUser( username );
         }
 
-        cacheBuilder.getCache( "ldapUserDn" ).put( username, userDn );    
+        ldapCacheDn.put( username, userDn );
     }
     
 }

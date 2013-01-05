@@ -33,21 +33,22 @@ import org.apache.archiva.redback.keys.KeyNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * CachedKeyManager 
+ * CachedKeyManager
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 @Service("keyManager#cached")
 public class CachedKeyManager
     extends AbstractKeyManager
     implements KeyManager
 {
-    @Inject @Named(value="keyManager#jdo")
+    @Inject
+    @Named(value = "keyManager#jdo")
     private KeyManager keyImpl;
 
-    @Inject @Named(value="cache#keys")
-    private Cache keysCache;
+    @Inject
+    @Named(value = "cache#keys")
+    private Cache<String, AuthenticationKey> keysCache;
 
     public AuthenticationKey addKey( AuthenticationKey key )
     {
@@ -97,7 +98,7 @@ public class CachedKeyManager
     {
         try
         {
-            AuthenticationKey authkey = (AuthenticationKey) keysCache.get( key );
+            AuthenticationKey authkey = keysCache.get( key );
             if ( authkey != null )
             {
                 assertNotExpired( authkey );
@@ -106,7 +107,7 @@ public class CachedKeyManager
             else
             {
                 authkey = this.keyImpl.findKey( key );
-                keysCache.put( key,authkey );
+                keysCache.put( key, authkey );
                 return authkey;
             }
         }

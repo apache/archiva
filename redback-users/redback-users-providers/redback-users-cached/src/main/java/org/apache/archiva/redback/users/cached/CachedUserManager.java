@@ -39,7 +39,7 @@ import java.util.List;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  */
-@Service( "userManager#cached" )
+@Service("userManager#cached")
 public class CachedUserManager
     implements UserManager, UserManagerListener
 {
@@ -47,12 +47,12 @@ public class CachedUserManager
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "userManager#configurable" )
+    @Named(value = "userManager#configurable")
     private UserManager userImpl;
 
     @Inject
-    @Named( value = "cache#users" )
-    private Cache usersCache;
+    @Named(value = "cache#users")
+    private Cache<String, User> usersCache;
 
     public boolean isReadOnly()
     {
@@ -124,10 +124,10 @@ public class CachedUserManager
             return getGuestUser();
         }
 
-        Object el = usersCache.get( username );
+        User el = usersCache.get( username );
         if ( el != null )
         {
-            return (User) el;
+            return el;
         }
         else
         {
@@ -140,10 +140,10 @@ public class CachedUserManager
     public User getGuestUser()
         throws UserNotFoundException, UserManagerException
     {
-        Object el = usersCache.get( GUEST_USERNAME );
+        User el = usersCache.get( GUEST_USERNAME );
         if ( el != null )
         {
-            return (User) el;
+            return el;
         }
         else
         {

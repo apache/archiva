@@ -59,31 +59,31 @@ public class CachedRbacManager
 
     @Inject
     @Named(value = "cache#operations")
-    private Cache operationsCache;
+    private Cache<String, Operation> operationsCache;
 
     @Inject
     @Named(value = "cache#permissions")
-    private Cache permissionsCache;
+    private Cache<String, Permission> permissionsCache;
 
     @Inject
     @Named(value = "cache#resources")
-    private Cache resourcesCache;
+    private Cache<String, Resource> resourcesCache;
 
     @Inject
     @Named(value = "cache#roles")
-    private Cache rolesCache;
+    private Cache<String, Role> rolesCache;
 
     @Inject
     @Named(value = "cache#userAssignments")
-    private Cache userAssignmentsCache;
+    private Cache<String, UserAssignment> userAssignmentsCache;
 
     @Inject
     @Named(value = "cache#userPermissions")
-    private Cache userPermissionsCache;
+    private Cache<String, Map<String, List<Permission>>> userPermissionsCache;
 
     @Inject
     @Named(value = "cache#effectiveRoleSet")
-    private Cache effectiveRoleSetCache;
+    private Cache<String, Set<Role>> effectiveRoleSetCache;
 
     public void addChildRole( Role role, Role childRole )
         throws RbacObjectInvalidException, RbacManagerException
@@ -210,7 +210,7 @@ public class CachedRbacManager
     public Map<String, List<Permission>> getAssignedPermissionMap( String principal )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        Map<String, List<Permission>> el = (Map<String, List<Permission>>) userPermissionsCache.get( principal );
+        Map<String, List<Permission>> el = userPermissionsCache.get( principal );
 
         if ( el != null )
         {
@@ -278,7 +278,7 @@ public class CachedRbacManager
     public Set<Role> getEffectiveRoles( Role role )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        Set<Role> el = (Set<Role>) effectiveRoleSetCache.get( role.getName() );
+        Set<Role> el = effectiveRoleSetCache.get( role.getName() );
 
         if ( el != null )
         {
@@ -305,10 +305,10 @@ public class CachedRbacManager
     public Operation getOperation( String operationName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        Object el = operationsCache.get( operationName );
+        Operation el = operationsCache.get( operationName );
         if ( el != null )
         {
-            return (Operation) el;
+            return el;
         }
         else
         {
@@ -321,10 +321,10 @@ public class CachedRbacManager
     public Permission getPermission( String permissionName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        Object el = permissionsCache.get( permissionName );
+        Permission el = permissionsCache.get( permissionName );
         if ( el != null )
         {
-            return (Permission) el;
+            return el;
         }
         else
         {
@@ -337,10 +337,10 @@ public class CachedRbacManager
     public Resource getResource( String resourceIdentifier )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        Object el = resourcesCache.get( resourceIdentifier );
+        Resource el = resourcesCache.get( resourceIdentifier );
         if ( el != null )
         {
-            return (Resource) el;
+            return el;
         }
         else
         {
@@ -353,10 +353,10 @@ public class CachedRbacManager
     public Role getRole( String roleName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        Object el = rolesCache.get( roleName );
+        Role el = rolesCache.get( roleName );
         if ( el != null )
         {
-            return (Role) el;
+            return el;
         }
         else
         {
@@ -383,10 +383,10 @@ public class CachedRbacManager
     public UserAssignment getUserAssignment( String principal )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        Object el = userAssignmentsCache.get( principal );
+        UserAssignment el = userAssignmentsCache.get( principal );
         if ( el != null )
         {
-            return (UserAssignment) el;
+            return el;
         }
         else
         {
