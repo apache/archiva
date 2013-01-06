@@ -18,12 +18,16 @@ package org.apache.archiva.redback.authentication;
  * under the License.
  */
 
+import java.io.Serializable;
+
 /**
  * detail on possible authentication failure.
+ *
  * @author Olivier Lamy
  * @since 1.4-M4
  */
 public class AuthenticationFailureCause
+    implements Serializable
 {
     private int cause;
 
