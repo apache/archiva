@@ -83,6 +83,8 @@
 
     <logger name="org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler" level="debug"/>
 
+    <logger name="org.apache.archiva.web.security.ArchivaAuthorizer" level="debug"/>
+
     <root level="info">
       <appender-ref ref="console"/>
     </root>
