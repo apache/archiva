@@ -59,7 +59,7 @@ public class ArchivaConfigurableUsersManager
 
     @Inject
     @Named(value = "cache#users")
-    private Cache usersCache;
+    private Cache<String,User> usersCache;
 
     @Override
     public void initialize()
@@ -196,7 +196,7 @@ public class ArchivaConfigurableUsersManager
         User user = null;
         if ( useUsersCache() )
         {
-            user = (User) usersCache.get( username );
+            user = usersCache.get( username );
             if ( user != null )
             {
                 return user;
