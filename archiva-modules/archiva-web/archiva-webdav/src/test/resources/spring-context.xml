@@ -74,4 +74,5 @@
   </bean>
   -->
   <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
+  <alias name="authorizer#rbac" alias="authorizer#default"/>
 </beans>
