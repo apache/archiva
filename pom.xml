@@ -138,7 +138,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.0.2</version>
+          <version>2.5.1</version>
           <configuration>
             <source>1.5</source>
             <target>1.5</target>
@@ -1211,9 +1211,14 @@
   <!-- TODO: we need to push this into the parent, and also upgrade to the latest ASF parent POM -->
   <distributionManagement>
     <repository>
-      <id>vmbuild.staging</id>
-      <name>Apache Release Staging Repository on VMBuild</name>
-      <url>http://vmbuild.apache.org/archiva/repository/staged-archiva</url>
+      <id>archiva-repository.releases</id>
+      <name>Apache Release Staging Repository</name>
+      <url>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage/</url>
     </repository>
+    <snapshotRepository>
+      <id>archiva-repository.snapshots</id>
+      <name>Apache Development Snapshot Repository</name>
+      <url>https://archiva-repository.apache.org/archiva/repository/snapshots/</url>
+    </snapshotRepository>
   </distributionManagement>
 </project>

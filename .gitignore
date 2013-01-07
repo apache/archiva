@@ -1,0 +1,5 @@
+target
+.idea/
+*.iml
+.DS_Store
+archiva-modules/archiva-web/archiva-webapp/overlays/
