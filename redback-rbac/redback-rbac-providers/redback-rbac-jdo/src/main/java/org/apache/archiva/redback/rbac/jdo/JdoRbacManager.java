@@ -132,7 +132,7 @@ public class JdoRbacManager
     public Role getRole( String roleName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        return (Role) jdo.getObjectById( JdoRole.class, roleName, ROLE_DETAIL );
+        return jdo.getObjectById( JdoRole.class, roleName, ROLE_DETAIL );
     }
 
     /**
@@ -309,7 +309,7 @@ public class JdoRbacManager
     public Permission getPermission( String permissionName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        return (Permission) jdo.getObjectById( JdoPermission.class, permissionName, null );
+        return jdo.getObjectById( JdoPermission.class, permissionName, null );
     }
 
     @SuppressWarnings( "unchecked" )
@@ -392,7 +392,7 @@ public class JdoRbacManager
     public Operation getOperation( String operationName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        return (Operation) jdo.getObjectById( JdoOperation.class, operationName, null );
+        return jdo.getObjectById( JdoOperation.class, operationName, null );
     }
 
     @SuppressWarnings( "unchecked" )
@@ -477,7 +477,7 @@ public class JdoRbacManager
     public Resource getResource( String resourceIdentifier )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        return (Resource) jdo.getObjectById( JdoResource.class, resourceIdentifier, null );
+        return jdo.getObjectById( JdoResource.class, resourceIdentifier, null );
     }
 
     @SuppressWarnings( "unchecked" )
@@ -568,7 +568,7 @@ public class JdoRbacManager
     public UserAssignment getUserAssignment( String principal )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        return (UserAssignment) jdo.getObjectById( JdoUserAssignment.class, principal, ROLE_DETAIL );
+        return jdo.getObjectById( JdoUserAssignment.class, principal, ROLE_DETAIL );
     }
 
     /**

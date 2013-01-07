@@ -149,12 +149,12 @@ public class JdoTool
         cache.pinAll( clazz, false ); // Pin all objects of type clazz from now on
     }
 
-    public Object saveObject( Object object )
+    public <T>T saveObject( T object )
     {
-        return saveObject( object, null );
+        return (T) saveObject( object, null );
     }
 
-    public Object saveObject( Object object, String[] fetchGroups )
+    public <T>T saveObject( T object, String[] fetchGroups )
     {
         PersistenceManager pm = getPersistenceManager();
         Transaction tx = pm.currentTransaction();
@@ -180,7 +180,7 @@ public class JdoTool
 
             pm.makePersistent( object );
 
-            object = pm.detachCopy( object );
+            object = (T) pm.detachCopy( object );
 
             tx.commit();
 
@@ -289,7 +289,7 @@ public class JdoTool
         }
     }
 
-    public Object getObjectById( Class<?> clazz, String id, String fetchGroup )
+    public <T>T getObjectById( Class<T> clazz, String id, String fetchGroup )
         throws RbacObjectNotFoundException, RbacManagerException
     {
         if ( StringUtils.isEmpty( id ) )
@@ -318,7 +318,7 @@ public class JdoTool
 
             tx.commit();
 
-            return object;
+            return (T) object;
         }
         catch ( JDOObjectNotFoundException e )
         {
@@ -355,7 +355,7 @@ public class JdoTool
         }
     }
 
-    public Object removeObject( Object o )
+    public <T>T removeObject( T o )
         throws RbacManagerException
     {
         if ( o == null )
@@ -370,7 +370,7 @@ public class JdoTool
         {
             tx.begin();
 
-            o = pm.getObjectById( pm.getObjectId( o ) );
+            o = (T) pm.getObjectById( pm.getObjectId( o ) );
 
             pm.deletePersistent( o );
 
