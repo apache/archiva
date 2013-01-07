@@ -32,6 +32,5 @@
     <module>redback-rbac-providers</module>
     <module>redback-rbac-role-manager</module>
     <module>redback-rbac-tests</module>
-    <module>redback-authorization-rbac</module>
   </modules>
 </project>

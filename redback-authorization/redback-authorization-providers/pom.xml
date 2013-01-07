@@ -28,6 +28,7 @@
   <name>Redback :: Authorization Providers</name>
   <packaging>pom</packaging>
   <modules>
+    <module>redback-authorization-rbac</module>
     <module>redback-authorization-open</module>
     <module>redback-authorization-ldap</module>
   </modules>  
