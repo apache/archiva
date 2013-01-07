@@ -83,7 +83,7 @@
   <distributionManagement>
     <site>
       <id>apache.website</id>
-      <url>${siteBaseDeployment}/docs/${project.version}</url>
+      <url>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/docs/${project.version}</url>
     </site>
   </distributionManagement>
 
@@ -94,17 +94,22 @@
       <build>
         <plugins>
           <plugin>
-            <artifactId>maven-site-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>deploy</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>deploy</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
+            <groupId>org.apache.maven.plugins</groupId>                         
+            <artifactId>maven-scm-publish-plugin</artifactId>                   
+            <configuration>                                                     
+              <checkinComment>Apache Archiva Versioned docs for ${project.version}</checkinComment>
+              <content>${project.build.directory}/site</content>
+            </configuration>                                                    
+            <executions>                                                        
+              <execution>                                                       
+                <id>scm-publish</id>                                            
+                <phase>deploy</phase>                                      
+                <goals>                                                         
+                  <goal>publish-scm</goal>                                      
+                </goals>                                                        
+              </execution>                                                      
+            </executions>                                                       
+          </plugin>                                                
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
