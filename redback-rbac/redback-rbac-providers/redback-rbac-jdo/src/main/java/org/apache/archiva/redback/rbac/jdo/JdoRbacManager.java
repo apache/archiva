@@ -103,7 +103,7 @@ public class JdoRbacManager
     {
         RBACObjectAssertions.assertValid( role );
 
-        return (Role) jdo.saveObject( role, new String[]{ ROLE_DETAIL } );
+        return jdo.saveObject( role, new String[]{ ROLE_DETAIL } );
     }
 
     public boolean roleExists( Role role )
@@ -286,7 +286,7 @@ public class JdoRbacManager
     {
         RBACObjectAssertions.assertValid( permission );
 
-        return (Permission) jdo.saveObject( permission, null );
+        return jdo.saveObject( permission, null );
     }
 
     public boolean permissionExists( Permission permission )
@@ -369,7 +369,7 @@ public class JdoRbacManager
         throws RbacObjectInvalidException, RbacManagerException
     {
         RBACObjectAssertions.assertValid( operation );
-        return (Operation) jdo.saveObject( operation, null );
+        return jdo.saveObject( operation, null );
     }
 
     public boolean operationExists( Operation operation )
@@ -454,7 +454,7 @@ public class JdoRbacManager
         throws RbacObjectInvalidException, RbacManagerException
     {
         RBACObjectAssertions.assertValid( resource );
-        return (Resource) jdo.saveObject( resource, null );
+        return jdo.saveObject( resource, null );
     }
 
     public boolean resourceExists( Resource resource )
@@ -545,7 +545,7 @@ public class JdoRbacManager
 
         fireRbacUserAssignmentSaved( userAssignment );
 
-        return (UserAssignment) jdo.saveObject( userAssignment, new String[]{ ROLE_DETAIL } );
+        return jdo.saveObject( userAssignment, new String[]{ ROLE_DETAIL } );
     }
 
     public boolean userAssignmentExists( String principal )
