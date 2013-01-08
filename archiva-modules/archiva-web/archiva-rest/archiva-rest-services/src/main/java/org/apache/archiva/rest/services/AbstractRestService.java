@@ -30,6 +30,8 @@ import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.rest.services.RedbackAuthenticationThreadLocal;
 import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
 import org.apache.archiva.redback.users.User;
@@ -95,6 +97,11 @@ public abstract class AbstractRestService
     @Named(value = "archivaTaskScheduler#repository")
     protected DefaultRepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
+
+    @Inject
+    @Named( value = "userConfiguration#default" )
+    protected UserConfiguration config;
+
     @Context
     protected HttpServletRequest httpServletRequest;
 
@@ -143,9 +150,9 @@ public abstract class AbstractRestService
         RedbackRequestInformation redbackRequestInformation = RedbackAuthenticationThreadLocal.get();
 
         return redbackRequestInformation == null
-            ? UserManager.GUEST_USERNAME
+            ? config.getString( UserConfigurationKeys.DEFAULT_GUEST )
             : ( redbackRequestInformation.getUser() == null
-                ? UserManager.GUEST_USERNAME
+                ? config.getString( UserConfigurationKeys.DEFAULT_GUEST )
                 : redbackRequestInformation.getUser().getUsername() );
     }
 

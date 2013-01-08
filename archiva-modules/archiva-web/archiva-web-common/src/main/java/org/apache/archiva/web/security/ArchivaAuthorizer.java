@@ -43,6 +43,11 @@ public class ArchivaAuthorizer
     @Named( value = "authorizer#rbac" )
     private Authorizer rbacAuthorizer;
 
+
+    @Inject
+    @Named( value = "authorizer#ldap" )
+    private Authorizer ldapAuthorizer;
+
     public String getId()
     {
         return "archiva";
@@ -52,6 +57,11 @@ public class ArchivaAuthorizer
         throws AuthorizationException
     {
         log.debug( "isAuthorized source: {}", source );
+
+        AuthorizationResult result = ldapAuthorizer.isAuthorized( source );
+
+
+
         return rbacAuthorizer.isAuthorized( source );
     }
 

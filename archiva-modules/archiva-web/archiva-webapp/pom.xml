@@ -463,6 +463,33 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.archiva.redback.components.registry</groupId>
+      <artifactId>spring-registry-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback.components.registry</groupId>
+      <artifactId>spring-registry-commons</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>ant</groupId>
+          <artifactId>ant-optional</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>jdom</groupId>
+          <artifactId>jdom</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-rest-api</artifactId>
       <exclusions>
@@ -642,6 +669,16 @@
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-integrations-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-authorization-ldap</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
