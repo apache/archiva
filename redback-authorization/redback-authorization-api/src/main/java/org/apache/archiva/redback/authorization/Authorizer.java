@@ -33,6 +33,12 @@ public interface Authorizer
 {
     String getId();
 
+    /**
+     *
+     * @param source
+     * @return result of authorization check can be <code>null</code>
+     * @throws AuthorizationException
+     */
     AuthorizationResult isAuthorized( AuthorizationDataSource source )
         throws AuthorizationException;
 
