@@ -226,6 +226,6 @@ public class DefaultUserConfiguration
 
     public Collection<String> getKeys()
     {
-        return this.registry.getKeys();
+        return this.registry.getSubset( PREFIX ).getKeys();
     }
 }
