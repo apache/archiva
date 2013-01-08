@@ -26,6 +26,8 @@ public interface UserConfigurationKeys
 {
     String USER_MANAGER_IMPL = "user.manager.impl";
 
+    String AUTHORIZER_IMPL = "authorizer.impl";
+
     String DEFAULT_ADMIN = "redback.default.admin";
 
     String DEFAULT_GUEST = "redback.default.guest";

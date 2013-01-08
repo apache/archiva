@@ -21,6 +21,7 @@ package org.apache.archiva.redback.configuration;
 import org.apache.archiva.redback.components.registry.RegistryException;
 
 import javax.annotation.PostConstruct;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -48,4 +49,6 @@ public interface UserConfiguration
     List<String> getList( String key );
 
     String getConcatenatedList( String key, String defaultValue );
+
+    Collection<String> getKeys();
 }

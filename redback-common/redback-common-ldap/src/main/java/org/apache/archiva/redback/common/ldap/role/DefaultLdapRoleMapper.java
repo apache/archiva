@@ -39,6 +39,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -347,9 +348,17 @@ public class DefaultLdapRoleMapper
     public Map<String, String> getLdapGroupMappings()
     {
         Map<String, String> map = new HashMap<String, String>();
-        map.put( "archiva-admin", "System Administrator" );
-        //log.warn( "getLdapGroupMappings not implemented" );
-        //return Collections.emptyMap();
+
+        Collection<String> keys = userConf.getKeys();
+
+        for ( String key : keys )
+        {
+            if ( key.startsWith( UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) )
+            {
+                map.put( key, userConf.getString( key ) );
+            }
+        }
+
         return map;
     }
 

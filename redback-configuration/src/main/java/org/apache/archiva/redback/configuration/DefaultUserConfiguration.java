@@ -33,6 +33,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -221,5 +222,10 @@ public class DefaultUserConfiguration
     public void setRegistry( Registry registry )
     {
         this.registry = registry;
+    }
+
+    public Collection<String> getKeys()
+    {
+        return this.registry.getKeys();
     }
 }
