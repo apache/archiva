@@ -186,11 +186,6 @@ public class LdapUserManager
             throw new UserNotFoundException( "Unable to find user based on null username." );
         }
 
-        if ( GUEST_USERNAME.equals( username ) )
-        {
-            return getGuestUser();
-        }
-
         // REDBACK-289/MRM-1488
         // look for the user in the cache first
         LdapUser ldapUser = ldapCacheService.getUser( username );
@@ -237,16 +232,6 @@ public class LdapUserManager
         {
             closeLdapConnection( ldapConnection );
         }
-    }
-
-    public User getGuestUser()
-        throws UserNotFoundException
-    {
-        if ( guestUser == null )
-        {
-            throw new UserNotFoundException( "Guest user doesn't exist." );
-        }
-        return guestUser;
     }
 
     public List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )
