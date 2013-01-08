@@ -80,7 +80,12 @@ public class DefaultLdapRoleMapper
 
         this.baseDn = userConf.getConcatenatedList( UserConfigurationKeys.LDAP_BASEDN, this.baseDn );
 
-        this.groupsDn = userConf.getConcatenatedList( UserConfigurationKeys.LDAP_GROUPS_BASEDN, this.baseDn );
+        this.groupsDn = userConf.getConcatenatedList( UserConfigurationKeys.LDAP_GROUPS_BASEDN, this.groupsDn );
+
+        if ( StringUtils.isEmpty( this.groupsDn ) )
+        {
+            this.groupsDn = this.baseDn;
+        }
     }
 
     public String getLdapGroup( String role )
