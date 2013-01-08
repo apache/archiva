@@ -39,6 +39,11 @@ public class RedbackRuntimeConfiguration
      */
     private List<String> userManagerImpls = new ArrayList<String>();
 
+    /**
+     * Field authorizerImpls.
+     */
+    private java.util.List<String> authorizerImpls;
+
     private LdapConfiguration ldapConfiguration;
 
     /**
@@ -153,12 +158,23 @@ public class RedbackRuntimeConfiguration
         this.usersCacheConfiguration = usersCacheConfiguration;
     }
 
+    public List<String> getAuthorizerImpls()
+    {
+        return authorizerImpls;
+    }
+
+    public void setAuthorizerImpls( List<String> authorizerImpls )
+    {
+        this.authorizerImpls = authorizerImpls;
+    }
+
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder();
         sb.append( "RedbackRuntimeConfiguration" );
         sb.append( "{userManagerImpls=" ).append( userManagerImpls );
+        sb.append( ", authorizerImpls=" ).append( authorizerImpls );
         sb.append( ", ldapConfiguration=" ).append( ldapConfiguration );
         sb.append( ", migratedFromRedbackConfiguration=" ).append( migratedFromRedbackConfiguration );
         sb.append( ", configurationProperties=" ).append( configurationProperties );

@@ -40,7 +40,10 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Olivier Lamy
@@ -75,7 +78,8 @@ public class DefaultRedbackRuntimeConfigurationAdmin
             if ( !redbackRuntimeConfiguration.isMigratedFromRedbackConfiguration() )
             {
                 // so migrate if available
-                String userManagerImpl = userConfiguration.getString( UserConfigurationKeys.USER_MANAGER_IMPL );
+                String userManagerImpl =
+                    userConfiguration.getConcatenatedList( UserConfigurationKeys.USER_MANAGER_IMPL, "jdo" );
                 if ( StringUtils.isNotEmpty( userManagerImpl ) )
                 {
                     if ( StringUtils.contains( userManagerImpl, ',' ) )
@@ -89,6 +93,25 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                     else
                     {
                         redbackRuntimeConfiguration.getUserManagerImpls().add( userManagerImpl );
+                    }
+                }
+
+                String authorizerImpls =
+                    userConfiguration.getConcatenatedList( UserConfigurationKeys.AUTHORIZER_IMPL, "rbac" );
+
+                if ( StringUtils.isNotEmpty( authorizerImpls ) )
+                {
+                    if ( StringUtils.contains( authorizerImpls, ',' ) )
+                    {
+                        String[] impls = StringUtils.split( authorizerImpls, ',' );
+                        for ( String impl : impls )
+                        {
+                            redbackRuntimeConfiguration.getAuthorizerImpls().add( impl );
+                        }
+                    }
+                    else
+                    {
+                        redbackRuntimeConfiguration.getAuthorizerImpls().add( userManagerImpl );
                     }
                 }
 
@@ -127,6 +150,15 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 log.info(
                     "redbackRuntimeConfiguration with empty userManagerImpls so force at least jdo implementation !" );
                 redbackRuntimeConfiguration.getUserManagerImpls().add( "jdo" );
+                updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
+            }
+
+            // we ensure authorizerImpls is not empty if so put
+            if ( redbackRuntimeConfiguration.getAuthorizerImpls().isEmpty() )
+            {
+                log.info(
+                    "redbackRuntimeConfiguration with empty authorizerImpls so force at least rbac implementation !" );
+                redbackRuntimeConfiguration.getAuthorizerImpls().add( "rbac" );
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
             }
 
@@ -501,5 +533,16 @@ public class DefaultRedbackRuntimeConfigurationAdmin
             return getRedbackRuntimeConfiguration().getLdapConfiguration().getBindDn();
         }
         return userConfiguration.getConcatenatedList( key, defaultValue );
+    }
+
+    public Collection<String> getKeys()
+    {
+        Collection<String> keys = userConfiguration.getKeys();
+
+        Set<String> keysSet = new HashSet<String>( keys );
+
+        keysSet.addAll( getRedbackRuntimeConfiguration().getConfigurationProperties().keySet() );
+
+        return keysSet;
     }
 }

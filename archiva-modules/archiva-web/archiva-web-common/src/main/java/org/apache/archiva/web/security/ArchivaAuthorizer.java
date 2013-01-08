@@ -18,12 +18,16 @@ package org.apache.archiva.web.security;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
+import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.authorization.AuthorizationDataSource;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.AuthorizationResult;
 import org.apache.archiva.redback.authorization.Authorizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -40,13 +44,10 @@ public class ArchivaAuthorizer
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "authorizer#rbac" )
-    private Authorizer rbacAuthorizer;
-
+    private ApplicationContext applicationContext;
 
     @Inject
-    @Named( value = "authorizer#ldap" )
-    private Authorizer ldapAuthorizer;
+    private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
     public String getId()
     {
@@ -58,11 +59,54 @@ public class ArchivaAuthorizer
     {
         log.debug( "isAuthorized source: {}", source );
 
-        AuthorizationResult result = ldapAuthorizer.isAuthorized( source );
+        try
+        {
+            RedbackRuntimeConfiguration redbackRuntimeConfiguration =
+                redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration();
 
+            AuthorizationException authorizationException = null;
 
+            AuthorizationResult lastResult = null;
 
-        return rbacAuthorizer.isAuthorized( source );
+            for ( String id : redbackRuntimeConfiguration.getAuthorizerImpls() )
+            {
+                Authorizer authorizer = getAuthorizer( id );
+
+                AuthorizationResult result = null;
+                try
+                {
+                    result = authorizer.isAuthorized( source );
+                    log.debug( "AuthorizationResult {} with id '{}", result, id );
+                }
+                catch ( AuthorizationException e )
+                {
+                    log.debug( "AuthorizationException {} with id '{}", e.getMessage(), id );
+                    authorizationException = e;
+                }
+
+                if ( result.isAuthorized() )
+                {
+                    return result;
+                }
+
+                lastResult = result;
+            }
+            if ( authorizationException != null )
+            {
+                throw authorizationException;
+            }
+            return lastResult;
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new AuthorizationException( e.getMessage(), e );
+        }
+
+    }
+
+    private Authorizer getAuthorizer( String id )
+    {
+        return applicationContext.getBean( "authorizer#" + id, Authorizer.class );
     }
 
     public boolean isFinalImplementation()

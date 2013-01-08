@@ -1496,6 +1496,15 @@
           </association>
         </field>
         <field>
+          <name>authorizerImpls</name>
+          <description>The authorizer impls to use.</description>
+          <version>1.4.0+</version>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
           <name>ldapConfiguration</name>
           <description>the ldap configuration</description>
           <version>1.4.0+</version>
