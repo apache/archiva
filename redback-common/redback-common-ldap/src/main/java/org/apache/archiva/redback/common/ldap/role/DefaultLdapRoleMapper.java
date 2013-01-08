@@ -355,7 +355,8 @@ public class DefaultLdapRoleMapper
         {
             if ( key.startsWith( UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) )
             {
-                map.put( key, userConf.getString( key ) );
+                map.put( StringUtils.substringAfter( key, UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ),
+                         userConf.getString( key ) );
             }
         }
 
