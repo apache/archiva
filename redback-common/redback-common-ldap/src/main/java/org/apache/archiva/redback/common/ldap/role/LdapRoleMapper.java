@@ -88,7 +88,7 @@ public interface LdapRoleMapper
         throws MappingException;
 
     /**
-     * @return Map of corresponding Redback role (key) and LDAP group (value)
+     * @return Map of corresponding LDAP group (key) and Redback role (value)
      */
     Map<String, String> getLdapGroupMappings()
         throws MappingException;

@@ -19,6 +19,8 @@ package org.apache.archiva.redback.integration.checks.security;
  * under the License.
  */
 
+import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.redback.users.User;
@@ -31,6 +33,7 @@ import org.apache.archiva.redback.users.UserManager;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.List;
 
 /**
@@ -48,6 +51,10 @@ public class GuestUserEnvironmentCheck
 
     @Inject
     private SecuritySystem securitySystem;
+
+    @Inject
+    @Named( value = "userConfiguration#default" )
+    private UserConfiguration config;
 
     /**
      * boolean detailing if this environment check has been executed
@@ -86,7 +93,7 @@ public class GuestUserEnvironmentCheck
 
             try
             {
-                roleManager.assignRole( "guest", guest.getUsername() );
+                roleManager.assignRole( config.getString( UserConfigurationKeys.DEFAULT_GUEST ), guest.getUsername() );
             }
             catch ( RoleManagerException rpe )
             {

@@ -723,7 +723,7 @@ public abstract class AbstractRBACManager
         Iterator<String> it = role.getChildRoleNames().listIterator();
         while ( it.hasNext() )
         {
-            String roleName = (String) it.next();
+            String roleName = it.next();
             try
             {
                 Role child = getRole( roleName );

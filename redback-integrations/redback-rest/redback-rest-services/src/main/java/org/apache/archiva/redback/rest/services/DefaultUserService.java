@@ -453,7 +453,7 @@ public class DefaultUserService
             org.apache.archiva.redback.users.User user = userManager.createGuestUser();
             user.setPasswordChangeRequired( false );
             user = userManager.updateUser( user, false );
-            roleManager.assignRole( "guest", user.getUsername() );
+            roleManager.assignRole( config.getString( UserConfigurationKeys.DEFAULT_GUEST ), user.getUsername() );
             return getSimpleUser( user );
         }
         catch ( RoleManagerException e )

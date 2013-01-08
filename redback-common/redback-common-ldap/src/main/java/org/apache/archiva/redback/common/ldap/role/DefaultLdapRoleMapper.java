@@ -40,6 +40,7 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,9 +77,9 @@ public class DefaultLdapRoleMapper
     {
         this.ldapGroupClass = userConf.getString( UserConfigurationKeys.LDAP_GROUPS_CLASS, this.ldapGroupClass );
 
-        this.groupsDn = userConf.getString( UserConfigurationKeys.LDAP_GROUPS_BASEDN, this.groupsDn );
+        this.groupsDn = userConf.getConcatenatedList( UserConfigurationKeys.LDAP_GROUPS_BASEDN, this.groupsDn );
 
-        this.baseDn = userConf.getString( UserConfigurationKeys.LDAP_BASEDN, this.baseDn );
+        this.baseDn = userConf.getConcatenatedList( UserConfigurationKeys.LDAP_BASEDN, this.baseDn );
     }
 
     public String getLdapGroup( String role )
@@ -345,8 +346,11 @@ public class DefaultLdapRoleMapper
 
     public Map<String, String> getLdapGroupMappings()
     {
-        log.warn( "getLdapGroupMappings not implemented" );
-        return Collections.emptyMap();
+        Map<String, String> map = new HashMap<String, String>();
+        map.put( "archiva-admin", "System Administrator" );
+        //log.warn( "getLdapGroupMappings not implemented" );
+        //return Collections.emptyMap();
+        return map;
     }
 
     //---------------------------------

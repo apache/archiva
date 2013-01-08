@@ -37,6 +37,10 @@
       <artifactId>redback-authorization-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-rbac-model</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
     </dependency>
@@ -62,7 +66,13 @@
             </Export-Package>
             <Import-Package>
               org.apache.archiva.redback.authorization;version=${project.version},
-              org.springframework.stereotype;version="[3,4)"
+              org.springframework.stereotype;version="[3,4)",
+              javax.inject,
+              org.apache.archiva.redback.common.ldap,
+              org.apache.archiva.redback.common.ldap.role,
+              org.apache.archiva.redback.rbac,
+              org.apache.commons.lang,
+              org.slf4j
             </Import-Package>
           </instructions>
         </configuration>
