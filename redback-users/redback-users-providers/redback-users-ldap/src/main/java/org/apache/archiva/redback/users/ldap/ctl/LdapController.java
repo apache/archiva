@@ -34,13 +34,13 @@ import java.util.List;
 public interface LdapController
 {
 
-    void removeUser( Object principal, DirContext context )
+    void removeUser( String principal, DirContext context )
         throws LdapControllerException;
 
     void updateUser( User user, DirContext context )
         throws LdapControllerException, MappingException;
 
-    boolean userExists( Object key, DirContext context )
+    boolean userExists( String key, DirContext context )
         throws LdapControllerException;
 
     Collection<User> getUsers( DirContext context )
@@ -49,7 +49,7 @@ public interface LdapController
     void createUser( User user, DirContext context, boolean encodePasswordIfChanged )
         throws LdapControllerException, MappingException;
 
-    LdapUser getUser( Object key, DirContext context )
+    LdapUser getUser( String key, DirContext context )
         throws LdapControllerException, MappingException;
 
     List<User> getUsersByQuery( LdapUserQuery query, DirContext context )

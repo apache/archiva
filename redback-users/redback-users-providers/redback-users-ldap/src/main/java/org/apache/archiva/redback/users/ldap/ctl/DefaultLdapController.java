@@ -59,12 +59,12 @@ public class DefaultLdapController
     private UserMapper mapper;
 
     /**
-     * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#removeUser(java.lang.Object, javax.naming.directory.DirContext)
+     * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#removeUser(String, javax.naming.directory.DirContext)
      */
-    public void removeUser( Object principal, DirContext context )
+    public void removeUser( String principal, DirContext context )
         throws LdapControllerException
     {
-
+        // no op
     }
 
     /**
@@ -73,13 +73,13 @@ public class DefaultLdapController
     public void updateUser( User user, DirContext context )
         throws LdapControllerException, MappingException
     {
-
+        // no op
     }
 
     /**
-     * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#userExists(java.lang.Object, javax.naming.directory.DirContext)
+     * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#userExists(String, javax.naming.directory.DirContext)
      */
-    public boolean userExists( Object key, DirContext context )
+    public boolean userExists( String key, DirContext context )
         throws LdapControllerException
     {
         NamingEnumeration<SearchResult> results = null;
@@ -108,11 +108,11 @@ public class DefaultLdapController
         }
     }
 
-    protected NamingEnumeration<SearchResult> searchUsers( Object key, DirContext context )
+    protected NamingEnumeration<SearchResult> searchUsers( String key, DirContext context )
         throws NamingException
     {
         LdapUserQuery query = new LdapUserQuery();
-        query.setUsername( "" + key );
+        query.setUsername( key );
         return searchUsers( context, null, query );
     }
 
@@ -257,12 +257,11 @@ public class DefaultLdapController
     }
 
     /**
-     * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#getUser(java.lang.Object, javax.naming.directory.DirContext)
+     * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#getUser(String, javax.naming.directory.DirContext)
      */
-    public LdapUser getUser( Object key, DirContext context )
+    public LdapUser getUser( String username, DirContext context )
         throws LdapControllerException, MappingException
     {
-        String username = key.toString();
 
         log.debug( "Searching for user: {}", username );
 
