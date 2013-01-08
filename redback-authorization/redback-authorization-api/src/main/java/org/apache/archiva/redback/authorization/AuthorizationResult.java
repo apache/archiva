@@ -56,4 +56,16 @@ public class AuthorizationResult
     {
         return exception;
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append( "AuthorizationResult" );
+        sb.append( "{isAuthorized=" ).append( isAuthorized );
+        sb.append( ", principal=" ).append( principal );
+        sb.append( ", exception=" ).append( exception );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }
