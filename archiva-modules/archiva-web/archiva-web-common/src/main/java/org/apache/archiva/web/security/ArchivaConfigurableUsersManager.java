@@ -449,7 +449,7 @@ public class ArchivaConfigurableUsersManager
         throws UserManagerException
     {
         UserManager userManager = findFirstWritable();
-        if ( userManager.isReadOnly() )
+        if ( userManager == null )
         {
             log.warn( "cannot find writable user manager implementation, skip guest user creation" );
             return null;

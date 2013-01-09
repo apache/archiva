@@ -84,7 +84,7 @@ public class ArchivaAuthorizer
                     authorizationException = e;
                 }
 
-                if ( result.isAuthorized() )
+                if ( result != null && result.isAuthorized() )
                 {
                     return result;
                 }
