@@ -612,15 +612,11 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.3</version>
-          <!-- remove when upgrading -->
-          <dependencies>
-            <dependency>
-              <groupId>org.codehaus.plexus</groupId>
-              <artifactId>plexus-utils</artifactId>
-              <version>${plexusUtilsPluginsVersion}</version>
-            </dependency>
-          </dependencies>
+          <version>2.4</version>
+          <configuration>
+            <useJvmChmod>true</useJvmChmod>
+            <recompressZippedFiles>true</recompressZippedFiles>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
