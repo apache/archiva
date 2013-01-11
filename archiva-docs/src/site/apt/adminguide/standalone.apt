@@ -59,6 +59,37 @@ Installing Standalone Distribution of Apache Archiva
 </Configure>
 +---
 
+* Installing as a Service on Linux
+
+  On Linux, the <<<bin/archiva>>> script is suitable for linking or copying
+  to <<</etc/init.d/archiva>>> and running as <<<root>>>, as long as the
+  <<<RUN_AS_USER>>> environment variable is set within the script. This will
+  allow you to start and stop the service with:
+
++----+
+$ service archiva start
+$ service archiva stop
++----+
+
+** Starting on boot for RedHat-based systems
+
+  The startup script is enabled to <<<chkconfig>>>. Run the following as
+  <<<root>>>:
+
++----+
+$ chkconfig --add archiva
+$ chkconfig archiva on
++----+
+
+** Starting on boot for Debian/Ubuntu-based systems
+
+  Debian-based systems come with a script to create appropriate <<<rc.d>>>
+  links for a startup script:
+
++----+
+$ update-rc.d archiva defaults 80
++----+
+
 * Installing as a Service on Windows
 
   On Windows, to use the <<<start>>> and <<<stop>>> commands you must first install it as a service. This is done by running:
@@ -85,6 +116,66 @@ wrapper.java.command=fullpath to your java executable
 ----
 .\bin\archiva.bat remove
 ----
+
+* Installing as a Service on Mac OS X
+
+  On OS X, you can use <<<launchd>>> to run a service. Create the following
+  as root in <<</Library/LaunchDaemons/org.apache.archiva.plist>>>:
+
++----+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>org.apache.archiva</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Applications/Archiva/apache-archiva-${project.version}/bin/archiva</string>
+        <string>console</string>
+    </array>
+    <key>Disabled</key>
+    <false/>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>UserName</key>
+    <string>archiva</string>
+    <key>StandardOutPath</key>
+    <string>/Applications/Archiva/apache-archiva-${project.version}/logs/launchd.log</string>
+    <!-- Optional - store data separate from installation (see below) -->
+    <key>EnvironmentVariables</key>
+    <dict>
+      <key>ARCHIVA_BASE</key>
+      <string>/Users/archiva/Library/Archiva</string>
+    </dict>
+    <!-- Optional: force it to keep running
+    <key>KeepAlive</key>
+    <true/>
+    -->
+</dict>
+</plist>
++----+
+
+  To install the service, run the following:
+
++----+
+$ sudo chown root:wheel /Library/LaunchDaemons/org.apache.archiva.plist
+$ sudo launchctl load -w /Library/LaunchDaemons/org.apache.archiva.plist
++----+
+
+  Start and stop the service with:
+
++----+
+$ sudo launchctl start org.apache.archiva.plist
+$ sudo launchctl stop org.apache.archiva.plist
++----+
+
+  To uninstall the service:
+
++----+
+$ sudo launchctl unload -w /Library/LaunchDaemons/org.apache.archiva.plist
++----+
 
 * Separating the base from the installation
 
@@ -192,4 +283,13 @@ wrapper.java.command=fullpath to your java executable
  {{{http://cwiki.apache.org/confluence/display/ARCHIVA/Archiva+User+DB+on+Derby+Network+Server}
  Archiva User DB on Derby Network Server}}
 
+* Installing with Puppet
+
+  If you use Puppet to manage your infrastructure, you can use a third-party
+  Puppet module to install Archiva. This will take care of adding the
+  required users, databases and configuration based on official release
+  tarballs.
+
+  * {{{https://forge.puppetlabs.com/maestrodev/archiva} Puppet module for
+    Apache Archiva}}
 
