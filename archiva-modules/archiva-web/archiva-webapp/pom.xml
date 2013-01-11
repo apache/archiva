@@ -1062,7 +1062,7 @@
               </includes>
             </webResource>
             <webResource>
-              <directory>target/maven-shared-archive-resources/META-INF/</directory>
+              <directory>${project.build.directory}/maven-shared-archive-resources/META-INF/</directory>
               <includes>
                 <include>NOTICE</include>
               </includes>
