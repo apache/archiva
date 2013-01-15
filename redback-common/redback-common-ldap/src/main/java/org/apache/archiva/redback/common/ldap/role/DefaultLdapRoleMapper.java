@@ -99,17 +99,13 @@ public class DefaultLdapRoleMapper
         return userConf.getString( UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY + role );
     }
 
-    public List<String> getAllGroups()
+    public List<String> getAllGroups( DirContext context )
         throws MappingException
     {
-        LdapConnection ldapConnection = null;
 
         NamingEnumeration<SearchResult> namingEnumeration = null;
         try
         {
-            ldapConnection = ldapConnectionFactory.getConnection();
-
-            DirContext context = ldapConnection.getDirContext();
 
             SearchControls searchControls = new SearchControls();
 
@@ -149,29 +145,29 @@ public class DefaultLdapRoleMapper
 
         finally
         {
-            if ( ldapConnection != null )
+            close( namingEnumeration );
+        }
+    }
+
+    protected void closeNamingEnumeration( NamingEnumeration namingEnumeration )
+    {
+        if ( namingEnumeration != null )
+        {
+            try
             {
-                ldapConnection.close();
+                namingEnumeration.close();
             }
-            if ( namingEnumeration != null )
+            catch ( NamingException e )
             {
-                try
-                {
-                    namingEnumeration.close();
-                }
-                catch ( NamingException e )
-                {
-                    log.warn( "failed to close search results", e );
-                }
+                log.warn( "failed to close NamingEnumeration", e );
             }
         }
     }
 
-    public List<String> getAllRoles()
+    public List<String> getAllRoles( DirContext context )
         throws MappingException
     {
-        // TODO read from ldap ?
-        List<String> groups = getAllGroups();
+        List<String> groups = getAllGroups( context );
 
         if ( groups.isEmpty() )
         {
@@ -194,17 +190,13 @@ public class DefaultLdapRoleMapper
         return roles;
     }
 
-    public List<String> getGroupsMember( String group )
+    public List<String> getGroupsMember( String group, DirContext context )
         throws MappingException
     {
-        LdapConnection ldapConnection = null;
 
         NamingEnumeration<SearchResult> namingEnumeration = null;
         try
         {
-            ldapConnection = ldapConnectionFactory.getConnection();
-
-            DirContext context = ldapConnection.getDirContext();
 
             SearchControls searchControls = new SearchControls();
 
@@ -255,28 +247,19 @@ public class DefaultLdapRoleMapper
 
         finally
         {
-            if ( ldapConnection != null )
-            {
-                ldapConnection.close();
-            }
             close( namingEnumeration );
         }
     }
 
-    public List<String> getGroups( String username )
+    public List<String> getGroups( String username, DirContext context )
         throws MappingException
     {
 
         List<String> userGroups = new ArrayList<String>();
 
-        LdapConnection ldapConnection = null;
-
         NamingEnumeration<SearchResult> namingEnumeration = null;
         try
         {
-            ldapConnection = ldapConnectionFactory.getConnection();
-
-            DirContext context = ldapConnection.getDirContext();
 
             SearchControls searchControls = new SearchControls();
 
@@ -336,21 +319,16 @@ public class DefaultLdapRoleMapper
         {
             throw new MappingException( e.getMessage(), e );
         }
-
         finally
         {
-            if ( ldapConnection != null )
-            {
-                ldapConnection.close();
-            }
             close( namingEnumeration );
         }
     }
 
-    public List<String> getRoles( String username )
+    public List<String> getRoles( String username, DirContext context )
         throws MappingException
     {
-        List<String> groups = getGroups( username );
+        List<String> groups = getGroups( username, context );
 
         Map<String, String> rolesMapping = getLdapGroupMappings();
 
@@ -427,7 +405,7 @@ public class DefaultLdapRoleMapper
         return map;
     }
 
-    public boolean saveRole( String roleName )
+    public boolean saveRole( String roleName, DirContext context )
         throws MappingException
     {
 
@@ -438,7 +416,7 @@ public class DefaultLdapRoleMapper
             return false;
         }
 
-        List<String> allGroups = getAllGroups();
+        List<String> allGroups = getAllGroups( context );
         if ( allGroups.contains( groupName ) )
         {
             log.info( "group {} already exists for role.", groupName, roleName );
@@ -458,14 +436,8 @@ public class DefaultLdapRoleMapper
         basicAttribute.add( "uid=admin," + getBaseDn() );
         attributes.put( basicAttribute );
 
-        LdapConnection ldapConnection = null;
-
         try
         {
-            ldapConnection = ldapConnectionFactory.getConnection();
-
-            DirContext context = ldapConnection.getDirContext();
-
             String dn = "cn=" + groupName + "," + this.groupsDn;
 
             context.createSubcontext( dn, attributes );
@@ -483,16 +455,9 @@ public class DefaultLdapRoleMapper
         {
             throw new MappingException( e.getMessage(), e );
         }
-        finally
-        {
-            if ( ldapConnection != null )
-            {
-                ldapConnection.close();
-            }
-        }
     }
 
-    public boolean saveUserRole( String roleName, String username )
+    public boolean saveUserRole( String roleName, String username, DirContext context )
         throws MappingException
     {
 
@@ -504,15 +469,9 @@ public class DefaultLdapRoleMapper
             return false;
         }
 
-        LdapConnection ldapConnection = null;
-
         NamingEnumeration<SearchResult> namingEnumeration = null;
         try
         {
-            ldapConnection = ldapConnectionFactory.getConnection();
-
-            DirContext context = ldapConnection.getDirContext();
-
             SearchControls searchControls = new SearchControls();
 
             searchControls.setDerefLinkFlag( true );
@@ -555,10 +514,6 @@ public class DefaultLdapRoleMapper
 
         finally
         {
-            if ( ldapConnection != null )
-            {
-                ldapConnection.close();
-            }
             if ( namingEnumeration != null )
             {
                 try
@@ -573,7 +528,7 @@ public class DefaultLdapRoleMapper
         }
     }
 
-    public boolean removeUserRole( String roleName, String username )
+    public boolean removeUserRole( String roleName, String username, DirContext context )
         throws MappingException
     {
         String groupName = HashBiMap.create( getLdapGroupMappings() ).inverse().get( roleName );
@@ -584,14 +539,9 @@ public class DefaultLdapRoleMapper
             return false;
         }
 
-        LdapConnection ldapConnection = null;
-
         NamingEnumeration<SearchResult> namingEnumeration = null;
         try
         {
-            ldapConnection = ldapConnectionFactory.getConnection();
-
-            DirContext context = ldapConnection.getDirContext();
 
             SearchControls searchControls = new SearchControls();
 
@@ -629,10 +579,6 @@ public class DefaultLdapRoleMapper
 
         finally
         {
-            if ( ldapConnection != null )
-            {
-                ldapConnection.close();
-            }
             if ( namingEnumeration != null )
             {
                 try
@@ -647,19 +593,14 @@ public class DefaultLdapRoleMapper
         }
     }
 
-    public void removeAllRoles()
+    public void removeAllRoles( DirContext context )
         throws MappingException
     {
         //all mapped roles
         Collection<String> groups = getLdapGroupMappings().keySet();
 
-        LdapConnection ldapConnection = null;
         try
         {
-            ldapConnection = ldapConnectionFactory.getConnection();
-
-            DirContext context = ldapConnection.getDirContext();
-
             for ( String groupName : groups )
             {
 
@@ -680,27 +621,16 @@ public class DefaultLdapRoleMapper
         {
             throw new MappingException( e.getMessage(), e );
         }
-        finally
-        {
-            if ( ldapConnection != null )
-            {
-                ldapConnection.close();
-            }
-        }
     }
 
-    public void removeRole( String roleName )
+    public void removeRole( String roleName, DirContext context )
         throws MappingException
     {
 
         String groupName = HashBiMap.create( getLdapGroupMappings() ).inverse().get( roleName );
 
-        LdapConnection ldapConnection = null;
         try
         {
-            ldapConnection = ldapConnectionFactory.getConnection();
-
-            DirContext context = ldapConnection.getDirContext();
 
             String dn = "cn=" + groupName + "," + this.groupsDn;
 
@@ -717,13 +647,6 @@ public class DefaultLdapRoleMapper
         catch ( NamingException e )
         {
             throw new MappingException( e.getMessage(), e );
-        }
-        finally
-        {
-            if ( ldapConnection != null )
-            {
-                ldapConnection.close();
-            }
         }
     }
 

@@ -20,6 +20,7 @@ package org.apache.archiva.redback.common.ldap.role;
 
 import org.apache.archiva.redback.common.ldap.MappingException;
 
+import javax.naming.directory.DirContext;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public interface LdapRoleMapper
      *
      * @return all LDAP groups
      */
-    List<String> getAllGroups()
+    List<String> getAllGroups( DirContext context )
         throws MappingException;
 
     /**
@@ -56,7 +57,7 @@ public interface LdapRoleMapper
      * @return all roles
      * @throws Exception
      */
-    List<String> getAllRoles()
+    List<String> getAllRoles( DirContext context )
         throws MappingException;
 
 
@@ -75,13 +76,13 @@ public interface LdapRoleMapper
      * @return uids of group members
      * @throws MappingException
      */
-    List<String> getGroupsMember( String group )
+    List<String> getGroupsMember( String group, DirContext context )
         throws MappingException;
 
-    List<String> getGroups( String username )
+    List<String> getGroups( String username, DirContext context )
         throws MappingException;
 
-    List<String> getRoles( String username )
+    List<String> getRoles( String username, DirContext context )
         throws MappingException;
 
     /**
@@ -118,7 +119,7 @@ public interface LdapRoleMapper
      * @return <code>true</code> if role was added, <code>false</code> if role already exists
      * @throws MappingException
      */
-    boolean saveRole( String roleName )
+    boolean saveRole( String roleName, DirContext context )
         throws MappingException;
 
     /**
@@ -129,16 +130,16 @@ public interface LdapRoleMapper
      * @return <code>true</code> if role was added to user, <code>false</code> if role already exists for the user
      * @throws MappingException
      */
-    boolean saveUserRole( String roleName, String username )
+    boolean saveUserRole( String roleName, String username, DirContext context )
         throws MappingException;
 
-    boolean removeUserRole( String roleName, String username )
+    boolean removeUserRole( String roleName, String username, DirContext context )
         throws MappingException;
 
-    void removeAllRoles()
+    void removeAllRoles( DirContext context )
         throws MappingException;
 
-    void removeRole( String roleName )
+    void removeRole( String roleName, DirContext context )
         throws MappingException;
 
 }

@@ -56,6 +56,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.NamingException;
+import javax.naming.directory.DirContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -160,13 +162,26 @@ public class LdapRbacManager
     {
         if ( writableLdap )
         {
+            LdapConnection ldapConnection = null;
+            DirContext context = null;
             try
             {
-                ldapRoleMapper.removeAllRoles();
+                ldapConnection = ldapConnectionFactory.getConnection();
+                context = ldapConnection.getDirContext();
+                ldapRoleMapper.removeAllRoles( context );
             }
             catch ( MappingException e )
             {
                 log.warn( "skip error removing all roles {}", e.getMessage() );
+            }
+            catch ( LdapException e )
+            {
+                log.warn( "skip error removing all roles {}", e.getMessage() );
+            }
+            finally
+            {
+                closeContext( context );
+                closeLdapConnection( ldapConnection );
             }
         }
         this.rbacImpl.eraseDatabase();
@@ -218,14 +233,28 @@ public class LdapRbacManager
     public List<Role> getAllRoles()
         throws RbacManagerException
     {
+        LdapConnection ldapConnection = null;
+        DirContext context = null;
         try
         {
-            List<String> groups = ldapRoleMapper.getAllGroups();
+            ldapConnection = ldapConnectionFactory.getConnection();
+            context = ldapConnection.getDirContext();
+
+            List<String> groups = ldapRoleMapper.getAllGroups( context );
             return mapToRoles( groups );
         }
         catch ( MappingException e )
         {
             throw new RbacManagerException( e.getMessage(), e );
+        }
+        catch ( LdapException e )
+        {
+            throw new RbacManagerException( e.getMessage(), e );
+        }
+        finally
+        {
+            closeContext( context );
+            closeLdapConnection( ldapConnection );
         }
         //return this.rbacImpl.getAllRoles();
     }
@@ -233,14 +262,13 @@ public class LdapRbacManager
     public List<UserAssignment> getAllUserAssignments()
         throws RbacManagerException
     {
-        // TODO FROM ldap or from real impl ?
-        //return this.rbacImpl.getAllUserAssignments();
         LdapConnection ldapConnection = null;
+        DirContext context = null;
         try
         {
             ldapConnection = ldapConnectionFactory.getConnection();
-            Map<String, Collection<String>> usersWithRoles =
-                ldapController.findUsersWithRoles( ldapConnection.getDirContext() );
+            context = ldapConnection.getDirContext();
+            Map<String, Collection<String>> usersWithRoles = ldapController.findUsersWithRoles( context );
             List<UserAssignment> userAssignments = new ArrayList<UserAssignment>( usersWithRoles.size() );
 
             for ( Map.Entry<String, Collection<String>> entry : usersWithRoles.entrySet() )
@@ -261,9 +289,30 @@ public class LdapRbacManager
         }
         finally
         {
-            if ( ldapConnection != null )
+            closeContext( context );
+            closeLdapConnection( ldapConnection );
+        }
+    }
+
+    protected void closeLdapConnection( LdapConnection ldapConnection )
+    {
+        if ( ldapConnection != null )
+        {
+            ldapConnection.close();
+        }
+    }
+
+    protected void closeContext( DirContext context )
+    {
+        if ( context != null )
+        {
+            try
             {
-                ldapConnection.close();
+                context.close();
+            }
+            catch ( NamingException e )
+            {
+                log.warn( "skip issue closing context: {}", e.getMessage() );
             }
         }
     }
@@ -311,10 +360,16 @@ public class LdapRbacManager
     public Collection<Role> getAssignedRoles( String username )
         throws RbacManagerException
     {
+
+        LdapConnection ldapConnection = null;
+        DirContext context = null;
+
         try
         {
-            // TODO here !!
-            List<String> roleNames = ldapRoleMapper.getRoles( username );
+
+            ldapConnection = ldapConnectionFactory.getConnection();
+            context = ldapConnection.getDirContext();
+            List<String> roleNames = ldapRoleMapper.getRoles( username, context );
 
             if ( roleNames.isEmpty() )
             {
@@ -331,6 +386,10 @@ public class LdapRbacManager
             return roles;
         }
         catch ( MappingException e )
+        {
+            throw new RbacManagerException( e.getMessage(), e );
+        }
+        catch ( LdapException e )
         {
             throw new RbacManagerException( e.getMessage(), e );
         }
@@ -355,20 +414,21 @@ public class LdapRbacManager
     }
 
     /**
-    public Collection<Role> getEffectivelyAssignedRoles( String username )
-        throws RbacManagerException
-    {
-        // TODO here !!
-        return this.rbacImpl.getEffectivelyAssignedRoles( username );
-    }**/
+     public Collection<Role> getEffectivelyAssignedRoles( String username )
+     throws RbacManagerException
+     {
+     // TODO here !!
+     return this.rbacImpl.getEffectivelyAssignedRoles( username );
+     }**/
 
     /**
-    public Collection<Role> getEffectivelyUnassignedRoles( String username )
-        throws RbacManagerException
-    {
-        // TODO here !!
-        return this.rbacImpl.getEffectivelyUnassignedRoles( username );
-    }**/
+     * public Collection<Role> getEffectivelyUnassignedRoles( String username )
+     * throws RbacManagerException
+     * {
+     * // TODO here !!
+     * return this.rbacImpl.getEffectivelyUnassignedRoles( username );
+     * }*
+     */
 
     public Set<Role> getEffectiveRoles( Role role )
         throws RbacManagerException
@@ -403,15 +463,24 @@ public class LdapRbacManager
     public Role getRole( String roleName )
         throws RbacManagerException
     {
+
+        LdapConnection ldapConnection = null;
+        DirContext context = null;
         //verify it's a ldap group
         try
         {
-            if ( !ldapRoleMapper.getAllRoles().contains( roleName ) )
+            ldapConnection = ldapConnectionFactory.getConnection();
+            context = ldapConnection.getDirContext();
+            if ( !ldapRoleMapper.getAllRoles( context ).contains( roleName ) )
             {
                 return null;
             }
         }
         catch ( MappingException e )
+        {
+            throw new RbacManagerException( e.getMessage(), e );
+        }
+        catch ( LdapException e )
         {
             throw new RbacManagerException( e.getMessage(), e );
         }
@@ -427,10 +496,19 @@ public class LdapRbacManager
     public Collection<Role> getUnassignedRoles( String username )
         throws RbacManagerException
     {
+        LdapConnection ldapConnection = null;
+
+        DirContext context = null;
+
         try
         {
-            List<String> allRoles = ldapRoleMapper.getAllRoles();
-            final List<String> userRoles = ldapRoleMapper.getRoles( username );
+
+            ldapConnection = ldapConnectionFactory.getConnection();
+
+            context = ldapConnection.getDirContext();
+
+            List<String> allRoles = ldapRoleMapper.getAllRoles( context );
+            final List<String> userRoles = ldapRoleMapper.getRoles( username, context );
 
             List<Role> unassignedRoles = new ArrayList<Role>();
 
@@ -447,20 +525,42 @@ public class LdapRbacManager
         {
             throw new RbacManagerException( e.getMessage(), e );
         }
+        catch ( LdapException e )
+        {
+            throw new RbacManagerException( e.getMessage(), e );
+        }
+        finally
+        {
+            closeContext( context );
+            closeLdapConnection( ldapConnection );
+        }
     }
 
     public UserAssignment getUserAssignment( String username )
         throws RbacManagerException
     {
+        LdapConnection ldapConnection = null;
+        DirContext context = null;
         try
         {
-            List<String> roles = ldapRoleMapper.getRoles( username );
+            ldapConnection = ldapConnectionFactory.getConnection();
+            context = ldapConnection.getDirContext();
+            List<String> roles = ldapRoleMapper.getRoles( username, context );
 
             return new UserAssignmentImpl( username, roles );
         }
         catch ( MappingException e )
         {
             throw new RbacManagerException( e.getMessage(), e );
+        }
+        catch ( LdapException e )
+        {
+            throw new RbacManagerException( e.getMessage(), e );
+        }
+        finally
+        {
+            closeContext( context );
+            closeLdapConnection( ldapConnection );
         }
 
         //return this.rbacImpl.getUserAssignment( username );
@@ -607,11 +707,19 @@ public class LdapRbacManager
         }
         if ( writableLdap )
         {
+            LdapConnection ldapConnection = null;
+            DirContext context = null;
             try
             {
-                ldapRoleMapper.removeRole( role.getName() );
+                ldapConnection = ldapConnectionFactory.getConnection();
+                context = ldapConnection.getDirContext();
+                ldapRoleMapper.removeRole( role.getName(), context );
             }
             catch ( MappingException e )
+            {
+                throw new RbacManagerException( e.getMessage(), e );
+            }
+            catch ( LdapException e )
             {
                 throw new RbacManagerException( e.getMessage(), e );
             }
@@ -671,13 +779,26 @@ public class LdapRbacManager
         {
             return false;
         }
+        LdapConnection ldapConnection = null;
+        DirContext context = null;
         try
         {
-            return ldapRoleMapper.getAllRoles().contains( name );
+            ldapConnection = ldapConnectionFactory.getConnection();
+            context = ldapConnection.getDirContext();
+            return ldapRoleMapper.getAllRoles( context ).contains( name );
         }
-        catch ( Exception e )
+        catch ( MappingException e )
         {
             throw new RbacManagerException( e.getMessage(), e );
+        }
+        catch ( LdapException e )
+        {
+            throw new RbacManagerException( e.getMessage(), e );
+        }
+        finally
+        {
+            closeContext( context );
+            closeLdapConnection( ldapConnection );
         }
     }
 
@@ -704,19 +825,27 @@ public class LdapRbacManager
     {
         if ( writableLdap )
         {
+            LdapConnection ldapConnection = null;
+            DirContext context = null;
             try
             {
-                ldapRoleMapper.saveRole( role.getName() );
+                ldapConnection = ldapConnectionFactory.getConnection();
+                context = ldapConnection.getDirContext();
+                ldapRoleMapper.saveRole( role.getName(), context );
                 if ( !role.getChildRoleNames().isEmpty() )
                 {
                     for ( String roleName : role.getChildRoleNames() )
                     {
-                        ldapRoleMapper.saveRole( roleName );
+                        ldapRoleMapper.saveRole( roleName, context );
                     }
                 }
                 fireRbacRoleSaved( role );
             }
             catch ( MappingException e )
+            {
+                throw new RbacManagerException( e.getMessage(), e );
+            }
+            catch ( LdapException e )
             {
                 throw new RbacManagerException( e.getMessage(), e );
             }
@@ -730,15 +859,24 @@ public class LdapRbacManager
     {
         if ( writableLdap )
         {
+            LdapConnection ldapConnection = null;
+            DirContext context = null;
             try
             {
+
+                ldapConnection = ldapConnectionFactory.getConnection();
+                context = ldapConnection.getDirContext();
                 for ( Role role : roles )
                 {
-                    ldapRoleMapper.saveRole( role.getName() );
+                    ldapRoleMapper.saveRole( role.getName(), context );
                     fireRbacRoleSaved( role );
                 }
             }
             catch ( MappingException e )
+            {
+                throw new RbacManagerException( e.getMessage(), e );
+            }
+            catch ( LdapException e )
             {
                 throw new RbacManagerException( e.getMessage(), e );
             }
@@ -750,7 +888,8 @@ public class LdapRbacManager
     public UserAssignment saveUserAssignment( UserAssignment userAssignment )
         throws RbacManagerException
     {
-
+        LdapConnection ldapConnection = null;
+        DirContext context = null;
         try
         {
             if ( !userManager.userExists( userAssignment.getPrincipal() ) )
@@ -758,10 +897,11 @@ public class LdapRbacManager
                 User user = userManager.createUser( userAssignment.getPrincipal(), null, null );
                 userManager.addUser( user );
             }
+            ldapConnection = ldapConnectionFactory.getConnection();
+            context = ldapConnection.getDirContext();
+            List<String> allRoles = ldapRoleMapper.getAllRoles( context );
 
-            List<String> allRoles = ldapRoleMapper.getAllRoles();
-
-            List<String> currentUserRoles = ldapRoleMapper.getRoles( userAssignment.getPrincipal() );
+            List<String> currentUserRoles = ldapRoleMapper.getRoles( userAssignment.getPrincipal(), context );
 
             for ( String role : userAssignment.getRoleNames() )
             {
@@ -770,10 +910,10 @@ public class LdapRbacManager
                     // role exists in ldap ?
                     if ( !allRoles.contains( role ) )
                     {
-                        ldapRoleMapper.saveRole( role );
+                        ldapRoleMapper.saveRole( role, context );
                         allRoles.add( role );
                     }
-                    ldapRoleMapper.saveUserRole( role, userAssignment.getPrincipal() );
+                    ldapRoleMapper.saveUserRole( role, userAssignment.getPrincipal(), context );
                     currentUserRoles.add( role );
                 }
             }
@@ -782,7 +922,7 @@ public class LdapRbacManager
             {
                 if ( !userAssignment.getRoleNames().contains( role ) && writableLdap )
                 {
-                    ldapRoleMapper.removeUserRole( role, userAssignment.getPrincipal() );
+                    ldapRoleMapper.removeUserRole( role, userAssignment.getPrincipal(), context );
                 }
             }
 
@@ -795,6 +935,15 @@ public class LdapRbacManager
         catch ( MappingException e )
         {
             throw new RbacManagerException( e.getMessage(), e );
+        }
+        catch ( LdapException e )
+        {
+            throw new RbacManagerException( e.getMessage(), e );
+        }
+        finally
+        {
+            closeContext( context );
+            closeLdapConnection( ldapConnection );
         }
 
         //this.rbacImpl.saveUserAssignment( userAssignment );
