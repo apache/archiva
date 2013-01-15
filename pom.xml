@@ -576,7 +576,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>13.0</version>
+        <version>13.0.1</version>
       </dependency>
       <!--
       using apacheds client api rather than com.sun.jndi.ldap

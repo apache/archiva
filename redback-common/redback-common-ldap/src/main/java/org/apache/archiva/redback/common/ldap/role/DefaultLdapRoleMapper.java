@@ -18,6 +18,7 @@ package org.apache.archiva.redback.common.ldap.role;
  * under the License.
  */
 
+import com.google.common.collect.HashBiMap;
 import org.apache.archiva.redback.common.ldap.MappingException;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
@@ -35,6 +36,9 @@ import javax.inject.Named;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
@@ -392,6 +396,153 @@ public class DefaultLdapRoleMapper
         }
 
         return map;
+    }
+
+    public boolean saveRole( String roleName )
+        throws MappingException
+    {
+
+        String groupName = HashBiMap.create( getLdapGroupMappings() ).inverse().get( roleName );
+        if ( groupName == null )
+        {
+            log.warn( "skip group creation as no mapping fro roleName:'{}", roleName );
+            return false;
+        }
+
+        List<String> allGroups = getAllGroups();
+        if ( allGroups.contains( groupName ) )
+        {
+            log.info( "group {} already exists for role.", groupName, roleName );
+            return false;
+        }
+
+        Attributes attributes = new BasicAttributes( true );
+        BasicAttribute objectClass = new BasicAttribute( "objectClass" );
+        objectClass.add( "top" );
+        objectClass.add( "groupOfUniqueNames" );
+        attributes.put( objectClass );
+        attributes.put( "cn", groupName );
+
+        // attribute mandatory when created a group so add admin as default member
+        // TODO make this default configurable
+        BasicAttribute basicAttribute = new BasicAttribute( "uniquemember" );
+        //
+        basicAttribute.add( "uid=admin," + getBaseDn() );
+
+        attributes.put( basicAttribute );
+
+        LdapConnection ldapConnection = null;
+
+        try
+        {
+            ldapConnection = ldapConnectionFactory.getConnection();
+
+            DirContext context = ldapConnection.getDirContext();
+
+            String dn = "cn=" + groupName + "," + this.groupsDn;
+
+            context.createSubcontext( dn, attributes );
+
+            log.debug( "created group with dn:'{}", dn );
+
+            return true;
+        }
+        catch ( LdapException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+
+        }
+        catch ( NamingException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+        }
+        finally
+        {
+            if ( ldapConnection != null )
+            {
+                ldapConnection.close();
+            }
+        }
+    }
+
+    public void removeAllRoles()
+        throws MappingException
+    {
+        //all mapped roles
+        Collection<String> groups = getLdapGroupMappings().keySet();
+
+        LdapConnection ldapConnection = null;
+        try
+        {
+            ldapConnection = ldapConnectionFactory.getConnection();
+
+            DirContext context = ldapConnection.getDirContext();
+
+            for ( String groupName : groups )
+            {
+
+                String dn = "cn=" + groupName + "," + this.groupsDn;
+
+                context.unbind( dn );
+
+                log.debug( "deleted group with dn:'{}", dn );
+            }
+
+        }
+        catch ( LdapException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+
+        }
+        catch ( NamingException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+        }
+        finally
+        {
+            if ( ldapConnection != null )
+            {
+                ldapConnection.close();
+            }
+        }
+    }
+
+    public void removeRole( String roleName )
+        throws MappingException
+    {
+
+        String groupName = HashBiMap.create( getLdapGroupMappings() ).inverse().get( roleName );
+
+        LdapConnection ldapConnection = null;
+        try
+        {
+            ldapConnection = ldapConnectionFactory.getConnection();
+
+            DirContext context = ldapConnection.getDirContext();
+
+            String dn = "cn=" + groupName + "," + this.groupsDn;
+
+            context.unbind( dn );
+
+            log.debug( "deleted group with dn:'{}", dn );
+
+        }
+        catch ( LdapException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+
+        }
+        catch ( NamingException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+        }
+        finally
+        {
+            if ( ldapConnection != null )
+            {
+                ldapConnection.close();
+            }
+        }
     }
 
     //---------------------------------

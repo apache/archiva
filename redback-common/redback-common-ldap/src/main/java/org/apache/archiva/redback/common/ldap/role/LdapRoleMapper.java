@@ -99,4 +99,21 @@ public interface LdapRoleMapper
     void setLdapGroupMappings( Map<String, String> mappings )
         throws MappingException;
 
+    /**
+     * will save a ldap group corresponding to the mapping.
+     * <b>will do nothing in group already exists.</b>
+     *
+     * @param roleName
+     * @return <code>true</code> if role was added, <code>false</code> if role already exists
+     * @throws MappingException
+     */
+    boolean saveRole( String roleName )
+        throws MappingException;
+
+    void removeAllRoles()
+        throws MappingException;
+
+    void removeRole( String roleName )
+        throws MappingException;
+
 }

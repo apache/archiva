@@ -122,7 +122,6 @@ public class TestLdapRoleMapper
         Attributes attributes = new BasicAttributes( true );
         attributes.put( objectClass );
         attributes.put( "organizationalUnitName", "foo" );
-        //attributes.put( "ou", "People" );
 
         apacheDs.getAdminContext().createSubcontext( suffix, attributes );
 

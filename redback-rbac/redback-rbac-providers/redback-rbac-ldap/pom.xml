@@ -23,23 +23,39 @@
 
   <parent>
     <groupId>org.apache.archiva.redback</groupId>
-    <artifactId>redback-common</artifactId>
+    <artifactId>redback-rbac-providers</artifactId>
     <version>2.1-SNAPSHOT</version>
   </parent>
 
-  <artifactId>redback-common-ldap</artifactId>
+  <artifactId>redback-rbac-ldap</artifactId>
   <packaging>bundle</packaging>
-  <name>Redback :: Ldap Common API</name>
+  <name>Redback :: RBAC Provider :: Ldap</name>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
-      <artifactId>redback-configuration</artifactId>
+      <artifactId>redback-system</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
-      <artifactId>redback-users-api</artifactId>
+      <artifactId>redback-authorization-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-rbac-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback.components.cache</groupId>
+      <artifactId>spring-cache-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback.components.cache</groupId>
+      <artifactId>spring-cache-ehcache</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache-core</artifactId>
+    </dependency>     
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
@@ -49,32 +65,40 @@
       <artifactId>jsr250-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-common-ldap</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-rbac-jdo</artifactId>      
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-rbac-cached</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-rbac-memory</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-rbac-tests</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <scope>test</scope>
+    </dependency>    
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.easytesting</groupId>
-      <artifactId>fest-assert</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.archiva.redback.components</groupId>
       <artifactId>spring-apacheds</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.redback</groupId>
-      <artifactId>redback-policy</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -84,25 +108,6 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Export-Package>
-              org.apache.archiva.redback.common.ldap*;version=${project.version};-split-package:=merge-first
-            </Export-Package>
-            <Import-Package>
-              javax.annotation,
-              javax.naming*,
-              javax.inject;version="[1,2)",
-              org.apache.archiva.redback.configuration;version=${project.version},
-              org.apache.archiva.redback.users;version=${project.version},
-              org.apache.commons.lang;version="[2.6,3)",
-              org.springframework.stereotype;version="[3,4)",
-              com.google.common.collect,
-              com.sun.jndi.ldap;resolution:=optional,
-              org.slf4j;resolution:=optional
-            </Import-Package>
-          </instructions>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
