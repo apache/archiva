@@ -97,7 +97,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 }
 
                 String authorizerImpls =
-                    userConfiguration.getConcatenatedList( UserConfigurationKeys.AUTHORIZER_IMPL, "rbac" );
+                    userConfiguration.getConcatenatedList( UserConfigurationKeys.RBAC_MANAGER_IMPL, "cached" );
 
                 if ( StringUtils.isNotEmpty( authorizerImpls ) )
                 {
@@ -106,12 +106,12 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                         String[] impls = StringUtils.split( authorizerImpls, ',' );
                         for ( String impl : impls )
                         {
-                            redbackRuntimeConfiguration.getAuthorizerImpls().add( impl );
+                            redbackRuntimeConfiguration.getRbacManagerImpls().add( impl );
                         }
                     }
                     else
                     {
-                        redbackRuntimeConfiguration.getAuthorizerImpls().add( userManagerImpl );
+                        redbackRuntimeConfiguration.getRbacManagerImpls().add( userManagerImpl );
                     }
                 }
 
@@ -154,11 +154,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
             }
 
             // we ensure authorizerImpls is not empty if so put
-            if ( redbackRuntimeConfiguration.getAuthorizerImpls().isEmpty() )
+            if ( redbackRuntimeConfiguration.getRbacManagerImpls().isEmpty() )
             {
                 log.info(
                     "redbackRuntimeConfiguration with empty authorizerImpls so force at least rbac implementation !" );
-                redbackRuntimeConfiguration.getAuthorizerImpls().add( "rbac" );
+                redbackRuntimeConfiguration.getRbacManagerImpls().add( "rbac" );
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
             }
 

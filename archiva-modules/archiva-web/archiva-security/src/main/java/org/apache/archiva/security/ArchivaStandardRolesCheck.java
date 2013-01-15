@@ -21,6 +21,7 @@ package org.apache.archiva.security;
 
 import java.util.List;
 
+import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.system.check.EnvironmentCheck;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.redback.rbac.RBACManager;
@@ -32,20 +33,19 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 /**
- * ArchivaStandardRolesCheck tests for the existance of expected / standard roles and permissions. 
- *
- *
+ * ArchivaStandardRolesCheck tests for the existance of expected / standard roles and permissions.
  */
 @Service("environmentCheck#archiva-required-roles")
 public class ArchivaStandardRolesCheck
     implements EnvironmentCheck
 {
     private Logger log = LoggerFactory.getLogger( ArchivaStandardRolesCheck.class );
-    
+
     /**
      *
      */
-    @Inject @Named(value = "rbacManager#cached")
+    @Inject
+    @Named(value = "rbacManager#cached")
     private RBACManager rbacManager;
 
     /**
@@ -57,36 +57,35 @@ public class ArchivaStandardRolesCheck
     {
         if ( !checked )
         {
-            String expectedRoles[] = new String[] {
-                ArchivaRoleConstants.SYSTEM_ADMINISTRATOR_ROLE,
+            String expectedRoles[] = new String[]{ ArchivaRoleConstants.SYSTEM_ADMINISTRATOR_ROLE,
                 ArchivaRoleConstants.GLOBAL_REPOSITORY_MANAGER_ROLE,
-                ArchivaRoleConstants.GLOBAL_REPOSITORY_OBSERVER_ROLE,
-                ArchivaRoleConstants.GUEST_ROLE,
-                ArchivaRoleConstants.REGISTERED_USER_ROLE,
-                ArchivaRoleConstants.USER_ADMINISTRATOR_ROLE };
+                ArchivaRoleConstants.GLOBAL_REPOSITORY_OBSERVER_ROLE, ArchivaRoleConstants.GUEST_ROLE,
+                ArchivaRoleConstants.REGISTERED_USER_ROLE, ArchivaRoleConstants.USER_ADMINISTRATOR_ROLE };
 
             log.info( "Checking the existance of required roles." );
 
             for ( String roleName : expectedRoles )
             {
-                if ( !rbacManager.roleExists( roleName ) )
+                try
                 {
+                    if ( !rbacManager.roleExists( roleName ) )
+                    {
+                        violations.add( "Unable to validate the existances of the '" + roleName + "' role." );
+                    }
+                }
+                catch ( RbacManagerException e )
+                {
+                    log.warn( "fail to verify existence of role '{}'", roleName );
                     violations.add( "Unable to validate the existances of the '" + roleName + "' role." );
                 }
             }
 
-            String expectedOperations[] = new String[] {
-                ArchivaRoleConstants.OPERATION_MANAGE_USERS,
-                ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION,
-                ArchivaRoleConstants.OPERATION_REGENERATE_INDEX,
-                ArchivaRoleConstants.OPERATION_RUN_INDEXER,
-                ArchivaRoleConstants.OPERATION_ACCESS_REPORT,
-                ArchivaRoleConstants.OPERATION_ADD_REPOSITORY,
-                ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY,
-                ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS,
-                ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY,
-                ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD,
-                ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS,
+            String expectedOperations[] = new String[]{ ArchivaRoleConstants.OPERATION_MANAGE_USERS,
+                ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION, ArchivaRoleConstants.OPERATION_REGENERATE_INDEX,
+                ArchivaRoleConstants.OPERATION_RUN_INDEXER, ArchivaRoleConstants.OPERATION_ACCESS_REPORT,
+                ArchivaRoleConstants.OPERATION_ADD_REPOSITORY, ArchivaRoleConstants.OPERATION_DELETE_REPOSITORY,
+                ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS, ArchivaRoleConstants.OPERATION_EDIT_REPOSITORY,
+                ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS,
                 "archiva-guest" };
 
             log.info( "Checking the existance of required operations." );

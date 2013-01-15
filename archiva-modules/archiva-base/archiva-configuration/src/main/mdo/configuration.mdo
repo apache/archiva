@@ -1496,8 +1496,8 @@
           </association>
         </field>
         <field>
-          <name>authorizerImpls</name>
-          <description>The authorizer impls to use.</description>
+          <name>rbacManagerImpls</name>
+          <description>The RBAC Manager impls to use.</description>
           <version>1.4.0+</version>
           <association>
             <type>String</type>
