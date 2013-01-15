@@ -65,7 +65,7 @@ public class TestLdapRoleMapper
     Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "apacheDS#test" )
+    @Named(value = "apacheDS#test")
     private ApacheDs apacheDs;
 
     private String suffix;
@@ -294,21 +294,49 @@ public class TestLdapRoleMapper
     public void getGroups()
         throws Exception
     {
-        List<String> roles = ldapRoleMapper.getGroups( "admin" );
+        List<String> groups = ldapRoleMapper.getGroups( "admin" );
+
+        log.info( "groups for admin: {}", groups );
+
+        Assertions.assertThat( groups ).isNotNull().isNotEmpty().hasSize( 3 ).contains( "archiva-admin",
+                                                                                        "internal-repo-manager",
+                                                                                        "internal-repo-observer" );
+
+        groups = ldapRoleMapper.getGroups( "user.8" );
+
+        Assertions.assertThat( groups ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "internal-repo-observer" );
+
+        groups = ldapRoleMapper.getGroups( "user.7" );
+
+        Assertions.assertThat( groups ).isNotNull().isNotEmpty().hasSize( 2 ).contains( "archiva-admin",
+                                                                                        "internal-repo-observer" );
+    }
+
+    @Test
+    public void getRoles()
+        throws Exception
+    {
+        List<String> roles = ldapRoleMapper.getRoles( "admin" );
 
         log.info( "roles for admin: {}", roles );
 
-        Assertions.assertThat( roles ).isNotNull().isNotEmpty().hasSize( 3 ).contains( "archiva-admin",
-                                                                                       "internal-repo-manager",
-                                                                                       "internal-repo-observer" );
+        Assertions.assertThat( roles ).isNotNull().isNotEmpty().hasSize( 3 ).contains( "Archiva System Administrator",
+                                                                                       "Internal Repo Manager",
+                                                                                       "Internal Repo Observer" );
 
-        roles = ldapRoleMapper.getGroups( "user.8" );
+        roles = ldapRoleMapper.getRoles( "user.7" );
 
-        Assertions.assertThat( roles ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "internal-repo-observer" );
+        log.info( "roles for user.7: {}", roles );
 
-        roles = ldapRoleMapper.getGroups( "user.7" );
+        Assertions.assertThat( roles ).isNotNull().isNotEmpty().hasSize( 2 ).contains( "Archiva System Administrator",
+                                                                                       "Internal Repo Observer" );
 
-        Assertions.assertThat( roles ).isNotNull().isNotEmpty().hasSize( 2 ).contains( "archiva-admin",
-                                                                                       "internal-repo-observer" );
+        roles = ldapRoleMapper.getRoles( "user.8" );
+
+        log.info( "roles for user.8: {}", roles );
+
+        Assertions.assertThat( roles ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "Internal Repo Observer" );
+
     }
+
 }

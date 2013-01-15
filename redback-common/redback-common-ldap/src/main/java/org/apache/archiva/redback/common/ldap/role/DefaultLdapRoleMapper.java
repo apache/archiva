@@ -312,7 +312,27 @@ public class DefaultLdapRoleMapper
             }
             close( namingEnumeration );
         }
+    }
 
+    public List<String> getRoles( String username )
+        throws MappingException
+    {
+        List<String> groups = getGroups( username );
+
+        Map<String, String> rolesMapping = getLdapGroupMappings();
+
+        List<String> roles = new ArrayList<String>( groups.size() );
+
+        for ( String group : groups )
+        {
+            String role = rolesMapping.get( group );
+            if ( role != null )
+            {
+                roles.add( role );
+            }
+        }
+
+        return roles;
     }
 
     private void close( NamingEnumeration namingEnumeration )
@@ -348,6 +368,12 @@ public class DefaultLdapRoleMapper
     public void removeLdapMapping( String role )
     {
         log.warn( "removeLdapMapping not implemented" );
+    }
+
+    public void setLdapGroupMappings( Map<String, String> mappings )
+        throws MappingException
+    {
+        log.warn( "setLdapGroupMappings not implemented" );
     }
 
     public Map<String, String> getLdapGroupMappings()

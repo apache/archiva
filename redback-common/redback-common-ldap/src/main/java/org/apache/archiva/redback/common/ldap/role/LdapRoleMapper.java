@@ -70,6 +70,9 @@ public interface LdapRoleMapper
     List<String> getGroups( String username )
         throws MappingException;
 
+    List<String> getRoles( String username )
+        throws MappingException;
+
     /**
      * add mapping redback role <-> ldap group
      *
@@ -91,6 +94,9 @@ public interface LdapRoleMapper
      * @return Map of corresponding LDAP group (key) and Redback role (value)
      */
     Map<String, String> getLdapGroupMappings()
+        throws MappingException;
+
+    void setLdapGroupMappings( Map<String, String> mappings )
         throws MappingException;
 
 }

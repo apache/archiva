@@ -31,5 +31,6 @@
     <module>redback-rbac-jdo</module>
     <module>redback-rbac-memory</module>
     <module>redback-rbac-cached</module>
+    <module>redback-rbac-ldap</module>
   </modules>
 </project>

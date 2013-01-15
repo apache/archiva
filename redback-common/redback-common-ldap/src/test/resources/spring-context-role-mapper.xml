@@ -30,6 +30,21 @@
 
   <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
 
+  <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry"
+        init-method="initialize">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+          <system/>
+          <properties fileName="${basedir}/src/test/security.properties" config-optional="true"
+                      config-at="org.apache.archiva.redback"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
   <bean name="apacheDS#test" class="org.apache.archiva.redback.components.apacheds.DefaultApacheDs"
         scope="prototype">
     <property name="basedir" value="${basedir}/target/apacheds"/>
