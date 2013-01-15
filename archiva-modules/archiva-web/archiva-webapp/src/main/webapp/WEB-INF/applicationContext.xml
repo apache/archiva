@@ -34,6 +34,17 @@
 
   <alias name="authorizer#rbac" alias="authorizer#default"/>
 
+  <alias name="repositoryStatisticsManager#default" alias="repositoryStatisticsManager"/>
+  <!-- TODO olamy need to find a more dynamic way if using jcr impl -->
+  <alias name="repositorySessionFactory#jcr" alias="repositorySessionFactory"/>
+
+  <alias name="environmentCheck#archiva-locked-admin-check" alias="environmentCheck#locked-admin-check"/>
+  <alias name="userManager#archiva" alias="userManager#configurable"/>
+  <alias name="authenticator#archiva" alias="authenticator#user-manager"/>
+
+  <alias name="ldapConnectionFactory#archiva" alias="ldapConnectionFactory"/>
+  <alias name="ldapConnectionFactory#archiva" alias="ldapConnectionFactory#configurable"/>
+
 
   <bean id="loggerManager" class="org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager"
         init-method="initialize"/>
@@ -42,10 +53,6 @@
   <task:executor id="springExecutor" pool-size="2"/>
   <task:scheduler id="springScheduler" pool-size="2"/>
   <task:annotation-driven executor="springExecutor" scheduler="springScheduler"/>
-
-  <alias name="repositoryStatisticsManager#default" alias="repositoryStatisticsManager"/>
-  <!-- TODO olamy need to find a more dynamic way if using jcr impl -->
-  <alias name="repositorySessionFactory#jcr" alias="repositorySessionFactory"/>
 
   <bean id="mailSession" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName" value="java:comp/env/mail/Session">
@@ -141,12 +148,7 @@
     </property>
   </bean>
 
-  <alias name="environmentCheck#archiva-locked-admin-check" alias="environmentCheck#locked-admin-check"/>
-  <alias name="userManager#archiva" alias="userManager#configurable"/>
-  <alias name="authenticator#archiva" alias="authenticator#user-manager"/>
 
-  <alias name="ldapConnectionFactory#archiva" alias="ldapConnectionFactory"/>
-  <alias name="ldapConnectionFactory#archiva" alias="ldapConnectionFactory#configurable"/>
 
   <!--
   <bean name="mimeTpes" class="org.apache.archiva.webdav.util.MimeTypes">
