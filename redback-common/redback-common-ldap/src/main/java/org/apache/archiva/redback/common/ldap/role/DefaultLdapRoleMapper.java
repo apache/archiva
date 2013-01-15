@@ -40,9 +40,11 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -163,6 +165,33 @@ public class DefaultLdapRoleMapper
                 }
             }
         }
+    }
+
+    public List<String> getAllRoles()
+        throws MappingException
+    {
+        // TODO read from ldap ?
+        List<String> groups = getAllGroups();
+
+        if ( groups.isEmpty() )
+        {
+            return Collections.emptyList();
+        }
+
+        List<String> roles = new ArrayList<String>( groups.size() );
+
+        Map<String, String> mapping = getLdapGroupMappings();
+
+        for ( String group : groups )
+        {
+            String role = mapping.get( group );
+            if ( role != null )
+            {
+                roles.add( role );
+            }
+        }
+
+        return roles;
     }
 
     public List<String> getGroupsMember( String group )
@@ -405,7 +434,7 @@ public class DefaultLdapRoleMapper
         String groupName = HashBiMap.create( getLdapGroupMappings() ).inverse().get( roleName );
         if ( groupName == null )
         {
-            log.warn( "skip group creation as no mapping fro roleName:'{}", roleName );
+            log.warn( "skip group creation as no mapping fro roleName:'{}'", roleName );
             return false;
         }
 
@@ -426,9 +455,7 @@ public class DefaultLdapRoleMapper
         // attribute mandatory when created a group so add admin as default member
         // TODO make this default configurable
         BasicAttribute basicAttribute = new BasicAttribute( "uniquemember" );
-        //
         basicAttribute.add( "uid=admin," + getBaseDn() );
-
         attributes.put( basicAttribute );
 
         LdapConnection ldapConnection = null;
@@ -443,7 +470,7 @@ public class DefaultLdapRoleMapper
 
             context.createSubcontext( dn, attributes );
 
-            log.debug( "created group with dn:'{}", dn );
+            log.info( "created group with dn:'{}", dn );
 
             return true;
         }
@@ -463,6 +490,89 @@ public class DefaultLdapRoleMapper
                 ldapConnection.close();
             }
         }
+    }
+
+    public boolean saveUserRole( String roleName, String username )
+        throws MappingException
+    {
+
+        String groupName = HashBiMap.create( getLdapGroupMappings() ).inverse().get( roleName );
+
+        if ( groupName == null )
+        {
+            log.warn( "no group found for role '{}", roleName );
+            return false;
+        }
+
+        LdapConnection ldapConnection = null;
+
+        NamingEnumeration<SearchResult> namingEnumeration = null;
+        try
+        {
+            ldapConnection = ldapConnectionFactory.getConnection();
+
+            DirContext context = ldapConnection.getDirContext();
+
+            SearchControls searchControls = new SearchControls();
+
+            searchControls.setDerefLinkFlag( true );
+            searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
+
+            String filter = "objectClass=" + getLdapGroupClass();
+
+            namingEnumeration = context.search( "cn=" + groupName + "," + getGroupsDn(), filter, searchControls );
+
+            while ( namingEnumeration.hasMore() )
+            {
+                SearchResult searchResult = namingEnumeration.next();
+                Attribute attribute = searchResult.getAttributes().get( "uniquemember" );
+                if ( attribute == null )
+                {
+                    BasicAttribute basicAttribute = new BasicAttribute( "uniquemember" );
+                    basicAttribute.add( "uid=" + username + "," + getGroupsDn() );
+                    context.modifyAttributes( "cn=" + groupName + "," + getGroupsDn(), new ModificationItem[]{
+                        new ModificationItem( DirContext.ADD_ATTRIBUTE, basicAttribute ) } );
+                }
+                else
+                {
+                    attribute.add( "uid=" + username + "," + getGroupsDn() );
+                    context.modifyAttributes( "cn=" + groupName + "," + getGroupsDn(), new ModificationItem[]{
+                        new ModificationItem( DirContext.REPLACE_ATTRIBUTE, attribute ) } );
+                }
+                return true;
+            }
+
+            return false;
+        }
+        catch ( LdapException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+        }
+        catch ( NamingException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+        }
+
+        finally
+        {
+            if ( ldapConnection != null )
+            {
+                ldapConnection.close();
+            }
+            if ( namingEnumeration != null )
+            {
+                try
+                {
+                    namingEnumeration.close();
+                }
+                catch ( NamingException e )
+                {
+                    log.warn( "failed to close search results", e );
+                }
+            }
+        }
+
+
     }
 
     public void removeAllRoles()
@@ -524,7 +634,7 @@ public class DefaultLdapRoleMapper
 
             context.unbind( dn );
 
-            log.debug( "deleted group with dn:'{}", dn );
+            log.info( "deleted group with dn:'{}", dn );
 
         }
         catch ( LdapException e )

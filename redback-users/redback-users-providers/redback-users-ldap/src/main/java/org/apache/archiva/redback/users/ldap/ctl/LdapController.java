@@ -27,6 +27,7 @@ import org.apache.archiva.redback.users.ldap.LdapUserQuery;
 import javax.naming.directory.DirContext;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -54,4 +55,14 @@ public interface LdapController
 
     List<User> getUsersByQuery( LdapUserQuery query, DirContext context )
         throws LdapControllerException, MappingException;
+
+    void initialize();
+
+    /**
+     * @param dirContext
+     * @return Map key == username and value == list of role names
+     * @throws LdapControllerException
+     */
+    Map<String, Collection<String>> findUsersWithRoles( DirContext dirContext )
+        throws LdapControllerException;
 }

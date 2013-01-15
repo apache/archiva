@@ -215,4 +215,5 @@ public interface UserManager
      * @since 2.1
      */
     String getDescriptionKey();
+
 }

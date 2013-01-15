@@ -43,9 +43,20 @@ public interface LdapRoleMapper
 
 
     /**
+     * read all groups from ldap
+     *
      * @return all LDAP groups
      */
     List<String> getAllGroups()
+        throws MappingException;
+
+    /**
+     * read all ldap groups then map to corresponding role (if no mapping found group is ignored)
+     *
+     * @return all roles
+     * @throws Exception
+     */
+    List<String> getAllRoles()
         throws MappingException;
 
 
@@ -108,6 +119,17 @@ public interface LdapRoleMapper
      * @throws MappingException
      */
     boolean saveRole( String roleName )
+        throws MappingException;
+
+    /**
+     * associate role to user in ldap
+     *
+     * @param roleName
+     * @param username
+     * @return <code>true</code> if role was added to user, <code>false</code> if role already exists for the user
+     * @throws MappingException
+     */
+    boolean saveUserRole( String roleName, String username )
         throws MappingException;
 
     void removeAllRoles()

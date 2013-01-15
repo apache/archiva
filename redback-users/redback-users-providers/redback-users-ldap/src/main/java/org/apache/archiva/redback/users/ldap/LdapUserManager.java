@@ -22,6 +22,8 @@ package org.apache.archiva.redback.users.ldap;
 
 import org.apache.archiva.redback.common.ldap.user.LdapUser;
 import org.apache.archiva.redback.common.ldap.user.UserMapper;
+import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
@@ -37,6 +39,7 @@ import org.apache.archiva.redback.users.ldap.ctl.LdapControllerException;
 import org.apache.archiva.redback.users.ldap.service.LdapCacheService;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.directory.DirContext;
@@ -47,26 +50,39 @@ import java.util.List;
 /**
  * @author <a href="jesse@codehaus.org"> jesse
  */
-@Service("userManager#ldap")
+@Service( "userManager#ldap" )
 public class LdapUserManager
     extends AbstractUserManager
     implements UserManager
 {
     @Inject
-    @Named(value = "ldapConnectionFactory#configurable")
+    @Named( value = "ldapConnectionFactory#configurable" )
     private LdapConnectionFactory connectionFactory;
 
     @Inject
     private LdapController controller;
 
     @Inject
-    @Named(value = "userMapper#ldap")
+    @Named( value = "userMapper#ldap" )
     private UserMapper mapper;
+
+    @Inject
+    @Named( value = "userConfiguration#default" )
+    private UserConfiguration userConf;
 
     @Inject
     private LdapCacheService ldapCacheService;
 
     private User guestUser;
+
+    private boolean writableLdap = false;
+
+    @PostConstruct
+    public void initialize()
+    {
+        this.writableLdap = userConf.getBoolean( UserConfigurationKeys.LDAP_WRITABLE, this.writableLdap );
+        controller.initialize();
+    }
 
     public boolean isReadOnly()
     {

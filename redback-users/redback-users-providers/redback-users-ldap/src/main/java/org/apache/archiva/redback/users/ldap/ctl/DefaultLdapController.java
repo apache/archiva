@@ -19,27 +19,43 @@ package org.apache.archiva.redback.users.ldap.ctl;
  * under the License.
  */
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.BasicAttributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
+import org.apache.archiva.redback.common.ldap.connection.LdapException;
 import org.apache.archiva.redback.common.ldap.user.LdapUser;
 import org.apache.archiva.redback.common.ldap.user.LdapUserMapper;
 import org.apache.archiva.redback.common.ldap.user.UserMapper;
+import org.apache.archiva.redback.configuration.UserConfiguration;
+import org.apache.archiva.redback.configuration.UserConfigurationKeys;
+import org.apache.archiva.redback.policy.PasswordEncoder;
+import org.apache.archiva.redback.policy.encoders.SHA1PasswordEncoder;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.common.ldap.MappingException;
 import org.apache.archiva.redback.users.ldap.LdapUserQuery;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -55,8 +71,32 @@ public class DefaultLdapController
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "userMapper#ldap" )
+    @Named(value = "userMapper#ldap")
     private UserMapper mapper;
+
+    @Inject
+    @Named( value = "userConfiguration#default" )
+    private UserConfiguration userConf;
+
+    private boolean writableLdap = false;
+
+    private PasswordEncoder passwordEncoder;
+
+    private String baseDn;
+
+    private String groupsDn;
+
+    private String ldapGroupClass = "groupOfUniqueNames";
+
+    @PostConstruct
+    public void initialize()
+    {
+        this.writableLdap = userConf.getBoolean( UserConfigurationKeys.LDAP_WRITABLE, this.writableLdap );
+        this.baseDn = userConf.getConcatenatedList( UserConfigurationKeys.LDAP_BASEDN, null );
+        this.passwordEncoder = new SHA1PasswordEncoder();
+        this.groupsDn = userConf.getConcatenatedList( UserConfigurationKeys.LDAP_GROUPS_BASEDN, this.groupsDn );
+        this.ldapGroupClass = userConf.getString( UserConfigurationKeys.LDAP_GROUPS_CLASS, this.ldapGroupClass );
+    }
 
     /**
      * @see org.apache.archiva.redback.users.ldap.ctl.LdapController#removeUser(String, javax.naming.directory.DirContext)
@@ -250,10 +290,55 @@ public class DefaultLdapController
         }
         if ( user.getUsername().equals( UserManager.GUEST_USERNAME ) )
         {
+            log.debug( "skip user '{}' creation" );
             //We don't store guest
             return;
         }
+        boolean userExists = userExists( user.getUsername(), context );
+        if ( userExists )
+        {
+            log.debug( "user '{}' exists skip creation", user.getUsername() );
+            return;
+        }
+        if ( writableLdap )
+        {
+            try
+            {
+                bindUserObject( context, user );
+                log.info( "user {} created in ldap", user.getUsername() );
+            }
+            catch ( NamingException e )
+            {
+                throw new LdapControllerException( e.getMessage(), e );
+            }
+        }
+    }
 
+
+    private void bindUserObject( DirContext context, User user )
+        throws NamingException
+    {
+        Attributes attributes = new BasicAttributes( true );
+        BasicAttribute objectClass = new BasicAttribute( "objectClass" );
+        objectClass.add( "top" );
+        objectClass.add( "inetOrgPerson" );
+        objectClass.add( "person" );
+        objectClass.add( "organizationalperson" );
+        attributes.put( objectClass );
+        attributes.put( "cn", user.getUsername() );
+        attributes.put( "sn", "foo" );
+        if ( StringUtils.isNotEmpty( user.getEmail() ) )
+        {
+            attributes.put( "mail", user.getEmail() );
+        }
+
+        if ( userConf.getBoolean( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ALLOW_EMPTY_PASSWORDS, false )
+            && StringUtils.isNotEmpty( user.getPassword() ) )
+        {
+            attributes.put( "userPassword", passwordEncoder.encodePassword( user.getPassword() ) );
+        }
+        attributes.put( "givenName", "foo" );
+        context.createSubcontext( "cn=" + user.getUsername() + "," + this.getBaseDn(), attributes );
     }
 
     /**
@@ -308,4 +393,154 @@ public class DefaultLdapController
         }
     }
 
+    public Map<String, Collection<String>> findUsersWithRoles( DirContext dirContext )
+        throws LdapControllerException
+    {
+        Map<String, Collection<String>> usersWithRoles = new HashMap<String, Collection<String>>();
+
+        NamingEnumeration<SearchResult> namingEnumeration = null;
+        try
+        {
+
+            SearchControls searchControls = new SearchControls();
+
+            searchControls.setDerefLinkFlag( true );
+            searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
+
+            String filter = "objectClass=" + getLdapGroupClass();
+
+            namingEnumeration = dirContext.search( getGroupsDn(), filter, searchControls );
+
+            while ( namingEnumeration.hasMore() )
+            {
+                SearchResult searchResult = namingEnumeration.next();
+
+                String groupName = searchResult.getName();
+                // cn=blabla we only want bla bla
+                groupName = StringUtils.substringAfter( groupName, "=" );
+
+                Attribute uniqueMemberAttr = searchResult.getAttributes().get( "uniquemember" );
+
+                if ( uniqueMemberAttr != null )
+                {
+                    NamingEnumeration<String> allMembersEnum = (NamingEnumeration<String>) uniqueMemberAttr.getAll();
+                    while ( allMembersEnum.hasMore() )
+                    {
+                        String userName = allMembersEnum.next();
+                        // uid=blabla we only want bla bla
+                        userName = StringUtils.substringAfter( userName, "=" );
+                        userName = StringUtils.substringBefore( userName, "," );
+                        Collection<String> roles = usersWithRoles.get( userName );
+                        if ( roles == null )
+                        {
+                            roles = new HashSet<String>();
+                        }
+
+                        roles.add( groupName );
+
+                        usersWithRoles.put( userName, roles );
+
+                    }
+                }
+
+                log.debug( "found groupName: '{}' with users: {}", groupName );
+
+            }
+
+            return usersWithRoles;
+        }
+        catch ( NamingException e )
+        {
+            throw new LdapControllerException( e.getMessage(), e );
+        }
+
+        finally
+        {
+
+            if ( namingEnumeration != null )
+            {
+                try
+                {
+                    namingEnumeration.close();
+                }
+                catch ( NamingException e )
+                {
+                    log.warn( "failed to close search results", e );
+                }
+            }
+        }
+    }
+
+    //-----------------------------
+    // setters/getters
+    //-----------------------------
+    public UserMapper getMapper()
+    {
+        return mapper;
+    }
+
+    public void setMapper( UserMapper mapper )
+    {
+        this.mapper = mapper;
+    }
+
+    public UserConfiguration getUserConf()
+    {
+        return userConf;
+    }
+
+    public void setUserConf( UserConfiguration userConf )
+    {
+        this.userConf = userConf;
+    }
+
+    public boolean isWritableLdap()
+    {
+        return writableLdap;
+    }
+
+    public void setWritableLdap( boolean writableLdap )
+    {
+        this.writableLdap = writableLdap;
+    }
+
+    public PasswordEncoder getPasswordEncoder()
+    {
+        return passwordEncoder;
+    }
+
+    public void setPasswordEncoder( PasswordEncoder passwordEncoder )
+    {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public String getBaseDn()
+    {
+        return baseDn;
+    }
+
+    public void setBaseDn( String baseDn )
+    {
+        this.baseDn = baseDn;
+    }
+
+    public String getGroupsDn()
+    {
+        return groupsDn;
+    }
+
+    public void setGroupsDn( String groupsDn )
+    {
+        this.groupsDn = groupsDn;
+    }
+
+    public String getLdapGroupClass()
+    {
+        return ldapGroupClass;
+    }
+
+    public void setLdapGroupClass( String ldapGroupClass )
+    {
+        this.ldapGroupClass = ldapGroupClass;
+    }
 }

@@ -52,7 +52,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//@DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_CLASS )
+@DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_CLASS )
 public class LdapRbacManagerTest
     extends AbstractRbacManagerTestCase
 {
@@ -285,5 +285,16 @@ public class LdapRbacManagerTest
     public void assertEventCount()
     {
         assertTrue( ( ( eventTracker.initCount > 0 ) && ( eventTracker.initCount <= 2 ) ) );
+    }
+
+    /**
+     * it's mandatory to have at least 1 user when creating a group so unit test result need to be changed.
+     *
+     * @param size
+     * @return
+     */
+    protected int incAssignements( int size )
+    {
+        return size + 1;
     }
 }

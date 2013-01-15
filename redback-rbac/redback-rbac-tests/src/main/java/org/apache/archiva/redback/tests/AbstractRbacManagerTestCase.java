@@ -16,6 +16,7 @@ package org.apache.archiva.redback.tests;
  * limitations under the License.
  */
 
+import org.fest.assertions.Assertions;
 import junit.framework.TestCase;
 import org.apache.archiva.redback.rbac.Operation;
 import org.apache.archiva.redback.rbac.RBACManager;
@@ -45,8 +46,8 @@ import org.springframework.test.annotation.DirtiesContext;
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
+@RunWith( SpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public abstract class AbstractRbacManagerTestCase
     extends TestCase
 {
@@ -658,17 +659,30 @@ public abstract class AbstractRbacManagerTestCase
         assignment.addRoleName( adminRole.getName() );
         assignment = manager.saveUserAssignment( assignment );
 
-        assertEquals( 3, assignment.getRoleNames().size() );
-        assertEquals( 1, manager.getAllUserAssignments().size() );
-        assertEquals( 3, manager.getAllRoles().size() );
+        Assertions.assertThat( assignment.getRoleNames() ).isNotNull().isNotEmpty().hasSize( 3 );
+        Assertions.assertThat( manager.getAllUserAssignments() ).isNotNull().isNotEmpty().hasSize(
+            incAssignements( 1 ) );
+
+        Assertions.assertThat( manager.getAllRoles() ).isNotNull().isNotEmpty().hasSize( 3 );
 
         afterSetup();
 
         // Get the List of Assigned Roles for user bob.
         Collection<Role> assignedRoles = manager.getAssignedRoles( username );
 
-        assertNotNull( assignedRoles );
-        assertEquals( 3, assignedRoles.size() );
+        Assertions.assertThat( assignedRoles ).isNotNull().isNotEmpty().hasSize( 3 );
+    }
+
+    /**
+     * getAllUserAssignments() can return more for ldap as when creating a group
+     * it's mandatory to have at leat 1 user in the group
+     *
+     * @param size
+     * @return
+     */
+    protected int incAssignements( int size )
+    {
+        return size;
     }
 
     @Test
@@ -683,8 +697,8 @@ public abstract class AbstractRbacManagerTestCase
         Role added = manager.saveRole( getDeveloperRole() );
         String roleName = added.getName();
 
-        assertEquals( 3, manager.getAllRoles().size() );
-        assertEquals( 3, manager.getAllPermissions().size() );
+        Assertions.assertThat( manager.getAllRoles() ).isNotNull().isNotEmpty().hasSize( 3 );
+        Assertions.assertThat( manager.getAllPermissions() ).isNotNull().isNotEmpty().hasSize( 3 );
 
         // Setup User / Assignment with 1 role.
         String username = "bob";
@@ -693,15 +707,14 @@ public abstract class AbstractRbacManagerTestCase
         assignment.addRoleName( roleName );
         manager.saveUserAssignment( assignment );
 
-        assertEquals( 1, manager.getAllUserAssignments().size() );
-        assertEquals( 3, manager.getAllRoles().size() );
-        assertEquals( 3, manager.getAllPermissions().size() );
+        Assertions.assertThat( manager.getAllUserAssignments() ).isNotNull().isNotEmpty().hasSize( 1 );
+        Assertions.assertThat( manager.getAllRoles() ).isNotNull().isNotEmpty().hasSize( 3 );
+        Assertions.assertThat( manager.getAllPermissions() ).isNotNull().isNotEmpty().hasSize( 3 );
 
         // Get the List of Assigned Roles for user bob.
         Collection<Permission> assignedPermissions = manager.getAssignedPermissions( username );
 
-        assertNotNull( assignedPermissions );
-        assertEquals( 1, assignedPermissions.size() );
+        Assertions.assertThat( assignedPermissions ).isNotNull().isNotEmpty().hasSize( 1 );
     }
 
     public Role getChildRole( RBACManager manager, Role role, String expectedChildRoleName, int childRoleCount )

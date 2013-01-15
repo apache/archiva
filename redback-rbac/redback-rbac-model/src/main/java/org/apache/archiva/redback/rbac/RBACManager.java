@@ -29,7 +29,6 @@ import java.util.Set;
  *
  * @author Jesse McConnell <jmcconnell@apache.org>
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  * @todo expand on javadoc
  */
 public interface RBACManager
@@ -60,9 +59,11 @@ public interface RBACManager
      * @return true if role exists in store.
      * @throws RbacManagerException
      */
-    boolean roleExists( String name );
+    boolean roleExists( String name )
+        throws RbacManagerException;
 
-    boolean roleExists( Role role );
+    boolean roleExists( Role role )
+        throws RbacManagerException;
 
     Role saveRole( Role role )
         throws RbacObjectInvalidException, RbacManagerException;
