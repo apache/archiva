@@ -671,16 +671,6 @@
       <artifactId>redback-integrations-security</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva.redback</groupId>
-      <artifactId>redback-authorization-ldap</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
       <scope>provided</scope>
