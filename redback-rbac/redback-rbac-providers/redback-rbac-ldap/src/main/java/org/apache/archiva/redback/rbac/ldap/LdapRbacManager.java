@@ -78,7 +78,7 @@ public class LdapRbacManager
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "rbacManager#default" )
+    @Named( value = "rbacManager#cached" )
     private RBACManager rbacImpl;
 
     @Inject
