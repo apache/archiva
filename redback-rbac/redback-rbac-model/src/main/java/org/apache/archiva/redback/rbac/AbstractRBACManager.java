@@ -648,7 +648,6 @@ public abstract class AbstractRBACManager
      * @throws RbacManagerException
      * @throws RbacObjectNotFoundException
      */
-    @SuppressWarnings( "unchecked" )
     public Collection<Role> getEffectivelyUnassignedRoles( String principal )
         throws RbacManagerException, RbacObjectNotFoundException
     {
@@ -668,7 +667,6 @@ public abstract class AbstractRBACManager
      * @throws RbacManagerException
      * @throws RbacObjectNotFoundException
      */
-    @SuppressWarnings( "unchecked" )
     public Collection<Role> getUnassignedRoles( String principal )
         throws RbacManagerException, RbacObjectNotFoundException
     {

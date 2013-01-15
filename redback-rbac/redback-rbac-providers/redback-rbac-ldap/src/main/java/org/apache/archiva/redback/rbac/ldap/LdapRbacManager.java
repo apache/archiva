@@ -268,12 +268,13 @@ public class LdapRbacManager
         }
     }
 
-    public Map<String, List<Permission>> getAssignedPermissionMap( String username )
-        throws RbacManagerException
-    {
-        // TODO here !!
-        return this.rbacImpl.getAssignedPermissionMap( username );
-    }
+    /**
+     * public Map<String, List<Permission>> getAssignedPermissionMap( String username )
+     * throws RbacManagerException
+     * {
+     * return this.rbacImpl.getAssignedPermissionMap( username );
+     * }*
+     */
 
     /*public Set<Permission> getAssignedPermissions( String username )
         throws RbacObjectNotFoundException, RbacManagerException
@@ -281,7 +282,6 @@ public class LdapRbacManager
         // TODO here !!
         return this.rbacImpl.getAssignedPermissions( username );
     }*/
-
     private List<Role> mapToRoles( List<String> groups )
         throws MappingException, RbacManagerException
     {
@@ -325,7 +325,7 @@ public class LdapRbacManager
 
             for ( String name : roleNames )
             {
-                roles.add( new RoleImpl( name ) );
+                roles.add( this.rbacImpl.getRole( name ) );// new RoleImpl( name ) );
             }
 
             return roles;
@@ -340,7 +340,6 @@ public class LdapRbacManager
         throws RbacManagerException
     {
         return getAssignedRoles( userAssignment.getPrincipal() );
-        //return this.rbacImpl.getAssignedRoles( userAssignment );
     }
 
     public Map<String, Role> getChildRoles( Role role )
@@ -355,19 +354,21 @@ public class LdapRbacManager
         return this.rbacImpl.getParentRoles( role );
     }
 
+    /**
     public Collection<Role> getEffectivelyAssignedRoles( String username )
         throws RbacManagerException
     {
         // TODO here !!
         return this.rbacImpl.getEffectivelyAssignedRoles( username );
-    }
+    }**/
 
+    /**
     public Collection<Role> getEffectivelyUnassignedRoles( String username )
         throws RbacManagerException
     {
         // TODO here !!
         return this.rbacImpl.getEffectivelyUnassignedRoles( username );
-    }
+    }**/
 
     public Set<Role> getEffectiveRoles( Role role )
         throws RbacManagerException

@@ -208,7 +208,7 @@ public class DefaultRoleModelProcessor
                     // add link from parent roles to this new role
                     if ( roleProfile.getParentRoles() != null )
                     {
-                        for ( String parentRoleId : (List<String>) roleProfile.getParentRoles() )
+                        for ( String parentRoleId : roleProfile.getParentRoles() )
                         {
                             ModelRole parentModelRole = RoleModelUtils.getModelRole( model, parentRoleId );
                             Role parentRole = rbacManager.getRole( parentModelRole.getName() );
