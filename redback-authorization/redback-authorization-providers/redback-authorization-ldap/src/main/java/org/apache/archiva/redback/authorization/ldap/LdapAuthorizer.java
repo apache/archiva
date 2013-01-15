@@ -82,9 +82,7 @@ public class LdapAuthorizer
         String resource = source.getResource();
         try
         {
-            List<String> ldapGroups = ldapRoleMapper.getGroups( userName );
-
-            List<String> roles = mapLdapGroups( ldapGroups );
+            List<String> roles = ldapRoleMapper.getRoles( userName );
 
             Map<String, List<Permission>> permissionMap = getAssignedPermissionMap( roles );
 
@@ -122,24 +120,7 @@ public class LdapAuthorizer
 
     }
 
-    protected List<String> mapLdapGroups( List<String> groups )
-        throws MappingException
-    {
-        List<String> roles = new ArrayList<String>();
 
-        Map<String, String> mapping = ldapRoleMapper.getLdapGroupMappings();
-
-        for ( String group : groups )
-        {
-            String role = mapping.get( group );
-            if ( role != null )
-            {
-                roles.add( role );
-            }
-        }
-
-        return roles;
-    }
 
     public Map<String, List<Permission>> getAssignedPermissionMap( List<String> roles )
         throws RbacObjectNotFoundException, RbacManagerException
