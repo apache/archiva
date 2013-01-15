@@ -110,8 +110,16 @@ public class ArchivaRbacManager
     public Role getRole( String roleName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        // iterate until not null ?
-        return getRbacManagerForCommon().getRole( roleName );
+        for ( RBACManager rbacManager : rbacManagersPerId.values() )
+        {
+            Role role = rbacManager.getRole( roleName );
+            if ( role != null )
+            {
+                return role;
+            }
+        }
+        log.debug( "cannot find role for name: ‘{}", roleName );
+        return null;
     }
 
     public List<Role> getAllRoles()
