@@ -295,10 +295,26 @@ public abstract class AbstractRbacManagerTestCase
         assertEventTracker( 1, 0, 0, 0, true, true );
     }
 
+    /**
+     * ldap doesn't support child roles
+     *
+     * @return
+     */
+    protected boolean supportChildRole()
+    {
+        return true;
+    }
+
     @Test
     public void testAddGetChildRole()
         throws RbacManagerException
     {
+        if ( !supportChildRole() )
+        {
+            log.info( "child role feature not supported by the RBACManager impl: {}",
+                      rbacManager.getClass().getName() );
+            return;
+        }
         RBACManager manager = rbacManager;
         assertNotNull( manager );
 
@@ -383,7 +399,7 @@ public abstract class AbstractRbacManagerTestCase
 
         manager.saveUserAssignment( assignment );
 
-        assertEquals( incAssignements( 1 ), manager.getAllUserAssignments().size() );
+        assertEquals( 1, manager.getAllUserAssignments().size() );
         assertEquals( 1, manager.getAllRoles().size() );
 
         UserAssignment ua = manager.getUserAssignment( adminPrincipal );
@@ -416,7 +432,7 @@ public abstract class AbstractRbacManagerTestCase
         assignment = manager.saveUserAssignment( assignment );
 
         assertEquals( 1, assignment.getRoleNames().size() );
-        assertEquals( 1, manager.getAssignedRoles( adminPrincipal ).size() );
+        assertEquals( incAssignements( 1 ), manager.getAssignedRoles( adminPrincipal ).size() );
     }
 
     @Test
@@ -432,7 +448,7 @@ public abstract class AbstractRbacManagerTestCase
 
         admin = manager.saveRole( admin );
 
-        assertEquals( incAssignements( 1 ), manager.getAllRoles().size() );
+        assertEquals( 1, manager.getAllRoles().size() );
 
         String adminPrincipal = "admin";
 
@@ -442,7 +458,7 @@ public abstract class AbstractRbacManagerTestCase
 
         manager.saveUserAssignment( ua );
 
-        assertEquals( incAssignements( 1 ), manager.getAllUserAssignments().size() );
+        assertEquals( 1, manager.getAllUserAssignments().size() );
 
         Set<Permission> assignedPermissions = manager.getAssignedPermissions( adminPrincipal );
 

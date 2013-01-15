@@ -297,4 +297,9 @@ public class LdapRbacManagerTest
     {
         return size + 1;
     }
+
+    protected boolean supportChildRole()
+    {
+        return false;
+    }
 }
