@@ -85,6 +85,11 @@ public class CachedRbacManager
     @Named( value = "cache#effectiveRoleSet" )
     private Cache<String, Set<Role>> effectiveRoleSetCache;
 
+    public void initialize()
+    {
+        // no op
+    }
+
     public void addChildRole( Role role, Role childRole )
         throws RbacObjectInvalidException, RbacManagerException
     {
