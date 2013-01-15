@@ -27,6 +27,7 @@ import org.apache.archiva.redback.common.ldap.role.LdapRoleMapper;
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.configuration.UserConfigurationKeys;
+import org.apache.archiva.redback.rbac.AbstractRBACManager;
 import org.apache.archiva.redback.rbac.AbstractRole;
 import org.apache.archiva.redback.rbac.Operation;
 import org.apache.archiva.redback.rbac.Permission;
@@ -66,6 +67,7 @@ import java.util.Set;
  */
 @Service( "rbacManager#ldap" )
 public class LdapRbacManager
+    extends AbstractRBACManager
     implements RBACManager, RBACManagerListener
 {
 
@@ -268,12 +270,12 @@ public class LdapRbacManager
         return this.rbacImpl.getAssignedPermissionMap( username );
     }
 
-    public Set<Permission> getAssignedPermissions( String username )
+    /*public Set<Permission> getAssignedPermissions( String username )
         throws RbacObjectNotFoundException, RbacManagerException
     {
         // TODO here !!
         return this.rbacImpl.getAssignedPermissions( username );
-    }
+    }*/
 
     private List<Role> mapToRoles( List<String> groups )
         throws MappingException, RbacManagerException
@@ -414,8 +416,18 @@ public class LdapRbacManager
     public UserAssignment getUserAssignment( String username )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        // TODO here !!
-        return this.rbacImpl.getUserAssignment( username );
+        try
+        {
+            List<String> roles = ldapRoleMapper.getRoles( username );
+
+            return new UserAssignmentImpl( username, roles );
+        }
+        catch ( MappingException e )
+        {
+            throw new RbacManagerException( e.getMessage(), e );
+        }
+
+        //return this.rbacImpl.getUserAssignment( username );
     }
 
     public List<UserAssignment> getUserAssignmentsForRoles( Collection<String> roleNames )
@@ -584,6 +596,7 @@ public class LdapRbacManager
         return this.rbacImpl.resourceExists( identifier );
     }
 
+    @Override
     public boolean roleExists( Role role )
         throws RbacManagerException
     {
@@ -835,6 +848,16 @@ public class LdapRbacManager
         {
             // no op
         }
+
+        @Override
+        public String toString()
+        {
+            final StringBuilder sb = new StringBuilder();
+            sb.append( "RoleImpl" );
+            sb.append( "{name='" ).append( name ).append( '\'' );
+            sb.append( '}' );
+            return sb.toString();
+        }
     }
 
     private static class UserAssignmentImpl
@@ -924,6 +947,18 @@ public class LdapRbacManager
         public void setPermanent( boolean permanent )
         {
             this.permanent = permanent;
+        }
+
+        @Override
+        public String toString()
+        {
+            final StringBuilder sb = new StringBuilder();
+            sb.append( "UserAssignmentImpl" );
+            sb.append( "{username='" ).append( username ).append( '\'' );
+            sb.append( ", roleNames=" ).append( roleNames );
+            sb.append( ", permanent=" ).append( permanent );
+            sb.append( '}' );
+            return sb.toString();
         }
     }
 }

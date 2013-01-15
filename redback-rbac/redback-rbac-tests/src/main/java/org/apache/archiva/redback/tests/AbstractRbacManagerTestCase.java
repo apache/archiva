@@ -383,7 +383,7 @@ public abstract class AbstractRbacManagerTestCase
 
         manager.saveUserAssignment( assignment );
 
-        assertEquals( 1, manager.getAllUserAssignments().size() );
+        assertEquals( incAssignements( 1 ), manager.getAllUserAssignments().size() );
         assertEquals( 1, manager.getAllRoles().size() );
 
         UserAssignment ua = manager.getUserAssignment( adminPrincipal );
@@ -432,7 +432,7 @@ public abstract class AbstractRbacManagerTestCase
 
         admin = manager.saveRole( admin );
 
-        assertEquals( 1, manager.getAllRoles().size() );
+        assertEquals( incAssignements( 1 ), manager.getAllRoles().size() );
 
         String adminPrincipal = "admin";
 
@@ -442,7 +442,7 @@ public abstract class AbstractRbacManagerTestCase
 
         manager.saveUserAssignment( ua );
 
-        assertEquals( 1, manager.getAllUserAssignments().size() );
+        assertEquals( incAssignements( 1 ), manager.getAllUserAssignments().size() );
 
         Set<Permission> assignedPermissions = manager.getAssignedPermissions( adminPrincipal );
 
@@ -516,7 +516,7 @@ public abstract class AbstractRbacManagerTestCase
         assignment.addRoleName( developerRole );
         manager.saveUserAssignment( assignment );
 
-        assertEquals( 1, manager.getAllUserAssignments().size() );
+        assertEquals( incAssignements( 1 ), manager.getAllUserAssignments().size() );
         assertEquals( 1, manager.getAllRoles().size() );
 
         // Create another role add it to manager.
@@ -529,7 +529,7 @@ public abstract class AbstractRbacManagerTestCase
         bob.addRoleName( projectAdminRoleName );
         bob = manager.saveUserAssignment( bob );
 
-        assertEquals( 1, manager.getAllUserAssignments().size() );
+        assertEquals( incAssignements( 1 ), manager.getAllUserAssignments().size() );
         assertEquals( 2, manager.getAllRoles().size() );
         assertEquals( 2, bob.getRoleNames().size() );
         assertEquals( 0, manager.getUnassignedRoles( bob.getPrincipal() ).size() );
@@ -582,7 +582,7 @@ public abstract class AbstractRbacManagerTestCase
         assignment.addRoleName( devRole );
         assignment = manager.saveUserAssignment( assignment );
 
-        assertEquals( 1, manager.getAllUserAssignments().size() );
+        assertEquals( incAssignements( 1 ), manager.getAllUserAssignments().size() );
         assertEquals( 1, manager.getAllRoles().size() );
 
         // assign the same role again to the same user
@@ -618,7 +618,7 @@ public abstract class AbstractRbacManagerTestCase
         assignment.addRoleName( devRole );
         assignment = manager.saveUserAssignment( assignment );
 
-        assertEquals( 1, manager.getAllUserAssignments().size() );
+        assertEquals( incAssignements( 1 ), manager.getAllUserAssignments().size() );
         assertEquals( "should be only one role assigned", 1,
                       manager.getAssignedRoles( assignment.getPrincipal() ).size() );
         assertEquals( "should be one role left to assign", 1,
@@ -707,7 +707,8 @@ public abstract class AbstractRbacManagerTestCase
         assignment.addRoleName( roleName );
         manager.saveUserAssignment( assignment );
 
-        Assertions.assertThat( manager.getAllUserAssignments() ).isNotNull().isNotEmpty().hasSize( 1 );
+        Assertions.assertThat( manager.getAllUserAssignments() ).isNotNull().isNotEmpty().hasSize(
+            incAssignements( 1 ) );
         Assertions.assertThat( manager.getAllRoles() ).isNotNull().isNotEmpty().hasSize( 3 );
         Assertions.assertThat( manager.getAllPermissions() ).isNotNull().isNotEmpty().hasSize( 3 );
 
@@ -795,7 +796,7 @@ public abstract class AbstractRbacManagerTestCase
         assignment.addRoleName( "Developer" );
         rbacManager.saveUserAssignment( assignment );
 
-        assertEquals( 1, rbacManager.getAllUserAssignments().size() );
+        assertEquals( incAssignements( 1 ), rbacManager.getAllUserAssignments().size() );
         assertEquals( 4, rbacManager.getAllRoles().size() );
         assertEquals( 6, rbacManager.getAllPermissions().size() );
 
@@ -827,7 +828,7 @@ public abstract class AbstractRbacManagerTestCase
         assignment.addRoleName( "Developer" );
         rbacManager.saveUserAssignment( assignment );
 
-        assertEquals( 1, rbacManager.getAllUserAssignments().size() );
+        assertEquals( incAssignements( 1 ), rbacManager.getAllUserAssignments().size() );
         assertEquals( 6, rbacManager.getAllPermissions().size() );
         assertEquals( 4, rbacManager.getAllRoles().size() );
 

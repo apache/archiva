@@ -35,7 +35,6 @@ import java.util.Set;
  * AbstractRBACManager
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
 public abstract class AbstractRBACManager
     implements RBACManager
@@ -316,6 +315,7 @@ public abstract class AbstractRBACManager
     }
 
     public boolean roleExists( Role role )
+        throws RbacManagerException
     {
         try
         {
@@ -328,6 +328,7 @@ public abstract class AbstractRBACManager
     }
 
     public boolean roleExists( String name )
+        throws RbacManagerException
     {
         try
         {
