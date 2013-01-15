@@ -571,8 +571,80 @@ public class DefaultLdapRoleMapper
                 }
             }
         }
+    }
 
+    public boolean removeUserRole( String roleName, String username )
+        throws MappingException
+    {
+        String groupName = HashBiMap.create( getLdapGroupMappings() ).inverse().get( roleName );
 
+        if ( groupName == null )
+        {
+            log.warn( "no group found for role '{}", roleName );
+            return false;
+        }
+
+        LdapConnection ldapConnection = null;
+
+        NamingEnumeration<SearchResult> namingEnumeration = null;
+        try
+        {
+            ldapConnection = ldapConnectionFactory.getConnection();
+
+            DirContext context = ldapConnection.getDirContext();
+
+            SearchControls searchControls = new SearchControls();
+
+            searchControls.setDerefLinkFlag( true );
+            searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
+
+            String filter = "objectClass=" + getLdapGroupClass();
+
+            namingEnumeration = context.search( "cn=" + groupName + "," + getGroupsDn(), filter, searchControls );
+
+            while ( namingEnumeration.hasMore() )
+            {
+                SearchResult searchResult = namingEnumeration.next();
+                Attribute attribute = searchResult.getAttributes().get( "uniquemember" );
+                if ( attribute != null )
+                {
+                    BasicAttribute basicAttribute = new BasicAttribute( "uniquemember" );
+                    basicAttribute.add( "uid=" + username + "," + getGroupsDn() );
+                    context.modifyAttributes( "cn=" + groupName + "," + getGroupsDn(), new ModificationItem[]{
+                        new ModificationItem( DirContext.REMOVE_ATTRIBUTE, basicAttribute ) } );
+                }
+                return true;
+            }
+
+            return false;
+        }
+        catch ( LdapException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+        }
+        catch ( NamingException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+        }
+
+        finally
+        {
+            if ( ldapConnection != null )
+            {
+                ldapConnection.close();
+            }
+            if ( namingEnumeration != null )
+            {
+                try
+                {
+                    namingEnumeration.close();
+                }
+                catch ( NamingException e )
+                {
+                    log.warn( "failed to close search results", e );
+                }
+            }
+        }
     }
 
     public void removeAllRoles()

@@ -462,8 +462,7 @@ public abstract class AbstractRbacManagerTestCase
 
         Set<Permission> assignedPermissions = manager.getAssignedPermissions( adminPrincipal );
 
-        assertNotNull( assignedPermissions );
-        assertEquals( 1, assignedPermissions.size() );
+        Assertions.assertThat( assignedPermissions ).isNotNull().isNotEmpty().hasSize( 1 );
 
         /* Assert some event tracker stuff */
         assertEventTracker( 1, 0, 1, 0, true, true );

@@ -132,6 +132,9 @@ public interface LdapRoleMapper
     boolean saveUserRole( String roleName, String username )
         throws MappingException;
 
+    boolean removeUserRole( String roleName, String username )
+        throws MappingException;
+
     void removeAllRoles()
         throws MappingException;
 

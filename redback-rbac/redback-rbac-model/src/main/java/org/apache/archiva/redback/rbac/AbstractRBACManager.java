@@ -66,10 +66,8 @@ public abstract class AbstractRBACManager
 
     public void fireRbacInit( boolean freshdb )
     {
-        Iterator<RBACManagerListener> it = listeners.iterator();
-        while ( it.hasNext() )
+        for ( RBACManagerListener listener : listeners )
         {
-            RBACManagerListener listener = it.next();
             try
             {
                 listener.rbacInit( freshdb );
@@ -83,10 +81,8 @@ public abstract class AbstractRBACManager
 
     public void fireRbacRoleSaved( Role role )
     {
-        Iterator<RBACManagerListener> it = listeners.iterator();
-        while ( it.hasNext() )
+        for ( RBACManagerListener listener : listeners )
         {
-            RBACManagerListener listener = it.next();
             try
             {
                 listener.rbacRoleSaved( role );
@@ -100,10 +96,8 @@ public abstract class AbstractRBACManager
 
     public void fireRbacRoleRemoved( Role role )
     {
-        Iterator<RBACManagerListener> it = listeners.iterator();
-        while ( it.hasNext() )
+        for ( RBACManagerListener listener : listeners )
         {
-            RBACManagerListener listener = it.next();
             try
             {
                 listener.rbacRoleRemoved( role );
@@ -117,10 +111,8 @@ public abstract class AbstractRBACManager
 
     public void fireRbacPermissionSaved( Permission permission )
     {
-        Iterator<RBACManagerListener> it = listeners.iterator();
-        while ( it.hasNext() )
+        for ( RBACManagerListener listener : listeners )
         {
-            RBACManagerListener listener = it.next();
             try
             {
                 listener.rbacPermissionSaved( permission );
@@ -135,10 +127,8 @@ public abstract class AbstractRBACManager
 
     public void fireRbacPermissionRemoved( Permission permission )
     {
-        Iterator<RBACManagerListener> it = listeners.iterator();
-        while ( it.hasNext() )
+        for ( RBACManagerListener listener : listeners )
         {
-            RBACManagerListener listener = it.next();
             try
             {
                 listener.rbacPermissionRemoved( permission );
@@ -153,10 +143,8 @@ public abstract class AbstractRBACManager
 
     public void fireRbacUserAssignmentSaved( UserAssignment userAssignment )
     {
-        Iterator<RBACManagerListener> it = listeners.iterator();
-        while ( it.hasNext() )
+        for ( RBACManagerListener listener : listeners )
         {
-            RBACManagerListener listener = it.next();
             try
             {
                 listener.rbacUserAssignmentSaved( userAssignment );
@@ -172,10 +160,8 @@ public abstract class AbstractRBACManager
 
     public void fireRbacUserAssignmentRemoved( UserAssignment userAssignment )
     {
-        Iterator<RBACManagerListener> it = listeners.iterator();
-        while ( it.hasNext() )
+        for ( RBACManagerListener listener : listeners )
         {
-            RBACManagerListener listener = it.next();
             try
             {
                 listener.rbacUserAssignmentRemoved( userAssignment );
