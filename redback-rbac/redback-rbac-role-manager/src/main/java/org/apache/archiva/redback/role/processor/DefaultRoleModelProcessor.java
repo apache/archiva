@@ -196,7 +196,7 @@ public class DefaultRoleModelProcessor
                     // add child roles to this role
                     if ( roleProfile.getChildRoles() != null )
                     {
-                        for ( String childRoleId : (List<String>) roleProfile.getChildRoles() )
+                        for ( String childRoleId : roleProfile.getChildRoles() )
                         {
                             ModelRole childRoleProfile = RoleModelUtils.getModelRole( model, childRoleId );
                             role.addChildRoleName( childRoleProfile.getName() );
