@@ -38,6 +38,11 @@ public interface RBACManager
 
     void removeListener( RBACManagerListener listener );
 
+    /**
+     * @since 2.1
+     */
+    void initialize();
+
     // ------------------------------------------------------------------
     // Role Methods
     // ------------------------------------------------------------------
