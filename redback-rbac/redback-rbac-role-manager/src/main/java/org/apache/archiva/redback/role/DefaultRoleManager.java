@@ -440,15 +440,22 @@ public class DefaultRoleManager
         }
         else
         {
-            if ( rbacManager.roleExists( modelRole.getName() ) )
+            try
             {
-                return true;
+                if ( rbacManager.roleExists( modelRole.getName() ) )
+                {
+                    return true;
+                }
+                else
+                {
+                    // perhaps try and reload the model here?
+                    throw new RoleManagerException(
+                        "breakdown in role management, role exists in configuration but was not created in underlying store" );
+                }
             }
-            else
+            catch ( RbacManagerException e )
             {
-                // perhaps try and reload the model here?
-                throw new RoleManagerException(
-                    "breakdown in role management, role exists in configuration but was not created in underlying store" );
+                throw new RoleManagerException( e.getMessage(), e );
             }
         }
     }
@@ -465,13 +472,20 @@ public class DefaultRoleManager
         }
         else
         {
-            if ( rbacManager.roleExists( modelTemplate.getNamePrefix() + modelTemplate.getDelimiter() + resource ) )
+            try
             {
-                return true;
+                if ( rbacManager.roleExists( modelTemplate.getNamePrefix() + modelTemplate.getDelimiter() + resource ) )
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else
+            catch ( RbacManagerException e )
             {
-                return false;
+                throw new RoleManagerException( e.getMessage(), e );
             }
         }
     }

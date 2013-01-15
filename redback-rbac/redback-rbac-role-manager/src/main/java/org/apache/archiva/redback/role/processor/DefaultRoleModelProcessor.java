@@ -49,16 +49,15 @@ import java.util.Map;
  * DefaultRoleModelProcessor: inserts the components of the model that can be populated into the rbac manager
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
- *
  */
-@Service( "roleModelProcessor" )
+@Service("roleModelProcessor")
 public class DefaultRoleModelProcessor
     implements RoleModelProcessor
 {
     private Logger log = LoggerFactory.getLogger( DefaultRoleModelProcessor.class );
 
     @Inject
-    @Named( value = "rbacManager#cached" )
+    @Named(value = "rbacManager#cached")
     private RBACManager rbacManager;
 
     private Map<String, Resource> resourceMap = new HashMap<String, Resource>();
@@ -76,7 +75,7 @@ public class DefaultRoleModelProcessor
         processRoles( model );
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     private void processResources( RedbackRoleModel model )
         throws RoleManagerException
     {
@@ -111,7 +110,7 @@ public class DefaultRoleModelProcessor
         }
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     private void processOperations( RedbackRoleModel model )
         throws RoleManagerException
     {
@@ -148,7 +147,7 @@ public class DefaultRoleModelProcessor
         }
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     private void processRoles( RedbackRoleModel model )
         throws RoleManagerException
     {
@@ -168,7 +167,18 @@ public class DefaultRoleModelProcessor
 
             List<Permission> permissions = processPermissions( roleProfile.getPermissions() );
 
-            if ( !rbacManager.roleExists( roleProfile.getName() ) )
+            boolean roleExists = false;
+
+            try
+            {
+                roleExists = rbacManager.roleExists( roleProfile.getName() );
+            }
+            catch ( RbacManagerException e )
+            {
+                throw new RoleManagerException( e.getMessage(), e );
+            }
+
+            if ( !roleExists )
             {
                 try
                 {

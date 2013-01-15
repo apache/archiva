@@ -50,17 +50,17 @@ import java.util.List;
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
  */
-@Service( "roleTemplateProcessor" )
+@Service("roleTemplateProcessor")
 public class DefaultRoleTemplateProcessor
     implements RoleTemplateProcessor
 {
     private Logger log = LoggerFactory.getLogger( DefaultRoleTemplateProcessor.class );
 
     @Inject
-    @Named( value = "rbacManager#cached" )
+    @Named(value = "rbacManager#cached")
     private RBACManager rbacManager;
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public void create( RedbackRoleModel model, String templateId, String resource )
         throws RoleManagerException
     {
@@ -84,7 +84,7 @@ public class DefaultRoleTemplateProcessor
         throw new RoleManagerException( "unknown template '" + templateId + "'" );
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     public void remove( RedbackRoleModel model, String templateId, String resource )
         throws RoleManagerException
     {
@@ -173,7 +173,7 @@ public class DefaultRoleTemplateProcessor
         }
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     private void processTemplate( RedbackRoleModel model, ModelTemplate template, String resource )
         throws RoleManagerException
     {
@@ -181,7 +181,18 @@ public class DefaultRoleTemplateProcessor
 
         List<Permission> permissions = processPermissions( model, template, resource );
 
-        if ( !rbacManager.roleExists( templateName ) )
+        boolean roleExists = false;
+
+        try
+        {
+            roleExists = rbacManager.roleExists( templateName );
+        }
+        catch ( RbacManagerException e )
+        {
+            throw new RoleManagerException( e.getMessage(), e );
+        }
+
+        if ( !roleExists )
         {
             try
             {
@@ -344,7 +355,7 @@ public class DefaultRoleTemplateProcessor
         }
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     private List<Permission> processPermissions( RedbackRoleModel model, ModelTemplate template, String resource )
         throws RoleManagerException
     {
