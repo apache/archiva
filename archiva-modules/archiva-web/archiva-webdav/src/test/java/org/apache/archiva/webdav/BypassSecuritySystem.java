@@ -63,7 +63,7 @@ public class BypassSecuritySystem
     public SecuritySession authenticate( AuthenticationDataSource source )
         throws AuthenticationException, UserNotFoundException, AccountLockedException
     {
-        AuthenticationResult result = new AuthenticationResult( true, source.getPrincipal(), null );
+        AuthenticationResult result = new AuthenticationResult( true, source.getUsername(), null );
         return new DefaultSecuritySession( result );
     }
 

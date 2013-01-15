@@ -106,14 +106,14 @@ public class ArchivaUserManagerAuthenticator
             try
             {
                 log.debug( "Authenticate: {} with userManager: {}", source, userManager.getId() );
-                User user = userManager.findUser( source.getPrincipal() );
+                User user = userManager.findUser( source.getUsername() );
                 username = user.getUsername();
 
                 if ( user.isLocked() )
                 {
-                    //throw new AccountLockedException( "Account " + source.getPrincipal() + " is locked.", user );
+                    //throw new AccountLockedException( "Account " + source.getUsername() + " is locked.", user );
                     AccountLockedException e =
-                        new AccountLockedException( "Account " + source.getPrincipal() + " is locked.", user );
+                        new AccountLockedException( "Account " + source.getUsername() + " is locked.", user );
                     log.warn( "{}", e.getMessage() );
                     resultException = e;
                     authnResultErrors.add(
@@ -138,7 +138,7 @@ public class ArchivaUserManagerAuthenticator
                 boolean isPasswordValid = encoder.isPasswordValid( user.getEncodedPassword(), source.getPassword() );
                 if ( isPasswordValid )
                 {
-                    log.debug( "User {} provided a valid password", source.getPrincipal() );
+                    log.debug( "User {} provided a valid password", source.getUsername() );
 
                     try
                     {
@@ -156,7 +156,7 @@ public class ArchivaUserManagerAuthenticator
                             }
                         }
 
-                        return new AuthenticationResult( true, source.getPrincipal(), null );
+                        return new AuthenticationResult( true, source.getUsername(), null );
                     }
                     catch ( MustChangePasswordException e )
                     {
@@ -169,11 +169,11 @@ public class ArchivaUserManagerAuthenticator
                 }
                 else
                 {
-                    log.warn( "Password is Invalid for user {} and userManager '{}'.", source.getPrincipal(),
+                    log.warn( "Password is Invalid for user {} and userManager '{}'.", source.getUsername(),
                               userManager.getId() );
                     authnResultErrors.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_NO_SUCH_USER,
                                                                            "Password is Invalid for user "
-                                                                               + source.getPrincipal() + "." ) );
+                                                                               + source.getUsername() + "." ) );
 
                     try
                     {
@@ -189,23 +189,23 @@ public class ArchivaUserManagerAuthenticator
                         }
                     }
 
-                    //return new AuthenticationResult( false, source.getPrincipal(), null, authnResultExceptionsMap );
+                    //return new AuthenticationResult( false, source.getUsername(), null, authnResultExceptionsMap );
                 }
             }
             catch ( UserNotFoundException e )
             {
-                log.warn( "Login for user {} failed. user not found.", source.getPrincipal() );
+                log.warn( "Login for user {} failed. user not found.", source.getUsername() );
                 resultException = e;
                 authnResultErrors.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_NO_SUCH_USER,
-                                                                       "Login for user " + source.getPrincipal()
+                                                                       "Login for user " + source.getUsername()
                                                                            + " failed. user not found." ) );
             }
             catch ( UserManagerException e )
             {
-                log.warn( "Login for user {} failed, message: {}", source.getPrincipal(), e.getMessage() );
+                log.warn( "Login for user {} failed, message: {}", source.getUsername(), e.getMessage() );
                 resultException = e;
                 authnResultErrors.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_RUNTIME_EXCEPTION,
-                                                                       "Login for user " + source.getPrincipal()
+                                                                       "Login for user " + source.getUsername()
                                                                            + " failed, message: " + e.getMessage() ) );
             }
         }

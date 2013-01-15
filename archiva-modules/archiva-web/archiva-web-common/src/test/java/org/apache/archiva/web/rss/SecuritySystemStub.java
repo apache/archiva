@@ -68,19 +68,19 @@ public class SecuritySystemStub
         AuthenticationResult result = null;
         SecuritySession session = null;
 
-        if ( users.get( source.getPrincipal() ) != null )
+        if ( users.get( source.getUsername() ) != null )
         {
-            result = new AuthenticationResult( true, source.getPrincipal(), null );
+            result = new AuthenticationResult( true, source.getUsername(), null );
 
             User user = new JdoUser();
-            user.setUsername( source.getPrincipal() );
-            user.setPassword( users.get( source.getPrincipal() ) );
+            user.setUsername( source.getUsername() );
+            user.setPassword( users.get( source.getUsername() ) );
 
             session = new DefaultSecuritySession( result, user );
         }
         else
         {
-            result = new AuthenticationResult( false, source.getPrincipal(), null );
+            result = new AuthenticationResult( false, source.getUsername(), null );
             session = new DefaultSecuritySession( result );
         }
         return session;
