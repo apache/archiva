@@ -426,13 +426,14 @@ public abstract class AbstractRbacManagerTestCase
 
         adminRole = manager.saveRole( adminRole );
 
-        String adminPrincipal = "admin";
+        // don't use admin as ldap group need at least one member
+        String adminPrincipal = "theadmin";
         UserAssignment assignment = manager.createUserAssignment( adminPrincipal );
         assignment.addRoleName( adminRole );
         assignment = manager.saveUserAssignment( assignment );
 
         assertEquals( 1, assignment.getRoleNames().size() );
-        assertEquals( incAssignements( 1 ), manager.getAssignedRoles( adminPrincipal ).size() );
+        assertEquals( 1, manager.getAssignedRoles( adminPrincipal ).size() );
     }
 
     @Test

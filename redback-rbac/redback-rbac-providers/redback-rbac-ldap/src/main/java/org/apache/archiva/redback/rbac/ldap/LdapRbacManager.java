@@ -437,8 +437,7 @@ public class LdapRbacManager
             {
                 if ( !userRoles.contains( roleName ) )
                 {
-                    // TODO real role with permission ?
-                    unassignedRoles.add( new RoleImpl( roleName ) );
+                    unassignedRoles.add( rbacImpl.getRole( roleName ) );
                 }
             }
             return unassignedRoles;
@@ -707,6 +706,13 @@ public class LdapRbacManager
             try
             {
                 ldapRoleMapper.saveRole( role.getName() );
+                if ( !role.getChildRoleNames().isEmpty() )
+                {
+                    for ( String roleName : role.getChildRoleNames() )
+                    {
+                        ldapRoleMapper.saveRole( roleName );
+                    }
+                }
                 fireRbacRoleSaved( role );
             }
             catch ( MappingException e )
@@ -770,8 +776,6 @@ public class LdapRbacManager
                     currentUserRoles.add( role );
                 }
             }
-
-
 
             for ( String role : currentUserRoles )
             {

@@ -300,6 +300,6 @@ public class LdapRbacManagerTest
 
     protected boolean supportChildRole()
     {
-        return false;
+        return true;
     }
 }
