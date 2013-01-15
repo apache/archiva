@@ -44,7 +44,7 @@ public class OpenAuthenticator
         throws AccountLockedException, AuthenticationException
     {
         PasswordBasedAuthenticationDataSource source = (PasswordBasedAuthenticationDataSource) s;
-        return new AuthenticationResult( true, source.getPrincipal(), null );
+        return new AuthenticationResult( true, source.getUsername(), null );
     }
 
     public String getId()

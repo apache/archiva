@@ -87,7 +87,7 @@ public class LdapBindAuthenticator
             !config.getBoolean( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ALLOW_EMPTY_PASSWORDS, false )
                 && StringUtils.isEmpty( source.getPassword() ) ) )
         {
-            return new AuthenticationResult( false, source.getPrincipal(), null );
+            return new AuthenticationResult( false, source.getUsername(), null );
         }
 
         SearchControls ctls = new SearchControls();
@@ -99,7 +99,7 @@ public class LdapBindAuthenticator
 
         String filter = "(&(objectClass=" + mapper.getUserObjectClass() + ")" + ( mapper.getUserFilter() != null
             ? mapper.getUserFilter()
-            : "" ) + "(" + mapper.getUserIdAttribute() + "=" + source.getPrincipal() + "))";
+            : "" ) + "(" + mapper.getUserIdAttribute() + "=" + source.getUsername() + "))";
 
         log.debug( "Searching for users with filter: '{}' from base dn: {}", filter, mapper.getUserBaseDn() );
 
@@ -110,18 +110,18 @@ public class LdapBindAuthenticator
         {
             ldapConnection = getLdapConnection();
             // check the cache for user's userDn in the ldap server
-            String userDn = ldapCacheService.getLdapUserDn( source.getPrincipal() );
+            String userDn = ldapCacheService.getLdapUserDn( source.getUsername() );
 
             if ( userDn == null )
             {
                 log.debug( "userDn for user {} not found in cache. Retrieving from ldap server..",
-                           source.getPrincipal() );
+                           source.getUsername() );
 
                 DirContext context = ldapConnection.getDirContext();
 
                 results = context.search( mapper.getUserBaseDn(), filter, ctls );
 
-                log.debug( "Found user '{}': {}", source.getPrincipal(), results.hasMoreElements() );
+                log.debug( "Found user '{}': {}", source.getUsername(), results.hasMoreElements() );
 
                 if ( results.hasMoreElements() )
                 {
@@ -129,14 +129,14 @@ public class LdapBindAuthenticator
 
                     userDn = result.getNameInNamespace();
 
-                    log.debug( "Adding userDn {} for user {} to the cache..", userDn, source.getPrincipal() );
+                    log.debug( "Adding userDn {} for user {} to the cache..", userDn, source.getUsername() );
 
                     // REDBACK-289/MRM-1488 cache the ldap user's userDn to lessen calls to ldap server
-                    ldapCacheService.addLdapUserDn( source.getPrincipal(), userDn );
+                    ldapCacheService.addLdapUserDn( source.getUsername(), userDn );
                 }
                 else
                 {
-                    return new AuthenticationResult( false, source.getPrincipal(), null );
+                    return new AuthenticationResult( false, source.getUsername(), null );
                 }
             }
 
@@ -144,17 +144,17 @@ public class LdapBindAuthenticator
 
             authLdapConnection = connectionFactory.getConnection( userDn, source.getPassword() );
 
-            log.info( "user '{}' authenticated", source.getPrincipal() );
+            log.info( "user '{}' authenticated", source.getUsername() );
 
-            return new AuthenticationResult( true, source.getPrincipal(), null );
+            return new AuthenticationResult( true, source.getUsername(), null );
         }
         catch ( LdapException e )
         {
-            return new AuthenticationResult( false, source.getPrincipal(), e );
+            return new AuthenticationResult( false, source.getUsername(), e );
         }
         catch ( NamingException e )
         {
-            return new AuthenticationResult( false, source.getPrincipal(), e );
+            return new AuthenticationResult( false, source.getUsername(), e );
         }
         finally
         {

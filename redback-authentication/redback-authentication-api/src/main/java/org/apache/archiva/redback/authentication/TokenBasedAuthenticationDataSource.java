@@ -50,7 +50,7 @@ public class TokenBasedAuthenticationDataSource
     {
     }
 
-    public String getPrincipal()
+    public String getUsername()
     {
         return principal;
     }

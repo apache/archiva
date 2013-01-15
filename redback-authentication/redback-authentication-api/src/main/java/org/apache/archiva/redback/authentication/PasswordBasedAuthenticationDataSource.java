@@ -56,7 +56,7 @@ public class PasswordBasedAuthenticationDataSource
         return password;
     }
 
-    public String getPrincipal()
+    public String getUsername()
     {
         return principal;
     }

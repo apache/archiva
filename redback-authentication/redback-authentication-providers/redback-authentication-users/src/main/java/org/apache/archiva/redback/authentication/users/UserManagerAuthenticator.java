@@ -43,9 +43,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * {@link Authenticator} implementation that uses a wrapped {@link UserManager} to authenticate.
@@ -92,12 +90,12 @@ public class UserManagerAuthenticator
         try
         {
             log.debug( "Authenticate: {}", source );
-            User user = userManager.findUser( source.getPrincipal() );
+            User user = userManager.findUser( source.getUsername() );
             username = user.getUsername();
 
             if ( user.isLocked() )
             {
-                throw new AccountLockedException( "Account " + source.getPrincipal() + " is locked.", user );
+                throw new AccountLockedException( "Account " + source.getUsername() + " is locked.", user );
             }
 
             if ( user.isPasswordChangeRequired() && source.isEnforcePasswordChange() )
@@ -111,7 +109,7 @@ public class UserManagerAuthenticator
             boolean isPasswordValid = encoder.isPasswordValid( user.getEncodedPassword(), source.getPassword() );
             if ( isPasswordValid )
             {
-                log.debug( "User {} provided a valid password", source.getPrincipal() );
+                log.debug( "User {} provided a valid password", source.getUsername() );
 
                 try
                 {
@@ -132,14 +130,14 @@ public class UserManagerAuthenticator
                     userManager.updateUser( user );
                 }
 
-                return new AuthenticationResult( true, source.getPrincipal(), null );
+                return new AuthenticationResult( true, source.getUsername(), null );
             }
             else
             {
-                log.warn( "Password is Invalid for user {}.", source.getPrincipal() );
+                log.warn( "Password is Invalid for user {}.", source.getUsername() );
                 authenticationFailureCauses.add(
                     new AuthenticationFailureCause( AuthenticationConstants.AUTHN_NO_SUCH_USER,
-                                                    "Password is Invalid for user " + source.getPrincipal() + "." ) );
+                                                    "Password is Invalid for user " + source.getUsername() + "." ) );
 
                 try
                 {
@@ -150,24 +148,24 @@ public class UserManagerAuthenticator
                     userManager.updateUser( user );
                 }
 
-                return new AuthenticationResult( false, source.getPrincipal(), null, authenticationFailureCauses );
+                return new AuthenticationResult( false, source.getUsername(), null, authenticationFailureCauses );
             }
         }
         catch ( UserNotFoundException e )
         {
-            log.warn( "Login for user {} failed. user not found.", source.getPrincipal() );
+            log.warn( "Login for user {} failed. user not found.", source.getUsername() );
             resultException = e;
             authenticationFailureCauses.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_NO_SUCH_USER,
-                                                                             "Login for user " + source.getPrincipal()
+                                                                             "Login for user " + source.getUsername()
                                                                                  + " failed. user not found." ) );
         }
         catch ( UserManagerException e )
         {
-            log.warn( "Login for user {} failed, message: {}", source.getPrincipal(), e.getMessage() );
+            log.warn( "Login for user {} failed, message: {}", source.getUsername(), e.getMessage() );
             resultException = e;
             authenticationFailureCauses.add(
                 new AuthenticationFailureCause( AuthenticationConstants.AUTHN_RUNTIME_EXCEPTION,
-                                                "Login for user " + source.getPrincipal() + " failed, message: "
+                                                "Login for user " + source.getUsername() + " failed, message: "
                                                     + e.getMessage() ) );
         }
 

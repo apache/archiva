@@ -77,11 +77,11 @@ public class KeyStoreAuthenticator
             // if we find a key (exception was probably thrown if not) then we should be authentic
             if ( authKey != null )
             {
-                User user = userManager.findUser( dataSource.getPrincipal() );
+                User user = userManager.findUser( dataSource.getUsername() );
 
                 if ( user.isLocked() )
                 {
-                    throw new AccountLockedException( "Account " + source.getPrincipal() + " is locked.", user );
+                    throw new AccountLockedException( "Account " + source.getUsername() + " is locked.", user );
                 }
 
                 if ( user.isPasswordChangeRequired() && source.isEnforcePasswordChange() )
@@ -89,11 +89,11 @@ public class KeyStoreAuthenticator
                     throw new MustChangePasswordException( "Password expired.", user );
                 }
 
-                return new AuthenticationResult( true, dataSource.getPrincipal(), null );
+                return new AuthenticationResult( true, dataSource.getUsername(), null );
             }
             else
             {
-                return new AuthenticationResult( false, dataSource.getPrincipal(),
+                return new AuthenticationResult( false, dataSource.getUsername(),
                                                  new AuthenticationException( "unable to find key" ) );
             }
         }
@@ -107,12 +107,12 @@ public class KeyStoreAuthenticator
         }
         catch ( UserNotFoundException e )
         {
-            log.warn( "Login for user {} failed. user not found.", source.getPrincipal() );
+            log.warn( "Login for user {} failed. user not found.", source.getUsername() );
             return new AuthenticationResult( false, null, e );
         }
         catch ( UserManagerException e )
         {
-            log.warn( "Login fail for user {} failed. message: {}", source.getPrincipal(), e.getMessage() );
+            log.warn( "Login fail for user {} failed. message: {}", source.getUsername(), e.getMessage() );
             return new AuthenticationResult( false, null, e );
         }
     }

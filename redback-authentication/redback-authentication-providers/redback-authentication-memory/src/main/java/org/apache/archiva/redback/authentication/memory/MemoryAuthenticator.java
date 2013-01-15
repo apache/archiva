@@ -51,7 +51,7 @@ public class MemoryAuthenticator
     {
         PasswordBasedAuthenticationDataSource source = (PasswordBasedAuthenticationDataSource) s;
 
-        login = source.getPrincipal();
+        login = source.getUsername();
         password = source.getPassword();
 
         if ( source.getPassword().equals( password ) )
