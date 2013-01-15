@@ -449,8 +449,8 @@ public class DefaultRoleManager
                 else
                 {
                     // perhaps try and reload the model here?
-                    throw new RoleManagerException(
-                        "breakdown in role management, role exists in configuration but was not created in underlying store" );
+                    throw new RoleManagerException( "breakdown in role management, role '" + modelRole.getName()
+                                                        + "' exists in configuration but was not created in underlying store" );
                 }
             }
             catch ( RbacManagerException e )
