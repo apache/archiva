@@ -55,7 +55,7 @@ public class LockedAdminEnvironmentCheck
     private UserManager userManager;
 
     @Inject
-    @Named( value = "rbacManager#cached" )
+    @Named( value = "rbacManager#default" )
     private RBACManager rbacManager;
 
     /**

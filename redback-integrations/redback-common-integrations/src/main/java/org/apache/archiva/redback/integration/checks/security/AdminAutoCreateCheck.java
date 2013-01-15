@@ -80,7 +80,7 @@ public class AdminAutoCreateCheck
     private RoleManager roleManager;
 
     @Inject
-    @Named(value = "rbacManager#cached")
+    @Named(value = "rbacManager#default")
     private RBACManager rbacManager;
 
     public void validateEnvironment( List<String> violations )

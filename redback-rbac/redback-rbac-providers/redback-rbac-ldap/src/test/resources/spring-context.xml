@@ -29,6 +29,8 @@
 
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
+  <alias name="rbacManager#memory" alias="rbacManager#default"/>
+
   <bean name="apacheDS#test" class="org.apache.archiva.redback.components.apacheds.DefaultApacheDs"
         scope="prototype">
     <property name="basedir" value="${basedir}/target/apacheds"/>

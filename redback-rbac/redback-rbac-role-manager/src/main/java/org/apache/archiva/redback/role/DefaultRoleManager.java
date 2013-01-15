@@ -93,7 +93,7 @@ public class DefaultRoleManager
     private RoleTemplateProcessor templateProcessor;
 
     @Inject
-    @Named(value = "rbacManager#cached")
+    @Named(value = "rbacManager#default")
     private RBACManager rbacManager;
 
 

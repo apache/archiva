@@ -57,7 +57,7 @@ public class DefaultRoleTemplateProcessor
     private Logger log = LoggerFactory.getLogger( DefaultRoleTemplateProcessor.class );
 
     @Inject
-    @Named(value = "rbacManager#cached")
+    @Named(value = "rbacManager#default")
     private RBACManager rbacManager;
 
     @SuppressWarnings("unchecked")
