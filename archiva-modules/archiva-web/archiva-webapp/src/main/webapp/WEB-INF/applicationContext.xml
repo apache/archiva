@@ -41,6 +41,7 @@
   <alias name="environmentCheck#archiva-locked-admin-check" alias="environmentCheck#locked-admin-check"/>
   <alias name="userManager#archiva" alias="userManager#configurable"/>
   <alias name="authenticator#archiva" alias="authenticator#user-manager"/>
+  <alias name="rbacManager#archiva" alias="rbacManager#default"/>
 
   <alias name="ldapConnectionFactory#archiva" alias="ldapConnectionFactory"/>
   <alias name="ldapConnectionFactory#archiva" alias="ldapConnectionFactory#configurable"/>

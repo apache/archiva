@@ -642,6 +642,11 @@
 
     <dependency>
       <groupId>org.apache.archiva.redback</groupId>
+      <artifactId>redback-rbac-ldap</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rest-services</artifactId>
     </dependency>
     <dependency>

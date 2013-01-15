@@ -41,6 +41,12 @@ import java.util.Set;
 @Service("rbacManager#cached")
 public class TestRBACManager implements RBACManager
 {
+
+    public void initialize()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public void addListener( RBACManagerListener listener )
     {
         //To change body of implemented methods use File | Settings | File Templates.
