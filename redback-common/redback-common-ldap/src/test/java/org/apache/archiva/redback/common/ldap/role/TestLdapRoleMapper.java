@@ -362,4 +362,19 @@ public class TestLdapRoleMapper
 
     }
 
+    @Test
+    public void hasRoleFound()
+        throws Exception
+    {
+        assertTrue( ldapRoleMapper.hasRole( getDirContext(), "Internal Repo Observer" ) );
+    }
+
+    @Test
+    public void hasRoleNotFound()
+        throws Exception
+    {
+        assertFalse( ldapRoleMapper.hasRole( getDirContext(), "Australian wine is good but not as French! " ) );
+    }
+
+
 }
