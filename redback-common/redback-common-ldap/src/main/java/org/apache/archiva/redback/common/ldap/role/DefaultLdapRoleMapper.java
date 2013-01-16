@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.NameAlreadyBoundException;
 import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -482,6 +483,11 @@ public class DefaultLdapRoleMapper
         throws MappingException
     {
 
+        if ( hasRole( context, roleName ) )
+        {
+            return true;
+        }
+
         String groupName = findGroupName( roleName );
 
         if ( groupName == null )
@@ -525,6 +531,11 @@ public class DefaultLdapRoleMapper
 
             log.info( "created group with dn:'{}", dn );
 
+            return true;
+        }
+        catch ( NameAlreadyBoundException e )
+        {
+            log.info( "skip group '{}' creation as already exists", groupName );
             return true;
         }
         catch ( LdapException e )
