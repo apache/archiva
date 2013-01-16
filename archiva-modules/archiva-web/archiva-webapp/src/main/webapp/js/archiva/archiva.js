@@ -58,7 +58,7 @@ $.ajax({
                 },
           paths: {
               "i18n":"jquery.i18n.properties-1.0.9",
-              "jquery": "jquery-1.8.3.min",
+              "jquery": "jquery-1.9.0.min",
               "jquery.tmpl": "jquery.tmpl",
               "utils": "archiva/utils",
               "startup": "archiva/startup",
