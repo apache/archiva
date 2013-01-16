@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.NameNotFoundException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -204,6 +205,11 @@ public class DefaultLdapRoleMapper
             namingEnumeration = context.search( "cn=" + groupName + "," + getGroupsDn(), filter, searchControls );
 
             return namingEnumeration.hasMore();
+        }
+        catch ( NameNotFoundException e )
+        {
+            log.debug( "group {} for role {} not found", groupName, roleName );
+            return false;
         }
         catch ( LdapException e )
         {
