@@ -42,7 +42,7 @@ public class RedbackRuntimeConfiguration
     /**
      * Field rbacManagerImpls.
      */
-    private java.util.List<String> rbacManagerImpls;
+    private java.util.List<String> rbacManagerImpls = new ArrayList<String>();
 
     private LdapConfiguration ldapConfiguration;
 

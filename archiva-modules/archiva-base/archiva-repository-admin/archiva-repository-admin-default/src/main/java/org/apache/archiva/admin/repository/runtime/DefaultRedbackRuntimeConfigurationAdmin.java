@@ -49,7 +49,7 @@ import java.util.Set;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service("userConfiguration#archiva")
+@Service( "userConfiguration#archiva" )
 public class DefaultRedbackRuntimeConfigurationAdmin
     implements RedbackRuntimeConfigurationAdmin, UserConfiguration
 {
@@ -60,11 +60,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
-    @Named(value = "userConfiguration#redback")
+    @Named( value = "userConfiguration#redback" )
     UserConfiguration userConfiguration;
 
     @Inject
-    @Named(value = "cache#users")
+    @Named( value = "cache#users" )
     private Cache usersCache;
 
     @PostConstruct
@@ -77,22 +77,17 @@ public class DefaultRedbackRuntimeConfigurationAdmin
             // migrate or not data from redback
             if ( !redbackRuntimeConfiguration.isMigratedFromRedbackConfiguration() )
             {
+                // not migrated so build a new fresh one
+                redbackRuntimeConfiguration = new RedbackRuntimeConfiguration();
                 // so migrate if available
                 String userManagerImpl =
                     userConfiguration.getConcatenatedList( UserConfigurationKeys.USER_MANAGER_IMPL, "jdo" );
                 if ( StringUtils.isNotEmpty( userManagerImpl ) )
                 {
-                    if ( StringUtils.contains( userManagerImpl, ',' ) )
+                    String[] impls = StringUtils.split( userManagerImpl, ',' );
+                    for ( String impl : impls )
                     {
-                        String[] impls = StringUtils.split( userManagerImpl, ',' );
-                        for ( String impl : impls )
-                        {
-                            redbackRuntimeConfiguration.getUserManagerImpls().add( impl );
-                        }
-                    }
-                    else
-                    {
-                        redbackRuntimeConfiguration.getUserManagerImpls().add( userManagerImpl );
+                        redbackRuntimeConfiguration.getUserManagerImpls().add( impl );
                     }
                 }
 
@@ -101,17 +96,10 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
                 if ( StringUtils.isNotEmpty( rbacManagerImpls ) )
                 {
-                    if ( StringUtils.contains( rbacManagerImpls, ',' ) )
+                    String[] impls = StringUtils.split( rbacManagerImpls, ',' );
+                    for ( String impl : impls )
                     {
-                        String[] impls = StringUtils.split( rbacManagerImpls, ',' );
-                        for ( String impl : impls )
-                        {
-                            redbackRuntimeConfiguration.getRbacManagerImpls().add( impl );
-                        }
-                    }
-                    else
-                    {
-                        redbackRuntimeConfiguration.getRbacManagerImpls().add( userManagerImpl );
+                        redbackRuntimeConfiguration.getRbacManagerImpls().add( impl );
                     }
                 }
 
