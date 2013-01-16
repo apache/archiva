@@ -82,6 +82,8 @@ public interface UserConfigurationKeys
 
     String LDAP_GROUPS_ROLE_START_KEY = "ldap.config.groups.role.";
 
+    String LDAP_GROUPS_USE_ROLENAME  = "ldap.config.groups.use.rolename";
+
     String LDAP_WRITABLE = "ldap.config.writable";
 
     String APPLICATION_URL = "application.url";

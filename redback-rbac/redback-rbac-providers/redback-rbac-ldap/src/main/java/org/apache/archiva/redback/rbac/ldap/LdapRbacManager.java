@@ -61,6 +61,7 @@ import javax.naming.directory.DirContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -195,16 +196,19 @@ public class LdapRbacManager
     {
         try
         {
-            Collection<String> roleNames = ldapRoleMapper.getLdapGroupMappings().values();
+            Collection<Collection<String>> roleNames = ldapRoleMapper.getLdapGroupMappings().values();
 
-            List<Role> roles = new ArrayList<Role>();
+            Set<Role> roles = new HashSet<Role>();
 
-            for ( String name : roleNames )
+            for ( Collection<String> names : roleNames )
             {
-                roles.add( new RoleImpl( name ) );
+                for ( String name : names )
+                {
+                    roles.add( new RoleImpl( name ) );
+                }
             }
 
-            return roles;
+            return new ArrayList<Role>( roles );
         }
         catch ( MappingException e )
         {
@@ -340,16 +344,19 @@ public class LdapRbacManager
         }
 
         List<Role> roles = new ArrayList<Role>( groups.size() );
-        Map<String, String> mappedGroups = ldapRoleMapper.getLdapGroupMappings();
+        Map<String, Collection<String>> mappedGroups = ldapRoleMapper.getLdapGroupMappings();
         for ( String group : groups )
         {
-            String roleName = mappedGroups.get( group );
-            if ( roleName != null )
+            Collection<String> roleNames = mappedGroups.get( group );
+            if ( roleNames != null )
             {
-                Role role = getRole( roleName );
-                if ( role != null )
+                for ( String roleName : roleNames )
                 {
-                    roles.add( role );
+                    Role role = getRole( roleName );
+                    if ( role != null )
+                    {
+                        roles.add( role );
+                    }
                 }
             }
         }
@@ -471,7 +478,7 @@ public class LdapRbacManager
         {
             ldapConnection = ldapConnectionFactory.getConnection();
             context = ldapConnection.getDirContext();
-            if ( !ldapRoleMapper.getAllRoles( context ).contains( roleName ) )
+            if ( !ldapRoleMapper.hasRole( context, roleName ) )
             {
                 return null;
             }
@@ -484,7 +491,9 @@ public class LdapRbacManager
         {
             throw new RbacManagerException( e.getMessage(), e );
         }
-        return this.rbacImpl.getRole( roleName );
+        Role role = this.rbacImpl.getRole( roleName );
+        return ( role == null ) ? new RoleImpl( roleName ) : role;
+
     }
 
     public Map<String, Role> getRoles( Collection<String> roleNames )

@@ -21,6 +21,7 @@ package org.apache.archiva.redback.common.ldap.role;
 import org.apache.archiva.redback.common.ldap.MappingException;
 
 import javax.naming.directory.DirContext;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +59,9 @@ public interface LdapRoleMapper
      * @throws Exception
      */
     List<String> getAllRoles( DirContext context )
+        throws MappingException;
+
+    boolean hasRole( DirContext context, String role )
         throws MappingException;
 
 
@@ -103,12 +107,12 @@ public interface LdapRoleMapper
         throws MappingException;
 
     /**
-     * @return Map of corresponding LDAP group (key) and Redback role (value)
+     * @return Map of corresponding LDAP group (key) and Redback roles (value)
      */
-    Map<String, String> getLdapGroupMappings()
+    Map<String, Collection<String>> getLdapGroupMappings()
         throws MappingException;
 
-    void setLdapGroupMappings( Map<String, String> mappings )
+    void setLdapGroupMappings( Map<String, Collection<String>> mappings )
         throws MappingException;
 
     /**

@@ -18,9 +18,9 @@ package org.apache.archiva.redback.common.ldap.role;
  * under the License.
  */
 
-import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.apache.archiva.redback.common.ldap.MappingException;
-import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.common.ldap.connection.LdapException;
 import org.apache.archiva.redback.configuration.UserConfiguration;
@@ -44,12 +44,12 @@ import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Olivier Lamy
@@ -79,6 +79,10 @@ public class DefaultLdapRoleMapper
 
     private String baseDn;
 
+    private boolean writableLdap = false;
+
+    private boolean useDefaultRoleName = false;
+
     @PostConstruct
     public void initialize()
     {
@@ -92,6 +96,11 @@ public class DefaultLdapRoleMapper
         {
             this.groupsDn = this.baseDn;
         }
+
+        this.writableLdap = userConf.getBoolean( UserConfigurationKeys.LDAP_WRITABLE, this.writableLdap );
+
+        this.useDefaultRoleName =
+            userConf.getBoolean( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME, this.useDefaultRoleName );
     }
 
     public String getLdapGroup( String role )
@@ -164,6 +173,53 @@ public class DefaultLdapRoleMapper
         }
     }
 
+    public boolean hasRole( DirContext context, String roleName )
+        throws MappingException
+    {
+        String groupName = findGroupName( roleName );
+
+        if ( groupName == null )
+        {
+            if ( this.useDefaultRoleName )
+            {
+                groupName = roleName;
+            }
+            else
+            {
+                log.warn( "skip group creation as no mapping fro roleName:'{}'", roleName );
+                return false;
+            }
+        }
+        NamingEnumeration<SearchResult> namingEnumeration = null;
+        try
+        {
+
+            SearchControls searchControls = new SearchControls();
+
+            searchControls.setDerefLinkFlag( true );
+            searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
+
+            String filter = "objectClass=" + getLdapGroupClass();
+
+            namingEnumeration = context.search( "cn=" + groupName + "," + getGroupsDn(), filter, searchControls );
+
+            return namingEnumeration.hasMore();
+        }
+        catch ( LdapException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+        }
+        catch ( NamingException e )
+        {
+            throw new MappingException( e.getMessage(), e );
+        }
+
+        finally
+        {
+            close( namingEnumeration );
+        }
+    }
+
     public List<String> getAllRoles( DirContext context )
         throws MappingException
     {
@@ -174,20 +230,23 @@ public class DefaultLdapRoleMapper
             return Collections.emptyList();
         }
 
-        List<String> roles = new ArrayList<String>( groups.size() );
+        Set<String> roles = new HashSet<String>( groups.size() );
 
-        Map<String, String> mapping = getLdapGroupMappings();
+        Map<String, Collection<String>> mapping = getLdapGroupMappings();
 
         for ( String group : groups )
         {
-            String role = mapping.get( group );
-            if ( role != null )
+            Collection<String> rolesPerGroup = mapping.get( group );
+            if ( rolesPerGroup != null )
             {
-                roles.add( role );
+                for ( String role : rolesPerGroup )
+                {
+                    roles.add( role );
+                }
             }
         }
 
-        return roles;
+        return new ArrayList<String>( roles );
     }
 
     public List<String> getGroupsMember( String group, DirContext context )
@@ -330,20 +389,23 @@ public class DefaultLdapRoleMapper
     {
         List<String> groups = getGroups( username, context );
 
-        Map<String, String> rolesMapping = getLdapGroupMappings();
+        Map<String, Collection<String>> rolesMapping = getLdapGroupMappings();
 
-        List<String> roles = new ArrayList<String>( groups.size() );
+        Set<String> roles = new HashSet<String>( groups.size() );
 
         for ( String group : groups )
         {
-            String role = rolesMapping.get( group );
-            if ( role != null )
+            Collection<String> rolesPerGroup = rolesMapping.get( group );
+            if ( rolesPerGroup != null )
             {
-                roles.add( role );
+                for ( String role : rolesPerGroup )
+                {
+                    roles.add( role );
+                }
             }
         }
 
-        return roles;
+        return new ArrayList<String>( roles );
     }
 
     private void close( NamingEnumeration namingEnumeration )
@@ -381,15 +443,15 @@ public class DefaultLdapRoleMapper
         log.warn( "removeLdapMapping not implemented" );
     }
 
-    public void setLdapGroupMappings( Map<String, String> mappings )
+    public void setLdapGroupMappings( Map<String, Collection<String>> mappings )
         throws MappingException
     {
         log.warn( "setLdapGroupMappings not implemented" );
     }
 
-    public Map<String, String> getLdapGroupMappings()
+    public Map<String, Collection<String>> getLdapGroupMappings()
     {
-        Map<String, String> map = new HashMap<String, String>();
+        Multimap<String, String> map = ArrayListMultimap.create();
 
         Collection<String> keys = userConf.getKeys();
 
@@ -397,23 +459,36 @@ public class DefaultLdapRoleMapper
         {
             if ( key.startsWith( UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) )
             {
-                map.put( StringUtils.substringAfter( key, UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ),
-                         userConf.getString( key ) );
+                String val = userConf.getString( key );
+                String[] roles = StringUtils.split( val, ',' );
+                for ( String role : roles )
+                {
+                    map.put( StringUtils.substringAfter( key, UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ),
+                             role );
+                }
             }
         }
 
-        return map;
+        return map.asMap();
     }
 
     public boolean saveRole( String roleName, DirContext context )
         throws MappingException
     {
 
-        String groupName = HashBiMap.create( getLdapGroupMappings() ).inverse().get( roleName );
+        String groupName = findGroupName( roleName );
+
         if ( groupName == null )
         {
-            log.warn( "skip group creation as no mapping fro roleName:'{}'", roleName );
-            return false;
+            if ( this.useDefaultRoleName )
+            {
+                groupName = roleName;
+            }
+            else
+            {
+                log.warn( "skip group creation as no mapping fro roleName:'{}'", roleName );
+                return false;
+            }
         }
 
         List<String> allGroups = getAllGroups( context );
@@ -461,12 +536,12 @@ public class DefaultLdapRoleMapper
         throws MappingException
     {
 
-        String groupName = HashBiMap.create( getLdapGroupMappings() ).inverse().get( roleName );
+        String groupName = findGroupName( roleName );
 
         if ( groupName == null )
         {
             log.warn( "no group found for role '{}", roleName );
-            return false;
+            groupName = roleName;
         }
 
         NamingEnumeration<SearchResult> namingEnumeration = null;
@@ -531,7 +606,7 @@ public class DefaultLdapRoleMapper
     public boolean removeUserRole( String roleName, String username, DirContext context )
         throws MappingException
     {
-        String groupName = HashBiMap.create( getLdapGroupMappings() ).inverse().get( roleName );
+        String groupName = findGroupName( roleName );
 
         if ( groupName == null )
         {
@@ -627,7 +702,7 @@ public class DefaultLdapRoleMapper
         throws MappingException
     {
 
-        String groupName = HashBiMap.create( getLdapGroupMappings() ).inverse().get( roleName );
+        String groupName = findGroupName( roleName );
 
         try
         {
@@ -683,5 +758,23 @@ public class DefaultLdapRoleMapper
     public void setBaseDn( String baseDn )
     {
         this.baseDn = baseDn;
+    }
+
+    //-------------------
+    // utils methods
+    //-------------------
+
+    protected String findGroupName( String role )
+    {
+        Map<String, Collection<String>> mapping = getLdapGroupMappings();
+
+        for ( Map.Entry<String, Collection<String>> entry : mapping.entrySet() )
+        {
+            if ( entry.getValue().contains( role ) )
+            {
+                return entry.getKey();
+            }
+        }
+        return null;
     }
 }
