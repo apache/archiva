@@ -187,7 +187,7 @@ public class DefaultLdapRoleMapper
             }
             else
             {
-                log.warn( "skip group creation as no mapping fro roleName:'{}'", roleName );
+                log.warn( "skip group creation as no mapping for roleName:'{}'", roleName );
                 return false;
             }
         }
