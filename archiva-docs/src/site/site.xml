@@ -22,6 +22,9 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/DECORATION/1.3.0 http://maven.apache.org/xsd/decoration-1.3.0.xsd"
   name="Archiva Documentation">
+
+  <googleAnalyticsAccountId>UA-140879-5</googleAnalyticsAccountId>
+
   <bannerLeft>
     <name>Apache Archiva</name>
     <src>http://archiva.apache.org/images/archiva.png</src>
