@@ -264,7 +264,6 @@ public class LdapRbacManager
     }
 
 
-
     public List<UserAssignment> getAllUserAssignments()
         throws RbacManagerException
     {
@@ -797,7 +796,7 @@ public class LdapRbacManager
         {
             ldapConnection = ldapConnectionFactory.getConnection();
             context = ldapConnection.getDirContext();
-            return ldapRoleMapper.getAllRoles( context ).contains( name );
+            return ldapRoleMapper.hasRole( context, name );
         }
         catch ( MappingException e )
         {
