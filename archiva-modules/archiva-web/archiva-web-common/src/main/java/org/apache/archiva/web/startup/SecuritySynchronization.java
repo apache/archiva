@@ -34,6 +34,7 @@ import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -50,8 +51,6 @@ import java.util.Map.Entry;
 
 /**
  * ConfigurationSynchronization
- *
- *
  */
 @Service
 public class SecuritySynchronization
@@ -63,7 +62,7 @@ public class SecuritySynchronization
     private RoleManager roleManager;
 
     @Inject
-    @Named( value = "rbacManager#cached" )
+    @Named(value = "rbacManager#cached")
     private RBACManager rbacManager;
 
     private Map<String, EnvironmentCheck> checkers;
@@ -97,7 +96,8 @@ public class SecuritySynchronization
         return beans;
     }
 
-    public void afterConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry, String propertyName, Object propertyValue )
+    public void afterConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry,
+                                          String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isManagedRepositories( propertyName ) && propertyName.endsWith( ".id" ) )
         {
@@ -108,7 +108,8 @@ public class SecuritySynchronization
         }
     }
 
-    public void beforeConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry, String propertyName, Object propertyValue )
+    public void beforeConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry,
+                                           String propertyName, Object propertyValue )
     {
         /* do nothing */
     }
@@ -176,6 +177,10 @@ public class SecuritySynchronization
                 "Unable to initialize the Redback Security Environment, " + "no Environment Check components found." );
         }
 
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.reset();
+        stopWatch.start();
+
         List<String> violations = new ArrayList<String>();
 
         for ( Entry<String, EnvironmentCheck> entry : checkers.entrySet() )
@@ -210,7 +215,11 @@ public class SecuritySynchronization
             throw new ArchivaException( "Unable to initialize Redback Security Environment, [" + violations.size()
                                             + "] violation(s) encountered, See log for details." );
         }
+
+        stopWatch.stop();
+        log.info( "time to execute all EnvironmentCheck: {} ms", stopWatch.getTime() );
     }
+
 
     private void assignRepositoryObserverToGuestUser( List<ManagedRepositoryConfiguration> repos )
     {
