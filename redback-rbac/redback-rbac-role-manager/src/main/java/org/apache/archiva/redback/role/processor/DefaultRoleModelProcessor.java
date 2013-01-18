@@ -33,6 +33,7 @@ import org.apache.archiva.redback.role.model.ModelResource;
 import org.apache.archiva.redback.role.model.ModelRole;
 import org.apache.archiva.redback.role.model.RedbackRoleModel;
 import org.apache.archiva.redback.role.util.RoleModelUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.codehaus.plexus.util.dag.CycleDetectedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,22 +43,24 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * DefaultRoleModelProcessor: inserts the components of the model that can be populated into the rbac manager
  *
  * @author: Jesse McConnell <jesse@codehaus.org>
  */
-@Service("roleModelProcessor")
+@Service( "roleModelProcessor" )
 public class DefaultRoleModelProcessor
     implements RoleModelProcessor
 {
     private Logger log = LoggerFactory.getLogger( DefaultRoleModelProcessor.class );
 
     @Inject
-    @Named(value = "rbacManager#default")
+    @Named( value = "rbacManager#default" )
     private RBACManager rbacManager;
 
     private Map<String, Resource> resourceMap = new HashMap<String, Resource>();
@@ -75,7 +78,7 @@ public class DefaultRoleModelProcessor
         processRoles( model );
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private void processResources( RedbackRoleModel model )
         throws RoleManagerException
     {
@@ -110,7 +113,7 @@ public class DefaultRoleModelProcessor
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private void processOperations( RedbackRoleModel model )
         throws RoleManagerException
     {
@@ -147,10 +150,13 @@ public class DefaultRoleModelProcessor
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     private void processRoles( RedbackRoleModel model )
         throws RoleManagerException
     {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.reset();
+        stopWatch.start();
         List<String> sortedGraph;
         try
         {
@@ -161,22 +167,38 @@ public class DefaultRoleModelProcessor
             throw new RoleManagerException( "cycle detected: this should have been caught in validation", e );
         }
 
+        List<Role> allRoles;
+        try
+        {
+            allRoles = rbacManager.getAllRoles();
+        }
+        catch ( RbacManagerException e )
+        {
+            throw new RoleManagerException( e.getMessage(), e );
+        }
+
+        Set<String> allRoleNames = new HashSet<String>( allRoles.size() );
+        for ( Role role : allRoles )
+        {
+            allRoleNames.add( role.getName() );
+        }
+
         for ( String roleId : sortedGraph )
         {
             ModelRole roleProfile = RoleModelUtils.getModelRole( model, roleId );
 
             List<Permission> permissions = processPermissions( roleProfile.getPermissions() );
 
-            boolean roleExists = false;
+            boolean roleExists = allRoleNames.contains( roleProfile.getName() );// false;
 
-            try
+            /*try
             {
                 roleExists = rbacManager.roleExists( roleProfile.getName() );
             }
             catch ( RbacManagerException e )
             {
                 throw new RoleManagerException( e.getMessage(), e );
-            }
+            }*/
 
             if ( !roleExists )
             {
@@ -204,6 +226,7 @@ public class DefaultRoleModelProcessor
                     }
 
                     rbacManager.saveRole( role );
+                    allRoleNames.add( role.getName() );
 
                     // add link from parent roles to this new role
                     if ( roleProfile.getParentRoles() != null )
@@ -214,6 +237,7 @@ public class DefaultRoleModelProcessor
                             Role parentRole = rbacManager.getRole( parentModelRole.getName() );
                             parentRole.addChildRoleName( role.getName() );
                             rbacManager.saveRole( parentRole );
+                            allRoleNames.add( parentRole.getName() );
                         }
                     }
 
@@ -257,6 +281,7 @@ public class DefaultRoleModelProcessor
                     if ( changed )
                     {
                         rbacManager.saveRole( role );
+                        allRoleNames.add( role.getName() );
                     }
                 }
                 catch ( RbacManagerException e )
@@ -265,6 +290,8 @@ public class DefaultRoleModelProcessor
                 }
             }
         }
+        stopWatch.stop();
+        log.info( "time to process roles model: {} ms", stopWatch.getTime() );
     }
 
     private List<Permission> processPermissions( List<ModelPermission> permissions )
