@@ -44,7 +44,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "rbacManager#archiva" )
+@Service("rbacManager#archiva")
 public class ArchivaRbacManager
     extends AbstractRBACManager
     implements RBACManager
@@ -288,6 +288,29 @@ public class ArchivaRbacManager
     {
         // iterate ?
         getRbacManagerForCommon().removeUserAssignment( userAssignment );
+    }
+
+    @Override
+    public boolean roleExists( String name )
+        throws RbacManagerException
+    {
+        boolean exists = false;
+        for ( RBACManager manager : rbacManagersPerId.values() )
+        {
+            exists = manager.roleExists( name );
+            if ( exists )
+            {
+                return true;
+            }
+        }
+        return exists;
+    }
+
+    @Override
+    public boolean roleExists( Role role )
+        throws RbacManagerException
+    {
+        return roleExists( role.getName() );
     }
 
     public void eraseDatabase()
