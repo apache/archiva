@@ -263,6 +263,8 @@ public class LdapRbacManager
         //return this.rbacImpl.getAllRoles();
     }
 
+
+
     public List<UserAssignment> getAllUserAssignments()
         throws RbacManagerException
     {
@@ -781,6 +783,7 @@ public class LdapRbacManager
         return roleExists( role.getName() );
     }
 
+    @Override
     public boolean roleExists( String name )
         throws RbacManagerException
     {

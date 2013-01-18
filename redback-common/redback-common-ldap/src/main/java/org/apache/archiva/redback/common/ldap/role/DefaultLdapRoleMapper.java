@@ -57,7 +57,7 @@ import java.util.Set;
  * @author Olivier Lamy
  * @since 2.1
  */
-@Service( "ldapRoleMapper#default" )
+@Service("ldapRoleMapper#default")
 public class DefaultLdapRoleMapper
     implements LdapRoleMapper
 {
@@ -68,7 +68,7 @@ public class DefaultLdapRoleMapper
     private LdapConnectionFactory ldapConnectionFactory;
 
     @Inject
-    @Named( value = "userConfiguration#default" )
+    @Named(value = "userConfiguration#default")
     private UserConfiguration userConf;
 
     //---------------------------
@@ -80,8 +80,6 @@ public class DefaultLdapRoleMapper
     private String groupsDn;
 
     private String baseDn;
-
-    private boolean writableLdap = false;
 
     private boolean useDefaultRoleName = false;
 
@@ -98,8 +96,6 @@ public class DefaultLdapRoleMapper
         {
             this.groupsDn = this.baseDn;
         }
-
-        this.writableLdap = userConf.getBoolean( UserConfigurationKeys.LDAP_WRITABLE, this.writableLdap );
 
         this.useDefaultRoleName =
             userConf.getBoolean( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME, this.useDefaultRoleName );
