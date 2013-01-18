@@ -19,6 +19,7 @@ package org.apache.archiva.redback.rest.services.utils;
  */
 
 import org.apache.archiva.redback.system.check.EnvironmentCheck;
+import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -44,6 +45,10 @@ public class EnvironmentChecker
     public EnvironmentChecker( ApplicationContext applicationContext )
     {
         Collection<EnvironmentCheck> checkers = applicationContext.getBeansOfType( EnvironmentCheck.class ).values();
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.reset();
+        stopWatch.start();
 
         if ( checkers != null )
         {
@@ -72,5 +77,8 @@ public class EnvironmentChecker
                 log.error( msg.toString() );
             }
         }
+
+        stopWatch.stop();
+        log.info( "time to execute all EnvironmentCheck: {} ms", stopWatch.getTime() );
     }
 }
