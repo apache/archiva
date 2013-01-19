@@ -102,7 +102,12 @@ public class LdapRbacManager
     @Inject
     private LdapController ldapController;
 
+    @Inject
+    @Named( value = "cache#ldapRoles" )
+    private Cache<String, Role> rolesCache;
+
     private boolean writableLdap = false;
+
 
     @PostConstruct
     public void initialize()
@@ -472,6 +477,11 @@ public class LdapRbacManager
         throws RbacManagerException
     {
 
+        Role role = rolesCache.get( roleName );
+        if ( role != null )
+        {
+            return role;
+        }
         LdapConnection ldapConnection = null;
         DirContext context = null;
         //verify it's a ldap group
@@ -492,9 +502,12 @@ public class LdapRbacManager
         {
             throw new RbacManagerException( e.getMessage(), e );
         }
-        Role role = this.rbacImpl.getRole( roleName );
-        return ( role == null ) ? new RoleImpl( roleName ) : role;
+        role = this.rbacImpl.getRole( roleName );
+        role = ( role == null ) ? new RoleImpl( roleName ) : role;
 
+        rolesCache.put( roleName, role );
+
+        return role;
     }
 
     public Map<String, Role> getRoles( Collection<String> roleNames )
@@ -715,6 +728,7 @@ public class LdapRbacManager
         {
             throw new RbacPermanentException( "Unable to delete permanent role [" + role.getName() + "]" );
         }
+        rolesCache.remove( role.getName() );
         if ( writableLdap )
         {
             LdapConnection ldapConnection = null;
@@ -790,12 +804,20 @@ public class LdapRbacManager
         {
             return false;
         }
+        if ( rolesCache.get( name ) != null )
+        {
+            return true;
+        }
         LdapConnection ldapConnection = null;
         DirContext context = null;
         try
         {
             ldapConnection = ldapConnectionFactory.getConnection();
             context = ldapConnection.getDirContext();
+            if ( rolesCache.hasKey( name ) )
+            {
+                return true;
+            }
             return ldapRoleMapper.hasRole( context, name );
         }
         catch ( MappingException e )
@@ -843,6 +865,7 @@ public class LdapRbacManager
                 ldapConnection = ldapConnectionFactory.getConnection();
                 context = ldapConnection.getDirContext();
                 ldapRoleMapper.saveRole( role.getName(), context );
+
                 if ( !role.getChildRoleNames().isEmpty() )
                 {
                     for ( String roleName : role.getChildRoleNames() )
@@ -861,7 +884,10 @@ public class LdapRbacManager
                 throw new RbacManagerException( e.getMessage(), e );
             }
         }
-        return this.rbacImpl.saveRole( role );
+        role = this.rbacImpl.saveRole( role );
+        rolesCache.put( role.getName(), role );
+
+        return role;
         //return new RoleImpl( role.getName(), role.getPermissions() );
     }
 
