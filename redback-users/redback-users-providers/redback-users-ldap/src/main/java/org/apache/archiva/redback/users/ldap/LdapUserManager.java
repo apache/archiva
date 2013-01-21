@@ -20,6 +20,7 @@ package org.apache.archiva.redback.users.ldap;
  */
 
 
+import org.apache.archiva.redback.common.ldap.role.LdapRoleMapper;
 import org.apache.archiva.redback.common.ldap.user.LdapUser;
 import org.apache.archiva.redback.common.ldap.user.UserMapper;
 import org.apache.archiva.redback.configuration.UserConfiguration;
@@ -86,7 +87,7 @@ public class LdapUserManager
 
     public boolean isReadOnly()
     {
-        return true;
+        return !this.writableLdap;
     }
 
     public User addUser( User user )
