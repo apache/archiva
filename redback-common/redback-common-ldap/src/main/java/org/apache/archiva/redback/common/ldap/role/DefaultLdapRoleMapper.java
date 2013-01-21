@@ -585,13 +585,13 @@ public class DefaultLdapRoleMapper
                 {
                     BasicAttribute basicAttribute = new BasicAttribute( "uniquemember" );
                     basicAttribute.add( this.userIdAttribute + "=" + username + "," + getGroupsDn() );
-                    context.modifyAttributes( "cn=" + groupName + "," + getGroupsDn(), new ModificationItem[]{
+                    context.modifyAttributes( "cn=" + groupName + "," + getBaseDn(), new ModificationItem[]{
                         new ModificationItem( DirContext.ADD_ATTRIBUTE, basicAttribute ) } );
                 }
                 else
                 {
                     attribute.add( this.userIdAttribute + "=" + username + "," + getGroupsDn() );
-                    context.modifyAttributes( "cn=" + groupName + "," + getGroupsDn(), new ModificationItem[]{
+                    context.modifyAttributes( "cn=" + groupName + "," + getBaseDn(), new ModificationItem[]{
                         new ModificationItem( DirContext.REPLACE_ATTRIBUTE, attribute ) } );
                 }
                 return true;
