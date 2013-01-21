@@ -269,6 +269,18 @@ public class ArchivaRbacManager
         return getRbacManagerForCommon().getUserAssignment( principal );
     }
 
+    @Override
+    public boolean userAssignmentExists( String principal )
+    {
+        return getRbacManagerForCommon().userAssignmentExists( principal );
+    }
+
+    @Override
+    public boolean userAssignmentExists( UserAssignment assignment )
+    {
+        return getRbacManagerForCommon().userAssignmentExists( assignment );
+    }
+
     public List<UserAssignment> getAllUserAssignments()
         throws RbacManagerException
     {
