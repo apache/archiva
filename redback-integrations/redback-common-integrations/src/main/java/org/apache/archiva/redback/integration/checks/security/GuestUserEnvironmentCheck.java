@@ -53,7 +53,7 @@ public class GuestUserEnvironmentCheck
     private SecuritySystem securitySystem;
 
     @Inject
-    @Named( value = "userConfiguration#default" )
+    @Named(value = "userConfiguration#default")
     private UserConfiguration config;
 
     /**
@@ -86,20 +86,29 @@ public class GuestUserEnvironmentCheck
                 catch ( UserManagerException ume )
                 {
                     violations.add( "unable to initialize guest user properly: " + ume.getMessage() );
+                    checked = true;
                     return;
                 }
                 policy.setEnabled( true );
             }
 
-            try
+            if ( guest != null )
             {
-                roleManager.assignRole( config.getString( UserConfigurationKeys.DEFAULT_GUEST ), guest.getUsername() );
-            }
-            catch ( RoleManagerException rpe )
-            {
-                violations.add( "unable to initialize guest user properly: " + rpe.getMessage() );
-            }
 
+                try
+                {
+                    roleManager.assignRole( config.getString( UserConfigurationKeys.DEFAULT_GUEST ),
+                                            guest.getUsername() );
+                }
+                catch ( RoleManagerException rpe )
+                {
+                    violations.add( "unable to initialize guest user properly: " + rpe.getMessage() );
+                }
+            }
+            else
+            {
+                violations.add( "cannot find neither create guest user" );
+            }
             checked = true;
         }
     }
