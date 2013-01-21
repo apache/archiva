@@ -62,7 +62,7 @@ public class RedbackRuntimeConfiguration
      * flag to know if redback will use a cache to prevent
      * searching users already found.
      */
-    private boolean useUsersCache = false;
+    private boolean useUsersCache = true;
 
     private CacheConfiguration usersCacheConfiguration;
 
