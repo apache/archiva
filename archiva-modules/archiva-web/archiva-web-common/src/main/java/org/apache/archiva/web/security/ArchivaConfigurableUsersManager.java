@@ -42,7 +42,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service("userManager#archiva")
+@Service( "userManager#archiva" )
 public class ArchivaConfigurableUsersManager
     extends ConfigurableUserManager
 {
@@ -58,8 +58,10 @@ public class ArchivaConfigurableUsersManager
     private List<UserManagerListener> listeners = new ArrayList<UserManagerListener>();
 
     @Inject
-    @Named(value = "cache#users")
-    private Cache<String,User> usersCache;
+    @Named( value = "cache#users" )
+    private Cache<String, User> usersCache;
+
+    private boolean useUsersCache;
 
     @Override
     public void initialize()
@@ -77,6 +79,8 @@ public class ArchivaConfigurableUsersManager
                 setUserManagerImpl( userManagerImpl );
                 userManagerPerId.put( id, userManagerImpl );
             }
+
+            this.useUsersCache = redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().isUseUsersCache();
         }
         catch ( RepositoryAdminException e )
         {
@@ -88,15 +92,7 @@ public class ArchivaConfigurableUsersManager
 
     protected boolean useUsersCache()
     {
-        try
-        {
-            return redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().isUseUsersCache();
-        }
-        catch ( RepositoryAdminException e )
-        {
-            log.warn( "skip fail to get RedbackRuntimeConfiguration: {}, use false", e.getMessage(), e );
-            return false;
-        }
+        return this.useUsersCache;
     }
 
     @Override
