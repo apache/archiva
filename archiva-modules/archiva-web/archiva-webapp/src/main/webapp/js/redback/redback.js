@@ -43,6 +43,7 @@ define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
     $.ajax("restServices/redbackServices/loginService/isLogged", {
       type: "GET",
       success: function(data) {
+        $.log("isLogged:"+data);
         var user = data ? mapUser(data):null;
         window.user=user;
         if(user){
@@ -53,6 +54,16 @@ define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
           successFn(user ? user:null);
         }
         if(!user){
+          if(notLoggedFn){
+            notLoggedFn();
+          }
+        }
+      },
+      statusCode: {
+        204: function() {
+          if (successFn){
+            successFn(null);
+          }
           if(notLoggedFn){
             notLoggedFn();
           }
