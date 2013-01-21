@@ -124,7 +124,7 @@ public class LdapUserManager
             return null;
         }
 
-        if ( GUEST_USERNAME.equals( user.getUsername() ) )
+        if ( isReadOnly() && GUEST_USERNAME.equals( user.getUsername() ) )
         {
             guestUser = user;
             return guestUser;

@@ -290,7 +290,7 @@ public class DefaultLdapController
         }
         if ( user.getUsername().equals( UserManager.GUEST_USERNAME ) )
         {
-            log.debug( "skip user '{}' creation" );
+            log.warn( "skip user '{}' creation" );
             //We don't store guest
             return;
         }
