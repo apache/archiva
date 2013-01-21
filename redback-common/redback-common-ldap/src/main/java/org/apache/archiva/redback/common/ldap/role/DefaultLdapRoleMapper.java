@@ -57,7 +57,7 @@ import java.util.Set;
  * @author Olivier Lamy
  * @since 2.1
  */
-@Service( "ldapRoleMapper#default" )
+@Service("ldapRoleMapper#default")
 public class DefaultLdapRoleMapper
     implements LdapRoleMapper
 {
@@ -68,7 +68,7 @@ public class DefaultLdapRoleMapper
     private LdapConnectionFactory ldapConnectionFactory;
 
     @Inject
-    @Named( value = "userConfiguration#default" )
+    @Named(value = "userConfiguration#default")
     private UserConfiguration userConf;
 
     //---------------------------
@@ -412,6 +412,13 @@ public class DefaultLdapRoleMapper
                 for ( String role : rolesPerGroup )
                 {
                     roles.add( role );
+                }
+            }
+            else
+            {
+                if ( this.useDefaultRoleName )
+                {
+                    roles.add( group );
                 }
             }
         }
@@ -798,7 +805,6 @@ public class DefaultLdapRoleMapper
         }
         return null;
     }
-
 
 
     public String getUserIdAttribute()
