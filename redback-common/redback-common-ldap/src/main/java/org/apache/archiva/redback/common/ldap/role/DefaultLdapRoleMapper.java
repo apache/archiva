@@ -57,7 +57,7 @@ import java.util.Set;
  * @author Olivier Lamy
  * @since 2.1
  */
-@Service("ldapRoleMapper#default")
+@Service( "ldapRoleMapper#default" )
 public class DefaultLdapRoleMapper
     implements LdapRoleMapper
 {
@@ -68,7 +68,7 @@ public class DefaultLdapRoleMapper
     private LdapConnectionFactory ldapConnectionFactory;
 
     @Inject
-    @Named(value = "userConfiguration#default")
+    @Named( value = "userConfiguration#default" )
     private UserConfiguration userConf;
 
     //---------------------------
@@ -82,6 +82,12 @@ public class DefaultLdapRoleMapper
     private String baseDn;
 
     private boolean useDefaultRoleName = false;
+
+    /**
+     * possible to user cn=beer or uid=beer or sn=beer etc
+     * so make it configurable
+     */
+    private String userIdAttribute = "uid";
 
     @PostConstruct
     public void initialize()
@@ -99,6 +105,8 @@ public class DefaultLdapRoleMapper
 
         this.useDefaultRoleName =
             userConf.getBoolean( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME, this.useDefaultRoleName );
+
+        this.userIdAttribute = userConf.getString( UserConfigurationKeys.LDAP_USER_ID_ATTRIBUTE, this.userIdAttribute );
     }
 
     public String getLdapGroup( String role )
@@ -330,8 +338,8 @@ public class DefaultLdapRoleMapper
 
             String filter =
                 new StringBuilder().append( "(&" ).append( "(objectClass=" + getLdapGroupClass() + ")" ).append(
-                    "(uniquemember=" ).append( "uid=" + username + "," + this.getBaseDn() ).append( ")" ).append(
-                    ")" ).toString();
+                    "(uniquemember=" ).append( this.userIdAttribute + "=" + username + "," + this.getBaseDn() ).append(
+                    ")" ).append( ")" ).toString();
 
             log.debug( "filter: {}", filter );
 
@@ -516,7 +524,7 @@ public class DefaultLdapRoleMapper
         // attribute mandatory when created a group so add admin as default member
         // TODO make this default configurable
         BasicAttribute basicAttribute = new BasicAttribute( "uniquemember" );
-        basicAttribute.add( "uid=admin," + getBaseDn() );
+        basicAttribute.add( this.userIdAttribute + "=admin," + getBaseDn() );
         attributes.put( basicAttribute );
 
         try
@@ -576,13 +584,13 @@ public class DefaultLdapRoleMapper
                 if ( attribute == null )
                 {
                     BasicAttribute basicAttribute = new BasicAttribute( "uniquemember" );
-                    basicAttribute.add( "uid=" + username + "," + getGroupsDn() );
+                    basicAttribute.add( this.userIdAttribute + "=" + username + "," + getGroupsDn() );
                     context.modifyAttributes( "cn=" + groupName + "," + getGroupsDn(), new ModificationItem[]{
                         new ModificationItem( DirContext.ADD_ATTRIBUTE, basicAttribute ) } );
                 }
                 else
                 {
-                    attribute.add( "uid=" + username + "," + getGroupsDn() );
+                    attribute.add( this.userIdAttribute + "=" + username + "," + getGroupsDn() );
                     context.modifyAttributes( "cn=" + groupName + "," + getGroupsDn(), new ModificationItem[]{
                         new ModificationItem( DirContext.REPLACE_ATTRIBUTE, attribute ) } );
                 }
@@ -647,7 +655,7 @@ public class DefaultLdapRoleMapper
                 if ( attribute != null )
                 {
                     BasicAttribute basicAttribute = new BasicAttribute( "uniquemember" );
-                    basicAttribute.add( "uid=" + username + "," + getGroupsDn() );
+                    basicAttribute.add( this.userIdAttribute + "=" + username + "," + getGroupsDn() );
                     context.modifyAttributes( "cn=" + groupName + "," + getGroupsDn(), new ModificationItem[]{
                         new ModificationItem( DirContext.REMOVE_ATTRIBUTE, basicAttribute ) } );
                 }
@@ -789,5 +797,17 @@ public class DefaultLdapRoleMapper
             }
         }
         return null;
+    }
+
+
+
+    public String getUserIdAttribute()
+    {
+        return userIdAttribute;
+    }
+
+    public void setUserIdAttribute( String userIdAttribute )
+    {
+        this.userIdAttribute = userIdAttribute;
     }
 }

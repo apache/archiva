@@ -52,17 +52,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_CLASS )
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class LdapRbacManagerTest
     extends AbstractRbacManagerTestCase
 {
 
     @Inject
-    @Named( value = "rbacManager#ldap" )
+    @Named(value = "rbacManager#ldap")
     LdapRbacManager rbacManager;
 
     @Inject
-    @Named( value = "apacheDS#test" )
+    @Named(value = "apacheDS#test")
     private ApacheDs apacheDs;
 
     private String suffix, groupSuffix;

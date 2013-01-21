@@ -146,4 +146,6 @@ public interface LdapRoleMapper
     void removeRole( String roleName, DirContext context )
         throws MappingException;
 
+    String getUserIdAttribute();
+
 }
