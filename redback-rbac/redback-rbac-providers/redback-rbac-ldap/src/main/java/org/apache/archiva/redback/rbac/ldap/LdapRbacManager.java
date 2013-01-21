@@ -982,22 +982,46 @@ public class LdapRbacManager
             closeContext( context );
             closeLdapConnection( ldapConnection );
         }
-
-        //this.rbacImpl.saveUserAssignment( userAssignment );
-
-        //return userAssignment;
     }
 
     public boolean userAssignmentExists( String principal )
     {
-        // TODO here
-        return this.rbacImpl.userAssignmentExists( principal );
+        LdapConnection ldapConnection = null;
+        DirContext context = null;
+        try
+        {
+            ldapConnection = ldapConnectionFactory.getConnection();
+            context = ldapConnection.getDirContext();
+            List<String> roles = ldapRoleMapper.getRoles( principal, context );
+            if ( roles == null || roles.isEmpty() )
+            {
+                return false;
+            }
+            return true;
+        }
+        catch ( LdapException e )
+        {
+            log.warn( "fail to call userAssignmentExists: {}", e.getMessage() );
+        }
+        catch ( MappingException e )
+        {
+            log.warn( "fail to call userAssignmentExists: {}", e.getMessage() );
+        }
+        finally
+        {
+            closeContext( context );
+            closeLdapConnection( ldapConnection );
+        }
+        return false;
     }
 
     public boolean userAssignmentExists( UserAssignment assignment )
     {
-        // TODO here
-        return this.rbacImpl.userAssignmentExists( assignment );
+        if ( assignment == null )
+        {
+            return false;
+        }
+        return this.userAssignmentExists( assignment.getPrincipal() );
     }
 
     public RBACManager getRbacImpl()
