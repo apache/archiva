@@ -97,7 +97,7 @@ public class GuestUserEnvironmentCheck
 
                 try
                 {
-                    roleManager.assignRole( config.getString( UserConfigurationKeys.DEFAULT_GUEST ),
+                    roleManager.assignRole( config.getString( UserConfigurationKeys.DEFAULT_GUEST_ROLE, "Guest" ),
                                             guest.getUsername() );
                 }
                 catch ( RoleManagerException rpe )
