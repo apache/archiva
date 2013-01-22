@@ -414,13 +414,13 @@ public class DefaultLdapRoleMapper
                     roles.add( role );
                 }
             }
-            else
+            /*else
             {
                 if ( this.useDefaultRoleName )
                 {
                     roles.add( group );
                 }
-            }
+            }*/
         }
 
         return new ArrayList<String>( roles );
