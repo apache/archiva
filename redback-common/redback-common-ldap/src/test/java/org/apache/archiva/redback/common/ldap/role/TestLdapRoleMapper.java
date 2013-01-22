@@ -86,6 +86,9 @@ public class TestLdapRoleMapper
     @Inject
     LdapConnectionFactory ldapConnectionFactory;
 
+    List<String> roleNames =
+        Arrays.asList( "Archiva System Administrator", "Internal Repo Manager", "Internal Repo Observer" );
+
     LdapConnection ldapConnection;
 
     DirContext context;
@@ -339,7 +342,7 @@ public class TestLdapRoleMapper
     public void getRoles()
         throws Exception
     {
-        List<String> roles = ldapRoleMapper.getRoles( "admin", getDirContext() );
+        List<String> roles = ldapRoleMapper.getRoles( "admin", getDirContext(), roleNames );
 
         log.info( "roles for admin: {}", roles );
 
@@ -347,14 +350,14 @@ public class TestLdapRoleMapper
                                                                                        "Internal Repo Manager",
                                                                                        "Internal Repo Observer" );
 
-        roles = ldapRoleMapper.getRoles( "user.7", getDirContext() );
+        roles = ldapRoleMapper.getRoles( "user.7", getDirContext(), roleNames );
 
         log.info( "roles for user.7: {}", roles );
 
         Assertions.assertThat( roles ).isNotNull().isNotEmpty().hasSize( 2 ).contains( "Archiva System Administrator",
                                                                                        "Internal Repo Observer" );
 
-        roles = ldapRoleMapper.getRoles( "user.8", getDirContext() );
+        roles = ldapRoleMapper.getRoles( "user.8", getDirContext(), roleNames );
 
         log.info( "roles for user.8: {}", roles );
 

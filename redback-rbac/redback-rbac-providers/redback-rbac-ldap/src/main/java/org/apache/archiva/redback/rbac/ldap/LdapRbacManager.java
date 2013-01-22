@@ -370,6 +370,18 @@ public class LdapRbacManager
 
     }
 
+    protected List<String> getRealRoles()
+        throws RbacManagerException
+    {
+        List<Role> roles = this.rbacImpl.getAllRoles();
+        List<String> roleNames = new ArrayList<String>( roles.size() );
+        for ( Role role : roles )
+        {
+            roleNames.add( role.getName() );
+        }
+        return roleNames;
+    }
+
     public Collection<Role> getAssignedRoles( String username )
         throws RbacManagerException
     {
@@ -382,7 +394,7 @@ public class LdapRbacManager
 
             ldapConnection = ldapConnectionFactory.getConnection();
             context = ldapConnection.getDirContext();
-            List<String> roleNames = ldapRoleMapper.getRoles( username, context );
+            List<String> roleNames = ldapRoleMapper.getRoles( username, context, getRealRoles() );
 
             if ( roleNames.isEmpty() )
             {
@@ -531,7 +543,7 @@ public class LdapRbacManager
             context = ldapConnection.getDirContext();
 
             List<String> allRoles = ldapRoleMapper.getAllRoles( context );
-            final List<String> userRoles = ldapRoleMapper.getRoles( username, context );
+            final List<String> userRoles = ldapRoleMapper.getRoles( username, context, getRealRoles() );
 
             List<Role> unassignedRoles = new ArrayList<Role>();
 
@@ -568,7 +580,7 @@ public class LdapRbacManager
         {
             ldapConnection = ldapConnectionFactory.getConnection();
             context = ldapConnection.getDirContext();
-            List<String> roles = ldapRoleMapper.getRoles( username, context );
+            List<String> roles = ldapRoleMapper.getRoles( username, context, getRealRoles() );
 
             return new UserAssignmentImpl( username, roles );
         }
@@ -938,7 +950,8 @@ public class LdapRbacManager
             context = ldapConnection.getDirContext();
             List<String> allRoles = ldapRoleMapper.getAllRoles( context );
 
-            List<String> currentUserRoles = ldapRoleMapper.getRoles( userAssignment.getPrincipal(), context );
+            List<String> currentUserRoles =
+                ldapRoleMapper.getRoles( userAssignment.getPrincipal(), context, getRealRoles() );
 
             for ( String role : userAssignment.getRoleNames() )
             {
@@ -992,12 +1005,16 @@ public class LdapRbacManager
         {
             ldapConnection = ldapConnectionFactory.getConnection();
             context = ldapConnection.getDirContext();
-            List<String> roles = ldapRoleMapper.getRoles( principal, context );
+            List<String> roles = ldapRoleMapper.getRoles( principal, context, getRealRoles() );
             if ( roles == null || roles.isEmpty() )
             {
                 return false;
             }
             return true;
+        }
+        catch ( RbacManagerException e )
+        {
+            log.warn( "fail to call userAssignmentExists: {}", e.getMessage() );
         }
         catch ( LdapException e )
         {

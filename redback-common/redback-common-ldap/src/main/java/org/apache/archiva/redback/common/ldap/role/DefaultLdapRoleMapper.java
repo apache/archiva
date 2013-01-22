@@ -57,7 +57,7 @@ import java.util.Set;
  * @author Olivier Lamy
  * @since 2.1
  */
-@Service("ldapRoleMapper#default")
+@Service( "ldapRoleMapper#default" )
 public class DefaultLdapRoleMapper
     implements LdapRoleMapper
 {
@@ -68,7 +68,7 @@ public class DefaultLdapRoleMapper
     private LdapConnectionFactory ldapConnectionFactory;
 
     @Inject
-    @Named(value = "userConfiguration#default")
+    @Named( value = "userConfiguration#default" )
     private UserConfiguration userConf;
 
     //---------------------------
@@ -395,7 +395,7 @@ public class DefaultLdapRoleMapper
         }
     }
 
-    public List<String> getRoles( String username, DirContext context )
+    public List<String> getRoles( String username, DirContext context, Collection<String> realRoles )
         throws MappingException
     {
         List<String> groups = getGroups( username, context );
@@ -409,18 +409,15 @@ public class DefaultLdapRoleMapper
             Collection<String> rolesPerGroup = rolesMapping.get( group );
             if ( rolesPerGroup != null )
             {
-                for ( String role : rolesPerGroup )
-                {
-                    roles.add( role );
-                }
+                roles.addAll( rolesPerGroup );
             }
-            /*else
+            else
             {
-                if ( this.useDefaultRoleName )
+                if ( this.useDefaultRoleName && realRoles != null && realRoles.contains( group ) )
                 {
                     roles.add( group );
                 }
-            }*/
+            }
         }
 
         return new ArrayList<String>( roles );

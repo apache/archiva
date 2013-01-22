@@ -86,7 +86,7 @@ public interface LdapRoleMapper
     List<String> getGroups( String username, DirContext context )
         throws MappingException;
 
-    List<String> getRoles( String username, DirContext context )
+    List<String> getRoles( String username, DirContext context, Collection<String> realRoles )
         throws MappingException;
 
     /**
