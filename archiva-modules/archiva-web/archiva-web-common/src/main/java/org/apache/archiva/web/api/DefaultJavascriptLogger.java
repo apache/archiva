@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "javascriptLogger#default" )
+@Service("javascriptLogger#default")
 public class DefaultJavascriptLogger
     implements JavascriptLogger
 {
@@ -37,7 +37,10 @@ public class DefaultJavascriptLogger
     {
         Logger toUse =
             javascriptLog.getLoggerName() == null ? logger : LoggerFactory.getLogger( javascriptLog.getLoggerName() );
-
+        if ( javascriptLog.getMessage() == null )
+        {
+            return Boolean.TRUE;
+        }
         toUse.trace( javascriptLog.getMessage() );
         return Boolean.TRUE;
     }
@@ -46,6 +49,11 @@ public class DefaultJavascriptLogger
     {
         Logger toUse =
             javascriptLog.getLoggerName() == null ? logger : LoggerFactory.getLogger( javascriptLog.getLoggerName() );
+
+        if ( javascriptLog.getMessage() == null )
+        {
+            return Boolean.TRUE;
+        }
 
         toUse.debug( javascriptLog.getMessage() );
         return Boolean.TRUE;
@@ -56,6 +64,11 @@ public class DefaultJavascriptLogger
         Logger toUse =
             javascriptLog.getLoggerName() == null ? logger : LoggerFactory.getLogger( javascriptLog.getLoggerName() );
 
+        if ( javascriptLog.getMessage() == null )
+        {
+            return Boolean.TRUE;
+        }
+
         toUse.info( javascriptLog.getMessage() );
         return Boolean.TRUE;
     }
@@ -65,6 +78,11 @@ public class DefaultJavascriptLogger
         Logger toUse =
             javascriptLog.getLoggerName() == null ? logger : LoggerFactory.getLogger( javascriptLog.getLoggerName() );
 
+        if ( javascriptLog.getMessage() == null )
+        {
+            return Boolean.TRUE;
+        }
+
         toUse.warn( javascriptLog.getMessage() );
         return Boolean.TRUE;
     }
@@ -73,6 +91,11 @@ public class DefaultJavascriptLogger
     {
         Logger toUse =
             javascriptLog.getLoggerName() == null ? logger : LoggerFactory.getLogger( javascriptLog.getLoggerName() );
+
+        if ( javascriptLog.getMessage() == null )
+        {
+            return Boolean.TRUE;
+        }
 
         toUse.error( javascriptLog.getMessage() );
         return Boolean.TRUE;
