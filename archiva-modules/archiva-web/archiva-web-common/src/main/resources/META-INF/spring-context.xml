@@ -51,6 +51,7 @@
       <ref bean="runtimeInfoService#rest"/>
       <ref bean="dataValidatorService#rest"/>
       <ref bean="fileUploadService#rest"/>
+      <ref bean="javascriptLogger#default"/>
     </jaxrs:serviceBeans>
 
     <jaxrs:outInterceptors>

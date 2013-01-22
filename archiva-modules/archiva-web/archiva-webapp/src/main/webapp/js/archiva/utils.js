@@ -495,6 +495,53 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
     mainContent.find(".tooltip-doc" ).tooltip({html: true, trigger: 'hover'});
   }
 
+  //------------------------------------
+  // remote logging
+  //------------------------------------
+  JavascriptLog=function(loggerName,message){
+    this.loggerName=loggerName;
+    this.message=message;
+  }
+
+  remoteLogTrace=function(loggerName,message){
+    var javascriptLog=new JavascriptLog(loggerName,message);
+    remoteLog("trace",javascriptLog);
+  }
+
+  remoteLogDebug=function(loggerName,message){
+    var javascriptLog=new JavascriptLog(loggerName,message);
+    remoteLog("debug",javascriptLog);
+  }
+
+  remoteLogInfo=function(loggerName,message){
+    var javascriptLog=new JavascriptLog(loggerName,message);
+    remoteLog("info",javascriptLog);
+  }
+
+  remoteLogWarn=function(loggerName,message){
+    var javascriptLog=new JavascriptLog(loggerName,message);
+    remoteLog("warn",javascriptLog);
+  }
+
+  remoteLogError=function(loggerName,message){
+    var javascriptLog=new JavascriptLog(loggerName,message);
+    remoteLog("error",javascriptLog);
+  }
+
+  /**
+   *
+   * @param level trace/debug/info/warn/error
+   * @param javascriptLog
+   */
+  remoteLog=function(level,javascriptLog){
+    $.ajax("restServices/archivaUiServices/javascriptLogger/"+level,{
+            type: "PUT",
+            contentType: 'application/json',
+            data: $.toJSON(javascriptLog)
+           }
+    );
+  }
+
   //-----------------------------------------
   // extends jquery tmpl to support var def
   //-----------------------------------------
