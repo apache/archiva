@@ -50,6 +50,9 @@ function(jquery,sammy,utils) {
         removeMediumSpinnerImg("#main-content");
         clearUserMessages();
         displayRestError($.parseJSON(data.responseText));
+      },
+      204: function(){
+        remoteLogInfo(null,"found 204:"+this.url);
       }
     }
   });
