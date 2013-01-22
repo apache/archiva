@@ -32,7 +32,7 @@ public interface UserConfigurationKeys
 
     String DEFAULT_GUEST = "redback.default.guest";
 
-    String DEFAULT_GUEST_ROLE = "redback.default.role.guest";
+    String DEFAULT_GUEST_ROLE_ID = "redback.default.role.guest.id";
 
     String EMAIL_FROM_ADDRESS = "email.from.address";
 
