@@ -106,8 +106,11 @@ public class LdapRbacManager
     @Named( value = "cache#ldapRoles" )
     private Cache<String, Role> rolesCache;
 
-    private boolean writableLdap = false;
+    @Inject
+    @Named( value = "cache#userAssignments" )
+    private Cache<String, UserAssignment> userAssignmentsCache;
 
+    private boolean writableLdap = false;
 
     @PostConstruct
     public void initialize()
@@ -191,6 +194,7 @@ public class LdapRbacManager
             }
         }
         this.rolesCache.clear();
+        this.userAssignmentsCache.clear();
         this.rbacImpl.eraseDatabase();
     }
 
@@ -286,6 +290,7 @@ public class LdapRbacManager
             {
                 UserAssignment userAssignment = new UserAssignmentImpl( entry.getKey(), entry.getValue() );
                 userAssignments.add( userAssignment );
+                userAssignmentsCache.put( userAssignment.getPrincipal(), userAssignment );
             }
 
             return userAssignments;
@@ -575,6 +580,11 @@ public class LdapRbacManager
     public UserAssignment getUserAssignment( String username )
         throws RbacManagerException
     {
+        UserAssignment ua = userAssignmentsCache.get( username );
+        if ( ua != null )
+        {
+            return ua;
+        }
         LdapConnection ldapConnection = null;
         DirContext context = null;
         try
@@ -583,7 +593,11 @@ public class LdapRbacManager
             context = ldapConnection.getDirContext();
             List<String> roles = ldapRoleMapper.getRoles( username, context, getRealRoles() );
 
-            return new UserAssignmentImpl( username, roles );
+            ua = new UserAssignmentImpl( username, roles );
+
+            userAssignmentsCache.put( username, ua );
+
+            return ua;
         }
         catch ( MappingException e )
         {
@@ -778,12 +792,17 @@ public class LdapRbacManager
         throws RbacManagerException
     {
         // TODO ldap cannot or isWritable ldap ?
+        userAssignmentsCache.remove( username );
         this.rbacImpl.removeUserAssignment( username );
     }
 
     public void removeUserAssignment( UserAssignment userAssignment )
         throws RbacManagerException
     {
+        if ( userAssignment != null )
+        {
+            userAssignmentsCache.remove( userAssignment.getPrincipal() );
+        }
         // TODO ldap cannot or isWritable ldap ?
         this.rbacImpl.removeUserAssignment( userAssignment );
     }
@@ -977,6 +996,7 @@ public class LdapRbacManager
                 }
             }
 
+            userAssignmentsCache.put( userAssignment.getPrincipal(), userAssignment );
             return userAssignment;
         }
         catch ( UserManagerException e )
@@ -1000,6 +1020,10 @@ public class LdapRbacManager
 
     public boolean userAssignmentExists( String principal )
     {
+        if ( userAssignmentsCache.hasKey( principal ) )
+        {
+            return true;
+        }
         LdapConnection ldapConnection = null;
         DirContext context = null;
         try

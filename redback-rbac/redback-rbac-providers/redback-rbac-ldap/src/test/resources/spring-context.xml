@@ -108,15 +108,7 @@
     <property name="userPermissionsCache" ref="cache#userPermissions"/>
   </bean>
 
-  <bean name="cache#userAssignments" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
-      init-method="initialize">
-    <property name="diskPersistent" value="false"/>
-    <property name="eternal" value="false"/>
-    <property name="maxElementsInMemory" value="1000"/>
-    <property name="memoryEvictionPolicy" value="LRU"/>
-    <property name="name" value="userAssignments"/>
-    <property name="timeToIdleSeconds" value="300"/>
-    <property name="timeToLiveSeconds" value="600"/>
+  <bean name="cache#userAssignments" class="org.apache.archiva.redback.components.cache.impl.NoCacheCache">
   </bean>
 
   <bean name="cache#userPermissions" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
