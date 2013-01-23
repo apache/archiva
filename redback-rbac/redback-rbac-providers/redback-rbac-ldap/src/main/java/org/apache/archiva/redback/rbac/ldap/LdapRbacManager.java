@@ -190,6 +190,7 @@ public class LdapRbacManager
                 closeLdapConnection( ldapConnection );
             }
         }
+        this.rolesCache.clear();
         this.rbacImpl.eraseDatabase();
     }
 
