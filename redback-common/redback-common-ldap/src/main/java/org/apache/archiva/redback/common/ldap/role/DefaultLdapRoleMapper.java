@@ -813,4 +813,14 @@ public class DefaultLdapRoleMapper
     {
         this.userIdAttribute = userIdAttribute;
     }
+
+    public boolean isUseDefaultRoleName()
+    {
+        return useDefaultRoleName;
+    }
+
+    public void setUseDefaultRoleName( boolean useDefaultRoleName )
+    {
+        this.useDefaultRoleName = useDefaultRoleName;
+    }
 }

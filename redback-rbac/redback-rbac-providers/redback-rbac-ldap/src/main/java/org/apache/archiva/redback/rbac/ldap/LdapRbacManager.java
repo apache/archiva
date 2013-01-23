@@ -373,6 +373,25 @@ public class LdapRbacManager
                     }
                 }
             }
+            else if ( this.ldapRoleMapper.isUseDefaultRoleName() )
+            {
+                Role role = null;
+                try
+                {
+                    role = this.rbacImpl.getRole( group );
+                }
+                catch ( RbacObjectNotFoundException e )
+                {
+                    // if it's mapped role to a group it doesn't exist in jdo
+                }
+                role = ( role == null ) ? new RoleImpl( group ) : role;
+                if ( role != null )
+                {
+                    rolesCache.put( role.getName(), role );
+                    roles.add( role );
+                }
+
+            }
         }
         return roles;
 

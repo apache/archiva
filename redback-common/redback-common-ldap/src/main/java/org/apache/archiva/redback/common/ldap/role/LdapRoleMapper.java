@@ -148,4 +148,6 @@ public interface LdapRoleMapper
 
     String getUserIdAttribute();
 
+    boolean isUseDefaultRoleName();
+
 }
