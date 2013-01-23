@@ -364,9 +364,11 @@ public class LdapRbacManager
             {
                 for ( String roleName : roleNames )
                 {
-                    Role role = getRole( roleName );
+                    Role role = this.rbacImpl.getRole( roleName );
+                    role = ( role == null ) ? new RoleImpl( roleName ) : role;
                     if ( role != null )
                     {
+                        rolesCache.put( role.getName(), role );
                         roles.add( role );
                     }
                 }
