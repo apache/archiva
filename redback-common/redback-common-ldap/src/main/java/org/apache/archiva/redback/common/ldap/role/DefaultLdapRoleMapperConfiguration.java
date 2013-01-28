@@ -35,6 +35,7 @@ import java.util.Map;
 
 /**
  * @author Olivier Lamy
+ * @since 2.1
  */
 @Service( "ldapRoleMapperConfiguration#default" )
 public class DefaultLdapRoleMapperConfiguration
