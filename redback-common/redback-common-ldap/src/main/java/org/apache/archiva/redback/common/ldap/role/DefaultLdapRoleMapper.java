@@ -71,6 +71,10 @@ public class DefaultLdapRoleMapper
     @Named( value = "userConfiguration#default" )
     private UserConfiguration userConf;
 
+    @Inject
+    @Named( value = "ldapRoleMapperConfiguration#default" )
+    private LdapRoleMapperConfiguration ldapRoleMapperConfiguration;
+
     //---------------------------
     // fields
     //---------------------------
@@ -243,7 +247,7 @@ public class DefaultLdapRoleMapper
 
         Set<String> roles = new HashSet<String>( groups.size() );
 
-        Map<String, Collection<String>> mapping = getLdapGroupMappings();
+        Map<String, Collection<String>> mapping = ldapRoleMapperConfiguration.getLdapGroupMappings();
 
         for ( String group : groups )
         {
@@ -400,7 +404,7 @@ public class DefaultLdapRoleMapper
     {
         List<String> groups = getGroups( username, context );
 
-        Map<String, Collection<String>> rolesMapping = getLdapGroupMappings();
+        Map<String, Collection<String>> rolesMapping = ldapRoleMapperConfiguration.getLdapGroupMappings();
 
         Set<String> roles = new HashSet<String>( groups.size() );
 
@@ -448,44 +452,6 @@ public class DefaultLdapRoleMapper
         return this.ldapGroupClass;
     }
 
-    public void addLdapMapping( String role, String ldapGroup )
-    {
-        log.warn( "addLdapMapping not implemented" );
-    }
-
-    public void removeLdapMapping( String role )
-    {
-        log.warn( "removeLdapMapping not implemented" );
-    }
-
-    public void setLdapGroupMappings( Map<String, Collection<String>> mappings )
-        throws MappingException
-    {
-        log.warn( "setLdapGroupMappings not implemented" );
-    }
-
-    public Map<String, Collection<String>> getLdapGroupMappings()
-    {
-        Multimap<String, String> map = ArrayListMultimap.create();
-
-        Collection<String> keys = userConf.getKeys();
-
-        for ( String key : keys )
-        {
-            if ( key.startsWith( UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) )
-            {
-                String val = userConf.getString( key );
-                String[] roles = StringUtils.split( val, ',' );
-                for ( String role : roles )
-                {
-                    map.put( StringUtils.substringAfter( key, UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ),
-                             role );
-                }
-            }
-        }
-
-        return map.asMap();
-    }
 
     public boolean saveRole( String roleName, DirContext context )
         throws MappingException
@@ -697,7 +663,7 @@ public class DefaultLdapRoleMapper
         throws MappingException
     {
         //all mapped roles
-        Collection<String> groups = getLdapGroupMappings().keySet();
+        Collection<String> groups = ldapRoleMapperConfiguration.getLdapGroupMappings().keySet();
 
         try
         {
@@ -750,6 +716,10 @@ public class DefaultLdapRoleMapper
         }
     }
 
+    //------------------------------------
+    // Mapping part
+    //------------------------------------
+
     //---------------------------------
     // setters for unit tests
     //---------------------------------
@@ -790,8 +760,9 @@ public class DefaultLdapRoleMapper
     //-------------------
 
     protected String findGroupName( String role )
+        throws MappingException
     {
-        Map<String, Collection<String>> mapping = getLdapGroupMappings();
+        Map<String, Collection<String>> mapping = ldapRoleMapperConfiguration.getLdapGroupMappings();
 
         for ( Map.Entry<String, Collection<String>> entry : mapping.entrySet() )
         {

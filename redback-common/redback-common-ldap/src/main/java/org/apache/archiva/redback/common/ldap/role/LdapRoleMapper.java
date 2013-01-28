@@ -89,31 +89,7 @@ public interface LdapRoleMapper
     List<String> getRoles( String username, DirContext context, Collection<String> realRoles )
         throws MappingException;
 
-    /**
-     * add mapping redback role <-> ldap group
-     *
-     * @param role      redback role
-     * @param ldapGroup ldap group
-     */
-    void addLdapMapping( String role, String ldapGroup )
-        throws MappingException;
 
-    /**
-     * remove a mapping
-     *
-     * @param role redback role
-     */
-    void removeLdapMapping( String role )
-        throws MappingException;
-
-    /**
-     * @return Map of corresponding LDAP group (key) and Redback roles (value)
-     */
-    Map<String, Collection<String>> getLdapGroupMappings()
-        throws MappingException;
-
-    void setLdapGroupMappings( Map<String, Collection<String>> mappings )
-        throws MappingException;
 
     /**
      * will save a ldap group corresponding to the mapping.
