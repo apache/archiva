@@ -26,6 +26,7 @@ import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.common.ldap.connection.LdapException;
 import org.apache.archiva.redback.common.ldap.role.LdapRoleMapper;
+import org.apache.archiva.redback.common.ldap.role.LdapRoleMapperConfiguration;
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.configuration.UserConfigurationKeys;
@@ -101,6 +102,10 @@ public class LdapRbacManager
 
     @Inject
     private LdapController ldapController;
+
+    @Inject
+    @Named( value = "ldapRoleMapperConfiguration#default" )
+    private LdapRoleMapperConfiguration ldapRoleMapperConfiguration;
 
     @Inject
     @Named( value = "cache#ldapRoles" )
@@ -206,7 +211,7 @@ public class LdapRbacManager
     {
         try
         {
-            Collection<Collection<String>> roleNames = ldapRoleMapper.getLdapGroupMappings().values();
+            Collection<Collection<String>> roleNames = ldapRoleMapperConfiguration.getLdapGroupMappings().values();
 
             Set<Role> roles = new HashSet<Role>();
 
@@ -356,7 +361,7 @@ public class LdapRbacManager
         }
 
         List<Role> roles = new ArrayList<Role>( groups.size() );
-        Map<String, Collection<String>> mappedGroups = ldapRoleMapper.getLdapGroupMappings();
+        Map<String, Collection<String>> mappedGroups = ldapRoleMapperConfiguration.getLdapGroupMappings();
         for ( String group : groups )
         {
             Collection<String> roleNames = mappedGroups.get( group );
