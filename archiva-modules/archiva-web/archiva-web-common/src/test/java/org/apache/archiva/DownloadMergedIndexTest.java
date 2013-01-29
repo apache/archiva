@@ -32,6 +32,7 @@ import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.commons.io.FileUtils;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.apache.archiva.redback.rest.services.FakeCreateAdminService;
+import org.fest.assertions.api.Assertions;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -41,12 +42,13 @@ import org.junit.runner.RunWith;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 
 /**
  * @author Olivier Lamy
  */
-@RunWith( ArchivaBlockJUnit4ClassRunner.class )
+@RunWith(ArchivaBlockJUnit4ClassRunner.class)
 public class DownloadMergedIndexTest
     extends AbstractDownloadTest
 {
@@ -177,7 +179,7 @@ public class DownloadMergedIndexTest
         request.setGroupId( "org.apache.felix" );
 
         List<Artifact> artifacts = searchService.searchArtifacts( request );
-        assertFalse( artifacts.isEmpty() );
-        assertEquals( 1, artifacts.size() );
+        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 1 );
+
     }
 }

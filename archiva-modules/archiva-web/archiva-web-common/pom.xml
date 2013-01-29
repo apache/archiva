@@ -396,6 +396,11 @@
       <version>${tomcat7Version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.easytesting</groupId>
+      <artifactId>fest-assert-core</artifactId>
+      <scope>test</scope>
+    </dependency>
 
 
   </dependencies>
