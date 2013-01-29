@@ -1894,6 +1894,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
     this.resultViewModel=new ResultViewModel([]);
     basicSearch=function(){
       var queryTerm=this.searchRequest().queryTerms();
+      $.log("basicSearch:"+queryTerm);
       if ($.trim(queryTerm).length<1){
         var errorList=[{
           message: $.i18n.prop("search.artifact.search.form.terms.empty"),
@@ -1909,8 +1910,9 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
 
       self.selectedRepoIds=[];
       mainContent.find("#search-basic-repositories" )
-          .find(".chzn-choices li span").each(function(i,span){
-                      self.selectedRepoIds.push($(span).html());
+          .find(".select2-search-choice").each(function(i,span){
+                      $.log("find .select2-search-choice");
+                      self.selectedRepoIds.push($(span).find("div").html());
                       }
                     );
 
@@ -1940,8 +1942,8 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
 
       self.selectedRepoIds=[];
       mainContent.find("#search-basic-repositories" )
-          .find(".chzn-choices li span").each(function(i,span){
-                      self.selectedRepoIds.push($(span).html());
+          .find(".select2-search-choice").each(function(i,span){
+                      self.selectedRepoIds.push($(span).find("div").html());
                       }
                     );
 
@@ -2002,8 +2004,8 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
       } else {
         self.selectedRepoIds=[];
         mainContent.find("#search-basic-repositories" )
-            .find(".chzn-choices li span").each(function(i,span){
-                        self.selectedRepoIds.push($(span).html());
+            .find(".select2-search-choice").each(function(i,span){
+                        self.selectedRepoIds.push($(span ).find("div").html());
                         }
                       );
       }
