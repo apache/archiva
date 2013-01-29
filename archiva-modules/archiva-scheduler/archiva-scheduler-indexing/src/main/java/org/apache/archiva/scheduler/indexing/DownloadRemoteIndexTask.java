@@ -45,6 +45,9 @@ import org.apache.maven.wagon.events.TransferEvent;
 import org.apache.maven.wagon.events.TransferListener;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
+import org.apache.maven.wagon.shared.http4.AbstractHttpClientWagon;
+import org.apache.maven.wagon.shared.http4.HttpConfiguration;
+import org.apache.maven.wagon.shared.http4.HttpMethodConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,6 +143,16 @@ public class DownloadRemoteIndexTask
             // FIXME olamy having 2 config values
             wagon.setReadTimeout( timeoutInMilliseconds );
             wagon.setTimeout( timeoutInMilliseconds );
+
+            if ( wagon instanceof AbstractHttpClientWagon )
+            {
+                HttpConfiguration httpConfiguration = new HttpConfiguration();
+                HttpMethodConfiguration httpMethodConfiguration = new HttpMethodConfiguration();
+                httpMethodConfiguration.setUsePreemptive( true );
+                httpMethodConfiguration.setReadTimeout( timeoutInMilliseconds );
+                httpConfiguration.setGet( httpMethodConfiguration );
+                ( (AbstractHttpClientWagon) wagon ).setHttpConfiguration( httpConfiguration );
+            }
 
             wagon.addTransferListener( new DownloadListener() );
             ProxyInfo proxyInfo = null;
