@@ -226,7 +226,12 @@
               org.codehaus.plexus.util;version="[3,4)",
               org.springframework*;version="[3,4)",
               org.apache.commons.lang.time,
-              org.slf4j;resolution:=optional
+              org.slf4j;resolution:=optional,
+              javax.naming,
+              javax.naming.directory,
+              org.apache.archiva.redback.common.ldap,
+              org.apache.archiva.redback.common.ldap.connection,
+              org.apache.archiva.redback.common.ldap.role
             </Import-Package>
           </instructions>
         </configuration>
