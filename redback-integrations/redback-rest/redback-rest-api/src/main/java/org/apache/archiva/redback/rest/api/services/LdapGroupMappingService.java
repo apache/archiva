@@ -21,6 +21,7 @@ package org.apache.archiva.redback.rest.api.services;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.apache.archiva.redback.rest.api.model.LdapGroupMapping;
+import org.apache.archiva.redback.rest.api.model.StringList;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -44,7 +45,7 @@ public interface LdapGroupMappingService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_ADMINISTRATOR_ROLE )
-    String getLdapGroups()
+    StringList getLdapGroups()
         throws RedbackServiceException;
 
 

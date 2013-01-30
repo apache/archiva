@@ -40,6 +40,15 @@ public interface LdapRoleMapperConfiguration
         throws MappingException;
 
     /**
+     * update an existing mapping
+     * @param ldapGroup
+     * @param roles
+     * @throws MappingException
+     */
+    void updateLdapMapping( String ldapGroup, List<String> roles )
+        throws MappingException;
+
+    /**
      * remove a mapping
      *
      * @param group ldap group

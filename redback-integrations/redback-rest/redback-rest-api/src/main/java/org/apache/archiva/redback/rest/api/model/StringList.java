@@ -19,61 +19,37 @@ package org.apache.archiva.redback.rest.api.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * jaxrs fail to return List<String> so use this contains for rest services returning that
+ *
  * @author Olivier Lamy
  * @since 2.1
  */
-@XmlRootElement(name = "ldapGroupMapping")
-public class LdapGroupMapping
-    implements Serializable
+@XmlRootElement( name = "stringList" )
+public class StringList
 {
-    private String group;
+    private List<String> strings;
 
-    private Collection<String> roleNames;
-
-    public LdapGroupMapping()
+    public StringList()
     {
         // no op
     }
 
-    public LdapGroupMapping( String group, Collection<String> roleNames )
+    public StringList( List<String> strings )
     {
-        this.group = group;
-        this.roleNames = roleNames;
+        this.strings = strings;
     }
 
-    public String getGroup()
+    public List<String> getStrings()
     {
-        return group;
+        return strings == null ? new ArrayList<String>( 0 ) : strings;
     }
 
-    public void setGroup( String group )
+    public void setStrings( List<String> strings )
     {
-        this.group = group;
-    }
-
-    public Collection<String> getRoleNames()
-    {
-        return roleNames;
-    }
-
-    public void setRoleNames( Collection<String> roleNames )
-    {
-        this.roleNames = roleNames;
-    }
-
-    @Override
-    public String toString()
-    {
-        final StringBuilder sb = new StringBuilder();
-        sb.append( "LdapGroupMapping" );
-        sb.append( "{group='" ).append( group ).append( '\'' );
-        sb.append( ", roleNames=" ).append( roleNames );
-        sb.append( '}' );
-        return sb.toString();
+        this.strings = strings;
     }
 }

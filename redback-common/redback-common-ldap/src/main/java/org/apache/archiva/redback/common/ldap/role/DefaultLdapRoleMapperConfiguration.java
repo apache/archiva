@@ -38,7 +38,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 2.1
  */
-@Service("ldapRoleMapperConfiguration#default")
+@Service( "ldapRoleMapperConfiguration#default" )
 public class DefaultLdapRoleMapperConfiguration
     implements LdapRoleMapperConfiguration
 {
@@ -46,9 +46,8 @@ public class DefaultLdapRoleMapperConfiguration
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named(value = "userConfiguration#default")
+    @Named( value = "userConfiguration#default" )
     private UserConfiguration userConf;
-
 
     public void addLdapMapping( String ldapGroup, List<String> roles )
         throws MappingException
@@ -57,6 +56,12 @@ public class DefaultLdapRoleMapperConfiguration
     }
 
     public void removeLdapMapping( String group )
+    {
+        log.warn( "removeLdapMapping not implemented" );
+    }
+
+    public void updateLdapMapping( String ldapGroup, List<String> roles )
+        throws MappingException
     {
         log.warn( "removeLdapMapping not implemented" );
     }
