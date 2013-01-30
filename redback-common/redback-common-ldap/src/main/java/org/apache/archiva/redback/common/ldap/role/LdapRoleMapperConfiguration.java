@@ -21,6 +21,7 @@ package org.apache.archiva.redback.common.ldap.role;
 import org.apache.archiva.redback.common.ldap.MappingException;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -30,20 +31,20 @@ import java.util.Map;
 public interface LdapRoleMapperConfiguration
 {
     /**
-     * add mapping redback role <-> ldap group
+     * add mapping ldap group <-> redback roles
      *
-     * @param role      redback role
+     * @param roles     list of Role names
      * @param ldapGroup ldap group
      */
-    void addLdapMapping( String role, String ldapGroup )
+    void addLdapMapping( String ldapGroup, List<String> roles )
         throws MappingException;
 
     /**
      * remove a mapping
      *
-     * @param role redback role
+     * @param group ldap group
      */
-    void removeLdapMapping( String role )
+    void removeLdapMapping( String group )
         throws MappingException;
 
     /**

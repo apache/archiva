@@ -31,13 +31,14 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author Olivier Lamy
  * @since 2.1
  */
-@Service( "ldapRoleMapperConfiguration#default" )
+@Service("ldapRoleMapperConfiguration#default")
 public class DefaultLdapRoleMapperConfiguration
     implements LdapRoleMapperConfiguration
 {
@@ -45,15 +46,17 @@ public class DefaultLdapRoleMapperConfiguration
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "userConfiguration#default" )
+    @Named(value = "userConfiguration#default")
     private UserConfiguration userConf;
 
-    public void addLdapMapping( String role, String ldapGroup )
+
+    public void addLdapMapping( String ldapGroup, List<String> roles )
+        throws MappingException
     {
         log.warn( "addLdapMapping not implemented" );
     }
 
-    public void removeLdapMapping( String role )
+    public void removeLdapMapping( String group )
     {
         log.warn( "removeLdapMapping not implemented" );
     }
