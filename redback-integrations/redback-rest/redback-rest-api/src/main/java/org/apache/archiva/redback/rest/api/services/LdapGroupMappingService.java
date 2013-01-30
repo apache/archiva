@@ -22,7 +22,11 @@ import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.apache.archiva.redback.rest.api.model.LdapGroupMapping;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -33,10 +37,10 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 2.1
  */
-@Path( "/ldapService/" )
-public interface LdapService
+@Path( "/ldapGroupMappingService/" )
+public interface LdapGroupMappingService
 {
-    @Path( "groups" )
+    @Path( "ldapGroups" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_ADMINISTRATOR_ROLE )
@@ -44,7 +48,6 @@ public interface LdapService
         throws RedbackServiceException;
 
 
-    @Path( "groupsMapping" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = RedbackRoleConstants.USER_ADMINISTRATOR_ROLE )
@@ -52,5 +55,25 @@ public interface LdapService
         throws RedbackServiceException;
 
 
+    @PUT
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = RedbackRoleConstants.USER_ADMINISTRATOR_ROLE )
+    Boolean addLdapGroupMapping( LdapGroupMapping ldapGroupMapping )
+        throws RedbackServiceException;
+
+    @DELETE
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = RedbackRoleConstants.USER_ADMINISTRATOR_ROLE )
+    Boolean removeLdapGroupMapping( String group )
+        throws RedbackServiceException;
+
+    @POST
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( permissions = RedbackRoleConstants.USER_ADMINISTRATOR_ROLE )
+    Boolean updateLdapGroupMapping( LdapGroupMapping ldapGroupMapping )
+        throws RedbackServiceException;
 
 }
