@@ -62,6 +62,6 @@ public interface LdapRoleMapperConfiguration
     Map<String, Collection<String>> getLdapGroupMappings()
         throws MappingException;
 
-    void setLdapGroupMappings( Map<String, Collection<String>> mappings )
+    void setLdapGroupMappings( Map<String, List<String>> mappings )
         throws MappingException;
 }

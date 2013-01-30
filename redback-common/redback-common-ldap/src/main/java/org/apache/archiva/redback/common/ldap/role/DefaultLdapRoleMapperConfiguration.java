@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +46,8 @@ public class DefaultLdapRoleMapperConfiguration
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
+    private Map<String, List<String>> ldapMappings = new HashMap<String, List<String>>();
+
     @Inject
     @Named( value = "userConfiguration#default" )
     private UserConfiguration userConf;
@@ -52,24 +55,27 @@ public class DefaultLdapRoleMapperConfiguration
     public void addLdapMapping( String ldapGroup, List<String> roles )
         throws MappingException
     {
-        log.warn( "addLdapMapping not implemented" );
+        ldapMappings.put( ldapGroup, roles );
+        log.warn( "addLdapMapping implemented but only in memory save" );
     }
 
     public void removeLdapMapping( String group )
     {
-        log.warn( "removeLdapMapping not implemented" );
+        ldapMappings.remove( group );
     }
 
     public void updateLdapMapping( String ldapGroup, List<String> roles )
         throws MappingException
     {
-        log.warn( "removeLdapMapping not implemented" );
+        ldapMappings.put( ldapGroup, roles );
+        log.warn( "updateLdapMapping implemented but only in memory save" );
     }
 
-    public void setLdapGroupMappings( Map<String, Collection<String>> mappings )
+    public void setLdapGroupMappings( Map<String, List<String>> mappings )
         throws MappingException
     {
-        log.warn( "setLdapGroupMappings not implemented" );
+        log.warn( "setLdapGroupMappings implemented but only in memory save" );
+        this.ldapMappings = mappings;
     }
 
     public Map<String, Collection<String>> getLdapGroupMappings()
@@ -92,6 +98,12 @@ public class DefaultLdapRoleMapperConfiguration
             }
         }
 
-        return map.asMap();
+        for ( Map.Entry<String, List<String>> entry : this.ldapMappings.entrySet() )
+        {
+            map.putAll( entry.getKey(), entry.getValue() );
+        }
+
+        Map<String, Collection<String>> mappings = map.asMap();
+        return mappings;
     }
 }
