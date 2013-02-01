@@ -19,6 +19,7 @@ package org.apache.archiva.redback.rest.services;
  */
 
 import org.apache.archiva.redback.components.apacheds.ApacheDs;
+import org.apache.archiva.redback.rest.api.model.LdapGroupMapping;
 import org.apache.archiva.redback.rest.api.services.LdapGroupMappingService;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.fest.assertions.Assertions;
@@ -100,6 +101,24 @@ public class LdapGroupMappingServiceTest
     public void stopServer()
         throws Exception
     {
+
+
+        // cleanup ldap entries
+        InitialDirContext context = apacheDs.getAdminContext();
+
+
+
+        for ( String group : this.groups )
+        {
+            context.unbind( createGroupDn( group ) );
+        }
+
+        context.unbind( suffix );
+
+        context.close();
+
+        apacheDs.stopServer();
+
         super.stopServer();
     }
 
@@ -147,15 +166,32 @@ public class LdapGroupMappingServiceTest
         {
             LdapGroupMappingService service = getLdapGroupMappingService( authorizationHeader );
 
-            List<String> groups = service.getLdapGroups().getStrings();
+            List<String> allGroups = service.getLdapGroups().getStrings();
 
-            Assertions.assertThat( groups ).isNotNull().isNotEmpty().hasSize( 3 ).contains( groups.toArray() );
+            Assertions.assertThat( allGroups ).isNotNull().isNotEmpty().hasSize( 3 ).contains( groups.toArray() );
         }
         catch ( Exception e )
         {
             log.error( e.getMessage(), e );
             throw e;
         }
+    }
 
+    @Test
+    public void getLdapGroupMappings() throws Exception
+    {
+        try
+        {
+            LdapGroupMappingService service = getLdapGroupMappingService( authorizationHeader );
+
+            List<LdapGroupMapping> mappings = service.getLdapGroupMappings();
+
+            Assertions.assertThat( mappings ).isNotNull().isNotEmpty().hasSize( 3 );
+        }
+        catch ( Exception e )
+        {
+            log.error( e.getMessage(), e );
+            throw e;
+        }
     }
 }
