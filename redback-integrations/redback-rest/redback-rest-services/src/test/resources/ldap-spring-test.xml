@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd" default-lazy-init="true">
+
+  <context:property-placeholder system-properties-mode="OVERRIDE"/>
+
+
+  <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
+
+  <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry"
+        init-method="initialize">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+          <system/>
+          <properties fileName="${basedir}/src/test/security.properties" config-optional="true"
+                      config-at="org.apache.archiva.redback"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
+  <bean name="apacheDS#test" class="org.apache.archiva.redback.components.apacheds.DefaultApacheDs"
+        scope="prototype">
+    <property name="basedir" value="${basedir}/target/apacheds"/>
+    <property name="port" value="${ldapPort}"/>
+    <property name="enableNetworking" value="true"/>
+    <property name="password" value="secret"/>
+  </bean>
+
+  <bean name="ldapConnectionFactory#configurable"
+        class="org.apache.archiva.redback.common.ldap.connection.ConfigurableLdapConnectionFactory">
+    <property name="hostname" value="localhost"/>
+    <property name="port" value="${ldapPort}"/>
+    <!--property name="baseDn" value="dc=redback,dc=plexus,dc=codehaus,dc=org"/-->
+    <property name="baseDn" value="dc=archiva,dc=apache,dc=org"/>
+    <property name="contextFactory" value="com.sun.jndi.ldap.LdapCtxFactory"/>
+    <property name="password" value="secret"/>
+    <property name="bindDn" value="uid=admin,ou=system"/>
+    <property name="userConf" ref="userConfiguration#default"/>
+  </bean>
+
+  <alias name="ldapRoleMapper#test" alias="ldapRoleMapper#default"/>
+
+  <bean name="ldapRoleMapper#test" class="org.apache.archiva.redback.common.ldap.role.DefaultLdapRoleMapper">
+    <property name="groupsDn" value="dc=archiva,dc=apache,dc=org"/>
+    <property name="ldapGroupClass" value="groupOfUniqueNames"/>
+    <property name="baseDn" value="ou=People,dc=archiva,dc=apache,dc=org"/>
+    <property name="ldapConnectionFactory" ref="ldapConnectionFactory#configurable"/>
+    <property name="userConf" ref="userConfiguration#default"/>
+  </bean>
+
+</beans>
