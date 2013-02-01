@@ -30,6 +30,7 @@ import org.apache.archiva.redback.rest.api.services.LdapGroupMappingService;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -44,12 +45,14 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 2.1
  */
+@Service("ldapGroupMappingService#rest")
 public class DefaultLdapGroupMappingService
     implements LdapGroupMappingService
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
+    @Named(value = "ldapRoleMapper#default")
     private LdapRoleMapper ldapRoleMapper;
 
     @Inject
@@ -69,6 +72,7 @@ public class DefaultLdapGroupMappingService
         try
         {
             ldapConnection = ldapConnectionFactory.getConnection();
+            context = ldapConnection.getDirContext();
             return new StringList( ldapRoleMapper.getAllGroups( context ) );
         }
         catch ( LdapException e )

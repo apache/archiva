@@ -44,14 +44,14 @@ public interface LdapGroupMappingService
     @Path( "ldapGroups" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = RedbackRoleConstants.USER_ADMINISTRATOR_ROLE )
+    @RedbackAuthorization( permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION )
     StringList getLdapGroups()
         throws RedbackServiceException;
 
 
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = RedbackRoleConstants.USER_ADMINISTRATOR_ROLE )
+    @RedbackAuthorization( permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION )
     List<LdapGroupMapping> getLdapGroupMappings()
         throws RedbackServiceException;
 
@@ -59,21 +59,21 @@ public interface LdapGroupMappingService
     @PUT
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = RedbackRoleConstants.USER_ADMINISTRATOR_ROLE )
+    @RedbackAuthorization( permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION )
     Boolean addLdapGroupMapping( LdapGroupMapping ldapGroupMapping )
         throws RedbackServiceException;
 
     @DELETE
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = RedbackRoleConstants.USER_ADMINISTRATOR_ROLE )
+    @RedbackAuthorization( permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION )
     Boolean removeLdapGroupMapping( String group )
         throws RedbackServiceException;
 
     @POST
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = RedbackRoleConstants.USER_ADMINISTRATOR_ROLE )
+    @RedbackAuthorization( permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION )
     Boolean updateLdapGroupMapping( LdapGroupMapping ldapGroupMapping )
         throws RedbackServiceException;
 

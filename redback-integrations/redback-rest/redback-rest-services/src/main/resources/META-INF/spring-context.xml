@@ -54,6 +54,7 @@
       <ref bean="roleManagementService#rest"/>
       <ref bean="utilServices#rest"/>
       <ref bean="passwordService#rest"/>
+      <ref bean="ldapGroupMappingService#rest"/>
     </jaxrs:serviceBeans>
     <jaxrs:outInterceptors>
       <ref bean="threadLocalUserCleaner#rest"/>

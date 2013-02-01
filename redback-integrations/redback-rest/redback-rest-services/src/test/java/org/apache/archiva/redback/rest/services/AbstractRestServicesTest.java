@@ -22,6 +22,7 @@ package org.apache.archiva.redback.rest.services;
 import junit.framework.TestCase;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.apache.archiva.redback.rest.api.model.User;
+import org.apache.archiva.redback.rest.api.services.LdapGroupMappingService;
 import org.apache.archiva.redback.rest.api.services.LoginService;
 import org.apache.archiva.redback.rest.api.services.RoleManagementService;
 import org.apache.archiva.redback.rest.api.services.UserService;
@@ -48,7 +49,7 @@ import java.util.Collections;
 /**
  * @author Olivier Lamy
  */
-@RunWith( JUnit4.class )
+@RunWith(JUnit4.class)
 public abstract class AbstractRestServicesTest
     extends TestCase
 {
@@ -149,6 +150,7 @@ public abstract class AbstractRestServicesTest
     {
         return getUserService( null );
     }
+
     // START SNIPPET: get-user-service
     protected UserService getUserService( String authzHeader )
     {
@@ -210,5 +212,28 @@ public abstract class AbstractRestServicesTest
 
         return service;
     }
+
+
+    protected LdapGroupMappingService getLdapGroupMappingService( String authzHeader )
+    {
+        LdapGroupMappingService service =
+            JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/redbackServices/",
+                                       LdapGroupMappingService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+
+        // for debuging purpose
+        WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000 );
+
+        if ( authzHeader != null )
+        {
+            WebClient.client( service ).header( "Authorization", authzHeader );
+        }
+
+        WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
+        WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
+
+        return service;
+    }
+
 
 }
