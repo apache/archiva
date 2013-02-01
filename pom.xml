@@ -74,7 +74,7 @@
     <redback.spring-utils.version>2.0</redback.spring-utils.version>
     <redback.taskqueue.version>2.0</redback.taskqueue.version>
     <slf4j.version>1.7.2</slf4j.version>
-    <log4j.version>2.0-beta3</log4j.version>
+    <log4j.version>2.0-beta4</log4j.version>
 
     <spring.version>3.2.1.RELEASE</spring.version>
 
