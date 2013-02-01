@@ -76,4 +76,32 @@ public class LdapGroupMapping
         sb.append( '}' );
         return sb.toString();
     }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        LdapGroupMapping that = (LdapGroupMapping) o;
+
+        if ( !group.equals( that.group ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return group.hashCode();
+    }
 }

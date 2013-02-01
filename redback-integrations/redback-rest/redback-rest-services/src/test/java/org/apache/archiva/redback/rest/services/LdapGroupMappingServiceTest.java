@@ -22,7 +22,9 @@ import org.apache.archiva.redback.components.apacheds.ApacheDs;
 import org.apache.archiva.redback.rest.api.model.LdapGroupMapping;
 import org.apache.archiva.redback.rest.api.services.LdapGroupMappingService;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
+import org.apache.commons.lang.StringUtils;
 import org.fest.assertions.Assertions;
+import org.fest.assertions.Condition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
@@ -102,11 +104,8 @@ public class LdapGroupMappingServiceTest
         throws Exception
     {
 
-
         // cleanup ldap entries
         InitialDirContext context = apacheDs.getAdminContext();
-
-
 
         for ( String group : this.groups )
         {
@@ -178,13 +177,68 @@ public class LdapGroupMappingServiceTest
     }
 
     @Test
-    public void getLdapGroupMappings() throws Exception
+    public void getLdapGroupMappings()
+        throws Exception
     {
         try
         {
             LdapGroupMappingService service = getLdapGroupMappingService( authorizationHeader );
 
             List<LdapGroupMapping> mappings = service.getLdapGroupMappings();
+
+            Assertions.assertThat( mappings ).isNotNull().isNotEmpty().hasSize( 3 );
+        }
+        catch ( Exception e )
+        {
+            log.error( e.getMessage(), e );
+            throw e;
+        }
+    }
+
+    @Test
+    public void addThenRemove()
+        throws Exception
+    {
+        try
+        {
+            LdapGroupMappingService service = getLdapGroupMappingService( authorizationHeader );
+
+            List<LdapGroupMapping> mappings = service.getLdapGroupMappings();
+
+            Assertions.assertThat( mappings ).isNotNull().isNotEmpty().hasSize( 3 );
+
+            LdapGroupMapping ldapGroupMapping = new LdapGroupMapping( "ldap group", Arrays.asList( "redback role" ) );
+
+            service.addLdapGroupMapping( ldapGroupMapping );
+
+            mappings = service.getLdapGroupMappings();
+
+            Assertions.assertThat( mappings ).isNotNull().isNotEmpty().hasSize( 4 ).satisfies( new Condition<List<?>>()
+            {
+                @Override
+                public boolean matches( List<?> objects )
+                {
+                    boolean res = false;
+
+                    List<LdapGroupMapping> mappingList = (List<LdapGroupMapping>) objects;
+
+                    for ( LdapGroupMapping mapping : mappingList )
+                    {
+                        if ( StringUtils.equals( "ldap group", mapping.getGroup() ) )
+                        {
+                            Assertions.assertThat( mapping.getRoleNames() ).isNotNull().isNotEmpty().containsOnly(
+                                "redback role" );
+                            return true;
+                        }
+                    }
+
+                    return res;
+                }
+            } );
+
+            service.removeLdapGroupMapping( "ldap group" );
+
+            mappings = service.getLdapGroupMappings();
 
             Assertions.assertThat( mappings ).isNotNull().isNotEmpty().hasSize( 3 );
         }
