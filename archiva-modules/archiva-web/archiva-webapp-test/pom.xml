@@ -137,7 +137,7 @@
 
     <dependency>
       <groupId>org.apache.logging.log4j.adapters</groupId>
-      <artifactId>log4j12-api</artifactId>
+      <artifactId>log4j-1.2-api</artifactId>
     </dependency>
 
   </dependencies>
