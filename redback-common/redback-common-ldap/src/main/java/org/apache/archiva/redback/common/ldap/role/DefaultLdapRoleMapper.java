@@ -65,6 +65,7 @@ public class DefaultLdapRoleMapper
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
+    @Named( value = "ldapConnectionFactory#configurable" )
     private LdapConnectionFactory ldapConnectionFactory;
 
     @Inject
