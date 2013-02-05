@@ -75,6 +75,9 @@ import org.apache.maven.wagon.repository.Repository;
 import org.apache.tools.ant.types.selectors.SelectorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
+import org.slf4j.helpers.BasicMarker;
+import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -98,7 +101,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @todo exception handling needs work - "not modified" is not really an exceptional case, and it has more layers than
  * your average brown onion
  */
-@Service ( "repositoryProxyConnectors#default" )
+@Service("repositoryProxyConnectors#default")
 public class DefaultRepositoryProxyConnectors
     implements RepositoryProxyConnectors, RegistryListener
 {
@@ -108,21 +111,21 @@ public class DefaultRepositoryProxyConnectors
      *
      */
     @Inject
-    @Named ( value = "archivaConfiguration#default" )
+    @Named(value = "archivaConfiguration#default")
     private ArchivaConfiguration archivaConfiguration;
 
     /**
      *
      */
     @Inject
-    @Named ( value = "repositoryContentFactory#default" )
+    @Named(value = "repositoryContentFactory#default")
     private RepositoryContentFactory repositoryFactory;
 
     /**
      *
      */
     @Inject
-    @Named ( value = "metadataTools#default" )
+    @Named(value = "metadataTools#default")
     private MetadataTools metadataTools;
 
     /**
@@ -163,7 +166,7 @@ public class DefaultRepositoryProxyConnectors
      *
      */
     @Inject
-    @Named ( value = "archivaTaskScheduler#repository" )
+    @Named(value = "archivaTaskScheduler#repository")
     private ArchivaTaskScheduler scheduler;
 
     @Inject
@@ -177,7 +180,7 @@ public class DefaultRepositoryProxyConnectors
 
     }
 
-    @SuppressWarnings ( "unchecked" )
+    @SuppressWarnings("unchecked")
     private void initConnectorsAndNetworkProxies()
     {
 
@@ -447,15 +450,19 @@ public class DefaultRepositoryProxyConnectors
             {
                 log.warn(
                     "Transfer error from repository \"" + targetRepository.getRepository().getId() + "\" for resource "
-                        + path + ", continuing to next repository. Error message: " + e.getMessage() );
-                log.debug( "Full stack trace", e );
+                        + path + ", continuing to next repository. Error message: {}", e.getMessage() );
+                log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ),
+                           "Transfer error from repository \"" + targetRepository.getRepository().getId()
+                               + "\" for resource " + path + ", continuing to next repository. Error message: {}",
+                           e.getMessage(), e );
             }
             catch ( RepositoryAdminException e )
             {
-                log.warn(
-                    "Transfer error from repository \"" + targetRepository.getRepository().getId() + "\" for resource "
-                        + path + ", continuing to next repository. Error message: " + e.getMessage() );
-                log.debug( "Full stack trace", e );
+                log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ),
+                           "Transfer error from repository \"" + targetRepository.getRepository().getId()
+                               + "\" for resource " + path + ", continuing to next repository. Error message: {}",
+                           e.getMessage(), e );
+                log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ), "Full stack trace", e );
             }
         }
 
