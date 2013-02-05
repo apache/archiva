@@ -60,6 +60,7 @@ public class DefaultLdapGroupMappingService
     private LdapRoleMapperConfiguration ldapRoleMapperConfiguration;
 
     @Inject
+    @Named(value = "ldapConnectionFactory#configurable")
     private LdapConnectionFactory ldapConnectionFactory;
 
     public StringList getLdapGroups()
