@@ -6,6 +6,7 @@
       <id>internal</id>
       <name>Archiva Managed Internal Repository</name>
       <location>${appserver.base}/data/repositories/internal</location>
+      <indexDir>${appserver.base}/data/repositories/internal/.indexer</indexDir>
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>
@@ -18,6 +19,7 @@
       <id>snapshots</id>
       <name>Archiva Managed Snapshot Repository</name>
       <location>${appserver.base}/data/repositories/snapshots</location>
+      <indexDir>${appserver.base}/data/repositories/snapshots/.indexer</indexDir>
       <layout>default</layout>
       <releases>false</releases>
       <snapshots>true</snapshots>
