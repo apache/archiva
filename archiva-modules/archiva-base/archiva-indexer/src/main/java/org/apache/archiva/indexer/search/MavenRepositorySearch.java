@@ -356,16 +356,6 @@ public class MavenRepositorySearch
                     log.warn( "Repository '{}' not found in configuration.", repo );
                 }
             }
-            catch ( UnsupportedExistingLuceneIndexException e )
-            {
-                log.warn( "Error accessing index of repository '{}' : {}", repo, e.getMessage() );
-                continue;
-            }
-            catch ( IOException e )
-            {
-                log.warn( "IO error occured while accessing index of repository '{}' : {}", repo, e.getMessage() );
-                continue;
-            }
             catch ( RepositoryAdminException e )
             {
                 log.warn( "RepositoryAdminException occured while accessing index of repository '{}' : {}", repo,
