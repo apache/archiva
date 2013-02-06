@@ -620,8 +620,8 @@ public class DefaultManagedRepositoryAdmin
                 if ( !indexDirectory.isAbsolute() )
                 {
                     indexDirectory = new File( repositoryDirectory, repository.getIndexDirectory() );
-                    repository.setIndexDirectory( indexDirectory.getAbsolutePath() );
                 }
+                repository.setIndexDirectory( indexDirectory.getAbsolutePath() );
             }
             else
             {
@@ -629,8 +629,8 @@ public class DefaultManagedRepositoryAdmin
                 if ( !repositoryDirectory.isAbsolute() )
                 {
                     indexDirectory = new File( repositoryDirectory, ".indexer" );
-                    repository.setIndexDirectory( indexDirectory.getAbsolutePath() );
                 }
+                repository.setIndexDirectory( indexDirectory.getAbsolutePath() );
             }
 
             if ( !indexDirectory.exists() )
@@ -825,5 +825,15 @@ public class DefaultManagedRepositoryAdmin
     public void setMavenIndexerUtils( MavenIndexerUtils mavenIndexerUtils )
     {
         this.mavenIndexerUtils = mavenIndexerUtils;
+    }
+
+    public NexusIndexer getIndexer()
+    {
+        return indexer;
+    }
+
+    public void setIndexer( NexusIndexer indexer )
+    {
+        this.indexer = indexer;
     }
 }
