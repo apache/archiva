@@ -242,16 +242,12 @@ public class ArchivaIndexingTaskExecutor
 
             if ( !repository.isSkipPackedIndexCreation() )
             {
-                File managedRepository = new File( repository.getLocation() );
-                String indexDirectory = repository.getIndexDirectory();
-                final File indexLocation = StringUtils.isBlank( indexDirectory )
-                    ? new File( managedRepository, ".indexer" )
-                    : new File( indexDirectory );
-                IndexPackingRequest request = new IndexPackingRequest( context, indexLocation );
+
+                IndexPackingRequest request = new IndexPackingRequest( context, context.getIndexDirectoryFile() );
                 indexPacker.packIndex( request );
                 context.updateTimestamp( true );
 
-                log.debug( "Index file packaged at '{}'.", indexLocation.getPath() );
+                log.debug( "Index file packaged at '{}'.", context.getIndexDirectoryFile() );
             }
             else
             {
