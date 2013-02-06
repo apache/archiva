@@ -532,6 +532,11 @@ public class DefaultManagedRepositoryAdmin
                 {
                     indexer.removeIndexingContext( indexingContext, true );
                 }
+
+                // delete directory too as only content is deleted
+                File indexDirectory = indexingContext.getIndexDirectoryFile();
+                FileUtils.deleteDirectory( indexDirectory );
+
                 createIndexContext( managedRepository );
             }
             catch ( IOException e )
