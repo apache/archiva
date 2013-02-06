@@ -588,7 +588,7 @@ public class DefaultManagedRepositoryAdmin
 
         if ( context != null )
         {
-            log.debug( "skip adding repository indexingContent with id {} as already exists", repository.getId() );
+            log.debug( "skip creating repository indexingContent with id {} as already exists", repository.getId() );
             return context;
         }
 
@@ -610,10 +610,8 @@ public class DefaultManagedRepositoryAdmin
         try
         {
 
-
-
             String indexDir = repository.getIndexDirectory();
-            File managedRepository = new File( repository.getLocation() );
+            //File managedRepository = new File( repository.getLocation() );
 
             File indexDirectory = null;
             if ( StringUtils.isNotBlank( indexDir ) )
@@ -622,14 +620,14 @@ public class DefaultManagedRepositoryAdmin
                 // not absolute so create it in repository directory
                 if ( !indexDirectory.isAbsolute() )
                 {
-                    indexDirectory = new File( managedRepository, repository.getIndexDirectory() );
+                    indexDirectory = new File( repositoryDirectory, repository.getIndexDirectory() );
                     repository.setIndexDirectory( indexDirectory.getAbsolutePath() );
                 }
             }
             else
             {
-                indexDirectory = new File( managedRepository, ".indexer" );
-                if ( !managedRepository.isAbsolute() )
+                indexDirectory = new File( repositoryDirectory, ".indexer" );
+                if ( !repositoryDirectory.isAbsolute() )
                 {
                     indexDirectory = new File( repositoryDirectory, ".indexer" );
                     repository.setIndexDirectory( indexDirectory.getAbsolutePath() );
@@ -645,9 +643,9 @@ public class DefaultManagedRepositoryAdmin
 
             if ( context == null )
             {
-                context = indexer.addIndexingContext( repository.getId(), repository.getId(), managedRepository,
+                context = indexer.addIndexingContext( repository.getId(), repository.getId(), repositoryDirectory,
                                                       indexDirectory,
-                                                      managedRepository.toURI().toURL().toExternalForm(),
+                                                      repositoryDirectory.toURI().toURL().toExternalForm(),
                                                       indexDirectory.toURI().toURL().toString(), indexCreators );
 
                 context.setSearchable( repository.isScanned() );
