@@ -587,9 +587,10 @@ public class DefaultManagedRepositoryAdmin
             File managedRepository = new File( repository.getLocation() );
 
             File indexDirectory = null;
-            if ( indexDir != null && !"".equals( indexDir ) )
+            if ( StringUtils.isNotBlank( indexDir ) )
             {
                 indexDirectory = new File( repository.getIndexDirectory() );
+                // not absolute so create it in repository directory
                 if ( !indexDirectory.isAbsolute() )
                 {
                     indexDirectory = new File( managedRepository, repository.getIndexDirectory() );
