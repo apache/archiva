@@ -91,7 +91,7 @@ public class ArchivaIndexingTaskExecutor
     }
 
     /**
-     * depending on current {@link Action} you have.
+     * depending on current {@link Task} you have.
      * If {@link org.apache.archiva.scheduler.indexing.ArtifactIndexingTask.Action.FINISH} && isExecuteOnEntireRepo:
      * repository will be scanned.
      *

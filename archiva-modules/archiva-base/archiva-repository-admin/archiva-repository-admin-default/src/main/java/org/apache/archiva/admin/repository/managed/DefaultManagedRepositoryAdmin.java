@@ -584,6 +584,14 @@ public class DefaultManagedRepositoryAdmin
         throws RepositoryAdminException
     {
 
+        IndexingContext context = indexer.getIndexingContexts().get( repository.getId() );
+
+        if ( context != null )
+        {
+            log.debug( "skip adding repository indexingContent with id {} as already exists", repository.getId() );
+            return context;
+        }
+
         // take care first about repository location as can be relative
         File repositoryDirectory = new File( repository.getLocation() );
 
@@ -602,13 +610,7 @@ public class DefaultManagedRepositoryAdmin
         try
         {
 
-            IndexingContext context = indexer.getIndexingContexts().get( repository.getId() );
 
-            if ( context != null )
-            {
-                log.debug( "skip adding repository indexingContent with id {} as already exists", repository.getId() );
-                return context;
-            }
 
             String indexDir = repository.getIndexDirectory();
             File managedRepository = new File( repository.getLocation() );
