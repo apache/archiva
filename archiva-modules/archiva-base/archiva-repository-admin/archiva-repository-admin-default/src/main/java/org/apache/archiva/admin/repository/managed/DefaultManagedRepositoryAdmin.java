@@ -561,9 +561,8 @@ public class DefaultManagedRepositoryAdmin
         if ( !file.isAbsolute() )
         {
             // add appserver.base/repositories
-            file = new File(
-                getRegistry().getString( "appserver.base" ) + File.separatorChar + "data" + File.separatorChar
-                    + "repositories", repository.getLocation() );
+            file = new File( getRegistry().getString( "appserver.base" ) + File.separatorChar + "repositories",
+                             repository.getLocation() );
         }
         repository.setLocation( file.getCanonicalPath() );
         if ( !file.exists() )
@@ -597,9 +596,9 @@ public class DefaultManagedRepositoryAdmin
 
         if ( !repositoryDirectory.isAbsolute() )
         {
-            repositoryDirectory = new File(
-                getRegistry().getString( "appserver.base" ) + File.separatorChar + "data" + File.separatorChar
-                    + "repositories", repository.getLocation() );
+            repositoryDirectory =
+                new File( getRegistry().getString( "appserver.base" ) + File.separatorChar + "repositories",
+                          repository.getLocation() );
         }
 
         if ( !repositoryDirectory.exists() )
