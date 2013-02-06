@@ -70,7 +70,7 @@ import java.util.Map;
  *
  * @author Olivier Lamy
  */
-@Service ( "managedRepositoryAdmin#default" )
+@Service( "managedRepositoryAdmin#default" )
 public class DefaultManagedRepositoryAdmin
     extends AbstractRepositoryAdmin
     implements ManagedRepositoryAdmin
@@ -81,7 +81,7 @@ public class DefaultManagedRepositoryAdmin
     public static final String STAGE_REPO_ID_END = "-stage";
 
     @Inject
-    @Named ( value = "archivaTaskScheduler#repository" )
+    @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     @Inject
@@ -339,7 +339,7 @@ public class DefaultManagedRepositoryAdmin
         }
         catch ( Exception e )
         {
-            throw new RepositoryAdminException( "Error saving configuration for delete action" + e.getMessage(), e);
+            throw new RepositoryAdminException( "Error saving configuration for delete action" + e.getMessage(), e );
         }
 
         return Boolean.TRUE;
@@ -468,9 +468,13 @@ public class DefaultManagedRepositoryAdmin
 
         ManagedRepositoryConfiguration toremove = configuration.findManagedRepositoryById( managedRepository.getId() );
 
+        boolean updateIndexContext = false;
+
         if ( toremove != null )
         {
             configuration.removeManagedRepository( toremove );
+
+            updateIndexContext = !StringUtils.equals( toremove.getIndexDir(), managedRepository.getIndexDirectory() );
         }
 
         ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( toremove );
@@ -518,7 +522,24 @@ public class DefaultManagedRepositoryAdmin
         {
             repositorySession.close();
         }
-        createIndexContext( managedRepository );
+
+        if ( updateIndexContext )
+        {
+            try
+            {
+                IndexingContext indexingContext = indexer.getIndexingContexts().get( managedRepository.getId() );
+                if ( indexingContext != null )
+                {
+                    indexer.removeIndexingContext( indexingContext, true );
+                }
+                createIndexContext( managedRepository );
+            }
+            catch ( IOException e )
+            {
+                throw new RepositoryAdminException( e.getMessage(), e );
+            }
+        }
+
         return true;
     }
 
