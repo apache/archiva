@@ -79,7 +79,7 @@ public class ArchivaConfigurationTest
 
         ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
 
-        assertEquals( "check managed repositories", "${appserver.base}/data/repositories/internal",
+        assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
                       repository.getLocation() );
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
@@ -546,7 +546,7 @@ public class ArchivaConfigurationTest
 
         ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
 
-        assertEquals( "check managed repositories", "${appserver.base}/data/repositories/internal",
+        assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
                       repository.getLocation() );
         assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
         assertEquals( "check managed repositories", "internal", repository.getId() );
