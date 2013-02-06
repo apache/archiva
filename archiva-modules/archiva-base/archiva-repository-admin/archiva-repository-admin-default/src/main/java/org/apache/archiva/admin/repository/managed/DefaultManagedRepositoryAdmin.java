@@ -589,9 +589,9 @@ public class DefaultManagedRepositoryAdmin
 
         if ( !repositoryDirectory.isAbsolute() )
         {
-            repositoryDirectory =
-                new File( getRegistry().getString( "appserver.base" ) + File.separatorChar + "repositories",
-                          repository.getLocation() );
+            repositoryDirectory = new File(
+                getRegistry().getString( "appserver.base" ) + File.separatorChar + "data" + File.separatorChar
+                    + "repositories", repository.getLocation() );
         }
 
         if ( !repositoryDirectory.exists() )
