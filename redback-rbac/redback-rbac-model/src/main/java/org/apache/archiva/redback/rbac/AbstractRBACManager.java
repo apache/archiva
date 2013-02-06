@@ -706,6 +706,9 @@ public abstract class AbstractRBACManager
         boolean childRoleNamesUpdated = false;
 
         Iterator<String> it = role.getChildRoleNames().listIterator();
+
+        List<String> updatedChildRoleList = new ArrayList<String>( role.getChildRoleNames().size() );
+
         while ( it.hasNext() )
         {
             String roleName = it.next();
@@ -713,17 +716,19 @@ public abstract class AbstractRBACManager
             {
                 Role child = getRole( roleName );
                 childRoles.put( child.getName(), child );
+                updatedChildRoleList.add( roleName );
             }
             catch ( RbacObjectNotFoundException e )
             {
-                // Found a bad roleName! - remove it.
-                it.remove();
+                // Found a bad roleName! - trigger new List save
+                //it.remove();
                 childRoleNamesUpdated = true;
             }
         }
 
         if ( childRoleNamesUpdated )
         {
+            role.setChildRoleNames( updatedChildRoleList );
             saveRole( role );
         }
 
