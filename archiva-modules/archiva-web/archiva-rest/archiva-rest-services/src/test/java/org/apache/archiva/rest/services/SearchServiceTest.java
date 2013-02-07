@@ -255,7 +255,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId, "/src/test/repo-with-osgi" );
+        createAndIndexRepo( testRepoId, getBasedir() + "/src/test/repo-with-osgi" );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
