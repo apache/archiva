@@ -54,12 +54,13 @@ public class TemporaryGroupIndexCleaner
     @Scheduled(fixedDelay = 900000)
     public void cleanTemporaryIndex()
     {
-        log.info( "cleanTemporaryIndex" );
+
         for ( TemporaryGroupIndex temporaryGroupIndex : indexMerger.getTemporaryGroupIndexes() )
         {
             // cleanup files older than the ttl
             if ( new Date().getTime() - temporaryGroupIndex.getCreationTime() > indexMerger.getGroupMergedIndexTtl() )
             {
+                log.info( "cleanTemporaryIndex for groupId {}", temporaryGroupIndex.getGroupId() );
                 indexMerger.cleanTemporaryGroupIndex( temporaryGroupIndex );
 
             }

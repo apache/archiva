@@ -76,6 +76,16 @@ public class TemporaryGroupIndex
         return this;
     }
 
+    public String getGroupId()
+    {
+        return groupId;
+    }
+
+    public void setGroupId( String groupId )
+    {
+        this.groupId = groupId;
+    }
+
     @Override
     public int hashCode()
     {
