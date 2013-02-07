@@ -47,7 +47,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Olivier Lamy
  * @since 1.4-M2
  */
-@Service( "indexMerger#default" )
+@Service("indexMerger#default")
 public class DefaultIndexMerger
     implements IndexMerger
 {
@@ -70,7 +70,7 @@ public class DefaultIndexMerger
 
     private List<TemporaryGroupIndex> temporaryGroupIndexes = new CopyOnWriteArrayList<TemporaryGroupIndex>();
 
-    private int defaultGroupIndexTtl;
+    private int groupMergedIndexTtl;
 
     @Inject
     public DefaultIndexMerger( PlexusSisuBridge plexusSisuBridge, MavenIndexerUtils mavenIndexerUtils )
@@ -84,10 +84,7 @@ public class DefaultIndexMerger
     @PostConstruct
     public void intialize()
     {
-        String ttlStr =
-            System.getProperty( IndexMerger.TMP_GROUP_INDEX_SYS_KEY, Integer.toString( DEFAULT_GROUP_INDEX_TTL ) );
-        this.defaultGroupIndexTtl = NumberUtils.toInt( ttlStr, DEFAULT_GROUP_INDEX_TTL );
-
+        this.groupMergedIndexTtl = Integer.getInteger( IndexMerger.TMP_GROUP_INDEX_SYS_KEY, DEFAULT_GROUP_INDEX_TTL );
     }
 
     public IndexingContext buildMergedIndex( Collection<String> repositoriesIds, boolean packIndex )
@@ -169,6 +166,6 @@ public class DefaultIndexMerger
 
     public int getGroupMergedIndexTtl()
     {
-        return this.defaultGroupIndexTtl;
+        return this.groupMergedIndexTtl;
     }
 }

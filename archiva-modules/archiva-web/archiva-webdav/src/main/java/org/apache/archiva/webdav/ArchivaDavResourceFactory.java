@@ -87,6 +87,7 @@ import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -108,7 +109,7 @@ import java.util.Set;
 /**
  *
  */
-@Service ("davResourceFactory#archiva")
+@Service("davResourceFactory#archiva")
 public class ArchivaDavResourceFactory
     implements DavResourceFactory, Auditable
 {
@@ -139,7 +140,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named (value = "repositoryProxyConnectors#default")
+    @Named(value = "repositoryProxyConnectors#default")
     private RepositoryProxyConnectors connectors;
 
     /**
@@ -169,7 +170,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named (value = "httpAuthenticator#basic")
+    @Named(value = "httpAuthenticator#basic")
     private HttpAuthenticator httpAuth;
 
     @Inject
@@ -205,7 +206,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named (value = "archivaTaskScheduler#repository")
+    @Named(value = "archivaTaskScheduler#repository")
     private RepositoryArchivaTaskScheduler scheduler;
 
     private ApplicationContext applicationContext;
@@ -1181,11 +1182,14 @@ public class ArchivaDavResourceFactory
                 if ( System.currentTimeMillis() - tmp.getCreationTime() > ( indexMerger.getGroupMergedIndexTtl() * 60
                     * 1000 ) )
                 {
-                    log.debug( "tmp group index is too old so delete it" );
+                    log.debug( MarkerFactory.getDetachedMarker( "group.merged.index" ),
+                               "tmp group index '{}' is too old so delete it", groupId );
                     indexMerger.cleanTemporaryGroupIndex( tmp );
                 }
                 else
                 {
+                    log.debug( MarkerFactory.getDetachedMarker( "group.merged.index" ),
+                               "merged index for group '{}' found in cache", groupId );
                     return tmp.getDirectory();
                 }
             }
