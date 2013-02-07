@@ -261,8 +261,7 @@ public class DefaultRemoteRepositoryAdmin
     {
         try
         {
-            // FIXME get this from ArchivaAdministration
-            String appServerBase = System.getProperty( "appserver.base" );
+            String appServerBase = getRegistry().getString( "appserver.base" );
 
             String contextKey = "remote-" + remoteRepository.getId();
             IndexingContext indexingContext = indexer.getIndexingContexts().get( contextKey );
