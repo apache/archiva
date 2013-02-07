@@ -34,6 +34,8 @@
 
     <logger name="org.springframework" level="error"/>
 
+    <logger name="org.apache.commons.configuration" level="error"/>
+
     <root level="info">
       <appender-ref ref="console"/>
     </root>
