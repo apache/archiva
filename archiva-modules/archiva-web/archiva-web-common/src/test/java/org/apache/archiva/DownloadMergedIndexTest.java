@@ -134,7 +134,7 @@ public class DownloadMergedIndexTest
         managedRepository = new ManagedRepository();
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
-        managedRepository.setLocation(System.getProperty( "basedir" ) + "src/test/repositories/test-repo" );
+        managedRepository.setLocation(System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" );
         managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex/" + id );
 
         if ( managedRepositoriesService.getManagedRepository( id ) != null )
