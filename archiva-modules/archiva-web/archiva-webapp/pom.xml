@@ -40,7 +40,7 @@
     <archiva.baseRestUrl />
     <rest.admin.pwd />
     <test.useTomcat>false</test.useTomcat>
-
+    <archiva.groupIndexTtl>30</archiva.groupIndexTtl>
   </properties>
 
   <dependencies>
@@ -991,7 +991,7 @@
             <archiva.devMode>${archiva.devMode}</archiva.devMode>
             <archiva.javascriptLog>${archiva.javascriptLog}</archiva.javascriptLog>
             <archiva.logMissingI18n>${archiva.logMissingI18n}</archiva.logMissingI18n>
-            <archiva.tmp.group.index.ttl>0</archiva.tmp.group.index.ttl>
+            <archiva.tmp.group.index.ttl>${archiva.groupIndexTtl}</archiva.tmp.group.index.ttl>
           </systemProperties>
           <additionalClasspathDirs>
             <additionalClasspathDir>${basedir}/src/test/tomcat</additionalClasspathDir>
