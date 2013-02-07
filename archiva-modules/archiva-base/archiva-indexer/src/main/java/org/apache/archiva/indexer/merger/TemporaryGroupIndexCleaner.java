@@ -54,6 +54,7 @@ public class TemporaryGroupIndexCleaner
     @Scheduled( fixedDelay = 900000 )
     public void cleanTemporaryIndex()
     {
+        log.info( "cleanTemporaryIndex" );
         for ( TemporaryGroupIndex temporaryGroupIndex : indexMerger.getTemporaryGroupIndexes() )
         {
             // cleanup files older than 60 minutes 3600000

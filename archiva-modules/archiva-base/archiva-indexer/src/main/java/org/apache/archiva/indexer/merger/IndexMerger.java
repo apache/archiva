@@ -50,6 +50,6 @@ public interface IndexMerger
     /**
      * @return ttl of temporay group index
      */
-    int getDefaultGroupIndexTtl();
+    int getGroupMergedIndexTtl();
 
 }

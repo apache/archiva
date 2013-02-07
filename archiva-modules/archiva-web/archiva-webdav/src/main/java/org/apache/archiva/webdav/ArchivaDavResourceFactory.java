@@ -82,7 +82,6 @@ import org.apache.jackrabbit.webdav.DavSession;
 import org.apache.jackrabbit.webdav.lock.LockManager;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.digest.ChecksumFile;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
@@ -1179,7 +1178,7 @@ public class ArchivaDavResourceFactory
 
             if ( tmp != null && tmp.getDirectory() != null && tmp.getDirectory().exists() )
             {
-                if ( System.currentTimeMillis() - tmp.getCreationTime() > ( indexMerger.getDefaultGroupIndexTtl() * 60
+                if ( System.currentTimeMillis() - tmp.getCreationTime() > ( indexMerger.getGroupMergedIndexTtl() * 60
                     * 1000 ) )
                 {
                     log.debug( "tmp group index is too old so delete it" );

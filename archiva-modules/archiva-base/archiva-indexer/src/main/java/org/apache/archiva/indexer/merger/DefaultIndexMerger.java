@@ -167,7 +167,7 @@ public class DefaultIndexMerger
         return this.temporaryGroupIndexes;
     }
 
-    public int getDefaultGroupIndexTtl()
+    public int getGroupMergedIndexTtl()
     {
         return this.defaultGroupIndexTtl;
     }
