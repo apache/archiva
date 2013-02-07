@@ -1183,13 +1183,13 @@ public class ArchivaDavResourceFactory
                 if ( System.currentTimeMillis() - tmp.getCreationTime() > ( indexMerger.getGroupMergedIndexTtl() * 60
                     * 1000 ) )
                 {
-                    log.debug( MarkerFactory.getDetachedMarker( "group.merged.index" ),
+                    log.debug( MarkerFactory.getMarker( "group.merged.index" ),
                                "tmp group index '{}' is too old so delete it", groupId );
                     indexMerger.cleanTemporaryGroupIndex( tmp );
                 }
                 else
                 {
-                    log.debug( MarkerFactory.getDetachedMarker( "group.merged.index" ),
+                    log.debug( MarkerFactory.getMarker( "group.merged.index" ),
                                "merged index for group '{}' found in cache", groupId );
                     return tmp.getDirectory();
                 }
