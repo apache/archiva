@@ -50,11 +50,18 @@ public class TemporaryGroupIndexSessionCleaner
     public void sessionCreated( HttpSessionEvent httpSessionEvent )
     {
         // ensure the map is here to avoid NPE
-        httpSessionEvent.getSession().setAttribute( TEMPORARY_INDEX_SESSION_KEY,
-                                                    new HashMap<String, TemporaryGroupIndex>() );
-        WebApplicationContext webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(
-            httpSessionEvent.getSession().getServletContext() );
-        indexMerger = webApplicationContext.getBean( IndexMerger.class );
+        if ( httpSessionEvent.getSession().getAttribute( TEMPORARY_INDEX_SESSION_KEY ) == null )
+        {
+            httpSessionEvent.getSession().setAttribute( TEMPORARY_INDEX_SESSION_KEY,
+                                                        new HashMap<String, TemporaryGroupIndex>() );
+        }
+
+        if ( indexMerger == null )
+        {
+            WebApplicationContext webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(
+                httpSessionEvent.getSession().getServletContext() );
+            indexMerger = webApplicationContext.getBean( IndexMerger.class );
+        }
     }
 
     public void sessionDestroyed( HttpSessionEvent httpSessionEvent )
@@ -67,8 +74,19 @@ public class TemporaryGroupIndexSessionCleaner
         {
             log.info( "cleanup temporaryGroupIndex {} directory {}", temporaryGroupIndex.getIndexId(),
                       temporaryGroupIndex.getDirectory().getAbsolutePath() );
-            indexMerger.cleanTemporaryGroupIndex( temporaryGroupIndex );
+            getIndexMerger( httpSessionEvent ).cleanTemporaryGroupIndex( temporaryGroupIndex );
         }
+    }
+
+    private IndexMerger getIndexMerger( HttpSessionEvent httpSessionEvent )
+    {
+        if ( indexMerger == null )
+        {
+            WebApplicationContext webApplicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(
+                httpSessionEvent.getSession().getServletContext() );
+            indexMerger = webApplicationContext.getBean( IndexMerger.class );
+        }
+        return indexMerger;
     }
 }
 
