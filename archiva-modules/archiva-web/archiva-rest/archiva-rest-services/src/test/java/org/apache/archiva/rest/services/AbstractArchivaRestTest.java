@@ -57,7 +57,7 @@ import java.util.Date;
 /**
  * @author Olivier Lamy
  */
-@RunWith ( ArchivaBlockJUnit4ClassRunner.class )
+@RunWith(ArchivaBlockJUnit4ClassRunner.class)
 public abstract class AbstractArchivaRestTest
     extends AbstractRestServicesTest
 {
@@ -225,9 +225,10 @@ public abstract class AbstractArchivaRestTest
 
     protected RedbackRuntimeConfigurationService getArchivaRuntimeConfigurationService()
     {
-        RedbackRuntimeConfigurationService service = JAXRSClientFactory.create(
-            getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
-            RedbackRuntimeConfigurationService.class, Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+        RedbackRuntimeConfigurationService service =
+            JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
+                                       RedbackRuntimeConfigurationService.class,
+                                       Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
@@ -429,6 +430,12 @@ public abstract class AbstractArchivaRestTest
         if ( badContent.exists() )
         {
             FileUtils.deleteDirectory( badContent );
+        }
+
+        File file = new File( repoPath );
+        if ( !file.isAbsolute() )
+        {
+            repoPath = getBasedir() + "/" + repoPath;
         }
 
         managedRepository.setLocation( new File( repoPath ).getPath() );
