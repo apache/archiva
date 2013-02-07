@@ -25,6 +25,7 @@ import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
@@ -90,6 +91,9 @@ public class DefaultIndexMerger
     public IndexingContext buildMergedIndex( IndexMergerRequest indexMergerRequest )
         throws IndexMergerException
     {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.reset();
+        stopWatch.start();
         File tempRepoFile = Files.createTempDir();
         tempRepoFile.deleteOnExit();
 
@@ -120,6 +124,8 @@ public class DefaultIndexMerger
             }
             temporaryGroupIndexes.add(
                 new TemporaryGroupIndex( tempRepoFile, tempRepoId, indexMergerRequest.getGroupId() ) );
+            stopWatch.stop();
+            log.info( "merged index for repos {} in {} s", indexMergerRequest.getRepositoriesIds(), stopWatch.getTime() );
             return indexingContext;
         }
         catch ( IOException e )
