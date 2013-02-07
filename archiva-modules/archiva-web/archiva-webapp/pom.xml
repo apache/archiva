@@ -991,6 +991,7 @@
             <archiva.devMode>${archiva.devMode}</archiva.devMode>
             <archiva.javascriptLog>${archiva.javascriptLog}</archiva.javascriptLog>
             <archiva.logMissingI18n>${archiva.logMissingI18n}</archiva.logMissingI18n>
+            <archiva.tmp.group.index.ttl>0</archiva.tmp.group.index.ttl>
           </systemProperties>
           <additionalClasspathDirs>
             <additionalClasspathDir>${basedir}/src/test/tomcat</additionalClasspathDir>

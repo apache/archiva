@@ -34,10 +34,13 @@ public class TemporaryGroupIndex
 
     private String indexId;
 
-    public TemporaryGroupIndex( File directory, String indexId )
+    private String groupId;
+
+    public TemporaryGroupIndex( File directory, String indexId, String groupId )
     {
         this.directory = directory;
         this.indexId = indexId;
+        this.groupId = groupId;
     }
 
     public long getCreationTime()

@@ -33,6 +33,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.indexer.merger.IndexMerger;
 import org.apache.archiva.indexer.merger.IndexMergerException;
+import org.apache.archiva.indexer.merger.IndexMergerRequest;
 import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
@@ -109,7 +110,7 @@ import java.util.Set;
 /**
  *
  */
-@Service("davResourceFactory#archiva")
+@Service( "davResourceFactory#archiva" )
 public class ArchivaDavResourceFactory
     implements DavResourceFactory, Auditable
 {
@@ -140,7 +141,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named(value = "repositoryProxyConnectors#default")
+    @Named( value = "repositoryProxyConnectors#default" )
     private RepositoryProxyConnectors connectors;
 
     /**
@@ -170,7 +171,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named(value = "httpAuthenticator#basic")
+    @Named( value = "httpAuthenticator#basic" )
     private HttpAuthenticator httpAuth;
 
     @Inject
@@ -206,7 +207,7 @@ public class ArchivaDavResourceFactory
      *
      */
     @Inject
-    @Named(value = "archivaTaskScheduler#repository")
+    @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler scheduler;
 
     private ApplicationContext applicationContext;
@@ -1216,10 +1217,11 @@ public class ArchivaDavResourceFactory
             }
             log.info( "generate temporary merged index for repository group '{}' for repositories '{}'", groupId,
                       authzRepos );
-            IndexingContext indexingContext = indexMerger.buildMergedIndex( authzRepos, true );
+            IndexingContext indexingContext =
+                indexMerger.buildMergedIndex( new IndexMergerRequest( authzRepos, true, groupId ) );
             File mergedRepoDir = indexingContext.getIndexDirectoryFile();
             TemporaryGroupIndex temporaryGroupIndex =
-                new TemporaryGroupIndex( mergedRepoDir, indexingContext.getId() ).setCreationTime(
+                new TemporaryGroupIndex( mergedRepoDir, indexingContext.getId(), groupId ).setCreationTime(
                     new Date().getTime() );
             temporaryGroupIndexMap.put( groupId, temporaryGroupIndex );
             session.setAttribute( TemporaryGroupIndexSessionCleaner.TEMPORARY_INDEX_SESSION_KEY,

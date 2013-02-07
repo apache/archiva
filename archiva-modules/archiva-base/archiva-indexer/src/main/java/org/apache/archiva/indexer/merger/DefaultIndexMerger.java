@@ -47,7 +47,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Olivier Lamy
  * @since 1.4-M2
  */
-@Service("indexMerger#default")
+@Service( "indexMerger#default" )
 public class DefaultIndexMerger
     implements IndexMerger
 {
@@ -87,7 +87,7 @@ public class DefaultIndexMerger
         this.groupMergedIndexTtl = Integer.getInteger( IndexMerger.TMP_GROUP_INDEX_SYS_KEY, DEFAULT_GROUP_INDEX_TTL );
     }
 
-    public IndexingContext buildMergedIndex( Collection<String> repositoriesIds, boolean packIndex )
+    public IndexingContext buildMergedIndex( IndexMergerRequest indexMergerRequest )
         throws IndexMergerException
     {
         File tempRepoFile = Files.createTempDir();
@@ -102,7 +102,7 @@ public class DefaultIndexMerger
                 indexer.addIndexingContext( tempRepoId, tempRepoId, tempRepoFile, indexLocation, null, null,
                                             mavenIndexerUtils.getAllIndexCreators() );
 
-            for ( String repoId : repositoriesIds )
+            for ( String repoId : indexMergerRequest.getRepositoriesIds() )
             {
                 IndexingContext idxToMerge = indexer.getIndexingContexts().get( repoId );
                 if ( idxToMerge != null )
@@ -113,12 +113,13 @@ public class DefaultIndexMerger
 
             indexingContext.optimize();
 
-            if ( packIndex )
+            if ( indexMergerRequest.isPackIndex() )
             {
                 IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexLocation );
                 indexPacker.packIndex( request );
             }
-            temporaryGroupIndexes.add( new TemporaryGroupIndex( tempRepoFile, tempRepoId ) );
+            temporaryGroupIndexes.add(
+                new TemporaryGroupIndex( tempRepoFile, tempRepoId, indexMergerRequest.getGroupId() ) );
             return indexingContext;
         }
         catch ( IOException e )
