@@ -1118,7 +1118,7 @@
         <label class="control-label" for="proxyId">${$.i18n.prop('proxy-connector.network-proxy.id')}</label>
 
         <div class="controls">
-          <select id="proxyId"
+          <select id="proxyId" class="input-xlarge"
                   data-bind="options: proxyConnectorsViewModel.networkProxies, optionsText: 'id',optionsValue:'id',
                      value: proxyConnector.proxyId, optionsCaption: 'direct connection'"></select>
         </div>
@@ -1127,7 +1127,7 @@
         <label class="control-label" for="proxyId">${$.i18n.prop('proxy-connector.managed.repository.id')}</label>
 
         <div class="controls">
-          <select id="sourceRepoId"
+          <select id="sourceRepoId" class="input-xlarge"
                   data-bind="options: proxyConnectorsViewModel.managedRepositories, optionsText: 'id',optionsValue:'id',
                       value: proxyConnector.sourceRepoId,attr: {disabled: isUpdate() }"></select>
         </div>
@@ -1136,7 +1136,7 @@
         <label class="control-label" for="proxyId">${$.i18n.prop('proxy-connector.remote.repository.id')}</label>
 
         <div class="controls">
-          <select id="targetRepoId"
+          <select id="targetRepoId" class="input-xlarge"
                   data-bind="options: proxyConnectorsViewModel.remoteRepositories, optionsText: 'id',optionsValue:'id',
                      value: proxyConnector.targetRepoId,attr: {disabled: isUpdate() }"></select>
         </div>
