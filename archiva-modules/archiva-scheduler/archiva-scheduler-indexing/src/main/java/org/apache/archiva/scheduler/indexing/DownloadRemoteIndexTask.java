@@ -84,7 +84,6 @@ public class DownloadRemoteIndexTask
 
     private IndexUpdater indexUpdater;
 
-    private IndexPacker indexPacker;
 
     public DownloadRemoteIndexTask( DownloadRemoteIndexTaskRequest downloadRemoteIndexTaskRequest,
                                     List<String> runningRemoteDownloadIds )
@@ -96,7 +95,6 @@ public class DownloadRemoteIndexTask
         this.runningRemoteDownloadIds = runningRemoteDownloadIds;
         this.indexUpdater = downloadRemoteIndexTaskRequest.getIndexUpdater();
         this.remoteRepositoryAdmin = downloadRemoteIndexTaskRequest.getRemoteRepositoryAdmin();
-        this.indexPacker = downloadRemoteIndexTaskRequest.getIndexPacker();
     }
 
     public void run()
@@ -188,13 +186,13 @@ public class DownloadRemoteIndexTask
 
             this.indexUpdater.fetchAndUpdateIndex( request );
             stopWatch.stop();
-            log.info( "time to download remote repository index for repository {}: {} s", this.remoteRepository.getId(),
+            log.info( "time update index from remote for repository {}: {} s", this.remoteRepository.getId(),
                       ( stopWatch.getTime() / 1000 ) );
 
             // index packing optionnal ??
-            IndexPackingRequest indexPackingRequest =
-                new IndexPackingRequest( indexingContext, indexingContext.getIndexDirectoryFile() );
-            indexPacker.packIndex( indexPackingRequest );
+            //IndexPackingRequest indexPackingRequest =
+            //    new IndexPackingRequest( indexingContext, indexingContext.getIndexDirectoryFile() );
+            //indexPacker.packIndex( indexPackingRequest );
             indexingContext.updateTimestamp( true );
 
         }
@@ -258,30 +256,34 @@ public class DownloadRemoteIndexTask
 
         private long startTime;
 
+        private int totalLength = 0;
+
         public void transferInitiated( TransferEvent transferEvent )
         {
+            startTime = System.currentTimeMillis();
             resourceName = transferEvent.getResource().getName();
             log.debug( "initiate transfer of {}", resourceName );
         }
 
         public void transferStarted( TransferEvent transferEvent )
         {
+            this.totalLength = 0;
             resourceName = transferEvent.getResource().getName();
-            startTime = System.currentTimeMillis();
             log.info( "start transfer of {}", transferEvent.getResource().getName() );
         }
 
         public void transferProgress( TransferEvent transferEvent, byte[] buffer, int length )
         {
             log.debug( "transfer of {} : {}/{}", transferEvent.getResource().getName(), buffer.length, length );
+            this.totalLength += length;
         }
 
         public void transferCompleted( TransferEvent transferEvent )
         {
             resourceName = transferEvent.getResource().getName();
             long endTime = System.currentTimeMillis();
-            log.info( "end of transfer file {}: {}s", transferEvent.getResource().getName(),
-                      ( endTime - startTime ) / 1000 );
+            log.info( "end of transfer file {} {} kb: {}s", transferEvent.getResource().getName(),
+                      this.totalLength / 1024, ( endTime - startTime ) / 1000 );
         }
 
         public void transferError( TransferEvent transferEvent )

@@ -187,7 +187,7 @@ public class DefaultDownloadRemoteIndexScheduler
             if ( now )
             {
                 log.info( "schedule download remote index for repository {}", remoteRepository.getId() );
-                // do it in async
+                // do it now
                 taskScheduler.schedule(
                     new DownloadRemoteIndexTask( downloadRemoteIndexTaskRequest, this.runningRemoteDownloadIds ),
                     new Date() );
