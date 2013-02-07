@@ -836,4 +836,14 @@ public class DefaultManagedRepositoryAdmin
     {
         this.indexer = indexer;
     }
+
+    public List<? extends IndexCreator> getIndexCreators()
+    {
+        return indexCreators;
+    }
+
+    public void setIndexCreators( List<? extends IndexCreator> indexCreators )
+    {
+        this.indexCreators = indexCreators;
+    }
 }

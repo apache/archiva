@@ -116,6 +116,7 @@ public abstract class AbstractMavenRepositorySearch
 
         defaultManagedRepositoryAdmin.setMavenIndexerUtils( mavenIndexerUtils );
         defaultManagedRepositoryAdmin.setIndexer( nexusIndexer );
+        defaultManagedRepositoryAdmin.setIndexCreators( mavenIndexerUtils.getAllIndexCreators() );
 
         config = new Configuration();
         config.addManagedRepository( createRepositoryConfig( TEST_REPO_1 ) );
