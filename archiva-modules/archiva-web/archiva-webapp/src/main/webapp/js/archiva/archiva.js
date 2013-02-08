@@ -112,7 +112,7 @@ $.ajax({
 
               window.cookieInformation=mapCookieInformation(data.cookieInformation);
 
-              require(['sammy','jquery','i18n','jquery.tmpl','archiva.main','utils','domReady!'],function () {
+              require(['sammy','jquery','jquery.ui','i18n','jquery.tmpl','archiva.main','utils','domReady!'],function () {
                   startArchivaApplication();
                   $("#loadingDiv").hide();
                   drawQuickSearchAutocomplete();
