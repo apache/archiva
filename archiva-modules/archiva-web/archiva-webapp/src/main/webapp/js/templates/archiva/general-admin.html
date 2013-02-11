@@ -1034,6 +1034,16 @@
               </div>
             </div>
             <div class="control-group">
+              <label for="baseGroupsDn" class="control-label">
+                ${$.i18n.prop('redback.runtime.ldap.baseGroupsDn.label')}
+              </label>
+              <div class="controls">
+                <input type="text" id="baseGroupsDn" name="baseGroupsDn" class="input-xxlarge"
+                       data-bind="value: redbackRuntimeConfiguration().ldapConfiguration().baseGroupsDn"/>
+              </div>
+            </div>
+
+            <div class="control-group">
               <label for="ldapBindDn" class="control-label">
                 ${$.i18n.prop('redback.runtime.ldap.bindDn.label')}
               </label>
