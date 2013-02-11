@@ -151,7 +151,6 @@ public class DefaultRedbackRuntimeConfigurationService
             usersCache.setMaxElementsOnDisk(
                 redbackRuntimeConfiguration.getUsersCacheConfiguration().getMaxElementsOnDisk() );
 
-
             ldapUserMapper.initialize();
 
             return Boolean.TRUE;
@@ -233,6 +232,20 @@ public class DefaultRedbackRuntimeConfigurationService
                 new LdapConnectionConfiguration( ldapConfiguration.getHostName(), ldapConfiguration.getPort(),
                                                  ldapConfiguration.getBaseDn(), ldapConfiguration.getContextFactory(),
                                                  ldapConfiguration.getBindDn(), ldapConfiguration.getPassword(),
+                                                 ldapConfiguration.getAuthenticationMethod(),
+                                                 toProperties( ldapConfiguration.getExtraProperties() ) );
+
+            ldapConnection = ldapConnectionFactory.getConnection( ldapConnectionConfiguration );
+
+            ldapConnection.close();
+
+            // verify groups dn value too
+
+            ldapConnectionConfiguration =
+                new LdapConnectionConfiguration( ldapConfiguration.getHostName(), ldapConfiguration.getPort(),
+                                                 ldapConfiguration.getBaseGroupsDn(),
+                                                 ldapConfiguration.getContextFactory(), ldapConfiguration.getBindDn(),
+                                                 ldapConfiguration.getPassword(),
                                                  ldapConfiguration.getAuthenticationMethod(),
                                                  toProperties( ldapConfiguration.getExtraProperties() ) );
 
