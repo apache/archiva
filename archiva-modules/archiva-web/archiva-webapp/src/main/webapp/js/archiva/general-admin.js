@@ -17,7 +17,7 @@
  * under the License.
  */
 define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout","knockout.simpleGrid",
-  "knockout.sortable","jquery.validate","bootstrap"]
+  "knockout.sortable","jquery.ui","jquery.validate","bootstrap","select2"]
     , function(jquery,i18n,utils,jqueryTmpl,ko) {
 
   //-------------------------
@@ -1257,6 +1257,11 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.usersCacheConfiguration=ko.observable(cacheConfiguration);
     this.usersCacheConfiguration.subscribe(function(newValue){self.modified(true)});
 
+    this.ldapGroups=ko.observableArray([]);
+    this.ldapGroups.subscribe(function(newValue){self.modified(true)});
+
+    this.ldapGroupMappings=ko.observableArray([]);
+    this.ldapGroupMappings.subscribe(function(newValue){self.modified(true);});
 
   }
 
@@ -1348,6 +1353,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.userManagerImplementationInformations=ko.observable(userManagerImplementationInformations);
 
     this.usedUserManagerImpls=ko.observableArray([]);
+
+    this.allRoleNames=[];
 
     self.gridViewModel = new ko.simpleGrid.viewModel({
       data: self.redbackRuntimeConfiguration().configurationPropertiesEntries,
@@ -1615,16 +1622,87 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           var redbackRuntimeConfiguration = mapRedbackRuntimeConfiguration(data);
           var redbackRuntimeConfigurationViewModel =
               new RedbackRuntimeConfigurationViewModel(redbackRuntimeConfiguration,userManagerImplementationInformations);
-          mainContent.html( $("#redback-runtime-configuration-main" ).tmpl() );
-          ko.applyBindings(redbackRuntimeConfigurationViewModel,$("#redback-runtime-configuration-content" ).get(0));
-          activateRedbackRuntimeGeneralFormValidation();
-          activateLdapConfigurationFormValidation();
+
+
+          // load ldap roles
+          $.ajax("restServices/redbackServices/ldapGroupMappingService/ldapGroups", {
+            type: "GET",
+            dataType: 'json',
+            success: function(data) {
+              var groups = [];
+              if(data&&data.strings){
+                groups = $.isArray(data.strings)? $.map(data.strings,function(item){
+                  return item;
+                }):[data.strings];
+              }
+              $.log("groups number:"+groups.length);
+              redbackRuntimeConfiguration.ldapGroups.push(groups);
+
+              // load ldap group mappings if any
+              $.ajax("restServices/redbackServices/ldapGroupMappingService", {
+                type: "GET",
+                dataType: 'json',
+                success: function(data) {
+                  var groupMappings=mapLdapGroupMappings(data);
+
+                  redbackRuntimeConfiguration.ldapGroupMappings(groupMappings);
+                  redbackRuntimeConfiguration.modified(false);
+
+
+                  $.ajax("restServices/redbackServices/roleManagementService/allRoles", {
+                    type: "GET",
+                    dataType: 'json',
+                    success: function(data) {
+
+                      var allRoleNames = $.map(data, function(item) {
+                        return item.name;
+                      });
+
+                      redbackRuntimeConfigurationViewModel.allRoleNames=allRoleNames;
+
+                      mainContent.html( $("#redback-runtime-configuration-main" ).tmpl() );
+                      ko.applyBindings(redbackRuntimeConfigurationViewModel,$("#redback-runtime-configuration-content" ).get(0));
+                      activateRedbackRuntimeGeneralFormValidation();
+                      activateLdapConfigurationFormValidation();
+                      $("#ldap-group-mappings-div select" ).select2({width: "element"});
+
+                    }
+                  });
+                }
+              });
+            }
+          });
+
+
+
+
         }
       });
 
       }
     });
 
+  }
+
+  LdapGroupMapping=function(group,roleNames){
+    var self=this;
+    this.modified=ko.observable(false);
+    //private String group;
+    this.group=ko.observable(group);
+    this.group.subscribe(function(newValue){self.modified(true)});
+
+    //private Collection<String> roleNames;
+    this.roleNames=ko.observableArray(roleNames);
+    this.roleNames.subscribe(function(newValue){self.modified(true)});
+  }
+
+  mapLdapGroupMappings=function(data){
+    if(data!=null){
+      return $.map(data,function(item){
+        return new LdapGroupMapping(item.group,item.roleNames?item.roleNames:[]);
+      })
+    }
+    return [];
   }
 
   CacheConfiguration=function(timeToIdleSeconds,timeToLiveSeconds,maxElementsInMemory,maxElementsOnDisk){

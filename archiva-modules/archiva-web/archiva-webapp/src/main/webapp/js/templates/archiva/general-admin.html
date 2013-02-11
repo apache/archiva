@@ -976,6 +976,7 @@
   <ul class="nav nav-tabs">
     <li class="active" id="redback-runtime-general-li"><a href="#redback-runtime-general-content" data-toggle="tab">${$.i18n.prop('redback.runtime.general.title')}</a></li>
     <li id="redback-runtime-ldap-li"><a href="#redback-runtime-ldap-content" data-toggle="tab">${$.i18n.prop('redback.runtime.ldap.title')}</a></li>
+    <li id="redback-ldap-mapping-li"><a href="#redback-runtime-ldap-mapping" data-toggle="tab">${$.i18n.prop('redback.runtime.ldap.mapping.title')}</a></li>
     <li id="redback-runtime-properties-li"><a href="#redback-runtime-properties-content" data-toggle="tab">${$.i18n.prop('redback.runtime.properties.title')}</a></li>
     <li id="redback-runtime-users-cache-li"><a href="#redback-runtime-users-cache-content" data-toggle="tab">${$.i18n.prop('redback.runtime.users.cache.title')}</a></li>
   </ul>
@@ -1091,10 +1092,14 @@
       </div>
     </div>
 
+    <div class="tab-pane" id="redback-runtime-ldap-mapping" data-bind='template: {name:"redback-runtime-ldap-mapping-tmpl",data: redbackRuntimeConfiguration}'>
+
+    </div>
+
     <div class="tab-pane" id="redback-runtime-properties-content">
 
       <div class="well">
-        <table id="proxyConnectorsTable"
+        <table id="proxyConnectorsTable" class="table-hover"
                data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'properties-grid',pageLinksId:'properties-grid-pagination'">
         </table>
         <div id="properties-grid-pagination"></div>
@@ -1190,5 +1195,33 @@
 <script id="redback-runtime-general-content-usermanagers" type="text/html">
   <div class="well draggable-item">
     ${$data.description}
+  </div>
+</script>
+
+<script id="redback-runtime-ldap-mapping-tmpl" type="text/html">
+  <div class="well" id="ldap-group-mappings-div">
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th>group</th>
+        <th>roles</th>
+      </tr>
+    </thead>
+    <tbody id="ldap-group-mappings-tbody">
+    {{each(i, ldapGroupMapping) ldapGroupMappings()}}
+      <tr>
+        <td>${ldapGroupMapping.group()}</td>
+        <td>
+          <div>
+            <select id="roles-group-${ldapGroupMapping.group()}" data-bind="options: $parent.allRoleNames, selectedOptions: ldapGroupMapping.roleNames()"
+                    size="5" multiple="true" ></select>
+          </div>
+
+        </td>
+      </tr>
+    {{/each}}
+
+    </tbody>
+  </table>
   </div>
 </script>
