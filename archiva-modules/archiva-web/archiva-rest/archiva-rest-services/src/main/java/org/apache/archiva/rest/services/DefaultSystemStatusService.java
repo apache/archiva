@@ -35,6 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.ws.rs.core.Response;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -62,6 +63,9 @@ public class DefaultSystemStatusService
     private Map<String, Cache> caches = null;
 
     private RepositoryScanner scanner;
+
+    // display spring scheduled
+    //@Inject @Named (value="springScheduler");
 
 
     @Inject

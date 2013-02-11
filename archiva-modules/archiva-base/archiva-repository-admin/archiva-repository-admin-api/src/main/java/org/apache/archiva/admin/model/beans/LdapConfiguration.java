@@ -66,6 +66,11 @@ public class LdapConfiguration
     private String bindDn;
 
     /**
+     * The LDAP base dn for groups (if empty baseDn is used).
+     */
+    private String baseGroupsDn;
+
+    /**
      * The LDAP password.
      */
     private String password;
@@ -215,5 +220,15 @@ public class LdapConfiguration
                 this.extraProperties.put( propertyEntry.getKey(), propertyEntry.getValue() );
             }
         }
+    }
+
+    public String getBaseGroupsDn()
+    {
+        return baseGroupsDn;
+    }
+
+    public void setBaseGroupsDn( String baseGroupsDn )
+    {
+        this.baseGroupsDn = baseGroupsDn;
     }
 }

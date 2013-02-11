@@ -49,7 +49,7 @@ import java.util.Set;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "userConfiguration#archiva" )
+@Service("userConfiguration#archiva")
 public class DefaultRedbackRuntimeConfigurationAdmin
     implements RedbackRuntimeConfigurationAdmin, UserConfiguration
 {
@@ -60,11 +60,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
-    @Named( value = "userConfiguration#redback" )
+    @Named(value = "userConfiguration#redback")
     UserConfiguration userConfiguration;
 
     @Inject
-    @Named( value = "cache#users" )
+    @Named(value = "cache#users")
     private Cache usersCache;
 
     @PostConstruct
@@ -118,6 +118,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 ldapConfiguration.setSsl( userConfiguration.getBoolean( UserConfigurationKeys.LDAP_SSL, false ) );
                 ldapConfiguration.setBaseDn(
                     userConfiguration.getConcatenatedList( UserConfigurationKeys.LDAP_BASEDN, null ) );
+
+                ldapConfiguration.setBaseGroupsDn(
+                    userConfiguration.getConcatenatedList( UserConfigurationKeys.LDAP_GROUPS_BASEDN,
+                                                           ldapConfiguration.getBaseDn() ) );
+
                 ldapConfiguration.setContextFactory(
                     userConfiguration.getString( UserConfigurationKeys.LDAP_CONTEX_FACTORY, null ) );
                 ldapConfiguration.setBindDn(
@@ -519,6 +524,10 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         if ( UserConfigurationKeys.LDAP_BINDDN.equals( key ) )
         {
             return getRedbackRuntimeConfiguration().getLdapConfiguration().getBindDn();
+        }
+        if ( UserConfigurationKeys.LDAP_GROUPS_BASEDN.equals( key ) )
+        {
+            return getRedbackRuntimeConfiguration().getLdapConfiguration().getBaseGroupsDn();
         }
         return userConfiguration.getConcatenatedList( key, defaultValue );
     }

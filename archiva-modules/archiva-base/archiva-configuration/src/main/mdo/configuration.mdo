@@ -1572,6 +1572,12 @@
           <type>String</type>
         </field>
         <field>
+          <name>baseGroupsDn</name>
+          <description>The LDAP base dn for groups (if empty baseDn is used).</description>
+          <version>1.4.0+</version>
+          <type>String</type>
+        </field>
+        <field>
           <name>contextFactory</name>
           <description>contextFactory to use.</description>
           <version>1.4.0+</version>
