@@ -132,6 +132,9 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 ldapConfiguration.setAuthenticationMethod(
                     userConfiguration.getString( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD, null ) );
 
+                ldapConfiguration.setWritable(
+                    userConfiguration.getBoolean( UserConfigurationKeys.LDAP_WRITABLE, false ) );
+
                 redbackRuntimeConfiguration.setMigratedFromRedbackConfiguration( true );
 
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
@@ -444,6 +447,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     {
         RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
 
+        if ( UserConfigurationKeys.LDAP_WRITABLE.equals( key ) )
+        {
+            return conf.getLdapConfiguration().isWritable();
+        }
+
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
             return Boolean.valueOf( conf.getConfigurationProperties().get( key ) );
@@ -470,6 +478,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         if ( UserConfigurationKeys.LDAP_SSL.equals( key ) )
         {
             return getRedbackRuntimeConfiguration().getLdapConfiguration().isSsl();
+        }
+
+        if ( UserConfigurationKeys.LDAP_WRITABLE.equals( key ) )
+        {
+            return getRedbackRuntimeConfiguration().getLdapConfiguration().isWritable();
         }
 
         RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();

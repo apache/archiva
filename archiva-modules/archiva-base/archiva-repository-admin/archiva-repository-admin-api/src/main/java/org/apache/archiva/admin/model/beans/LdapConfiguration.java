@@ -95,6 +95,11 @@ public class LdapConfiguration
      */
     private List<PropertyEntry> extraPropertiesEntries;
 
+    /**
+     * LDAP writable.
+     */
+    private boolean writable = false;
+
     public LdapConfiguration()
     {
         // no op
@@ -230,5 +235,15 @@ public class LdapConfiguration
     public void setBaseGroupsDn( String baseGroupsDn )
     {
         this.baseGroupsDn = baseGroupsDn;
+    }
+
+    public boolean isWritable()
+    {
+        return writable;
+    }
+
+    public void setWritable( boolean writable )
+    {
+        this.writable = writable;
     }
 }

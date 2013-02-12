@@ -1608,6 +1608,12 @@
           <type>boolean</type>
         </field>
         <field>
+          <name>writable</name>
+          <description>LDAP writable.</description>
+          <version>1.4.0+</version>
+          <type>boolean</type>
+        </field>
+        <field>
           <name>extraProperties</name>
           <version>1.4.0+</version>
           <type>Map</type>
