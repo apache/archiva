@@ -21,6 +21,7 @@ package org.apache.archiva.admin.model.beans;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,6 +123,7 @@ public class RedbackRuntimeConfiguration
         {
             configurationPropertiesEntries.add( new PropertyEntry( entry.getKey(), entry.getValue() ) );
         }
+        Collections.sort( configurationPropertiesEntries );
         return configurationPropertiesEntries;
     }
 

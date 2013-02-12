@@ -27,12 +27,12 @@ import java.io.Serializable;
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-@XmlRootElement( name = "propertyEntry" )
+@XmlRootElement(name = "propertyEntry")
 public class PropertyEntry
-    implements Serializable
+    implements Serializable, Comparable<PropertyEntry>
 {
     private String key;
-    
+
     private String value;
 
     public PropertyEntry()
@@ -75,5 +75,10 @@ public class PropertyEntry
         sb.append( ", value='" ).append( value ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    public int compareTo( PropertyEntry o )
+    {
+        return this.key.compareTo( o.getKey() );
     }
 }
