@@ -135,6 +135,9 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 ldapConfiguration.setWritable(
                     userConfiguration.getBoolean( UserConfigurationKeys.LDAP_WRITABLE, false ) );
 
+                ldapConfiguration.setUseRoleNameAsGroup(
+                    userConfiguration.getBoolean( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME, false ) );
+
                 redbackRuntimeConfiguration.setMigratedFromRedbackConfiguration( true );
 
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
@@ -452,6 +455,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
             return conf.getLdapConfiguration().isWritable();
         }
 
+        if ( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME.equals( key ) )
+        {
+            return conf.getLdapConfiguration().isUseRoleNameAsGroup();
+        }
+
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
             return Boolean.valueOf( conf.getConfigurationProperties().get( key ) );
@@ -483,6 +491,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         if ( UserConfigurationKeys.LDAP_WRITABLE.equals( key ) )
         {
             return getRedbackRuntimeConfiguration().getLdapConfiguration().isWritable();
+        }
+
+        if ( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME.equals( key ) )
+        {
+            return getRedbackRuntimeConfiguration().getLdapConfiguration().isUseRoleNameAsGroup();
         }
 
         RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();

@@ -86,6 +86,11 @@ public class LdapConfiguration
     private boolean bindAuthenticatorEnabled;
 
     /**
+     * Will use role name as LDAP group.
+     */
+    private boolean useRoleNameAsGroup = false;
+
+    /**
      * Field extraProperties.
      */
     private Map<String, String> extraProperties = new HashMap<String, String>();
@@ -245,5 +250,15 @@ public class LdapConfiguration
     public void setWritable( boolean writable )
     {
         this.writable = writable;
+    }
+
+    public boolean isUseRoleNameAsGroup()
+    {
+        return useRoleNameAsGroup;
+    }
+
+    public void setUseRoleNameAsGroup( boolean useRoleNameAsGroup )
+    {
+        this.useRoleNameAsGroup = useRoleNameAsGroup;
     }
 }

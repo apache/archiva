@@ -1617,6 +1617,13 @@
           <defaultValue>false</defaultValue>
         </field>
         <field>
+          <name>useRoleNameAsGroup</name>
+          <description>Will use role name as LDAP group.</description>
+          <version>1.4.0+</version>
+          <type>boolean</type>
+          <defaultValue>false</defaultValue>
+        </field>
+        <field>
           <name>extraProperties</name>
           <version>1.4.0+</version>
           <type>Map</type>

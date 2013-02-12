@@ -1071,6 +1071,16 @@
               </div>
             </div>
             <div class="control-group">
+              <label for="ldap-useRoleNameAsGroup" class="control-label">
+                ${$.i18n.prop('redback.runtime.ldap.useRoleNameAsGroup.label')}
+              </label>
+              <div class="controls">
+                <input type="checkbox" id="ldap-useRoleNameAsGroup" name="ldap-useRoleNameAsGroup"
+                       data-bind="checked: redbackRuntimeConfiguration().ldapConfiguration().useRoleNameAsGroup"/>
+              </div>
+            </div>
+
+            <div class="control-group">
               <label for="ldapPassword" class="control-label">
                 ${$.i18n.prop('redback.runtime.ldap.password.label')}
               </label>
