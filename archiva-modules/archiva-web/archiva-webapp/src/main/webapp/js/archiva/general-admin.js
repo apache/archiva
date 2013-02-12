@@ -1637,7 +1637,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           $.ajax("restServices/redbackServices/ldapGroupMappingService/ldapGroups", {
             type: "GET",
             dataType: 'json',
-            success: function(data) {
+            complete: function(data) {
               var groups = [];
               if(data&&data.strings){
                 groups = $.isArray(data.strings)? $.map(data.strings,function(item){

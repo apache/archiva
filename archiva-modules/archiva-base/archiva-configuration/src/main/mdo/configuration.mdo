@@ -1564,6 +1564,7 @@
           <description>ssl LDAP connection.</description>
           <version>1.4.0+</version>
           <type>boolean</type>
+          <defaultValue>false</defaultValue>
         </field>
         <field>
           <name>baseDn</name>
@@ -1606,12 +1607,14 @@
           <description>The LDAP authenticator enabled.</description>
           <version>1.4.0+</version>
           <type>boolean</type>
+          <defaultValue>false</defaultValue>
         </field>
         <field>
           <name>writable</name>
           <description>LDAP writable.</description>
           <version>1.4.0+</version>
           <type>boolean</type>
+          <defaultValue>false</defaultValue>
         </field>
         <field>
           <name>extraProperties</name>

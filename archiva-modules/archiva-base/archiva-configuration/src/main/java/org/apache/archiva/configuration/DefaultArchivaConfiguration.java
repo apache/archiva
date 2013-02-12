@@ -719,7 +719,7 @@ public class DefaultArchivaConfiguration
 
         List<String> dbConsumers = Arrays.asList( "update-db-artifact", "update-db-repository-metadata" );
 
-        // remove database consumers  if here
+        // remove database consumers if here
         List<String> intersec =
             ListUtils.intersection( dbConsumers, configuration.getRepositoryScanning().getKnownContentConsumers() );
 
