@@ -244,6 +244,11 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
     </dependency>
+    <!-- normally not needed as we are 1.6 required
+      but due to http://jira.codehaus.org/browse/MODELLO-266
+      and we use stax reader produced by modello
+      ibm jdk stax impl won't work with
+     -->
     <dependency>
       <groupId>org.codehaus.woodstox</groupId>
       <artifactId>woodstox-core-asl</artifactId>
