@@ -69,6 +69,8 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     @Named( value = "cache#users" )
     private Cache usersCache;
 
+    private RedbackRuntimeConfiguration currentRedbackRuntimeConfiguration;
+
     @PostConstruct
     public void initialize()
         throws UserConfigurationException
@@ -217,6 +219,8 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
             }
 
+            this.currentRedbackRuntimeConfiguration = redbackRuntimeConfiguration;
+
         }
         catch ( RepositoryAdminException e )
         {
@@ -239,6 +243,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         try
         {
             archivaConfiguration.save( configuration );
+            this.currentRedbackRuntimeConfiguration = redbackRuntimeConfiguration;
         }
         catch ( RegistryException e )
         {
@@ -253,6 +258,10 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     private RedbackRuntimeConfiguration build(
         org.apache.archiva.configuration.RedbackRuntimeConfiguration runtimeConfiguration )
     {
+        if ( this.currentRedbackRuntimeConfiguration != null )
+        {
+            return this.currentRedbackRuntimeConfiguration;
+        }
         RedbackRuntimeConfiguration redbackRuntimeConfiguration =
             new BeanReplicator().replicateBean( runtimeConfiguration, RedbackRuntimeConfiguration.class );
 
@@ -283,7 +292,9 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
         cleanupProperties( redbackRuntimeConfiguration );
 
-t         return redbackRuntimeConfiguration;
+        this.currentRedbackRuntimeConfiguration = redbackRuntimeConfiguration;
+
+        return redbackRuntimeConfiguration;
     }
 
     /**
@@ -307,13 +318,13 @@ t         return redbackRuntimeConfiguration;
         properties.remove( UserConfigurationKeys.LDAP_WRITABLE );
         properties.remove( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME );
         // cleanup groups <-> role mapping
-        for ( Map.Entry<String, String> entry : new HashMap<String, String>( properties ).entrySet() )
-        {
-            if ( entry.getKey().startsWith( UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) )
-            {
-                properties.remove( entry.getKey() );
-            }
-        }
+        /**for ( Map.Entry<String, String> entry : new HashMap<String, String>( properties ).entrySet() )
+         {
+         if ( entry.getKey().startsWith( UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) )
+         {
+         properties.remove( entry.getKey() );
+         }
+         }*/
     }
 
     private org.apache.archiva.configuration.RedbackRuntimeConfiguration build(
