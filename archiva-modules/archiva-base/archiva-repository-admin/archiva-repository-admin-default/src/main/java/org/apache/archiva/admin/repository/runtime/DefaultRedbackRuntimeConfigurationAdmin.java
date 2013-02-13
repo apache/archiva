@@ -41,15 +41,17 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service("userConfiguration#archiva")
+@Service( "userConfiguration#archiva" )
 public class DefaultRedbackRuntimeConfigurationAdmin
     implements RedbackRuntimeConfigurationAdmin, UserConfiguration
 {
@@ -60,11 +62,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
-    @Named(value = "userConfiguration#redback")
+    @Named( value = "userConfiguration#redback" )
     UserConfiguration userConfiguration;
 
     @Inject
-    @Named(value = "cache#users")
+    @Named( value = "cache#users" )
     private Cache usersCache;
 
     @PostConstruct
@@ -279,7 +281,39 @@ public class DefaultRedbackRuntimeConfigurationAdmin
             redbackRuntimeConfiguration.setUsersCacheConfiguration( new CacheConfiguration() );
         }
 
-        return redbackRuntimeConfiguration;
+        cleanupProperties( redbackRuntimeConfiguration );
+
+t         return redbackRuntimeConfiguration;
+    }
+
+    /**
+     * cleaning from map properties used directly in archiva configuration fields
+     *
+     * @param redbackRuntimeConfiguration
+     */
+    private void cleanupProperties( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
+    {
+        Map<String, String> properties = redbackRuntimeConfiguration.getConfigurationProperties();
+        properties.remove( UserConfigurationKeys.LDAP_HOSTNAME );
+        properties.remove( UserConfigurationKeys.LDAP_PORT );
+        properties.remove( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ENABLED );
+        properties.remove( UserConfigurationKeys.LDAP_SSL );
+        properties.remove( UserConfigurationKeys.LDAP_BASEDN );
+        properties.remove( UserConfigurationKeys.LDAP_GROUPS_BASEDN );
+        properties.remove( UserConfigurationKeys.LDAP_CONTEX_FACTORY );
+        properties.remove( UserConfigurationKeys.LDAP_BINDDN );
+        properties.remove( UserConfigurationKeys.LDAP_PASSWORD );
+        properties.remove( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD );
+        properties.remove( UserConfigurationKeys.LDAP_WRITABLE );
+        properties.remove( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME );
+        // cleanup groups <-> role mapping
+        for ( Map.Entry<String, String> entry : new HashMap<String, String>( properties ).entrySet() )
+        {
+            if ( entry.getKey().startsWith( UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) )
+            {
+                properties.remove( entry.getKey() );
+            }
+        }
     }
 
     private org.apache.archiva.configuration.RedbackRuntimeConfiguration build(
