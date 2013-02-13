@@ -1290,7 +1290,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   LdapConfiguration=function(hostName,port,ssl,baseDn,baseGroupsDn,contextFactory,bindDn,password,authenticationMethod,
-                             extraPropertiesEntries,writable,useRoleNameAsGroup){
+                             extraPropertiesEntries,writable,useRoleNameAsGroup,bindAuthenticatorEnabled){
 
     var self=this;
     this.modified=ko.observable(false);
@@ -1342,6 +1342,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.useRoleNameAsGroup=ko.observable(useRoleNameAsGroup);
     this.useRoleNameAsGroup.subscribe(function(newValue){self.modified(true)});
 
+    //bindAuthenticatorEnabled
+
   }
 
   mapLdapConfiguration=function(data){
@@ -1355,7 +1357,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         }
         $.log("mapLdapConfiguration done");
         return new LdapConfiguration(data.hostName,data.port,data.ssl,data.baseDn,data.baseGroupsDn,data.contextFactory,data.bindDn,data.password,
-                                    data.authenticationMethod,extraPropertiesEntries,data.writable,data.useRoleNameAsGroup);
+                                    data.authenticationMethod,extraPropertiesEntries,data.writable,data.useRoleNameAsGroup,data.bindAuthenticatorEnabled);
       }
       return null;
   }

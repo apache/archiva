@@ -138,6 +138,9 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 ldapConfiguration.setUseRoleNameAsGroup(
                     userConfiguration.getBoolean( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME, false ) );
 
+                ldapConfiguration.setBindAuthenticatorEnabled(
+                    userConfiguration.getBoolean( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ENABLED, false ) );
+
                 redbackRuntimeConfiguration.setMigratedFromRedbackConfiguration( true );
 
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
@@ -460,6 +463,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
             return conf.getLdapConfiguration().isUseRoleNameAsGroup();
         }
 
+        if ( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ENABLED.equals( key ) )
+        {
+            return conf.getLdapConfiguration().isBindAuthenticatorEnabled();
+        }
+
         if ( conf.getConfigurationProperties().containsKey( key ) )
         {
             return Boolean.valueOf( conf.getConfigurationProperties().get( key ) );
@@ -496,6 +504,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         if ( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME.equals( key ) )
         {
             return getRedbackRuntimeConfiguration().getLdapConfiguration().isUseRoleNameAsGroup();
+        }
+
+        if ( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ENABLED.equals( key ) )
+        {
+            return getRedbackRuntimeConfiguration().getLdapConfiguration().isBindAuthenticatorEnabled();
         }
 
         RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
