@@ -1079,6 +1079,15 @@
                        data-bind="checked: redbackRuntimeConfiguration().ldapConfiguration().useRoleNameAsGroup"/>
               </div>
             </div>
+            <div class="control-group">
+              <label for="ldap-bindAuthenticatorEnabled" class="control-label">
+                ${$.i18n.prop('redback.runtime.ldap.bindAuthenticatorEnabled.label')}
+              </label>
+              <div class="controls">
+                <input type="checkbox" id="ldap-bindAuthenticatorEnabled" name="ldap-bindAuthenticatorEnabled"
+                       data-bind="checked: redbackRuntimeConfiguration().ldapConfiguration().bindAuthenticatorEnabled"/>
+              </div>
+            </div>
 
             <div class="control-group">
               <label for="ldapPassword" class="control-label">

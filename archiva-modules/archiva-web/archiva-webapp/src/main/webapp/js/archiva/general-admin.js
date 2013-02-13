@@ -1343,6 +1343,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.useRoleNameAsGroup.subscribe(function(newValue){self.modified(true)});
 
     //bindAuthenticatorEnabled
+    this.bindAuthenticatorEnabled=ko.observable(bindAuthenticatorEnabled);
+    this.bindAuthenticatorEnabled.subscribe(function(newValue){self.modified(true)});
 
   }
 
