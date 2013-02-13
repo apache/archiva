@@ -1213,9 +1213,11 @@
   </thead>
   <tbody>
   {{each(i, row) itemsOnCurrentPage()}}
+    {{var key = row.key}}
+    <!-- do not display mapped ldap groups as keys -->
+    {{if !key.startsWith('ldap.config.groups.')}}
     <tr>
       <td>
-        {{var key = row.key}}
         <a class="popover-doc"
            data-original-title="${$.i18n.prop('redback.runtime.properties.help.title')}"
            data-content="${$.i18n.prop(key+'.help.content')}">
@@ -1225,6 +1227,7 @@
       <td>${row.key}</td>
       <td><input type="text" class="input-xxlarge" data-bind="value: row.value"></td>
     </tr>
+    {{/if}}
   {{/each}}
   </tbody>
 

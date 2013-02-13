@@ -1231,15 +1231,11 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     this.migratedFromRedbackConfiguration=ko.observable(migratedFromRedbackConfiguration);
 
-    $.log("new RedbackRuntimeConfiguration before configurationPropertiesEntries mapping:");
-
     this.configurationPropertiesEntries=ko.observableArray(configurationPropertiesEntries?configurationPropertiesEntries:[]);
     this.configurationPropertiesEntries.subscribe(function(newValue){
       self.modified(true);
       $.log("configurationPropertiesEntries modified")
     });
-
-    $.log("new RedbackRuntimeConfiguration before configurationPropertiesEntries mapping done");
 
     this.findPropertyValue=function(key){
       for(var i=0;i<self.configurationPropertiesEntries().length;i++){
@@ -1266,22 +1262,29 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   mapRedbackRuntimeConfiguration=function(data){
-    $.log("mapRedbackRuntimeConfiguration");
+
     var ldapConfiguration=mapLdapConfiguration(data.ldapConfiguration);
-    $.log("mapLdapConfiguration done for ");
 
     var redbackRuntimeConfiguration =
             new RedbackRuntimeConfiguration(data.userManagerImpls,ldapConfiguration,data.migratedFromRedbackConfiguration,[]
                     ,data.useUsersCache,mapCacheConfiguration(data.usersCacheConfiguration));
 
-    $.log("mapRedbackRuntimeConfiguration done");
+
     var configurationPropertiesEntries = data.configurationPropertiesEntries == null ? []: $.each(data.configurationPropertiesEntries,function(item){
-      return new Entry(item.key, item.value,function(newValue){
+      var entry = new Entry(item.key, item.value,function(newValue){
         redbackRuntimeConfiguration.modified(true);
       });
+      return entry;
     });
+
     if (!$.isArray(configurationPropertiesEntries)){
       configurationPropertiesEntries=[];
+    } else {
+      configurationPropertiesEntries = $.each(configurationPropertiesEntries,function(item){
+        $.log("each configurationPropertiesEntries");
+        $.log("key:"+item);
+        return item;
+      });
     }
     redbackRuntimeConfiguration.configurationPropertiesEntries(configurationPropertiesEntries);
     redbackRuntimeConfiguration.modified(false);
