@@ -26,6 +26,8 @@ import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ConfigurationEvent;
+import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.components.registry.RegistryException;
@@ -53,7 +55,7 @@ import java.util.Set;
  */
 @Service( "userConfiguration#archiva" )
 public class DefaultRedbackRuntimeConfigurationAdmin
-    implements RedbackRuntimeConfigurationAdmin, UserConfiguration
+    implements RedbackRuntimeConfigurationAdmin, UserConfiguration, ConfigurationListener
 {
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
@@ -230,7 +232,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
     public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
     {
-        return build( archivaConfiguration.getConfiguration().getRedbackRuntimeConfiguration() );
+        return build( archivaConfiguration.getConfiguration().getRedbackRuntimeConfiguration(), false );
     }
 
     public void updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
@@ -256,9 +258,9 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     }
 
     private RedbackRuntimeConfiguration build(
-        org.apache.archiva.configuration.RedbackRuntimeConfiguration runtimeConfiguration )
+        org.apache.archiva.configuration.RedbackRuntimeConfiguration runtimeConfiguration, boolean force )
     {
-        if ( this.currentRedbackRuntimeConfiguration != null )
+        if ( this.currentRedbackRuntimeConfiguration != null && !force )
         {
             return this.currentRedbackRuntimeConfiguration;
         }
@@ -625,5 +627,10 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         keysSet.addAll( getRedbackRuntimeConfiguration().getConfigurationProperties().keySet() );
 
         return keysSet;
+    }
+
+    public void configurationEvent( ConfigurationEvent event )
+    {
+        build( archivaConfiguration.getConfiguration().getRedbackRuntimeConfiguration(), true );
     }
 }

@@ -37,6 +37,7 @@ import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RedbackRuntimeConfigurationService;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
@@ -288,6 +289,7 @@ public class DefaultRedbackRuntimeConfigurationService
         }
         return properties;
     }
+
 }
 
 
