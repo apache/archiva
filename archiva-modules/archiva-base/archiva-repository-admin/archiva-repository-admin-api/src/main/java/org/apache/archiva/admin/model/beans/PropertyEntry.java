@@ -79,6 +79,10 @@ public class PropertyEntry
 
     public int compareTo( PropertyEntry o )
     {
+        if (o == null || o.getKey() == null)
+        {
+            return 1;
+        }
         return this.key.compareTo( o.getKey() );
     }
 }
