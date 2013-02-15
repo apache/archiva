@@ -1131,13 +1131,12 @@
     </div>
 
     <div class="tab-pane" id="redback-runtime-ldap-mapping" data-bind='template: {name:"redback-runtime-ldap-mapping-tmpl",data: redbackRuntimeConfiguration}'>
-
     </div>
 
     <div class="tab-pane" id="redback-runtime-properties-content">
 
       <div class="well">
-        <table id="proxyConnectorsTable" class="table-hover"
+        <table id="propertiesTable" class="table-hover"
                data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'properties-grid',pageLinksId:'properties-grid-pagination'">
         </table>
         <div id="properties-grid-pagination"></div>
@@ -1261,7 +1260,6 @@
         </td>
       </tr>
     {{/each}}
-
     </tbody>
   </table>
   </div>
