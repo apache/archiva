@@ -863,6 +863,7 @@
               <exclude>src/site/resources/css/*.css</exclude>
               <exclude>src/site/resources/js/*.js</exclude>
               <exclude>src/test/repositories/test-repo/**</exclude>
+              <exclude>src/main/resources/META-INF/services/*</exclude>
             </excludes>
           </configuration>
         </plugin>
