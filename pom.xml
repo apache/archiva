@@ -1709,7 +1709,7 @@
           </configuration>
           <dependencies>
             <dependency>
-              <groupId>org.apache.archiva.redback.components.registry</groupId>
+              <groupId>org.apache.archiva.redback.components.modello</groupId>
               <artifactId>modello-plugin-redback-registry</artifactId>
               <version>${redback.registry.version}</version>
             </dependency>
