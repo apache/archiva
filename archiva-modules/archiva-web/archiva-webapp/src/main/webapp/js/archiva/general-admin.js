@@ -1372,6 +1372,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     this.usedUserManagerImpls=ko.observableArray([]);
 
+    this.modifiesLdapGroupMappings=ko.observableArray([]);
+
     this.allRoleNames=[];
 
     self.gridViewModel = new ko.simpleGrid.viewModel({
@@ -1385,24 +1387,6 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
          headerText: $.i18n.prop('redback.runtime.properties.value.label'),
          rowText: "value"
        }
-      ],
-      pageSize: 10,
-      gridUpdateCallBack: function(){
-        activatePopoverDoc();
-      }
-    });
-
-    self.ldapGroupMappingsViewModel=new ko.simpleGrid.viewModel({
-      data: self.redbackRuntimeConfiguration().ldapGroupMappings,
-      columns: [
-        {
-          headerText: $.i18n.prop('redback.runtime.ldap.mapping.group.label'),
-          rowText: "group"
-        },
-        {
-          headerText: $.i18n.prop('redback.runtime.ldap.mapping.roles.label'),
-          rowText: "value"
-        }
       ],
       pageSize: 10,
       gridUpdateCallBack: function(){
@@ -1509,6 +1493,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     }
 
     saveRedbackRuntimeConfiguration=function(){
+
       var mainContent=$("#main-content");
       var valid = mainContent.find("#redback-runtime-general-form-id").valid();
       if (valid==false) {
@@ -1564,14 +1549,71 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
             saveButton.button('reset');
             self.redbackRuntimeConfiguration().modified(false);
             self.redbackRuntimeConfiguration().ldapConfiguration().modified(false);
+            saveModifyLdapGroupMapping();
           }
         }
       );
 
+
+
     }
 
-    modifyLdapGroupMapping=function(ldapGroupMapping){
-      $.log('modifyLdapGroupMapping');
+    saveModifyLdapGroupMapping=function(){
+      //save modified ldap group mappings if any
+      if(self.modifiesLdapGroupMappings().length>0){
+        $.log("save modifiesLdapGroupMappings");
+        $.each(self.modifiesLdapGroupMappings(),function(idx,item){
+          if(!(item.automatic&item.roleNames().length<2)){
+            $.log("update mapping for group:"+item.group());
+            var mainContent=$("#main-content");
+            var saveButton = mainContent.find("#redback-runtime-configuration-save" );
+            saveButton.button('loading');
+            clearUserMessages();
+            var userMessages=$("#user-messages");
+            userMessages.html(mediumSpinnerImg());
+            $.ajax("restServices/redbackServices/ldapGroupMappingService",
+                   {
+                     type: "POST",
+                     contentType: 'application/json',
+                     data:ko.toJSON(item),
+                     dataType: 'json',
+                     success: function(data) {
+                       var message=$.i18n.prop('redback-runtime-ldap-group-mapping.updated');
+                       displaySuccessMessage(message);
+                     },
+                     error: function(data) {
+                       var res = $.parseJSON(data.responseText);
+                       displayRestError(res);
+                     },
+                     complete:function(data){
+                       removeMediumSpinnerImg(userMessages);
+                       saveButton.button('reset');
+                       self.redbackRuntimeConfiguration().modified(false);
+                       self.redbackRuntimeConfiguration().ldapConfiguration().modified(false);
+                     }
+                   }
+            );
+          }
+        });
+
+
+      } else {
+        $.log("not save modifiesLdapGroupMappings");
+      }
+      self.modifiesLdapGroupMappings=ko.observableArray([]);
+    }
+
+    this.modifyLdapGroupMapping=function(roleNames,ldapGroupMapping){
+      var toAdd=true;
+      $.each(self.modifiesLdapGroupMappings(),function(idx,item){
+        if(item.group()==ldapGroupMapping.group()){
+          toAdd=false;
+        }
+      });
+      if(toAdd){
+        self.modifiesLdapGroupMappings().push(ldapGroupMapping);
+      }
+      $.log('modifyLdapGroupMapping:'+ldapGroupMapping.group()+','+self.modifiesLdapGroupMappings().length);
     };
   }
 
@@ -1726,9 +1768,6 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
             }
           });
 
-
-
-
         }
       });
 
@@ -1755,11 +1794,12 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       self.modified(true);
       $.log("roleNames modified");
       if(subscribeFn){
-        subscribeFn(newValue)
+        subscribeFn(newValue,self);
       }
     });
 
     this.automatic=automatic?automatic:false;
+    this.update=true;
   }
 
   mapLdapGroupMappings=function(data,modifyLdapGroupMapping){
