@@ -260,7 +260,8 @@ public abstract class AbstractRbacManagerTestCase
         Role actualAdmin = rbacManager.getRole( adminRole.getName() );
         Role actualDevel = rbacManager.getRole( develRole.getName() );
 
-        assertEquals( adminRole, actualAdmin );
+        assertEquals( adminRole.getName(), actualAdmin.getName() );
+        assertEquals( adminRole.getChildRoleNames(), actualAdmin.getChildRoleNames() );
         assertEquals( develRole, actualDevel );
 
         /* Assert some event tracker stuff */
@@ -287,7 +288,8 @@ public abstract class AbstractRbacManagerTestCase
 
         Role actualRole = rbacManager.getRole( rolename );
 
-        assertEquals( testRole, actualRole );
+        assertEquals( testRole.getName(), actualRole.getName() );
+        assertEquals( testRole.getChildRoleNames(), actualRole.getChildRoleNames() );
         assertEquals( 1, rbacManager.getAllRoles().size() );
         assertEquals( 0, rbacManager.getAllPermissions().size() );
 
@@ -329,7 +331,8 @@ public abstract class AbstractRbacManagerTestCase
         Role actualAdmin = manager.getRole( adminRole.getName() );
         Role actualDevel = manager.getRole( develRole.getName() );
 
-        assertEquals( adminRole, actualAdmin );
+        assertEquals( adminRole.getName(), actualAdmin.getName() );
+        assertEquals( adminRole.getChildRoleNames(), actualAdmin.getChildRoleNames() );
         assertEquals( develRole, actualDevel );
 
         // Now add a child role.
@@ -360,7 +363,8 @@ public abstract class AbstractRbacManagerTestCase
         Role actualAdmin = manager.getRole( adminRole.getName() );
         Role actualDevel = manager.getRole( develRole.getName() );
 
-        assertEquals( adminRole, actualAdmin );
+        assertEquals( adminRole.getName(), actualAdmin.getName() );
+        assertEquals( adminRole.getChildRoleNames(), actualAdmin.getChildRoleNames() );
         assertEquals( develRole, actualDevel );
 
         // Now do a child role.
@@ -769,7 +773,8 @@ public abstract class AbstractRbacManagerTestCase
         Role actualAdmin = rbacManager.getRole( adminRole.getName() );
         Role actualDevel = rbacManager.getRole( develRole.getName() );
 
-        assertEquals( adminRole, actualAdmin );
+        assertEquals( adminRole.getName(), actualAdmin.getName() );
+        assertEquals( adminRole.getChildRoleNames(), actualAdmin.getChildRoleNames() );
         assertEquals( develRole, actualDevel );
 
         // Attempt to remove perm now.

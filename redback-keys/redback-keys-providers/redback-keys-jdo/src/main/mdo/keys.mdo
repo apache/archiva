@@ -73,12 +73,12 @@
           <version>1.0.0+</version>
           <type>String</type>
         </field>
-        <field>
+        <field xml.format="long">
           <name>dateCreated</name>
           <version>1.0.0+</version>
           <type>Date</type>
         </field>
-        <field>
+        <field xml.format="long">
           <name>dateExpires</name>
           <version>1.0.0+</version>
           <type>Date</type>

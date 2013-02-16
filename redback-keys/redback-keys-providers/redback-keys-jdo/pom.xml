@@ -110,16 +110,37 @@
         <configuration>
           <version>1.0.1</version>
           <packageWithVersion>false</packageWithVersion>
-          <model>src/main/mdo/keys.mdo</model>
+          <models>
+            <model>src/main/mdo/keys.mdo</model>
+          </models>
         </configuration>
         <executions>
           <execution>
             <id>modello-java</id>
             <goals>
               <goal>java</goal>
-              <goal>jpox-metadata-class</goal>
               <goal>stax-reader</goal>
               <goal>stax-writer</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.archiva.redback.components.modello</groupId>
+        <artifactId>jpox-modello-maven-plugin</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <configuration>
+          <version>1.0.1</version>
+          <packageWithVersion>false</packageWithVersion>
+          <models>
+            <model>src/main/mdo/keys.mdo</model>
+          </models>
+        </configuration>
+        <executions>
+          <execution>
+            <id>modello-jpox</id>
+            <goals>
+              <goal>jpox-metadata-class</goal>
             </goals>
           </execution>
           <execution>

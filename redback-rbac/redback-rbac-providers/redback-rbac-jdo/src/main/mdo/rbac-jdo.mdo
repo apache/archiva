@@ -80,8 +80,7 @@
     </class>
 
     <class jpox.stashable="true" 
-           jpox.table="ROLES"
-           jpox.not-persisted-fields="modelEncoding">
+           jpox.table="ROLES">
       <name>JdoRole</name>
       <version>1.0.0+</version>
       <interfaces>
@@ -155,8 +154,7 @@
     </class>
 
     <class jpox.stashable="true" 
-           jpox.table="PERMISSIONS"
-           jpox.not-persisted-fields="modelEncoding">
+           jpox.table="PERMISSIONS">
       <name>JdoPermission</name>
       <version>1.0.0+</version>
       <interfaces>
@@ -212,8 +210,7 @@
     </class>
 
     <class jpox.stashable="true" 
-           jpox.table="OPERATIONS"
-           jpox.not-persisted-fields="modelEncoding">
+           jpox.table="OPERATIONS">
       <name>JdoOperation</name>
       <version>1.0.0+</version>
       <interfaces>
@@ -251,8 +248,7 @@
     </class>
 
     <class jpox.stashable="true" 
-           jpox.table="RESOURCES"
-           jpox.not-persisted-fields="modelEncoding">
+           jpox.table="RESOURCES">
       <name>JdoResource</name>
       <version>1.0.0+</version>
       <description>
@@ -292,8 +288,7 @@
     </class>
 
     <class jpox.stashable="true" 
-           jpox.table="USER_ASSIGNMENTS"
-           jpox.not-persisted-fields="modelEncoding">
+           jpox.table="USER_ASSIGNMENTS">
       <name>JdoUserAssignment</name>
       <description>binding of a principal to a role</description>
       <version>1.0.0+</version>
@@ -308,7 +303,7 @@
           <type>String</type>
           <identifier>true</identifier>
         </field>
-        <field jpox.column="LAST_UPDATED">
+        <field jpox.column="LAST_UPDATED" xml.format="long">
           <name>timestamp</name>
           <version>1.0.0+</version>
           <type>Date</type>

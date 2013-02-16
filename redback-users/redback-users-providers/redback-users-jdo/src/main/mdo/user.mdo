@@ -83,12 +83,12 @@
           <type>String</type>
           <identifier>true</identifier>
         </field>
-        <field>
+        <field xml.format="long">
           <name>lastPasswordChange</name>
           <version>1.0.0+</version>
           <type>Date</type>
         </field>
-        <field>
+        <field xml.format="long">
           <name>lastLoginDate</name>
           <version>1.0.0+</version>
           <type>Date</type>
@@ -134,7 +134,7 @@
             <multiplicity>*</multiplicity>
           </association>
         </field>
-        <field>
+        <field xml.format="long">
           <name>accountCreationDate</name>
           <version>1.0.0+</version>
           <type>Date</type>

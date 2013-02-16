@@ -32,6 +32,7 @@ import javax.xml.stream.XMLStreamException;
 import junit.framework.TestCase;
 
 import org.apache.archiva.redback.rbac.Operation;
+import org.apache.archiva.redback.rbac.Permission;
 import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.rbac.jdo.io.stax.RbacJdoModelStaxReader;
 import org.apache.archiva.redback.rbac.jdo.io.stax.RbacJdoModelStaxWriter;
@@ -155,13 +156,13 @@ public class RbacJdoModelStaxTest
         assertEquals( expectedAssignment.getRoleNames(), assignment.getRoleNames() );
     }
 
-    private void assertPermissions( List<JdoPermission> expectedPermissions, List<JdoPermission> permissions )
+    private void assertPermissions( List<Permission> expectedPermissions, List<Permission> permissions )
     {
         assertEquals( expectedPermissions.size(), permissions.size() );
-        for ( JdoPermission permission : permissions )
+        for ( Permission permission : permissions )
         {
             boolean found = false;
-            for ( JdoPermission expectedPermission : expectedPermissions )
+            for ( Permission expectedPermission : expectedPermissions )
             {
                 if ( expectedPermission.getName().equals( permission.getName() ) )
                 {
@@ -177,7 +178,7 @@ public class RbacJdoModelStaxTest
         }
     }
 
-    private void assertPermission( JdoPermission expectedPermission, JdoPermission permission )
+    private void assertPermission( Permission expectedPermission, Permission permission )
     {
         assertEquals( expectedPermission.getDescription(), permission.getDescription() );
         assertOperation( expectedPermission.getOperation(), permission.getOperation() );

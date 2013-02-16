@@ -30,4 +30,30 @@ public abstract class AbstractRole
     {
         return ( getChildRoleNames() != null ) && !getChildRoleNames().isEmpty();
     }
+
+    /**
+     * Method equals.
+     *
+     * @param other
+     * @return boolean
+     */
+    public boolean equals( Object other )
+    {
+        if ( this == other )
+        {
+            return true;
+        }
+
+        if ( !( other instanceof AbstractRole ) )
+        {
+            return false;
+        }
+
+        AbstractRole that = (AbstractRole) other;
+        boolean result = true;
+
+        result = result && ( getName() == null ? that.getName() == null : getName().equals( that.getName() ) );
+
+        return result;
+    }
 }
