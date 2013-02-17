@@ -82,6 +82,7 @@ public class RepositorySession
      * If the session has been marked as dirty, it will be saved. This may save partial changes in the case of a typical
      * <code>try { ... } finally { ... }</code> approach - if this is a problem, ensure you revert changes when an
      * exception occurs.
+     * <b>can throw RuntimeException</b>
      */
     public void close()
     {
@@ -102,6 +103,18 @@ public class RepositorySession
             {
                 throw new RuntimeException( e.getMessage(), e );
             }
+        }
+    }
+
+    public void closeQuietly()
+    {
+        try
+        {
+            this.close();
+        }
+        catch ( RuntimeException e )
+        {
+            log.warn( "ignore Runtime exception while closing: {}", e.getMessage() );
         }
     }
 

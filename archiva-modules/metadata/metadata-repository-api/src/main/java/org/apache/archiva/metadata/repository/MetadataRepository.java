@@ -197,11 +197,18 @@ public interface MetadataRepository
         throws MetadataRepositoryException;
 
 
+    /**
+     * <b>implementations can throw RuntimeException</b>
+     */
     void save();
+
 
     void close()
         throws MetadataRepositoryException;
 
+    /**
+     * <b>implementations can throw RuntimeException</b>
+     */
     void revert();
 
     boolean canObtainAccess( Class<?> aClass );

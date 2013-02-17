@@ -703,7 +703,7 @@ public class DefaultBrowseService
         {
             if ( session != null )
             {
-                session.close();
+                session.closeQuietly();
             }
         }
 
