@@ -106,6 +106,10 @@ public class RepositorySession
         }
     }
 
+    /**
+     * ignore RuntimeException when closing repository
+     * @since 1.4-M4
+     */
     public void closeQuietly()
     {
         try
@@ -114,7 +118,7 @@ public class RepositorySession
         }
         catch ( RuntimeException e )
         {
-            log.warn( "ignore Runtime exception while closing: {}", e.getMessage() );
+            log.warn( "ignore Runtime exception while closing: {}", e.getMessage(), e );
         }
     }
 
