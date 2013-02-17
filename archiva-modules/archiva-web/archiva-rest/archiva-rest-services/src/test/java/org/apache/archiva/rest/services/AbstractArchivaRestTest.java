@@ -445,6 +445,8 @@ public abstract class AbstractArchivaRestTest
         managedRepository.setStageRepoNeeded( stageNeeded );
         managedRepository.setSnapshots( true );
 
+        //managedRepository.setScanned( scanned );
+
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
         service.addManagedRepository( managedRepository );
 

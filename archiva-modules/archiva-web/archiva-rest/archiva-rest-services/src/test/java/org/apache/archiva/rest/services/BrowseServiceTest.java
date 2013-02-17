@@ -336,23 +336,32 @@ public class BrowseServiceTest
     public void getArtifactDownloadInfos()
         throws Exception
     {
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        try
         {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+            String testRepoId = "test-repo";
+            // force guest user creation if not exists
+            if ( getUserService( authorizationHeader ).getGuestUser() == null )
+            {
+                assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+            }
+
+            createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(),
+                                false );
+
+            BrowseService browseService = getBrowseService( authorizationHeader, true );
+
+            List<Artifact> artifactDownloadInfos =
+                browseService.getArtifactDownloadInfos( "commons-logging", "commons-logging", "1.1", testRepoId );
+
+            log.info( "artifactDownloadInfos {}", artifactDownloadInfos );
+            assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 3 );
+            deleteTestRepo( testRepoId );
         }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
-
-        BrowseService browseService = getBrowseService( authorizationHeader, true );
-
-        List<Artifact> artifactDownloadInfos =
-            browseService.getArtifactDownloadInfos( "commons-logging", "commons-logging", "1.1", testRepoId );
-
-        log.info( "artifactDownloadInfos {}", artifactDownloadInfos );
-        assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 3 );
-        deleteTestRepo( testRepoId );
+        catch ( Exception e )
+        {
+            log.error( e.getMessage(), e );
+            throw e;
+        }
     }
 
 
