@@ -694,4 +694,15 @@ public class JdoRbacManager
     {
         this.enableCache = enableCache;
     }
+
+    @Override
+    public boolean isFinalImplementation()
+    {
+        return true;
+    }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.rbacmanager.jdo";
+    }
 }

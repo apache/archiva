@@ -38,10 +38,6 @@ public interface RBACManager
 
     void removeListener( RBACManagerListener listener );
 
-    /**
-     * @since 2.1
-     */
-    void initialize();
 
     // ------------------------------------------------------------------
     // Role Methods
@@ -427,4 +423,24 @@ public interface RBACManager
         throws RbacManagerException;
 
     void eraseDatabase();
+
+    /**
+     * consumer of user manager can use it to reload various configuration
+     * with the configurable implementation is possible to change dynamically the real implementation used.
+     *
+     * @since 2.1
+     */
+    void initialize();
+
+    /**
+     * @return true if this implementation is a final one and not a wrapper (configurable, cached)
+     * @since 2.1
+     */
+    boolean isFinalImplementation();
+
+    /**
+     * @return a key to be able to customize label in UI
+     * @since 2.1
+     */
+    String getDescriptionKey();
 }

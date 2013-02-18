@@ -51,6 +51,12 @@ public abstract class AbstractRBACManager
         //no op
     }
 
+    public boolean isFinalImplementation()
+    {
+        return false;
+    }
+
+
     public void addListener( RBACManagerListener listener )
     {
         if ( !listeners.contains( listener ) )

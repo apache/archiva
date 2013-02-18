@@ -1363,4 +1363,16 @@ public class LdapRbacManager
             return sb.toString();
         }
     }
+
+
+    @Override
+    public boolean isFinalImplementation()
+    {
+        return true;
+    }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.rbacmanager.ldap";
+    }
 }

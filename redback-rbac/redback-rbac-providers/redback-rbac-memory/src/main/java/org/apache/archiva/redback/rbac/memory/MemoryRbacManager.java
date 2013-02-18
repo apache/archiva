@@ -65,6 +65,8 @@ public class MemoryRbacManager
 
     private Map<String, UserAssignment> userAssignments = new HashMap<String, UserAssignment>();
 
+    private boolean hasTriggeredInit = false;
+
     // ----------------------------------------------------------------------
     // Role methods
     // ----------------------------------------------------------------------
@@ -529,8 +531,6 @@ public class MemoryRbacManager
         return resources.get( resourceIdentifier );
     }
 
-    private boolean hasTriggeredInit = false;
-
     public void triggerInit()
     {
         if ( !hasTriggeredInit )
@@ -538,5 +538,16 @@ public class MemoryRbacManager
             fireRbacInit( roles.isEmpty() );
             hasTriggeredInit = true;
         }
+    }
+
+    @Override
+    public boolean isFinalImplementation()
+    {
+        return true;
+    }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.rbacmanager.memory";
     }
 }

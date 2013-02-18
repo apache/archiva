@@ -882,4 +882,16 @@ public class CachedRbacManager
     {
         this.rbacImpl = rbacImpl;
     }
+
+
+    public boolean isFinalImplementation()
+    {
+        return true;
+    }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.rbacmanager.cached";
+    }
+
 }
