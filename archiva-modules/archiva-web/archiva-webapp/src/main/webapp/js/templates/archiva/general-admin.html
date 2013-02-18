@@ -988,14 +988,31 @@
           <div class="span4 dotted">
             <h5>${$.i18n.prop('redback.runtime.user-managers.impls.choosed')}</h5>
             <div style="min-height: 40px" id="user-mananagers-sortables-choosed"
-                 data-bind="sortable: { template: 'redback-runtime-general-content-usermanagers', data:usedUserManagerImpls,afterMove: userManagerImplMoved}">
+                 data-bind="sortable: { template: 'redback-runtime-general-content-impl-informations', data:usedUserManagerImpls,afterMove: userManagerImplMoved}">
             </div>
           </div>
 
           <div class="span4 dotted">
             <h5>${$.i18n.prop('redback.runtime.user-managers.impls.available')}</h5>
             <div style="min-height: 40px"id="user-mananagers-sortables-availables"
-                 data-bind="sortable: {template: 'redback-runtime-general-content-usermanagers',data:availableUserManagerImpls,afterMove: userManagerImplMoved}">
+                 data-bind="sortable: {template: 'redback-runtime-general-content-impl-informations',data:availableUserManagerImpls,afterMove: userManagerImplMoved}">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="well">
+        <div class="row-fluid">
+          <div class="span4 dotted">
+            <h5>${$.i18n.prop('redback.runtime.rbac-managers.impls.choosed')}</h5>
+            <div style="min-height: 40px" id="rbac-mananagers-sortables-choosed"
+                 data-bind="sortable: { template: 'redback-runtime-general-content-impl-informations', data:usedUserManagerImpls,afterMove: userManagerImplMoved}">
+            </div>
+          </div>
+
+          <div class="span4 dotted">
+            <h5>${$.i18n.prop('redback.runtime.rbac-managers.impls.available')}</h5>
+            <div style="min-height: 40px"id="rbac-mananagers-sortables-availables"
+                 data-bind="sortable: {template: 'redback-runtime-general-content-impl-informations',data:availableUserManagerImpls,afterMove: userManagerImplMoved}">
             </div>
           </div>
         </div>
@@ -1232,7 +1249,7 @@
 
 </script>
 
-<script id="redback-runtime-general-content-usermanagers" type="text/html">
+<script id="redback-runtime-general-content-impl-informations" type="text/html">
   <div class="well draggable-item">
     ${$data.description}
   </div>

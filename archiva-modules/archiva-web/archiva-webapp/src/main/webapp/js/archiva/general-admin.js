@@ -1368,10 +1368,11 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       return null;
   }
 
-  RedbackRuntimeConfigurationViewModel=function(redbackRuntimeConfiguration,userManagerImplementationInformations){
+  RedbackRuntimeConfigurationViewModel=function(redbackRuntimeConfiguration,userManagerImplementationInformations,rbacManagerImplementationInformations){
     var self=this;
     this.redbackRuntimeConfiguration=ko.observable(redbackRuntimeConfiguration);
-    this.userManagerImplementationInformations=ko.observable(userManagerImplementationInformations);
+    this.userManagerImplementationInformations=ko.observableArray(userManagerImplementationInformations);
+    this.rbacManagerImplementationInformations=ko.observableArray(rbacManagerImplementationInformations);
 
     this.usedUserManagerImpls=ko.observableArray([]);
 
@@ -1697,18 +1698,20 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     var mainContent = $("#main-content");
     mainContent.html(mediumSpinnerImg());
 
-    $.ajax("restServices/archivaServices/redbackRuntimeConfigurationService/redbackImplementationInformations", {
+    $.ajax("restServices/archivaServices/redbackRuntimeConfigurationService/redbackImplementationsInformations", {
       type: "GET",
       dataType: 'json',
       success: function(data) {
         var userManagerImplementationInformations=data?mapManagerImplementationInformations(data.userManagerImplementationInformations):[];
+        var rbacManagerImplementationInformations=data?mapManagerImplementationInformations(data.rbacManagerImplementationInformations):[];
+        $.log("rbacManagerImplementationInformations:"+rbacManagerImplementationInformations.length);
         $.ajax("restServices/archivaServices/redbackRuntimeConfigurationService/redbackRuntimeConfiguration", {
           type: "GET",
           dataType: 'json',
           success: function(data) {
             var redbackRuntimeConfiguration = mapRedbackRuntimeConfiguration(data);
             var redbackRuntimeConfigurationViewModel =
-                new RedbackRuntimeConfigurationViewModel(redbackRuntimeConfiguration,userManagerImplementationInformations);
+                new RedbackRuntimeConfigurationViewModel(redbackRuntimeConfiguration,userManagerImplementationInformations,rbacManagerImplementationInformations);
 
             var groups=[];
             var useLdap = $.inArray("ldap",redbackRuntimeConfiguration.usedUserManagerImpls)>0
