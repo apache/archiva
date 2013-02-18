@@ -340,4 +340,9 @@ public class ArchivaRbacManager
     {
         return "archiva.redback.rbacmanager.archiva";
     }
+
+    public boolean isReadOnly()
+    {
+        return false;
+    }
 }
