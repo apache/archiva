@@ -92,7 +92,7 @@ public class AbstractImplementationInformation
         {
             return true;
         }
-        if ( !( o instanceof UserManagerImplementationInformation ) )
+        if ( !( o instanceof AbstractImplementationInformation ) )
         {
             return false;
         }

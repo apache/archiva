@@ -216,13 +216,13 @@ public class DefaultRedbackRuntimeConfigurationService
 
         for ( Map.Entry<String, RBACManager> entry : beans.entrySet() )
         {
-            UserManager userManager = applicationContext.getBean( entry.getKey(), UserManager.class );
-            if ( userManager.isFinalImplementation() )
+            RBACManager rbacManager = applicationContext.getBean( entry.getKey(), RBACManager.class );
+            if ( rbacManager.isFinalImplementation() )
             {
                 RBACManagerImplementationInformation information = new RBACManagerImplementationInformation();
                 information.setBeanId( StringUtils.substringAfter( entry.getKey(), "#" ) );
-                information.setDescriptionKey( userManager.getDescriptionKey() );
-                information.setReadOnly( userManager.isReadOnly() );
+                information.setDescriptionKey( rbacManager.getDescriptionKey() );
+                information.setReadOnly( rbacManager.isReadOnly() );
                 informations.add( information );
             }
         }
