@@ -1622,24 +1622,24 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     };
   }
 
-  UserManagerImplementationInformation=function(beanId,descriptionKey,readOnly){
+  ManagerImplementationInformation=function(beanId,descriptionKey,readOnly){
     this.beanId=beanId;
     this.descriptionKey=descriptionKey;
     this.description= $.i18n.prop(descriptionKey);
     this.readOnly=readOnly;
   }
 
-  mapUserManagerImplementationInformations=function(data){
+  mapManagerImplementationInformations=function(data){
     return $.map(data, function(item) {
-      return mapUserManagerImplementationInformation(item);
+      return mapManagerImplementationInformation(item);
     });
   }
 
-  mapUserManagerImplementationInformation=function(data){
+  mapManagerImplementationInformation=function(data){
     if(data==null){
       return null;
     }
-    return new UserManagerImplementationInformation(data.beanId,data.descriptionKey,data.readOnly);
+    return new ManagerImplementationInformation(data.beanId,data.descriptionKey,data.readOnly);
   }
 
   activateRedbackRuntimeGeneralFormValidation=function(){
@@ -1701,7 +1701,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       type: "GET",
       dataType: 'json',
       success: function(data) {
-      var userManagerImplementationInformations=mapUserManagerImplementationInformations(data);
+      var userManagerImplementationInformations=mapManagerImplementationInformations(data);
       $.ajax("restServices/archivaServices/redbackRuntimeConfigurationService/redbackRuntimeConfiguration", {
         type: "GET",
         dataType: 'json',
