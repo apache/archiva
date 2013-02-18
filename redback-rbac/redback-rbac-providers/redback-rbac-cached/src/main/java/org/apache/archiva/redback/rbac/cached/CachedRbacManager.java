@@ -894,4 +894,8 @@ public class CachedRbacManager
         return "archiva.redback.rbacmanager.cached";
     }
 
+    public boolean isReadOnly()
+    {
+        return false;
+    }
 }

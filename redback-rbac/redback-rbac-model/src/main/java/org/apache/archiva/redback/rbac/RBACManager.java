@@ -443,4 +443,11 @@ public interface RBACManager
      * @since 2.1
      */
     String getDescriptionKey();
+
+    /**
+     * Is the RBACManager read only?  if so then create and modify actions are to be disabled
+     *
+     * @return boolean true if user manager is read only
+     */
+    boolean isReadOnly();
 }

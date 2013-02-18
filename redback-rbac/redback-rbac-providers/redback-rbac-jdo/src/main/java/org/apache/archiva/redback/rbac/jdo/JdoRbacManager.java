@@ -705,4 +705,9 @@ public class JdoRbacManager
     {
         return "archiva.redback.rbacmanager.jdo";
     }
+
+    public boolean isReadOnly()
+    {
+        return false;
+    }
 }

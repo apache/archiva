@@ -1375,4 +1375,9 @@ public class LdapRbacManager
     {
         return "archiva.redback.rbacmanager.ldap";
     }
+
+    public boolean isReadOnly()
+    {
+        return !writableLdap;
+    }
 }

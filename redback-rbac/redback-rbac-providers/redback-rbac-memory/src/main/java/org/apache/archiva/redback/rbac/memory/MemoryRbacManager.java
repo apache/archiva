@@ -550,4 +550,9 @@ public class MemoryRbacManager
     {
         return "archiva.redback.rbacmanager.memory";
     }
+
+    public boolean isReadOnly()
+    {
+        return false;
+    }
 }
