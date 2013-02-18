@@ -25,15 +25,11 @@ import java.io.Serializable;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@XmlRootElement ( name = "userManagerImplementationInformation" )
+@XmlRootElement(name = "userManagerImplementationInformation")
 public class UserManagerImplementationInformation
+    extends AbstractImplementationInformation
     implements Serializable
 {
-    private String beanId;
-
-    private String descriptionKey;
-
-    private boolean readOnly;
 
     public UserManagerImplementationInformation()
     {
@@ -42,77 +38,7 @@ public class UserManagerImplementationInformation
 
     public UserManagerImplementationInformation( String beanId, String descriptionKey, boolean readOnly )
     {
-        this.beanId = beanId;
-        this.descriptionKey = descriptionKey;
-        this.readOnly = readOnly;
+        super( beanId, descriptionKey, readOnly );
     }
 
-    public String getBeanId()
-    {
-        return beanId;
-    }
-
-    public void setBeanId( String beanId )
-    {
-        this.beanId = beanId;
-    }
-
-    public String getDescriptionKey()
-    {
-        return descriptionKey;
-    }
-
-    public void setDescriptionKey( String descriptionKey )
-    {
-        this.descriptionKey = descriptionKey;
-    }
-
-    public boolean isReadOnly()
-    {
-        return readOnly;
-    }
-
-    public void setReadOnly( boolean readOnly )
-    {
-        this.readOnly = readOnly;
-    }
-
-    @Override
-    public String toString()
-    {
-        final StringBuilder sb = new StringBuilder();
-        sb.append( "UserManagerImplementationInformation" );
-        sb.append( "{beanId='" ).append( beanId ).append( '\'' );
-        sb.append( ", descriptionKey='" ).append( descriptionKey ).append( '\'' );
-        sb.append( '}' );
-        return sb.toString();
-    }
-
-    @Override
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( !( o instanceof UserManagerImplementationInformation ) )
-        {
-            return false;
-        }
-
-        UserManagerImplementationInformation that = (UserManagerImplementationInformation) o;
-
-        if ( !beanId.equals( that.beanId ) )
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return beanId.hashCode();
-    }
 }

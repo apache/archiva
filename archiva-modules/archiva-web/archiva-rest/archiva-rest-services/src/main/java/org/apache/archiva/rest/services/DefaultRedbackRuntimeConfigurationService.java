@@ -33,7 +33,9 @@ import org.apache.archiva.redback.common.ldap.connection.LdapException;
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.policy.CookieSettings;
 import org.apache.archiva.redback.policy.PasswordRule;
+import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.rest.api.model.RBACManagerImplementationInformation;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RedbackRuntimeConfigurationService;
@@ -199,6 +201,34 @@ public class DefaultRedbackRuntimeConfigurationService
         return informations;
     }
 
+    public List<RBACManagerImplementationInformation> getRbacManagerImplementationInformations()
+        throws ArchivaRestServiceException
+    {
+        Map<String, RBACManager> beans = applicationContext.getBeansOfType( RBACManager.class );
+
+        if ( beans.isEmpty() )
+        {
+            return Collections.emptyList();
+        }
+
+        List<RBACManagerImplementationInformation> informations =
+            new ArrayList<RBACManagerImplementationInformation>( beans.size() );
+
+        for ( Map.Entry<String, RBACManager> entry : beans.entrySet() )
+        {
+            UserManager userManager = applicationContext.getBean( entry.getKey(), UserManager.class );
+            if ( userManager.isFinalImplementation() )
+            {
+                RBACManagerImplementationInformation information = new RBACManagerImplementationInformation();
+                information.setBeanId( StringUtils.substringAfter( entry.getKey(), "#" ) );
+                information.setDescriptionKey( userManager.getDescriptionKey() );
+                information.setReadOnly( userManager.isReadOnly() );
+                informations.add( information );
+            }
+        }
+
+        return informations;
+    }
 
     public Boolean checkLdapConnection()
         throws ArchivaRestServiceException

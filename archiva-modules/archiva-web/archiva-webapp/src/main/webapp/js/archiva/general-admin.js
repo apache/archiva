@@ -1217,7 +1217,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
 
   RedbackRuntimeConfiguration=function(userManagerImpls,ldapConfiguration,migratedFromRedbackConfiguration,configurationPropertiesEntries
-                                      ,useUsersCache,cacheConfiguration){
+                                      ,useUsersCache,cacheConfiguration,rbacManagerImpls){
     $.log("new RedbackRuntimeConfiguration");
     var self=this;
     this.modified=ko.observable(false);
@@ -1225,6 +1225,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     this.userManagerImpls=ko.observableArray(userManagerImpls);
     this.userManagerImpls.subscribe(function(newValue){self.modified(true)});
+
+    this.rbacManagerImpls=ko.observableArray(rbacManagerImpls);
+    this.rbacManagerImpls.subscribe(function(newValue){self.modified(true)});
 
     this.ldapConfiguration=ko.observable(ldapConfiguration);
     this.ldapConfiguration.subscribe(function(newValue){self.modified(true)});
@@ -1270,7 +1273,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     var redbackRuntimeConfiguration =
             new RedbackRuntimeConfiguration(data.userManagerImpls,ldapConfiguration,data.migratedFromRedbackConfiguration,[]
-                    ,data.useUsersCache,mapCacheConfiguration(data.usersCacheConfiguration));
+                    ,data.useUsersCache,mapCacheConfiguration(data.usersCacheConfiguration),data.rbacManagerImpls);
 
 
     var configurationPropertiesEntries = data.configurationPropertiesEntries == null ? []: $.each(data.configurationPropertiesEntries,function(item){
@@ -1371,6 +1374,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.userManagerImplementationInformations=ko.observable(userManagerImplementationInformations);
 
     this.usedUserManagerImpls=ko.observableArray([]);
+
+    this.rbacManagerImpls=ko.observableArray([]);
 
     this.modifiesLdapGroupMappings=ko.observableArray([]);
 
@@ -1692,7 +1697,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     var mainContent = $("#main-content");
     mainContent.html(mediumSpinnerImg());
 
-    $.ajax("restServices/archivaServices/redbackRuntimeConfigurationService/userManagerImplementationInformation", {
+    $.ajax("restServices/archivaServices/redbackRuntimeConfigurationService/userManagerImplementationInformations", {
       type: "GET",
       dataType: 'json',
       success: function(data) {
@@ -1706,7 +1711,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
               new RedbackRuntimeConfigurationViewModel(redbackRuntimeConfiguration,userManagerImplementationInformations);
 
           var groups=[];
-
+          var useLdap = $.inArray("ldap",redbackRuntimeConfiguration.usedUserManagerImpls)>0
+                  ||$.inArray("ldap",redbackRuntimeConfiguration.rbacManagerImpls)>0;
+          $.log("useLdap:"+useLdap);
           // load ldap roles
           $.ajax("restServices/redbackServices/ldapGroupMappingService/ldapGroups", {
             type: "GET",
@@ -1716,7 +1723,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
               $.log("groups number:"+groups.length);
               redbackRuntimeConfiguration.ldapGroups=ko.observableArray(groups);
             }
-          } ).always(
+          } )
+            .always(
                   function() {
                     $.log("complete");
 

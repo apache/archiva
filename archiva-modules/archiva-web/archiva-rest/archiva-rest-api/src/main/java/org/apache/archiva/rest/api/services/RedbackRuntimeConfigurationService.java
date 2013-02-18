@@ -21,6 +21,7 @@ package org.apache.archiva.rest.api.services;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.rest.api.model.RBACManagerImplementationInformation;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
@@ -55,11 +56,18 @@ public interface RedbackRuntimeConfigurationService
     Boolean updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws ArchivaRestServiceException;
 
-    @Path("userManagerImplementationInformation")
+    @Path("userManagerImplementationInformations")
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
     List<UserManagerImplementationInformation> getUserManagerImplementationInformations()
+        throws ArchivaRestServiceException;
+
+    @Path("rbacManagerImplementationInformations")
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
+    List<RBACManagerImplementationInformation> getRbacManagerImplementationInformations()
         throws ArchivaRestServiceException;
 
 

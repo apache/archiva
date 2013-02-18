@@ -329,4 +329,15 @@ public class ArchivaRbacManager
     {
         log.warn( "eraseDatabase not implemented" );
     }
+
+    @Override
+    public boolean isFinalImplementation()
+    {
+        return false;
+    }
+
+    public String getDescriptionKey()
+    {
+        return "archiva.redback.rbacmanager.archiva";
+    }
 }
