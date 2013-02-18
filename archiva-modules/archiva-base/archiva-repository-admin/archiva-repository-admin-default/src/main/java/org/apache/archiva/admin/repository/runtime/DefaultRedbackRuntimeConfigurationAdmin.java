@@ -55,7 +55,7 @@ import java.util.Set;
  */
 @Service( "userConfiguration#archiva" )
 public class DefaultRedbackRuntimeConfigurationAdmin
-    implements RedbackRuntimeConfigurationAdmin, UserConfiguration, ConfigurationListener
+    implements RedbackRuntimeConfigurationAdmin, UserConfiguration
 {
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
@@ -70,8 +70,6 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     @Inject
     @Named( value = "cache#users" )
     private Cache usersCache;
-
-    private volatile RedbackRuntimeConfiguration currentRedbackRuntimeConfiguration;
 
     @PostConstruct
     public void initialize()
@@ -221,8 +219,6 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
             }
 
-            this.currentRedbackRuntimeConfiguration = redbackRuntimeConfiguration;
-
         }
         catch ( RepositoryAdminException e )
         {
@@ -232,7 +228,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
     public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
     {
-        return build( archivaConfiguration.getConfiguration().getRedbackRuntimeConfiguration(), false );
+        return build( archivaConfiguration.getConfiguration().getRedbackRuntimeConfiguration() );
     }
 
     public void updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
@@ -245,7 +241,6 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         try
         {
             archivaConfiguration.save( configuration );
-            this.currentRedbackRuntimeConfiguration = redbackRuntimeConfiguration;
         }
         catch ( RegistryException e )
         {
@@ -258,12 +253,8 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     }
 
     private RedbackRuntimeConfiguration build(
-        org.apache.archiva.configuration.RedbackRuntimeConfiguration runtimeConfiguration, boolean force )
+        org.apache.archiva.configuration.RedbackRuntimeConfiguration runtimeConfiguration )
     {
-        if ( this.currentRedbackRuntimeConfiguration != null && !force )
-        {
-            return this.currentRedbackRuntimeConfiguration;
-        }
         RedbackRuntimeConfiguration redbackRuntimeConfiguration =
             new BeanReplicator().replicateBean( runtimeConfiguration, RedbackRuntimeConfiguration.class );
 
@@ -293,8 +284,6 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         }
 
         cleanupProperties( redbackRuntimeConfiguration );
-
-        this.currentRedbackRuntimeConfiguration = redbackRuntimeConfiguration;
 
         return redbackRuntimeConfiguration;
     }
@@ -629,8 +618,5 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return keysSet;
     }
 
-    public void configurationEvent( ConfigurationEvent event )
-    {
-        build( archivaConfiguration.getConfiguration().getRedbackRuntimeConfiguration(), true );
-    }
+
 }

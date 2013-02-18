@@ -118,10 +118,6 @@ public class RedbackRuntimeConfiguration
 
     public List<PropertyEntry> getConfigurationPropertiesEntries()
     {
-        if ( configurationPropertiesEntries != null )
-        {
-            return configurationPropertiesEntries;
-        }
         configurationPropertiesEntries = new ArrayList<PropertyEntry>( getConfigurationProperties().size() );
         for ( Map.Entry<String, String> entry : getConfigurationProperties().entrySet() )
         {
