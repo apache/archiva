@@ -1714,75 +1714,80 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           var useLdap = $.inArray("ldap",redbackRuntimeConfiguration.usedUserManagerImpls)>0
                   ||$.inArray("ldap",redbackRuntimeConfiguration.rbacManagerImpls)>0;
           $.log("useLdap:"+useLdap);
-          // load ldap roles
-          $.ajax("restServices/redbackServices/ldapGroupMappingService/ldapGroups", {
-            type: "GET",
-            dataType: 'json',
-            success: function(data){
-              groups = mapStringList(data);
-              $.log("groups number:"+groups.length);
-              redbackRuntimeConfiguration.ldapGroups=ko.observableArray(groups);
-            }
-          } )
+          if(useLdap){
+            // load ldap roles
+            $.ajax("restServices/redbackServices/ldapGroupMappingService/ldapGroups", {
+              type: "GET",
+              dataType: 'json',
+              success: function(data){
+                groups = mapStringList(data);
+                $.log("groups number:"+groups.length);
+                redbackRuntimeConfiguration.ldapGroups=ko.observableArray(groups);
+              }
+            } )
             .always(
-                  function() {
-                    $.log("complete");
+              function() {
+                $.log("complete");
 
-                    // load ldap group mappings if any
-                    $.ajax("restServices/redbackServices/ldapGroupMappingService", {
+                // load ldap group mappings if any
+                $.ajax("restServices/redbackServices/ldapGroupMappingService", {
+                  type: "GET",
+                  dataType: 'json',
+                  success: function(data) {
+                    var groupMappings=mapLdapGroupMappings(data,redbackRuntimeConfigurationViewModel.modifyLdapGroupMapping);
+
+                    $.ajax("restServices/redbackServices/roleManagementService/allRoles", {
                       type: "GET",
                       dataType: 'json',
                       success: function(data) {
-                        var groupMappings=mapLdapGroupMappings(data,redbackRuntimeConfigurationViewModel.modifyLdapGroupMapping);
-
-                        $.ajax("restServices/redbackServices/roleManagementService/allRoles", {
-                          type: "GET",
-                          dataType: 'json',
-                          success: function(data) {
-
-                            var allRoleNames = $.map(data, function(item) {
-                              return item.name;
-                            });
-
-                            redbackRuntimeConfigurationViewModel.allRoleNames=allRoleNames;
-                            if (redbackRuntimeConfiguration.ldapConfiguration().useRoleNameAsGroup()) {
-                              // if using groups == roles add all as mapping except already mapped
-                              $.each(groups,function(idx,item){
-                                var exists=false;
-                                // avoid duplicate if mapping really exists !
-                                $.each(groupMappings,function(idx2,groupMapping){
-                                  if(groupMapping.group()==item){
-                                    exists=true;
-                                  }
-                                });
-                                if(!exists){
-                                  groupMappings.push(new LdapGroupMapping(item,[item],true,redbackRuntimeConfigurationViewModel.modifyLdapGroupMapping));
-                                }
-
-                              });
-                            }
-                            redbackRuntimeConfiguration.ldapGroupMappings=ko.observableArray(groupMappings);
-                            redbackRuntimeConfiguration.modified(false);
-
-                            mainContent.html( $("#redback-runtime-configuration-main" ).tmpl() );
-                            ko.applyBindings(redbackRuntimeConfigurationViewModel,$("#redback-runtime-configuration-content" ).get(0));
-                            activateRedbackRuntimeGeneralFormValidation();
-                            activateLdapConfigurationFormValidation();
-                            $("#ldap-group-mappings-div select" ).select2({width: "element"});
-
-                          }
-                        });
+                        displayRuntimeConfigurationScreen(redbackRuntimeConfigurationViewModel,data,groupMappings,groups);
                       }
                     });
                   }
-                );
-
+                });
+              }
+            );
+          } else {
+            displayRuntimeConfigurationScreen(redbackRuntimeConfigurationViewModel,null,null);
+          }
         }
       });
 
       }
     });
 
+  }
+
+  displayRuntimeConfigurationScreen=function(redbackRuntimeConfigurationViewModel,allRoles,groupMappings,groups){
+    var allRoleNames = $.map(allRoles?allRoles:[], function(item) {
+      return item.name;
+    });
+
+    redbackRuntimeConfigurationViewModel.allRoleNames=allRoleNames;
+    if (redbackRuntimeConfigurationViewModel.redbackRuntimeConfiguration().ldapConfiguration().useRoleNameAsGroup()) {
+      // if using groups == roles add all as mapping except already mapped
+      $.each(groups,function(idx,item){
+        var exists=false;
+        // avoid duplicate if mapping really exists !
+        $.each(groupMappings,function(idx2,groupMapping){
+          if(groupMapping.group()==item){
+            exists=true;
+          }
+        });
+        if(!exists){
+          groupMappings.push(new LdapGroupMapping(item,[item],true,redbackRuntimeConfigurationViewModel.modifyLdapGroupMapping));
+        }
+
+      });
+    }
+    redbackRuntimeConfigurationViewModel.redbackRuntimeConfiguration().ldapGroupMappings=ko.observableArray(groupMappings?groupMappings:[]);
+    redbackRuntimeConfigurationViewModel.redbackRuntimeConfiguration().modified(false);
+
+    $("#main-content").html( $("#redback-runtime-configuration-main" ).tmpl() );
+    ko.applyBindings(redbackRuntimeConfigurationViewModel,$("#redback-runtime-configuration-content" ).get(0));
+    activateRedbackRuntimeGeneralFormValidation();
+    activateLdapConfigurationFormValidation();
+    $("#ldap-group-mappings-div select" ).select2({width: "element"});
   }
 
   LdapGroupMapping=function(group,roleNames,automatic,subscribeFn){
