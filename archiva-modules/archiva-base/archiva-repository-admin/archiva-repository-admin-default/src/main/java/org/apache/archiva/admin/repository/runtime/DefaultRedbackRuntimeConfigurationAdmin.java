@@ -71,7 +71,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     @Named( value = "cache#users" )
     private Cache usersCache;
 
-    private RedbackRuntimeConfiguration currentRedbackRuntimeConfiguration;
+    private volatile RedbackRuntimeConfiguration currentRedbackRuntimeConfiguration;
 
     @PostConstruct
     public void initialize()
