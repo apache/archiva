@@ -19,7 +19,6 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.PropertyEntry;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
@@ -36,7 +35,7 @@ import org.apache.archiva.redback.policy.PasswordRule;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.rest.api.model.RBACManagerImplementationInformation;
-import org.apache.archiva.rest.api.model.RedbackImplementationInformations;
+import org.apache.archiva.rest.api.model.RedbackImplementationsInformations;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RedbackRuntimeConfigurationService;
@@ -51,7 +50,6 @@ import javax.naming.InvalidNameException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -231,10 +229,10 @@ public class DefaultRedbackRuntimeConfigurationService
         return informations;
     }
 
-    public RedbackImplementationInformations getRedbackImplementationInformations()
+    public RedbackImplementationsInformations getRedbackImplementationsInformations()
         throws ArchivaRestServiceException
     {
-        return new RedbackImplementationInformations( getUserManagerImplementationInformations(),
+        return new RedbackImplementationsInformations( getUserManagerImplementationInformations(),
                                                       getRbacManagerImplementationInformations() );
     }
 

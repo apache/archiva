@@ -22,7 +22,7 @@ import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.RBACManagerImplementationInformation;
-import org.apache.archiva.rest.api.model.RedbackImplementationInformations;
+import org.apache.archiva.rest.api.model.RedbackImplementationsInformations;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
@@ -72,11 +72,11 @@ public interface RedbackRuntimeConfigurationService
         throws ArchivaRestServiceException;
 
 
-    @Path("redbackImplementationInformations")
+    @Path("redbackImplementationsInformations")
     @GET
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
-    RedbackImplementationInformations getRedbackImplementationInformations()
+    RedbackImplementationsInformations getRedbackImplementationsInformations()
         throws ArchivaRestServiceException;
 
     @Path( "checkLdapConnection" )
