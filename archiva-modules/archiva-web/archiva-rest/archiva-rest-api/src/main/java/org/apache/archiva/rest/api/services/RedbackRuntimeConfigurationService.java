@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.RBACManagerImplementationInformation;
+import org.apache.archiva.rest.api.model.RedbackImplementationInformations;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
@@ -71,6 +72,13 @@ public interface RedbackRuntimeConfigurationService
         throws ArchivaRestServiceException;
 
 
+    @Path("redbackImplementationInformations")
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
+    RedbackImplementationInformations getRedbackImplementationInformations()
+        throws ArchivaRestServiceException;
+
     @Path( "checkLdapConnection" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
@@ -78,11 +86,11 @@ public interface RedbackRuntimeConfigurationService
     Boolean checkLdapConnection()
         throws ArchivaRestServiceException;
 
-    @Path( "checkLdapConnection" )
+    @Path("checkLdapConnection")
     @POST
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
     Boolean checkLdapConnection( LdapConfiguration ldapConfiguration )
         throws ArchivaRestServiceException;
 }

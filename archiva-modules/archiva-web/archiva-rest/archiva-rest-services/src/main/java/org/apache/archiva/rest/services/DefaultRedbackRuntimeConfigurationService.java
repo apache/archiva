@@ -36,6 +36,7 @@ import org.apache.archiva.redback.policy.PasswordRule;
 import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.rest.api.model.RBACManagerImplementationInformation;
+import org.apache.archiva.rest.api.model.RedbackImplementationInformations;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RedbackRuntimeConfigurationService;
@@ -228,6 +229,13 @@ public class DefaultRedbackRuntimeConfigurationService
         }
 
         return informations;
+    }
+
+    public RedbackImplementationInformations getRedbackImplementationInformations()
+        throws ArchivaRestServiceException
+    {
+        return new RedbackImplementationInformations( getUserManagerImplementationInformations(),
+                                                      getRbacManagerImplementationInformations() );
     }
 
     public Boolean checkLdapConnection()
