@@ -1703,7 +1703,7 @@
         <plugin>
           <groupId>org.codehaus.modello</groupId>
           <artifactId>modello-maven-plugin</artifactId>
-          <version>1.6</version>
+          <version>1.7</version>
           <configuration>
             <useJava5>true</useJava5>
           </configuration>
