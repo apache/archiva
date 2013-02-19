@@ -691,7 +691,7 @@
         <plugin>
           <groupId>org.codehaus.modello</groupId>
           <artifactId>modello-maven-plugin</artifactId>
-          <version>1.7-SNAPSHOT</version>
+          <version>1.7</version>
           <configuration>
             <!-- cause issue with datamanagement module -->
             <useJava5>false</useJava5>
