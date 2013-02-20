@@ -58,7 +58,7 @@ import java.util.Properties;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service("redbackRuntimeConfigurationService#rest")
+@Service( "redbackRuntimeConfigurationService#rest" )
 public class DefaultRedbackRuntimeConfigurationService
     extends AbstractRestService
     implements RedbackRuntimeConfigurationService
@@ -67,18 +67,22 @@ public class DefaultRedbackRuntimeConfigurationService
     private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
     @Inject
-    @Named(value = "userManager#configurable")
+    @Named( value = "userManager#configurable" )
     private UserManager userManager;
+
+    @Inject
+    @Named( value = "rbacManager#default" )
+    private RBACManager rbacManager;
 
     @Inject
     private ApplicationContext applicationContext;
 
     @Inject
-    @Named(value = "ldapConnectionFactory#configurable")
+    @Named( value = "ldapConnectionFactory#configurable" )
     private LdapConnectionFactory ldapConnectionFactory;
 
     @Inject
-    @Named(value = "cache#users")
+    @Named( value = "cache#users" )
     private Cache usersCache;
 
     @Inject
@@ -111,6 +115,13 @@ public class DefaultRedbackRuntimeConfigurationService
                 userManagerChanged || ( redbackRuntimeConfiguration.getUserManagerImpls().toString().hashCode()
                     != redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getUserManagerImpls().toString().hashCode() );
 
+            boolean rbacManagerChanged = redbackRuntimeConfiguration.getRbacManagerImpls().size()
+                != redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getRbacManagerImpls().size();
+
+            rbacManagerChanged =
+                rbacManagerChanged || ( redbackRuntimeConfiguration.getRbacManagerImpls().toString().hashCode()
+                    != redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getRbacManagerImpls().toString().hashCode() );
+
             redbackRuntimeConfigurationAdmin.updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
 
             if ( userManagerChanged )
@@ -118,6 +129,13 @@ public class DefaultRedbackRuntimeConfigurationService
                 log.info( "user managerImpls changed to {} so reload it",
                           redbackRuntimeConfiguration.getUserManagerImpls() );
                 userManager.initialize();
+            }
+
+            if ( rbacManagerChanged )
+            {
+                log.info( "rbac manager changed to {} so reload it",
+                          redbackRuntimeConfiguration.getRbacManagerImpls() );
+                rbacManager.initialize();
             }
 
             ldapConnectionFactory.initialize();
@@ -233,7 +251,7 @@ public class DefaultRedbackRuntimeConfigurationService
         throws ArchivaRestServiceException
     {
         return new RedbackImplementationsInformations( getUserManagerImplementationInformations(),
-                                                      getRbacManagerImplementationInformations() );
+                                                       getRbacManagerImplementationInformations() );
     }
 
     public Boolean checkLdapConnection()
