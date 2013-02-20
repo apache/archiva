@@ -171,4 +171,10 @@ public interface RoleManager
      */
     void verifyTemplatedRole( String templateID, String resource )
         throws RoleManagerException;
+
+    /**
+     * intialize the role manager
+     * @since 2.1
+     */
+    void initialize();
 }

@@ -97,7 +97,6 @@ public class DefaultRoleManager
     private RBACManager rbacManager;
 
 
-    @SuppressWarnings("unchecked")
     public void loadRoleModel( URL resource )
         throws RoleManagerException
     {
@@ -139,7 +138,6 @@ public class DefaultRoleManager
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void loadRoleModel( RedbackRoleModel roleModel )
         throws RoleManagerException
     {
