@@ -1275,7 +1275,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
             new RedbackRuntimeConfiguration(data.userManagerImpls,ldapConfiguration,data.migratedFromRedbackConfiguration,[]
                     ,data.useUsersCache,mapCacheConfiguration(data.usersCacheConfiguration),data.rbacManagerImpls);
 
-
+    $.log("redbackRuntimeConfiguration.rbacManagerImpls:"+redbackRuntimeConfiguration.rbacManagerImpls().length);
     var configurationPropertiesEntries = data.configurationPropertiesEntries == null ? []: $.each(data.configurationPropertiesEntries,function(item){
       var entry = new Entry(item.key, item.value,function(newValue){
         redbackRuntimeConfiguration.modified(true);
@@ -1376,7 +1376,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     this.usedUserManagerImpls=ko.observableArray([]);
 
-    this.rbacManagerImpls=ko.observableArray([]);
+    this.usedRbacManagerImpls=ko.observableArray([]);
 
     this.modifiesLdapGroupMappings=ko.observableArray([]);
 
@@ -1405,6 +1405,15 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         $.log(id+""+self.userManagerImplementationInformations()[i].beanId);
         if(id==self.userManagerImplementationInformations()[i].beanId){
           return self.userManagerImplementationInformations()[i];
+        }
+      }
+    }
+
+    findRbacManagerImplementationInformation=function(id){
+      for(var i= 0;i<self.rbacManagerImplementationInformations().length;i++){
+        $.log(id+""+self.rbacManagerImplementationInformations()[i].beanId);
+        if(id==self.rbacManagerImplementationInformations()[i].beanId){
+          return self.rbacManagerImplementationInformations()[i];
         }
       }
     }
@@ -1467,13 +1476,27 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     for(var i= 0;i<redbackRuntimeConfiguration.userManagerImpls().length;i++){
       var id=redbackRuntimeConfiguration.userManagerImpls()[i];
-      $.log("id:"+id);
+
       var userManagerImplementationInformation=findUserManagerImplementationInformation(id);
 
       if(userManagerImplementationInformation!=null){
         this.usedUserManagerImpls.push(userManagerImplementationInformation);
       }
     }
+
+    $.log("init usedUserManagerImpls done");
+
+    for(var i= 0;i<redbackRuntimeConfiguration.rbacManagerImpls().length;i++){
+      var id=redbackRuntimeConfiguration.rbacManagerImpls()[i];
+
+      var rbacManagerImplementationInformation=findRbacManagerImplementationInformation(id);
+
+      if(rbacManagerImplementationInformation!=null){
+        this.usedRbacManagerImpls.push(rbacManagerImplementationInformation);
+      }
+    }
+
+    $.log("init usedUserManagerImpls done");
 
     isUsedUserManagerImpl=function(userManagerImplementationInformation){
       for(var i=0;i<self.usedUserManagerImpls().length;i++){
@@ -1490,11 +1513,32 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       if(!isUsedUserManagerImpl(self.userManagerImplementationInformations()[i])){
         self.availableUserManagerImpls.push(self.userManagerImplementationInformations()[i]);
       }
-
     }
 
     userManagerImplMoved=function(arg){
       $.log("userManagerImplMoved");
+      self.redbackRuntimeConfiguration().modified(true);
+    }
+
+    isUsedRbacManagerImpl=function(rbacManagerImplementationInformation){
+      for(var i=0;i<self.usedRbacManagerImpls().length;i++){
+        if(self.usedRbacManagerImpls()[i].beanId==rbacManagerImplementationInformation.beanId){
+          return true;
+        }
+      }
+      return false;
+    }
+
+    this.availableRbacManagerImpls=ko.observableArray([]);
+
+    for(var i=0;i<self.rbacManagerImplementationInformations().length;i++){
+      if(!isUsedRbacManagerImpl(self.rbacManagerImplementationInformations()[i])){
+        self.availableRbacManagerImpls.push(self.rbacManagerImplementationInformations()[i]);
+      }
+    }
+
+    rbacManagerImplMoved=function(arg){
+      $.log("rbacManagerImplMoved");
       self.redbackRuntimeConfiguration().modified(true);
     }
 
@@ -1528,6 +1572,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       clearUserMessages();
       var userMessages=$("#user-messages");
       userMessages.html(mediumSpinnerImg());
+
       self.redbackRuntimeConfiguration().userManagerImpls=ko.observableArray([]);
 
       for(var i=0;i<self.usedUserManagerImpls().length;i++){
@@ -1535,6 +1580,17 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         $.log("beanId:"+beanId);
         self.redbackRuntimeConfiguration().userManagerImpls.push(beanId);
       }
+
+
+      self.redbackRuntimeConfiguration().rbacManagerImpls=ko.observableArray([]);
+
+      for(var i=0;i<self.usedRbacManagerImpls().length;i++){
+        var beanId=self.usedRbacManagerImpls()[i].beanId;
+        $.log("beanId:"+beanId);
+        self.redbackRuntimeConfiguration().rbacManagerImpls.push(beanId);
+      }
+
+
       $.log("rememberme enabled:"+self.redbackRuntimeConfiguration().findPropertyValue("security.rememberme.enabled"));
       $.ajax("restServices/archivaServices/redbackRuntimeConfigurationService/redbackRuntimeConfiguration",
         {
@@ -1710,12 +1766,14 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           dataType: 'json',
           success: function(data) {
             var redbackRuntimeConfiguration = mapRedbackRuntimeConfiguration(data);
+            $.log("before new RedbackRuntimeConfigurationViewModel");
             var redbackRuntimeConfigurationViewModel =
                 new RedbackRuntimeConfigurationViewModel(redbackRuntimeConfiguration,userManagerImplementationInformations,rbacManagerImplementationInformations);
 
             var groups=[];
-            var useLdap = $.inArray("ldap",redbackRuntimeConfiguration.usedUserManagerImpls)>0
-                    ||$.inArray("ldap",redbackRuntimeConfiguration.rbacManagerImpls)>0;
+            $.log("before useLdap");
+            var useLdap = $.inArray("ldap",redbackRuntimeConfiguration.userManagerImpls())>0
+                    ||$.inArray("ldap",redbackRuntimeConfiguration.rbacManagerImpls())>0;
             $.log("useLdap:"+useLdap);
             if(useLdap){
               // load ldap roles

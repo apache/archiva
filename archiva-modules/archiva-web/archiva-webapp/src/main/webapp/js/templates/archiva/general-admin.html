@@ -1005,14 +1005,14 @@
           <div class="span4 dotted">
             <h5>${$.i18n.prop('redback.runtime.rbac-managers.impls.choosed')}</h5>
             <div style="min-height: 40px" id="rbac-mananagers-sortables-choosed"
-                 data-bind="sortable: { template: 'redback-runtime-general-content-impl-informations', data:usedUserManagerImpls,afterMove: userManagerImplMoved}">
+                 data-bind="sortable: { template: 'redback-runtime-general-content-impl-informations', data:usedRbacManagerImpls,afterMove: rbacManagerImplMoved}">
             </div>
           </div>
 
           <div class="span4 dotted">
             <h5>${$.i18n.prop('redback.runtime.rbac-managers.impls.available')}</h5>
             <div style="min-height: 40px"id="rbac-mananagers-sortables-availables"
-                 data-bind="sortable: {template: 'redback-runtime-general-content-impl-informations',data:availableUserManagerImpls,afterMove: userManagerImplMoved}">
+                 data-bind="sortable: {template: 'redback-runtime-general-content-impl-informations',data:availableRbacManagerImpls,afterMove: rbacManagerImplMoved}">
             </div>
           </div>
         </div>
