@@ -185,6 +185,13 @@ public class ArchivaRbacManager
     public Role getRole( String roleName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
+
+        Role el = rolesCache.get( roleName );
+        if ( el != null )
+        {
+            return el;
+        }
+
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
         {
@@ -193,6 +200,7 @@ public class ArchivaRbacManager
                 Role role = rbacManager.getRole( roleName );
                 if ( role != null )
                 {
+                    rolesCache.put( role.getName(), role );
                     return role;
                 }
             }
@@ -250,6 +258,7 @@ public class ArchivaRbacManager
             try
             {
                 rbacManager.removeRole( role );
+                rolesCache.remove( role.getName() );
                 allFailed = false;
             }
             catch ( Exception e )
@@ -305,6 +314,13 @@ public class ArchivaRbacManager
     public Permission getPermission( String permissionName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
+
+        Permission el = permissionsCache.get( permissionName );
+        if ( el != null )
+        {
+            return el;
+        }
+
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
         {
@@ -313,6 +329,7 @@ public class ArchivaRbacManager
                 Permission p = rbacManager.getPermission( permissionName );
                 if ( p != null )
                 {
+                    permissionsCache.put( permissionName, p );
                     return p;
                 }
             }
@@ -369,6 +386,7 @@ public class ArchivaRbacManager
             try
             {
                 rbacManager.removePermission( permission );
+                permissionsCache.remove( permission.getName() );
                 allFailed = false;
             }
             catch ( Exception e )
@@ -417,6 +435,13 @@ public class ArchivaRbacManager
     public Operation getOperation( String operationName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
+
+        Operation el = operationsCache.get( operationName );
+        if ( el != null )
+        {
+            return el;
+        }
+
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
         {
@@ -425,6 +450,7 @@ public class ArchivaRbacManager
                 Operation o = rbacManager.getOperation( operationName );
                 if ( o != null )
                 {
+                    operationsCache.put( operationName, o );
                     return o;
                 }
             }
@@ -481,6 +507,7 @@ public class ArchivaRbacManager
             try
             {
                 rbacManager.removeOperation( operation );
+                operationsCache.remove( operation.getName() );
                 allFailed = false;
             }
             catch ( Exception e )
@@ -531,6 +558,12 @@ public class ArchivaRbacManager
         throws RbacObjectNotFoundException, RbacManagerException
     {
 
+        Resource el = resourcesCache.get( resourceIdentifier );
+        if ( el != null )
+        {
+            return el;
+        }
+
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
         {
@@ -539,6 +572,7 @@ public class ArchivaRbacManager
                 Resource r = rbacManager.getResource( resourceIdentifier );
                 if ( r != null )
                 {
+                    resourcesCache.put( resourceIdentifier, r );
                     return r;
                 }
             }
@@ -595,6 +629,7 @@ public class ArchivaRbacManager
             try
             {
                 rbacManager.removeResource( resource );
+                resourcesCache.remove( resource.getIdentifier() );
                 allFailed = false;
             }
             catch ( Exception e )
@@ -643,6 +678,11 @@ public class ArchivaRbacManager
     public UserAssignment getUserAssignment( String principal )
         throws RbacObjectNotFoundException, RbacManagerException
     {
+        UserAssignment el = userAssignmentsCache.get( principal );
+        if ( el != null )
+        {
+            return el;
+        }
 
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
@@ -652,6 +692,7 @@ public class ArchivaRbacManager
                 UserAssignment ua = rbacManager.getUserAssignment( principal );
                 if ( ua != null )
                 {
+                    userAssignmentsCache.put( principal, ua );
                     return ua;
                 }
             }
@@ -782,6 +823,7 @@ public class ArchivaRbacManager
             try
             {
                 rbacManager.removeUserAssignment( userAssignment );
+                userAssignmentsCache.remove( userAssignment.getPrincipal() );
                 allFailed = false;
             }
             catch ( Exception e )
@@ -800,6 +842,12 @@ public class ArchivaRbacManager
     public boolean roleExists( String name )
         throws RbacManagerException
     {
+        Role r = rolesCache.get( name );
+        if ( r != null )
+        {
+            return true;
+        }
+
         boolean allFailed = true;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
