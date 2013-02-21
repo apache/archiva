@@ -78,7 +78,7 @@ $.ajax({
               "tmpl": "tmpl.min",
               "purl": "purl-2.2.1",
               "prettify": "prettify",
-              "sammy": "sammy.0.7.2",
+              "sammy": "sammy.0.7.4",
               "select2": "select2.min-3.2",
               "jqueryFileTree": "jqueryFileTree-1.0.1",
               "redback": "redback/redback",
