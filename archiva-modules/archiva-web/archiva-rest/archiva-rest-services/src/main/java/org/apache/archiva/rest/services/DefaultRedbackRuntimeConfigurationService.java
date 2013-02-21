@@ -182,15 +182,10 @@ public class DefaultRedbackRuntimeConfigurationService
 
             return Boolean.TRUE;
         }
-        catch ( AuthenticationException e )
+        catch ( Exception e )
         {
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(), e );
-        }
-
     }
 
     public List<UserManagerImplementationInformation> getUserManagerImplementationInformations()
