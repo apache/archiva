@@ -1616,19 +1616,21 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
           dataType: 'json',
           success: function(data) {
             var message=$.i18n.prop('redback-runtime-configuration.updated');
+            window.sammyArchivaApplication.runRoute("get","#redbackruntimeconfig");
             displaySuccessMessage(message);
           },
           error: function(data) {
             var res = $.parseJSON(data.responseText);
             displayRestError(res);
-          },
-          complete:function(data){
-            removeMediumSpinnerImg(userMessages);
-            saveButton.button('reset');
-            self.redbackRuntimeConfiguration().modified(false);
-            self.redbackRuntimeConfiguration().ldapConfiguration().modified(false);
-            saveModifyLdapGroupMapping();
           }
+        }
+      ).always(
+        function(){
+          removeMediumSpinnerImg(userMessages);
+          saveButton.button('reset');
+          self.redbackRuntimeConfiguration().modified(false);
+          self.redbackRuntimeConfiguration().ldapConfiguration().modified(false);
+          saveModifyLdapGroupMapping();
         }
       );
 
