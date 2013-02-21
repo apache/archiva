@@ -985,6 +985,12 @@ public abstract class AbstractRbacManagerTestCase
 
     }
 
+    @Test
+    public void testInitialize() throws Exception
+    {
+        rbacManager.initialize();
+    }
+
     /**
      * Allows subclasses to hook code after a test case has finished it's setup
      */

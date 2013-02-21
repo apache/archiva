@@ -492,6 +492,7 @@ public class DefaultRoleManager
     public void initialize()
     {
 
+        knownResources = new HashMap<String, ModelApplication>();
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
