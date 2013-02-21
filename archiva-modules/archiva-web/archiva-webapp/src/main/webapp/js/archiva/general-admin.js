@@ -1439,14 +1439,20 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
                  displaySuccessMessage(message);
                },
                error: function(data) {
-                 var res = $.parseJSON(data.responseText);
-                 displayRestError(res);
-               },
-               complete:function(data){
-                 removeMediumSpinnerImg(userMessages);
-                 btn.button('reset');
+                 try{
+                   var res = $.parseJSON(data.responseText);
+                   displayRestError(res);
+                 }catch (e){
+                   displayErrorMessage( $.i18n.prop("error.500"));
+                 }
+
                }
              }
+      ).always(
+        function(data){
+          removeMediumSpinnerImg(userMessages);
+          btn.button('reset');
+        }
       );
     }
 
@@ -1468,14 +1474,19 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
                  displaySuccessMessage(message);
                },
                error: function(data) {
-                 var res = $.parseJSON(data.responseText);
-                 displayRestError(res);
-               },
-               complete:function(data){
-                 removeMediumSpinnerImg(userMessages);
-                 btn.button('reset');
+                 try{
+                   var res = $.parseJSON(data.responseText);
+                   displayRestError(res);
+                 }catch (e){
+                   displayErrorMessage( $.i18n.prop("error.500"));
+                 }
                }
              }
+      ).always(
+        function(data){
+          removeMediumSpinnerImg(userMessages);
+          btn.button('reset');
+        }
       );
     }
 
