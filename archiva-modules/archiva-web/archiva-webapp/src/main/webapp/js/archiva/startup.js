@@ -49,7 +49,12 @@ function(jquery,sammy,utils) {
         removeSmallSpinnerImg();
         removeMediumSpinnerImg("#main-content");
         clearUserMessages();
-        displayRestError($.parseJSON(data.responseText));
+        try {
+          displayRestError($.parseJSON(data.responseText));
+        } catch (e) {
+          //maybe not a json reponse
+          displayErrorMessage($.i18n.prop('error.500'));
+        }
       },
       204: function(){
         remoteLogInfo(null,"found 204:"+this.url);
