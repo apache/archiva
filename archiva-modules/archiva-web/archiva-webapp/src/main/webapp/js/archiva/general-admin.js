@@ -1582,6 +1582,22 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         }
       }
 
+      clearUserMessages();
+
+      if (self.usedUserManagerImpls().length<1){
+        displayErrorMessage( $.i18n.prop("error.redback.runtimeconfiguration.user-managers.empty"));
+        valid=false;
+      }
+
+      if (self.usedRbacManagerImpls().length<1){
+        displayErrorMessage( $.i18n.prop("error.redback.runtimeconfiguration.rbac-managers.empty"));
+        valid=false;
+      }
+
+      if(valid==false){
+        return;
+      }
+
       $.log("saveRedbackRuntimeConfiguration");
       var saveButton = mainContent.find("#redback-runtime-configuration-save" );
       saveButton.button('loading');
