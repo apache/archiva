@@ -96,7 +96,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 }
 
                 String rbacManagerImpls =
-                    userConfiguration.getConcatenatedList( UserConfigurationKeys.RBAC_MANAGER_IMPL, "cached" );
+                    userConfiguration.getConcatenatedList( UserConfigurationKeys.RBAC_MANAGER_IMPL, "jdo" );
 
                 if ( StringUtils.isNotEmpty( rbacManagerImpls ) )
                 {
