@@ -59,7 +59,7 @@ import java.util.Properties;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "redbackRuntimeConfigurationService#rest" )
+@Service("redbackRuntimeConfigurationService#rest")
 public class DefaultRedbackRuntimeConfigurationService
     extends AbstractRestService
     implements RedbackRuntimeConfigurationService
@@ -68,11 +68,11 @@ public class DefaultRedbackRuntimeConfigurationService
     private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
     @Inject
-    @Named( value = "userManager#configurable" )
+    @Named(value = "userManager#configurable")
     private UserManager userManager;
 
     @Inject
-    @Named( value = "rbacManager#default" )
+    @Named(value = "rbacManager#default")
     private RBACManager rbacManager;
 
     @Inject
@@ -82,11 +82,11 @@ public class DefaultRedbackRuntimeConfigurationService
     private ApplicationContext applicationContext;
 
     @Inject
-    @Named( value = "ldapConnectionFactory#configurable" )
+    @Named(value = "ldapConnectionFactory#configurable")
     private LdapConnectionFactory ldapConnectionFactory;
 
     @Inject
-    @Named( value = "cache#users" )
+    @Named(value = "cache#users")
     private Cache usersCache;
 
     @Inject
@@ -184,6 +184,7 @@ public class DefaultRedbackRuntimeConfigurationService
         }
         catch ( Exception e )
         {
+            log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
