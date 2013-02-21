@@ -886,7 +886,7 @@ public class CachedRbacManager
 
     public boolean isFinalImplementation()
     {
-        return true;
+        return false;
     }
 
     public String getDescriptionKey()
