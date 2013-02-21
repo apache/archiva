@@ -33,6 +33,7 @@ import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.policy.CookieSettings;
 import org.apache.archiva.redback.policy.PasswordRule;
 import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.rest.api.model.RBACManagerImplementationInformation;
 import org.apache.archiva.rest.api.model.RedbackImplementationsInformations;
@@ -73,6 +74,9 @@ public class DefaultRedbackRuntimeConfigurationService
     @Inject
     @Named( value = "rbacManager#default" )
     private RBACManager rbacManager;
+
+    @Inject
+    private RoleManager roleManager;
 
     @Inject
     private ApplicationContext applicationContext;
@@ -136,6 +140,7 @@ public class DefaultRedbackRuntimeConfigurationService
                 log.info( "rbac manager changed to {} so reload it",
                           redbackRuntimeConfiguration.getRbacManagerImpls() );
                 rbacManager.initialize();
+                roleManager.initialize();
             }
 
             ldapConnectionFactory.initialize();
