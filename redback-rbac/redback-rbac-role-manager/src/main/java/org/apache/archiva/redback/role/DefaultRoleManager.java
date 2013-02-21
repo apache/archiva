@@ -493,6 +493,7 @@ public class DefaultRoleManager
     {
 
         knownResources = new HashMap<String, ModelApplication>();
+        this.unblessedModel = new RedbackRoleModel();
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
