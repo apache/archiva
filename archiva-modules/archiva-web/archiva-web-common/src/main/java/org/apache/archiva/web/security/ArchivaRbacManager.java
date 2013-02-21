@@ -44,7 +44,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service("rbacManager#archiva")
+@Service( "rbacManager#archiva" )
 public class ArchivaRbacManager
     extends AbstractRBACManager
     implements RBACManager
@@ -85,26 +85,33 @@ public class ArchivaRbacManager
         }
     }
 
-    protected RBACManager getRbacManagerForCommon()
+    protected RBACManager getRbacManagerForWrite()
     {
+        for ( RBACManager rbacManager : this.rbacManagersPerId.values() )
+        {
+            if ( !rbacManager.isReadOnly() )
+            {
+                return rbacManager;
+            }
+        }
         return this.rbacManagersPerId.values().iterator().next();
     }
 
     public Role createRole( String name )
     {
-        return getRbacManagerForCommon().createRole( name );
+        return getRbacManagerForWrite().createRole( name );
     }
 
     public Role saveRole( Role role )
         throws RbacObjectInvalidException, RbacManagerException
     {
-        return getRbacManagerForCommon().saveRole( role );
+        return getRbacManagerForWrite().saveRole( role );
     }
 
     public void saveRoles( Collection<Role> roles )
         throws RbacObjectInvalidException, RbacManagerException
     {
-        getRbacManagerForCommon().saveRoles( roles );
+        getRbacManagerForWrite().saveRoles( roles );
     }
 
     public Role getRole( String roleName )
@@ -126,180 +133,159 @@ public class ArchivaRbacManager
         throws RbacManagerException
     {
         // iterate and aggregate results ?
-        return getRbacManagerForCommon().getAllRoles();
+        return getRbacManagerForWrite().getAllRoles();
     }
 
     public void removeRole( Role role )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
-        // iterate remove ?
-        getRbacManagerForCommon().removeRole( role );
+        getRbacManagerForWrite().removeRole( role );
     }
 
     public Permission createPermission( String name )
         throws RbacManagerException
     {
-        // iterate ?
-        return getRbacManagerForCommon().createPermission( name );
+        return getRbacManagerForWrite().createPermission( name );
     }
 
     public Permission createPermission( String name, String operationName, String resourceIdentifier )
         throws RbacManagerException
     {
-        // iterate ?
-        return getRbacManagerForCommon().createPermission( name, operationName, resourceIdentifier );
+        return getRbacManagerForWrite().createPermission( name, operationName, resourceIdentifier );
     }
 
     public Permission savePermission( Permission permission )
         throws RbacObjectInvalidException, RbacManagerException
     {
-        // iterate ?
-        return getRbacManagerForCommon().savePermission( permission );
+        return getRbacManagerForWrite().savePermission( permission );
     }
 
     public Permission getPermission( String permissionName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        // iterate ?
-        return getRbacManagerForCommon().getPermission( permissionName );
+        return getRbacManagerForWrite().getPermission( permissionName );
     }
 
     public List<Permission> getAllPermissions()
         throws RbacManagerException
     {
-        // iterate and aggregate ?
-        return getRbacManagerForCommon().getAllPermissions();
+        return getRbacManagerForWrite().getAllPermissions();
     }
 
     public void removePermission( Permission permission )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
-        // iterate remove ?
-        getRbacManagerForCommon().removePermission( permission );
+        getRbacManagerForWrite().removePermission( permission );
     }
 
     public Operation createOperation( String name )
         throws RbacManagerException
     {
-        // iterate ?
-        return getRbacManagerForCommon().createOperation( name );
+        return getRbacManagerForWrite().createOperation( name );
     }
 
     public Operation saveOperation( Operation operation )
         throws RbacObjectInvalidException, RbacManagerException
     {
-        // iterate ?
-        return getRbacManagerForCommon().saveOperation( operation );
+        return getRbacManagerForWrite().saveOperation( operation );
     }
 
     public Operation getOperation( String operationName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        // iterate ?
-        return getRbacManagerForCommon().getOperation( operationName );
+        return getRbacManagerForWrite().getOperation( operationName );
     }
 
     public List<Operation> getAllOperations()
         throws RbacManagerException
     {
-        // iterate and aggregate ?
-        return getRbacManagerForCommon().getAllOperations();
+        return getRbacManagerForWrite().getAllOperations();
     }
 
     public void removeOperation( Operation operation )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
-        // iterate ?
-        getRbacManagerForCommon().removeOperation( operation );
+        getRbacManagerForWrite().removeOperation( operation );
     }
 
     public Resource createResource( String identifier )
         throws RbacManagerException
     {
-        // iterate ?
-        return getRbacManagerForCommon().createResource( identifier );
+        return getRbacManagerForWrite().createResource( identifier );
     }
 
     public Resource saveResource( Resource resource )
         throws RbacObjectInvalidException, RbacManagerException
     {
-        // iterate ?
-        return getRbacManagerForCommon().saveResource( resource );
+        return getRbacManagerForWrite().saveResource( resource );
     }
 
     public Resource getResource( String resourceIdentifier )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        // iterate ?
-        return getRbacManagerForCommon().getResource( resourceIdentifier );
+        return getRbacManagerForWrite().getResource( resourceIdentifier );
     }
 
     public List<Resource> getAllResources()
         throws RbacManagerException
     {
-        // iterate and aggregate ?
-        return getRbacManagerForCommon().getAllResources();
+        return getRbacManagerForWrite().getAllResources();
     }
 
     public void removeResource( Resource resource )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
-        // iterate
-        getRbacManagerForCommon().removeResource( resource );
+        getRbacManagerForWrite().removeResource( resource );
     }
 
     public UserAssignment createUserAssignment( String principal )
         throws RbacManagerException
     {
-        // iterate ?
-        return getRbacManagerForCommon().createUserAssignment( principal );
+        return getRbacManagerForWrite().createUserAssignment( principal );
     }
 
     public UserAssignment saveUserAssignment( UserAssignment userAssignment )
         throws RbacObjectInvalidException, RbacManagerException
     {
-        // iterate ?
-        return getRbacManagerForCommon().saveUserAssignment( userAssignment );
+        return getRbacManagerForWrite().saveUserAssignment( userAssignment );
     }
 
     public UserAssignment getUserAssignment( String principal )
         throws RbacObjectNotFoundException, RbacManagerException
     {
-        // iterate ?
-        return getRbacManagerForCommon().getUserAssignment( principal );
+        return getRbacManagerForWrite().getUserAssignment( principal );
     }
 
     @Override
     public boolean userAssignmentExists( String principal )
     {
-        return getRbacManagerForCommon().userAssignmentExists( principal );
+        return getRbacManagerForWrite().userAssignmentExists( principal );
     }
 
     @Override
     public boolean userAssignmentExists( UserAssignment assignment )
     {
-        return getRbacManagerForCommon().userAssignmentExists( assignment );
+        return getRbacManagerForWrite().userAssignmentExists( assignment );
     }
 
     public List<UserAssignment> getAllUserAssignments()
         throws RbacManagerException
     {
         // iterate
-        return getRbacManagerForCommon().getAllUserAssignments();
+        return getRbacManagerForWrite().getAllUserAssignments();
     }
 
     public List<UserAssignment> getUserAssignmentsForRoles( Collection<String> roleNames )
         throws RbacManagerException
     {
         // iterate ?
-        return getRbacManagerForCommon().getUserAssignmentsForRoles( roleNames );
+        return getRbacManagerForWrite().getUserAssignmentsForRoles( roleNames );
     }
 
     public void removeUserAssignment( UserAssignment userAssignment )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
-        // iterate ?
-        getRbacManagerForCommon().removeUserAssignment( userAssignment );
+        getRbacManagerForWrite().removeUserAssignment( userAssignment );
     }
 
     @Override
