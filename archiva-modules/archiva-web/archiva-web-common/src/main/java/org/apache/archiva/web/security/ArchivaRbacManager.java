@@ -20,6 +20,7 @@ package org.apache.archiva.web.security;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.rbac.AbstractRBACManager;
 import org.apache.archiva.redback.rbac.Operation;
 import org.apache.archiva.redback.rbac.Permission;
@@ -35,12 +36,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Olivier Lamy
@@ -59,6 +62,34 @@ public class ArchivaRbacManager
 
     @Inject
     private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
+
+    @Inject
+    @Named( value = "cache#operations" )
+    private Cache<String, Operation> operationsCache;
+
+    @Inject
+    @Named( value = "cache#permissions" )
+    private Cache<String, Permission> permissionsCache;
+
+    @Inject
+    @Named( value = "cache#resources" )
+    private Cache<String, Resource> resourcesCache;
+
+    @Inject
+    @Named( value = "cache#roles" )
+    private Cache<String, Role> rolesCache;
+
+    @Inject
+    @Named( value = "cache#userAssignments" )
+    private Cache<String, UserAssignment> userAssignmentsCache;
+
+    @Inject
+    @Named( value = "cache#userPermissions" )
+    private Cache<String, Map<String, List<Permission>>> userPermissionsCache;
+
+    @Inject
+    @Named( value = "cache#effectiveRoleSet" )
+    private Cache<String, Set<Role>> effectiveRoleSetCache;
 
     @Override
     public void initialize()

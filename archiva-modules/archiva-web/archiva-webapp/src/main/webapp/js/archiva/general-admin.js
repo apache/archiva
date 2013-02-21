@@ -18,7 +18,7 @@
  */
 define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout","knockout.simpleGrid",
   "knockout.sortable","jquery.ui","jquery.validate","bootstrap","select2"]
-    , function(jquery,i18n,utils,jqueryTmpl,ko) {
+    , function(jquery,i18n,utils,jqueryTmpl,ko,simpleGrid,sortable,jqueryUi,validate,bootstrap,select2) {
 
   //-------------------------
   // legacy path part
@@ -595,6 +595,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     });
 
   }
+
   ArchivaRuntimeConfigurationViewModel=function(archivaRuntimeConfiguration){
     var self=this;
     this.archivaRuntimeConfiguration=ko.observable(archivaRuntimeConfiguration);
@@ -617,11 +618,15 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         success: function(data){
           displaySuccessMessage( $.i18n.prop("archiva.runtime-configuration.updated"));
         },
-        complete: function(){
-          removeMediumSpinnerImg(userMessages);
-          mainContent.find("#cache-failure-form-btn-save" ).button('reset');
+        error:function(){
+          displayErrorMessage("error.500");
         }
-      });
+      } ).always(
+          function(){
+            removeMediumSpinnerImg(userMessages);
+            mainContent.find("#cache-failure-form-btn-save" ).button('reset');
+          }
+        );
     }
   }
 
@@ -1750,6 +1755,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   displayRedbackRuntimeConfiguration=function(){
+    var jqueryUi = require("jquery.ui");
     $.log("displayRuntimeConfiguration");
     var mainContent = $("#main-content");
     mainContent.html(mediumSpinnerImg());
