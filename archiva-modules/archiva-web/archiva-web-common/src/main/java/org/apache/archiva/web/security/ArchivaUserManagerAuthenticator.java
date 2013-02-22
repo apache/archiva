@@ -194,7 +194,8 @@ public class ArchivaUserManagerAuthenticator
             }
             catch ( UserNotFoundException e )
             {
-                log.warn( "Login for user {} failed. user not found.", source.getUsername() );
+                log.warn( "Login for user {} and userManager {} failed. user not found.", source.getUsername(),
+                          userManager.getId() );
                 resultException = e;
                 authnResultErrors.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_NO_SUCH_USER,
                                                                        "Login for user " + source.getUsername()
@@ -202,7 +203,8 @@ public class ArchivaUserManagerAuthenticator
             }
             catch ( Exception e )
             {
-                log.warn( "Login for user {} failed, message: {}", source.getUsername(), e.getMessage() );
+                log.warn( "Login for user {} and userManager {} failed, message: {}", source.getUsername(),
+                          userManager.getId(), e.getMessage() );
                 resultException = e;
                 authnResultErrors.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_RUNTIME_EXCEPTION,
                                                                        "Login for user " + source.getUsername()
