@@ -1079,6 +1079,15 @@
               </div>
             </div>
             <div class="control-group">
+              <label for="ldapPassword" class="control-label">
+                ${$.i18n.prop('redback.runtime.ldap.password.label')}
+              </label>
+              <div class="controls">
+                <input type="password" id="ldapPassword" name="ldapPassword" class="input-xlarge"
+                       data-bind="value: redbackRuntimeConfiguration().ldapConfiguration().password"/>
+              </div>
+            </div>
+            <div class="control-group">
               <label for="ldap-ssl" class="control-label">
                 ${$.i18n.prop('redback.runtime.ldap.ssl.label')}
               </label>
@@ -1103,16 +1112,6 @@
               <div class="controls">
                 <input type="checkbox" id="ldap-bindAuthenticatorEnabled" name="ldap-bindAuthenticatorEnabled"
                        data-bind="checked: redbackRuntimeConfiguration().ldapConfiguration().bindAuthenticatorEnabled"/>
-              </div>
-            </div>
-
-            <div class="control-group">
-              <label for="ldapPassword" class="control-label">
-                ${$.i18n.prop('redback.runtime.ldap.password.label')}
-              </label>
-              <div class="controls">
-                <input type="password" id="ldapPassword" name="ldapPassword" class="input-xlarge"
-                       data-bind="value: redbackRuntimeConfiguration().ldapConfiguration().password"/>
               </div>
             </div>
             <div class="control-group">
