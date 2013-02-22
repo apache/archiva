@@ -77,7 +77,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
 
 
-  logout=function(doScreenChange){
+  logout=function(){
     var user = getUserFromLoginCookie();
     if(user){
       user.logged=false;
@@ -94,14 +94,15 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
     $("#user-messages" ).empty();
     $("#login-welcome" ).hide();
     $.ajax({
-      url: 'restServices/redbackServices/loginService/logout',
-      complete: function(){
-        // go to welcome on logout
-        //window.sammyArchivaApplication.setLocation("#welcome");
-        displayWelcome();
-      }
-
-    });
+      url: 'restServices/redbackServices/loginService/logout'
+    } ).always(
+        function(){
+          // go to welcome on logout
+          //window.sammyArchivaApplication.setLocation("#welcome");
+          $.log("displayWelcome");
+          displayWelcome();
+        }
+    );
   };
 
 
@@ -745,9 +746,9 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
   displayWelcome=function(){
     $.log("#welcome hash");
     checkCreateAdminLink(function(){
-      //window.sammyArchivaApplication.setLocation("#search")
-      $("#main-content" ).html($("#welcome" ).tmpl({runtimeInfo: window.archivaRuntimeInfo}));
-      drawQuickSearchAutocomplete("#quick-search-autocomplete-welcome");
+      window.sammyArchivaApplication.setLocation("#welcome");
+      //$("#main-content" ).html($("#welcome" ).tmpl({runtimeInfo: window.archivaRuntimeInfo}));
+      //drawQuickSearchAutocomplete("#quick-search-autocomplete-welcome");
     });
   }
 
