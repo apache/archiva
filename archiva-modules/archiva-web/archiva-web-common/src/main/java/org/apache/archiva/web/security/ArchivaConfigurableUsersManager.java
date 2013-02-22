@@ -209,7 +209,7 @@ public class ArchivaConfigurableUsersManager
             }
 
         }
-        UserManagerException lastException = null;
+        Exception lastException = null;
         for ( UserManager userManager : userManagerPerId.values() )
         {
             try
@@ -228,7 +228,7 @@ public class ArchivaConfigurableUsersManager
             {
                 lastException = e;
             }
-            catch ( UserManagerException e )
+            catch ( Exception e )
             {
                 lastException = e;
             }
@@ -238,7 +238,7 @@ public class ArchivaConfigurableUsersManager
         {
             if ( lastException != null )
             {
-                throw lastException;
+                throw new UserManagerException( lastException.getMessage(), lastException );
             }
         }
 
