@@ -144,8 +144,11 @@ public class ArchivaRbacManager
         {
             try
             {
-                role = rbacManager.saveRole( role );
-                allFailed = false;
+                if ( !rbacManager.isReadOnly() )
+                {
+                    role = rbacManager.saveRole( role );
+                    allFailed = false;
+                }
             }
             catch ( Exception e )
             {
@@ -168,8 +171,11 @@ public class ArchivaRbacManager
         {
             try
             {
-                rbacManager.saveRoles( roles );
-                allFailed = false;
+                if ( !rbacManager.isReadOnly() )
+                {
+                    rbacManager.saveRoles( roles );
+                    allFailed = false;
+                }
             }
             catch ( Exception e )
             {
@@ -294,8 +300,11 @@ public class ArchivaRbacManager
         {
             try
             {
-                permission = rbacManager.savePermission( permission );
-                allFailed = false;
+                if ( rbacManager.isReadOnly() )
+                {
+                    permission = rbacManager.savePermission( permission );
+                    allFailed = false;
+                }
             }
             catch ( Exception e )
             {
@@ -416,8 +425,11 @@ public class ArchivaRbacManager
         {
             try
             {
-                operation = rbacManager.saveOperation( operation );
-                allFailed = false;
+                if ( !rbacManager.isReadOnly() )
+                {
+                    operation = rbacManager.saveOperation( operation );
+                    allFailed = false;
+                }
             }
             catch ( Exception e )
             {
@@ -537,9 +549,11 @@ public class ArchivaRbacManager
         {
             try
             {
-                resource = rbacManager.saveResource( resource );
-
-                allFailed = false;
+                if ( !rbacManager.isReadOnly() )
+                {
+                    resource = rbacManager.saveResource( resource );
+                    allFailed = false;
+                }
             }
             catch ( Exception e )
             {
@@ -659,8 +673,11 @@ public class ArchivaRbacManager
         {
             try
             {
-                userAssignment = rbacManager.saveUserAssignment( userAssignment );
-                allFailed = false;
+                if ( !rbacManager.isReadOnly() )
+                {
+                    userAssignment = rbacManager.saveUserAssignment( userAssignment );
+                    allFailed = false;
+                }
             }
             catch ( Exception e )
             {

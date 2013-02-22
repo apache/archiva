@@ -145,8 +145,9 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 ldapConfiguration.setUseRoleNameAsGroup(
                     userConfiguration.getBoolean( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME, false ) );
 
-                ldapConfiguration.setBindAuthenticatorEnabled(
-                    userConfiguration.getBoolean( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ENABLED, false ) );
+                boolean ldapBindAuthenticatorEnabled =
+                    userConfiguration.getBoolean( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ENABLED, false );
+                ldapConfiguration.setBindAuthenticatorEnabled( ldapBindAuthenticatorEnabled );
 
                 redbackRuntimeConfiguration.setMigratedFromRedbackConfiguration( true );
 
