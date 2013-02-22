@@ -121,32 +121,31 @@ public class ArchivaConfigurableUsersManager
         }
     }
 
-    protected UserManager findFirstWritable()
-    {
-        for ( UserManager userManager : userManagerPerId.values() )
-        {
-            if ( !userManager.isReadOnly() )
-            {
-                return userManager;
-            }
-        }
-        return null;
-    }
-
     @Override
     public User createUser( String username, String fullName, String emailAddress )
         throws UserManagerException
     {
-        UserManager userManager = findFirstWritable();
-        if ( userManager.isReadOnly() )
+        Exception lastException = null;
+        boolean allFailed = true;
+        User user = null;
+        for ( UserManager userManager : userManagerPerId.values() )
         {
-            log.warn( "cannot find writable user manager implementation, skip user creation" );
-            return null;
+            try
+            {
+                if ( !userManager.isReadOnly() )
+                {
+                    user = userManager.createUser( username, fullName, emailAddress );
+                    allFailed = false;
+                }
+            }
+            catch ( Exception e )
+            {
+                lastException = e;
+            }
         }
-        User user = userManager.createUser( username, fullName, emailAddress );
-        if ( useUsersCache() )
+        if ( lastException != null && allFailed )
         {
-            usersCache.put( user.getUsername(), user );
+            throw new UserManagerException( lastException.getMessage(), lastException );
         }
         return user;
     }
@@ -162,16 +161,27 @@ public class ArchivaConfigurableUsersManager
     public void deleteUser( String username )
         throws UserNotFoundException, UserManagerException
     {
-        UserManager userManager = findFirstWritable();
-        if ( userManager.isReadOnly() )
+        Exception lastException = null;
+        boolean allFailed = true;
+        User user = null;
+        for ( UserManager userManager : userManagerPerId.values() )
         {
-            log.warn( "cannot find writable user manager implementation, skip delete user" );
-            return;
+            try
+            {
+                if ( !userManager.isReadOnly() )
+                {
+                    userManager.deleteUser( username );
+                    allFailed = false;
+                }
+            }
+            catch ( Exception e )
+            {
+                lastException = e;
+            }
         }
-        userManager.deleteUser( username );
-        if ( useUsersCache() )
+        if ( lastException != null && allFailed )
         {
-            usersCache.remove( username );
+            throw new UserManagerException( lastException.getMessage(), lastException );
         }
     }
 
@@ -354,7 +364,13 @@ public class ArchivaConfigurableUsersManager
     @Override
     public boolean isReadOnly()
     {
-        return findFirstWritable() != null;
+        boolean readOnly = false;
+
+        for ( UserManager userManager : userManagerPerId.values() )
+        {
+            readOnly = readOnly || userManager.isReadOnly();
+        }
+        return readOnly;
     }
 
     @Override
@@ -444,13 +460,29 @@ public class ArchivaConfigurableUsersManager
     public User createGuestUser()
         throws UserManagerException
     {
-        UserManager userManager = findFirstWritable();
-        if ( userManager == null )
+        Exception lastException = null;
+        boolean allFailed = true;
+        User user = null;
+        for ( UserManager userManager : userManagerPerId.values() )
         {
-            log.warn( "cannot find writable user manager implementation, skip guest user creation" );
-            return null;
+            try
+            {
+                if ( !userManager.isReadOnly() )
+                {
+                    user = userManager.createGuestUser();
+                    allFailed = false;
+                }
+            }
+            catch ( Exception e )
+            {
+                lastException = e;
+            }
         }
-        return userManager.createGuestUser();
+        if ( lastException != null && allFailed )
+        {
+            throw new UserManagerException( lastException.getMessage(), lastException );
+        }
+        return user;
     }
 
     @Override
