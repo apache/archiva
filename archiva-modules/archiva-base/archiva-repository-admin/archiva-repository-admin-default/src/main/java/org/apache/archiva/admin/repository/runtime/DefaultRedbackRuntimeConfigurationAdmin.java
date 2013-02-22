@@ -53,7 +53,7 @@ import java.util.Set;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "userConfiguration#archiva" )
+@Service("userConfiguration#archiva")
 public class DefaultRedbackRuntimeConfigurationAdmin
     implements RedbackRuntimeConfigurationAdmin, UserConfiguration
 {
@@ -64,11 +64,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
-    @Named( value = "userConfiguration#redback" )
+    @Named(value = "userConfiguration#redback")
     UserConfiguration userConfiguration;
 
     @Inject
-    @Named( value = "cache#users" )
+    @Named(value = "cache#users")
     private Cache usersCache;
 
     @PostConstruct
@@ -128,7 +128,10 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                                                            ldapConfiguration.getBaseDn() ) );
 
                 ldapConfiguration.setContextFactory(
-                    userConfiguration.getString( UserConfigurationKeys.LDAP_CONTEX_FACTORY, null ) );
+                    userConfiguration.getString( UserConfigurationKeys.LDAP_CONTEX_FACTORY,
+                                                 isSunContextFactoryAvailable()
+                                                     ? "com.sun.jndi.ldap.LdapCtxFactory"
+                                                     : "" ) );
                 ldapConfiguration.setBindDn(
                     userConfiguration.getConcatenatedList( UserConfigurationKeys.LDAP_BINDDN, null ) );
                 ldapConfiguration.setPassword(
@@ -223,6 +226,19 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         catch ( RepositoryAdminException e )
         {
             throw new UserConfigurationException( e.getMessage(), e );
+        }
+    }
+
+    private boolean isSunContextFactoryAvailable()
+    {
+        try
+        {
+            return Thread.currentThread().getContextClassLoader().loadClass( "com.sun.jndi.ldap.LdapCtxFactory" )
+                != null;
+        }
+        catch ( ClassNotFoundException e )
+        {
+            return false;
         }
     }
 
