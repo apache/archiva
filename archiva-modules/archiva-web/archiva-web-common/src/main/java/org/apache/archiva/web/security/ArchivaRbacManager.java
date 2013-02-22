@@ -700,23 +700,38 @@ public class ArchivaRbacManager
         {
             return el;
         }
-
+        UserAssignment ua = null;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
         {
             try
             {
-                UserAssignment ua = rbacManager.getUserAssignment( principal );
-                if ( ua != null )
+                if ( ua == null )
                 {
-                    userAssignmentsCache.put( principal, ua );
-                    return ua;
+                    ua = rbacManager.getUserAssignment( principal );
+                }
+                else
+                {
+                    UserAssignment userAssignment = rbacManager.getUserAssignment( principal );
+                    if ( userAssignment != null )
+                    {
+                        for ( String roleName : userAssignment.getRoleNames() )
+                        {
+                            ua.addRoleName( roleName );
+                        }
+                    }
                 }
             }
             catch ( Exception e )
             {
                 lastException = e;
             }
+        }
+
+        if ( ua != null )
+        {
+            userAssignmentsCache.put( principal, ua );
+            return ua;
         }
 
         if ( lastException != null )
@@ -784,6 +799,14 @@ public class ArchivaRbacManager
                 List<UserAssignment> userAssignments = rbacManager.getAllUserAssignments();
                 for ( UserAssignment ua : userAssignments )
                 {
+                    UserAssignment userAssignment = allUserAssignments.get( ua.getPrincipal() );
+                    if ( userAssignment != null )
+                    {
+                        for ( String roleName : ua.getRoleNames() )
+                        {
+                            userAssignment.addRoleName( roleName );
+                        }
+                    }
                     allUserAssignments.put( ua.getPrincipal(), ua );
                 }
                 allFailed = false;
