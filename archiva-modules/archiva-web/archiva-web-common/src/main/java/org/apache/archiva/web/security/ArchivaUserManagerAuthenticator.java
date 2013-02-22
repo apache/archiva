@@ -50,7 +50,7 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "authenticator#archiva" )
+@Service("authenticator#archiva")
 public class ArchivaUserManagerAuthenticator
     extends AbstractAuthenticator
     implements Authenticator
@@ -200,7 +200,7 @@ public class ArchivaUserManagerAuthenticator
                                                                        "Login for user " + source.getUsername()
                                                                            + " failed. user not found." ) );
             }
-            catch ( UserManagerException e )
+            catch ( Exception e )
             {
                 log.warn( "Login for user {} failed, message: {}", source.getUsername(), e.getMessage() );
                 resultException = e;
