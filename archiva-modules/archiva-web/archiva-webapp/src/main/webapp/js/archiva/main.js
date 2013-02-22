@@ -99,7 +99,8 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
         function(){
           // go to welcome on logout
           //window.sammyArchivaApplication.setLocation("#welcome");
-          $.log("displayWelcome");
+          //$.log("displayWelcome");
+          window.sammyArchivaApplication.setLocation("#welcome");
           displayWelcome();
         }
     );
@@ -744,11 +745,10 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
   };
 
   displayWelcome=function(){
-    $.log("#welcome hash");
     checkCreateAdminLink(function(){
-      window.sammyArchivaApplication.setLocation("#welcome");
-      //$("#main-content" ).html($("#welcome" ).tmpl({runtimeInfo: window.archivaRuntimeInfo}));
-      //drawQuickSearchAutocomplete("#quick-search-autocomplete-welcome");
+      //window.sammyArchivaApplication.setLocation("#search")
+      $("#main-content" ).html($("#welcome" ).tmpl({runtimeInfo: window.archivaRuntimeInfo}));
+      drawQuickSearchAutocomplete("#quick-search-autocomplete-welcome");
     });
   }
 
