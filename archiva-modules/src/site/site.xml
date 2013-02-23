@@ -24,6 +24,7 @@
     <fluidoSkin>
       <topBarEnabled>true</topBarEnabled>
       <sideBarEnabled>false</sideBarEnabled>
+      <skipGenerationDate>true</skipGenerationDate>
       <googleSearch>
         <sitesearch>${project.url}</sitesearch>
       </googleSearch>
