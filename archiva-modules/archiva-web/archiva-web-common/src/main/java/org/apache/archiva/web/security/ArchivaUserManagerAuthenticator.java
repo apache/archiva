@@ -164,7 +164,7 @@ public class ArchivaUserManagerAuthenticator
                         //throw e;
                         resultException = e;
                         authnResultErrors.add( new AuthenticationFailureCause(
-                            AuthenticationConstants.AUTHN_MUST_CHANGE_PASSWORD_EXCEPTION, e.getMessage() ) );
+                            AuthenticationConstants.AUTHN_MUST_CHANGE_PASSWORD_EXCEPTION, e.getMessage() ).user( user ) );
                     }
                 }
                 else
@@ -173,7 +173,7 @@ public class ArchivaUserManagerAuthenticator
                               userManager.getId() );
                     authnResultErrors.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_NO_SUCH_USER,
                                                                            "Password is Invalid for user "
-                                                                               + source.getUsername() + "." ) );
+                                                                               + source.getUsername() + "." ).user( user ) );
 
                     try
                     {
