@@ -22,6 +22,7 @@ package org.apache.archiva.redback.authentication;
 import org.apache.archiva.redback.users.User;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,6 +94,10 @@ public class AuthenticationResult
 
     public List<AuthenticationFailureCause> getAuthenticationFailureCauses()
     {
+        if ( authenticationFailureCauses == null )
+        {
+            this.authenticationFailureCauses = new ArrayList<AuthenticationFailureCause>();
+        }
         return authenticationFailureCauses;
     }
 

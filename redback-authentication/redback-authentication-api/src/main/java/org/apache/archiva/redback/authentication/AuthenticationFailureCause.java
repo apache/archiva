@@ -18,6 +18,8 @@ package org.apache.archiva.redback.authentication;
  * under the License.
  */
 
+import org.apache.archiva.redback.users.User;
+
 import java.io.Serializable;
 
 /**
@@ -32,6 +34,8 @@ public class AuthenticationFailureCause
     private int cause;
 
     private String message;
+
+    private User user;
 
     public AuthenticationFailureCause( int cause, String message )
     {
@@ -57,6 +61,22 @@ public class AuthenticationFailureCause
     public void setMessage( String message )
     {
         this.message = message;
+    }
+
+    public User getUser()
+    {
+        return user;
+    }
+
+    public AuthenticationFailureCause user ( User user)
+    {
+        this.user = user;
+        return this;
+    }
+
+    public void setUser( User user )
+    {
+        this.user = user;
     }
 
     @Override

@@ -21,11 +21,17 @@ package org.apache.archiva.redback.authentication;
 
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,12 +53,18 @@ public class DefaultAuthenticationManager
     implements AuthenticationManager
 {
 
+    private Logger log = LoggerFactory.getLogger( getClass() );
+
     private List<Authenticator> authenticators;
 
     @Inject
     private ApplicationContext applicationContext;
 
-    @SuppressWarnings("unchecked")
+    @Inject
+    @Named( value = "userManager#configurable" )
+    private UserManager userManager;
+
+    @SuppressWarnings( "unchecked" )
     @PostConstruct
     public void initialize()
     {
@@ -88,6 +100,37 @@ public class DefaultAuthenticationManager
 
                 if ( authResult.isAuthenticated() )
                 {
+                    //olamy: as we can chain various user managers with Archiva
+                    // user manager authenticator can lock accounts in the following case :
+                    // 2 user managers: ldap and jdo.
+                    // ldap correctly find the user but cannot compare hashed password
+                    // jdo reject password so increase loginAttemptCount
+                    // now ldap bind authenticator work but loginAttemptCount has been increased.
+                    // so we restore here loginAttemptCount to 0 if in authenticationFailureCauses
+
+                    for ( AuthenticationFailureCause authenticationFailureCause : authenticationFailureCauses )
+                    {
+                        User user = authenticationFailureCause.getUser();
+                        if ( user != null )
+                        {
+                            if ( user.getCountFailedLoginAttempts() > 0 )
+                            {
+                                user.setCountFailedLoginAttempts( 0 );
+                                if ( !userManager.isReadOnly() )
+                                {
+                                    try
+                                    {
+                                        userManager.updateUser( user );
+                                    }
+                                    catch ( UserManagerException e )
+                                    {
+                                        log.debug( e.getMessage(), e );
+                                        log.warn( "skip error updating user: {}", e.getMessage() );
+                                    }
+                                }
+                            }
+                        }
+                    }
                     return authResult;
                 }
 

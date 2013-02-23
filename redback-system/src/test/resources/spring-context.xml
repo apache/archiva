@@ -45,4 +45,6 @@
 
   <alias name="commons-configuration" alias="test-conf"/>
 
+  <bean name="userManager#configurable" class="org.apache.archiva.redback.system.MockUserManager"/>
+
 </beans>
