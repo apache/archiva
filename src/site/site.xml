@@ -27,6 +27,7 @@
     <fluidoSkin>
       <topBarEnabled>true</topBarEnabled>
       <sideBarEnabled>false</sideBarEnabled>
+      <skipGenerationDate>true</skipGenerationDate>
       <googleSearch>
         <sitesearch>http://archiva.apache.org/redback</sitesearch>
       </googleSearch>
