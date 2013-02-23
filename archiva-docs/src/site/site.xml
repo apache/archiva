@@ -37,6 +37,7 @@
       <sideBarEnabled>true</sideBarEnabled>
       <leftColumnClass>span2</leftColumnClass>
       <bodyColumnClass>span10</bodyColumnClass>
+      <skipGenerationDate>true</skipGenerationDate>
       <googleSearch>
         <sitesearch>${project.url}</sitesearch>
       </googleSearch>
