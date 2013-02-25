@@ -100,7 +100,7 @@
     <plexus-digest.version>1.1</plexus-digest.version>
     <plexus-expression-evaluator.version>2.0</plexus-expression-evaluator.version>
     <plexus-utils.version>3.0.8</plexus-utils.version>
-    <asfTomcatMavenPluginVersion>2.1-SNAPSHOT</asfTomcatMavenPluginVersion>
+    <asfTomcatMavenPluginVersion>2.1</asfTomcatMavenPluginVersion>
     <tomcat7Version>7.0.37</tomcat7Version>
 
     <release.preparationGoals>clean install</release.preparationGoals>
