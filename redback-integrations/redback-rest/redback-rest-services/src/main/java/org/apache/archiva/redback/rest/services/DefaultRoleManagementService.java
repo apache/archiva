@@ -84,6 +84,9 @@ public class DefaultRoleManagementService
         this.roleManager = roleManager;
         this.rbacManager = rbacManager;
         this.userManager = userManager;
+
+        log.debug( "use rbacManager impl: {}", rbacManager.getClass().getName() );
+        log.debug( "use userManager impl: {}", userManager.getClass().getName() );
     }
 
     public Boolean createTemplatedRole( String templateId, String resource )
