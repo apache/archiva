@@ -1385,6 +1385,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     this.modifiesLdapGroupMappings=ko.observableArray([]);
 
+    this.availableUserManagerImpls=ko.observableArray([]);
+    this.availableRbacManagerImpls=ko.observableArray([]);
+
     this.allRoleNames=[];
 
     self.gridViewModel = new ko.simpleGrid.viewModel({
@@ -1523,8 +1526,6 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       return false;
     }
 
-    this.availableUserManagerImpls=ko.observableArray([]);
-
     for(var i=0;i<self.userManagerImplementationInformations().length;i++){
       if(!isUsedUserManagerImpl(self.userManagerImplementationInformations()[i])){
         self.availableUserManagerImpls.push(self.userManagerImplementationInformations()[i]);
@@ -1545,7 +1546,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       return false;
     }
 
-    this.availableRbacManagerImpls=ko.observableArray([]);
+
 
     for(var i=0;i<self.rbacManagerImplementationInformations().length;i++){
       if(!isUsedRbacManagerImpl(self.rbacManagerImplementationInformations()[i])){
