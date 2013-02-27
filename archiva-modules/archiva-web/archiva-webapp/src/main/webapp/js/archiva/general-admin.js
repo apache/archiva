@@ -1698,6 +1698,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       }
       self.modifiesLdapGroupMappings=ko.observableArray([]);
     }
+    this.modifiesLdapGroupMappings=ko.observableArray([]);
 
     this.modifyLdapGroupMapping=function(roleNames,ldapGroupMapping){
       var toAdd=true;
@@ -1711,6 +1712,13 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       }
       $.log('modifyLdapGroupMapping:'+ldapGroupMapping.group()+','+self.modifiesLdapGroupMappings().length);
     };
+
+    addLdapGroupMapping=function(){
+      $.log("addLdapGroupMapping");
+      self.redbackRuntimeConfiguration().ldapGroupMappings.push(new LdapGroupMapping("",[],false,self.modifyLdapGroupMapping));
+      $("#ldap-group-mappings-div select" ).select2({width: "element"});
+    }
+
   }
 
   ManagerImplementationInformation=function(beanId,descriptionKey,readOnly){
@@ -1806,9 +1814,10 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
                 new RedbackRuntimeConfigurationViewModel(redbackRuntimeConfiguration,userManagerImplementationInformations,rbacManagerImplementationInformations);
 
             var groups=[];
-            $.log("before useLdap");
-            var useLdap = $.inArray("ldap",redbackRuntimeConfiguration.userManagerImpls())>0
-                    ||$.inArray("ldap",redbackRuntimeConfiguration.rbacManagerImpls())>0;
+            $.log("before useLdap:"+$.inArray("ldap",redbackRuntimeConfiguration.userManagerImpls())
+                          +','+$.inArray("ldap",redbackRuntimeConfiguration.rbacManagerImpls()));
+            var useLdap = $.inArray("ldap",redbackRuntimeConfiguration.userManagerImpls())>=0
+                    ||$.inArray("ldap",redbackRuntimeConfiguration.rbacManagerImpls())>=0;
             $.log("useLdap:"+useLdap);
             if(useLdap){
               // load ldap roles
@@ -1887,6 +1896,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   LdapGroupMapping=function(group,roleNames,automatic,subscribeFn){
+    $.log("new LdapGroupMapping");
     var self=this;
     this.modified=ko.observable(false);
     //private String group;
@@ -1894,7 +1904,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     this.group.subscribe(function(newValue){
       self.modified(true);
       if(subscribeFn){
-        subscribeFn(newValue)
+        subscribeFn(newValue,self)
       }
     });
 

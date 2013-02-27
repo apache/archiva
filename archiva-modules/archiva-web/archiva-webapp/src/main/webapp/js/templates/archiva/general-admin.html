@@ -1266,17 +1266,29 @@
     <tbody id="ldap-group-mappings-tbody">
     {{each(i, ldapGroupMapping) ldapGroupMappings()}}
       <tr>
-        <td>${ldapGroupMapping.group()}</td>
+        <td>${ldapGroupMapping.group()}
+          <select id="roles-group-${ldapGroupMapping.group()}" data-bind="options: ldapGroups, value: ldapGroupMapping.group, optionsCaption: 'Select a LDAP Group'"
+                  size="1"></select>
+        </td>
         <td>
-          <div>
-            <select id="roles-group-${ldapGroupMapping.group()}" data-bind="options: $parent.allRoleNames, selectedOptions: ldapGroupMapping.roleNames"
-                    size="5" multiple="true" ></select>
-          </div>
-
+          <select id="roles-group-mapping-${ldapGroupMapping.group()}" data-bind="options: $parent.allRoleNames, selectedOptions: ldapGroupMapping.roleNames"
+                  size="5" multiple="true" ></select>
         </td>
       </tr>
     {{/each}}
     </tbody>
   </table>
+  <div>
+    <span class="btn btn-success">
+      <i class="icon-plus-sign icon-white" title="add mapping" data-bind="click: function(){ addLdapGroupMapping() }"/>
+    </span>
+    <table class="table table-condensed">
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+  </div>
+
   </div>
 </script>
