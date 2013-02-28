@@ -21,6 +21,7 @@ package org.apache.archiva.web.security;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.components.cache.Cache;
+import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserManagerException;
@@ -31,6 +32,7 @@ import org.apache.archiva.redback.users.configurable.ConfigurableUserManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
@@ -44,7 +46,7 @@ import java.util.Map;
  */
 @Service( "userManager#archiva" )
 public class ArchivaConfigurableUsersManager
-    extends ConfigurableUserManager
+    extends AbstractUserManager
 {
 
     @Inject
@@ -55,15 +57,13 @@ public class ArchivaConfigurableUsersManager
 
     private Map<String, UserManager> userManagerPerId;
 
-    private List<UserManagerListener> listeners = new ArrayList<UserManagerListener>();
-
     @Inject
     @Named( value = "cache#users" )
     private Cache<String, User> usersCache;
 
     private boolean useUsersCache;
 
-    @Override
+    @PostConstruct
     public void initialize()
     {
         try
@@ -95,7 +95,6 @@ public class ArchivaConfigurableUsersManager
         return this.useUsersCache;
     }
 
-    @Override
     public User addUser( User user )
         throws UserManagerException
     {
@@ -109,7 +108,6 @@ public class ArchivaConfigurableUsersManager
         return user;
     }
 
-    @Override
     public void addUserUnchecked( User user )
         throws UserManagerException
     {
@@ -121,7 +119,6 @@ public class ArchivaConfigurableUsersManager
         }
     }
 
-    @Override
     public User createUser( String username, String fullName, String emailAddress )
         throws UserManagerException
     {
@@ -150,14 +147,12 @@ public class ArchivaConfigurableUsersManager
         return user;
     }
 
-    @Override
     public UserQuery createUserQuery()
     {
-        return super.createUserQuery();
+        return userManagerPerId.values().iterator().next().createUserQuery();
     }
 
 
-    @Override
     public void deleteUser( String username )
         throws UserNotFoundException, UserManagerException
     {
@@ -185,7 +180,6 @@ public class ArchivaConfigurableUsersManager
         }
     }
 
-    @Override
     public void eraseDatabase()
     {
         for ( UserManager userManager : userManagerPerId.values() )
@@ -194,7 +188,6 @@ public class ArchivaConfigurableUsersManager
         }
     }
 
-    @Override
     public User findUser( String username )
         throws UserManagerException
     {
@@ -253,7 +246,6 @@ public class ArchivaConfigurableUsersManager
         return findUser( GUEST_USERNAME );
     }
 
-    @Override
     public List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )
         throws UserManagerException
     {
@@ -270,7 +262,6 @@ public class ArchivaConfigurableUsersManager
         return users;
     }
 
-    @Override
     public List<User> findUsersByFullNameKey( String fullNameKey, boolean orderAscending )
         throws UserManagerException
     {
@@ -287,7 +278,6 @@ public class ArchivaConfigurableUsersManager
         return users;
     }
 
-    @Override
     public List<User> findUsersByQuery( UserQuery query )
         throws UserManagerException
     {
@@ -304,7 +294,6 @@ public class ArchivaConfigurableUsersManager
         return users;
     }
 
-    @Override
     public List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
         throws UserManagerException
     {
@@ -321,13 +310,11 @@ public class ArchivaConfigurableUsersManager
         return users;
     }
 
-    @Override
     public String getId()
     {
         return null;
     }
 
-    @Override
     public List<User> getUsers()
         throws UserManagerException
     {
@@ -344,7 +331,6 @@ public class ArchivaConfigurableUsersManager
         return users;
     }
 
-    @Override
     public List<User> getUsers( boolean orderAscending )
         throws UserManagerException
     {
@@ -361,7 +347,6 @@ public class ArchivaConfigurableUsersManager
         return users;
     }
 
-    @Override
     public boolean isReadOnly()
     {
         boolean readOnly = false;
@@ -373,7 +358,6 @@ public class ArchivaConfigurableUsersManager
         return readOnly;
     }
 
-    @Override
     public User updateUser( User user )
         throws UserNotFoundException, UserManagerException
     {
@@ -387,7 +371,6 @@ public class ArchivaConfigurableUsersManager
         return user;
     }
 
-    @Override
     public User updateUser( User user, boolean passwordChangeRequired )
         throws UserNotFoundException, UserManagerException
     {
@@ -401,59 +384,10 @@ public class ArchivaConfigurableUsersManager
         return user;
     }
 
-    @Override
     public void setUserManagerImpl( UserManager userManagerImpl )
     {
         // not possible here but we know so no need of log.error
         log.debug( "setUserManagerImpl cannot be used in this implementation" );
-    }
-
-    @Override
-    public void addUserManagerListener( UserManagerListener listener )
-    {
-        this.listeners.add( listener );
-    }
-
-    @Override
-    public void removeUserManagerListener( UserManagerListener listener )
-    {
-        this.listeners.remove( listener );
-    }
-
-    @Override
-    protected void fireUserManagerInit( boolean freshDatabase )
-    {
-        for ( UserManagerListener listener : listeners )
-        {
-            listener.userManagerInit( freshDatabase );
-        }
-    }
-
-    @Override
-    protected void fireUserManagerUserAdded( User addedUser )
-    {
-        for ( UserManagerListener listener : listeners )
-        {
-            listener.userManagerUserAdded( addedUser );
-        }
-    }
-
-    @Override
-    protected void fireUserManagerUserRemoved( User removedUser )
-    {
-        for ( UserManagerListener listener : listeners )
-        {
-            listener.userManagerUserRemoved( removedUser );
-        }
-    }
-
-    @Override
-    protected void fireUserManagerUserUpdated( User updatedUser )
-    {
-        for ( UserManagerListener listener : listeners )
-        {
-            listener.userManagerUserUpdated( updatedUser );
-        }
     }
 
     @Override
@@ -486,7 +420,6 @@ public class ArchivaConfigurableUsersManager
     }
 
 
-    @Override
     public boolean userExists( String userName )
         throws UserManagerException
     {
@@ -516,6 +449,8 @@ public class ArchivaConfigurableUsersManager
         }
         return exists;
     }
+
+
 
     @Override
     public boolean isFinalImplementation()
