@@ -485,6 +485,38 @@ public class ArchivaConfigurableUsersManager
         return user;
     }
 
+
+    @Override
+    public boolean userExists( String userName )
+        throws UserManagerException
+    {
+        Exception lastException = null;
+        boolean allFailed = true;
+        boolean exists = false;
+        for ( UserManager userManager : userManagerPerId.values() )
+        {
+            try
+            {
+
+                if ( userManager.userExists( userName ) )
+                {
+                    exists = true;
+                }
+                allFailed = false;
+
+            }
+            catch ( Exception e )
+            {
+                lastException = e;
+            }
+        }
+        if ( lastException != null && allFailed )
+        {
+            throw new UserManagerException( lastException.getMessage(), lastException );
+        }
+        return exists;
+    }
+
     @Override
     public boolean isFinalImplementation()
     {
