@@ -41,7 +41,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 2.1
  */
-@Service( "ldapRoleMapperConfiguration#default" )
+@Service("ldapRoleMapperConfiguration#default")
 public class DefaultLdapRoleMapperConfiguration
     implements LdapRoleMapperConfiguration
 {
@@ -51,14 +51,14 @@ public class DefaultLdapRoleMapperConfiguration
     private Map<String, List<String>> ldapMappings = new HashMap<String, List<String>>();
 
     @Inject
-    @Named( value = "userConfiguration#default" )
+    @Named(value = "userConfiguration#default")
     private UserConfiguration userConf;
 
     public void addLdapMapping( String ldapGroup, List<String> roles )
         throws MappingException
     {
         ldapMappings.put( ldapGroup, roles );
-        log.warn( "addLdapMapping implemented but only in memory save" );
+        log.warn( "addLdapMapping implemented but only in memory save: group '{}' roles '{}'", ldapGroup, roles );
     }
 
     public void removeLdapMapping( String group )
@@ -70,7 +70,7 @@ public class DefaultLdapRoleMapperConfiguration
         throws MappingException
     {
         ldapMappings.put( ldapGroup, roles );
-        log.warn( "updateLdapMapping implemented but only in memory save" );
+        log.warn( "updateLdapMapping implemented but only in memory save: group '{}' roles '{}'", ldapGroup, roles );
     }
 
     public void setLdapGroupMappings( Map<String, List<String>> mappings )
