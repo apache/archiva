@@ -42,7 +42,7 @@ public class DefaultPermissionEvaluator
     implements PermissionEvaluator
 {
     @Inject
-    @Named(value = "userManager#configurable")
+    @Named(value = "userManager#default")
     private UserManager userManager;
 
     public boolean evaluate( Permission permission, String operation, String resource, String principal )

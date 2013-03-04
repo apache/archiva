@@ -79,7 +79,7 @@ public class DefaultRoleManagementService
     @Inject
     public DefaultRoleManagementService( RoleManager roleManager,
                                          @Named(value = "rbacManager#default") RBACManager rbacManager,
-                                         @Named(value = "userManager#configurable") UserManager userManager )
+                                         @Named(value = "userManager#default") UserManager userManager )
     {
         this.roleManager = roleManager;
         this.rbacManager = rbacManager;

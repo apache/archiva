@@ -132,7 +132,7 @@ public class DefaultUserService
     private HttpServletRequest httpServletRequest;
 
     @Inject
-    public DefaultUserService( @Named( value = "userManager#configurable" ) UserManager userManager,
+    public DefaultUserService( @Named( value = "userManager#default" ) UserManager userManager,
                                SecuritySystem securitySystem,
                                @Named( "httpAuthenticator#basic" ) HttpAuthenticator httpAuthenticator )
     {

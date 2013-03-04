@@ -51,7 +51,7 @@ public class HttpDigestAuthentication
     extends HttpAuthenticator
 {
     @Inject
-    @Named(value = "userManager#configurable")
+    @Named(value = "userManager#default")
     private UserManager userManager;
 
     /**

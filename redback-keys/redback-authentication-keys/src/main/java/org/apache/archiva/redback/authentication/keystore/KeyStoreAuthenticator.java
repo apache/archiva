@@ -56,7 +56,7 @@ public class KeyStoreAuthenticator
     @Resource(name = "keyManager#cached")
     private KeyManager keystore;
 
-    @Resource(name = "userManager#configurable")
+    @Resource(name = "userManager#default")
     private UserManager userManager;
 
     public String getId()

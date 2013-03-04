@@ -66,7 +66,7 @@ public class AdminAutoCreateCheck
     public static final String ADMIN_PASSWORD_KEY = "redback.admin.password";
 
     @Inject
-    @Named(value = "userManager#configurable")
+    @Named(value = "userManager#default")
     private UserManager userManager;
 
     @Inject

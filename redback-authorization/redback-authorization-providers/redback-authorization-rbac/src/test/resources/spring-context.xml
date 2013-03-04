@@ -44,4 +44,6 @@
 
 
   <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
+
+  <alias name="userManager#configurable" alias="userManager#default"/>
 </beans>

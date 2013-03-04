@@ -58,7 +58,7 @@ public class UserManagerAuthenticator
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named(value = "userManager#configurable")
+    @Named(value = "userManager#default")
     private UserManager userManager;
 
     @Inject

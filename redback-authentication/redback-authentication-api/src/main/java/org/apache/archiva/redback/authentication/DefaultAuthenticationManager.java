@@ -61,7 +61,7 @@ public class DefaultAuthenticationManager
     private ApplicationContext applicationContext;
 
     @Inject
-    @Named( value = "userManager#configurable" )
+    @Named( value = "userManager#default" )
     private UserManager userManager;
 
     @SuppressWarnings( "unchecked" )

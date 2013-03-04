@@ -47,4 +47,6 @@
 
   <bean name="userManager#configurable" class="org.apache.archiva.redback.system.MockUserManager"/>
 
+  <alias name="userManager#configurable" alias="userManager#default"/>
+
 </beans>

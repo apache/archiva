@@ -59,7 +59,7 @@ public class RbacAuthorizer
     private RBACManager manager;
 
     @Inject
-    @Named(value = "userManager#configurable")
+    @Named(value = "userManager#default")
     private UserManager userManager;
 
     @Inject

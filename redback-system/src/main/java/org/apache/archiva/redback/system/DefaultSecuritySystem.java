@@ -61,7 +61,7 @@ public class DefaultSecuritySystem
     private Authorizer authorizer;
 
     @Inject
-    @Named(value = "userManager#configurable")
+    @Named(value = "userManager#default")
     private UserManager userManager;
 
     @Inject
