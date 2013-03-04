@@ -1793,10 +1793,10 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
                }
              }
       ).always(
-              function(){
-                removeMediumSpinnerImg(userMessages);
-                saveButton.button('reset');
-              }
+        function(){
+          removeMediumSpinnerImg(userMessages);
+          saveButton.button('reset');
+        }
       );
     }
   }
