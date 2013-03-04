@@ -1390,24 +1390,6 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     this.allRoleNames=[];
 
-    self.gridViewModel = new ko.simpleGrid.viewModel({
-      data: self.redbackRuntimeConfiguration().configurationPropertiesEntries,
-      columns: [
-       {
-         headerText: $.i18n.prop('redback.runtime.properties.key.label'),
-         rowText: "key"
-       },
-       {
-         headerText: $.i18n.prop('redback.runtime.properties.value.label'),
-         rowText: "value"
-       }
-      ],
-      pageSize: 10,
-      gridUpdateCallBack: function(){
-        activatePopoverDoc();
-      }
-    });
-
     findUserManagerImplementationInformation=function(id){
       for(var i= 0;i<self.userManagerImplementationInformations().length;i++){
         $.log(id+""+self.userManagerImplementationInformations()[i].beanId);
@@ -1712,14 +1694,111 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         self.modifiesLdapGroupMappings().push(ldapGroupMapping);
       }
       $.log('modifyLdapGroupMapping:'+ldapGroupMapping.group()+','+self.modifiesLdapGroupMappings().length);
+      //$("#ldap-group-mappings-div select" ).select2({width: "element"});
     };
+    //olamy could be better but some reason doesn't work and I didn't find enough to understand why :-)
+    /*self.gridldapMappingsViewModel = new ko.simpleGrid.viewModel({
+     data: self.redbackRuntimeConfiguration().ldapGroupMappings,
+     pageSize: 10,
+     gridUpdateCallBack: function(){
+       $.log("ldapGroupsMapping: gridUpdateCallBack");
+       $("#main-content").find("#ldap-group-mappings-div select" ).select2({width: "element"});
+     }
+    });*/
+
+    self.gridViewModel = new ko.simpleGrid.viewModel({
+     data: self.redbackRuntimeConfiguration().configurationPropertiesEntries,
+     columns: [
+       {
+         headerText: $.i18n.prop('redback.runtime.properties.key.label'),
+         rowText: "key"
+       },
+       {
+         headerText: $.i18n.prop('redback.runtime.properties.value.label'),
+         rowText: "value"
+       }
+     ],
+     pageSize: 10,
+     gridUpdateCallBack: function(){
+       activatePopoverDoc();
+     }
+    });
+
+    this.newLdapGroupMapping=ko.observable(new LdapGroupMapping("",[],false,self.modifyLdapGroupMapping));
 
     addLdapGroupMapping=function(){
-      $.log("addLdapGroupMapping");
-      self.redbackRuntimeConfiguration().ldapGroupMappings.push(new LdapGroupMapping("",[],false,self.modifyLdapGroupMapping));
-      $("#ldap-group-mappings-div select" ).select2({width: "element"});
+      // FIXME validate datas from ldapGroupMapping
+      $.log("addLdapGroupMapping:"+self.newLdapGroupMapping().group());
+
+      var mainContent=$("#main-content");
+      var saveButton = mainContent.find("#redback-runtime-configuration-save" );
+      saveButton.button('loading');
+      clearUserMessages();
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
+      $.ajax("restServices/redbackServices/ldapGroupMappingService",
+             {
+               type: "PUT",
+               contentType: 'application/json',
+               data:ko.toJSON(new LdapGroupMapping(self.newLdapGroupMapping().group(),self.newLdapGroupMapping().roleNames(),false,self.modifyLdapGroupMapping)),
+               dataType: 'json',
+               success: function(data) {
+                 self.redbackRuntimeConfiguration().ldapGroupMappings
+                         .unshift(new LdapGroupMapping(self.newLdapGroupMapping().group(),self.newLdapGroupMapping().roleNames(),false,self.modifyLdapGroupMapping));
+                 self.newLdapGroupMapping=ko.observable(new LdapGroupMapping("",[],false,self.modifyLdapGroupMapping));
+                 $.log("addLdapGroupMapping:"+self.redbackRuntimeConfiguration().ldapGroupMappings().length);
+                 $("#ldap-group-mappings-div select" ).select2({width: "element"});
+                 var message=$.i18n.prop('redback-runtime-ldap-group-mapping.added');
+                 displaySuccessMessage(message);
+               },
+               error: function(data) {
+                 var res = $.parseJSON(data.responseText);
+                 displayRestError(res);
+               }
+             }
+      ).always(
+        function(){
+          removeMediumSpinnerImg(userMessages);
+          saveButton.button('reset');
+        }
+      );
+
+
     }
 
+    deleteLdapGroupMapping=function(ldapGroupMapping){
+
+
+      var mainContent=$("#main-content");
+      var saveButton = mainContent.find("#redback-runtime-configuration-save" );
+      saveButton.button('loading');
+      clearUserMessages();
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
+      $.ajax("restServices/redbackServices/ldapGroupMappingService/"+ldapGroupMapping.group(),
+             {
+               type: "DELETE",
+               contentType: 'application/json',
+               dataType: 'json',
+               success: function(data) {
+                 $.log("deleteLdapGroupMapping:"+ldapGroupMapping.group());
+                 self.redbackRuntimeConfiguration().ldapGroupMappings.remove(ldapGroupMapping);
+                 $("#ldap-group-mappings-div select" ).select2({width: "element"});
+                 var message=$.i18n.prop('redback-runtime-ldap-group-mapping.deleted');
+                 displaySuccessMessage(message);
+               },
+               error: function(data) {
+                 var res = $.parseJSON(data.responseText);
+                 displayRestError(res);
+               }
+             }
+      ).always(
+              function(){
+                removeMediumSpinnerImg(userMessages);
+                saveButton.button('reset');
+              }
+      );
+    }
   }
 
   ManagerImplementationInformation=function(beanId,descriptionKey,readOnly){
@@ -1890,6 +1969,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     redbackRuntimeConfigurationViewModel.redbackRuntimeConfiguration().modified(false);
 
     $("#main-content").html( $("#redback-runtime-configuration-main" ).tmpl() );
+    $.log("applyBindings:#redback-runtime-configuration-content:"+redbackRuntimeConfigurationViewModel.redbackRuntimeConfiguration().ldapGroupMappings().length);
     ko.applyBindings(redbackRuntimeConfigurationViewModel,$("#redback-runtime-configuration-content" ).get(0));
     activateRedbackRuntimeGeneralFormValidation();
     activateLdapConfigurationFormValidation();
@@ -1897,7 +1977,6 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
   }
 
   LdapGroupMapping=function(group,roleNames,automatic,subscribeFn){
-    $.log("new LdapGroupMapping");
     var self=this;
     this.modified=ko.observable(false);
     //private String group;

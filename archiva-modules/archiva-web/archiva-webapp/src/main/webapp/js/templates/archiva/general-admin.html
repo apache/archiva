@@ -1150,7 +1150,6 @@
     </div>
 
     <div class="tab-pane" id="redback-runtime-properties-content">
-
       <div class="well">
         <table id="propertiesTable" class="table-hover"
                data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'properties-grid',pageLinksId:'properties-grid-pagination'">
@@ -1248,23 +1247,16 @@
 
 </script>
 
-<script id="redback-runtime-general-content-impl-informations" type="text/html">
-  <div class="well draggable-item">
-    ${$data.description}
-  </div>
-</script>
-
-<script id="redback-runtime-ldap-mapping-tmpl" type="text/html">
-  <div class="well" id="ldap-group-mappings-div">
-  <table class="table table-condensed">
-    <thead>
-      <tr>
-        <th>${$.i18n.prop('redback.runtime.ldap.mapping.group.label')}</th>
-        <th>${$.i18n.prop('redback.runtime.ldap.mapping.roles.label')}</th>
-      </tr>
+<script id="redback-runtime-ldap-mapping-grid" type="text/html">
+  <thead>
+    <tr>
+      <th>${$.i18n.prop('redback.runtime.ldap.mapping.group.label')}</th>
+      <th>${$.i18n.prop('redback.runtime.ldap.mapping.roles.label')}</th>
+    </tr>
     </thead>
     <tbody id="ldap-group-mappings-tbody">
-    {{each(i, ldapGroupMapping) ldapGroupMappings()}}
+
+    {{each(i, ldapGroupMapping) itemsOnCurrentPage()}}
       <tr>
         <td>${ldapGroupMapping.group()}
           <select id="roles-group-${ldapGroupMapping.group()}" data-bind="options: ldapGroups, value: ldapGroupMapping.group, optionsCaption: 'Select a LDAP Group'"
@@ -1276,19 +1268,59 @@
         </td>
       </tr>
     {{/each}}
+  </tbody>
+</script>
+
+<script id="redback-runtime-ldap-mapping-tmpl" type="text/html">
+  <div class="well" id="ldap-group-mappings-div">
+  <table class="table table-condensed">
+    <thead>
+      <tr>
+        <th></th>
+        <th>${$.i18n.prop('redback.runtime.ldap.mapping.group.label')}</th>
+        <th>${$.i18n.prop('redback.runtime.ldap.mapping.roles.label')}</th>
+      </tr>
+    </thead>
+    <tbody id="ldap-group-mappings-tbody">
+      <tr>
+        <td>
+          <span class="btn btn-success">
+            <i class="icon-plus-sign icon-white" title="add mapping" data-bind="click: function(){ addLdapGroupMapping() }"/>
+          </span>
+        </td>
+        <td>
+          <select data-bind="options: ldapGroups, optionsCaption: 'Select a LDAP Group',value: $parent.newLdapGroupMapping().group" size="1">
+          </select>
+        </td>
+        <td>
+          <select data-bind="options: $parent.allRoleNames, selectedOptions: $parent.newLdapGroupMapping().roleNames"
+                  size="5" multiple="true" ></select>
+        </td>
+      </tr>
+    {{each(i, ldapGroupMapping) ldapGroupMappings()}}
+      <tr>
+        <td>
+          <span class="btn btn-danger">
+            <i class="icon-minus-sign icon-white" title="remove mapping" data-bind="click: function(){ deleteLdapGroupMapping(ldapGroupMapping)}"/>
+          </span>
+        </td>
+        <td>
+          ${ldapGroupMapping.group}
+        </td>
+        <td>
+          <select id="roles-group-mapping-${ldapGroupMapping.group()}" data-bind="options: $parent.allRoleNames, selectedOptions: ldapGroupMapping.roleNames"
+                  size="5" multiple="true" ></select>
+        </td>
+      </tr>
+    {{/each}}
     </tbody>
   </table>
-  <div>
-    <span class="btn btn-success">
-      <i class="icon-plus-sign icon-white" title="add mapping" data-bind="click: function(){ addLdapGroupMapping() }"/>
-    </span>
-    <table class="table table-condensed">
-      <tr>
-        <td></td>
-        <td></td>
-      </tr>
-    </table>
-  </div>
 
+  </div>
+</script>
+
+<script id="redback-runtime-general-content-impl-informations" type="text/html">
+  <div class="well draggable-item">
+    ${$data.description}
   </div>
 </script>
