@@ -39,7 +39,7 @@
   <alias name="repositorySessionFactory#jcr" alias="repositorySessionFactory"/>
 
   <alias name="environmentCheck#archiva-locked-admin-check" alias="environmentCheck#locked-admin-check"/>
-  <alias name="userManager#archiva" alias="userManager#configurable"/>
+  <alias name="userManager#archiva" alias="userManager#default"/>
   <alias name="authenticator#archiva" alias="authenticator#user-manager"/>
   <alias name="rbacManager#archiva" alias="rbacManager#default"/>
 
