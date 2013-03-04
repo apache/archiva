@@ -1724,7 +1724,9 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
      }
     });
 
-    this.newLdapGroupMapping=ko.observable(new LdapGroupMapping("",[],false,self.modifyLdapGroupMapping));
+    this.newLdapGroupMapping=ko.observable(new LdapGroupMapping("",[],false,null));
+
+    this.ldapSelectOptionCaption = $.i18n.prop('redback.runtime.ldap.mapping.select.group');
 
     addLdapGroupMapping=function(){
       // FIXME validate datas from ldapGroupMapping
@@ -1740,12 +1742,11 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
              {
                type: "PUT",
                contentType: 'application/json',
-               data:ko.toJSON(new LdapGroupMapping(self.newLdapGroupMapping().group(),self.newLdapGroupMapping().roleNames(),false,self.modifyLdapGroupMapping)),
+               data:ko.toJSON(new LdapGroupMapping(self.newLdapGroupMapping().group(),self.newLdapGroupMapping().roleNames(),false,null)),
                dataType: 'json',
                success: function(data) {
                  self.redbackRuntimeConfiguration().ldapGroupMappings
                          .unshift(new LdapGroupMapping(self.newLdapGroupMapping().group(),self.newLdapGroupMapping().roleNames(),false,self.modifyLdapGroupMapping));
-                 self.newLdapGroupMapping=ko.observable(new LdapGroupMapping("",[],false,self.modifyLdapGroupMapping));
                  $.log("addLdapGroupMapping:"+self.redbackRuntimeConfiguration().ldapGroupMappings().length);
                  $("#ldap-group-mappings-div select" ).select2({width: "element"});
                  var message=$.i18n.prop('redback-runtime-ldap-group-mapping.added');
@@ -1759,6 +1760,10 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       ).always(
         function(){
           removeMediumSpinnerImg(userMessages);
+          $.log("addLdapGroupMapping#always");
+          //self.newLdapGroupMapping().group("");
+          //self.newLdapGroupMapping().roleNames([]);
+          self.newLdapGroupMapping=ko.observable(new LdapGroupMapping("",[],false,null));
           saveButton.button('reset');
         }
       );
