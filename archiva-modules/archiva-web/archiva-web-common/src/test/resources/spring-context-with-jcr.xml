@@ -51,4 +51,5 @@
   </bean>
   <alias name="userConfiguration#archiva" alias="userConfiguration#default"/>
   <alias name="authorizer#rbac" alias="authorizer#default"/>
+  <alias name="userManager#configurable" alias="userManager#default"/>
 </beans>

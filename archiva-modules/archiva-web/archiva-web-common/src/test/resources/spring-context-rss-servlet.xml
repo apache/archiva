@@ -67,4 +67,5 @@
   <bean name="RoleManagerStub" class="org.apache.archiva.web.rss.RoleManagerStub"/>
   <alias name="userConfiguration#archiva" alias="userConfiguration#default"/>
   <alias name="authorizer#rbac" alias="authorizer#default"/>
+  <alias name="userManager#configurable" alias="userManager#default"/>
 </beans>
