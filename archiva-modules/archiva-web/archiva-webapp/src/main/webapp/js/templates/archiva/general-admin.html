@@ -1265,12 +1265,13 @@
           </span>
         </td>
         <td>
-          <select data-bind="options: ldapGroups,value: $parent.newLdapGroupMapping().group" size="1">
+          <select data-bind="options: ldapGroups,value: $parent.newLdapGroupMapping().group, select2: { }"
+                  size="1" style="min-width: 150px">
           </select>
         </td>
         <td>
-          <select data-bind="options: $parent.allRoleNames, selectedOptions: $parent.newLdapGroupMapping().roleNames"
-                  size="5" multiple="true" ></select>
+          <select data-bind="options: $parent.allRoleNames, selectedOptions: $parent.newLdapGroupMapping().roleNames, select2: { }"
+                  size="5" multiple="true" style="min-width: 200px"></select>
         </td>
       </tr>
     {{each(i, ldapGroupMapping) ldapGroupMappings()}}
@@ -1284,8 +1285,9 @@
           ${ldapGroupMapping.group}
         </td>
         <td>
-          <select id="roles-group-mapping-${ldapGroupMapping.group()}" data-bind="options: $parent.allRoleNames, selectedOptions: ldapGroupMapping.roleNames"
-                  size="5" multiple="true" ></select>
+          <select id="roles-group-mapping-${ldapGroupMapping.group()}"
+                  data-bind="options: $parent.allRoleNames, selectedOptions: ldapGroupMapping.roleNames, select2: { }"
+                  size="5" multiple="true" style="min-width: 200px"></select>
         </td>
       </tr>
     {{/each}}

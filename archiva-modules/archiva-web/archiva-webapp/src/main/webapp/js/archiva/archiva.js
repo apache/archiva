@@ -70,6 +70,7 @@ $.ajax({
               "jquery.json": "jquery.json-2.3.min",
               "knockout": "knockout-2.2.0.debug",
               "knockout.simpleGrid": "knockout.simpleGrid",
+              "knockout.select2": "knockout.select2",
               "knockout.sortable": "knockout-sortable",
               "jquery.iframe.transport": "jquery.iframe-transport-1.4",
               "jquery.fileupload": "jquery.fileupload-5.10.0",
