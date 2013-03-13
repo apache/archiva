@@ -125,8 +125,8 @@ public class DefaultFileUploadService
         {
 
             String classifier = getStringValue( multipartBody, "classifier" );
-            boolean pomFile = BooleanUtils.toBoolean( getStringValue( multipartBody, "pomFile" ) );
-
+            boolean pomFile = BooleanUtils.toBoolean( getStringValue( multipartBody, "pomFile" ), "1", "" );
+            
             Attachment file = multipartBody.getAttachment( "files[]" );
 
             //Content-Disposition: form-data; name="files[]"; filename="org.apache.karaf.features.command-2.2.2.jar"
