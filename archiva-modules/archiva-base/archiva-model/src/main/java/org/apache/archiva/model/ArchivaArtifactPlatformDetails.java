@@ -26,5 +26,5 @@ package org.apache.archiva.model;
  */
 public interface ArchivaArtifactPlatformDetails
 {
-    public String getPlatform();
+    String getPlatform();
 }

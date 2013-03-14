@@ -45,7 +45,7 @@ public interface RepositoryProxyConnectors
      * @return the file that was obtained, or null if no content was obtained
      * @throws ProxyDownloadException if there was a problem fetching the content from the target repositories.
      */
-    public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
+    File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
         throws ProxyDownloadException;
     
     /**
@@ -59,7 +59,7 @@ public interface RepositoryProxyConnectors
      * @param logicalPath the metadata to fetch.
      * @return the file that was obtained, or null if no content was obtained
      */
-    public File fetchMetatadaFromProxies( ManagedRepositoryContent repository, String logicalPath );
+    File fetchMetatadaFromProxies( ManagedRepositoryContent repository, String logicalPath );
 
     /**
      * Performs the fetch operation against the target repositories
@@ -69,7 +69,7 @@ public interface RepositoryProxyConnectors
      * @param path the path of the resource to fetch
      * @return the file that was obtained, or null if no content was obtained
      */
-    public File fetchFromProxies( ManagedRepositoryContent managedRepository, String path );
+    File fetchFromProxies( ManagedRepositoryContent managedRepository, String path );
 
     /**
      * Get the List of {@link ProxyConnector} objects of the source repository.
@@ -77,7 +77,7 @@ public interface RepositoryProxyConnectors
      * @param repository the source repository to look for.
      * @return the List of {@link ProxyConnector} objects.
      */
-    public List<ProxyConnector> getProxyConnectors( ManagedRepositoryContent repository );
+    List<ProxyConnector> getProxyConnectors( ManagedRepositoryContent repository );
 
     /**
      * Tests to see if the provided repository is a source repository for
@@ -87,5 +87,5 @@ public interface RepositoryProxyConnectors
      * @return true if there are proxy connectors that use the provided 
      *   repository as a source repository.
      */
-    public boolean hasProxies( ManagedRepositoryContent repository );
+    boolean hasProxies( ManagedRepositoryContent repository );
 }

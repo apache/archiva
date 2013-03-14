@@ -29,5 +29,5 @@ public interface ConfigurationListener
     /**
      * Generic event point to notify components that something has happend in the configuration.
      */
-    public void configurationEvent( ConfigurationEvent event );
+    void configurationEvent( ConfigurationEvent event );
 }

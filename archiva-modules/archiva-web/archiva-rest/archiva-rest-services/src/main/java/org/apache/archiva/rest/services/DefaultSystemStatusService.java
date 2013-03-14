@@ -35,7 +35,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.ws.rs.core.Response;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;

@@ -26,5 +26,5 @@ package org.apache.archiva.model;
  */
 public interface CompoundKey
 {
-    public String toString();
+    String toString();
 }

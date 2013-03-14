@@ -26,7 +26,6 @@ import org.apache.jackrabbit.webdav.io.OutputContext;
 import java.io.File;
 import java.io.PrintWriter;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -84,7 +83,8 @@ public class IndexWriter
         writer.println( "<head>" );
         writer.println( "<title>Collection: /" + logicalResource + "</title>" );
         writer.println( "<style type=\"text/css\">" );
-        writer.println( "ul{list-style:none;}" ); //list-style-image: url("../images/folder.png");
+        writer.println( "ul{list-style:none;}" ); 
+        
         StringBuilder relative = new StringBuilder("../../");
         if ( logicalResource.length() > 0 ) 
         {

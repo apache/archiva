@@ -40,6 +40,6 @@ public interface DownloadPolicy
      * 
      * @throws PolicyViolationException if the policy has been violated.
      */
-    public void applyPolicy( String policySetting, Properties request, File localFile )
+    void applyPolicy( String policySetting, Properties request, File localFile )
         throws PolicyViolationException, PolicyConfigurationException;
 }

@@ -18,8 +18,6 @@ package org.apache.archiva.web.model;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Calendar;

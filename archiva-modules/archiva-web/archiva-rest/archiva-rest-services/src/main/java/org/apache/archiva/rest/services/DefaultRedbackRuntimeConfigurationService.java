@@ -22,7 +22,6 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
-import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.Authenticator;
 import org.apache.archiva.redback.common.ldap.user.LdapUserMapper;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnection;

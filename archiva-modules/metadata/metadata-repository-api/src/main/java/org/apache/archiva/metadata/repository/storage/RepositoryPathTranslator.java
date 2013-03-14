@@ -25,7 +25,7 @@ import java.io.File;
 
 public interface RepositoryPathTranslator
 {
-    static final char PATH_SEPARATOR = '/';
+    char PATH_SEPARATOR = '/';
 
     String toPath( String namespace, String projectId, String projectVersion, String filename );
 

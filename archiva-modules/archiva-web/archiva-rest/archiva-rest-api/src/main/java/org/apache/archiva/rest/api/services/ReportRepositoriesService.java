@@ -46,7 +46,7 @@ public interface ReportRepositoriesService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    public List<RepositoryStatistics> getStatisticsReport( @QueryParam( "repository" ) List<String> repositoriesId,
+    List<RepositoryStatistics> getStatisticsReport( @QueryParam( "repository" ) List<String> repositoriesId,
                                                            @QueryParam( "rowCount" ) int rowCount,
                                                            @QueryParam( "startDate" ) Date startDate,
                                                            @QueryParam( "endDate" ) Date endDate )
@@ -56,7 +56,7 @@ public interface ReportRepositoriesService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    public List<RepositoryProblemFacet> getHealthReport( @PathParam( "repository" ) String repository,
+    List<RepositoryProblemFacet> getHealthReport( @PathParam( "repository" ) String repository,
                                                          @QueryParam( "groupId" ) String groupId,
                                                          @PathParam( "rowCount" ) int rowCount )
         throws ArchivaRestServiceException;

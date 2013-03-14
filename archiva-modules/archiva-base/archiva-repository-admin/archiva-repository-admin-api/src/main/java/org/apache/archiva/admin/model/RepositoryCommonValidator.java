@@ -31,9 +31,9 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 public interface RepositoryCommonValidator
 {
 
-    public static final String REPOSITORY_ID_VALID_EXPRESSION = "^[a-zA-Z0-9._-]+$";
+    String REPOSITORY_ID_VALID_EXPRESSION = "^[a-zA-Z0-9._-]+$";
 
-    public static final String REPOSITORY_NAME_VALID_EXPRESSION = "^([a-zA-Z0-9.)/_(-]|\\s)+$";
+    String REPOSITORY_NAME_VALID_EXPRESSION = "^([a-zA-Z0-9.)/_(-]|\\s)+$";
 
 
     void basicValidation( AbstractRepository abstractRepository, boolean update )

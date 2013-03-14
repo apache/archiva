@@ -28,8 +28,6 @@ import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.packer.IndexPacker;
-import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
 import org.apache.maven.index.updater.ResourceFetcher;

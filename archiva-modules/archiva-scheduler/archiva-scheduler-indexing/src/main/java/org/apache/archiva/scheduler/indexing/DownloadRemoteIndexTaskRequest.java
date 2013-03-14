@@ -22,7 +22,6 @@ import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.proxy.common.WagonFactory;
-import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.updater.IndexUpdater;
 

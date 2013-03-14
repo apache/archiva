@@ -21,7 +21,6 @@ package org.apache.archiva.admin.model.proxyconnector;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
-import org.apache.archiva.admin.model.beans.ProxyConnectorRule;
 
 import java.util.List;
 import java.util.Map;

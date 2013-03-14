@@ -32,7 +32,7 @@ public interface IndexMerger
     /**
      * system property which contains the value in s for ttl of temporary index groups
      */
-    static final String TMP_GROUP_INDEX_SYS_KEY = "archiva.tmp.group.index.ttl";
+    String TMP_GROUP_INDEX_SYS_KEY = "archiva.tmp.group.index.ttl";
 
     /**
      * @param indexMergerRequest

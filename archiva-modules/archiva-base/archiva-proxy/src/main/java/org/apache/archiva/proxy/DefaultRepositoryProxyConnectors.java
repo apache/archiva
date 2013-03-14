@@ -76,8 +76,6 @@ import org.apache.tools.ant.types.selectors.SelectorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
-import org.slf4j.helpers.BasicMarker;
-import org.slf4j.helpers.BasicMarkerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;

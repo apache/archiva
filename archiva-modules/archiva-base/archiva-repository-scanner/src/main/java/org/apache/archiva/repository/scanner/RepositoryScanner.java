@@ -22,7 +22,6 @@ package org.apache.archiva.repository.scanner;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
-import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.Set;
@@ -38,7 +37,7 @@ public interface RepositoryScanner
      * The value to pass to {@link #scan(ManagedRepository, long)} to have the scan
      * operate in a fresh fashion, with no check on changes based on timestamp.
      */
-    public static final long FRESH_SCAN = 0;
+    long FRESH_SCAN = 0;
 
     /**
      * <p>
@@ -53,7 +52,7 @@ public interface RepositoryScanner
      * These patterns are only valid for archiva-cli and archiva-converter use.
      * </p>
      */
-    public static final String[] IGNORABLE_CONTENT =
+    static final String[] IGNORABLE_CONTENT =
         { "bin/**", "reports/**", ".index", ".reports/**", ".maven/**", "**/.svn/**", "**/*snapshot-version",
             "*/website/**", "*/licences/**", "**/.htaccess", "**/*.html", "**/*.txt", "**/README*", "**/CHANGELOG*",
             "**/KEYS*", ".indexer" };

@@ -28,7 +28,6 @@ import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.redback.components.taskqueue.Task;
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutionException;
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
-import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.index.ArtifactContext;

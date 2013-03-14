@@ -30,11 +30,11 @@ import java.util.Map;
  */
 public interface RssFeedProcessor
 {
-    public static final String KEY_REPO_ID = "repoId";
+    String KEY_REPO_ID = "repoId";
 
-    public static final String KEY_GROUP_ID = "groupId";
+    String KEY_GROUP_ID = "groupId";
 
-    public static final String KEY_ARTIFACT_ID = "artifactId";
+    String KEY_ARTIFACT_ID = "artifactId";
 
     SyndFeed process( Map<String, String> reqParams, MetadataRepository metadataRepository )
         throws FeedException;

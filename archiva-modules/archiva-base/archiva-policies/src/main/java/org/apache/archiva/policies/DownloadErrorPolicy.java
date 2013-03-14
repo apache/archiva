@@ -43,7 +43,7 @@ public interface DownloadErrorPolicy
      * @return whether to process the exception or not
      * @throws PolicyConfigurationException if the policy is improperly configured
      */
-    public boolean applyPolicy( String policySetting, Properties request, File localFile, Exception exception,
+    boolean applyPolicy( String policySetting, Properties request, File localFile, Exception exception,
                                 Map<String, Exception> previousExceptions )
         throws PolicyConfigurationException;
 }

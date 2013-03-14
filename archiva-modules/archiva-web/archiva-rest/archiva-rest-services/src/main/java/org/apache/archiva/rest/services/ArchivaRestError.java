@@ -19,7 +19,6 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
