@@ -114,11 +114,6 @@ public class DefaultLdapRoleMapper
         this.userIdAttribute = userConf.getString( UserConfigurationKeys.LDAP_USER_ID_ATTRIBUTE, this.userIdAttribute );
     }
 
-    public String getLdapGroup( String role )
-    {
-        return userConf.getString( UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY + role );
-    }
-
     public List<String> getAllGroups( DirContext context )
         throws MappingException
     {

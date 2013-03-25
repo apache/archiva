@@ -33,12 +33,6 @@ import java.util.Map;
  */
 public interface LdapRoleMapper
 {
-    /**
-     * @param role redback role
-     * @return corresponding LDAP group
-     */
-    String getLdapGroup( String role )
-        throws MappingException;
 
     // for continuum ?
     //String getLdapGroup( String role, String resource );
