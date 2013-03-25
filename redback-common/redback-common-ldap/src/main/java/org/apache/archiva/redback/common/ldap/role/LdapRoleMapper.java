@@ -34,10 +34,6 @@ import java.util.Map;
 public interface LdapRoleMapper
 {
 
-    // for continuum ?
-    //String getLdapGroup( String role, String resource );
-
-
     /**
      * read all groups from ldap
      *
