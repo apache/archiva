@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <b>This implementation is only in memory you must use a different one if you need to serialize datas.</b>
+ * <b>This implementation is only in memory you must use a different one if you need to save datas.</b>
  *
  * @author Olivier Lamy
  * @since 2.1
