@@ -45,6 +45,8 @@
 
   <alias name="ldapConnectionFactory#archiva" alias="ldapConnectionFactory"/>
   <alias name="ldapConnectionFactory#archiva" alias="ldapConnectionFactory#configurable"/>
+  
+  <alias name="ldapRoleMapperConfiguration#archiva" alias="ldapRoleMapperConfiguration#default"/>
 
 
   <bean id="loggerManager" class="org.codehaus.plexus.logging.slf4j.Slf4jLoggerManager"

@@ -1727,7 +1727,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
     addLdapGroupMapping=function(){
       // FIXME validate datas from ldapGroupMapping
-      $.log("addLdapGroupMapping:"+self.newLdapGroupMapping().group());
+      $.log("addLdapGroupMapping:"+self.newLdapGroupMapping().group()+",roles:"+self.newLdapGroupMapping().roleNames().length);
       clearUserMessages();
 
       if (self.newLdapGroupMapping().roleNames().length<1){

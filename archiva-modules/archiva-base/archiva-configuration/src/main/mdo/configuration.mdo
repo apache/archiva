@@ -1513,6 +1513,15 @@
           </association>
         </field>
         <field>
+          <name>ldapGroupMappings</name>
+          <description>LdapGroupMappings</description>
+          <version>1.4.0+</version>
+          <association>
+            <type>LdapGroupMapping</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+        <field>
           <name>configurationProperties</name>
           <description>extra properties for redback configuration. String/String</description>
           <version>1.4.0+</version>
@@ -1669,6 +1678,29 @@
           <version>1.4.0+</version>
           <type>int</type>
           <defaultValue>-1</defaultValue>
+        </field>
+      </fields>
+    </class>
+
+    <class>
+      <name>LdapGroupMapping</name>
+      <version>1.4.0+</version>
+      <description>configuration of a LDAP group to Archiva roles</description>
+      <fields>
+        <field>
+          <name>group</name>
+          <description>LDAP Group</description>
+          <version>1.4.0+</version>
+          <type>String</type>
+        </field>
+        <field>
+          <name>roleNames</name>
+          <version>1.4.0+</version>
+          <description>Archiva roles.</description>
+          <association>
+            <type>String</type>
+            <multiplicity>*</multiplicity>
+          </association>
         </field>
       </fields>
     </class>

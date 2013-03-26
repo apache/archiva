@@ -67,6 +67,11 @@ public class RedbackRuntimeConfiguration
 
     private CacheConfiguration usersCacheConfiguration;
 
+    /**
+     * Field ldapGroupMappings.
+     */
+    private List<LdapGroupMapping> ldapGroupMappings;
+
     public RedbackRuntimeConfiguration()
     {
         // no op
@@ -168,6 +173,16 @@ public class RedbackRuntimeConfiguration
     public void setRbacManagerImpls( List<String> rbacManagerImpls )
     {
         this.rbacManagerImpls = rbacManagerImpls;
+    }
+
+    public List<LdapGroupMapping> getLdapGroupMappings()
+    {
+        return ldapGroupMappings;
+    }
+
+    public void setLdapGroupMappings( List<LdapGroupMapping> ldapGroupMappings )
+    {
+        this.ldapGroupMappings = ldapGroupMappings;
     }
 
     @Override

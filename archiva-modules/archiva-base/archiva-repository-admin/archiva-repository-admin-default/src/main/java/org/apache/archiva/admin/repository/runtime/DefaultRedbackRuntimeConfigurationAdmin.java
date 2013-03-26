@@ -22,12 +22,11 @@ import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.CacheConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
+import org.apache.archiva.admin.model.beans.LdapGroupMapping;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ConfigurationEvent;
-import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.components.registry.RegistryException;
@@ -42,6 +41,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,7 +53,7 @@ import java.util.Set;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service("userConfiguration#archiva")
+@Service( "redbackRuntimeConfigurationAdmin#default" )
 public class DefaultRedbackRuntimeConfigurationAdmin
     implements RedbackRuntimeConfigurationAdmin, UserConfiguration
 {
@@ -64,11 +64,11 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
-    @Named(value = "userConfiguration#redback")
-    UserConfiguration userConfiguration;
+    @Named( value = "userConfiguration#redback" )
+    private UserConfiguration userConfiguration;
 
     @Inject
-    @Named(value = "cache#users")
+    @Named( value = "cache#users" )
     private Cache usersCache;
 
     @PostConstruct
@@ -148,6 +148,31 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 boolean ldapBindAuthenticatorEnabled =
                     userConfiguration.getBoolean( UserConfigurationKeys.LDAP_BIND_AUTHENTICATOR_ENABLED, false );
                 ldapConfiguration.setBindAuthenticatorEnabled( ldapBindAuthenticatorEnabled );
+
+                // LDAP groups mapping reading !!
+                // UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY
+                // userConfiguration.getKeys()
+
+                Collection<String> keys = userConfiguration.getKeys();
+
+                List<LdapGroupMapping> ldapGroupMappings = new ArrayList<LdapGroupMapping>();
+
+                for ( String key : keys )
+                {
+                    if ( key.startsWith( UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) )
+                    {
+                        String group =
+                            StringUtils.substringAfter( key, UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY );
+                        String val = userConfiguration.getConcatenatedList( key, "" );
+                        if ( !StringUtils.isEmpty( val ) )
+                        {
+                            String[] roles = StringUtils.split( val, ',' );
+                            ldapGroupMappings.add( new LdapGroupMapping( group, roles ) );
+                        }
+                    }
+                }
+
+                redbackRuntimeConfiguration.setLdapGroupMappings( ldapGroupMappings );
 
                 redbackRuntimeConfiguration.setMigratedFromRedbackConfiguration( true );
 
@@ -300,6 +325,20 @@ public class DefaultRedbackRuntimeConfigurationAdmin
             redbackRuntimeConfiguration.setUsersCacheConfiguration( new CacheConfiguration() );
         }
 
+        List<org.apache.archiva.configuration.LdapGroupMapping> mappings = runtimeConfiguration.getLdapGroupMappings();
+
+        if ( mappings != null && mappings.size() > 0 )
+        {
+            List<LdapGroupMapping> ldapGroupMappings = new ArrayList<LdapGroupMapping>( mappings.size() );
+
+            for ( org.apache.archiva.configuration.LdapGroupMapping mapping : mappings )
+            {
+                ldapGroupMappings.add( new LdapGroupMapping( mapping.getGroup(), mapping.getRoleNames() ) );
+            }
+
+            redbackRuntimeConfiguration.setLdapGroupMappings( ldapGroupMappings );
+        }
+
         cleanupProperties( redbackRuntimeConfiguration );
 
         return redbackRuntimeConfiguration;
@@ -359,10 +398,30 @@ public class DefaultRedbackRuntimeConfigurationAdmin
             new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getUsersCacheConfiguration(),
                                                 org.apache.archiva.configuration.CacheConfiguration.class ) );
 
+        List<LdapGroupMapping> ldapGroupMappings = archivaRuntimeConfiguration.getLdapGroupMappings();
+
+        if ( ldapGroupMappings != null && ldapGroupMappings.size() > 0 )
+        {
+
+            List<org.apache.archiva.configuration.LdapGroupMapping> mappings =
+                new ArrayList<org.apache.archiva.configuration.LdapGroupMapping>( ldapGroupMappings.size() );
+
+            for ( LdapGroupMapping ldapGroupMapping : ldapGroupMappings )
+            {
+
+                org.apache.archiva.configuration.LdapGroupMapping mapping =
+                    new org.apache.archiva.configuration.LdapGroupMapping();
+                mapping.setGroup( ldapGroupMapping.getGroup() );
+                mapping.setRoleNames( new ArrayList<String>( ldapGroupMapping.getRoleNames() ) );
+                mappings.add( mapping );
+
+            }
+            redbackRuntimeConfiguration.setLdapGroupMappings( mappings );
+        }
         return redbackRuntimeConfiguration;
     }
 
-    // wrapper for UserConfiguration to intercept values (and store it not yet migrated
+    // wrapper for UserConfiguration to intercept values (and store it not yet migrated)
 
 
     public String getString( String key )
@@ -371,6 +430,18 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         {
             // possible false for others than archiva user manager
             return getRedbackRuntimeConfiguration().getUserManagerImpls().get( 0 );
+        }
+
+        if ( StringUtils.startsWith( key, UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) )
+        {
+            RedbackRuntimeConfiguration redbackRuntimeConfiguration = getRedbackRuntimeConfiguration();
+            int index = redbackRuntimeConfiguration.getLdapGroupMappings().indexOf( new LdapGroupMapping(
+                StringUtils.substringAfter( key, UserConfigurationKeys.LDAP_GROUPS_ROLE_START_KEY ) ) );
+            if ( index > -1 )
+            {
+                return StringUtils.join( redbackRuntimeConfiguration.getLdapGroupMappings().get( index ).getRoleNames(),
+                                         ',' );
+            }
         }
 
         RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
