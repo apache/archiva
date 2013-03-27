@@ -33,7 +33,6 @@
 
   <properties>
     <tomcatVersion>7.0.39</tomcatVersion>
-    <test.useTomcat>false</test.useTomcat>
   </properties>
 
   <dependencies>
