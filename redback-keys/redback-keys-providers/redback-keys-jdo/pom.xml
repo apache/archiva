@@ -149,7 +149,7 @@
               <goal>jpox-jdo-mapping</goal>
             </goals>
             <configuration>
-              <outputDirectory>${basedir}/target/classes/org/apache/archiva/redback/keys/jdo</outputDirectory>
+              <outputDirectory>${project.build.outputDirectory}/org/apache/archiva/redback/keys/jdo</outputDirectory>
             </configuration>
           </execution>
         </executions>

@@ -79,7 +79,7 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>target/classes/features.xml</file>
+                  <file>${project.build.outputDirectory}/features.xml</file>
                   <type>xml</type>
                   <classifier>features</classifier>
                 </artifact>
