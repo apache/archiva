@@ -72,7 +72,7 @@
   </distributionManagement>
 
   <properties>
-    <springVersion>3.2.1.RELEASE</springVersion>
+    <springVersion>3.2.2.RELEASE</springVersion>
     <slf4jVersion>1.7.2</slf4jVersion>
     <log4j2Version>2.0-beta4</log4j2Version>
 
