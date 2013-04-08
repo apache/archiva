@@ -166,7 +166,7 @@
       <roles>
         <role>PMC Member</role>
       </roles>
-      <timezone>+1</timezone>
+      <timezone>Australia/Melbourne</timezone>
     </developer>
     <!--Committers-->
     <developer>
