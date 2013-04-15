@@ -114,7 +114,7 @@
         <item name="Appearance Configuration" href="/adminguide/appearance-configuration.html"/>
         <item name="UI Configuration"         href="/adminguide/ui-configuration.html"/>
         <item name="Url Failure Cache Configuration"         href="/adminguide/url-cache-failure-configuration.html"/>
-        <item name="Users Runtime Configuration"    href="/adminguide/redback-runtime-configuration.html"/>
+        <item name="Redback Runtime Configuration"    href="/adminguide/redback-runtime-configuration.html"/>
       </item>
       <item name="REST Apis"                    href="/adminguide/webservices/rest.html"/>
 
