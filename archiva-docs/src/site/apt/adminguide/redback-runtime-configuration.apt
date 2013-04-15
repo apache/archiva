@@ -39,6 +39,12 @@ Apache Archiva Redback Runtime Configuration
 
 [../images/ldap-configuration.png]
 
+* LDAP Group-Roles mapping
+
+  Since 1.4-M4, you can map dynamically LDAP Group to Archiva Roles
+
+[../images/ldap-group-roles-mapping.png]
+
 * Runtime properties
 
   You can now too modify some Redback configuration properties. You have a help button which explains to you what the property is doing.
