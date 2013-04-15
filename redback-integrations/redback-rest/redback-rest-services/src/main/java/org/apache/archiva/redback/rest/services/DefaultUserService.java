@@ -75,7 +75,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-@Service( "userService#rest" )
+@Service("userService#rest")
 public class DefaultUserService
     implements UserService
 {
@@ -89,7 +89,7 @@ public class DefaultUserService
     private SecuritySystem securitySystem;
 
     @Inject
-    @Named( value = "userConfiguration#default" )
+    @Named(value = "userConfiguration#default")
     private UserConfiguration config;
 
     @Inject
@@ -99,28 +99,28 @@ public class DefaultUserService
      * cache used for user assignments
      */
     @Inject
-    @Named( value = "cache#userAssignments" )
+    @Named(value = "cache#userAssignments")
     private Cache userAssignmentsCache;
 
     /**
      * cache used for user permissions
      */
     @Inject
-    @Named( value = "cache#userPermissions" )
+    @Named(value = "cache#userPermissions")
     private Cache userPermissionsCache;
 
     /**
      * Cache used for users
      */
     @Inject
-    @Named( value = "cache#users" )
+    @Named(value = "cache#users")
     private Cache usersCache;
 
     @Inject
     private Mailer mailer;
 
     @Inject
-    @Named( value = "rbacManager#default" )
+    @Named(value = "rbacManager#default")
     private RBACManager rbacManager;
 
     private HttpAuthenticator httpAuthenticator;
@@ -132,9 +132,9 @@ public class DefaultUserService
     private HttpServletRequest httpServletRequest;
 
     @Inject
-    public DefaultUserService( @Named( value = "userManager#default" ) UserManager userManager,
+    public DefaultUserService( @Named(value = "userManager#default") UserManager userManager,
                                SecuritySystem securitySystem,
-                               @Named( "httpAuthenticator#basic" ) HttpAuthenticator httpAuthenticator )
+                               @Named("httpAuthenticator#basic") HttpAuthenticator httpAuthenticator )
     {
         this.userManager = userManager;
         this.securitySystem = securitySystem;
@@ -544,6 +544,12 @@ public class DefaultUserService
         }
         catch ( UserManagerException e )
         {
+            Throwable cause = e.getCause();
+
+            if ( cause != null && cause instanceof UserNotFoundException )
+            {
+                return Boolean.FALSE;
+            }
             throw new RedbackServiceException( new ErrorMessage( e.getMessage() ) );
         }
         return Boolean.FALSE;
