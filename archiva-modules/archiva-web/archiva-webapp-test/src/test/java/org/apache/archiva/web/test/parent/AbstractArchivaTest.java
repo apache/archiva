@@ -96,7 +96,7 @@ public abstract class AbstractArchivaTest
     private void createUser( String userName, String fullName, String emailAd, String password, String confirmPassword,
                              boolean valid )
     {
-
+        login( getAdminUsername(), getAdminPassword() );
         clickLinkWithLocator( "menu-users-list-a", true );
         clickLinkWithLocator( "users-view-tabs-li-user-edit-a", true );
 
