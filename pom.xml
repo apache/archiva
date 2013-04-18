@@ -86,7 +86,7 @@
     <jackrabbit.version>2.6.0</jackrabbit.version>
 
     <cxfVersion>2.6.6</cxfVersion>
-    <derbyVersion>10.9.1.0</derbyVersion>
+    <derbyVersion>10.10.1.1</derbyVersion>
     <httpclient.version>4.2.3</httpclient.version>
     <httpclient.core.version>4.2.3</httpclient.core.version>
     <javaxMailVersion>1.4</javaxMailVersion>
