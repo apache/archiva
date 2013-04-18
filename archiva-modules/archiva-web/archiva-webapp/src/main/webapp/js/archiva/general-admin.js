@@ -1906,6 +1906,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
                     ||$.inArray("ldap",redbackRuntimeConfiguration.rbacManagerImpls())>=0;
             $.log("useLdap:"+useLdap);
             if(useLdap){
+              $.log("in get ldap groups");
+
               // load ldap roles
               $.ajax("restServices/redbackServices/ldapGroupMappingService/ldapGroups", {
                 type: "GET",
@@ -1939,6 +1941,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
                 }
               );
             } else {
+              $.log("before displayRuntimeConfigurationScreen");
               displayRuntimeConfigurationScreen(redbackRuntimeConfigurationViewModel,null,null);
             }
           }
@@ -1955,7 +1958,8 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     });
 
     redbackRuntimeConfigurationViewModel.allRoleNames=ko.observableArray(allRoleNames);
-    if (redbackRuntimeConfigurationViewModel.redbackRuntimeConfiguration().ldapConfiguration().useRoleNameAsGroup()) {
+
+    if (redbackRuntimeConfigurationViewModel.redbackRuntimeConfiguration().ldapConfiguration().useRoleNameAsGroup()&&groups) {
       // if using groups == roles add all as mapping except already mapped
       $.each(groups,function(idx,item){
         var exists=false;
@@ -1971,6 +1975,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
 
       });
     }
+
     redbackRuntimeConfigurationViewModel.redbackRuntimeConfiguration().ldapGroupMappings=ko.observableArray(groupMappings?groupMappings:[]);
     redbackRuntimeConfigurationViewModel.redbackRuntimeConfiguration().modified(false);
 
