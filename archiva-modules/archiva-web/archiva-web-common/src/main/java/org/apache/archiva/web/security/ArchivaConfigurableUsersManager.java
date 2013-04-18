@@ -44,7 +44,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "userManager#archiva" )
+@Service("userManager#archiva")
 public class ArchivaConfigurableUsersManager
     extends AbstractUserManager
 {
@@ -58,7 +58,7 @@ public class ArchivaConfigurableUsersManager
     private Map<String, UserManager> userManagerPerId;
 
     @Inject
-    @Named( value = "cache#users" )
+    @Named(value = "cache#users")
     private Cache<String, User> usersCache;
 
     private boolean useUsersCache;
@@ -231,6 +231,10 @@ public class ArchivaConfigurableUsersManager
         {
             if ( lastException != null )
             {
+                if ( lastException instanceof UserNotFoundException )
+                {
+                    throw (UserNotFoundException) lastException;
+                }
                 throw new UserManagerException( lastException.getMessage(), lastException );
             }
         }
@@ -449,7 +453,6 @@ public class ArchivaConfigurableUsersManager
         }
         return exists;
     }
-
 
 
     @Override
