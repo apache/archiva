@@ -73,6 +73,7 @@ import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
 import org.apache.jackrabbit.webdav.DavResourceFactory;
@@ -445,7 +446,7 @@ public class ArchivaDavResourceFactory
 
         String rootPath = StringUtils.substringBeforeLast( pathInfo, "/" );
 
-        if ( StringUtils.endsWith( rootPath, "/.indexer" ) )
+        if ( StringUtils.endsWith( rootPath, "/" + repoGroupConfig.getMergedIndexPath() ) )
         {
             // we are in the case of index file request
             String requestedFileName = StringUtils.substringAfterLast( pathInfo, "/" );
@@ -926,11 +927,12 @@ public class ArchivaDavResourceFactory
 
         boolean allow = isAllowedToContinue( request, repositories, activePrincipal );
 
+        // remove last /
+        String pathInfo = StringUtils.removeEnd( request.getPathInfo(), "/" );
+
         if ( allow )
         {
 
-            // remove last /
-            String pathInfo = StringUtils.removeEnd( request.getPathInfo(), "/" );
             if ( StringUtils.endsWith( pathInfo, repositoryGroupConfiguration.getMergedIndexPath() ) )
             {
                 File mergedRepoDir =
@@ -939,6 +941,23 @@ public class ArchivaDavResourceFactory
             }
             else
             {
+                if ( StringUtils.equalsIgnoreCase( pathInfo, "/" + repositoryGroupConfiguration.getId() ) )
+                {
+                    File tmpDirectory = new File( SystemUtils.getJavaIoTmpDir(),
+                                                  repositoryGroupConfiguration.getId() + "/"
+                                                      + repositoryGroupConfiguration.getMergedIndexPath() );
+                    if ( !tmpDirectory.exists() )
+                    {
+                        synchronized ( tmpDirectory.getAbsolutePath() )
+                        {
+                            if ( !tmpDirectory.exists() )
+                            {
+                                tmpDirectory.mkdirs();
+                            }
+                        }
+                    }
+                    mergedRepositoryContents.add( tmpDirectory.getParentFile() );
+                }
                 for ( String repository : repositories )
                 {
                     ManagedRepositoryContent managedRepository = null;
