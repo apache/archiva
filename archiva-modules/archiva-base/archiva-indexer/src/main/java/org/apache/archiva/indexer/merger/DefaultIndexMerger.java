@@ -47,7 +47,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Olivier Lamy
  * @since 1.4-M2
  */
-@Service( "indexMerger#default" )
+@Service("indexMerger#default")
 public class DefaultIndexMerger
     implements IndexMerger
 {
@@ -100,7 +100,7 @@ public class DefaultIndexMerger
 
         try
         {
-            File indexLocation = new File( tempRepoFile, ".indexer" );
+            File indexLocation = new File( tempRepoFile, indexMergerRequest.getMergedIndexPath() );
             IndexingContext indexingContext =
                 indexer.addIndexingContext( tempRepoId, tempRepoId, tempRepoFile, indexLocation, null, null,
                                             mavenIndexerUtils.getAllIndexCreators() );
@@ -124,7 +124,8 @@ public class DefaultIndexMerger
             temporaryGroupIndexes.add(
                 new TemporaryGroupIndex( tempRepoFile, tempRepoId, indexMergerRequest.getGroupId() ) );
             stopWatch.stop();
-            log.info( "merged index for repos {} in {} s", indexMergerRequest.getRepositoriesIds(), stopWatch.getTime() );
+            log.info( "merged index for repos {} in {} s", indexMergerRequest.getRepositoriesIds(),
+                      stopWatch.getTime() );
             return indexingContext;
         }
         catch ( IOException e )
