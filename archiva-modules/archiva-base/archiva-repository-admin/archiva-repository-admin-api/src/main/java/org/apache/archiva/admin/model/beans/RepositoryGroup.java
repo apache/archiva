@@ -27,7 +27,7 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@XmlRootElement( name = "repositoryGroup" )
+@XmlRootElement(name = "repositoryGroup")
 public class RepositoryGroup
     implements Serializable
 {
@@ -40,6 +40,11 @@ public class RepositoryGroup
      * repositories ids
      */
     private List<String> repositories;
+
+    /**
+     * The path of the merged index.
+     */
+    private String mergedIndexPath = "/.indexer";
 
     public RepositoryGroup()
     {
