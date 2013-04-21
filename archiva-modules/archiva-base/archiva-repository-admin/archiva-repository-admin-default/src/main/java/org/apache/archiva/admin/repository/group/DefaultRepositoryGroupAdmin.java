@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 /**
  * @author Olivier Lamy
  */
-@Service( "repositoryGroupAdmin#default" )
+@Service("repositoryGroupAdmin#default")
 public class DefaultRepositoryGroupAdmin
     extends AbstractRepositoryAdmin
     implements RepositoryGroupAdmin
@@ -67,7 +67,8 @@ public class DefaultRepositoryGroupAdmin
         for ( RepositoryGroupConfiguration repositoryGroupConfiguration : getArchivaConfiguration().getConfiguration().getRepositoryGroups() )
         {
             repositoriesGroups.add( new RepositoryGroup( repositoryGroupConfiguration.getId(), new ArrayList<String>(
-                repositoryGroupConfiguration.getRepositories() ) ) );
+                repositoryGroupConfiguration.getRepositories() ) ).mergedIndexPath(
+                repositoryGroupConfiguration.getMergedIndexPath() ) );
         }
 
         return repositoriesGroups;
@@ -95,6 +96,7 @@ public class DefaultRepositoryGroupAdmin
         RepositoryGroupConfiguration repositoryGroupConfiguration = new RepositoryGroupConfiguration();
         repositoryGroupConfiguration.setId( repositoryGroup.getId() );
         repositoryGroupConfiguration.setRepositories( repositoryGroup.getRepositories() );
+        repositoryGroupConfiguration.setMergedIndexPath( repositoryGroup.getMergedIndexPath() );
         Configuration configuration = getArchivaConfiguration().getConfiguration();
         configuration.addRepositoryGroup( repositoryGroupConfiguration );
         saveConfiguration( configuration );
@@ -138,6 +140,7 @@ public class DefaultRepositoryGroupAdmin
         configuration.removeRepositoryGroup( repositoryGroupConfiguration );
 
         repositoryGroupConfiguration.setRepositories( repositoryGroup.getRepositories() );
+        repositoryGroupConfiguration.setMergedIndexPath( repositoryGroup.getMergedIndexPath() );
         configuration.addRepositoryGroup( repositoryGroupConfiguration );
 
         saveConfiguration( configuration );

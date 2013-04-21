@@ -122,6 +122,22 @@ public class RepositoryGroup
         this.repositories = repositories;
     }
 
+    public String getMergedIndexPath()
+    {
+        return mergedIndexPath;
+    }
+
+    public void setMergedIndexPath( String mergedIndexPath )
+    {
+        this.mergedIndexPath = mergedIndexPath;
+    }
+
+    public RepositoryGroup mergedIndexPath( String mergedIndexPath )
+    {
+        this.mergedIndexPath = mergedIndexPath;
+        return this;
+    }
+
     public boolean equals( Object other )
     {
         if ( this == other )
