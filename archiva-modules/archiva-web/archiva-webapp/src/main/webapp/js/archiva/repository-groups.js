@@ -20,13 +20,17 @@ define("archiva.repository-groups",["jquery","i18n","jquery.tmpl","bootstrap","j
   ,"knockout.simpleGrid","knockout.sortable"],
 function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
 
-  RepositoryGroup=function(id,repositories){
+  RepositoryGroup=function(id,repositories,mergedIndexPath){
 
     var self=this;
 
     //private String id;
     this.id=ko.observable(id);
     this.id.subscribe(function(newValue){self.modified(true)});
+
+    //private String mergedIndexPath = "/.indexer";
+    this.mergedIndexPath=ko.observable(mergedIndexPath?mergedIndexPath:".indexer");
+    this.mergedIndexPath.subscribe(function(newValue){self.modified(true)});
 
     // private List<String> repositories;
     this.repositories=ko.observableArray(repositories);
@@ -192,6 +196,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
             repositoryGroupViewModel.renderSortableChoosed(self);
             repositoryGroupViewModel.renderSortableAvailables(self);
             mainContent.find("#repository-groups-view-tabs-li-edit" ).find("a").html($.i18n.prop("edit"));
+            repositoryGroupValidator();
           }
         });
     }
@@ -206,32 +211,39 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
     }
 
     this.saveRepositoryGroup=function(repositoryGroup){
-        clearUserMessages();
-        var userMessages=$("#user-messages");
-        userMessages.html(mediumSpinnerImg());
-        $("#repository-group-save" ).button('loading');
-        $.ajax("restServices/archivaServices/repositoryGroupService/updateRepositoryGroup",
-          {
-            type: "POST",
-            contentType: 'application/json',
-            data:ko.toJSON(repositoryGroup),
-            dataType: 'json',
-            success: function(data) {
-              $.log("update repositoryGroup id:"+repositoryGroup.id());
-              var message=$.i18n.prop('repository.group.updated',repositoryGroup.id());
-              displaySuccessMessage(message);
-              repositoryGroup.modified(false);
-            },
-            error: function(data) {
-              var res = $.parseJSON(data.responseText);
-              displayRestError(res);
-            },
-            complete:function(data){
-              $("#repository-group-save" ).button('reset');
-              removeMediumSpinnerImg(userMessages);
-            }
+      if(valid==false){
+        $.log("saveRepositoryGroup, valid:"+valid);
+        return;
+      }
+      clearUserMessages();
+      var userMessages=$("#user-messages");
+      userMessages.html(mediumSpinnerImg());
+      var valid = $("#main-content").find("#repository-group-edit-form" ).valid();
+
+
+      $("#repository-group-save" ).button('loading');
+      $.ajax("restServices/archivaServices/repositoryGroupService/updateRepositoryGroup",
+        {
+          type: "POST",
+          contentType: 'application/json',
+          data:ko.toJSON(repositoryGroup),
+          dataType: 'json',
+          success: function(data) {
+            $.log("update repositoryGroup id:"+repositoryGroup.id());
+            var message=$.i18n.prop('repository.group.updated',repositoryGroup.id());
+            displaySuccessMessage(message);
+            repositoryGroup.modified(false);
+          },
+          error: function(data) {
+            var res = $.parseJSON(data.responseText);
+            displayRestError(res);
+          },
+          complete:function(data){
+            $("#repository-group-save" ).button('reset');
+            removeMediumSpinnerImg(userMessages);
           }
-        );
+        }
+      );
 
     }
 
@@ -359,6 +371,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
   }
 
   activateRepositoryGroupEditTab=function(){
+    $.log("activateRepositoryGroupEditTab");
     var mainContent = $("#main-content");
 
     mainContent.find("#repository-groups-view-tabs-content div[class*='tab-pane']").removeClass("active");
@@ -366,6 +379,27 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
 
     mainContent.find("#repository-groups-edit").addClass("active");
     mainContent.find("#repository-groups-view-tabs-li-edit").addClass("active");
+
+
+  }
+
+  repositoryGroupValidator=function(){
+    $.log("validator");
+    var theForm=$("#main-content").find("#repository-group-edit-form");
+    var validator = theForm.validate({
+        rules: {
+            id: {
+              required: true
+              },
+            mergedIndexPath:{
+              required:true
+            }
+        },
+        showErrors: function(validator, errorMap, errorList) {
+           customShowError("#main-content #repository-group-edit-form",validator,errorMap,errorMap);
+        }
+    });
+    return validator;
   }
 
   mapRepositoryGroups=function(data){
@@ -379,7 +413,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
   }
 
   mapRepositoryGroup=function(data){
-    return new RepositoryGroup(data.id, mapStringArray(data.repositories));
+    return new RepositoryGroup(data.id, mapStringArray(data.repositories),data.mergedIndexPath);
   }
 
 });

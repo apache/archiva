@@ -740,7 +740,6 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
         });
 
-
       });
   };
 

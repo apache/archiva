@@ -1426,32 +1426,35 @@
 
 <script id="repository-group-edit-tmpl" type="text/html">
   <div class="row-fluid">
-    {{if update}}
-    <div class="dotted span8">
-      <blockquote>
-        ${repositoryGroup.id}
-        <br/>
-        <a href="${window.archivaRuntimeInfo.baseUrl}/repository/${repositoryGroup.id()}" target="_blank">
-          ${applicationUrl}/repository/${repositoryGroup.id()}
-        </a>
-      </blockquote>
-    </div>
-    {{else}}
+
     <div class="dotted span8">
       <form id="repository-group-edit-form" class="well">
         <fieldset id="repository-group-edit-fieldset">
           <div class="control-group">
             <label class="control-label" for="id">${$.i18n.prop('id')}</label>
-
             <div class="controls">
               <input type="text" class="input-medium required" id="id" name="id" size="15"
                      data-bind="value: repositoryGroup.id,css:{'uneditable-input': update},readonly:update"/>
             </div>
           </div>
+          <div class="control-group">
+            <label class="control-label" for="mergedIndexPath">${$.i18n.prop('repository.group.mergedIndexPath')}</label>
+              <div class="controls">
+                <input type="text" class="input-large required" id="mergedIndexPath" name="mergedIndexPath"
+                       data-bind="value: repositoryGroup.mergedIndexPath"/>
+              </div>
+          </div>
+          <div>
+            <a href="${window.archivaRuntimeInfo.baseUrl}/repository/${repositoryGroup.id()}" target="_blank">
+            {{if repositoryGroup.id()}}
+              ${applicationUrl}/repository/${repositoryGroup.id()}
+            {{/if}}
+            </a>
+          </div>
         </fieldset>
       </form>
     </div>
-    {{/if}}
+
     {{if repositoryGroup.modified()}}
     <div class="span3">
       <a href="#" class="btn btn-warning" data-loading-text="${$.i18n.prop('common.loading')}"
