@@ -841,6 +841,14 @@
           <description>The id of the repository group.</description>
         </field>
         <field>
+          <name>mergedIndexPath</name>
+          <version>1.2.0+</version>
+          <type>String</type>
+          <required>false</required>
+          <defaultValue>/.indexer</defaultValue>
+          <description>The path of the merged index.</description>
+        </field>
+        <field>
           <name>repositories</name>
           <version>1.2.0+</version>
           <association>

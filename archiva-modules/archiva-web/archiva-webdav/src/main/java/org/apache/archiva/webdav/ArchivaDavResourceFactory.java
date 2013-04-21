@@ -262,8 +262,8 @@ public class ArchivaDavResourceFactory
             // handle browse requests for virtual repos
             if ( RepositoryPathUtil.getLogicalResource( archivaLocator.getOrigResourcePath() ).endsWith( "/" ) )
             {
-                return getResource( request, repoGroupConfig.getRepositories(), archivaLocator,
-                                    archivaLocator.getRepositoryId() );
+                return getResourceFromGroup( request, repoGroupConfig.getRepositories(), archivaLocator,
+                                             repoGroupConfig );
             }
             else
             {
@@ -904,8 +904,9 @@ public class ArchivaDavResourceFactory
         }
     }
 
-    private DavResource getResource( DavServletRequest request, List<String> repositories,
-                                     ArchivaDavResourceLocator locator, String groupId )
+    private DavResource getResourceFromGroup( DavServletRequest request, List<String> repositories,
+                                              ArchivaDavResourceLocator locator,
+                                              RepositoryGroupConfiguration repositoryGroupConfiguration )
         throws DavException
     {
         List<File> mergedRepositoryContents = new ArrayList<File>();
@@ -930,9 +931,11 @@ public class ArchivaDavResourceFactory
 
             // remove last /
             String pathInfo = StringUtils.removeEnd( request.getPathInfo(), "/" );
-            if ( StringUtils.endsWith( pathInfo, "/.indexer" ) )
+            if ( StringUtils.endsWith( pathInfo, "/" + repositoryGroupConfiguration.getMergedIndexPath() )
+                || StringUtils.endsWith( pathInfo, "/" + repositoryGroupConfiguration.getMergedIndexPath() + "/" ) )
             {
-                File mergedRepoDir = buildMergedIndexDirectory( repositories, activePrincipal, request, groupId );
+                File mergedRepoDir = buildMergedIndexDirectory( repositories, activePrincipal, request,
+                                                                repositoryGroupConfiguration.getId() );
                 mergedRepositoryContents.add( mergedRepoDir );
             }
             else
