@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","knockout.simpleGrid","jqueryFileTree","prettify"]
+define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","knockout.simpleGrid","jqueryFileTree","prettify", "d3"]
 , function(jquery,i18n,jqueryTmpl,select2,ko,koSimpleGrid) {
 
   //-----------------------------------------
@@ -466,6 +466,17 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
                   return;
                 }
 
+                if ($(e.target).attr("data-target")=="#artifact-details-dependency-graph-content") {
+                  var location ="#artifact-dependency-graph";
+                  if (self.repositoryId) {
+                    location+="~"+self.repositoryId;
+                  }
+                  location+="/"+self.groupId+"/"+self.artifactId+"/"+self.version;
+                  displayGraph(treeDependencyUrl);
+                  window.sammyArchivaApplication.setLocation(location);
+                  return;
+                }
+
                 if ($(e.target).attr("data-target")=="#artifact-details-used-by-content") {
                   var location ="#artifact-used-by";
                   if (self.repositoryId){
@@ -530,7 +541,201 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
       });
     }
 
+    displayGraphData=function(data) {
 
+      var w = 960,
+          h = 500,
+          r =6,
+          node,
+          link,
+          root;
+
+      var onmousedown = false;
+
+      var svg = d3.select("#artifact-details-dependency-graph-content")
+          .append("svg:svg")
+            .attr("width", w)
+            .attr("height", h)
+            .attr("pointer-events", "all")
+          .append('svg:g')
+            .call(d3.behavior.zoom().on("zoom", redraw))
+          .append('svg:g');
+
+      svg.append('svg:rect')
+          .attr('width', w)
+          .attr('height', h)
+          .attr('fill', 'rgba(255, 255, 255, 0)')
+
+      var force = d3.layout.force()
+          .on("tick", tick)
+          .linkDistance(100)
+          .charge(-300)
+          .size([w, h]);
+
+      var nodes = flatten(data[0]);
+      var links = d3.layout.tree().links(nodes);
+
+      force.nodes(nodes)
+          .links(links)
+          .start();
+
+      svg.append("svg:defs").selectAll("marker")
+          .data(["suit"])
+          .enter().append("svg:marker")
+            .attr("id", String)
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 15)
+            .attr("refY", -1.5)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+          .append("svg:path")
+            .attr("d", "M0,-5L10,0L0,5");
+
+      var path = svg.append("svg:g").selectAll("path")
+          .data(force.links())
+          .enter().append("svg:path")
+          .attr("class", function (d) {
+              return "link suit";
+            })
+          .attr("marker-end", function (d) {
+              return "url(#suit)";
+            });
+
+      var circle = svg.append("svg:g").selectAll("circle")
+          .data(force.nodes())
+          .enter().append("svg:circle")
+          .attr("r", r)
+          .on("click", click)
+          .on("mouseenter",onmouseover)
+          .on("mouseleave", function (d, i) {
+            setTimeout(function() {
+              $("#plot_overlay").remove();
+            }, 201)})
+          .call(force.drag);
+
+      force.drag()
+          .on("dragstart", function() {
+              $("#plot_overlay").remove();
+              onmousedown = true;
+            })
+          .on("dragend", function() {
+            $("#plot_overlay").remove();
+            onmousedown = false;
+          });
+
+      var text = svg.append("svg:g")
+          .selectAll("g")
+          .data(force.nodes())
+          .enter().append("svg:g");
+
+      text.append("svg:text")
+          .attr("x", 8)
+          .attr("y", ".31em")
+          .attr("class", "shadow")
+          .text(function (d) {
+              return d.artifact.artifactId;
+            });
+
+      text.append("svg:text")
+          .attr("x", 8)
+          .attr("y", ".31em")
+          .text(function (d) {
+              return d.artifact.artifactId;
+            });
+
+      function tick() {
+        path.attr("d", function (d) {
+          var dx = d.target.x - d.source.x,
+              dy = d.target.y - d.source.y,
+              dr = 0;
+          return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+        });
+
+        circle.attr("transform", function (d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        });
+
+        text.attr("transform", function (d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        });
+      }
+
+      function redraw() {
+        trans=d3.event.translate;
+        scale=d3.event.scale;
+        svg.attr("transform",
+                 "translate(" + trans + ")"
+                     + " scale(" + scale + ")");
+      }
+
+      function click(d) {
+        var location ="#artifact";
+        var selectedRepo=getSelectedBrowsingRepository();
+        if (selectedRepo){
+          location+="~"+selectedRepo;
+        }
+        location+="/"+d.artifact.groupId+"/"+d.artifact.artifactId+"/"+d.artifact.version;
+
+        window.sammyArchivaApplication.setLocation(location);
+      }
+
+      function onmouseover(d) {
+        if (!onmousedown) {
+          var x;
+          var y;
+          if (d3.event.pageX != undefined && d3.event.pageY != undefined) {
+            x = d3.event.pageX;
+            y = d3.event.pageY;
+          } else {
+            x = d3.event.clientX + document.body.scrollLeft +
+                document.documentElement.scrollLeft;
+            y = d3.event.clientY + document.body.scrollTop +
+                document.documentElement.scrollTop;
+          }
+          x += r;
+          y += r;
+          setTimeout(function() {
+            var bubble_code = "<div id='plot_overlay' class='popover fade in left' style='position:absolute; top:"
+                + y + "px; left:" + x + "px; z-index: 1; display: block;'>" +
+                "<h3 class='popover-title'>Details</h3>" +
+                "<div class='popover-content'><ul><li>ArtifactId: " +d.artifact.artifactId + "</li>"
+                + "<li>GroupId: " +d.artifact.groupId + "</li>"
+                + "<li>Version: " +d.artifact.version + "</li></ul></div>" +
+                "</div>";
+            $("body").append(bubble_code);
+          }, 200);
+        }
+      }
+
+      function flatten(root) {
+        var nodes = [], i = 0;
+
+        function recurse(node) {
+          if (node.childs) {
+            node.childs.forEach(recurse);
+            node.children = node.childs;
+          }
+          if (!node.id) node.id = ++i;
+
+          nodes.push(node);
+        }
+
+        recurse(root);
+        return nodes;
+      }
+    }
+
+    displayGraph=function(treeDependencyUrl) {
+
+      $.ajax(treeDependencyUrl, {
+        type: "GET",
+        dataType: 'json',
+        success: function(data) {
+          displayGraphData(data);
+        }
+      });
+    }
 
     displayGroup=function(groupId){
       var selectedRepo=getSelectedBrowsingRepository();

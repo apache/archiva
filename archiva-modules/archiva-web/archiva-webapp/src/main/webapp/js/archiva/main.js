@@ -550,6 +550,24 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
           checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-dependency-tree-content-a");
         });
 
+        this.get('#artifact-dependency-graph/:groupId/:artifactId/:version', function(context) {
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+          checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-dependency-graph-content-a");
+        });
+
+        this.get('#artifact-dependency-graph~:repository/::groupId/:artifactId/:version', function(context) {
+
+          var repositoryId = this.params.repositoryId;
+          var groupId= this.params.groupId;
+          var artifactId= this.params.artifactId;
+          var version= this.params.version;
+          checkArtifactDetailContent(groupId,artifactId,version,repositoryId,"artifact-details-dependency-graph-content-a");
+        })
+
         this.get('#artifact-mailing-list/:groupId/:artifactId/:version',function(context){
 
           var repositoryId = this.params.repositoryId;
