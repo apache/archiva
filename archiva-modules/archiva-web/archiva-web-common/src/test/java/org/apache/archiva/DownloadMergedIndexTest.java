@@ -123,8 +123,15 @@ public class DownloadMergedIndexTest
 
         RepositoryGroupService repositoryGroupService = getRepositoryGroupService();
 
+        String repoGroupId = "test-group";
+
+        if ( repositoryGroupService.getRepositoryGroup( repoGroupId ) != null )
+        {
+            repositoryGroupService.deleteRepositoryGroup( repoGroupId );
+        }
+
         RepositoryGroup repositoryGroup = new RepositoryGroup();
-        repositoryGroup.setId( "test-group" );
+        repositoryGroup.setId( repoGroupId );
         repositoryGroup.setRepositories( Arrays.asList( id ) );
 
         repositoryGroupService.addRepositoryGroup( repositoryGroup );
@@ -134,7 +141,7 @@ public class DownloadMergedIndexTest
         managedRepository = new ManagedRepository();
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
-        managedRepository.setLocation(System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" );
+        managedRepository.setLocation( System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" );
         managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex/" + id );
 
         if ( managedRepositoriesService.getManagedRepository( id ) != null )
@@ -157,7 +164,7 @@ public class DownloadMergedIndexTest
 
         ProxyConnectorService proxyConnectorService = getProxyConnectorService();
         ProxyConnector proxyConnector = new ProxyConnector();
-        proxyConnector.setProxyId( "foo-bar" );
+        proxyConnector.setProxyId( "foo-bar1" );
         proxyConnector.setSourceRepoId( id );
         proxyConnector.setTargetRepoId( "all-merged" );
         proxyConnectorService.addProxyConnector( proxyConnector );
