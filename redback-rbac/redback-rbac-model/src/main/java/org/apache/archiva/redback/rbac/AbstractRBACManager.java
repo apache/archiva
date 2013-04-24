@@ -731,7 +731,8 @@ public abstract class AbstractRBACManager
                 else
                 {
                     log.warn(
-                        "error searching role with name '{}' probably some issues when migrating your role manager" );
+                        "error searching role with name '{}' probably some issues when migrating your role manager",
+                        roleName );
                 }
             }
             catch ( RbacObjectNotFoundException e )
