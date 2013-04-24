@@ -74,7 +74,7 @@
   <properties>
     <springVersion>3.2.2.RELEASE</springVersion>
     <slf4jVersion>1.7.2</slf4jVersion>
-    <log4j2Version>2.0-beta4</log4j2Version>
+    <log4j2Version>2.0-beta5</log4j2Version>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <gpg.useagent>true</gpg.useagent>
