@@ -730,7 +730,7 @@ public class DefaultManagedRepositoryAdmin
     }
 
 
-    public void addRepositoryRoles( ManagedRepository newRepository )
+    private void addRepositoryRoles( ManagedRepository newRepository )
         throws RoleManagerException
     {
         String repoId = newRepository.getId();
