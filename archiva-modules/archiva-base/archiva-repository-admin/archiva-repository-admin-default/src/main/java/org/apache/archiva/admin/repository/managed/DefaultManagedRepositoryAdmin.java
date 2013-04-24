@@ -109,7 +109,7 @@ public class DefaultManagedRepositoryAdmin
 
     @PostConstruct
     public void initialize()
-        throws RepositoryAdminException
+        throws RepositoryAdminException, RoleManagerException
     {
         try
         {
@@ -120,10 +120,12 @@ public class DefaultManagedRepositoryAdmin
         {
             throw new RepositoryAdminException( e.getMessage(), e );
         }
-        // initialize index context on start
+        // initialize index context on start and check roles here
         for ( ManagedRepository managedRepository : getManagedRepositories() )
         {
             createIndexContext( managedRepository );
+            addRepositoryRoles( managedRepository.getId() );
+
         }
     }
 
@@ -264,13 +266,13 @@ public class DefaultManagedRepositoryAdmin
         try
         {
             addRepository( repository, config );
-            addRepositoryRoles( repository );
+            addRepositoryRoles( repository.getId() );
 
             if ( stageRepoNeeded )
             {
                 ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( repository );
                 addRepository( stagingRepository, config );
-                addRepositoryRoles( stagingRepository );
+                addRepositoryRoles( stagingRepository.getId() );
                 triggerAuditEvent( stagingRepository.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );
             }
         }
@@ -727,11 +729,30 @@ public class DefaultManagedRepositoryAdmin
         return true;
     }
 
-    protected void addRepositoryRoles( ManagedRepositoryConfiguration newRepository )
+
+    public void addRepositoryRoles( ManagedRepository newRepository )
         throws RoleManagerException
     {
         String repoId = newRepository.getId();
 
+        // TODO: double check these are configured on start up
+        // TODO: belongs in the business logic
+
+        if ( !getRoleManager().templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
+        {
+            getRoleManager().createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
+        }
+
+        if ( !getRoleManager().templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
+        {
+            getRoleManager().createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
+        }
+    }
+
+
+    private void addRepositoryRoles( String repoId )
+        throws RoleManagerException
+    {
         // TODO: double check these are configured on start up
         // TODO: belongs in the business logic
 

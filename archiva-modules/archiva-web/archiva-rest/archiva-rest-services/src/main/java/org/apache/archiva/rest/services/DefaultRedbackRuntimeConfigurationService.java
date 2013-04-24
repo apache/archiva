@@ -179,6 +179,8 @@ public class DefaultRedbackRuntimeConfigurationService
 
             ldapUserMapper.initialize();
 
+            //check repositories roles are here !!!
+
             return Boolean.TRUE;
         }
         catch ( Exception e )
