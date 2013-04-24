@@ -74,7 +74,7 @@
     <redback.spring-utils.version>2.0</redback.spring-utils.version>
     <redback.taskqueue.version>2.0</redback.taskqueue.version>
     <slf4j.version>1.7.2</slf4j.version>
-    <log4j.version>2.0-beta4</log4j.version>
+    <log4j.version>2.0-beta5</log4j.version>
 
     <spring.version>3.2.2.RELEASE</spring.version>
 
@@ -1188,19 +1188,19 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.logging.log4j.adapters</groupId>
+        <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j-impl</artifactId>
         <version>${log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.logging.log4j.adapters</groupId>
+        <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-jcl</artifactId>
         <version>${log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>org.apache.logging.log4j.adapters</groupId>
+        <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-1.2-api</artifactId>
         <version>${log4j.version}</version>
         <scope>runtime</scope>
