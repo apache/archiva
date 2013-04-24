@@ -1080,13 +1080,13 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
         { headerText: "Artifact Count", rowText: "totalArtifactCount" },
         { headerText: "Group Count", rowText: "totalGroupCount" },
         { headerText: "Project Count", rowText: "totalProjectCount" },
-        { headerText: "Archetypes", rowText: function (item) { return item.totalCountForType.pom === "" ? item.totalCountForType.pom : "0"} },
-        { headerText: "Jars", rowText: function (item) { return item.totalCountForType.jar === "" ? item.totalCountForType.jar : "0" } },
-        { headerText: "Wars", rowText: function (item) { return item.totalCountForType.war === "" ? item.totalCountForType.war : "0" } },
-        { headerText: "Ears", rowText: function (item) { return item.totalCountForType.ear === "" ? item.totalCountForType.ear : "0" } },
-        { headerText: "Exes", rowText: function (item) { return item.totalCountForType.exe === "" ? item.totalCountForType.exe : "0" } },
-        { headerText: "Dlls", rowText: function (item) { return item.totalCountForType.dll === "" ? item.totalCountForType.dll : "0" } },
-        { headerText: "Zips", rowText: function (item) { return item.totalCountForType.zip === "" ? item.totalCountForType.zip : "0" } }
+        { headerText: "Archetypes", rowText: function (item) { return !item.totalCountForType.pom || item.totalCountForType.pom === "" ? "0" : item.totalCountForType.pom } },
+        { headerText: "Jars", rowText: function (item) { return !item.totalCountForType.war || item.totalCountForType.jar === "" ? "0" : item.totalCountForType.jar } },
+        { headerText: "Wars", rowText: function (item) { return !item.totalCountForType.war || item.totalCountForType.war === "" ? "0" : item.totalCountForType.jar } },
+        { headerText: "Ears", rowText: function (item) { return !item.totalCountForType.ear || item.totalCountForType.ear === "" ? "0" : item.totalCountForType.ear } },
+        { headerText: "Exes", rowText: function (item) { return !item.totalCountForType.exe || item.totalCountForType.exe === "" ? "0" : item.totalCountForType.exe } },
+        { headerText: "Dlls", rowText: function (item) { return !item.totalCountForType.dll || item.totalCountForType.dll === "" ? "0" : item.totalCountForType.dll} },
+        { headerText: "Zips", rowText: function (item) { return !item.totalCountForType.zip || item.totalCountForType.zip === "" ? "0" : item.totalCountForType.zip } }
       ],
       pageSize: 10
     });
