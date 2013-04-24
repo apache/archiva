@@ -84,6 +84,9 @@ public class DefaultManagedRepositoryAdmin
     @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
+    /**
+     * FIXME: this could be multiple implementations and needs to be configured.
+     */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
 

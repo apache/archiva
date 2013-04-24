@@ -66,30 +66,18 @@ public class DuplicateArtifactsConsumer
 {
     private Logger log = LoggerFactory.getLogger( DuplicateArtifactsConsumer.class );
 
-    /**
-     * default-value="duplicate-artifacts"
-     */
     private String id = "duplicate-artifacts";
 
-    /**
-     * default-value="Check for Duplicate Artifacts via SHA1 Checksums"
-     */
     private String description = "Check for Duplicate Artifacts via SHA1 Checksums";
 
-    /**
-     *
-     */
     @Inject
     private ArchivaConfiguration configuration;
 
-    /**
-     *
-     */
     @Inject
     private FileTypes filetypes;
 
     /**
-     * FIXME: can be of other types
+     * FIXME: this could be multiple implementations and needs to be configured.
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;

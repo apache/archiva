@@ -113,7 +113,7 @@ public class RepositoryPurgeConsumer
     private List<RepositoryListener> listeners = Collections.emptyList();
 
     /**
-     * TODO: this could be multiple implementations and needs to be configured.
+     * FIXME: this could be multiple implementations and needs to be configured.
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;

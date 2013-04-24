@@ -87,6 +87,9 @@ public class RssFeedServlet
 
     private HttpAuthenticator httpAuth;
 
+    /**
+     * FIXME: this could be multiple implementations and needs to be configured.
+     */
     private RepositorySessionFactory repositorySessionFactory;
 
     public void init( javax.servlet.ServletConfig servletConfig )

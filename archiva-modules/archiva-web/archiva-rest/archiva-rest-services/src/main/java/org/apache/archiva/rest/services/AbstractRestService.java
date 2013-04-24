@@ -79,6 +79,9 @@ public abstract class AbstractRestService
     protected UserRepositories userRepositories;
 
 
+    /**
+     * FIXME: this could be multiple implementations and needs to be configured.
+     */
     @Inject
     @Named(value = "repositorySessionFactory")
     protected RepositorySessionFactory repositorySessionFactory;

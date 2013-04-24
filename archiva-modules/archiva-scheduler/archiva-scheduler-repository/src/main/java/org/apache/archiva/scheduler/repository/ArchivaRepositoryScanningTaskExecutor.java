@@ -84,7 +84,7 @@ public class ArchivaRepositoryScanningTaskExecutor
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     /**
-     * TODO: may be different implementations
+     * FIXME: this could be multiple implementations and needs to be configured.
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;

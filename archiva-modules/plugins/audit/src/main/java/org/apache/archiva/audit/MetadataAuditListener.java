@@ -44,10 +44,8 @@ public class MetadataAuditListener
     private AuditManager auditManager;
 
     /**
-     * FIXME: this could be multiple implementations and needs to be configured. It also starts a separate session to
-     * the originator of the audit event that we may rather want to pass through.
-     *
-     *
+     * FIXME: this could be multiple implementations and needs to be configured.
+     *  It also starts a separate session to the originator of the audit event that we may rather want to pass through.
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;

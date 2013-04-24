@@ -87,7 +87,7 @@ public class ArchivaMetadataCreationConsumer
     private List<String> includes = new ArrayList<String>( 0 );
 
     /**
-     * FIXME: can be of other types
+     * FIXME: this could be multiple implementations and needs to be configured.
      */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
