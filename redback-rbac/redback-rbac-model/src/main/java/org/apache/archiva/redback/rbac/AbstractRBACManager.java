@@ -721,8 +721,18 @@ public abstract class AbstractRBACManager
             try
             {
                 Role child = getRole( roleName );
-                childRoles.put( child.getName(), child );
-                updatedChildRoleList.add( roleName );
+                // archiva can change role manager but LDAP can be non writable so in such case
+                // some roles doesn't exists !!
+                if ( child != null )
+                {
+                    childRoles.put( child.getName(), child );
+                    updatedChildRoleList.add( roleName );
+                }
+                else
+                {
+                    log.warn(
+                        "error searching role with name '{}' probably some issues when migrating your role manager" );
+                }
             }
             catch ( RbacObjectNotFoundException e )
             {
