@@ -60,7 +60,7 @@
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
 
-    <maven3x.version>3.0.4</maven3x.version>
+    <maven3x.version>3.0.5</maven3x.version>
     <maven.version>2.0.8</maven.version>
     <aether.version>1.13.1</aether.version>
 
