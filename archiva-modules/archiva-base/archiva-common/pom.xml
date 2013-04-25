@@ -53,8 +53,8 @@
       <version>2.7.0</version>
     </dependency>
     <dependency>
-      <groupId>org.sonatype.sisu</groupId>
-      <artifactId>sisu-inject-plexus</artifactId>
+      <groupId>org.eclipse.sisu</groupId>
+      <artifactId>org.eclipse.sisu.plexus</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
