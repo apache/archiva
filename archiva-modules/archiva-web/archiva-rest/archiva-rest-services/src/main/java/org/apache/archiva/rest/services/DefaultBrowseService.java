@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.dependency.tree.maven2.DependencyTreeBuilder;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
@@ -38,11 +39,13 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMetadataVersionComparator;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.model.ArchivaArtifact;
+import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.rest.api.model.ArtifactContent;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
@@ -54,6 +57,7 @@ import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.services.utils.ArtifactContentEntryComparator;
 import org.apache.archiva.security.ArchivaSecurityException;
+import org.apache.archiva.xml.XMLException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -803,6 +807,37 @@ public class DefaultBrowseService
                 if ( file != null && file.exists() )
                 {
                     return true;
+                }
+
+                // in case of SNAPSHOT we can have timestamped version locally !
+                if ( StringUtils.endsWith( version, VersionUtil.SNAPSHOT ) )
+                {
+                    File metadataFile = new File( file.getParent(), MetadataTools.MAVEN_METADATA );
+                    if ( metadataFile.exists() )
+                    {
+                        try
+                        {
+                            ArchivaRepositoryMetadata archivaRepositoryMetadata =
+                                MavenMetadataReader.read( metadataFile );
+                            int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
+                            String timeStamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
+                            // rebuild file name with timestamped version and build number
+                            File timeStampFile = new File( file.getParent(), artifactId + "-" + StringUtils.remove( version,
+                                                                                                              "-"
+                                                                                                                  + VersionUtil.SNAPSHOT )
+                                + "-" + timeStamp + "-" + Integer.toString( buildNumber ) + ( StringUtils.isEmpty(
+                                classifier ) ? "" : "-" + classifier ) + ".jar" );
+
+                            if ( timeStampFile.exists() )
+                            {
+                                return true;
+                            }
+                        }
+                        catch ( XMLException e )
+                        {
+                            log.warn( "skip fail to find timestamped snapshot file: {}", e.getMessage() );
+                        }
+                    }
                 }
 
                 String path = managedRepositoryContent.toPath( archivaArtifact );
