@@ -30,9 +30,15 @@ import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.proxy.common.WagonFactory;
+import org.apache.archiva.repository.metadata.MetadataTools;
+import org.apache.archiva.xml.XMLException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.model.building.DefaultModelBuilderFactory;
@@ -76,7 +82,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M3
  */
-@Service( "dependencyTreeBuilder#maven3" )
+@Service("dependencyTreeBuilder#maven3")
 public class Maven3DependencyTreeBuilder
     implements DependencyTreeBuilder
 {
@@ -86,7 +92,7 @@ public class Maven3DependencyTreeBuilder
     private PlexusSisuBridge plexusSisuBridge;
 
     @Inject
-    @Named( value = "repositoryPathTranslator#maven2" )
+    @Named(value = "repositoryPathTranslator#maven2")
     private RepositoryPathTranslator pathTranslator;
 
     @Inject
@@ -108,16 +114,12 @@ public class Maven3DependencyTreeBuilder
 
     private ModelBuilder builder;
 
-
-    private RepositorySystem repoSystem;
-
     @PostConstruct
     public void initialize()
         throws PlexusSisuBridgeException
     {
         factory = plexusSisuBridge.lookup( ArtifactFactory.class, "default" );
 
-        repoSystem = plexusSisuBridge.lookup( RepositorySystem.class );
         DefaultModelBuilderFactory defaultModelBuilderFactory = new DefaultModelBuilderFactory();
         builder = defaultModelBuilderFactory.newInstance();
     }
@@ -158,7 +160,8 @@ public class Maven3DependencyTreeBuilder
             {
                 for ( ProxyConnector proxyConnector : proxyConnectors )
                 {
-                    remoteRepositories.add( remoteRepositoryAdmin.getRemoteRepository( proxyConnector.getTargetRepoId() ) );
+                    remoteRepositories.add(
+                        remoteRepositoryAdmin.getRemoteRepository( proxyConnector.getTargetRepoId() ) );
 
                     NetworkProxy networkProxyConfig = networkProxyAdmin.getNetworkProxy( proxyConnector.getProxyId() );
 
@@ -279,9 +282,39 @@ public class Maven3DependencyTreeBuilder
             {
                 return managedRepository;
             }
+            // try with snapshot version
+            if ( StringUtils.endsWith( projectArtifact.getBaseVersion(), VersionUtil.SNAPSHOT ) )
+            {
+                File metadataFile = new File( file.getParent(), MetadataTools.MAVEN_METADATA );
+                if ( metadataFile.exists() )
+                {
+                    try
+                    {
+                        ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( metadataFile );
+                        int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
+                        String timeStamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
+                        // rebuild file name with timestamped version and build number
+                        String timeStampFileName =
+                            new StringBuilder( projectArtifact.getArtifactId() ).append( '-' ).append(
+                                StringUtils.remove( projectArtifact.getBaseVersion(),
+                                                    "-" + VersionUtil.SNAPSHOT ) ).append( '-' ).append(
+                                timeStamp ).append( '-' ).append( Integer.toString( buildNumber ) ).append(
+                                ".pom" ).toString();
+                        File timeStampFile = new File( file.getParent(), timeStampFileName );
+                        log.debug( "try to find timestamped snapshot version file: {}", timeStampFile.getPath() );
+                        if ( timeStampFile.exists() )
+                        {
+                            return managedRepository;
+                        }
+                    }
+                    catch ( XMLException e )
+                    {
+                        log.warn( "skip fail to find timestamped snapshot pom: {}", e.getMessage() );
+                    }
+                }
+            }
         }
         return null;
     }
-
 
 }
