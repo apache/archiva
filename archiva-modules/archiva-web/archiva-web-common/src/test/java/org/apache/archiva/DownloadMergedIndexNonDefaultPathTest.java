@@ -172,7 +172,7 @@ public class DownloadMergedIndexNonDefaultPathTest
         proxyConnector.setTargetRepoId( remoteId );
         proxyConnectorService.addProxyConnector( proxyConnector );
 
-        repositoriesService.scheduleDownloadRemoteIndex( "all-merged", true, true );
+        repositoriesService.scheduleDownloadRemoteIndex( remoteId, true, true );
 
         // wait a bit
         timeout = 20000;
