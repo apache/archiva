@@ -31,15 +31,15 @@
       <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n}" />
     </Console>
 
-    <!--RollingFile name="console" fileName="${logsDirectory}/archiva.log"
-                 filePattern="${logsDirectory}/archiva-%d{MM-dd-yyyy}.log">
+    <FastFile name="rolling" fileName="${logsDirectory}/archiva.log"
+                filePattern="${logsDirectory}/archiva-%d{MM-dd-yyyy}.log" immediateFlush="false" append="true">
       <PatternLayout>
         <pattern>%d [%t] %-5p %c %x - %m%n</pattern>
       </PatternLayout>
       <Policies>
         <TimeBasedTriggeringPolicy />
       </Policies>
-    </RollingFile-->
+    </FastFile>
 
   </appenders>
   <loggers>
@@ -52,47 +52,42 @@
     <logger name="org.apache.http.headers" level="debug"/>
     -->
 
+    <asyncLogger name="org.apache.archiva.indexer.search.MavenRepositorySearch" level="info"/>
 
-    <logger name="org.apache.archiva.indexer.search.MavenRepositorySearch" level="info"/>
+    <asyncLogger name="org.apache.archiva.common.plexusbridge.MavenIndexerUtils" level="info"/>
 
-    <logger name="org.apache.archiva.common.plexusbridge.MavenIndexerUtils" level="info"/>
+    <asyncLogger name="JPOX" level="error"/>
 
-    <logger name="JPOX" level="error"/>
+    <asyncLogger name="org.apache.commons.configuration.DefaultConfigurationBuilder" level="error"/>
 
+    <asyncLogger name="org.apache.archiva.admin.repository.managed" level="info"/>
 
-    <logger name="org.apache.commons.configuration.DefaultConfigurationBuilder" level="error"/>
+    <asyncLogger name="org.springframework" level="info"/>
 
+    <asyncLogger name="org.codehaus.plexus" level="info"/>
 
-    <logger name="org.apache.archiva.admin.repository.managed" level="info"/>
+    <asyncLogger name="org.codehaus.redback" level="info"/>
 
-    <logger name="org.springframework" level="info"/>
+    <asyncLogger name="org.apache.cxf" level="info"/>
 
+    <asyncLogger name="org.quartz" level="info"/>
 
-    <logger name="org.codehaus.plexus" level="info"/>
+    <asyncLogger name="org.apache.archiva.indexer.merger" level="info"/>
 
+    <asyncLogger name="org.apache.archiva.metadata.repository.stats.DefaultRepositoryStatisticsManager" level="debug" />
 
-    <logger name="org.codehaus.redback" level="info"/>
+    <asyncLogger name="org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler" level="debug"/>
 
+    <asyncLogger name="org.apache.archiva.web.security.ArchivaAuthorizer" level="debug"/>
 
-    <logger name="org.apache.cxf" level="info"/>
+    <asyncLogger name="org.apache.archiva.redback.rest.services.DefaultRoleManagementService" level="debug"/>
 
-    <logger name="org.quartz" level="info"/>
+    <asyncLogger name="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry" level="debug"/>
 
-    <logger name="org.apache.archiva.indexer.merger" level="info"/>
-
-    <logger name="org.apache.archiva.metadata.repository.stats.DefaultRepositoryStatisticsManager" level="debug" />
-
-    <logger name="org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler" level="debug"/>
-
-    <logger name="org.apache.archiva.web.security.ArchivaAuthorizer" level="debug"/>
-
-    <logger name="org.apache.archiva.redback.rest.services.DefaultRoleManagementService" level="debug"/>
-
-    <logger name="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry" level="debug"/>
-
-    <root level="info">
+    <asyncRoot level="info" includeLocation="true">
       <appender-ref ref="console"/>
-    </root>
+      <appender-ref ref="rolling"/>
+    </asyncRoot>
   </loggers>
 </configuration>
 
