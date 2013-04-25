@@ -822,12 +822,20 @@ public class DefaultBrowseService
                             int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
                             String timeStamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
                             // rebuild file name with timestamped version and build number
-                            File timeStampFile = new File( file.getParent(), artifactId + "-" + StringUtils.remove( version,
-                                                                                                              "-"
-                                                                                                                  + VersionUtil.SNAPSHOT )
-                                + "-" + timeStamp + "-" + Integer.toString( buildNumber ) + ( StringUtils.isEmpty(
-                                classifier ) ? "" : "-" + classifier ) + ".jar" );
-
+                            String timeStampFileName = new StringBuilder( artifactId ).append( '-' ).append(
+                                StringUtils.remove( version, "-" + VersionUtil.SNAPSHOT ) ).append( '-' ).append(
+                                timeStamp ).append( '-' ).append( Integer.toString( buildNumber ) ).append(
+                                ( StringUtils.isEmpty( classifier ) ? "" : "-" + classifier ) ).append(
+                                ".jar" ).toString();
+                            /*File timeStampFile = new File( file.getParent(),
+                                                           artifactId + "-" + StringUtils.remove( version, "-"
+                                                               + VersionUtil.SNAPSHOT ) + "-" + timeStamp + "-"
+                                                               + Integer.toString( buildNumber )
+                                                               + ( StringUtils.isEmpty( classifier )
+                                                               ? ""
+                                                               : "-" + classifier ) + ".jar" );*/
+                            File timeStampFile = new File( file.getParent(), timeStampFileName );
+                            log.debug( "try to find timestamped snapshot version file: {}", timeStampFile.getPath() );
                             if ( timeStampFile.exists() )
                             {
                                 return true;
