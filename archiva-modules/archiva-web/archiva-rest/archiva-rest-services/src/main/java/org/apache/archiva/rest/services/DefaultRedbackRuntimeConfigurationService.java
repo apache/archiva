@@ -266,7 +266,7 @@ public class DefaultRedbackRuntimeConfigurationService
         }
         catch ( LdapException e )
         {
-            log.warn( "fail to get LdapConnection: {}", e.getMessage() );
+            log.warn( "fail to get LdapConnection: {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         finally
@@ -312,12 +312,12 @@ public class DefaultRedbackRuntimeConfigurationService
         }
         catch ( InvalidNameException e )
         {
-            log.warn( "fail to get LdapConnection: {}", e.getMessage() );
+            log.warn( "fail to get LdapConnection: {}", e.getMessage(), e);
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         catch ( LdapException e )
         {
-            log.warn( "fail to get LdapConnection: {}", e.getMessage() );
+            log.warn( "fail to get LdapConnection: {}", e.getMessage(), e);
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         finally
