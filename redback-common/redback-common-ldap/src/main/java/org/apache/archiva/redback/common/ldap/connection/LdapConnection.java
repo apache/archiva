@@ -37,7 +37,6 @@ import java.util.Properties;
  * The configuration for a connection will not change.
  *
  * @author <a href="mailto:trygvis@inamo.no">trygvis</a>
- *
  */
 public class LdapConnection
 {
@@ -76,12 +75,16 @@ public class LdapConnection
             baseDn.add( subRdn );
         }
 
+        log.debug( "baseDn: {}", baseDn );
+
         baseDnRdns = Collections.unmodifiableList( baseDn.getRdns() );
 
         if ( context != null )
         {
             throw new LdapException( "Already connected." );
         }
+
+        log.debug( "baseDnRdns: {}", baseDnRdns );
 
         Hashtable<Object, Object> e = getEnvironment();
 
@@ -141,9 +144,9 @@ public class LdapConnection
 
         // REDBACK-289/MRM-1488
         // enable connection pooling when using Sun's LDAP context factory
-        if( config.getContextFactory().equals( "com.sun.jndi.ldap.LdapCtxFactory" ) )
+        if ( config.getContextFactory().equals( "com.sun.jndi.ldap.LdapCtxFactory" ) )
         {
-            env.put( "com.sun.jndi.ldap.connect.pool", "true");
+            env.put( "com.sun.jndi.ldap.connect.pool", "true" );
 
             env.put( "com.sun.jndi.ldap.connect.pool.timeout", "3600" );
         }
@@ -221,6 +224,8 @@ public class LdapConnection
         {
             env.setProperty( Context.STATE_FACTORIES, stateFactories );
         }
+
+        log.debug( "env properties: {}", env );
 
         return env;
     }
