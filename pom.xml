@@ -30,7 +30,7 @@
 
   <groupId>org.apache.archiva</groupId>
   <artifactId>archiva-parent</artifactId>
-  <version>10-SNAPSHOT</version>
+  <version>10</version>
   <packaging>pom</packaging>
 
   <name>Archiva Common Parent Project</name>
@@ -85,7 +85,7 @@
     <plexusUtilsPluginsVersion>3.0.8</plexusUtilsPluginsVersion>
 
     <jacksonVersion>1.9.11</jacksonVersion>
-    <enunciate.docsDir></enunciate.docsDir>
+    <enunciate.docsDir />
     <enunciate.version>1.26.2</enunciate.version>
     <enunciate.debug>false</enunciate.debug>
 
@@ -93,9 +93,9 @@
 
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/parent</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/parent</developerConnection>
-    <url>http://svn.apache.org/viewvc/archiva/parent/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/tags/archiva-parent-10</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/tags/archiva-parent-10</developerConnection>
+    <url>http://svn.apache.org/viewvc/archiva/tags/archiva-parent-10</url>
   </scm>
 
   <issueManagement>
