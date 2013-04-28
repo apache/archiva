@@ -1537,11 +1537,13 @@
 
                     <exclude>commons-logging:commons-logging-api</exclude>
                     <exclude>log4j:log4j</exclude>
+
+                    <exclude>org.sonatype.sisu:sisu-guava</exclude>
+
                     <!--
                     <exclude>org.slf4j:jcl-over-slf4j</exclude>
                     <exclude>org.slf4j:slf4j-log4j12</exclude>
                     -->
-                    <!-- TODO org.sonatype.sisu:sisu-guava -->
 
                   </excludes>
                 </bannedDependencies>
