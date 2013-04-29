@@ -226,15 +226,21 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
       this.administrationMenuItems = ko.observableArray([
         {text: $.i18n.prop('menu.administration'), id: null}     ]);
         
-    
-        var myrepplugins = "archiva/admin/repository/legacy/main|archiva/admin/repository/maven2/main";
-        $.each(myrepplugins.split("|"), function(key, value) {
-           alert(value);
-             require([value], function() {
+        var pluginsURL = "restServices/archivaServices/pluginsService/getAdminPlugins";
+        $.ajax(pluginsURL, {
+            type: "GET",
+            dataType: 'text',
+            success: function(data) {
+                $.each(data.split("|"), function(key, value) {
+                      require([value], function() {
                 showMenu(self.administrationMenuItems);
             });
             
         });
+            }
+        });
+        //var myrepplugins = "archiva/admin/repository/legacy/main|archiva/admin/repository/maven2/main";
+        
         self.administrationMenuItems.push({  text : $.i18n.prop('menu.network-proxies')          , id: "menu-network-proxies-list-a"        , href: "#networkproxies"       , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayNetworkProxies()}});
         self.administrationMenuItems.push({  text : $.i18n.prop('menu.repository-scanning')      , id: "menu-repository-scanning-list-a"    , href: "#scanningList"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryScanning()}});
         self.administrationMenuItems.push({  text : $.i18n.prop('menu.runtime-configuration')    , id: "menu-runtime-configuration-list-a"  , href: "#runtimeconfig"        , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRuntimeConfiguration()}});
