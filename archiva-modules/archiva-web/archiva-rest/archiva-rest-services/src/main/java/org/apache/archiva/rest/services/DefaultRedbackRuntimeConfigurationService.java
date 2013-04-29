@@ -293,6 +293,7 @@ public class DefaultRedbackRuntimeConfigurationService
                                                  ldapConfiguration.getBindDn(), ldapConfiguration.getPassword(),
                                                  ldapConfiguration.getAuthenticationMethod(),
                                                  toProperties( ldapConfiguration.getExtraProperties() ) );
+            ldapConnectionConfiguration.setSsl( ldapConfiguration.isSsl() );
 
             ldapConnection = ldapConnectionFactory.getConnection( ldapConnectionConfiguration );
 
@@ -307,6 +308,8 @@ public class DefaultRedbackRuntimeConfigurationService
                                                  ldapConfiguration.getPassword(),
                                                  ldapConfiguration.getAuthenticationMethod(),
                                                  toProperties( ldapConfiguration.getExtraProperties() ) );
+
+            ldapConnectionConfiguration.setSsl( ldapConfiguration.isSsl() );
 
             ldapConnection = ldapConnectionFactory.getConnection( ldapConnectionConfiguration );
         }
