@@ -1641,14 +1641,16 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
       //save modified ldap group mappings if any
       if(self.modifiesLdapGroupMappings().length>0){
         $.log("save modifiesLdapGroupMappings");
+        var message=$.i18n.prop('redback-runtime-ldap-group-mapping.updated');
+        var userMessages=$("#user-messages");
         $.each(self.modifiesLdapGroupMappings(),function(idx,item){
           if(!(item.automatic&item.roleNames().length<2)){
+
+            userMessages.empty();
             $.log("update mapping for group:"+item.group());
             var mainContent=$("#main-content");
             var saveButton = mainContent.find("#redback-runtime-configuration-save" );
             saveButton.button('loading');
-            clearUserMessages();
-            var userMessages=$("#user-messages");
             userMessages.html(mediumSpinnerImg());
             $.ajax("restServices/redbackServices/ldapGroupMappingService",
                    {
@@ -1657,8 +1659,7 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
                      data:ko.toJSON(item),
                      dataType: 'json',
                      success: function(data) {
-                       var message=$.i18n.prop('redback-runtime-ldap-group-mapping.updated');
-                       displaySuccessMessage(message);
+                       userMessages.html($.tmpl($("#alert-message-success").html(), { "message" : message }));
                      },
                      error: function(data) {
                        var res = $.parseJSON(data.responseText);
