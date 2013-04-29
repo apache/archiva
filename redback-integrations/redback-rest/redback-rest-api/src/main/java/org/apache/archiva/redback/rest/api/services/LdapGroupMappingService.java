@@ -21,6 +21,7 @@ package org.apache.archiva.redback.rest.api.services;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.apache.archiva.redback.rest.api.model.LdapGroupMapping;
+import org.apache.archiva.redback.rest.api.model.LdapGroupMappingUpdateRequest;
 import org.apache.archiva.redback.rest.api.model.StringList;
 
 import javax.ws.rs.Consumes;
@@ -39,44 +40,44 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 2.1
  */
-@Path( "/ldapGroupMappingService/" )
+@Path("/ldapGroupMappingService/")
 public interface LdapGroupMappingService
 {
-    @Path( "ldapGroups" )
+    @Path("ldapGroups")
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION )
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization(permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION)
     StringList getLdapGroups()
         throws RedbackServiceException;
 
 
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION )
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization(permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION)
     List<LdapGroupMapping> getLdapGroupMappings()
         throws RedbackServiceException;
 
 
     @PUT
-    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION )
+    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization(permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION)
     Boolean addLdapGroupMapping( LdapGroupMapping ldapGroupMapping )
         throws RedbackServiceException;
 
     @DELETE
-    @Path( "{group}" )
-    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION )
-    Boolean removeLdapGroupMapping( @PathParam( "group" ) String group )
+    @Path("{group}")
+    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization(permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION)
+    Boolean removeLdapGroupMapping( @PathParam("group") String group )
         throws RedbackServiceException;
 
     @POST
-    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION )
-    Boolean updateLdapGroupMapping( LdapGroupMapping ldapGroupMapping )
+    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization(permissions = RedbackRoleConstants.CONFIGURATION_EDIT_OPERATION)
+    Boolean updateLdapGroupMapping( LdapGroupMappingUpdateRequest ldapGroupMappingUpdateRequest )
         throws RedbackServiceException;
 
 }

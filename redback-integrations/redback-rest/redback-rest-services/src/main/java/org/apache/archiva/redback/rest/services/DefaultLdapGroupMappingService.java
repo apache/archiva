@@ -25,6 +25,7 @@ import org.apache.archiva.redback.common.ldap.connection.LdapException;
 import org.apache.archiva.redback.common.ldap.role.LdapRoleMapper;
 import org.apache.archiva.redback.common.ldap.role.LdapRoleMapperConfiguration;
 import org.apache.archiva.redback.rest.api.model.LdapGroupMapping;
+import org.apache.archiva.redback.rest.api.model.LdapGroupMappingUpdateRequest;
 import org.apache.archiva.redback.rest.api.model.StringList;
 import org.apache.archiva.redback.rest.api.services.LdapGroupMappingService;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
@@ -56,7 +57,7 @@ public class DefaultLdapGroupMappingService
     private LdapRoleMapper ldapRoleMapper;
 
     @Inject
-    @Named( value = "ldapRoleMapperConfiguration#default" )
+    @Named(value = "ldapRoleMapperConfiguration#default")
     private LdapRoleMapperConfiguration ldapRoleMapperConfiguration;
 
     @Inject
@@ -146,13 +147,16 @@ public class DefaultLdapGroupMappingService
         return Boolean.TRUE;
     }
 
-    public Boolean updateLdapGroupMapping( LdapGroupMapping ldapGroupMapping )
+    public Boolean updateLdapGroupMapping( LdapGroupMappingUpdateRequest ldapGroupMappingUpdateRequest )
         throws RedbackServiceException
     {
         try
         {
-            ldapRoleMapperConfiguration.updateLdapMapping( ldapGroupMapping.getGroup(),
-                                                           new ArrayList( ldapGroupMapping.getRoleNames() ) );
+            for ( LdapGroupMapping ldapGroupMapping : ldapGroupMappingUpdateRequest.getLdapGroupMapping() )
+            {
+                ldapRoleMapperConfiguration.updateLdapMapping( ldapGroupMapping.getGroup(),
+                                                               new ArrayList( ldapGroupMapping.getRoleNames() ) );
+            }
         }
         catch ( MappingException e )
         {
