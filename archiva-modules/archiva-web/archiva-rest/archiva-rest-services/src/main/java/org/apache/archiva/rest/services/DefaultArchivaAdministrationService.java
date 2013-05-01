@@ -366,6 +366,10 @@ public class DefaultArchivaAdministrationService
     {
         try
         {
+            // fix for MRM-1757
+            // strip any trailing '/' at the end of the url so it won't affect url/link calculations in UI
+            uiConfiguration.setApplicationUrl(StringUtils.stripEnd(uiConfiguration.getApplicationUrl(), "/"));
+
             archivaAdministration.updateUiConfiguration( uiConfiguration );
         }
         catch ( RepositoryAdminException e )
