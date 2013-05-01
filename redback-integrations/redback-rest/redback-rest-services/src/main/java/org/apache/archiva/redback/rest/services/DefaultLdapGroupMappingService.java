@@ -20,6 +20,7 @@ package org.apache.archiva.redback.rest.services;
 
 import org.apache.archiva.redback.common.ldap.MappingException;
 import org.apache.archiva.redback.common.ldap.connection.DefaultLdapConnection;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.common.ldap.connection.LdapException;
 import org.apache.archiva.redback.common.ldap.role.LdapRoleMapper;
@@ -67,7 +68,7 @@ public class DefaultLdapGroupMappingService
     public StringList getLdapGroups()
         throws RedbackServiceException
     {
-        DefaultLdapConnection ldapConnection = null;
+        LdapConnection ldapConnection = null;
 
         DirContext context = null;
 
@@ -170,7 +171,7 @@ public class DefaultLdapGroupMappingService
     // utils
     //------------------
 
-    protected void closeLdapConnection( DefaultLdapConnection ldapConnection )
+    protected void closeLdapConnection( LdapConnection ldapConnection )
     {
         if ( ldapConnection != null )
         {

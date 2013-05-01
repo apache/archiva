@@ -19,36 +19,24 @@ package org.apache.archiva.redback.common.ldap.connection;
  * under the License.
  */
 
-import javax.naming.ldap.LdapName;
+import javax.naming.directory.DirContext;
 import javax.naming.ldap.Rdn;
-import javax.naming.spi.ObjectFactory;
-import javax.naming.spi.StateFactory;
-
+import java.util.Hashtable;
+import java.util.List;
 
 /**
- * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
+ * @author Olivier Lamy
  */
-public interface LdapConnectionFactory
+public interface LdapConnection
 {
-    LdapConnection getConnection()
+    Hashtable<Object, Object> getEnvironment()
         throws LdapException;
 
-    LdapConnection getConnection( LdapConnectionConfiguration ldapConnectionConfiguration )
-        throws LdapException;
+    void close();
 
-    LdapConnection getConnection( Rdn subRdn )
-        throws LdapException;
+    LdapConnectionConfiguration getConfiguration();
 
-    LdapConnection getConnection( String bindDn, String password )
-        throws LdapException;
+    List<Rdn> getBaseDnRdns();
 
-    LdapName getBaseDnLdapName()
-        throws LdapException;
-
-    void addObjectFactory( Class<? extends ObjectFactory> objectFactoryClass );
-
-    void addStateFactory( Class<? extends StateFactory> objectFactoryClass );
-
-    void initialize();
-
+    DirContext getDirContext();
 }

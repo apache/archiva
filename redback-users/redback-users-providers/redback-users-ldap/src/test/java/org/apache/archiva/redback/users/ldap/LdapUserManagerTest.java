@@ -20,6 +20,7 @@ package org.apache.archiva.redback.users.ldap;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.policy.PasswordEncoder;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.common.ldap.connection.DefaultLdapConnection;
@@ -147,7 +148,8 @@ public class LdapUserManagerTest
     {
         assertNotNull( connectionFactory );
 
-        DefaultLdapConnection connection = null;
+        LdapConnection connection = null;
+
         try
         {
             connection = connectionFactory.getConnection();
@@ -168,7 +170,8 @@ public class LdapUserManagerTest
     public void testDirectUsersExistence()
         throws Exception
     {
-        DefaultLdapConnection connection = null;
+        LdapConnection connection = null;
+
         try
         {
             connection = connectionFactory.getConnection();

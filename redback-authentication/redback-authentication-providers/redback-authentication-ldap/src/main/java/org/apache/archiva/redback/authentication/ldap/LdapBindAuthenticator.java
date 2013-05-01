@@ -21,6 +21,7 @@ package org.apache.archiva.redback.authentication.ldap;
 
 import org.apache.archiva.redback.authentication.AbstractAuthenticator;
 import org.apache.archiva.redback.common.ldap.connection.DefaultLdapConnection;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.user.UserMapper;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.configuration.UserConfiguration;
@@ -103,8 +104,8 @@ public class LdapBindAuthenticator
 
         log.debug( "Searching for users with filter: '{}' from base dn: {}", filter, mapper.getUserBaseDn() );
 
-        DefaultLdapConnection ldapConnection = null;
-        DefaultLdapConnection authLdapConnection = null;
+        LdapConnection ldapConnection = null;
+        LdapConnection authLdapConnection = null;
         NamingEnumeration<SearchResult> results = null;
         try
         {
@@ -172,13 +173,13 @@ public class LdapBindAuthenticator
         return ( source instanceof PasswordBasedAuthenticationDataSource );
     }
 
-    private DefaultLdapConnection getLdapConnection()
+    private LdapConnection getLdapConnection()
         throws LdapException
     {
         return connectionFactory.getConnection();
     }
 
-    private void closeLdapConnection( DefaultLdapConnection ldapConnection )
+    private void closeLdapConnection( LdapConnection ldapConnection )
     {
         if ( ldapConnection != null )
         {

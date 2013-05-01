@@ -38,8 +38,10 @@ import java.util.Properties;
  * The configuration for a connection will not change.
  *
  * @author <a href="mailto:trygvis@inamo.no">trygvis</a>
+ * @since 2.1
  */
 public class DefaultLdapConnection
+    implements LdapConnection
 {
 
     private static LdapCtxFactory ctxFactory;// = new LdapCtxFactory();
@@ -132,6 +134,7 @@ public class DefaultLdapConnection
     // Connection Managment
     // ----------------------------------------------------------------------
 
+    @Override
     public Hashtable<Object, Object> getEnvironment()
         throws LdapException
     {
@@ -236,6 +239,7 @@ public class DefaultLdapConnection
         return env;
     }
 
+    @Override
     public void close()
     {
         try
@@ -259,16 +263,19 @@ public class DefaultLdapConnection
     // Utils
     // ----------------------------------------------------------------------
 
+    @Override
     public LdapConnectionConfiguration getConfiguration()
     {
         return config;
     }
 
+    @Override
     public List<Rdn> getBaseDnRdns()
     {
         return baseDnRdns;
     }
 
+    @Override
     public DirContext getDirContext()
     {
         return context;

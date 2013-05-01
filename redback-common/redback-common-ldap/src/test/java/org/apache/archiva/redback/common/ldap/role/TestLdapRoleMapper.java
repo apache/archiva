@@ -1,4 +1,5 @@
 package org.apache.archiva.redback.common.ldap.role;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,7 +20,7 @@ package org.apache.archiva.redback.common.ldap.role;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.redback.common.ldap.connection.DefaultLdapConnection;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.components.apacheds.ApacheDs;
 import org.apache.archiva.redback.policy.PasswordEncoder;
@@ -89,7 +90,7 @@ public class TestLdapRoleMapper
     List<String> roleNames =
         Arrays.asList( "Archiva System Administrator", "Internal Repo Manager", "Internal Repo Observer" );
 
-    DefaultLdapConnection ldapConnection;
+    LdapConnection ldapConnection;
 
     DirContext context;
 

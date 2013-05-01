@@ -20,7 +20,7 @@ package org.apache.archiva.redback.rbac.ldap;
  */
 
 import org.apache.archiva.redback.common.ldap.MappingException;
-import org.apache.archiva.redback.common.ldap.connection.DefaultLdapConnection;
+import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.common.ldap.connection.LdapException;
 import org.apache.archiva.redback.common.ldap.role.LdapRoleMapper;
@@ -71,7 +71,7 @@ import java.util.Set;
  *
  * @author Olivier Lamy
  */
-@Service( "rbacManager#ldap" )
+@Service("rbacManager#ldap")
 public class LdapRbacManager
     extends AbstractRBACManager
     implements RBACManager, RBACManagerListener
@@ -80,19 +80,19 @@ public class LdapRbacManager
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "rbacManager#cached" )
+    @Named(value = "rbacManager#cached")
     private RBACManager rbacImpl;
 
     @Inject
-    @Named( value = "ldapRoleMapper#default" )
+    @Named(value = "ldapRoleMapper#default")
     private LdapRoleMapper ldapRoleMapper;
 
     @Inject
-    @Named( value = "userConfiguration#default" )
+    @Named(value = "userConfiguration#default")
     private UserConfiguration userConf;
 
     @Inject
-    @Named( value = "userManager#ldap" )
+    @Named(value = "userManager#ldap")
     private UserManager userManager;
 
     @Inject
@@ -102,15 +102,15 @@ public class LdapRbacManager
     private LdapController ldapController;
 
     @Inject
-    @Named( value = "ldapRoleMapperConfiguration#default" )
+    @Named(value = "ldapRoleMapperConfiguration#default")
     private LdapRoleMapperConfiguration ldapRoleMapperConfiguration;
 
     @Inject
-    @Named( value = "cache#ldapRoles" )
+    @Named(value = "cache#ldapRoles")
     private Cache<String, Role> rolesCache;
 
     @Inject
-    @Named( value = "cache#userAssignments" )
+    @Named(value = "cache#userAssignments")
     private Cache<String, UserAssignment> userAssignmentsCache;
 
     private boolean writableLdap = false;
@@ -174,7 +174,7 @@ public class LdapRbacManager
     {
         if ( writableLdap )
         {
-            DefaultLdapConnection ldapConnection = null;
+            LdapConnection ldapConnection = null;
             DirContext context = null;
             try
             {
@@ -250,7 +250,7 @@ public class LdapRbacManager
     public List<Role> getAllRoles()
         throws RbacManagerException
     {
-        DefaultLdapConnection ldapConnection = null;
+        LdapConnection ldapConnection = null;
         DirContext context = null;
         try
         {
@@ -280,7 +280,7 @@ public class LdapRbacManager
     public List<UserAssignment> getAllUserAssignments()
         throws RbacManagerException
     {
-        DefaultLdapConnection ldapConnection = null;
+        LdapConnection ldapConnection = null;
         DirContext context = null;
         try
         {
@@ -313,7 +313,7 @@ public class LdapRbacManager
         }
     }
 
-    protected void closeLdapConnection( DefaultLdapConnection ldapConnection )
+    protected void closeLdapConnection( LdapConnection ldapConnection )
     {
         if ( ldapConnection != null )
         {
@@ -420,7 +420,7 @@ public class LdapRbacManager
         throws RbacManagerException
     {
 
-        DefaultLdapConnection ldapConnection = null;
+        LdapConnection ldapConnection = null;
         DirContext context = null;
 
         try
@@ -528,7 +528,7 @@ public class LdapRbacManager
         {
             return role;
         }
-        DefaultLdapConnection ldapConnection = null;
+        LdapConnection ldapConnection = null;
         DirContext context = null;
         //verify it's a ldap group
         try
@@ -565,7 +565,7 @@ public class LdapRbacManager
     public Collection<Role> getUnassignedRoles( String username )
         throws RbacManagerException
     {
-        DefaultLdapConnection ldapConnection = null;
+        LdapConnection ldapConnection = null;
 
         DirContext context = null;
 
@@ -613,7 +613,7 @@ public class LdapRbacManager
         {
             return ua;
         }
-        DefaultLdapConnection ldapConnection = null;
+        LdapConnection ldapConnection = null;
         DirContext context = null;
         try
         {
@@ -786,7 +786,7 @@ public class LdapRbacManager
         rolesCache.remove( role.getName() );
         if ( writableLdap )
         {
-            DefaultLdapConnection ldapConnection = null;
+            LdapConnection ldapConnection = null;
             DirContext context = null;
             try
             {
@@ -868,7 +868,7 @@ public class LdapRbacManager
         {
             return true;
         }
-        DefaultLdapConnection ldapConnection = null;
+        LdapConnection ldapConnection = null;
         DirContext context = null;
         try
         {
@@ -918,7 +918,7 @@ public class LdapRbacManager
     {
         if ( writableLdap )
         {
-            DefaultLdapConnection ldapConnection = null;
+            LdapConnection ldapConnection = null;
             DirContext context = null;
             try
             {
@@ -956,7 +956,7 @@ public class LdapRbacManager
     {
         if ( writableLdap )
         {
-            DefaultLdapConnection ldapConnection = null;
+            LdapConnection ldapConnection = null;
             DirContext context = null;
             try
             {
@@ -985,7 +985,7 @@ public class LdapRbacManager
     public UserAssignment saveUserAssignment( UserAssignment userAssignment )
         throws RbacManagerException
     {
-        DefaultLdapConnection ldapConnection = null;
+        LdapConnection ldapConnection = null;
         DirContext context = null;
         try
         {
@@ -1052,7 +1052,7 @@ public class LdapRbacManager
         {
             return true;
         }
-        DefaultLdapConnection ldapConnection = null;
+        LdapConnection ldapConnection = null;
         DirContext context = null;
         try
         {
