@@ -30,16 +30,16 @@ import javax.naming.spi.StateFactory;
  */
 public interface LdapConnectionFactory
 {
-    LdapConnection getConnection()
+    DefaultLdapConnection getConnection()
         throws LdapException;
 
-    LdapConnection getConnection( LdapConnectionConfiguration ldapConnectionConfiguration )
+    DefaultLdapConnection getConnection( LdapConnectionConfiguration ldapConnectionConfiguration )
         throws LdapException;
 
-    LdapConnection getConnection( Rdn subRdn )
+    DefaultLdapConnection getConnection( Rdn subRdn )
         throws LdapException;
 
-    LdapConnection getConnection( String bindDn, String password )
+    DefaultLdapConnection getConnection( String bindDn, String password )
         throws LdapException;
 
     LdapName getBaseDnLdapName()

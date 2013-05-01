@@ -19,10 +19,8 @@ package org.apache.archiva.redback.rbac.ldap;
  * under the License.
  */
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import org.apache.archiva.redback.common.ldap.MappingException;
-import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
+import org.apache.archiva.redback.common.ldap.connection.DefaultLdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.common.ldap.connection.LdapException;
 import org.apache.archiva.redback.common.ldap.role.LdapRoleMapper;
@@ -176,7 +174,7 @@ public class LdapRbacManager
     {
         if ( writableLdap )
         {
-            LdapConnection ldapConnection = null;
+            DefaultLdapConnection ldapConnection = null;
             DirContext context = null;
             try
             {
@@ -252,7 +250,7 @@ public class LdapRbacManager
     public List<Role> getAllRoles()
         throws RbacManagerException
     {
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
         DirContext context = null;
         try
         {
@@ -282,7 +280,7 @@ public class LdapRbacManager
     public List<UserAssignment> getAllUserAssignments()
         throws RbacManagerException
     {
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
         DirContext context = null;
         try
         {
@@ -315,7 +313,7 @@ public class LdapRbacManager
         }
     }
 
-    protected void closeLdapConnection( LdapConnection ldapConnection )
+    protected void closeLdapConnection( DefaultLdapConnection ldapConnection )
     {
         if ( ldapConnection != null )
         {
@@ -422,7 +420,7 @@ public class LdapRbacManager
         throws RbacManagerException
     {
 
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
         DirContext context = null;
 
         try
@@ -530,7 +528,7 @@ public class LdapRbacManager
         {
             return role;
         }
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
         DirContext context = null;
         //verify it's a ldap group
         try
@@ -567,7 +565,7 @@ public class LdapRbacManager
     public Collection<Role> getUnassignedRoles( String username )
         throws RbacManagerException
     {
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
 
         DirContext context = null;
 
@@ -615,7 +613,7 @@ public class LdapRbacManager
         {
             return ua;
         }
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
         DirContext context = null;
         try
         {
@@ -788,7 +786,7 @@ public class LdapRbacManager
         rolesCache.remove( role.getName() );
         if ( writableLdap )
         {
-            LdapConnection ldapConnection = null;
+            DefaultLdapConnection ldapConnection = null;
             DirContext context = null;
             try
             {
@@ -870,7 +868,7 @@ public class LdapRbacManager
         {
             return true;
         }
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
         DirContext context = null;
         try
         {
@@ -920,7 +918,7 @@ public class LdapRbacManager
     {
         if ( writableLdap )
         {
-            LdapConnection ldapConnection = null;
+            DefaultLdapConnection ldapConnection = null;
             DirContext context = null;
             try
             {
@@ -958,7 +956,7 @@ public class LdapRbacManager
     {
         if ( writableLdap )
         {
-            LdapConnection ldapConnection = null;
+            DefaultLdapConnection ldapConnection = null;
             DirContext context = null;
             try
             {
@@ -987,7 +985,7 @@ public class LdapRbacManager
     public UserAssignment saveUserAssignment( UserAssignment userAssignment )
         throws RbacManagerException
     {
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
         DirContext context = null;
         try
         {
@@ -1054,7 +1052,7 @@ public class LdapRbacManager
         {
             return true;
         }
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
         DirContext context = null;
         try
         {

@@ -19,7 +19,6 @@ package org.apache.archiva.redback.users.ldap.ctl;
  * under the License.
  */
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,8 +41,6 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
-import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
-import org.apache.archiva.redback.common.ldap.connection.LdapException;
 import org.apache.archiva.redback.common.ldap.user.LdapUser;
 import org.apache.archiva.redback.common.ldap.user.LdapUserMapper;
 import org.apache.archiva.redback.common.ldap.user.UserMapper;

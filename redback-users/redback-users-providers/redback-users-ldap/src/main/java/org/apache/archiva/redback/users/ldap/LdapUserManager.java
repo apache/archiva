@@ -20,7 +20,7 @@ package org.apache.archiva.redback.users.ldap;
  */
 
 
-import org.apache.archiva.redback.common.ldap.role.LdapRoleMapper;
+import org.apache.archiva.redback.common.ldap.connection.DefaultLdapConnection;
 import org.apache.archiva.redback.common.ldap.user.LdapUser;
 import org.apache.archiva.redback.common.ldap.user.UserMapper;
 import org.apache.archiva.redback.configuration.UserConfiguration;
@@ -31,7 +31,6 @@ import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.common.ldap.MappingException;
-import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.common.ldap.connection.LdapException;
 import org.apache.archiva.redback.users.UserQuery;
@@ -130,7 +129,7 @@ public class LdapUserManager
             return guestUser;
         }
 
-        LdapConnection ldapConnection = getLdapConnection();
+        DefaultLdapConnection ldapConnection = getLdapConnection();
         try
         {
             DirContext context = ldapConnection.getDirContext();
@@ -169,7 +168,7 @@ public class LdapUserManager
         {
             clearFromCache( username );
         }
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
         try
         {
             ldapConnection = getLdapConnection();
@@ -212,7 +211,7 @@ public class LdapUserManager
             return ldapUser;
         }
 
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
 
         try
         {
@@ -279,7 +278,7 @@ public class LdapUserManager
             return Collections.emptyList();
         }
 
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
 
         try
         {
@@ -330,7 +329,7 @@ public class LdapUserManager
      */
     public List<User> getUsers()
     {
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
 
         try
         {
@@ -386,7 +385,7 @@ public class LdapUserManager
             clearFromCache( user.getUsername() );
         }
 
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
 
         try
         {
@@ -430,7 +429,7 @@ public class LdapUserManager
             return true;
         }
 
-        LdapConnection ldapConnection = null;
+        DefaultLdapConnection ldapConnection = null;
 
         try
         {
@@ -453,7 +452,7 @@ public class LdapUserManager
         }
     }
 
-    private LdapConnection getLdapConnection()
+    private DefaultLdapConnection getLdapConnection()
         throws LdapException
     {
         try
@@ -467,7 +466,7 @@ public class LdapUserManager
         }
     }
 
-    private void closeLdapConnection( LdapConnection ldapConnection )
+    private void closeLdapConnection( DefaultLdapConnection ldapConnection )
     {
         if ( ldapConnection != null )
         {

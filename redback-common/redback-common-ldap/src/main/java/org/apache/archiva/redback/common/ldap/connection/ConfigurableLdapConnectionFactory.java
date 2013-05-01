@@ -101,28 +101,28 @@ public class ConfigurableLdapConnectionFactory
     // LdapConnectionFactory Implementation
     // ----------------------------------------------------------------------
 
-    public LdapConnection getConnection()
+    public DefaultLdapConnection getConnection()
         throws LdapException
     {
-        return new LdapConnection( getLdapConnectionConfiguration(), null );
+        return new DefaultLdapConnection( getLdapConnectionConfiguration(), null );
     }
 
-    public LdapConnection getConnection( Rdn subRdn )
+    public DefaultLdapConnection getConnection( Rdn subRdn )
         throws LdapException
     {
-        return new LdapConnection( getLdapConnectionConfiguration(), subRdn );
+        return new DefaultLdapConnection( getLdapConnectionConfiguration(), subRdn );
     }
 
-    public LdapConnection getConnection( String bindDn, String password )
+    public DefaultLdapConnection getConnection( String bindDn, String password )
         throws LdapException
     {
-        return new LdapConnection( getLdapConnectionConfiguration(), bindDn, password );
+        return new DefaultLdapConnection( getLdapConnectionConfiguration(), bindDn, password );
     }
 
-    public LdapConnection getConnection( LdapConnectionConfiguration ldapConnectionConfiguration )
+    public DefaultLdapConnection getConnection( LdapConnectionConfiguration ldapConnectionConfiguration )
         throws LdapException
     {
-        return new LdapConnection( ldapConnectionConfiguration, null );
+        return new DefaultLdapConnection( ldapConnectionConfiguration, null );
     }
 
     public LdapName getBaseDnLdapName()
