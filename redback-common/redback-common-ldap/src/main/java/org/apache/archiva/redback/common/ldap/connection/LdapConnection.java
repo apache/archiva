@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import java.util.Collections;
@@ -153,7 +154,7 @@ public class LdapConnection
 
         if ( config.getHostname() != null )
         {
-            String protocol = config.isSsl() ? "ldaps" : "ldap";
+            String protocol = "ldap";// config.isSsl() ? "ldaps" : "ldap";
             if ( config.getPort() != 0 )
             {
                 env.put( Context.PROVIDER_URL, protocol + "://" + config.getHostname() + ":" + config.getPort() + "/" );
@@ -162,6 +163,11 @@ public class LdapConnection
             {
                 env.put( Context.PROVIDER_URL, protocol + "://" + config.getHostname() + "/" );
             }
+        }
+
+        if ( config.isSsl() )
+        {
+            env.put( Context.SECURITY_PROTOCOL, "ssl" );
         }
 
         if ( config.getAuthenticationMethod() != null )
