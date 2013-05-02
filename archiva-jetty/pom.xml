@@ -121,7 +121,7 @@
                     </property>
                     <property>
                       <name>wrapper.logfile</name>
-                      <value>%ARCHIVA_BASE%/logs/wrapper.YYYYMMDD.log</value>
+                      <value>%ARCHIVA_BASE%/logs/wrapper-YYYYMMDD.log</value>
                     </property>
                     <property>
                       <name>wrapper.logfile.rollmode</name>
