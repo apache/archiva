@@ -15,3 +15,4 @@ redback-integrations/redback-struts2/redback-struts2-example/src/main/webapp/tem
 redback-integrations/redback-struts2/redback-struts2-example/appserver-base
 redback-integrations/redback-struts2/redback-struts2-example/overlays/
 .DS_Store
+.site-content
