@@ -679,7 +679,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-scm-publish-plugin</artifactId>
           <configuration>
-            <content>${siteDeployDirectory}</content>
+            <content>${project.build.directory}/staging</content>
             <checkinComment>Apache Redback Core site deployment</checkinComment>
             <tryUpdate>true</tryUpdate>
             <pubScmUrl>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/redback/core</pubScmUrl>
