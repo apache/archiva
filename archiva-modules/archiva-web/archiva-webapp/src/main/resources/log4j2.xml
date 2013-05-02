@@ -39,7 +39,7 @@
     </FastRollingFile>
 
     <FastRollingFile name="auditlog" fileName="${logsDirectory}/archiva-audit.log"
-                 filePattern="${logsDirectory}/logs/archiva-audit-%d{MM-dd-yyyy}.log"
+                 filePattern="${logsDirectory}/archiva-audit-%d{MM-dd-yyyy}.log"
                  immediateFlush="false" append="true">
       <PatternLayout>
         <pattern>%d{yyyy-MM-dd HH:mm:ss} %m%n</pattern>
