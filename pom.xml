@@ -771,7 +771,8 @@
             <!-- Eclipse files -->
             <exclude>.project</exclude>
             <exclude>.classpath</exclude>
-            <exclude>.settings</exclude>
+            <exclude>.settings/**</exclude>
+            <exclude>.site-content/**</exclude>
           </excludes>
         </configuration>
         <executions>
