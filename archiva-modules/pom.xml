@@ -76,7 +76,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>${checkstyleVersion}</version>
-        <inherited>false</inherited>
+        <!-- inherited is needed to use netbeans checkstyle based code formatting -->
+        <!-- 2013 05 03 may change in future release -->
+        <inherited>true</inherited>
         <configuration>
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
           <configLocation>config/maven_checks.xml</configLocation>
