@@ -205,7 +205,7 @@
   <form id="managed-repository-edit-form" class="well form-horizontal">
     <fieldset id="managed-repository-edit-fieldset">
       <div class="control-group">
-        <label class="control-label" for="id">${$.i18n.prop('id')}</label>
+        <label class="control-label" for="id">${$.i18n.prop('identifier')}</label>
 
         <div class="controls">
           {{if update}}
@@ -544,7 +544,7 @@
   <form id="remote-repository-edit-form" class="well form-horizontal">
     <fieldset id="remote-repository-edit-fieldset">
       <div class="control-group">
-        <label class="control-label" for="id">${$.i18n.prop('id')}</label>
+        <label class="control-label" for="id">${$.i18n.prop('identifier')}</label>
 
         <div class="controls">
           {{if update}}
@@ -904,7 +904,7 @@
   <form id="network-proxy-edit-form" class="well form-horizontal">
     <fieldset id="network-proxy-edit-fieldset">
       <div class="control-group">
-        <label class="control-label" for="id">${$.i18n.prop('id')}</label>
+        <label class="control-label" for="id">${$.i18n.prop('identifier')}</label>
 
         <div class="controls">
           {{if update}}
@@ -1429,7 +1429,7 @@
       <form id="repository-group-edit-form" class="well">
         <fieldset id="repository-group-edit-fieldset">
           <div class="control-group">
-            <label class="control-label" for="id">${$.i18n.prop('id')}</label>
+            <label class="control-label" for="id">${$.i18n.prop('identifier')}</label>
             <div class="controls">
               <input type="text" class="input-medium required" id="id" name="id" size="15"
                      data-bind="value: repositoryGroup.id,css:{'uneditable-input': update},readonly:update"/>
