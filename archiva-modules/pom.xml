@@ -32,7 +32,7 @@
   <properties>
     <siteFilePath>${user.home}/archiva-sites/archiva-ref-${project.version}/</siteFilePath>
     <siteUrlDeployment>file://${siteFilePath}</siteUrlDeployment>
-    <scmPubCheckoutDirectory>${user.home}/archiva-sites/archiva-ref-${project.version}-content</scmPubCheckoutDirectory>
+    <scmPubCheckoutDirectory>${basedir}/.site-content</scmPubCheckoutDirectory>
   </properties>
 
   <modules>
@@ -53,7 +53,7 @@
           <configuration>
             <pubScmUrl>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/ref/${project.version}</pubScmUrl>
             <checkinComment>Apache Archiva Versionned ref for ${project.version}</checkinComment>
-            <content>${siteFilePath}</content>
+            <content>${project.build.directory}/staging</content>
           </configuration>
         </plugin>
       </plugins>
@@ -83,13 +83,6 @@
           <includeTestSourceDirectory>true</includeTestSourceDirectory>
           <configLocation>config/maven_checks.xml</configLocation>
         </configuration>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>checkstyle-aggregate</report>
-            </reports>
-          </reportSet>
-        </reportSets>
       </plugin>
       <plugin>
         <!-- No need for the standard project reports -->
@@ -167,6 +160,30 @@
 
     </plugins>
   </reporting>
+
+  <profiles>
+    <profile>
+      <id>reporting</id>
+      <reporting>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${checkstyleVersion}</version>
+            <inherited>false</inherited>
+            <reportSets>
+              <reportSet>
+                <reports>
+                  <report>checkstyle-aggregate</report>
+                </reports>
+              </reportSet>
+            </reportSets>
+          </plugin>
+        </plugins>
+      </reporting>
+    </profile>
+  </profiles>
+
 
 
   <distributionManagement>
