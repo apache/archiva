@@ -293,7 +293,8 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
           dataType: 'text',
           success: function(applicationUrl){
 
-            self.repositoryGroupsViewModel.managedRepositories(mapManagedRepositories(data,applicationUrl));
+            self.repositoryGroupsViewModel.managedRepositories(
+                mapManagedRepositories(data,applicationUrl?applicationUrl:window.location.toString().substringBeforeLast("/")));
             self.repositoryGroupsViewModel.applicationUrl=applicationUrl;
             $.ajax("restServices/archivaServices/repositoryGroupService/getRepositoriesGroups", {
                 type: "GET",
