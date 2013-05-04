@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
-import javax.naming.directory.InitialDirContext;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import java.util.Collections;
