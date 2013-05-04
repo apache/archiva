@@ -27,111 +27,105 @@
 
   <appenders>
 
-    <RollingFile name="rolling" fileName="${logsDirectory}/archiva.log"
-                 filePattern="${logsDirectory}/archiva-%d{MM-dd-yyyy}.log">
+    <FastRollingFile name="rolling" fileName="${logsDirectory}/archiva.log"
+                 filePattern="${logsDirectory}/archiva-%d{yyyyMMdd}.log"
+                 immediateFlush="false" append="true">
       <PatternLayout>
         <pattern>%d [%t] %-5p %c %x - %m%n</pattern>
       </PatternLayout>
       <Policies>
         <TimeBasedTriggeringPolicy />
       </Policies>
-    </RollingFile>
+    </FastRollingFile>
 
-    <RollingFile name="auditlog" fileName="${logsDirectory}/archiva-audit.log"
-                 filePattern="${logsDirectory}/logs/archiva-audit-%d{MM-dd-yyyy}.log">
+    <FastRollingFile name="auditlog" fileName="${logsDirectory}/archiva-audit.log"
+                 filePattern="${logsDirectory}/archiva-audit-%d{yyyyMMdd}.log"
+                 immediateFlush="false" append="true">
       <PatternLayout>
         <pattern>%d{yyyy-MM-dd HH:mm:ss} %m%n</pattern>
       </PatternLayout>
       <Policies>
         <TimeBasedTriggeringPolicy />
       </Policies>
-    </RollingFile>
+    </FastRollingFile>
 
-    <RollingFile name="redbackAuditLog" fileName="${logsDirectory}/archiva-security-audit.log"
-                 filePattern="${logsDirectory}/archiva-security-audit.log-%d{MM-dd-yyyy}.log">
+    <FastRollingFile name="redbackAuditLog" fileName="${logsDirectory}/archiva-security-audit.log"
+                 filePattern="${logsDirectory}/archiva-security-audit.log-%d{yyyyMMdd}.log"
+                 immediateFlush="false" append="true">
       <PatternLayout>
         <pattern>%d{yyyy-MM-dd HH:mm:ss} - %X{redback.currentUser} - %m%n</pattern>
       </PatternLayout>
       <Policies>
         <TimeBasedTriggeringPolicy />
       </Policies>
-    </RollingFile>
+    </FastRollingFile>
 
   </appenders>
   <loggers>
 
-    <logger name="org.apache.archiva.redback.struts2.action.AuditEvent" additivity="false" level="info">
+    <asyncLogger name="org.apache.archiva.redback.struts2.action.AuditEvent" additivity="false" level="info">
       <appender-ref ref="redbackAuditLog" />
-    </logger>
+    </asyncLogger>
 
-    <logger name="org.apache.archiva.AuditLog" additivity="false" level="info">
+    <asyncLogger name="org.apache.archiva.AuditLog" additivity="false" level="info">
       <appender-ref ref="auditlog" />
-    </logger>
+    </asyncLogger>
 
   <!-- INFO level loggers can use the default
-   <logger name="org.apache.archiva.consumers" level="info"/>
+   <asyncLogger name="org.apache.archiva.consumers" level="info"/>
 
-    <logger name="org.apache.archiva" level="info"/>
+   <asyncLogger name="org.apache.archiva" level="info"/>
 
+   <asyncLogger name="org.quartz" level="info"/>
 
-    <logger name="org.quartz" level="info"/>
+   <asyncLogger name="org.apache.jasper" level="info"/>
 
-    <logger name="org.apache.jasper" level="info"/>
+   <asyncLogger name="com.opensymphony.xwork2" level="info"/>
 
-    <logger name="com.opensymphony.xwork2" level="info"/>
-
-    <logger name="org.apache.struts2" level="info"/>
+   <asyncLogger name="org.apache.struts2" level="info"/>
 
   -->
 
     <!-- WebDav objects -->
-    <logger name="org.apache.archiva.webdav.ArchivaDavResource" level="info"/>
+    <asyncLogger name="org.apache.archiva.webdav.ArchivaDavResource" level="info"/>
 
-
-    <logger name="org.apache.archiva.webdav.ArchivaDavResourceFactory" level="info"/>
-
+    <asyncLogger name="org.apache.archiva.webdav.ArchivaDavResourceFactory" level="info"/>
 
     <!-- squelch noisy objects (for now) -->
-    <logger name="org.apache.commons" level="warn"/>
+    <asyncLogger name="org.apache.commons" level="warn"/>
 
-    <logger name="net.sf.ehcache" level="warn"/>
-
+    <asyncLogger name="net.sf.ehcache" level="warn"/>
 
     <!-- retained for Redback -->
-    <logger name="JPOX" level="warn"/>
+    <asyncLogger name="JPOX" level="warn"/>
 
+    <asyncLogger name="JPOX.MetaData" level="error"/>
 
-    <logger name="JPOX.MetaData" level="error"/>
+    <asyncLogger name="JPOX.RDBMS.SQL" level="error"/>
 
+    <asyncLogger name="SQL" level="error"/>
 
-    <logger name="JPOX.RDBMS.SQL" level="error"/>
-
-
-    <logger name="SQL" level="error"/>
-
-
-
-    <logger name="org.apache.commons.configuration.DefaultConfigurationBuilder" level="error"/>
+    <asyncLogger name="org.apache.commons.configuration.DefaultConfigurationBuilder" level="error"/>
 
     <!-- debug wagon transfer -->
     <!--
-    <logger name="org.apache.archiva.proxy.common" level="debug"/>
+    <asyncLogger name="org.apache.archiva.proxy.common" level="debug"/>
 
     -->
     <!-- apache httpclient debug content transfer verbose -->
     <!--
-    <logger name="org.apache.http.wire" level="debug"/>
+    <asyncLogger name="org.apache.http.wire" level="debug"/>
 
     -->
     <!-- apache httpclient log headers -->
     <!--
-    <logger name="org.apache.http.headers" level="debug"/>
+    <asyncLogger name="org.apache.http.headers" level="debug"/>
 
     -->
 
-    <root level="info">
+    <asyncRoot level="info" includeLocation="true">
       <appender-ref ref="rolling"/>
-    </root>
+    </asyncRoot>
   </loggers>
 </configuration>
 

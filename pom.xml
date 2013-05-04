@@ -74,7 +74,7 @@
     <redback.spring-utils.version>2.0</redback.spring-utils.version>
     <redback.taskqueue.version>2.0</redback.taskqueue.version>
     <slf4j.version>1.7.5</slf4j.version>
-    <log4j.version>2.0-beta5</log4j.version>
+    <log4j.version>2.0-beta6-SNAPSHOT</log4j.version>
 
     <spring.version>3.2.2.RELEASE</spring.version>
 
@@ -96,7 +96,7 @@
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
     <sisu-inject-plexus.version>0.0.0.M2a</sisu-inject-plexus.version>
-    <sisu-guice.version>3.1.2</sisu-guice.version>
+    <sisu-guice.version>3.1.4</sisu-guice.version>
     <plexus-digest.version>1.1</plexus-digest.version>
     <plexus-expression-evaluator.version>2.0</plexus-expression-evaluator.version>
     <plexus-utils.version>3.0.8</plexus-utils.version>
@@ -531,7 +531,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>13.0</version>
+        <version>14.0.1</version>
       </dependency>
       <dependency>
         <groupId>stax</groupId>
@@ -1537,11 +1537,13 @@
 
                     <exclude>commons-logging:commons-logging-api</exclude>
                     <exclude>log4j:log4j</exclude>
+
+                    <exclude>org.sonatype.sisu:sisu-guava</exclude>
+
                     <!--
                     <exclude>org.slf4j:jcl-over-slf4j</exclude>
                     <exclude>org.slf4j:slf4j-log4j12</exclude>
                     -->
-                    <!-- TODO org.sonatype.sisu:sisu-guava -->
 
                   </excludes>
                 </bannedDependencies>
@@ -1720,11 +1722,6 @@
               <version>1.0-SNAPSHOT</version>
             </dependency>
           </dependencies>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.cargo</groupId>
-          <artifactId>cargo-maven2-plugin</artifactId>
-          <version>1.1.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

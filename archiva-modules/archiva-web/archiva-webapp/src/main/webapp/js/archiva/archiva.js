@@ -71,7 +71,7 @@ $.ajax({
               "knockout": "knockout-2.2.0.debug",
               "knockout.simpleGrid": "knockout.simpleGrid",
               "knockout.select2": "knockout.select2",
-              "knockout.sortable": "knockout-sortable",
+              "knockout.sortable": "knockout-sortable.0.7.2",
               "jquery.iframe.transport": "jquery.iframe-transport-1.4",
               "jquery.fileupload": "jquery.fileupload-5.10.0",
               "jquery.fileupload.ip":"jquery.fileupload-ip-1.0.6",

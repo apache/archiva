@@ -23,8 +23,9 @@ import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.authentication.Authenticator;
-import org.apache.archiva.redback.common.ldap.user.LdapUserMapper;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnection;
+import org.apache.archiva.redback.common.ldap.user.LdapUserMapper;
+import org.apache.archiva.redback.common.ldap.connection.DefaultLdapConnection;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionConfiguration;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.common.ldap.connection.LdapException;
@@ -266,7 +267,7 @@ public class DefaultRedbackRuntimeConfigurationService
         }
         catch ( LdapException e )
         {
-            log.warn( "fail to get LdapConnection: {}", e.getMessage() );
+            log.warn( "fail to get ldapConnection: {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         finally
@@ -293,6 +294,7 @@ public class DefaultRedbackRuntimeConfigurationService
                                                  ldapConfiguration.getBindDn(), ldapConfiguration.getPassword(),
                                                  ldapConfiguration.getAuthenticationMethod(),
                                                  toProperties( ldapConfiguration.getExtraProperties() ) );
+            ldapConnectionConfiguration.setSsl( ldapConfiguration.isSsl() );
 
             ldapConnection = ldapConnectionFactory.getConnection( ldapConnectionConfiguration );
 
@@ -308,16 +310,18 @@ public class DefaultRedbackRuntimeConfigurationService
                                                  ldapConfiguration.getAuthenticationMethod(),
                                                  toProperties( ldapConfiguration.getExtraProperties() ) );
 
+            ldapConnectionConfiguration.setSsl( ldapConfiguration.isSsl() );
+
             ldapConnection = ldapConnectionFactory.getConnection( ldapConnectionConfiguration );
         }
         catch ( InvalidNameException e )
         {
-            log.warn( "fail to get LdapConnection: {}", e.getMessage() );
+            log.warn( "fail to get ldapConnection: {}", e.getMessage(), e);
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         catch ( LdapException e )
         {
-            log.warn( "fail to get LdapConnection: {}", e.getMessage() );
+            log.warn( "fail to get ldapConnection: {}", e.getMessage(), e);
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         finally

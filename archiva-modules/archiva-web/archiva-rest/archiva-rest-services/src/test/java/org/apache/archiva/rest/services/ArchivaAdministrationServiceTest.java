@@ -141,6 +141,35 @@ public class ArchivaAdministrationServiceTest
     }
 
     @Test
+    public void uiConfigurationUpdate_ApplicationUrlHasTrailingSlash()
+        throws Exception {
+
+        UiConfiguration ui = getArchivaAdministrationService().getUiConfiguration();
+        assertNotNull( ui );
+        assertNull( ui.getApplicationUrl() );
+
+        String url = "http://foo.fr/bar/";
+        ui.setApplicationUrl( url );
+
+        getArchivaAdministrationService().setUiConfiguration( ui );
+
+        ui = getArchivaAdministrationService().getUiConfiguration();
+
+        assertEquals( "http://foo.fr/bar", ui.getApplicationUrl() );
+
+        // test if multiple '/' is trailing
+        url = "http://foo.fr/bar//";
+
+        ui.setApplicationUrl(url);
+
+        getArchivaAdministrationService().setUiConfiguration(ui);
+
+        ui = getArchivaAdministrationService().getUiConfiguration();
+
+        assertEquals( "http://foo.fr/bar", ui.getApplicationUrl() );
+    }
+
+    @Test
     public void getKnownContentAdminRepositoryConsumer()
         throws Exception
     {
