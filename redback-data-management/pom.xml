@@ -24,7 +24,7 @@
   <parent>
     <artifactId>redback</artifactId>
     <groupId>org.apache.archiva.redback</groupId>
-    <version>2.1-SNAPSHOT</version>
+    <version>2.1</version>
   </parent>
 
   <artifactId>redback-data-management</artifactId>
