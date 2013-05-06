@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva.redback</groupId>
     <artifactId>redback-keys</artifactId>
-    <version>2.1</version>
+    <version>2.2-SNAPSHOT</version>
   </parent>
   <artifactId>redback-keys-providers</artifactId>
   <name>Redback :: Key Management Providers</name>

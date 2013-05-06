@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva.redback</groupId>
     <artifactId>redback-authorization</artifactId>
-    <version>2.1</version>
+    <version>2.2-SNAPSHOT</version>
   </parent>
   <artifactId>redback-authorization-providers</artifactId>
   <name>Redback :: Authorization Providers</name>
