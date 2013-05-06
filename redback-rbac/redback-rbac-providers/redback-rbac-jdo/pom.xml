@@ -122,7 +122,6 @@
       <plugin>
         <groupId>org.apache.archiva.redback.components.modello</groupId>
         <artifactId>jpox-modello-maven-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
         <configuration>
           <version>1.0.1</version>
           <packageWithVersion>false</packageWithVersion>
