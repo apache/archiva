@@ -245,7 +245,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
         }
       );
 
-    }
+    };
 
     this.addRepositoryGroup=function(repositoryGroup){
       clearUserMessages();

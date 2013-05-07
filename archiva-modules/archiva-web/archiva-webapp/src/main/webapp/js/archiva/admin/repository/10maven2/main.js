@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva/admin/repository/maven2/main",["jquery",'i18n'],
+define("archiva/admin/repository/10maven2/main",["jquery",'i18n'],
         function() {
             showMenu = function(administrationMenuItems) {
                 administrationMenuItems.push(
@@ -25,17 +25,17 @@ define("archiva/admin/repository/maven2/main",["jquery",'i18n'],
                             href: "#repositorygroup",
                             redback: "{permissions: ['archiva-manage-configuration']}",
                             func: function() {
-                                displayRepositoryGroups()
+                                displayRepositoryGroups();
                             }
                         });
                 administrationMenuItems.push({text: $.i18n.prop('menu.repositories'), id: "menu-repositories-list-a", href: "#repositorylist", redback: "{permissions: ['archiva-manage-configuration']}", func: function() {
-                        displayRepositoriesGrid()
+                        displayRepositoriesGrid();
                     }});
                 administrationMenuItems.push({text: $.i18n.prop('menu.proxy-connectors'), id: "menu-proxy-connectors-list-a", href: "#proxyconnectors", redback: "{permissions: ['archiva-manage-configuration']}", func: function() {
-                        displayProxyConnectors()
+                        displayProxyConnectors();
                     }});
                 administrationMenuItems.push({text: $.i18n.prop('menu.proxy-connectors-rules'), id: "menu.proxy-connectors-rules-list-a", href: "#proxyconnectorsrules", redback: "{permissions: ['archiva-manage-configuration']}", func: function() {
-                        displayProxyConnectorsRules()
+                        displayProxyConnectorsRules();
                     }});
 
             };

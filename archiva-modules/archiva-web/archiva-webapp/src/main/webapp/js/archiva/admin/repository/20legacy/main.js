@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva/admin/repository/legacy/main", ["jquery", 'i18n','knockout'],
+define("archiva/admin/repository/20legacy/main", ["jquery", 'i18n','knockout'],
         function(jquery,i18n,ko) {
 
             showMenu = function(administrationMenuItems) {
@@ -27,10 +27,10 @@ define("archiva/admin/repository/legacy/main", ["jquery", 'i18n','knockout'],
                             href: "#legacy",
                             redback: "{permissions: ['archiva-manage-configuration']}",
                             func: function() {
-                                displayLegacyArtifactPathSupport()
+                                displayLegacyArtifactPathSupport();
                             }
                         });
-            }
+            };
 
 
             //-------------------------
@@ -186,7 +186,7 @@ define("archiva/admin/repository/legacy/main", ["jquery", 'i18n','knockout'],
                                 }
                         );
                     }
-                }
+                };
             };
 
             LegacyArtifactPathsViewModel = function() {
@@ -247,7 +247,7 @@ define("archiva/admin/repository/legacy/main", ["jquery", 'i18n','knockout'],
 
                 updateLegacyArtifactPath = function(legacyArtifactPath) {
 
-                }
+                };
 
             };
 

@@ -35,11 +35,13 @@ import javax.ws.rs.core.MediaType;
 public interface PluginsService
 {
 
-   @Path( "getAdminPlugins" )
+    @Path( "getAdminPlugins" )
     @GET
-    @Produces( { MediaType.TEXT_PLAIN } )
+    @Produces( 
+    {
+        MediaType.TEXT_PLAIN
+    } )
     @RedbackAuthorization( noRestriction = true )
-    String getAdminPlugins( )
-        throws ArchivaRestServiceException;
-
+    String getAdminPlugins()
+            throws ArchivaRestServiceException;
 }

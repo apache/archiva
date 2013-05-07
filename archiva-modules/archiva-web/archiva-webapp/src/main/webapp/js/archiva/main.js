@@ -232,11 +232,11 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
             dataType: 'text',
             success: function(data) {
                 $.each(data.split("|"), function(key, value) {
-                      require([value], function() {
-                showMenu(self.administrationMenuItems);
-            });
-            
-        });
+                    require([value], function() {
+                        showMenu(self.administrationMenuItems);
+                    });
+
+                });
             }
         });
         //var myrepplugins = "archiva/admin/repository/legacy/main|archiva/admin/repository/maven2/main";
@@ -777,7 +777,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
       $("#main-content" ).html($("#welcome" ).tmpl({runtimeInfo: window.archivaRuntimeInfo}));
       drawQuickSearchAutocomplete("#quick-search-autocomplete-welcome");
     });
-  }
+  };
 
   userLoggedCallbackFn=function(user){
     $.log("userLoggedCallbackFn:"+ (user?user.username():null));
@@ -901,18 +901,18 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
            }
         );
       },
-      select: function( event, ui ) {
-        $.log("select artifactId:"+ui.item.artifactId);
-        window.sammyArchivaApplication.setLocation("#quicksearch~"+ui.item.artifactId);
-      }
-		}).data( "autocomplete" )._renderItem = function( ul, item ) {
-							return $( "<li></li>" )
-								.data( "item.autocomplete", item )
-								.append( "<a>" + item.artifactId + "</a>" )
-								.appendTo( ul );
-						};
+            select: function(event, ui) {
+                $.log("select artifactId:" + ui.item.artifactId);
+                window.sammyArchivaApplication.setLocation("#quicksearch~" + ui.item.artifactId);
+            }
+        }).data("autocomplete")._renderItem = function(ul, item) {
+            return $("<li></li>")
+                    .data("item.autocomplete", item)
+                    .append("<a>" + item.artifactId + "</a>")
+                    .appendTo(ul);
+        };
 
-  }
+    };
 
 
 });
