@@ -26,7 +26,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
-    <version>10-SNAPSHOT</version>
+    <version>10</version>
     <relativePath />
   </parent>
 
@@ -67,14 +67,14 @@
     <maven-model-converter.version>2.1</maven-model-converter.version>
     <maven.indexer.version>5.1.1</maven.indexer.version>
     <wagon.version>2.4</wagon.version>
-    <redback.version>2.1-SNAPSHOT</redback.version>
-    <redback.cache.version>2.1-SNAPSHOT</redback.cache.version>
+    <redback.version>2.1</redback.version>
+    <redback.cache.version>2.1</redback.cache.version>
     <redback.quartz.version>2.0</redback.quartz.version>
-    <redback.registry.version>2.1-SNAPSHOT</redback.registry.version>
+    <redback.registry.version>2.1</redback.registry.version>
     <redback.spring-utils.version>2.0</redback.spring-utils.version>
     <redback.taskqueue.version>2.0</redback.taskqueue.version>
     <slf4j.version>1.7.5</slf4j.version>
-    <log4j.version>2.0-beta6-SNAPSHOT</log4j.version>
+    <log4j.version>2.0-beta6</log4j.version>
 
     <spring.version>3.2.2.RELEASE</spring.version>
 
@@ -452,7 +452,7 @@
       <dependency>
         <groupId>org.apache.archiva.redback.components</groupId>
         <artifactId>spring-jdo2</artifactId>
-        <version>2.1-SNAPSHOT</version>
+        <version>2.1</version>
       </dependency>
 
       <dependency>
@@ -496,6 +496,11 @@
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-core-asl</artifactId>
+        <version>${jacksonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-mapper-asl</artifactId>
         <version>${jacksonVersion}</version>
       </dependency>
       <dependency>
@@ -1189,12 +1194,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>${log4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j-impl</artifactId>
         <version>${log4j.version}</version>
         <scope>runtime</scope>
@@ -1208,6 +1207,12 @@
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-1.2-api</artifactId>
+        <version>${log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-to-slf4j</artifactId>
         <version>${log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
@@ -1719,7 +1724,7 @@
             <dependency>
               <groupId>org.apache.archiva.redback.components.modello</groupId>
               <artifactId>modello-plugin-redback-registry</artifactId>
-              <version>1.0-SNAPSHOT</version>
+              <version>1.0</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -1851,6 +1856,10 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
+    </repository>
+    <repository>
+      <id>log4j2.staging</id>
+      <url>https://repository.apache.org/content/repositories/orgapachelogging-013/</url>
     </repository>
   </repositories>
   <pluginRepositories>
