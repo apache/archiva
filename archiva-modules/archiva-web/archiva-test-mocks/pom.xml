@@ -26,7 +26,6 @@
   </parent>
 
   <artifactId>archiva-test-mocks</artifactId>
-  <version>1.4-M4-SNAPSHOT</version>
 
   <name>Archiva Web :: Tests Mocks</name>
 

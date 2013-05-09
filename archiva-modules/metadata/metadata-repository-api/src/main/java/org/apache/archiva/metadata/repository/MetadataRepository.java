@@ -48,6 +48,12 @@ public interface MetadataRepository
                                ProjectVersionMetadata versionMetadata )
         throws MetadataRepositoryException;
 
+    /**
+     * create the namespace in the repository. (if not exist)
+     * @param repositoryId
+     * @param namespace
+     * @throws MetadataRepositoryException
+     */
     void updateNamespace( String repositoryId, String namespace )
         throws MetadataRepositoryException;
 

@@ -26,7 +26,6 @@
   </parent>
 
   <artifactId>archiva-maven2-metadata</artifactId>
-  <version>1.4-M4-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Archiva Base :: Maven 2 Metadata</name>
