@@ -74,7 +74,7 @@
     <redback.spring-utils.version>2.0</redback.spring-utils.version>
     <redback.taskqueue.version>2.0</redback.taskqueue.version>
     <slf4j.version>1.7.5</slf4j.version>
-    <log4j.version>2.0-beta6</log4j.version>
+    <log4j.version>2.0-beta6-SNAPSHOT</log4j.version>
 
     <spring.version>3.2.2.RELEASE</spring.version>
 
@@ -1856,10 +1856,6 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-    </repository>
-    <repository>
-      <id>log4j2.staging</id>
-      <url>https://repository.apache.org/content/repositories/orgapachelogging-013/</url>
     </repository>
   </repositories>
   <pluginRepositories>
