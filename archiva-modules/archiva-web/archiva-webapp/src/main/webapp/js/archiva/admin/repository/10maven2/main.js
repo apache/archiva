@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva/admin/repository/10maven2/main",["jquery",'i18n'],
+define("archiva/admin/repository/10maven2/main",["jquery",'i18n',"archiva/admin/repository/10maven2/repository-groups","archiva/admin/repository/10maven2/proxy-connectors-rules","archiva/admin/repository/10maven2/proxy-connectors"],
         function() {
             showMenu = function(administrationMenuItems) {
                 administrationMenuItems.push(

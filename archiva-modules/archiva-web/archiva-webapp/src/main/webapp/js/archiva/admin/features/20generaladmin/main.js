@@ -16,12 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout","knockout.simpleGrid",
+define("archiva/admin/features/20generaladmin/main",["jquery","i18n","utils","jquery.tmpl","knockout","knockout.simpleGrid",
   "knockout.sortable","jquery.ui","jquery.validate","bootstrap","select2","knockout.select2"]
     , function(jquery,i18n,utils,jqueryTmpl,ko,simpleGrid,sortable,jqueryUi,validate,bootstrap,select2) {
 
+  showMenu = function(          administrationMenuItems) {
+        administrationMenuItems.push({  text : $.i18n.prop('menu.repository-scanning')      , id: "menu-repository-scanning-list-a"    , href: "#scanningList"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryScanning();}});
+        administrationMenuItems.push({  text : $.i18n.prop('menu.runtime-configuration')    , id: "menu-runtime-configuration-list-a"  , href: "#runtimeconfig"        , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRuntimeConfiguration();}});
+        administrationMenuItems.push({  text : $.i18n.prop('menu.system-status')            , id: "menu-system-status-list-a"          , href: "#status"               , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displaySystemStatus();}});
+        administrationMenuItems.push({  text : $.i18n.prop('menu.ui-configuration')         , id: "menu-ui-configuration-list-a"       , href: "#uiconfig"             , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayUiConfiguration();}});
+        administrationMenuItems.push({  text : $.i18n.prop('menu.reports')                  , id: "menu-report-list-a"                 , href: "#reports"              , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayReportsPage();}});
  
-
+  };
+ 
   //---------------------------
   // repository scanning part
   //---------------------------
@@ -1780,28 +1787,6 @@ define("archiva.general-admin",["jquery","i18n","utils","jquery.tmpl","knockout"
     return new CacheConfiguration(data.timeToIdleSeconds,data.timeToLiveSeconds,data.maxElementsInMemory,data.maxElementsOnDisk);
   }
 
-  CookieInformation=function(path,domain,secure,timeout,rememberMeEnabled){
-    //private String path;
-    this.path=path;
-
-    //private String domain;
-    this.domain=domain;
-
-    //private String secure;
-    this.secure=secure;
-
-    //private String timeout;
-    this.timeout=timeout;
-
-    //private boolean rememberMeEnabled;
-    this.rememberMeEnabled=rememberMeEnabled;
-  }
-
-  mapCookieInformation=function(data){
-    if(!data){
-      return new CookieInformation();
-    }
-    return new CookieInformation(data.path,data.domain,data.secure,data.timeout,data.rememberMeEnabled);
-  }
+ 
 
 });

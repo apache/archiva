@@ -34,43 +34,53 @@ import org.springframework.core.io.Resource;
  */
 @Service( "pluginsService#rest" )
 public class DefaultPluginsServices
-    implements PluginsService
+        implements PluginsService
 {
 
     private List<String> repositoryType = new ArrayList<String>();
-    
+    private List<String> adminFeatures = new ArrayList<String>();
+
     @Inject
-    public DefaultPluginsServices( ApplicationContext applicationContext ) 
+    public DefaultPluginsServices( ApplicationContext applicationContext )
     {
-        Resource[] xmlResources;
-        try {
-            xmlResources = applicationContext.getResources( "/**/repository/**/main.js" );
-            for (Resource rc : xmlResources) 
-            {
-                String tmp =  rc.getURL().toString();
-                tmp = tmp.substring( tmp.lastIndexOf("repository") + 11,  tmp.length() - 8 );
-                repositoryType.add( tmp );
-            }
-        } catch (IOException ex) {
-            
-        }
-        
-    }
-    
-    @Override
-    public String getAdminPlugins()
-        throws ArchivaRestServiceException
-    {
-        // rebuild
-        String baseRepo = "archiva/admin/repository/";
-        StringBuilder sb = new StringBuilder();
-        for (String repoType : repositoryType) 
-        {
-            sb.append( baseRepo ).append( repoType ).append( "/main" ).append( "|" );
-        }
-        
-        return sb.substring( 0, sb.length() - 1);
-        
+        feed( repositoryType, "repository", applicationContext );
+        feed( adminFeatures, "features", applicationContext );
     }
 
+    private void feed( List<String> repository, String key, ApplicationContext applicationContext )
+    {
+        Resource[] xmlResources;
+        try
+        {
+            xmlResources = applicationContext.getResources( "/**/" + key + "/**/main.js" );
+            for ( Resource rc : xmlResources )
+            {
+                String tmp = rc.getURL().toString();
+                tmp = tmp.substring( tmp.lastIndexOf( key ) + key.length() + 1, tmp.length() - 8 );
+                repository.add( "archiva/admin/" + key + "/" + tmp + "/main" );
+            }
+        }
+        catch ( IOException ex )
+        {
+        }
+    }
+
+    @Override
+    public String getAdminPlugins()
+            throws ArchivaRestServiceException
+    {
+        // rebuild
+        StringBuilder sb = new StringBuilder();
+        for ( String repoType : repositoryType )
+        {
+            sb.append( repoType ).append( "|" );
+        }
+        for ( String repoType : adminFeatures )
+        {
+            sb.append( repoType ).append( "|" );
+        }
+
+        return sb.substring( 0, sb.length() - 1 );
+
+    }
 }
