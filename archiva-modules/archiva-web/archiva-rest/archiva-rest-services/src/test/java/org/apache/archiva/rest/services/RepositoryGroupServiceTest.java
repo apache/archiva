@@ -51,11 +51,13 @@ public class RepositoryGroupServiceTest
 
         managedRepositoriesService.addManagedRepository( managedRepository );
 
-        RepositoryGroup repositoryGroup = new RepositoryGroup( "one", Arrays.asList( managedRepository.getId() ) );
+        RepositoryGroup repositoryGroup = new RepositoryGroup( "one", Arrays.asList( managedRepository.getId() ) )
+                .mergedIndexTtl( 40 );
 
         service.addRepositoryGroup( repositoryGroup );
         assertFalse( service.getRepositoriesGroups().isEmpty() );
         assertEquals( 1, service.getRepositoriesGroups().size() );
+        assertEquals( 40, service.getRepositoriesGroups().get(0).getMergedIndexTtl() );
 
         service.deleteRepositoryGroup( "one" );
 

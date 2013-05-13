@@ -18,6 +18,7 @@ package org.apache.archiva.admin.repository.group;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
@@ -67,6 +68,10 @@ public class RepositoryGroupAdminTest
             assertEquals( Arrays.asList( "test-new-one", "test-new-two" ),
                           repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getRepositories() );
 
+            // verify if default values were saved
+            assertEquals(30, repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getMergedIndexTtl() );
+            assertEquals("/.indexer", repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getMergedIndexPath() );
+
             repositoryGroupAdmin.deleteRepositoryGroup( "repo-group-one", getFakeAuditInformation() );
 
             assertEquals( 0, repositoryGroupAdmin.getRepositoriesGroups().size() );
@@ -100,7 +105,8 @@ public class RepositoryGroupAdminTest
 
             managedRepositoryAdmin.addManagedRepository( managedRepositoryTwo, false, getFakeAuditInformation() );
 
-            RepositoryGroup repositoryGroup = new RepositoryGroup( "repo-group-one", Arrays.asList( "test-new-one" ) );
+            RepositoryGroup repositoryGroup = new RepositoryGroup( "repo-group-one", Arrays.asList( "test-new-one" ) )
+                    .mergedIndexTtl( 20 ).mergedIndexPath( "/.nonDefaultPath" );
 
             mockAuditListener.clearEvents();
 
@@ -111,6 +117,8 @@ public class RepositoryGroupAdminTest
             assertEquals( 1, repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getRepositories().size() );
             assertEquals( Arrays.asList( "test-new-one" ),
                           repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getRepositories() );
+            assertEquals( 20, repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getMergedIndexTtl() );
+            assertEquals( "/.nonDefaultPath", repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getMergedIndexPath() );
 
             repositoryGroup = repositoryGroupAdmin.getRepositoryGroup( "repo-group-one" );
             assertNotNull( repositoryGroup );
@@ -143,9 +151,8 @@ public class RepositoryGroupAdminTest
         }
     }
 
-
     @Test
-    public void addAndDeleteGroupWithRemowingManagedRepo()
+    public void addAndDeleteGroupWithRemovedManagedRepo()
         throws Exception
     {
         try
@@ -196,6 +203,80 @@ public class RepositoryGroupAdminTest
         {
             mockAuditListener.clearEvents();
 
+            managedRepositoryAdmin.deleteManagedRepository( "test-new-two", getFakeAuditInformation(), true );
+        }
+    }
+
+    @Test( expected = RepositoryAdminException.class )
+    public void testAddGroupWithInvalidMergedIndexTtl() throws Exception {
+        try {
+            ManagedRepository managedRepositoryOne =
+                    getTestManagedRepository( "test-new-one", APPSERVER_BASE_PATH + File.separator + "test-new-one" );
+
+            ManagedRepository managedRepositoryTwo =
+                    getTestManagedRepository( "test-new-two", APPSERVER_BASE_PATH + File.separator + "test-new-two" );
+
+            managedRepositoryAdmin.addManagedRepository( managedRepositoryOne, false, getFakeAuditInformation() );
+
+            managedRepositoryAdmin.addManagedRepository( managedRepositoryTwo, false, getFakeAuditInformation() );
+
+            RepositoryGroup repositoryGroup =
+                    new RepositoryGroup( "repo-group-one", Arrays.asList( "test-new-one", "test-new-two" ) )
+                    .mergedIndexTtl( -1 );
+
+            mockAuditListener.clearEvents();
+
+            repositoryGroupAdmin.addRepositoryGroup( repositoryGroup, getFakeAuditInformation() );
+        }
+        finally
+        {
+            mockAuditListener.clearEvents();
+            managedRepositoryAdmin.deleteManagedRepository( "test-new-one", getFakeAuditInformation(), true );
+            managedRepositoryAdmin.deleteManagedRepository( "test-new-two", getFakeAuditInformation(), true );
+        }
+    }
+
+    @Test( expected = RepositoryAdminException.class )
+    public void testAddAndUpdateGroupWithInvalidMergedIndexTtl() throws Exception {
+        try {
+            ManagedRepository managedRepositoryOne =
+                    getTestManagedRepository( "test-new-one", APPSERVER_BASE_PATH + File.separator + "test-new-one" );
+
+            ManagedRepository managedRepositoryTwo =
+                    getTestManagedRepository( "test-new-two", APPSERVER_BASE_PATH + File.separator + "test-new-two" );
+
+            managedRepositoryAdmin.addManagedRepository( managedRepositoryOne, false, getFakeAuditInformation() );
+
+            managedRepositoryAdmin.addManagedRepository( managedRepositoryTwo, false, getFakeAuditInformation() );
+
+            RepositoryGroup repositoryGroup =
+                    new RepositoryGroup( "repo-group-one", Arrays.asList( "test-new-one", "test-new-two" ) );
+
+            mockAuditListener.clearEvents();
+
+            repositoryGroupAdmin.addRepositoryGroup( repositoryGroup, getFakeAuditInformation() );
+
+            assertEquals( 1, repositoryGroupAdmin.getRepositoriesGroups().size() );
+            assertEquals( "repo-group-one", repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getId() );
+            assertEquals( 2, repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getRepositories().size() );
+            assertEquals( Arrays.asList( "test-new-one", "test-new-two" ),
+                    repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getRepositories() );
+
+            // verify if default values were saved
+            assertEquals(30, repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getMergedIndexTtl() );
+            assertEquals("/.indexer", repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getMergedIndexPath() );
+
+            repositoryGroup = repositoryGroupAdmin.getRepositoryGroup( "repo-group-one" );
+            assertNotNull( repositoryGroup );
+
+            repositoryGroup.mergedIndexTtl( -1 );
+
+            repositoryGroupAdmin.updateRepositoryGroup( repositoryGroup, getFakeAuditInformation() );
+        }
+        finally
+        {
+            mockAuditListener.clearEvents();
+            managedRepositoryAdmin.deleteManagedRepository( "test-new-one", getFakeAuditInformation(), true );
             managedRepositoryAdmin.deleteManagedRepository( "test-new-two", getFakeAuditInformation(), true );
         }
     }

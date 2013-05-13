@@ -68,7 +68,7 @@ public class DefaultRepositoryGroupAdmin
         {
             repositoriesGroups.add( new RepositoryGroup( repositoryGroupConfiguration.getId(), new ArrayList<String>(
                 repositoryGroupConfiguration.getRepositories() ) ).mergedIndexPath(
-                repositoryGroupConfiguration.getMergedIndexPath() ) );
+                repositoryGroupConfiguration.getMergedIndexPath() ).mergedIndexTtl( repositoryGroupConfiguration.getMergedIndexTtl() ) );
         }
 
         return repositoriesGroups;
@@ -93,10 +93,12 @@ public class DefaultRepositoryGroupAdmin
     {
         validateRepositoryGroup( repositoryGroup, false );
         validateManagedRepositoriesExists( repositoryGroup.getRepositories() );
+
         RepositoryGroupConfiguration repositoryGroupConfiguration = new RepositoryGroupConfiguration();
         repositoryGroupConfiguration.setId( repositoryGroup.getId() );
         repositoryGroupConfiguration.setRepositories( repositoryGroup.getRepositories() );
         repositoryGroupConfiguration.setMergedIndexPath( repositoryGroup.getMergedIndexPath() );
+        repositoryGroupConfiguration.setMergedIndexTtl( repositoryGroup.getMergedIndexTtl() );
         Configuration configuration = getArchivaConfiguration().getConfiguration();
         configuration.addRepositoryGroup( repositoryGroupConfiguration );
         saveConfiguration( configuration );
@@ -141,6 +143,7 @@ public class DefaultRepositoryGroupAdmin
 
         repositoryGroupConfiguration.setRepositories( repositoryGroup.getRepositories() );
         repositoryGroupConfiguration.setMergedIndexPath( repositoryGroup.getMergedIndexPath() );
+        repositoryGroupConfiguration.setMergedIndexTtl( repositoryGroup.getMergedIndexTtl() );
         configuration.addRepositoryGroup( repositoryGroupConfiguration );
 
         saveConfiguration( configuration );
@@ -280,6 +283,11 @@ public class DefaultRepositoryGroupAdmin
         {
             throw new RepositoryAdminException(
                 "Invalid character(s) found in identifier. Only the following characters are allowed: alphanumeric, '.', '-' and '_'" );
+        }
+
+        if ( repositoryGroup.getMergedIndexTtl() <= 0)
+        {
+            throw new RepositoryAdminException( "Merged Index TTL must be greater than 0." );
         }
 
         Configuration configuration = getArchivaConfiguration().getConfiguration();

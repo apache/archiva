@@ -1202,8 +1202,7 @@ public class ArchivaDavResourceFactory
 
             if ( tmp != null && tmp.getDirectory() != null && tmp.getDirectory().exists() )
             {
-                if ( System.currentTimeMillis() - tmp.getCreationTime() > ( indexMerger.getGroupMergedIndexTtl() * 60
-                    * 1000 ) )
+                if ( System.currentTimeMillis() - tmp.getCreationTime() > ( repositoryGroupConfiguration.getMergedIndexTtl() * 60 * 1000 ) )
                 {
                     log.debug( MarkerFactory.getMarker( "group.merged.index" ),
                                "tmp group index '{}' is too old so delete it", repositoryGroupConfiguration.getId() );
