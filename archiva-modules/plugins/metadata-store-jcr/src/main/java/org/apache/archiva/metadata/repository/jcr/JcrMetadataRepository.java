@@ -1256,14 +1256,14 @@ public class JcrMetadataRepository
         return aClass == Session.class;
     }
 
-    public Object obtainAccess( Class<?> aClass )
+    public <T>T obtainAccess( Class<T> aClass )
         throws MetadataRepositoryException
     {
         if ( aClass == Session.class )
         {
             try
             {
-                return getJcrSession();
+                return (T) getJcrSession();
             }
             catch ( RepositoryException e )
             {

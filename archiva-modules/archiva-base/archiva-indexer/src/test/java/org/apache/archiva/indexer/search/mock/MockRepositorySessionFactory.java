@@ -256,7 +256,7 @@ public class MockRepositorySessionFactory
                         return false;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
-                    public Object obtainAccess( Class<?> aClass )
+                    public <T>T obtainAccess( Class<T> aClass )
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }

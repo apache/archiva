@@ -219,6 +219,6 @@ public interface MetadataRepository
 
     boolean canObtainAccess( Class<?> aClass );
 
-    Object obtainAccess( Class<?> aClass )
+    <T>T obtainAccess( Class<T> aClass )
         throws MetadataRepositoryException;
 }

@@ -176,27 +176,27 @@ public class TestMetadataRepository
 
     public void save()
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        //
     }
 
     public void close()
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        //
     }
 
     public void revert()
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        //
     }
 
     public boolean canObtainAccess( Class<?> aClass )
     {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
-    public Object obtainAccess( Class<?> aClass )
+    public <T>T obtainAccess( Class<T> aClass )
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public void removeArtifact( String repositoryId, String namespace, String project, String version,
