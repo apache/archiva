@@ -1013,7 +1013,6 @@
             <archiva.devMode>${archiva.devMode}</archiva.devMode>
             <archiva.javascriptLog>${archiva.javascriptLog}</archiva.javascriptLog>
             <archiva.logMissingI18n>${archiva.logMissingI18n}</archiva.logMissingI18n>
-            <archiva.tmp.group.index.ttl>${archiva.groupIndexTtl}</archiva.tmp.group.index.ttl>
             <!--
             not needed as we use asyncLogger in configuration
             <Log4jContextSelector>org.apache.logging.log4j.core.async.AsyncLoggerContextSelector</Log4jContextSelector>

@@ -28,12 +28,6 @@ import java.util.Collection;
  */
 public interface IndexMerger
 {
-
-    /**
-     * system property which contains the value in s for ttl of temporary index groups
-     */
-    String TMP_GROUP_INDEX_SYS_KEY = "archiva.tmp.group.index.ttl";
-
     /**
      * @param indexMergerRequest
      * @return a temporary directory with a merge index (directory marked deleteOnExit)
@@ -45,10 +39,4 @@ public interface IndexMerger
     void cleanTemporaryGroupIndex( TemporaryGroupIndex temporaryGroupIndex );
 
     Collection<TemporaryGroupIndex> getTemporaryGroupIndexes();
-
-    /**
-     * @return ttl of temporay group index
-     */
-    int getGroupMergedIndexTtl();
-
 }
