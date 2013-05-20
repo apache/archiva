@@ -122,7 +122,7 @@ public class DefaultIndexMerger
                 indexPacker.packIndex( request );
             }
             temporaryGroupIndexes.add(
-                new TemporaryGroupIndex( tempRepoFile, tempRepoId, indexMergerRequest.getGroupId() ) );
+                new TemporaryGroupIndex( tempRepoFile, tempRepoId, indexMergerRequest.getGroupId(), indexMergerRequest.getMergedIndexTtl() ) );
             stopWatch.stop();
             log.info( "merged index for repos {} in {} s", indexMergerRequest.getRepositoriesIds(),
                       stopWatch.getTime() );

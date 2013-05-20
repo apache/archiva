@@ -1240,11 +1240,11 @@ public class ArchivaDavResourceFactory
                       repositoryGroupConfiguration.getId(), authzRepos );
             IndexingContext indexingContext = indexMerger.buildMergedIndex(
                 new IndexMergerRequest( authzRepos, true, repositoryGroupConfiguration.getId(),
-                                        repositoryGroupConfiguration.getMergedIndexPath() ) );
+                                        repositoryGroupConfiguration.getMergedIndexPath(), repositoryGroupConfiguration.getMergedIndexTtl() ) );
             File mergedRepoDir = indexingContext.getIndexDirectoryFile();
             TemporaryGroupIndex temporaryGroupIndex = new TemporaryGroupIndex( mergedRepoDir, indexingContext.getId(),
-                                                                               repositoryGroupConfiguration.getId() ).setCreationTime(
-                new Date().getTime() );
+                    repositoryGroupConfiguration.getId(),repositoryGroupConfiguration.getMergedIndexTtl() )
+                    .setCreationTime(new Date().getTime() );
             temporaryGroupIndexMap.put( repositoryGroupConfiguration.getId(), temporaryGroupIndex );
             session.setAttribute( TemporaryGroupIndexSessionCleaner.TEMPORARY_INDEX_SESSION_KEY,
                                   temporaryGroupIndexMap );
