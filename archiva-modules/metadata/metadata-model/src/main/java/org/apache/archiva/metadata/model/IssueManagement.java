@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
@@ -28,6 +29,7 @@ import java.io.Serializable;
  * @todo considering moving this to a facet - avoid referring to it externally
  */
 @XmlRootElement(name = "issueManagement")
+@Entity
 public class IssueManagement
     implements Serializable
 {
