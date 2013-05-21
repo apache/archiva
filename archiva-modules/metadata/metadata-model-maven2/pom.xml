@@ -53,7 +53,8 @@
             </Export-Package>
             <Import-Package>
               javax.xml.bind.annotation,
-              org.apache.commons.lang
+              org.apache.commons.lang,
+              javax.persistence
             </Import-Package>
           </instructions>
         </configuration>
