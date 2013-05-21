@@ -1,6 +1,7 @@
 package org.apache.archiva.metadata.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.List;
 
 /*
@@ -27,8 +28,9 @@ import java.util.List;
  *
  * @todo considering moving this to a facet - avoid referring to it externally
  */
-@XmlRootElement( name = "mailingList" )
+@XmlRootElement(name = "mailingList")
 public class MailingList
+    implements Serializable
 {
     /**
      * The primary archive URL for this mailing list.

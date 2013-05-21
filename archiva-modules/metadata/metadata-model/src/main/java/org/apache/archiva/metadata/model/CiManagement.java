@@ -20,14 +20,16 @@ package org.apache.archiva.metadata.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * Information about the CI system used by the project.
  *
  * @todo considering moving this to a facet - avoid referring to it externally
  */
-@XmlRootElement( name = "ciManagement" )
+@XmlRootElement(name = "ciManagement")
 public class CiManagement
+    implements Serializable
 {
     /**
      * A simple identifier for the type of CI server used, eg <tt>continuum</tt>, <tt>bamboo</tt>, <tt>hudson</tt>, etc.

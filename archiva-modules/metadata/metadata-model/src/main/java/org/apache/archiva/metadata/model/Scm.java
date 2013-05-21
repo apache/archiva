@@ -20,9 +20,11 @@ package org.apache.archiva.metadata.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
-@XmlRootElement( name = "scm" )
+@XmlRootElement(name = "scm")
 public class Scm
+    implements Serializable
 {
     private String connection;
 
