@@ -48,7 +48,7 @@
               org.apache.archiva.metadata.model;version=${project.version};-split-package:=merge-first
             </Export-Package>
             <Import-Package>
-              javax.xml.bind.annotation
+              javax.xml.bind.annotation,javax.persistence
             </Import-Package>
           </instructions>
         </configuration>
