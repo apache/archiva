@@ -83,6 +83,14 @@ public interface MetadataRepository
     void removeMetadataFacet( String repositoryId, String facetId, String name )
         throws MetadataRepositoryException;
 
+    /**
+     * if startTime or endTime are <code>null</code> they are not used for search
+     * @param repositoryId
+     * @param startTime can be <code>null</code>
+     * @param endTime can be <code>null</code>
+     * @return
+     * @throws MetadataRepositoryException
+     */
     List<ArtifactMetadata> getArtifactsByDateRange( String repositoryId, Date startTime, Date endTime )
         throws MetadataRepositoryException;
 
