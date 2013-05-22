@@ -141,6 +141,14 @@ public interface MetadataRepository
     List<ArtifactMetadata> getArtifacts( String repositoryId )
         throws MetadataRepositoryException;
 
+    /**
+     * basically just checking it exists not complete data returned
+     * @param repoId
+     * @param namespace
+     * @param projectId
+     * @return
+     * @throws MetadataResolutionException
+     */
     ProjectMetadata getProject( String repoId, String namespace, String projectId )
         throws MetadataResolutionException;
 
