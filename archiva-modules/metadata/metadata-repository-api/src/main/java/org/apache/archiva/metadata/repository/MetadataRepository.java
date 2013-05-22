@@ -108,11 +108,12 @@ public interface MetadataRepository
         throws MetadataRepositoryException;
 
     /**
+     * Only remove {@link MetadataFacet} for the artifact
      * @param repositoryId
      * @param namespace
      * @param project
      * @param version
-     * @param metadataFacet will remove artifacts which have this {@link MetadataFacet} using equals
+     * @param metadataFacet
      * @throws MetadataRepositoryException
      * @since 1.4-M3
      */
