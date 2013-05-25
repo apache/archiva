@@ -222,20 +222,28 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
         {  text : $.i18n.prop('menu.artifacts.upload') , id: "menu-find-upload-a", href: "#upload" , redback: "{permissions: ['archiva-upload-repository']}", func: function(){displayUploadArtifact(true)}}
       ]);
       this.administrationMenuItems = ko.observableArray([
-        {text: $.i18n.prop('menu.administration'), id: null}     ]);
+        {text: $.i18n.prop('menu.administration'), id: null ,order : 1}     ]);
         
         var pluginsURL = "restServices/archivaServices/pluginsService/getAdminPlugins";
         $.ajax(pluginsURL, {
             type: "GET",
             dataType: 'text',
+            
             success: function(data) {
-                $.each(data.split("|"), function(key, value) {
+               $.each(data.split("|"), function(key, value) {
                     require([value], function() {
                         showMenu(self.administrationMenuItems);
+                        // sort menu according to order field
+                        // 
+                        self.administrationMenuItems.sort(function(left, right) {
+                            return left.order == right.order ? 0 : (left.order < right.order ? -1 : 1)
+                        })
                     });
 
                 });
+                
             }
+
         });
         
        

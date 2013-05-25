@@ -88,7 +88,7 @@ $.ajax({
               "redback.user": "redback/user",
               "redback.users": "redback/users",
               "redback.templates": "redback/redback-tmpl",
-             // "archiva.general-admin":"archiva/general-admin",
+              "archiva.cookie-information":"archiva/cookie-information",
               "archiva.templates": "archiva/main-tmpl",
              // "archiva.repositories": "archiva/repositories",
              // "archiva.network-proxies": "archiva/network-proxies",
@@ -103,32 +103,10 @@ $.ajax({
       });
       
       
- CookieInformation=function(path,domain,secure,timeout,rememberMeEnabled){
-    //private String path;
-    this.path=path;
-
-    //private String domain;
-    this.domain=domain;
-
-    //private String secure;
-    this.secure=secure;
-
-    //private String timeout;
-    this.timeout=timeout;
-
-    //private boolean rememberMeEnabled;
-    this.rememberMeEnabled=rememberMeEnabled;
-  }
-
-  mapCookieInformation=function(data){
-    if(!data){
-      return new CookieInformation();
-    }
-    return new CookieInformation(data.path,data.domain,data.secure,data.timeout,data.rememberMeEnabled);
-  }
+ 
   
   
-      requirejs(['jquery','jquery.tmpl','jquery.ui','i18n','sammy','startup','utils','domReady!','archiva.main'/*,'archiva.general-admin'*/], function () {
+      requirejs(['jquery','jquery.tmpl','jquery.ui','i18n','sammy','startup','utils','domReady!','archiva.main','archiva.cookie-information'], function () {
         loadi18n(function () {
           $.ajax({
             url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),

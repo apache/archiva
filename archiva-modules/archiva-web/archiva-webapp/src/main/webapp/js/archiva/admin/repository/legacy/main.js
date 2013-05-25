@@ -16,13 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva/admin/repository/20legacy/main", ["jquery", 'i18n','knockout'],
+define("archiva/admin/repository/legacy/main", ["jquery", 'i18n','knockout'],
         function(jquery,i18n,ko) {
 
             showMenu = function(administrationMenuItems) {
                 administrationMenuItems.push(
                         {
                             text: $.i18n.prop('menu.legacy-artifact-support'),
+                            order:600,
                             id: "menu-legacy-support-list-a",
                             href: "#legacy",
                             redback: "{permissions: ['archiva-manage-configuration']}",

@@ -16,11 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva/admin/repository/10maven2/main",["jquery",'i18n',"archiva/admin/repository/10maven2/repository-groups","archiva/admin/repository/10maven2/proxy-connectors-rules","archiva/admin/repository/10maven2/proxy-connectors"],
+define("archiva/admin/repository/maven2/main",["jquery",'i18n',"archiva/admin/repository/maven2/repository-groups","archiva/admin/repository/maven2/proxy-connectors-rules","archiva/admin/repository/maven2/proxy-connectors"],
         function() {
             showMenu = function(administrationMenuItems) {
                 administrationMenuItems.push(
                         {text: $.i18n.prop('menu.repository.groups'),
+                    order:500,
                             id: "menu-repository-groups-list-a",
                             href: "#repositorygroup",
                             redback: "{permissions: ['archiva-manage-configuration']}",
@@ -28,13 +29,13 @@ define("archiva/admin/repository/10maven2/main",["jquery",'i18n',"archiva/admin/
                                 displayRepositoryGroups();
                             }
                         });
-                administrationMenuItems.push({text: $.i18n.prop('menu.repositories'), id: "menu-repositories-list-a", href: "#repositorylist", redback: "{permissions: ['archiva-manage-configuration']}", func: function() {
+                administrationMenuItems.push({text: $.i18n.prop('menu.repositories'),  order:510, id: "menu-repositories-list-a", href: "#repositorylist", redback: "{permissions: ['archiva-manage-configuration']}", func: function() {
                         displayRepositoriesGrid();
                     }});
-                administrationMenuItems.push({text: $.i18n.prop('menu.proxy-connectors'), id: "menu-proxy-connectors-list-a", href: "#proxyconnectors", redback: "{permissions: ['archiva-manage-configuration']}", func: function() {
+                administrationMenuItems.push({text: $.i18n.prop('menu.proxy-connectors'),  order:520, id: "menu-proxy-connectors-list-a", href: "#proxyconnectors", redback: "{permissions: ['archiva-manage-configuration']}", func: function() {
                         displayProxyConnectors();
                     }});
-                administrationMenuItems.push({text: $.i18n.prop('menu.proxy-connectors-rules'), id: "menu.proxy-connectors-rules-list-a", href: "#proxyconnectorsrules", redback: "{permissions: ['archiva-manage-configuration']}", func: function() {
+                administrationMenuItems.push({text: $.i18n.prop('menu.proxy-connectors-rules'),  order:530, id: "menu.proxy-connectors-rules-list-a", href: "#proxyconnectorsrules", redback: "{permissions: ['archiva-manage-configuration']}", func: function() {
                         displayProxyConnectorsRules();
                     }});
 

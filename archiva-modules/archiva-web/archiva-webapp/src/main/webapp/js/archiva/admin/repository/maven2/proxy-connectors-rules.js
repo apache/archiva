@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva/admin/repository/10maven2/proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstrap","jquery.ui","knockout"
-  ,"knockout.simpleGrid","knockout.sortable","archiva/admin/repository/10maven2/proxy-connectors"],
+define("archiva/admin/repository/maven2/proxy-connectors-rules",["jquery","i18n","jquery.tmpl","bootstrap","jquery.ui","knockout"
+  ,"knockout.simpleGrid","knockout.sortable","archiva/admin/repository/maven2/proxy-connectors"],
   function(jquery,i18n,jqueryTmpl,bootstrap,jqueryUi,ko) {
 
   ProxyConnectorRulesViewModel=function(proxyConnectorRules,proxyConnectors){
