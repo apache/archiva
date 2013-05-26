@@ -1804,6 +1804,7 @@
               <exclude>.repository/**</exclude>
               <exclude>*.patch</exclude>
               <exclude>**/target/**</exclude>
+              <exclude>.java-version</exclude>
             </excludes>
           </configuration>
         </plugin>
