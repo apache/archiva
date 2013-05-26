@@ -76,7 +76,7 @@
     <slf4j.version>1.7.5</slf4j.version>
     <log4j.version>2.0-beta6</log4j.version>
 
-    <spring.version>3.2.2.RELEASE</spring.version>
+    <spring.version>3.2.3.RELEASE</spring.version>
 
     <javax.jcr.version>2.0</javax.jcr.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
