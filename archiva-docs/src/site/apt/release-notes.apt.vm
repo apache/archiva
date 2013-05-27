@@ -1,1191 +1,1191 @@
------
+ -----
+ Release Notes for Archiva ${project.version}
+ -----
+
+~~ Licensed to the Apache Software Foundation (ASF) under one                      
+~~ or more contributor license agreements.  See the NOTICE file                    
+~~ distributed with this work for additional information                           
+~~ regarding copyright ownership.  The ASF licenses this file                      
+~~ to you under the Apache License, Version 2.0 (the                               
+~~ "License"); you may not use this file except in compliance                      
+~~ with the License.  You may obtain a copy of the License at                      
+~~                                                                                 
+~~   http://www.apache.org/licenses/LICENSE-2.0                                    
+~~                                                                                 
+~~ Unless required by applicable law or agreed to in writing,                      
+~~ software distributed under the License is distributed on an                     
+~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY                          
+~~ KIND, either express or implied.  See the License for the                       
+~~ specific language governing permissions and limitations                         
+~~ under the License.                                                              
+
 Release Notes for Archiva ${project.version}
------
 
-~~ Licensed to the Apache Software Foundation (ASF) under one
-~~ or more contributor license agreements.  See the NOTICE file
-~~ distributed with this work for additional information
-~~ regarding copyright ownership.  The ASF licenses this file
-~~ to you under the Apache License, Version 2.0 (the
-~~ "License"); you may not use this file except in compliance
-~~ with the License.  You may obtain a copy of the License at
-~~
-~~   http://www.apache.org/licenses/LICENSE-2.0
-~~
-~~ Unless required by applicable law or agreed to in writing,
-~~ software distributed under the License is distributed on an
-~~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-~~ KIND, either express or implied.  See the License for the
-~~ specific language governing permissions and limitations
-~~ under the License.
+  The Apache Archiva team would like to announce the release of Archiva
+  ${project.version}.  Archiva is {{{http://archiva.apache.org/download.html}
+  available for download from the web site}}.
 
-Release Notes for Archiva ${project.version}
+  Archiva is an application for managing one or more remote repositories,
+  including administration, artifact handling, browsing and searching.
 
-The Apache Archiva team would like to announce the release of Archiva
-${project.version}.  Archiva is {{{http://archiva.apache.org/download.html}
-available for download from the web site}}.
+  If you have any questions, please consult:
 
-Archiva is an application for managing one or more remote repositories,
-including administration, artifact handling, browsing and searching.
+    * the web site: {{http://archiva.apache.org/}}
 
-If you have any questions, please consult:
-
-* the web site: {{http://archiva.apache.org/}}
-
-* the archiva-user mailing list: {{http://archiva.apache.org/mail-lists.html}}
+    * the archiva-user mailing list: {{http://archiva.apache.org/mail-lists.html}}
 
 * New in Archiva ${project.version}
 
-Some new features has been added in ${project.version}:
+  Some new features has been added in ${project.version}:
 
-* There is now a new webapp UI based on javascript (legacy webapp is still distributed). <<NOTE>>: most of the UI issues has been fixed
-in the new UI only.
+  * There is now a new webapp UI based on javascript (legacy webapp is still distributed). <<NOTE>>: most of the UI issues has been fixed
+   in the new UI only.
 
 * Compatibility Changes
 
-* If upgrading from earlier versions of Archiva, the list of libraries in
-<<<wrapper.conf>>> has changed. If you have customized your copy of
-<<<wrapper.conf>>>, please update it for compatibility with the version
-distributed with the current release.
+  * If upgrading from earlier versions of Archiva, the list of libraries in
+    <<<wrapper.conf>>> has changed. If you have customized your copy of
+    <<<wrapper.conf>>>, please update it for compatibility with the version
+    distributed with the current release.
 
-* As the database storage has been removed, you can remove the JNDI entry
-for <<<jdbc/archiva>>>.  After upgrading from a previous version, you will
-have to run a full scan to populate the new JCR Repository. This will be
-done on first start of Archiva.
+  * As the database storage has been removed, you can remove the JNDI entry
+    for <<<jdbc/archiva>>>.  After upgrading from a previous version, you will
+    have to run a full scan to populate the new JCR Repository. This will be
+    done on first start of Archiva.
 
-Refer to the {{{./adminguide/upgrade.html} Upgrading Archiva guide}} for more
-information.
+  Refer to the {{{./adminguide/upgrade.html} Upgrading Archiva guide}} for more
+  information.
 
 * Release Notes
 
-The Archiva ${project.version} features set can be seen in the {{{./tour/index.html} feature tour}}.
+  The Archiva ${project.version} features set can be seen in the {{{./tour/index.html} feature tour}}.
 
 * Changes in Archiva ${project.version}
 
-Released: <<???>>
+  Released: <<???>>
 
 ** Improvement
 
-* [MRM-526] - cache-failure policy timeout should be easily configurable
+ * [MRM-526] - cache-failure policy timeout should be easily configurable
 
-* [MRM-862] - Paginate Dependencies Page
+ * [MRM-862] - Paginate Dependencies Page
 
-* [MRM-863] - Paginate Used By page
+ * [MRM-863] - Paginate Used By page
 
-* [MRM-1550] - scanner failed with trying to scan maven indexes
+ * [MRM-1550] - scanner failed with trying to scan maven indexes
 
-* [MRM-1689] - Ability to delete a specific version of an an artifact from the artifact screen
+ * [MRM-1689] - Ability to delete a specific version of an an artifact from the artifact screen
 
-* [MRM-1693] - exposing index downloaded from remote repositories
+ * [MRM-1693] - exposing index downloaded from remote repositories
 
-* [MRM-1699] - Re implement remember me in new UI
+ * [MRM-1699] - Re implement remember me in new UI
 
-* [MRM-1711] - Add buttons for managing repository group as can be a pain with long list of repositories
+ * [MRM-1711] - Add buttons for managing repository group as can be a pain with long list of repositories
 
-* [MRM-1712] - Add buttons for managing proxy connectors rules as can be a pain with long list of repositories
+ * [MRM-1712] - Add buttons for managing proxy connectors rules as can be a pain with long list of repositories
 
-* [MRM-1717] - open loginbox when url need authz
+ * [MRM-1717] - open loginbox when url need authz
 
-* [MRM-1721] - Chaining user manager implementations
+ * [MRM-1721] - Chaining user manager implementations
 
-* [MRM-1722] - Use cookie settings from redback for rememberme feature
+ * [MRM-1722] - Use cookie settings from redback for rememberme feature
 
-* [MRM-1723] - Provide tooltips for action icons
+ * [MRM-1723] - Provide tooltips for action icons
 
-* [MRM-1726] - merge "Artifacts" and "Artifacts Content"
+ * [MRM-1726] - merge "Artifacts" and "Artifacts Content"
 
-* [MRM-1727] - SCM Viewer info should provide a link
+ * [MRM-1727] - SCM Viewer info should provide a link
 
-* [MRM-1731] - Using cache to search users (and must be configurable dynamically) on per default
+ * [MRM-1731] - Using cache to search users (and must be configurable dynamically) on per default
 
-* [MRM-1734] - add some filtering for searching in users table
+ * [MRM-1734] - add some filtering for searching in users table
 
-* [MRM-1751] - repogroup merged index ttl configurable per repository group
+ * [MRM-1751] - repogroup merged index ttl configurable per repository group
 
-* [MRM-1752] - Graph visualization for dependencies
+ * [MRM-1752] - Graph visualization for dependencies
 
-* [MRM-1760] - Multiple, incompatible, log name formats
+ * [MRM-1760] - Multiple, incompatible, log name formats
 
 ** New Feature
 
-* [MRM-1707] - Allow different implementation of transfer mechanism in the DefaultRepositoryProxyConnectors class
+ * [MRM-1707] - Allow different implementation of transfer mechanism in the DefaultRepositoryProxyConnectors class
 
-* [MRM-1714] - using LDAP can be configurable with the ui
+ * [MRM-1714] - using LDAP can be configurable with the ui
 
-* [MRM-1718] - ldap configuration editable with the ui.
+ * [MRM-1718] - ldap configuration editable with the ui.
 
-* [MRM-1732] - dynamic configuration of users cache
+ * [MRM-1732] - dynamic configuration of users cache
 
 ** Bug
 
-* [MRM-1334] - problem reports appear due to relative path for Archiva repository
+ * [MRM-1334] - problem reports appear due to relative path for Archiva repository
 
-* [MRM-1683] - Automatic generation of REST Api documentation
+ * [MRM-1683] - Automatic generation of REST Api documentation
 
-* [MRM-1684] - feeds link behaviour seems not coherent
+ * [MRM-1684] - feeds link behaviour seems not coherent
 
-* [MRM-1687] - artifact browser isn't sorting all items correctly.
+ * [MRM-1687] - artifact browser isn't sorting all items correctly.
 
-* [MRM-1692] - Archiva should allow PropertyPlaceholderConfigurer in applicationContext.xml
+ * [MRM-1692] - Archiva should allow PropertyPlaceholderConfigurer in applicationContext.xml
 
-* [MRM-1695] - Users from LDAP does not appear in User List
+ * [MRM-1695] - Users from LDAP does not appear in User List
 
-* [MRM-1697] - Confusing behavior when session is lost
+ * [MRM-1697] - Confusing behavior when session is lost
 
-* [MRM-1698] - proxy connector update are not saved
+ * [MRM-1698] - proxy connector update are not saved
 
-* [MRM-1700] - Authentication for remote repositories doesn't work
+ * [MRM-1700] - Authentication for remote repositories doesn't work
 
-* [MRM-1701] - metadatas are not removed when a snapshot is purged
+ * [MRM-1701] - metadatas are not removed when a snapshot is purged
 
-* [MRM-1703] - Cannot delete project with the ui
+ * [MRM-1703] - Cannot delete project with the ui
 
-* [MRM-1705] - Feature to add custom parameters and/or headers when requesting an external repositories
+ * [MRM-1705] - Feature to add custom parameters and/or headers when requesting an external repositories
 
-* [MRM-1706] - upgrade bootstrap to 2.2.0
+ * [MRM-1706] - upgrade bootstrap to 2.2.0
 
-* [MRM-1708] - When using LDAP, users can still edit their details upon login
+ * [MRM-1708] - When using LDAP, users can still edit their details upon login
 
-* [MRM-1709] - Default redback admin does not work anymore when using LDAP in the new UI
+ * [MRM-1709] - Default redback admin does not work anymore when using LDAP in the new UI
 
-* [MRM-1710] - errors are not displayed in modal box when reseting password
+ * [MRM-1710] - errors are not displayed in modal box when reseting password
 
-* [MRM-1713] - users list when using ldap doesn't work
+ * [MRM-1713] - users list when using ldap doesn't work
 
-* [MRM-1720] - hard coded limitation of 30 for pageSize in SearchResultLimits
+ * [MRM-1720] - hard coded limitation of 30 for pageSize in SearchResultLimits
 
-* [MRM-1724] - Cannot manually delete artifacts via web GUI
+ * [MRM-1724] - Cannot manually delete artifacts via web GUI
 
-* [MRM-1725] - truncated line numbers in File Content
+ * [MRM-1725] - truncated line numbers in File Content
 
-* [MRM-1729] - add MetadataRepository#hasMetadataFacet to prevent slow startup time
+ * [MRM-1729] - add MetadataRepository#hasMetadataFacet to prevent slow startup time
 
-* [MRM-1730] - upgrade to spring framework 3.2.0
+ * [MRM-1730] - upgrade to spring framework 3.2.0
 
-* [MRM-1736] - map roles to ldap groups
+ * [MRM-1736] - map roles to ldap groups
 
-* [MRM-1737] - Improve welcome page
+ * [MRM-1737] - Improve welcome page
 
-* [MRM-1739] - Document installing Archiva as a Mac OS X service with launchd
+ * [MRM-1739] - Document installing Archiva as a Mac OS X service with launchd
 
-* [MRM-1740] - implements LDAP user/roles creation
+ * [MRM-1740] - implements LDAP user/roles creation
 
-* [MRM-1744] - updating managed repository fail to correctly update maven index directory
+ * [MRM-1744] - updating managed repository fail to correctly update maven index directory
 
-* [MRM-1747] - Fail to start on ibm jdk (was8)
+ * [MRM-1747] - Fail to start on ibm jdk (was8)
 
-* [MRM-1748] - fail to upload supplied POM file
+ * [MRM-1748] - fail to upload supplied POM file
 
-* [MRM-1753] - Number of artifacts type is not displayed in the statistics view
+ * [MRM-1753] - Number of artifacts type is not displayed in the statistics view
 
-* [MRM-1754] - DownloadMergedIndexNonDefaultPathTest test fail
+ * [MRM-1754] - DownloadMergedIndexNonDefaultPathTest test fail
 
-* [MRM-1755] - [Patch] Activating the dependency tree tab on snapshot artifact fails with NotSuchMethodException
+ * [MRM-1755] - [Patch] Activating the dependency tree tab on snapshot artifact fails with NotSuchMethodException
 
-* [MRM-1757] - Unable to download uploaded artifact from repository
+ * [MRM-1757] - Unable to download uploaded artifact from repository
 
 ** Task
 
-* [MRM-1627] - Add documentation for Setup archiva with ldap
+ * [MRM-1627] - Add documentation for Setup archiva with ldap
 
-* [MRM-1686] - stop support of struts2 webapp
+ * [MRM-1686] - stop support of struts2 webapp
 
 ** Wish
 
-* [MRM-1745] - path of merged index for group configurable
+ * [MRM-1745] - path of merged index for group configurable
 
 Previous Releases
 
 * Changes in Archiva 1.3.5
 
-Released: <<14 March 2011>>
+  Released: <<14 March 2011>>
 
 ** Task
 
-* [MRM-1460] - Upgrade Archiva to Redback 1.2.7
+    * [MRM-1460] - Upgrade Archiva to Redback 1.2.7
 
 * Changes in Archiva 1.3.4
 
-Released: <<9 February 2011>>
+  Released: <<9 February 2011>>
 
 ** Task
 
-* [MRM-1455] - upgrade to Redback 1.2.6
+    * [MRM-1455] - upgrade to Redback 1.2.6
 
 * Changes in Archiva 1.3.3
 
-Released: <<18 December 2010>>
+  Released: <<18 December 2010>>
 
 ** Bug
 
-* [MRM-1097] - Error 500 "too many open files"
+    * [MRM-1097] - Error 500 "too many open files"
 
-* [MRM-1369] - Editing user roles in archiva clobbers continuum redback roles
+    * [MRM-1369] - Editing user roles in archiva clobbers continuum redback roles
 
-* [MRM-1396] - Purge task problem : Not enough parts to the path
+    * [MRM-1396] - Purge task problem : Not enough parts to the path
 
-* [MRM-1421] - Archiva repository purge incorrectly purges based on file timestamps even when the snapshot timestamp is known
+    * [MRM-1421] - Archiva repository purge incorrectly purges based on file timestamps even when the snapshot timestamp is known
 
-* [MRM-1443] - repository statistics collection can cause server to hang
+    * [MRM-1443] - repository statistics collection can cause server to hang
 
 ** Improvement
 
-* [MRM-1416] - upgrade to Redback 1.2.5
+    * [MRM-1416] - upgrade to Redback 1.2.5
 
-* [MRM-1439] - improve indexing performance
+    * [MRM-1439] - improve indexing performance
 
 ** New Feature
 
-* [MRM-1440] - system status page
+    * [MRM-1440] - system status page
 
-* [MRM-1441] - monitor repository scanning progress
+    * [MRM-1441] - monitor repository scanning progress
 
-* [MRM-1442] - track time spent in each consumer during a scan, to help diagnose poor scanning performance
+    * [MRM-1442] - track time spent in each consumer during a scan, to help diagnose poor scanning performance
 
 ** Task
 
-* [MRM-1445] - disable referrer check by default
+    * [MRM-1445] - disable referrer check by default
 
 * Changes in Archiva 1.3.2
 
-Released: <<29 November 2010>>
+  Released: <<29 November 2010>>
 
 ** Bug
 
-* [MRM-1438] - CSRF vulnerability - Archiva doesn't check which form sends credentials
+    * [MRM-1438] - CSRF vulnerability - Archiva doesn't check which form sends credentials
 
 * Changes in Archiva 1.3.1
 
-Released: <<11 June 2010>>
+  Released: <<11 June 2010>>
 
 ** Bug
 
-* [MRM-1066] - Shutdown of Tomcat causes Exception when running Archiva Project
+  * [MRM-1066] - Shutdown of Tomcat causes Exception when running Archiva Project
 
-* [MRM-1302] - java.util.ConcurrentModificationException while running Archiva 1.2.2
+  * [MRM-1302] - java.util.ConcurrentModificationException while running Archiva 1.2.2
 
-* [MRM-1304] - Query using Group ID field in audit log report uses '/' as a separator instead of '.'
+  * [MRM-1304] - Query using Group ID field in audit log report uses '/' as a separator instead of '.'
 
-* [MRM-1206] - HTTP ERROR: 500 when adding/deleting artifact, adding repository/legacy support/network proxies with null values
+  * [MRM-1206] - HTTP ERROR: 500 when adding/deleting artifact, adding repository/legacy support/network proxies with null values
 
-* [MRM-1312] - mda5 and sha are not generated for snapshot jars
+  * [MRM-1312] - mda5 and sha are not generated for snapshot jars
 
-* [MRM-1314] - Logo still links to incorrect location
+  * [MRM-1314] - Logo still links to incorrect location
 
-* [MRM-1316] - audit log report does not restrict events to repositories that you are a manager of
+  * [MRM-1316] - audit log report does not restrict events to repositories that you are a manager of
 
-* [MRM-1320] - Incorrect Archiva version specified for the "Process All Artifacts" feature in upgrade docs
+  * [MRM-1320] - Incorrect Archiva version specified for the "Process All Artifacts" feature in upgrade docs
 
-* [MRM-1321] - Snapshot is linking to oldest version in Archiva GUI
+  * [MRM-1321] - Snapshot is linking to oldest version in Archiva GUI
 
-* [MRM-1353] - Build number is always 1 for SNAPSHOT artifacts uploaded via web upload form
+  * [MRM-1353] - Build number is always 1 for SNAPSHOT artifacts uploaded via web upload form
 
-* [MRM-1355] - Audit log reports user as 'guest' when deployed via WebDAV
+  * [MRM-1355] - Audit log reports user as 'guest' when deployed via WebDAV
 
-* [MRM-1356] - Content Lenght differs : Chunked request
+  * [MRM-1356] - Content Lenght differs : Chunked request
 
-* [MRM-1373] - Archiva fails when default charset in database is UTF 8
+  * [MRM-1373] - Archiva fails when default charset in database is UTF 8
 
-* [MRM-1386] - Start Date and End Date calendar pop-up in Audit Log Report page is broken
+  * [MRM-1386] - Start Date and End Date calendar pop-up in Audit Log Report page is broken
 
 ** Improvement
 
-* [MRM-621] - Use UTF-8 for better i18n support for page dispaly
+  * [MRM-621] - Use UTF-8 for better i18n support for page dispaly
 
-* [MRM-1310] - Include Audit Log report in feature tour
+  * [MRM-1310] - Include Audit Log report in feature tour
 
 ** New Feature
 
-* [MRM-1389] - Add support for NPanday artifact types
+  * [MRM-1389] - Add support for NPanday artifact types
 
 * Changes in Archiva 1.3
 
-Released: <<13 January 2010>>
+  Released: <<13 January 2010>>
 
 ** Bug
 
-* [MRM-612] - Repository scanning does not recognize newly added artifacts if they have an old timestamp
+    * [MRM-612] - Repository scanning does not recognize newly added artifacts if they have an old timestamp
 
-* [MRM-636] - war:inplace usage is not compatible with cobertura
+    * [MRM-636] - war:inplace usage is not compatible with cobertura
 
-* [MRM-747] - Archiva should prevent re-deployment of released or non-snapshot versioned artifacts
+    * [MRM-747] - Archiva should prevent re-deployment of released or non-snapshot versioned artifacts
 
-* [MRM-1033] - Changing the location of a scanned repository results to the contents of the new location not getting indexed
+    * [MRM-1033] - Changing the location of a scanned repository results to the contents of the new location not getting indexed
 
-* [MRM-1228] - Ping service in not working
+    * [MRM-1228] - Ping service in not working
 
-* [MRM-1229] - SearchService.quickSearch doesn't return the same result as the application
+    * [MRM-1229] - SearchService.quickSearch doesn't return the same result as the application
 
-* [MRM-1230] - Type of artifact is allways "pom"
+    * [MRM-1230] - Type of artifact is allways "pom"
 
-* [MRM-1231] -  Not authorized to use method with version parameter
+    * [MRM-1231] -  Not authorized to use method with version parameter
 
-* [MRM-1238] - NPE when updating consumers of known content without setting any of the checkboxes (enabled)
+    * [MRM-1238] - NPE when updating consumers of known content without setting any of the checkboxes (enabled)
 
-* [MRM-1240] - NPE when updating consumers (not setting any of the checkboxes) of Unprocessed Artifacts and Artifact Cleanup Scanning in Database
+    * [MRM-1240] - NPE when updating consumers (not setting any of the checkboxes) of Unprocessed Artifacts and Artifact Cleanup Scanning in Database
 
-* [MRM-1243] - Encoding issues with Archiva UI: add Spring CharacterEncodingFilter
+    * [MRM-1243] - Encoding issues with Archiva UI: add Spring CharacterEncodingFilter
 
-* [MRM-1246] - MetadataUpdaterConsumer didn't run during a repository scan after deleting a version of an artifact.
+    * [MRM-1246] - MetadataUpdaterConsumer didn't run during a repository scan after deleting a version of an artifact.
 
-* [MRM-1249] - Archiva does not respect configuration of the index directory
+    * [MRM-1249] - Archiva does not respect configuration of the index directory
 
-* [MRM-1250] - Granting the Global Repository Manager/System Administrator role does not automatically assign the Global Repository Observer role
+    * [MRM-1250] - Granting the Global Repository Manager/System Administrator role does not automatically assign the Global Repository Observer role
 
-* [MRM-1253] - Artifacts cannot be found using the Search function
+    * [MRM-1253] - Artifacts cannot be found using the Search function
 
-* [MRM-1259] - 'index-content' consumer processes all types of files, slowing down the indexing process
+    * [MRM-1259] - 'index-content' consumer processes all types of files, slowing down the indexing process
 
-* [MRM-1265] - .indexer directory should not be scanned
+    * [MRM-1265] - .indexer directory should not be scanned
 
-* [MRM-1266] - results page fails when find artifact returns multiple results
+    * [MRM-1266] - results page fails when find artifact returns multiple results
 
-* [MRM-1267] - Hide the sub-topics in documentation menu by default
+    * [MRM-1267] - Hide the sub-topics in documentation menu by default
 
-* [MRM-1268] - X-Forwarded-Host handling when having more than one proxy
+    * [MRM-1268] - X-Forwarded-Host handling when having more than one proxy
 
-* [MRM-1272] - Empty Lucene Index
+    * [MRM-1272] - Empty Lucene Index
 
-* [MRM-1274] - SearchService.quickSearch returns artifacts with null as repositoryId
+    * [MRM-1274] - SearchService.quickSearch returns artifacts with null as repositoryId
 
-* [MRM-1278] - Wrong repository displayed in Archiva browse
+    * [MRM-1278] - Wrong repository displayed in Archiva browse
 
-* [MRM-1290] - getDependees always returns results for archiva-test in xmlrpc
+    * [MRM-1290] - getDependees always returns results for archiva-test in xmlrpc
 
-* [MRM-1294] - repository scan period is incorrect
+    * [MRM-1294] - repository scan period is incorrect
 
-* [MRM-1305] - Documentation for setting up archiva with tomcat 6 specifies invalid archiva.xml
+    * [MRM-1305] - Documentation for setting up archiva with tomcat 6 specifies invalid archiva.xml
 
 ** Improvement
 
-* [MRM-1056] - Option to force scanning of an artifact/repository regardless of file dates
+    * [MRM-1056] - Option to force scanning of an artifact/repository regardless of file dates
 
-* [MRM-1251] - Update documentation - Artifacts not displayed in Archiva GUI after release
+    * [MRM-1251] - Update documentation - Artifacts not displayed in Archiva GUI after release
 
-* [MRM-1262] - m2eclipse index should only be created at end of indexing run
+    * [MRM-1262] - m2eclipse index should only be created at end of indexing run
 
-* [MRM-1264] - reduce memory used by indexing process
+    * [MRM-1264] - reduce memory used by indexing process
 
-* [MRM-1270] - Improve message when a user tries to search and the user does not have access to any repository
+    * [MRM-1270] - Improve message when a user tries to search and the user does not have access to any repository
 
-* [MRM-1275] - Include other file types for the index consumer instead of just the indexable-content
+    * [MRM-1275] - Include other file types for the index consumer instead of just the indexable-content
 
 ** New Feature
 
-* [MRM-1185] - Archiva Reporting Modification Request
+    * [MRM-1185] - Archiva Reporting Modification Request
 
-* [MRM-1296] - Audit logging report
+    * [MRM-1296] - Audit logging report
 
 ** Task
 
-* [MRM-1080] - Update SearchServiceImplTest so that it uses the new search API
+    * [MRM-1080] - Update SearchServiceImplTest so that it uses the new search API
 
-* [MRM-1123] - ensure all nexus indexer dependencies are in central or built in to JAR appropriately
+    * [MRM-1123] - ensure all nexus indexer dependencies are in central or built in to JAR appropriately
 
-* [MRM-1164] - Fix the Selenium tests
+    * [MRM-1164] - Fix the Selenium tests
 
-* [MRM-1254] - Add more unit tests for searching artifacts
+    * [MRM-1254] - Add more unit tests for searching artifacts
 
-* [MRM-1277] - Create Selenium test for advanced search feature
+    * [MRM-1277] - Create Selenium test for advanced search feature
 
-* [MRM-1281] - remove unused consumers
+    * [MRM-1281] - remove unused consumers
 
-* [MRM-1289] - need to document changes to wrapper.conf on upgrade
+    * [MRM-1289] - need to document changes to wrapper.conf on upgrade
 
-* [MRM-1306] - upgrade to jQuery UI 1.7.2 and jQuery 1.3.2
+    * [MRM-1306] - upgrade to jQuery UI 1.7.2 and jQuery 1.3.2
 
-* [MRM-1309] - Upgrade to Redback 1.2.3
+    * [MRM-1309] - Upgrade to Redback 1.2.3
 
 ** Test
 
-* [MRM-1241] - Selenium Tests for Repository Scanning and Database
+    * [MRM-1241] - Selenium Tests for Repository Scanning and Database
 
-* [MRM-1257] - Selenium Test for accessing bundled repositories
+    * [MRM-1257] - Selenium Test for accessing bundled repositories
 
 
 * Changes in Archiva 1.2.2
 
-Released: <<27 August 2009>>
+  Released: <<27 August 2009>>
 
 ** Bug
 
-* [MRM-1002] - Website navigation links don't work as expected
+    * [MRM-1002] - Website navigation links don't work as expected
 
-* [MRM-1085] - CLONE -Failing to startup due to invalid bean definition
+    * [MRM-1085] - CLONE -Failing to startup due to invalid bean definition
 
-* [MRM-1141] - archiva-cli no longer works
+    * [MRM-1141] - archiva-cli no longer works
 
-* [MRM-1151] - Error when processing file nexus-maven-repository-index.zip
+    * [MRM-1151] - Error when processing file nexus-maven-repository-index.zip
 
-* [MRM-1155] - m2eclipse - getting index from archiva 1.2 failed
+    * [MRM-1155] - m2eclipse - getting index from archiva 1.2 failed
 
-* [MRM-1168] - A locked user gets HTTP ERROR 500 page when logging in Artifact Repository page
+    * [MRM-1168] - A locked user gets HTTP ERROR 500 page when logging in Artifact Repository page
 
-* [MRM-1171] - Archiva 1.2 - Internet Explorer - Search - Anvanced Search - Advanced Search Fields - Add Search Field (green +)
+    * [MRM-1171] - Archiva 1.2 - Internet Explorer - Search - Anvanced Search - Advanced Search Fields - Add Search Field (green +)
 
-* [MRM-1194] - Archiva doesn't cope with versions in a pom.xml that are properties
+    * [MRM-1194] - Archiva doesn't cope with versions in a pom.xml that are properties
 
-* [MRM-1196] - checksums are not updated when artifact is re-uploaded
+    * [MRM-1196] - checksums are not updated when artifact is re-uploaded
 
-* [MRM-1197] - Random 400 Error when uploading maven-metadata.xml to Archiva 1.2/1.2.1
+    * [MRM-1197] - Random 400 Error when uploading maven-metadata.xml to Archiva 1.2/1.2.1
 
-* [MRM-1198] - field length for ARCHIVA_SCM.URL is too short
+    * [MRM-1198] - field length for ARCHIVA_SCM.URL is too short
 
-* [MRM-1202] - 404 error when changing password
+    * [MRM-1202] - 404 error when changing password
 
-* [MRM-1204] - org.apache.maven.archiva.repository.project.ProjectModelMerge.merge throws NPE
+    * [MRM-1204] - org.apache.maven.archiva.repository.project.ProjectModelMerge.merge throws NPE
 
-* [MRM-1212] - create-missing-checksums and metadata-updater sometimes causes deployments to fail for large projects when enabled
+    * [MRM-1212] - create-missing-checksums and metadata-updater sometimes causes deployments to fail for large projects when enabled
 
-* [MRM-1217] - upgrade standalone bundle to Jetty 6.1.19
+    * [MRM-1217] - upgrade standalone bundle to Jetty 6.1.19
 
-* [MRM-1220] - disable Struts devMode
+    * [MRM-1220] - disable Struts devMode
 
-* [MRM-1232] - Unable to get artifacts from repositories which requires Repository Manager role using repository group
+    * [MRM-1232] - Unable to get artifacts from repositories which requires Repository Manager role using repository group
 
-* [MRM-1234] - Typo in Appearance Page
+    * [MRM-1234] - Typo in Appearance Page
 
-* [MRM-1236] - Locale selection is broken
+    * [MRM-1236] - Locale selection is broken
 
-* [MRM-1239] - Unable to get artifact-level maven-metadata.xml of artifacts that are only three directory levels deep
+    * [MRM-1239] - Unable to get artifact-level maven-metadata.xml of artifacts that are only three directory levels deep
 
 ** Improvement
 
-* [MRM-1163] - Add some decent logs in webdav for debugging purposes
+    * [MRM-1163] - Add some decent logs in webdav for debugging purposes
 
-* [MRM-1191] - Add Archiva log files in documentation
+    * [MRM-1191] - Add Archiva log files in documentation
 
-* [MRM-1214] - Web Application Deployment, Troubleshooting
+    * [MRM-1214] - Web Application Deployment, Troubleshooting
 
 ** Task
 
-* [MRM-1182] - Clarify 'delete released snapshots' functionality
+    * [MRM-1182] - Clarify 'delete released snapshots' functionality
 
-* [MRM-1207] - Make wrapper.log roll each day so it won't get too large
+    * [MRM-1207] - Make wrapper.log roll each day so it won't get too large
 
-* [MRM-1216] - Logging conflict on startup in Jetty bundle
+    * [MRM-1216] - Logging conflict on startup in Jetty bundle
 
-* [MRM-1218] - upgrade to JSP 2.1
+    * [MRM-1218] - upgrade to JSP 2.1
 
-* [MRM-1219] - Missing appenders in log4j configuration
+    * [MRM-1219] - Missing appenders in log4j configuration
 
 ** Test
 
-* [MRM-1226] - Selenium tests for Repositories and Network Proxies
+    * [MRM-1226] - Selenium tests for Repositories and Network Proxies
 
 * Changes in Archiva 1.2.1
 
-Released: <<24 May 2009>>
+  Released: <<24 May 2009>>
 
 ** Bug
 
-* [MRM-1143] - Nexus indexer throws NPE on repository scan
+    * [MRM-1143] - Nexus indexer throws NPE on repository scan
 
-* [MRM-1157] - Update from 1.1.3 to 1.2 fails with create table error
+    * [MRM-1157] - Update from 1.1.3 to 1.2 fails with create table error
 
-* [MRM-1160] - Nexus Indexer throws NPE intermittently on retrieval
+    * [MRM-1160] - Nexus Indexer throws NPE intermittently on retrieval
 
-* [MRM-1161] - indexing causes NullPointer when getting a SNAPSHOT that has been deployed with maven 2.1
+    * [MRM-1161] - indexing causes NullPointer when getting a SNAPSHOT that has been deployed with maven 2.1
 
-* [MRM-1167] - Quicksearch from the xmlrpc api returns no results
+    * [MRM-1167] - Quicksearch from the xmlrpc api returns no results
 
-* [MRM-1172] - Invalid version validation error when uploading a jar with a four-part version number
+    * [MRM-1172] - Invalid version validation error when uploading a jar with a four-part version number
 
-* [MRM-1176] - SQLSyntaxErrorException is thrown when browsing for artifacts after upgrading from 1.3.1 to 1.2
+    * [MRM-1176] - SQLSyntaxErrorException is thrown when browsing for artifacts after upgrading from 1.3.1 to 1.2
 
-* [MRM-1179] - NPE retrieving artifacts via http/webdav that are proxied
+    * [MRM-1179] - NPE retrieving artifacts via http/webdav that are proxied
 
-* [MRM-1188] - Index cleanup consumer fails when there is a current indexing task being executed (e.g. during repo scan, during artifact deployment or during proxy)
+    * [MRM-1188] - Index cleanup consumer fails when there is a current indexing task being executed (e.g. during repo scan, during artifact deployment or during proxy)
 
 ** Improvement
 
-* [MRM-1165] - Move out upgrade instructions from 'Installing Standalone' into it's own page
+    * [MRM-1165] - Move out upgrade instructions from 'Installing Standalone' into it's own page
 
 * Changes in Archiva 1.2
 
-Released: <<22 March 2009>>
+  Released: <<22 March 2009>>
 
 ** Sub-task
 
-* [MRM-1038] - merge versions in search results
+    * [MRM-1038] - merge versions in search results
 
-* [MRM-1039] - remove metadata files from search results
+    * [MRM-1039] - remove metadata files from search results
 
-* [MRM-1040] - for snapshots in search results just show SNAPSHOT, not timestamps
+    * [MRM-1040] - for snapshots in search results just show SNAPSHOT, not timestamps
 
-* [MRM-1041] - artifact version list should show basic shared project information rather than having to drill into one version
+    * [MRM-1041] - artifact version list should show basic shared project information rather than having to drill into one version
 
-* [MRM-1042] - snapshot should go to a page that shows a list of versions (go to latest, but list previous snapshots)
+    * [MRM-1042] - snapshot should go to a page that shows a list of versions (go to latest, but list previous snapshots)
 
-* [MRM-1043] - improve appearance and flexibility of Advanced search (maybe change to "add term" buttons on the default search)
+    * [MRM-1043] - improve appearance and flexibility of Advanced search (maybe change to "add term" buttons on the default search)
 
-* [MRM-1044] - class/package search is still flaky
+    * [MRM-1044] - class/package search is still flaky
 
-* [MRM-1046] - Write some decent tests for SearchAction
+    * [MRM-1046] - Write some decent tests for SearchAction
 
 ** Bug
 
-* [MRM-609] - Search results contains links with \ characters in them on Windows
+    * [MRM-609] - Search results contains links with \ characters in them on Windows
 
-* [MRM-616] - When running on IBM JDK 1.5:  java.security.NoSuchProviderException: no such provider: SUN
+    * [MRM-616] - When running on IBM JDK 1.5:  java.security.NoSuchProviderException: no such provider: SUN
 
-* [MRM-731] - variable in url pom are not replaced.
+    * [MRM-731] - variable in url pom are not replaced.
 
-* [MRM-836] - The organization is incorrect when displaying an artifacts's Info via browsing or searching.
+    * [MRM-836] - The organization is incorrect when displaying an artifacts's Info via browsing or searching.
 
-* [MRM-842] - Issue tracker is incorrect when displaying an artifacts's Info via browsing or searching.
+    * [MRM-842] - Issue tracker is incorrect when displaying an artifacts's Info via browsing or searching.
 
-* [MRM-901] - Repository groups does not display groups that have the same groupId
+    * [MRM-901] - Repository groups does not display groups that have the same groupId
 
-* [MRM-921] - user management role does not display the user management menu
+    * [MRM-921] - user management role does not display the user management menu
 
-* [MRM-922] - access to upload page with managed repository role
+    * [MRM-922] - access to upload page with managed repository role
 
-* [MRM-933] - Incorrect search results hit count (ex. Hits: -6 to 23 of 39) for bytecode search
+    * [MRM-933] - Incorrect search results hit count (ex. Hits: -6 to 23 of 39) for bytecode search
 
-* [MRM-962] - Upload Artifact action should trim its fields
+    * [MRM-962] - Upload Artifact action should trim its fields
 
-* [MRM-989] - download-type-javadoc.png is missing
+    * [MRM-989] - download-type-javadoc.png is missing
 
-* [MRM-996] - HttpProxyTransferTest fails on Windows
+    * [MRM-996] - HttpProxyTransferTest fails on Windows
 
-* [MRM-1000] - AdministrationServiceImplTest fails on Windows
+    * [MRM-1000] - AdministrationServiceImplTest fails on Windows
 
-* [MRM-1004] - RepositoryServlet tests fail intermittently on Windows
+    * [MRM-1004] - RepositoryServlet tests fail intermittently on Windows
 
-* [MRM-1011] - Organisation link on logo points to somewhere
+    * [MRM-1011] - Organisation link on logo points to somewhere
 
-* [MRM-1013] - Fresh installation of Archiva with LDAP authentication does not survive restart of the servlet container
+    * [MRM-1013] - Fresh installation of Archiva with LDAP authentication does not survive restart of the servlet container
 
-* [MRM-1020] - Fix the crazy alpaca on Windows
+    * [MRM-1020] - Fix the crazy alpaca on Windows
 
-* [MRM-1027] - Indices are not cleaned up when deleting artifact via web services
+    * [MRM-1027] - Indices are not cleaned up when deleting artifact via web services
 
-* [MRM-1028] - Find Artifact doesn't show up in the navigation menu after migration to struts 2
+    * [MRM-1028] - Find Artifact doesn't show up in the navigation menu after migration to struts 2
 
-* [MRM-1032] - Pick Report - Repository Statistics: End Date can be set earlier than Start Date
+    * [MRM-1032] - Pick Report - Repository Statistics: End Date can be set earlier than Start Date
 
-* [MRM-1034] - Browse artifact error does not show correct error message
+    * [MRM-1034] - Browse artifact error does not show correct error message
 
-* [MRM-1047] - Archiva allows deployment by user with expired password
+    * [MRM-1047] - Archiva allows deployment by user with expired password
 
-* [MRM-1050] - Unable to remove user
+    * [MRM-1050] - Unable to remove user
 
-* [MRM-1057] -  Archiva user-admin should be able to view useredit after logging in from "Security Alert" page
+    * [MRM-1057] -  Archiva user-admin should be able to view useredit after logging in from "Security Alert" page
 
-* [MRM-1062] - Find Artifact broken
+    * [MRM-1062] - Find Artifact broken
 
-* [MRM-1073] - Errors on when upgrading from v1.1.3 to v1.2-M1
+    * [MRM-1073] - Errors on when upgrading from v1.1.3 to v1.2-M1
 
-* [MRM-1075] - Error 500 when accessing repository url
+    * [MRM-1075] - Error 500 when accessing repository url
 
-* [MRM-1076] - NPE in NexusIndexConsumer when executed when an artifact is deployed in the Archiva repository
+    * [MRM-1076] - NPE in NexusIndexConsumer when executed when an artifact is deployed in the Archiva repository
 
-* [MRM-1092] - Typo in Search results page
+    * [MRM-1092] - Typo in Search results page
 
-* [MRM-1095] - Archiva keeps scanning repositories, even if scanning disabled in the web UI
+    * [MRM-1095] - Archiva keeps scanning repositories, even if scanning disabled in the web UI
 
-* [MRM-1096] - No icon for maven-plugin on artifact-details view.
+    * [MRM-1096] - No icon for maven-plugin on artifact-details view.
 
-* [MRM-1101] - Audit log shows user guest when deploying files from Maven
+    * [MRM-1101] - Audit log shows user guest when deploying files from Maven
 
-* [MRM-1105] - Legacy artifact path not properly stored when entered from Archiva UI
+    * [MRM-1105] - Legacy artifact path not properly stored when entered from Archiva UI
 
-* [MRM-1106] - NPE when starting Archiva
+    * [MRM-1106] - NPE when starting Archiva
 
-* [MRM-1108] - empty logoLocation can be set for the organisation, but does not show the default logo
+    * [MRM-1108] - empty logoLocation can be set for the organisation, but does not show the default logo
 
-* [MRM-1109] - environment checks do not indicate which caused a violation
+    * [MRM-1109] - environment checks do not indicate which caused a violation
 
-* [MRM-1110] - some redback log statements are not visible in Archiva logs
+    * [MRM-1110] - some redback log statements are not visible in Archiva logs
 
-* [MRM-1117] - move advanced search out of the 'info' popup on the quick search page
+    * [MRM-1117] - move advanced search out of the 'info' popup on the quick search page
 
-* [MRM-1121] - NPE in browse at artifact level
+    * [MRM-1121] - NPE in browse at artifact level
 
-* [MRM-1122] - reduce verbosity of logging during scanning
+    * [MRM-1122] - reduce verbosity of logging during scanning
 
-* [MRM-1133] - delete artifact role not added on upgrade from previous version
+    * [MRM-1133] - delete artifact role not added on upgrade from previous version
 
-* [MRM-1135] - Cannot remove a whitelist entry containing backslashes
+    * [MRM-1135] - Cannot remove a whitelist entry containing backslashes
 
-* [MRM-1136] - Archiva don't want to download a snapshot of a maven plugin (merged metadata are empty)
+    * [MRM-1136] - Archiva don't want to download a snapshot of a maven plugin (merged metadata are empty)
 
-* [MRM-1137] - Cannot upload artifact to WEB UI any more
+    * [MRM-1137] - Cannot upload artifact to WEB UI any more
 
-* [MRM-1138] - Fix java.lang.NullPointerException: configuration can not be null on startup
+    * [MRM-1138] - Fix java.lang.NullPointerException: configuration can not be null on startup
 
-* [MRM-1139] - war:inplace blindly copies everything (including WEB-INF/lib/**) into the archiva-webapp.
+    * [MRM-1139] - war:inplace blindly copies everything (including WEB-INF/lib/**) into the archiva-webapp.
 
-* [MRM-1140] - centralise logging through slf4j
+    * [MRM-1140] - centralise logging through slf4j
 
-* [MRM-1147] - handling leading / on whitelists is ambiguous
+    * [MRM-1147] - handling leading / on whitelists is ambiguous
 
 ** Improvement
 
-* [MRM-176] - prevent potential out of memory problems in large search results
+    * [MRM-176] - prevent potential out of memory problems in large search results
 
-* [MRM-732] - search should tokenize on a hypthen
+    * [MRM-732] - search should tokenize on a hypthen
 
-* [MRM-737] - Don't list metadata files in the search results
+    * [MRM-737] - Don't list metadata files in the search results
 
-* [MRM-799] - Better handling of artifacts with missing poms
+    * [MRM-799] - Better handling of artifacts with missing poms
 
-* [MRM-937] - Rename audit.log to archiva-audit.log to avoid conflicts
+    * [MRM-937] - Rename audit.log to archiva-audit.log to avoid conflicts
 
-* [MRM-975] - Refresh of Archiva templates and stylesheets to match site styles
+    * [MRM-975] - Refresh of Archiva templates and stylesheets to match site styles
 
-* [MRM-1015] - Move consumer API's from plexus to spring
+    * [MRM-1015] - Move consumer API's from plexus to spring
 
-* [MRM-1016] - Minor usability enhancement for the web app footer
+    * [MRM-1016] - Minor usability enhancement for the web app footer
 
-* [MRM-1037] - Search Usability
+    * [MRM-1037] - Search Usability
 
-* [MRM-1074] - Typo of Legacy Support option on the left nav menu
+    * [MRM-1074] - Typo of Legacy Support option on the left nav menu
 
-* [MRM-1081] - Archiva model should be updated so that the ARTIFACT table includes repositoryId as a primary key
+    * [MRM-1081] - Archiva model should be updated so that the ARTIFACT table includes repositoryId as a primary key
 
-* [MRM-1084] - Upgrade modello maven plugin to 1.0 to support Java 5 generics
+    * [MRM-1084] - Upgrade modello maven plugin to 1.0 to support Java 5 generics
 
-* [MRM-1091] - Upgrade appassembler plugin from 1.0-beta-2 to 1.0
+    * [MRM-1091] - Upgrade appassembler plugin from 1.0-beta-2 to 1.0
 
-* [MRM-1093] - Log configuration and repository changes made.
+    * [MRM-1093] - Log configuration and repository changes made.
 
-* [MRM-1098] - upgrade to wagon 1.0-beta-5
+    * [MRM-1098] - upgrade to wagon 1.0-beta-5
 
-* [MRM-1099] - Updated Archiva User Guide
+    * [MRM-1099] - Updated Archiva User Guide
 
-* [MRM-1130] - add security audit log
+    * [MRM-1130] - add security audit log
 
 ** New Feature
 
-* [MRM-206] - Add xml-rpc search
+    * [MRM-206] - Add xml-rpc search
 
-* [MRM-749] - Support m2eclipse index format creation
+    * [MRM-749] - Support m2eclipse index format creation
 
-* [MRM-913] - Ability to delete an artifact from the web interface
+    * [MRM-913] - Ability to delete an artifact from the web interface
 
-* [MRM-1083] - Add artifact search box to the default decorator
+    * [MRM-1083] - Add artifact search box to the default decorator
 
 ** Task
 
-* [MRM-938] - Remove 'redback.default.guest' usage in ArchivaXworkUser once this property is removed in redback
+    * [MRM-938] - Remove 'redback.default.guest' usage in ArchivaXworkUser once this property is removed in redback
 
-* [MRM-991] - Update screenshots in documentation to reflect the changes in the UI
+    * [MRM-991] - Update screenshots in documentation to reflect the changes in the UI
 
-* [MRM-1031] - Upgrade to jackrabbit-webdav 1.5.0
+    * [MRM-1031] - Upgrade to jackrabbit-webdav 1.5.0
 
-* [MRM-1036] - Add documentation on how to use Archiva web services
+    * [MRM-1036] - Add documentation on how to use Archiva web services
 
-* [MRM-1068] - Upgrade to redback-1.2-beta-2
+    * [MRM-1068] - Upgrade to redback-1.2-beta-2
 
-* [MRM-1079] - Update LuceneCleanupRemoveIndexerConsumer to use the new index format
+    * [MRM-1079] - Update LuceneCleanupRemoveIndexerConsumer to use the new index format
 
-* [MRM-1082] - Upgrade from plexus-maven-plugin to the plexus-component-metadata plugin
+    * [MRM-1082] - Upgrade from plexus-maven-plugin to the plexus-component-metadata plugin
 
-* [MRM-1094] - Update docs on search to reflect the search re-vamp for 1.2-M2
+    * [MRM-1094] - Update docs on search to reflect the search re-vamp for 1.2-M2
 
-* [MRM-1107] - upgrade to Redback 1.2
+    * [MRM-1107] - upgrade to Redback 1.2
 
 * Changes in Archiva 1.2-M1
 
-Released: <<14 November 2008>>
+  Released: <<14 November 2008>>
 
 ** Bug
 
-* [MRM-514] - Archiva cannot compile and pass tests on JDK 1.6
+    * [MRM-514] - Archiva cannot compile and pass tests on JDK 1.6
 
-* [MRM-615] - When scanning, Archiva doesn't resolve properties/variables of POMs in managed repositories
+    * [MRM-615] - When scanning, Archiva doesn't resolve properties/variables of POMs in managed repositories
 
-* [MRM-620] - pom.xml that inherit version from parent show up in reports as "has an invalid project model"
+    * [MRM-620] - pom.xml that inherit version from parent show up in reports as "has an invalid project model"
 
-* [MRM-717] - Performance affected using Archiva Repository
+    * [MRM-717] - Performance affected using Archiva Repository
 
-* [MRM-844] - "Unable to create ArchivaArtifact with empty version" in dependency tree.
+    * [MRM-844] - "Unable to create ArchivaArtifact with empty version" in dependency tree.
 
-* [MRM-868] - Include sources bundle during deployment (in release:perform)
+    * [MRM-868] - Include sources bundle during deployment (in release:perform)
 
-* [MRM-876] - Archiva does not proxy .asc files
+    * [MRM-876] - Archiva does not proxy .asc files
 
-* [MRM-882] - checksum validation reports invalid checksum when checksum is correct
+    * [MRM-882] - checksum validation reports invalid checksum when checksum is correct
 
-* [MRM-885] - incorrect metadata generated from merge
+    * [MRM-885] - incorrect metadata generated from merge
 
-* [MRM-925] - Access to maven-metadata.xml without "groupId" fails when accessed via a repository group
+    * [MRM-925] - Access to maven-metadata.xml without "groupId" fails when accessed via a repository group
 
-* [MRM-978] - showArtifactLink tag is broken
+    * [MRM-978] - showArtifactLink tag is broken
 
-* [MRM-981] - artifactIds with numeric characters aren't found in advanced search
+    * [MRM-981] - artifactIds with numeric characters aren't found in advanced search
 
-* [MRM-986] - archiva.xml is saved in home directory instead of $ARCHIVA_BASE/conf
+    * [MRM-986] - archiva.xml is saved in home directory instead of $ARCHIVA_BASE/conf
 
 ** Improvement
 
-* [MRM-541] - convenient way to take Archiva proxies "offline"
+    * [MRM-541] - convenient way to take Archiva proxies "offline"
 
-* [MRM-906] - Proxy repository operations should not be done in place
+    * [MRM-906] - Proxy repository operations should not be done in place
 
-* [MRM-907] - Remove VersionedReference/ProjectReference/ArtifactReference from RepositoryProxyConnectors
+    * [MRM-907] - Remove VersionedReference/ProjectReference/ArtifactReference from RepositoryProxyConnectors
 
-* [MRM-946] - Upgrade to redback 1.1.1
+    * [MRM-946] - Upgrade to redback 1.1.1
 
-* [MRM-948] - allow plugins to handle deletion of artifacts through repository purge
+    * [MRM-948] - allow plugins to handle deletion of artifacts through repository purge
 
-* [MRM-952] - Patch for several issues while processing poms (effective model, expressions resolving, storing to database)
+    * [MRM-952] - Patch for several issues while processing poms (effective model, expressions resolving, storing to database)
 
-* [MRM-966] - Update documentation for search feature
+    * [MRM-966] - Update documentation for search feature
 
-* [MRM-977] - Upgrade from Webwork 2 to Struts 2
+    * [MRM-977] - Upgrade from Webwork 2 to Struts 2
 
-* [MRM-985] - Document usage of boolean NOT in quick search
+    * [MRM-985] - Document usage of boolean NOT in quick search
 
-* [MRM-987] - switch from prototype to jquery
+    * [MRM-987] - switch from prototype to jquery
 
-* [MRM-988] - remove "dav:" from the POM snippet in repositories page
+    * [MRM-988] - remove "dav:" from the POM snippet in repositories page
 
 ** New Feature
 
-* [MRM-90] - add advanced search options
+    * [MRM-90] - add advanced search options
 
-* [MRM-124] - web service interface
+    * [MRM-124] - web service interface
 
 ** Task
 
-* [MRM-84] - Basic statistics
+    * [MRM-84] - Basic statistics
 
 * Changes in Archiva 1.1.3
 
-Released: <<9 October 2008>>
+  Released: <<9 October 2008>>
 
 ** Bug
 
-* [MRM-967] - Security Issue: If repository observer role is enabled for the 'guest' user, an invalid user is able to deploy to that repository
+    * [MRM-967] - Security Issue: If repository observer role is enabled for the 'guest' user, an invalid user is able to deploy to that repository
 
-* [MRM-397] - background of the Archiva logo is not transparent in repositories page
+    * [MRM-397] - background of the Archiva logo is not transparent in repositories page
 
-* [MRM-580] - does not give error message when one defines an illegal directory for a managed repository
+    * [MRM-580] - does not give error message when one defines an illegal directory for a managed repository
 
-* [MRM-954] - Footer doesn't stretch across repositoryGroups page
+    * [MRM-954] - Footer doesn't stretch across repositoryGroups page
 
 * Changes in Archiva 1.1.2
 
-Released: <<11 September 2008>>
+  Released: <<11 September 2008>>
 
 ** Bug
 
-* [MRM-765] - should not be possible to create a proxy connector if there are no remote repositories
+    * [MRM-765] - should not be possible to create a proxy connector if there are no remote repositories
 
-* [MRM-807] - Deployed dll won't be indexed
+    * [MRM-807] - Deployed dll won't be indexed
 
-* [MRM-834] - Wrong repository url when archiva is used behind Apache with mof_proxy
+    * [MRM-834] - Wrong repository url when archiva is used behind Apache with mof_proxy
 
-* [MRM-841] - Introducing a new scannable artifact file type requires restart in order for some consumers to work
+    * [MRM-841] - Introducing a new scannable artifact file type requires restart in order for some consumers to work
 
-* [MRM-880] - Archiva does not start up on Solaris 64-Bit
+    * [MRM-880] - Archiva does not start up on Solaris 64-Bit
 
-* [MRM-881] - Failing to startup due to invalid bean definition
+    * [MRM-881] - Failing to startup due to invalid bean definition
 
-* [MRM-893] - Illegal browse operation allow
+    * [MRM-893] - Illegal browse operation allow
 
-* [MRM-902] - If path has leading slash when being checked againts whitelists and blacklists causes matching failure
+    * [MRM-902] - If path has leading slash when being checked againts whitelists and blacklists causes matching failure
 
-* [MRM-903] - Repository scanning should not stop when encounters error
+    * [MRM-903] - Repository scanning should not stop when encounters error
 
-* [MRM-905] - EL Expression failed with empty/not functions
+    * [MRM-905] - EL Expression failed with empty/not functions
 
-* [MRM-911] - Archiva checks user's credentials before guest's rights on the repository
+    * [MRM-911] - Archiva checks user's credentials before guest's rights on the repository
 
-* [MRM-912] - rss urls seem to use fixed webcontext "archiva" instead of actual webcontext
+    * [MRM-912] - rss urls seem to use fixed webcontext "archiva" instead of actual webcontext
 
-* [MRM-915] - NPE with rss links
+    * [MRM-915] - NPE with rss links
 
-* [MRM-926] - NPE with search page
+    * [MRM-926] - NPE with search page
 
-* [MRM-932] - Error 500 when clicking the Next or Previous icon of the results of a search, if user is trying to search for java classes, packages or methods.
+    * [MRM-932] - Error 500 when clicking the Next or Previous icon of the results of a search, if user is trying to search for java classes, packages or methods.
 
-* [MRM-934] - For bytecode search, only 1 version of the artifact is returned even if there are more than 1 version of that artifact which matched the search
+    * [MRM-934] - For bytecode search, only 1 version of the artifact is returned even if there are more than 1 version of that artifact which matched the search
 
-* [MRM-943] - results search option should only be available on results page
+    * [MRM-943] - results search option should only be available on results page
 
 ** Improvement
 
-* [MRM-839] - change RSS URLs
+    * [MRM-839] - change RSS URLs
 
-* [MRM-848] - Pre-configured repositories initially appear to be empty
+    * [MRM-848] - Pre-configured repositories initially appear to be empty
 
-* [MRM-874] - POM snippet for plugins should be <plugin> not <dependency>
+    * [MRM-874] - POM snippet for plugins should be <plugin> not <dependency>
 
-The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=14491&styleName=Text&projectId=10980} in JIRA}}.
+  The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=14491&styleName=Text&projectId=10980} in JIRA}}.
 
 * Changes in Archiva 1.1.1
 
-Released: <<11 August 2008>>
+  Released: <<11 August 2008>>
 
 ** Bug
 
-* [MRM-584] - Newly created user cannot login
+     * [MRM-584] - Newly created user cannot login
 
-* [MRM-631] - network proxy is always used when defined
+     * [MRM-631] - network proxy is always used when defined
 
-* [MRM-814] - Invalid cron expressions are accepted in Database Scanning
+     * [MRM-814] - Invalid cron expressions are accepted in Database Scanning
 
-* [MRM-873] - repository groups - move up/down should not show when it's not possible
+     * [MRM-873] - repository groups - move up/down should not show when it's not possible
 
-* [MRM-883] - RSS syndication java.lang.ArrayIndexOutOfBoundsException
+     * [MRM-883] - RSS syndication java.lang.ArrayIndexOutOfBoundsException
 
-* [MRM-884] - network proxy fails after upgrading to archiva 1.1
+     * [MRM-884] - network proxy fails after upgrading to archiva 1.1
 
-* [MRM-888] - add notes on reindexing to the upgrade docs
+     * [MRM-888] - add notes on reindexing to the upgrade docs
 
-* [MRM-891] - Unable to use archiva as http source with maven-stage-plugin
+     * [MRM-891] - Unable to use archiva as http source with maven-stage-plugin
 
-* [MRM-892] - Search for java classes and package names is broken
+     * [MRM-892] - Search for java classes and package names is broken
 
-* [MRM-895] - Archiva version doesn't appear on the footer when it is installed on Tomcat
+     * [MRM-895] - Archiva version doesn't appear on the footer when it is installed on Tomcat
 
-* [MRM-896] - classifier is appended to pom filename after artifact upload
+     * [MRM-896] - classifier is appended to pom filename after artifact upload
 
 ** Improvement
 
-* [MRM-817] - Artifact information screen should indicate the name of repository in which the artifact resides
+     * [MRM-817] - Artifact information screen should indicate the name of repository in which the artifact resides
 
-The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=14461&styleName=Text&projectId=10980} in JIRA}}.
+  The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=14461&styleName=Text&projectId=10980} in JIRA}}.
 
 * Changes in Archiva 1.1
 
-Released: <<20 July 2008>>
+  Released: <<20 July 2008>>
 
 ** Sub-task
 
-* [MRM-801] - Create documentation for virtual repositories
+    * [MRM-801] - Create documentation for virtual repositories
 
-* [MRM-861] - Paginate Search Results page
+    * [MRM-861] - Paginate Search Results page
 
 ** Bug
 
-* [MRM-234] - Moving files between repos through webdav doesn't work
+    * [MRM-234] - Moving files between repos through webdav doesn't work
 
-* [MRM-312] - ConcurrentModificationException
+    * [MRM-312] - ConcurrentModificationException
 
-* [MRM-523] - Appearance Actions do not work when ${user.home} is invalid.
+    * [MRM-523] - Appearance Actions do not work when ${user.home} is invalid.
 
-* [MRM-538] - Browse > Info not synchronised with updated POM contents
+    * [MRM-538] - Browse > Info not synchronised with updated POM contents
 
-* [MRM-550] - proxy connectors - move up/down should not show when it's not possible
+    * [MRM-550] - proxy connectors - move up/down should not show when it's not possible
 
-* [MRM-584] - Newly created user cannot login
+    * [MRM-584] - Newly created user cannot login
 
-* [MRM-597] - Cannot run Archiva as another user because su is run with option "-" (--login)
+    * [MRM-597] - Cannot run Archiva as another user because su is run with option "-" (--login)
 
-* [MRM-602] - add "maintainance" to the feature tour
+    * [MRM-602] - add "maintainance" to the feature tour
 
-* [MRM-605] - unit tests fail on archiva 1.0 source distribution
+    * [MRM-605] - unit tests fail on archiva 1.0 source distribution
 
-* [MRM-610] - a number of unit tests fail on windows
+    * [MRM-610] - a number of unit tests fail on windows
 
-* [MRM-614] - User validation message has incorrect URL
+    * [MRM-614] - User validation message has incorrect URL
 
-* [MRM-624] - Failed to install Archiva as windows service
+    * [MRM-624] - Failed to install Archiva as windows service
 
-* [MRM-629] - NullPointer when setting corporate POM on a fresh archvia install
+    * [MRM-629] - NullPointer when setting corporate POM on a fresh archvia install
 
-* [MRM-638] - some developer reports are appearing in the archiva-docs module and need to be disabled
+    * [MRM-638] - some developer reports are appearing in the archiva-docs module and need to be disabled
 
-* [MRM-650] - Deleted metadata files still appear in search results
+    * [MRM-650] - Deleted metadata files still appear in search results
 
-* [MRM-652] - Invalid html links in "webdav" directory browsing
+    * [MRM-652] - Invalid html links in "webdav" directory browsing
 
-* [MRM-653] - WebDAV deploy fails with error
+    * [MRM-653] - WebDAV deploy fails with error
 
-* [MRM-658] - org.apache.maven.archiva.repository.content.FilenameParser is unable to determine unique snapshot versions with specific version names
+    * [MRM-658] - org.apache.maven.archiva.repository.content.FilenameParser is unable to determine unique snapshot versions with specific version names
 
-* [MRM-682] - Archiva runs out of heap memory
+    * [MRM-682] - Archiva runs out of heap memory
 
-* [MRM-692] - Repository problem is kept in database even though its related artifact has been already removed
+    * [MRM-692] - Repository problem is kept in database even though its related artifact has been already removed
 
-* [MRM-702] - in the standalone bundle, the pid file is written into the installation directory alongside the wrapper, but should be in a temporary location
+    * [MRM-702] - in the standalone bundle, the pid file is written into the installation directory alongside the wrapper, but should be in a temporary location
 
-* [MRM-711] - Security using ldap throws NullPointerException
+    * [MRM-711] - Security using ldap throws NullPointerException
 
-* [MRM-733] - Error ending component lifecycle
+    * [MRM-733] - Error ending component lifecycle
 
-* [MRM-753] - Error while deploying an artifact to archiva
+    * [MRM-753] - Error while deploying an artifact to archiva
 
-* [MRM-767] - generated LICENSE and NOTICE files need improvement
+    * [MRM-767] - generated LICENSE and NOTICE files need improvement
 
-* [MRM-768] - Cannot proxy maven2 plugin (jaxb) from a maven1 repository (http://download.java.net/maven/1)
+    * [MRM-768] - Cannot proxy maven2 plugin (jaxb) from a maven1 repository (http://download.java.net/maven/1)
 
-* [MRM-769] - CLONE - 507 Insufficient Storage when deploying artifact with webdav
+    * [MRM-769] - CLONE - 507 Insufficient Storage when deploying artifact with webdav
 
-* [MRM-777] - assignments.jsp: missing <tr></tr> group under "Resource Roles":
+    * [MRM-777] - assignments.jsp: missing <tr></tr> group under "Resource Roles":
 
-* [MRM-778] - DefaultDavServerManager.createServer doesn't create server
+    * [MRM-778] - DefaultDavServerManager.createServer doesn't create server
 
-* [MRM-780] - Access to indexes files with a browser is not possible
+    * [MRM-780] - Access to indexes files with a browser is not possible
 
-* [MRM-784] - mailing-info on the website points to 'old' maven.apache.org addresses
+    * [MRM-784] - mailing-info on the website points to 'old' maven.apache.org addresses
 
-* [MRM-785] - No message is displayed after a successful artifact upload
+    * [MRM-785] - No message is displayed after a successful artifact upload
 
-* [MRM-789] - Archiva may delete you app server installation
+    * [MRM-789] - Archiva may delete you app server installation
 
-* [MRM-790] - [regression] proxying metadata causes an IO exception in new checksum code
+    * [MRM-790] - [regression] proxying metadata causes an IO exception in new checksum code
 
-* [MRM-792] - remove references to maven in code
+    * [MRM-792] - remove references to maven in code
 
-* [MRM-796] - releases always activated in repositories
+    * [MRM-796] - releases always activated in repositories
 
-* [MRM-797] - Delete Released Snapshots doesn't work
+    * [MRM-797] - Delete Released Snapshots doesn't work
 
-* [MRM-800] - Admin user account user lockout via Webdav only?
+    * [MRM-800] - Admin user account user lockout via Webdav only?
 
-* [MRM-810] - Uploads done through the Web UI are not reported in the audit log
+    * [MRM-810] - Uploads done through the Web UI are not reported in the audit log
 
-* [MRM-818] - [Repository Group] Page will be broken if entered identifier is too long
+    * [MRM-818] - [Repository Group] Page will be broken if entered identifier is too long
 
-* [MRM-819] - ERROR 404 page when clicking the URL of Repository Group with identifier i.e. "test/test"
+    * [MRM-819] - ERROR 404 page when clicking the URL of Repository Group with identifier i.e. "test/test"
 
-* [MRM-820] - 404 when the dav url of an Archiva default repository (internal or snapshots) is accessed
+    * [MRM-820] - 404 when the dav url of an Archiva default repository (internal or snapshots) is accessed
 
-* [MRM-823] - Deleted repository still shows up in the repo group
+    * [MRM-823] - Deleted repository still shows up in the repo group
 
-* [MRM-824] - dependency cleanup
+    * [MRM-824] - dependency cleanup
 
-* [MRM-835] - Checksum search appears broken
+    * [MRM-835] - Checksum search appears broken
 
-* [MRM-840] - Wagon HTTP deadlocks under high load
+    * [MRM-840] - Wagon HTTP deadlocks under high load
 
-* [MRM-845] - Continuous Loop when you click a repository group link
+    * [MRM-845] - Continuous Loop when you click a repository group link
 
-* [MRM-846] - "Repository Purge By Retention Count" option not working
+    * [MRM-846] - "Repository Purge By Retention Count" option not working
 
-* [MRM-847] - DependencyTreeGeneratorConsumerTest fails under windows due to line ending
+    * [MRM-847] - DependencyTreeGeneratorConsumerTest fails under windows due to line ending
 
-* [MRM-851] - wrong taglib short-name causes deployment error on Geronimo
+    * [MRM-851] - wrong taglib short-name causes deployment error on Geronimo
 
-* [MRM-853] - HTTP Error 500 when uploading artifact with Windows OS
+    * [MRM-853] - HTTP Error 500 when uploading artifact with Windows OS
 
-* [MRM-855] - java.lang.NoClassDefFoundError: org/apache/xml/serialize/OutputFormat
+    * [MRM-855] - java.lang.NoClassDefFoundError: org/apache/xml/serialize/OutputFormat
 
-* [MRM-856] - Artifact Upload replaces all instances of the name "jar" with "pom" when trying to change the file extension
+    * [MRM-856] - Artifact Upload replaces all instances of the name "jar" with "pom" when trying to change the file extension
 
-* [MRM-858] - last-modified header is missing
+    * [MRM-858] - last-modified header is missing
 
-* [MRM-865] - Upload snapshot should work like a deploy
+    * [MRM-865] - Upload snapshot should work like a deploy
 
-* [MRM-867] - 500 on HEAD method
+    * [MRM-867] - 500 on HEAD method
 
-* [MRM-869] - many empty folders created in managed repos with proxy connectors when used in a group
+    * [MRM-869] - many empty folders created in managed repos with proxy connectors when used in a group
 
-* [MRM-870] - addRepositoryToGroup.action => AbstractMethodError on DeferredDocumentImpl.getXmlStandalone()
+    * [MRM-870] - addRepositoryToGroup.action => AbstractMethodError on DeferredDocumentImpl.getXmlStandalone()
 
-* [MRM-871] - jetty.host and jetty.port properties are set by default in jetty.xml preventing user from using other hostname if user is not aware of these properties
+    * [MRM-871] - jetty.host and jetty.port properties are set by default in jetty.xml preventing user from using other hostname if user is not aware of these properties
 
-* [MRM-872] - empty metadatas frmo a repository group
+    * [MRM-872] - empty metadatas frmo a repository group
 
 ** Improvement
 
-* [MRM-591] - Reports should show from which repository the defective artifact was found.
+    * [MRM-591] - Reports should show from which repository the defective artifact was found.
 
-* [MRM-651] - Updated consumer plugin to build against the 1.1 apis
+    * [MRM-651] - Updated consumer plugin to build against the 1.1 apis
 
-* [MRM-654] - Archetype for generation of Consumer plugins
+    * [MRM-654] - Archetype for generation of Consumer plugins
 
-* [MRM-667] - Timeout implementation for Archiva
+    * [MRM-667] - Timeout implementation for Archiva
 
-* [MRM-678] - 404 errors on proxies should be cached
+    * [MRM-678] - 404 errors on proxies should be cached
 
-* [MRM-737] - Don't list metadata files in the search results
+    * [MRM-737] - Don't list metadata files in the search results
 
-* [MRM-752] - Trim URL in Remote Repositories
+    * [MRM-752] - Trim URL in Remote Repositories
 
-* [MRM-760] - set JSW to auto-restart if it crashes or hangs
+    * [MRM-760] - set JSW to auto-restart if it crashes or hangs
 
-* [MRM-773] - Improve RSS feed generation
+    * [MRM-773] - Improve RSS feed generation
 
-* [MRM-781] - Removal of Archiva-Webdav implementation in favor of Jackrabbit-webdav
+    * [MRM-781] - Removal of Archiva-Webdav implementation in favor of Jackrabbit-webdav
 
-* [MRM-802] - Display the url for the repository group
+    * [MRM-802] - Display the url for the repository group
 
-* [MRM-804] - When uploading artifacts to the repo, they should be added to the index instantly
+    * [MRM-804] - When uploading artifacts to the repo, they should be added to the index instantly
 
-* [MRM-822] - add org/jvnet/**, com/sun/** to the whitelist for the default java.net repository
+    * [MRM-822] - add org/jvnet/**, com/sun/** to the whitelist for the default java.net repository
 
-* [MRM-829] - Replace Company POM feature with simple Appearence customisation
+    * [MRM-829] - Replace Company POM feature with simple Appearence customisation
 
-* [MRM-831] - When deploying artifacts to the repo, they should be added to the index instantly
+    * [MRM-831] - When deploying artifacts to the repo, they should be added to the index instantly
 
-* [MRM-857] - set a user agent for proxy HTTP requests
+    * [MRM-857] - set a user agent for proxy HTTP requests
 
-* [MRM-859] - Use File.createTempFile() when downloading files from a remote repository
+    * [MRM-859] - Use File.createTempFile() when downloading files from a remote repository
 
 ** New Feature
 
-* [MRM-123] - add RSS view to repository manager
+    * [MRM-123] - add RSS view to repository manager
 
-* [MRM-216] - Upload (deploy) artifacts to a repository - via a web form (not using wagon)
+    * [MRM-216] - Upload (deploy) artifacts to a repository - via a web form (not using wagon)
 
-* [MRM-694] - Virtual repositories or repository grouping
+    * [MRM-694] - Virtual repositories or repository grouping
 
-* [MRM-730] - Index/Search by class, method or package name
+    * [MRM-730] - Index/Search by class, method or package name
 
-* [MRM-751] - Support database connection pooling
+    * [MRM-751] - Support database connection pooling
 
-* [MRM-774] - Support inclusion of pom file when deploying an artifact via the web upload form
+    * [MRM-774] - Support inclusion of pom file when deploying an artifact via the web upload form
 
-* [MRM-864] - Searching within search results
+    * [MRM-864] - Searching within search results
 
 ** Task
 
-* [MRM-677] - Upgrade archiva to the latest redback (1.0.1)
+    * [MRM-677] - Upgrade archiva to the latest redback (1.0.1)
 
-* [MRM-688] - Replace plexus-runtime with standalone jetty bundle
+    * [MRM-688] - Replace plexus-runtime with standalone jetty bundle
 
-* [MRM-708] - Migrate from Plexus Logging to Slf4J
+    * [MRM-708] - Migrate from Plexus Logging to Slf4J
 
-* [MRM-754] - Update the screenshots in the docs
+    * [MRM-754] - Update the screenshots in the docs
 
-The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=13861&styleName=Text&projectId=10980} in JIRA}}.
+  The full list of changes can be found {{{http://jira.codehaus.org/secure/ReleaseNote.jspa?version=13861&styleName=Text&projectId=10980} in JIRA}}.
 
 * Changes in Archiva 1.0.2
 
-Released: <<8 April 2008>>
+  Released: <<8 April 2008>>
 
 ** Bug
 
-* [MRM-159] - should not respond with a 404 if proxying a file results in a remote error
+    * [MRM-159] - should not respond with a 404 if proxying a file results in a remote error
 
-* [MRM-532] - Unable to specify the location of the index files through the web ui
+    * [MRM-532] - Unable to specify the location of the index files through the web ui
 
-* [MRM-598] - Validation error on new repository creation and other fields under certain conditions
+    * [MRM-598] - Validation error on new repository creation and other fields under certain conditions
 
-* [MRM-608] - Unable to find project model for  [...] if the initial import of the POM failed
+    * [MRM-608] - Unable to find project model for  [...] if the initial import of the POM failed
 
-* [MRM-617] - Reporting does not work due to bug in client-side JavaScript validation
+    * [MRM-617] - Reporting does not work due to bug in client-side JavaScript validation
 
-* [MRM-618] - PLEXUS_BASE does not work for local databases
+    * [MRM-618] - PLEXUS_BASE does not work for local databases
 
-* [MRM-622] - database not being updated with project model information
+    * [MRM-622] - database not being updated with project model information
 
-* [MRM-626] - ClassCastException when saving proxy connector with property defined
+    * [MRM-626] - ClassCastException when saving proxy connector with property defined
 
-* [MRM-627] - Archiva doesn't download SNAPSHOTs for proxied repositories.
+    * [MRM-627] - Archiva doesn't download SNAPSHOTs for proxied repositories.
 
-* [MRM-631] - network proxy is always used when defined
+    * [MRM-631] - network proxy is always used when defined
 
-* [MRM-642] - archiva-common tests rely on relative paths
+    * [MRM-642] - archiva-common tests rely on relative paths
 
-* [MRM-655] - The logs are duplicated in the archiva.log and wrapper.log file.
+    * [MRM-655] - The logs are duplicated in the archiva.log and wrapper.log file.
 
-* [MRM-659] - archiva cannot serve ejb artifacts from a maven1 repository
+    * [MRM-659] - archiva cannot serve ejb artifacts from a maven1 repository
 
-* [MRM-661] - remote repository removals are not saved after restart
+    * [MRM-661] - remote repository removals are not saved after restart
 
-* [MRM-664] - Cannot download a strut-module artifact in a Legacy repository
+    * [MRM-664] - Cannot download a strut-module artifact in a Legacy repository
 
-* [MRM-674] - LayoutException when downloading SNAPSHOT test-sources
+    * [MRM-674] - LayoutException when downloading SNAPSHOT test-sources
 
-* [MRM-683] - Archiva version missing from pages and logs
+    * [MRM-683] - Archiva version missing from pages and logs
 
-* [MRM-687] - Project model cannot be added to database if it inherits groupId and/or version from parent POM
+    * [MRM-687] - Project model cannot be added to database if it inherits groupId and/or version from parent POM
 
-* [MRM-689] - Incorrect war name in example for tomcat
+    * [MRM-689] - Incorrect war name in example for tomcat
 
-* [MRM-690] - using undefined appserver.base
+    * [MRM-690] - using undefined appserver.base
 
-* [MRM-691] - Can't get any of the consumers to work without through a NPE
+    * [MRM-691] - Can't get any of the consumers to work without through a NPE
 
-* [MRM-701] - Buggy documentation on "separating the base from the installation"
+    * [MRM-701] - Buggy documentation on "separating the base from the installation"
 
-* [MRM-703] - Artifacts with extensions longer than fours characters breaks repository scanning.
+    * [MRM-703] - Artifacts with extensions longer than fours characters breaks repository scanning.
 
-* [MRM-713] - extensionPattern in FilenameParser is incorrect
+    * [MRM-713] - extensionPattern in FilenameParser is incorrect
 
-* [MRM-715] - error adding artifacts to Lucene under some circumstances
+    * [MRM-715] - error adding artifacts to Lucene under some circumstances
 
-* [MRM-719] - NPE during repository scan
+    * [MRM-719] - NPE during repository scan
 
-* [MRM-725] - /archiva/browse URL does not work on WebSphere
+    * [MRM-725] - /archiva/browse URL does not work on WebSphere
 
-* [MRM-727] - Archiva does not download plugin artifacts in Geronimo
+    * [MRM-727] - Archiva does not download plugin artifacts in Geronimo
 
-* [MRM-734] - Unable to update metadata - No versions found for reference
+    * [MRM-734] - Unable to update metadata - No versions found for reference
 
-* [MRM-746] - unable to include *.xml in artifacts list as it picks up maven-metadata.xml
+    * [MRM-746] - unable to include *.xml in artifacts list as it picks up maven-metadata.xml
 
-* [MRM-750] - Adding a network proxy doesn't require an identifier
+    * [MRM-750] - Adding a network proxy doesn't require an identifier
 
-* [MRM-755] - No content type for .pom files denoted in file "archiva-mime-types.txt" - workaround included
+    * [MRM-755] - No content type for .pom files denoted in file "archiva-mime-types.txt" - workaround included
 
-* [MRM-758] - unable to schedule cron expressions that contain a comma
+    * [MRM-758] - unable to schedule cron expressions that contain a comma
 
-* [MRM-761] - Exception when trying to retrieve a Maven 1 artifact of type zip
+    * [MRM-761] - Exception when trying to retrieve a Maven 1 artifact of type zip
 
-* [MRM-762] - Footer doesn't stretch across repositoryScanning and database pages
+    * [MRM-762] - Footer doesn't stretch across repositoryScanning and database pages
 
-* [MRM-763] - Default cron expression for database update is invalid
+    * [MRM-763] - Default cron expression for database update is invalid
 
-* [MRM-764] - default policies are not selected in the add proxy connector page
+    * [MRM-764] - default policies are not selected in the add proxy connector page
 
 ** Improvement
 
-* [MRM-504] - Find Artifact page needs more onscreen information/instructions
+    * [MRM-504] - Find Artifact page needs more onscreen information/instructions
 
-* [MRM-656] - Admin guide for installing WAR needs updating
+    * [MRM-656] - Admin guide for installing WAR needs updating
 
-* [MRM-666] - Edit Managed Repository page should indicate the repo id being edited
+    * [MRM-666] - Edit Managed Repository page should indicate the repo id being edited
 
-* [MRM-700] - Review the documentation on deploying to Archiva for inconsistent repository ids
+    * [MRM-700] - Review the documentation on deploying to Archiva for inconsistent repository ids
 
-* [MRM-720] - Upgrade Lucene from 2.0 to 2.3.1
+    * [MRM-720] - Upgrade Lucene from 2.0 to 2.3.1
 
 * Changes in Archiva 1.0.1
 
-Released: <<4 February 2008>>
+  Released: <<4 February 2008>>
 
 ** Bug
 
-* [MRM-623] - find artifact self signed certificate will expire soon
+  * [MRM-623] - find artifact self signed certificate will expire soon
 
-* [MRM-628] - In the audit.log file the userid for each action is guest, even though the deploy was performed by admin
+  * [MRM-628] - In the audit.log file the userid for each action is guest, even though the deploy was performed by admin
 
-* [MRM-630] - http 502 proxy error with browse button after 2 days running
+  * [MRM-630] - http 502 proxy error with browse button after 2 days running
 
-* [MRM-633] - Logging is too verbose
+  * [MRM-633] - Logging is too verbose
 
-* [MRM-646] - Documentation for configuring for Tomcat is invalid
+  * [MRM-646] - Documentation for configuring for Tomcat is invalid
 
-* [MRM-662] - Repo purge is not deleting artifacts in correct order
+  * [MRM-662] - Repo purge is not deleting artifacts in correct order
 
-* [MRM-668] - Repo browse and search isn't working in trunk and in archiva 1.0.1 release candidate
+  * [MRM-668] - Repo browse and search isn't working in trunk and in archiva 1.0.1 release candidate
 
-* [MRM-670] - legacy artifact mapping form needs better validation
+  * [MRM-670] - legacy artifact mapping form needs better validation
 
 ** Improvement
 
-* [MRM-594] - add some minimal hook in LegacyPathParser to allow exception management in artifact resolution
+  * [MRM-594] - add some minimal hook in LegacyPathParser to allow exception management in artifact resolution
 
 ** Task
 
-* [MRM-619] - Update docs/site for some corrections
+  * [MRM-619] - Update docs/site for some corrections
 
 * Archiva 1.0
 
-Released: <<23 November 2007>>
+  Released: <<23 November 2007>>
 
-First production release.
+  First production release.
 
 * History
 
-Archiva was started in November 2005, building a simple framework on top of some existing repository conversion
-tools within the Maven project. Initial development focused on repository conversion, error reporting, and indexing.
-From January 2006 a web application was started to visualise the information and to start incorporating
-functionality from the unmaintained maven-proxy project.
+  Archiva was started in November 2005, building a simple framework on top of some existing repository conversion
+  tools within the Maven project. Initial development focused on repository conversion, error reporting, and indexing.
+  From January 2006 a web application was started to visualise the information and to start incorporating
+  functionality from the unmaintained maven-proxy project.
 
-Development continued through many stops and starts. Initial versions of Archiva were built from source by contributors,
-and the first alpha version was not released until April 2007. Some significant changes were made to improve
-performance and functionality in June 2007 and over the next 6 months and a series of alpha and beta releases, a concerted effort
-was made to release the 1.0 version.
+  Development continued through many stops and starts. Initial versions of Archiva were built from source by contributors,
+  and the first alpha version was not released until April 2007. Some significant changes were made to improve
+  performance and functionality in June 2007 and over the next 6 months and a series of alpha and beta releases, a concerted effort
+  was made to release the 1.0 version.
 
-Archiva became an Apache "top level project" in March 2008.
+  Archiva became an Apache "top level project" in March 2008.
 
