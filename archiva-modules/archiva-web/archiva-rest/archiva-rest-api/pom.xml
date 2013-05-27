@@ -22,7 +22,7 @@
   <parent>
     <artifactId>archiva-rest</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M4</version>
+    <version>1.4-M5-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-rest-api</artifactId>
   <!-- DO NOT USE bundle packaging generated documentation is not included in the jar !!! -->

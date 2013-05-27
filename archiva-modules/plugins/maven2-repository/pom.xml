@@ -22,7 +22,7 @@
   <parent>
     <artifactId>plugins</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M4</version>
+    <version>1.4-M5-SNAPSHOT</version>
   </parent>
   <artifactId>maven2-repository</artifactId>
   <packaging>bundle</packaging>

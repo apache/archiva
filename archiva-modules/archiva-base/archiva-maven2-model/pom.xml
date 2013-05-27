@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-base</artifactId>
-    <version>1.4-M4</version>
+    <version>1.4-M5-SNAPSHOT</version>
   </parent>
 
   <artifactId>archiva-maven2-model</artifactId>
