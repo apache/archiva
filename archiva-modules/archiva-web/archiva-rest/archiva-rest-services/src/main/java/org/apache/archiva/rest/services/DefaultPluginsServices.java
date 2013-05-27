@@ -39,20 +39,23 @@ public class DefaultPluginsServices
 
     private List<String> repositoryType = new ArrayList<String>();
     private List<String> adminFeatures = new ArrayList<String>();
+    private ApplicationContext appCont;
 
     @Inject
     public DefaultPluginsServices( ApplicationContext applicationContext )
     {
-        feed( repositoryType, "repository", applicationContext );
-        feed( adminFeatures, "features", applicationContext );
+        System.err.println( "appCont" );
+        this.appCont = applicationContext;
     }
 
-    private void feed( List<String> repository, String key, ApplicationContext applicationContext )
+    private void feed( List<String> repository, String key ) throws ArchivaRestServiceException
     {
+        System.err.println( "feeed" );
+        repository.clear();
         Resource[] xmlResources;
         try
         {
-            xmlResources = applicationContext.getResources( "/**/" + key + "/**/main.js" );
+            xmlResources = appCont.getResources( "/**/" + key + "/**/main.js" );
             for ( Resource rc : xmlResources )
             {
                 String tmp = rc.getURL().toString();
@@ -60,8 +63,10 @@ public class DefaultPluginsServices
                 repository.add( "archiva/admin/" + key + "/" + tmp + "/main" );
             }
         }
-        catch ( IOException ex )
+        catch ( IOException e )
         {
+
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 
@@ -70,6 +75,8 @@ public class DefaultPluginsServices
             throws ArchivaRestServiceException
     {
         // rebuild
+        feed( repositoryType, "repository" );
+        feed( adminFeatures, "features" );
         StringBuilder sb = new StringBuilder();
         for ( String repoType : repositoryType )
         {
@@ -79,8 +86,15 @@ public class DefaultPluginsServices
         {
             sb.append( repoType ).append( "|" );
         }
-
-        return sb.substring( 0, sb.length() - 1 );
+        System.err.println( "sb" + sb.toString() );
+        if ( sb.length() > 1 )
+        {
+            return sb.substring( 0, sb.length() - 1 );
+        }
+        else
+        {
+            return sb.toString();
+        }
 
     }
 }
