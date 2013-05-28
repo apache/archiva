@@ -26,6 +26,8 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import org.apache.archiva.rest.api.services.PluginsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 
@@ -40,17 +42,17 @@ public class DefaultPluginsServices
     private List<String> repositoryType = new ArrayList<String>();
     private List<String> adminFeatures = new ArrayList<String>();
     private ApplicationContext appCont;
+    private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
     public DefaultPluginsServices( ApplicationContext applicationContext )
     {
-        System.err.println( "appCont" );
         this.appCont = applicationContext;
     }
 
     private void feed( List<String> repository, String key ) throws ArchivaRestServiceException
     {
-        System.err.println( "feeed" );
+        log.info( "Feeding: {}", key );
         repository.clear();
         Resource[] xmlResources;
         try
@@ -86,7 +88,7 @@ public class DefaultPluginsServices
         {
             sb.append( repoType ).append( "|" );
         }
-        System.err.println( "sb" + sb.toString() );
+        log.debug( "getAdminPlugins: {}", sb.toString() );
         if ( sb.length() > 1 )
         {
             return sb.substring( 0, sb.length() - 1 );
