@@ -53,8 +53,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-@RunWith(ArchivaSpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public abstract class AbstractMetadataRepositoryTest
     extends TestCase
 {
@@ -188,6 +188,7 @@ public abstract class AbstractMetadataRepositoryTest
         // test that namespace and project is also constructed
         assertEquals( Collections.singletonList( TEST_NAMESPACE ), repository.getRootNamespaces( TEST_REPO_ID ) );
         ProjectMetadata projectMetadata = repository.getProject( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT );
+        assertNotNull( projectMetadata );
         assertEquals( TEST_PROJECT, projectMetadata.getId() );
         assertEquals( TEST_NAMESPACE, projectMetadata.getNamespace() );
     }
