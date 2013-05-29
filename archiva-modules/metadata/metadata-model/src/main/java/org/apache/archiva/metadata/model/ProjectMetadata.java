@@ -44,4 +44,14 @@ public class ProjectMetadata
     {
         this.namespace = namespace;
     }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "ProjectMetadata{" );
+        sb.append( "namespace='" ).append( namespace ).append( '\'' );
+        sb.append( ", id='" ).append( id ).append( '\'' );
+        sb.append( '}' );
+        return sb.toString();
+    }
 }
