@@ -1220,8 +1220,10 @@ public abstract class AbstractMetadataRepositoryTest
 
         repository.removeArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact.getId() );
 
-        assertTrue(
-            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).isEmpty() );
+        Collection<ArtifactMetadata> artifacts =
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+
+        Assertions.assertThat( artifacts ).isNotNull().isEmpty();
     }
 
     @Test
