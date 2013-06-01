@@ -20,7 +20,7 @@ define("archiva/admin/repository/maven2/repository-groups",["jquery","i18n","jqu
   ,"knockout.simpleGrid","knockout.sortable","archiva/admin/repository/maven2/repositories"],
 function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
 
-  RepositoryGroup=function(id,repositories,mergedIndexPath){
+  RepositoryGroup=function(id,repositories,mergedIndexPath,mergedIndexTtl){
 
     var self=this;
 
@@ -31,6 +31,10 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
     //private String mergedIndexPath = "/.indexer";
     this.mergedIndexPath=ko.observable(mergedIndexPath?mergedIndexPath:".indexer");
     this.mergedIndexPath.subscribe(function(newValue){self.modified(true)});
+
+    // private int mergedIndexTtl = 30;
+    this.mergedIndexTtl=ko.observable(mergedIndexTtl?mergedIndexTtl:30);
+    this.mergedIndexTtl.subscribe(function(newValue){self.modified(true)});
 
     // private List<String> repositories;
     this.repositories=ko.observableArray(repositories);
@@ -414,7 +418,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
   }
 
   mapRepositoryGroup=function(data){
-    return new RepositoryGroup(data.id, mapStringArray(data.repositories),data.mergedIndexPath);
+    return new RepositoryGroup(data.id, mapStringArray(data.repositories),data.mergedIndexPath,data.mergedIndexTtl);
   }
 
 });
