@@ -22,11 +22,10 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
-    <version>1.4-M4-SNAPSHOT</version>
+    <version>1.4-M5-SNAPSHOT</version>
   </parent>
 
   <artifactId>archiva-test-mocks</artifactId>
-  <version>1.4-M4-SNAPSHOT</version>
 
   <name>Archiva Web :: Tests Mocks</name>
 

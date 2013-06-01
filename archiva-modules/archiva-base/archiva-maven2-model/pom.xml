@@ -22,11 +22,10 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-base</artifactId>
-    <version>1.4-M4-SNAPSHOT</version>
+    <version>1.4-M5-SNAPSHOT</version>
   </parent>
 
   <artifactId>archiva-maven2-model</artifactId>
-  <version>1.4-M4-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>Archiva Base :: Maven 2 Model</name>

@@ -19,6 +19,7 @@ package org.apache.archiva.indexer.merger;
  */
 
 import com.google.common.io.Files;
+
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
@@ -35,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
@@ -70,8 +70,6 @@ public class DefaultIndexMerger
 
     private List<TemporaryGroupIndex> temporaryGroupIndexes = new CopyOnWriteArrayList<TemporaryGroupIndex>();
 
-    private int groupMergedIndexTtl;
-
     @Inject
     public DefaultIndexMerger( PlexusSisuBridge plexusSisuBridge, MavenIndexerUtils mavenIndexerUtils )
         throws PlexusSisuBridgeException
@@ -79,12 +77,6 @@ public class DefaultIndexMerger
         this.indexer = plexusSisuBridge.lookup( NexusIndexer.class );
         this.mavenIndexerUtils = mavenIndexerUtils;
         indexPacker = plexusSisuBridge.lookup( IndexPacker.class, "default" );
-    }
-
-    @PostConstruct
-    public void intialize()
-    {
-        this.groupMergedIndexTtl = Integer.getInteger( IndexMerger.TMP_GROUP_INDEX_SYS_KEY, DEFAULT_GROUP_INDEX_TTL );
     }
 
     public IndexingContext buildMergedIndex( IndexMergerRequest indexMergerRequest )
@@ -122,7 +114,7 @@ public class DefaultIndexMerger
                 indexPacker.packIndex( request );
             }
             temporaryGroupIndexes.add(
-                new TemporaryGroupIndex( tempRepoFile, tempRepoId, indexMergerRequest.getGroupId() ) );
+                new TemporaryGroupIndex( tempRepoFile, tempRepoId, indexMergerRequest.getGroupId(), indexMergerRequest.getMergedIndexTtl() ) );
             stopWatch.stop();
             log.info( "merged index for repos {} in {} s", indexMergerRequest.getRepositoriesIds(),
                       stopWatch.getTime() );
@@ -169,10 +161,5 @@ public class DefaultIndexMerger
     public Collection<TemporaryGroupIndex> getTemporaryGroupIndexes()
     {
         return this.temporaryGroupIndexes;
-    }
-
-    public int getGroupMergedIndexTtl()
-    {
-        return this.groupMergedIndexTtl;
     }
 }

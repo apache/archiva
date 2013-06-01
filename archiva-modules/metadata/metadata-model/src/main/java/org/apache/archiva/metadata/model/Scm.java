@@ -19,10 +19,14 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
+import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
-@XmlRootElement( name = "scm" )
+@XmlRootElement(name = "scm")
+@Entity
 public class Scm
+    implements Serializable
 {
     private String connection;
 

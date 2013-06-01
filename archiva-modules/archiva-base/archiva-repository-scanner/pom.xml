@@ -23,7 +23,7 @@
   <parent>
     <artifactId>archiva-base</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M4-SNAPSHOT</version>
+    <version>1.4-M5-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-repository-scanner</artifactId>
   <packaging>bundle</packaging>

@@ -22,11 +22,18 @@
   <parent>
     <artifactId>metadata</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M4-SNAPSHOT</version>
+    <version>1.4-M5-SNAPSHOT</version>
   </parent>
   <artifactId>metadata-model</artifactId>
   <packaging>bundle</packaging>
   <name>Archiva Metadata :: Model</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jpa_2.0_spec</artifactId>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
@@ -41,7 +48,7 @@
               org.apache.archiva.metadata.model;version=${project.version};-split-package:=merge-first
             </Export-Package>
             <Import-Package>
-              javax.xml.bind.annotation
+              javax.xml.bind.annotation,javax.persistence
             </Import-Package>
           </instructions>
         </configuration>

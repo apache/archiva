@@ -58,7 +58,7 @@ public class TemporaryGroupIndexCleaner
         for ( TemporaryGroupIndex temporaryGroupIndex : indexMerger.getTemporaryGroupIndexes() )
         {
             // cleanup files older than the ttl
-            if ( new Date().getTime() - temporaryGroupIndex.getCreationTime() > indexMerger.getGroupMergedIndexTtl() )
+            if ( new Date().getTime() - temporaryGroupIndex.getCreationTime() > temporaryGroupIndex.getMergedIndexTtl() )
             {
                 log.info( "cleanTemporaryIndex for groupId {}", temporaryGroupIndex.getGroupId() );
                 indexMerger.cleanTemporaryGroupIndex( temporaryGroupIndex );

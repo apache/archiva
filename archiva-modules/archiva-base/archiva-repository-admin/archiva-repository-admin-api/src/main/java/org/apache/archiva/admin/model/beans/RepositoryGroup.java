@@ -46,6 +46,11 @@ public class RepositoryGroup
      */
     private String mergedIndexPath = "/.indexer";
 
+    /**
+     * The TTL (time to live) of the repo group's merged index.
+     */
+    private int mergedIndexTtl = 30;
+
     public RepositoryGroup()
     {
         // no op
@@ -132,9 +137,26 @@ public class RepositoryGroup
         this.mergedIndexPath = mergedIndexPath;
     }
 
-    public RepositoryGroup mergedIndexPath( String mergedIndexPath )
-    {
+    public int getMergedIndexTtl() {
+        return mergedIndexTtl;
+    }
+
+    /**
+     * Set the TTL of the repo group's merged index.
+     *
+     * @param mergedIndexTtl
+     */
+    public void setMergedIndexTtl(int mergedIndexTtl) {
+        this.mergedIndexTtl = mergedIndexTtl;
+    }
+
+    public RepositoryGroup mergedIndexPath( String mergedIndexPath ) {
         this.mergedIndexPath = mergedIndexPath;
+        return this;
+    }
+
+    public RepositoryGroup mergedIndexTtl( int mergedIndexTtl ) {
+        this.mergedIndexTtl = mergedIndexTtl;
         return this;
     }
 

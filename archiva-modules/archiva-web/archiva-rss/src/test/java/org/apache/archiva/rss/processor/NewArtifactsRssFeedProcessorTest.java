@@ -250,7 +250,7 @@ public class NewArtifactsRssFeedProcessorTest
             return false;
         }
 
-        public Object obtainAccess( Class<?> aClass )
+        public <T>T obtainAccess( Class<T> aClass )
         {
             throw new UnsupportedOperationException();
         }

@@ -559,7 +559,7 @@ public class FileMetadataRepository
         return false;
     }
 
-    public Object obtainAccess( Class<?> aClass )
+    public <T>T obtainAccess( Class<T> aClass )
     {
         throw new IllegalArgumentException(
             "Access using " + aClass + " is not supported on the file metadata storage" );

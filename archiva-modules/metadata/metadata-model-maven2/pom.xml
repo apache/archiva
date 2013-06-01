@@ -22,7 +22,7 @@
   <parent>
     <artifactId>metadata</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M4-SNAPSHOT</version>
+    <version>1.4-M5-SNAPSHOT</version>
   </parent>
   <artifactId>metadata-model-maven2</artifactId>
   <packaging>bundle</packaging>
@@ -53,7 +53,8 @@
             </Export-Package>
             <Import-Package>
               javax.xml.bind.annotation,
-              org.apache.commons.lang
+              org.apache.commons.lang,
+              javax.persistence
             </Import-Package>
           </instructions>
         </configuration>

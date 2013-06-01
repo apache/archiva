@@ -20,12 +20,14 @@ package org.apache.archiva.metadata.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * A description of a particular license used by a project.
  */
-@XmlRootElement( name = "license" )
+@XmlRootElement(name = "license")
 public class License
+    implements Serializable
 {
     /**
      * The name of the license.

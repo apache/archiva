@@ -849,6 +849,14 @@
           <description>The path of the merged index.</description>
         </field>
         <field>
+          <name>mergedIndexTtl</name>
+          <version>1.4.0+</version>
+          <type>int</type>
+          <required>false</required>
+          <defaultValue>30</defaultValue>
+          <description>The time to live of the merged index of the repository group.</description>
+        </field>
+        <field>
           <name>repositories</name>
           <version>1.2.0+</version>
           <association>

@@ -151,6 +151,8 @@ public class DefaultRepositoryStatisticsManager
 
         long startGather = System.currentTimeMillis();
 
+        // FIXME what about other implementations ?
+
         if ( metadataRepository.canObtainAccess( Session.class ) )
         {
             // TODO: this is currently very raw and susceptible to changes in content structure. Should we instead
@@ -168,7 +170,7 @@ public class DefaultRepositoryStatisticsManager
             populateStatisticsFromRepositoryWalk( metadataRepository, repositoryId, repositoryStatistics );
         }
 
-        log.info( "Gathering statistics executed in " + ( System.currentTimeMillis() - startGather ) + "ms" );
+        log.info( "Gathering statistics executed in {} ms",  ( System.currentTimeMillis() - startGather ) );
 
         metadataRepository.addMetadataFacet( repositoryId, repositoryStatistics );
     }

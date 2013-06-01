@@ -178,7 +178,7 @@ public class TestMetadataRepository
         return false;
     }
 
-    public Object obtainAccess( Class<?> aClass )
+    public <T>T obtainAccess( Class<T> aClass )
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

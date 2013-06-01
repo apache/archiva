@@ -20,14 +20,16 @@ package org.apache.archiva.metadata.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * Information about a dependency that this project has on another project or artifact.
  *
  * @todo will be reviewing what is appropriate for the base here - rest should be in a maven dependency facet - avoid details on it externally
  */
-@XmlRootElement( name = "dependency" )
+@XmlRootElement(name = "dependency")
 public class Dependency
+    implements Serializable
 {
     /**
      * The Maven classifier of the dependency.

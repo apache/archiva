@@ -27,6 +27,9 @@ import java.util.List;
 public class ProjectVersionMetadata
     extends FacetedMetadata
 {
+    /**
+     * id is the version
+     */
     private String id;
 
     private String url;

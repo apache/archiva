@@ -42,6 +42,8 @@ public class IndexMergerRequest
 
     private String mergedIndexPath = "/.indexer";
 
+    private int mergedIndexTtl;
+
     public IndexMergerRequest( Collection<String> repositoriesIds, boolean packIndex, String groupId )
     {
         this.repositoriesIds = repositoriesIds;
@@ -52,13 +54,14 @@ public class IndexMergerRequest
     /**
      * @since 1.4-M4
      */
-    public IndexMergerRequest( Collection<String> repositoriesIds, boolean packIndex, String groupId,
-                               String mergedIndexPath )
+    public IndexMergerRequest(Collection<String> repositoriesIds, boolean packIndex, String groupId,
+                              String mergedIndexPath, int mergedIndexTtl)
     {
         this.repositoriesIds = repositoriesIds;
         this.packIndex = packIndex;
         this.groupId = groupId;
         this.mergedIndexPath = mergedIndexPath;
+        this.mergedIndexTtl = mergedIndexTtl;
     }
 
     public Collection<String> getRepositoriesIds()
@@ -101,6 +104,14 @@ public class IndexMergerRequest
         this.mergedIndexPath = mergedIndexPath;
     }
 
+    public int getMergedIndexTtl() {
+        return mergedIndexTtl;
+    }
+
+    public void setMergedIndexTtl(int mergedIndexTtl) {
+        this.mergedIndexTtl = mergedIndexTtl;
+    }
+
     @Override
     public String toString()
     {
@@ -109,6 +120,7 @@ public class IndexMergerRequest
         sb.append( ", packIndex=" ).append( packIndex );
         sb.append( ", groupId='" ).append( groupId ).append( '\'' );
         sb.append( ", mergedIndexPath='" ).append( mergedIndexPath ).append( '\'' );
+        sb.append( ", mergedIndexTtl='" ).append( mergedIndexTtl ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

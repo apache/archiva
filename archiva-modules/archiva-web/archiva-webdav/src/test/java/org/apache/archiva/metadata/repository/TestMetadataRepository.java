@@ -174,7 +174,7 @@ public class TestMetadataRepository
         return false;
     }
 
-    public Object obtainAccess( Class<?> aClass )
+    public <T>T obtainAccess( Class<T> aClass )
     {
         return null;
     }
