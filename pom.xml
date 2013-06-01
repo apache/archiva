@@ -26,12 +26,12 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
-    <version>10-SNAPSHOT</version>
+    <version>10</version>
     <relativePath />
   </parent>
 
   <artifactId>archiva</artifactId>
-  <version>1.4-M4-SNAPSHOT</version>
+  <version>1.4-M5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Apache Archiva</name>
@@ -67,23 +67,23 @@
     <maven-model-converter.version>2.1</maven-model-converter.version>
     <maven.indexer.version>5.1.1</maven.indexer.version>
     <wagon.version>2.4</wagon.version>
-    <redback.version>2.1-SNAPSHOT</redback.version>
-    <redback.cache.version>2.1-SNAPSHOT</redback.cache.version>
+    <redback.version>2.1</redback.version>
+    <redback.cache.version>2.1</redback.cache.version>
     <redback.quartz.version>2.0</redback.quartz.version>
-    <redback.registry.version>2.1-SNAPSHOT</redback.registry.version>
+    <redback.registry.version>2.1</redback.registry.version>
     <redback.spring-utils.version>2.0</redback.spring-utils.version>
     <redback.taskqueue.version>2.0</redback.taskqueue.version>
     <slf4j.version>1.7.5</slf4j.version>
-    <log4j.version>2.0-beta6-SNAPSHOT</log4j.version>
+    <log4j.version>2.0-beta6</log4j.version>
 
-    <spring.version>3.2.2.RELEASE</spring.version>
+    <spring.version>3.2.3.RELEASE</spring.version>
 
     <javax.jcr.version>2.0</javax.jcr.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
 
     <lucene.version>3.6.2</lucene.version>
-    <jackrabbit.version>2.6.0</jackrabbit.version>
+    <jackrabbit.version>2.6.1</jackrabbit.version>
 
     <cxfVersion>2.6.6</cxfVersion>
     <derbyVersion>10.10.1.1</derbyVersion>
@@ -452,7 +452,7 @@
       <dependency>
         <groupId>org.apache.archiva.redback.components</groupId>
         <artifactId>spring-jdo2</artifactId>
-        <version>2.1-SNAPSHOT</version>
+        <version>2.1</version>
       </dependency>
 
       <dependency>
@@ -496,6 +496,11 @@
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-core-asl</artifactId>
+        <version>${jacksonVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-mapper-asl</artifactId>
         <version>${jacksonVersion}</version>
       </dependency>
       <dependency>
@@ -1127,6 +1132,11 @@
         <version>1.1</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jpa_2.0_spec</artifactId>
+        <version>1.1</version>
+      </dependency>
+      <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>2.5</version>
@@ -1189,12 +1199,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>${log4j.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j-impl</artifactId>
         <version>${log4j.version}</version>
         <scope>runtime</scope>
@@ -1208,6 +1212,12 @@
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-1.2-api</artifactId>
+        <version>${log4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-to-slf4j</artifactId>
         <version>${log4j.version}</version>
         <scope>runtime</scope>
       </dependency>
@@ -1719,7 +1729,7 @@
             <dependency>
               <groupId>org.apache.archiva.redback.components.modello</groupId>
               <artifactId>modello-plugin-redback-registry</artifactId>
-              <version>1.0-SNAPSHOT</version>
+              <version>1.0</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -1794,6 +1804,7 @@
               <exclude>.repository/**</exclude>
               <exclude>*.patch</exclude>
               <exclude>**/target/**</exclude>
+              <exclude>.java-version</exclude>
             </excludes>
           </configuration>
         </plugin>

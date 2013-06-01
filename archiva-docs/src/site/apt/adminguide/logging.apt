@@ -39,3 +39,10 @@ Log Files
                             For example, a successful login of a user or a user account is created.
   
   []
+
+  Note since 1.4-M4, the log4j2 asyncLogger feature is configured per default.
+
+  This mean per default AsyncLogger.WaitStrategy option is configured to Sleep.
+
+  If you are on a constrained environment, you can change it to Block (-DAsyncLogger.WaitStrategy=Block)
+  (See {{{http://logging.apache.org/log4j/2.x/manual/async.html}log4j2 documentation}} )

@@ -2,13 +2,8 @@ target
 build
 *.iml
 .idea
-archiva-modules/archiva-web/archiva-webapp/appserver-base/
-archiva-modules/archiva-web/archiva-webapp/src/main/webapp/META-INF/
-archiva-modules/archiva-web/archiva-webapp/src/main/webapp/WEB-INF/classes/
-archiva-modules/archiva-web/archiva-webapp/src/main/webapp/WEB-INF/lib/
-archiva-modules/archiva-web/archiva-webapp-test/cargo-installs/
 
-archiva-modules/archiva-web/archiva-webapp/src/main/webapp/WEB-INF/classes/
+.java-version
 
 *.ipr
 *.iws

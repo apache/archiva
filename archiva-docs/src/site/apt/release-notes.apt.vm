@@ -64,226 +64,135 @@ Release Notes for Archiva ${project.version}
 
   Released: <<???>>
 
+** Improvement
+
+ * [MRM-526] - cache-failure policy timeout should be easily configurable
+
+ * [MRM-862] - Paginate Dependencies Page
+
+ * [MRM-863] - Paginate Used By page
+
+ * [MRM-1550] - scanner failed with trying to scan maven indexes
+
+ * [MRM-1689] - Ability to delete a specific version of an an artifact from the artifact screen
+
+ * [MRM-1693] - exposing index downloaded from remote repositories
+
+ * [MRM-1699] - Re implement remember me in new UI
+
+ * [MRM-1711] - Add buttons for managing repository group as can be a pain with long list of repositories
+
+ * [MRM-1712] - Add buttons for managing proxy connectors rules as can be a pain with long list of repositories
+
+ * [MRM-1717] - open loginbox when url need authz
+
+ * [MRM-1721] - Chaining user manager implementations
+
+ * [MRM-1722] - Use cookie settings from redback for rememberme feature
+
+ * [MRM-1723] - Provide tooltips for action icons
+
+ * [MRM-1726] - merge "Artifacts" and "Artifacts Content"
+
+ * [MRM-1727] - SCM Viewer info should provide a link
+
+ * [MRM-1731] - Using cache to search users (and must be configurable dynamically) on per default
+
+ * [MRM-1734] - add some filtering for searching in users table
+
+ * [MRM-1751] - repogroup merged index ttl configurable per repository group
+
+ * [MRM-1752] - Graph visualization for dependencies
+
+ * [MRM-1760] - Multiple, incompatible, log name formats
+
 ** New Feature
 
-    * [MRM-648] - Add description field to the different types of repositories
+ * [MRM-1707] - Allow different implementation of transfer mechanism in the DefaultRepositoryProxyConnectors class
 
-    * [MRM-875] - Allow uploading multiple artifacts
+ * [MRM-1714] - using LDAP can be configurable with the ui
 
-    * [MRM-918] - Switch for disabling user registration
+ * [MRM-1718] - ldap configuration editable with the ui.
 
-    * [MRM-1668] - download artifacts when coming from search results
-
-    []
-
-** Sub-task
-
-    * [MRM-1569] - rewrite login page
-
-    * [MRM-1570] - rewrite user management page
-
-    * [MRM-1571] - rewrite role management page
-
-    * [MRM-1572] - rewrite search page
-
-    * [MRM-1573] - rewrite browse page
-
-    * [MRM-1574] - rewrite managed/remote repositories admin page
-
-    * [MRM-1575] - rewrite repositories group page
-
-    * [MRM-1576] - rewrite proxies connector page
-
-    * [MRM-1577] - rewrite legacy path admin page
-
-    * [MRM-1578] - rewrite network proxies admin page
-
-    * [MRM-1579] - rewrite repositories scanning admin page
-
-    * [MRM-1580] - rewrite system status page
-
-    * [MRM-1581] - rewrite network configuration page
-
-    * [MRM-1583] - rewrite reports page
-
-    * [MRM-1585] - rewrite appareance page
-
-    * [MRM-1586] - rewrite upload artifact page
-
-    * [MRM-1587] - rewrite delete artifact page
-
-    * [MRM-1589] - review ajax call to have sure we have error callback implemented
-
-    * [MRM-1598] - use bootstrap css 2.1.x
-
-    * [MRM-1614] - html js transversal review
-
-    * [MRM-1615] - Artifact detail view
-
-    * [MRM-1617] - reset password link
-
-    * [MRM-1620] - add a tab to browse artifact content in artifact detail view
-
-    * [MRM-1621] - add download box in artifact detail for new ui
-
-    * [MRM-1639] - History navigation
-
-    * [MRM-1656] - Failed tests: testAddUser(org.apache.archiva.redback.users.cached.CachedUserManagerTest)
-
-    []
+ * [MRM-1732] - dynamic configuration of users cache
 
 ** Bug
 
-    * [MRM-640] - breadcrumbs need to incude current doc so you can navigate back to home page
+ * [MRM-1334] - problem reports appear due to relative path for Archiva repository
 
-    * [MRM-1536] - Error 500 when naughtily exploring webapp directory hierarchy
+ * [MRM-1683] - Automatic generation of REST Api documentation
 
-    * [MRM-1563] - Project-level metadata not deleted after artifact removal
+ * [MRM-1684] - feeds link behaviour seems not coherent
 
-    * [MRM-1565] - Error 500 when uploading an artifact in web interface
+ * [MRM-1687] - artifact browser isn't sorting all items correctly.
 
-    * [MRM-1567] - Artifact data incomplete
+ * [MRM-1692] - Archiva should allow PropertyPlaceholderConfigurer in applicationContext.xml
 
-    * [MRM-1568] - Artifact metadata is incomplete, opposite case to MRM-1567
+ * [MRM-1695] - Users from LDAP does not appear in User List
 
-    * [MRM-1590] - Wrong URL returned by SearchService.getArtifactVersions
+ * [MRM-1697] - Confusing behavior when session is lost
 
-    * [MRM-1599] - NTLM proxy no longer works
+ * [MRM-1698] - proxy connector update are not saved
 
-    * [MRM-1607] - maven model build failed when model have jdk profile activation
+ * [MRM-1700] - Authentication for remote repositories doesn't work
 
-    * [MRM-1609] - MetadataToolsTest fail in testGatherSnapshotVersionsA
+ * [MRM-1701] - metadatas are not removed when a snapshot is purged
 
-    * [MRM-1611] - Uploading fail on window server.
+ * [MRM-1703] - Cannot delete project with the ui
 
-    * [MRM-1612] - configuration changes spawn an unreasonable number of checks on repository permission templates
+ * [MRM-1705] - Feature to add custom parameters and/or headers when requesting an external repositories
 
-    * [MRM-1619] - The modal box when creating a repository with a directory which already exists does not disappear when click ok
+ * [MRM-1706] - upgrade bootstrap to 2.2.0
 
-    * [MRM-1623] - Archiva Consumers :: Consumers Archetype cannot run integration test
+ * [MRM-1708] - When using LDAP, users can still edit their details upon login
 
-    * [MRM-1625] - java.lang.ArrayIndexOutOfBoundsException from parsing maven-metadata.xml
+ * [MRM-1709] - Default redback admin does not work anymore when using LDAP in the new UI
 
-    * [MRM-1629] - Add a configuration field for the application url
+ * [MRM-1710] - errors are not displayed in modal box when reseting password
 
-    * [MRM-1632] - Invalid Cron in a job leads jetty to not work anymore
+ * [MRM-1713] - users list when using ldap doesn't work
 
-    * [MRM-1635] - Archiva not working on 64 bit Linux - must remove linux-x86-32 wrapper files
+ * [MRM-1720] - hard coded limitation of 30 for pageSize in SearchResultLimits
 
-    * [MRM-1637] - End of java 1.5 support
+ * [MRM-1724] - Cannot manually delete artifacts via web GUI
 
-    * [MRM-1640] - With the new Fest Assert version, some imports/methods call have to be changed
+ * [MRM-1725] - truncated line numbers in File Content
 
-    * [MRM-1642] - SNAPSHOT build failed
+ * [MRM-1729] - add MetadataRepository#hasMetadataFacet to prevent slow startup time
 
-    * [MRM-1644] - Archiva should set cache control headers instead of adding for maven-metadata.xml
+ * [MRM-1730] - upgrade to spring framework 3.2.0
 
-    * [MRM-1645] - mvn archetype:generate -DarchetypeCatalog (archetype-catalog.xml) failing with Not a valid artifact path
+ * [MRM-1736] - map roles to ldap groups
 
-    * [MRM-1647] - Cannot upload artifact from Web UI
+ * [MRM-1737] - Improve welcome page
 
-    * [MRM-1649] - Delete artifact in the console doesn't really delete the artifact
+ * [MRM-1739] - Document installing Archiva as a Mac OS X service with launchd
 
-    * [MRM-1653] - Bad mod on file in the bundle
+ * [MRM-1740] - implements LDAP user/roles creation
 
-    * [MRM-1654] - Bad repository SVN in documentation
+ * [MRM-1744] - updating managed repository fail to correctly update maven index directory
 
-    * [MRM-1659] - Cannot connect to PostgreSQL
+ * [MRM-1747] - Fail to start on ibm jdk (was8)
 
-    * [MRM-1660] - use log4j 2.x
+ * [MRM-1748] - fail to upload supplied POM file
 
-    * [MRM-1664] - Validation error message not visible to user when adding Remote Repository
+ * [MRM-1753] - Number of artifacts type is not displayed in the statistics view
 
-    * [MRM-1665] - Adding a Snapshot Managed Repository results in Releases being checked too.
+ * [MRM-1754] - DownloadMergedIndexNonDefaultPathTest test fail
 
-    * [MRM-1667] - The role management is not shown on role edit tab
+ * [MRM-1755] - [Patch] Activating the dependency tree tab on snapshot artifact fails with NotSuchMethodException
 
-    * [MRM-1672] - Upload Artifact section doesn't clear uploaded artifacts
-
-    * [MRM-1674] - While creating admin account, entering invalid password yields no error message
-
-    * [MRM-1675] - When resetting admin account's password, using invalid new password yields no error message
-
-    * [MRM-1676] - use tomcat-jdbc for connection pooling in embeded distrib.
-
-    * [MRM-1681] - addProxy Connectors Rules screen
-
-    * [MRM-1682] - archiva server has no option to configure the registration mail
-
-    []
-
-** Improvement
-
-    * [MRM-130] - improve search results page
-
-    * [MRM-491] - paginate report pages
-
-    * [MRM-722] - Scan Repository Now should display a confirmation message
-
-    * [MRM-854] - Changing ProxyConnector sorting is painful with many remote repsitories.
-
-    * [MRM-947] - Add some screenshots in "Runtime Configuration" pages
-
-    * [MRM-1030] - Change the web context for jetty deliverable to /  (ROOT context)
-
-    * [MRM-1142] - Improve delete artifact from webapp
-
-    * [MRM-1263] - creating an m2eclipse compatible index should be an optional component
-
-    * [MRM-1543] - artifact display doesn't show eventual classifiers
-
-    * [MRM-1564] - spring 3.1.0 upgrade
-
-    * [MRM-1606] - Upgrade to wagon 2.2
-
-    * [MRM-1610] - Use Jackson as jaxrs provider for cxf for performance reasons
-
-    * [MRM-1624] - Apache project branding requirements: DOAP file [PATCH]
-
-    * [MRM-1626] - Use MavenXpp3Reader as a static variable
-
-    * [MRM-1655] - In interface Scheduler the method schedulJob takes an implementation, not a interface
-
-    * [MRM-1661] - There is no image in the carousel for a couple of seconds
-
-    * [MRM-1662] - Add a link to all screenshots page in the caption of the carousel
-
-    * [MRM-1663] - Missing links on the carousel to force the image to display
-
-    * [MRM-1677] - upgrade jetty 8
-
-    * [MRM-1680] - Delete artifact by groupId/artifactId/versionId in context when authenticated w/ Admin privileges...
-
-    []
+ * [MRM-1757] - Unable to download uploaded artifact from repository
 
 ** Task
 
-    * [MRM-709] - Use commons-io instead of Plexus Utils
+ * [MRM-1627] - Add documentation for Setup archiva with ldap
 
-    * [MRM-710] - Use commons-lang instead of Plexus Utils
-
-    * [MRM-1515] - see how to reduce dependencies number
-
-    * [MRM-1566] - remove xml rpc services
-
-    * [MRM-1594] - Upgrade to commons-codec 1.6
-
-    * [MRM-1595] - Upgrade to Guava 11.0.1
-
-    * [MRM-1596] - Upgrade to commons-collections 3.2.1
-
-    * [MRM-1597] - Upgrade to commons-io 2.1
-
-    * [MRM-1604] - Upgrade to maven-bundle-plugin 2.3.7
-
-    * [MRM-1608] - Upgrade to commons-pool 1.6
-
-    * [MRM-1638] - Improve unit test for archiva build
-
-    []
+ * [MRM-1686] - stop support of struts2 webapp
 
 ** Wish
-    * [MRM-1628] - Silently ignore request to delete artifacts that does not exist on disk anymore
+
+ * [MRM-1745] - path of merged index for group configurable
 
 Previous Releases
 

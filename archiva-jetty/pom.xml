@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva</artifactId>
-    <version>1.4-M4-SNAPSHOT</version>
+    <version>1.4-M5-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-jetty</artifactId>
   <packaging>pom</packaging>
@@ -171,7 +171,7 @@
                   -->
                   <systemProperty>jetty.logs=%ARCHIVA_BASE%/logs</systemProperty>
                   <systemProperty>java.io.tmpdir=%ARCHIVA_BASE%/temp</systemProperty>
-                  <systemProperty>archiva.tmp.group.index.ttl=30</systemProperty>
+                  <systemProperty>AsyncLogger.WaitStrategy=Sleep</systemProperty>
                 </systemProperties>
                 <extraArguments>
                   <extraArgument>-XX:MaxPermSize=128m</extraArgument>
