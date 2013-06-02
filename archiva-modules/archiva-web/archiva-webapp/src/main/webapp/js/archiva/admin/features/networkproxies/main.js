@@ -16,10 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.network-proxies",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout"
+define("archiva/admin/features/networkproxies/main",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout"
   ,"knockout.simpleGrid"], function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 
-
+  showMenu = function(administrationMenuItems) {
+      administrationMenuItems.push(
+            {  text : $.i18n.prop('menu.network-proxies')          ,order:1000, id: "menu-network-proxies-list-a"        , href: "#networkproxies"       , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayNetworkProxies()}}
+    );
+  }
+   
   NetworkProxy=function(id,protocol,host,port,username,password,useNtlm){
     var self=this;
     //private String id;

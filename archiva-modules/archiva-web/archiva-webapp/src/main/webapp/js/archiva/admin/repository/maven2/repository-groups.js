@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.repository-groups",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","jquery.ui","knockout"
-  ,"knockout.simpleGrid","knockout.sortable"],
+define("archiva/admin/repository/maven2/repository-groups",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","jquery.ui","knockout"
+  ,"knockout.simpleGrid","knockout.sortable","archiva/admin/repository/maven2/repositories"],
 function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
 
   RepositoryGroup=function(id,repositories,mergedIndexPath,mergedIndexTtl){
@@ -249,7 +249,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
         }
       );
 
-    }
+    };
 
     this.addRepositoryGroup=function(repositoryGroup){
       clearUserMessages();

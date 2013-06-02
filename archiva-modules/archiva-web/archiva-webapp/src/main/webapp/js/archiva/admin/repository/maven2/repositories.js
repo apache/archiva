@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout","knockout.simpleGrid"],
+define("archiva/admin/repository/maven2/repositories",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout","knockout.simpleGrid"],
 function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 
   // FIXME this must be dynamic if we do a plugin mechanism with dynamic repositories types

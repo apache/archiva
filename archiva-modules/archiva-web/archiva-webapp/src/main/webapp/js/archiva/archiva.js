@@ -88,21 +88,25 @@ $.ajax({
               "redback.user": "redback/user",
               "redback.users": "redback/users",
               "redback.templates": "redback/redback-tmpl",
-              "archiva.general-admin":"archiva/general-admin",
+              "archiva.cookie-information":"archiva/cookie-information",
               "archiva.templates": "archiva/main-tmpl",
-              "archiva.repositories": "archiva/repositories",
-              "archiva.network-proxies": "archiva/network-proxies",
-              "archiva.proxy-connectors": "archiva/proxy-connectors",
-              "archiva.repository-groups": "archiva/repository-groups",
+             // "archiva.repositories": "archiva/repositories",
+             // "archiva.network-proxies": "archiva/network-proxies",
+             // "archiva.proxy-connectors": "archiva/proxy-connectors",
+             // "archiva.repository-groups": "archiva/repository-groups",
               "archiva.artifacts-management": "archiva/artifacts-management",
               "archiva.search": "archiva/search",
-              "archiva.proxy-connectors-rules": "archiva/proxy-connectors-rules",
+             // "archiva.proxy-connectors-rules": "archiva/proxy-connectors-rules",
               "archiva.docs": "archiva/docs",
               "archiva.main": "archiva/main"
           }
       });
-
-      requirejs(['jquery','jquery.tmpl','jquery.ui','i18n','sammy','startup','utils','domReady!','archiva.main','archiva.general-admin'], function () {
+      
+      
+ 
+  
+  
+      requirejs(['jquery','jquery.tmpl','jquery.ui','i18n','sammy','startup','utils','domReady!','archiva.main','archiva.cookie-information'], function () {
         loadi18n(function () {
           $.ajax({
             url: "restServices/archivaUiServices/runtimeInfoService/archivaRuntimeInfo/"+usedLang(),

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout"
+define("archiva/admin/repository/maven2/proxy-connectors",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout"
   ,"knockout.simpleGrid","knockout.sortable","select2"],
   function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 

@@ -869,6 +869,7 @@
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
             <excludes>
+              <exclude>nbactions.xml</exclude>  
               <exclude>src/main/webapp/css/*.css</exclude>
               <exclude>src/main/webapp/js/*.js</exclude>
               <exclude>src/site/resources/css/*.css</exclude>
