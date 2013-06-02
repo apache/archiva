@@ -21,10 +21,12 @@ package org.apache.archiva.rest.services;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+
 import org.apache.archiva.rest.api.services.PluginsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,15 +35,19 @@ import org.springframework.core.io.Resource;
 
 /**
  * @author Eric Barboni
+ * @since 1.4.0
  */
-@Service( "pluginsService#rest" )
+@Service("pluginsService#rest")
 public class DefaultPluginsServices
-        implements PluginsService
+    implements PluginsService
 {
 
     private List<String> repositoryType = new ArrayList<String>();
+
     private List<String> adminFeatures = new ArrayList<String>();
+
     private ApplicationContext appCont;
+
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
@@ -50,7 +56,8 @@ public class DefaultPluginsServices
         this.appCont = applicationContext;
     }
 
-    private void feed( List<String> repository, String key ) throws ArchivaRestServiceException
+    private void feed( List<String> repository, String key )
+        throws ArchivaRestServiceException
     {
         log.info( "Feeding: {}", key );
         repository.clear();
@@ -74,7 +81,7 @@ public class DefaultPluginsServices
 
     @Override
     public String getAdminPlugins()
-            throws ArchivaRestServiceException
+        throws ArchivaRestServiceException
     {
         // rebuild
         feed( repositoryType, "repository" );

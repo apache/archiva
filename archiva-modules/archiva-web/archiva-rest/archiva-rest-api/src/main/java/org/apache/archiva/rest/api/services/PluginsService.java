@@ -31,17 +31,15 @@ import javax.ws.rs.core.MediaType;
  * @author Eric Barboni
  * @since 1.4.0
  */
-@Path( "/pluginsService/" )
+@Path("/pluginsService/")
 public interface PluginsService
 {
 
-    @Path( "getAdminPlugins" )
+    @Path("getAdminPlugins")
     @GET
-    @Produces( 
-    {
-        MediaType.TEXT_PLAIN
-    } )
-    @RedbackAuthorization( noRestriction = true )
+    @Produces(
+        { MediaType.TEXT_PLAIN })
+    @RedbackAuthorization(noRestriction = true)
     String getAdminPlugins()
-            throws ArchivaRestServiceException;
+        throws ArchivaRestServiceException;
 }
