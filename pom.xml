@@ -26,7 +26,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
-    <version>10</version>
+    <version>11-SNAPSHOT</version>
     <relativePath />
   </parent>
 
@@ -85,7 +85,7 @@
     <lucene.version>3.6.2</lucene.version>
     <jackrabbit.version>2.6.1</jackrabbit.version>
 
-    <cxfVersion>2.6.6</cxfVersion>
+    <cxfVersion>2.6.8</cxfVersion>
     <derbyVersion>10.10.1.1</derbyVersion>
     <httpclient.version>4.2.5</httpclient.version>
     <httpclient.core.version>4.2.4</httpclient.core.version>
