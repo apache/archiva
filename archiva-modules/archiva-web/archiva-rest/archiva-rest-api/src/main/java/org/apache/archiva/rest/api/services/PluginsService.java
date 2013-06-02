@@ -29,7 +29,7 @@ import javax.ws.rs.core.MediaType;
  * contains some services for plugins
  *
  * @author Eric Barboni
- * @since 1.4-M4
+ * @since 1.4.0
  */
 @Path( "/pluginsService/" )
 public interface PluginsService
