@@ -34,6 +34,7 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.fest.assertions.api.Assertions;
+import org.fest.util.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -49,12 +50,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+@RunWith(ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
 public abstract class AbstractMetadataRepositoryTest
     extends TestCase
 {
@@ -352,8 +354,8 @@ public abstract class AbstractMetadataRepositoryTest
 
         Collection<String> repositories = repository.getRepositories();
 
-        assertEquals( "repository.getRepositories() -> " + repositories, Arrays.asList( TEST_REPO_ID, OTHER_REPO_ID ),
-                      new ArrayList<String>( repositories ) );
+        assertEquals( "repository.getRepositories() -> " + repositories,
+                      Sets.newLinkedHashSet( TEST_REPO_ID, OTHER_REPO_ID ), new LinkedHashSet<String>( repositories ) );
     }
 
     @Test
@@ -1222,8 +1224,7 @@ public abstract class AbstractMetadataRepositoryTest
 
         repository.removeArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact.getId() );
 
-        artifacts =
-            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+        artifacts = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
 
         Assertions.assertThat( artifacts ).isNotNull().isEmpty();
     }
