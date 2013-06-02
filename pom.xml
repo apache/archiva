@@ -777,6 +777,7 @@
             <exclude>.classpath</exclude>
             <exclude>.settings/**</exclude>
             <exclude>.site-content/**</exclude>
+            <exclude>.java-version</exclude>
           </excludes>
         </configuration>
         <executions>
