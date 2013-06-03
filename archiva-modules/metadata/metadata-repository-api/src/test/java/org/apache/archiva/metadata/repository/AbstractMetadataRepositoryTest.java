@@ -1265,7 +1265,9 @@ public abstract class AbstractMetadataRepositoryTest
 
         repository.removeProject( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT );
 
-        assertEquals( 0, repository.getProjectVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT ).size() );
+        Collection<String> versions = repository.getProjectVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT );
+
+        Assertions.assertThat( versions ).isNotNull().isEmpty();
     }
 
 
