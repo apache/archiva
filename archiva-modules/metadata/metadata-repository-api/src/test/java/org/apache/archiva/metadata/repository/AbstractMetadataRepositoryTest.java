@@ -1033,8 +1033,9 @@ public abstract class AbstractMetadataRepositoryTest
 
         repository.updateNamespace( TEST_REPO_ID, "org.apache.maven.shared" );
 
-        assertEquals( Collections.singletonList( TEST_PROJECT ),
-                      repository.getProjects( TEST_REPO_ID, "org.apache.maven" ) );
+        Collection<String> projects = repository.getProjects( TEST_REPO_ID, "org.apache.maven" );
+
+        Assertions.assertThat( projects ).isNotNull().isNotEmpty().hasSize( 1 ).contains( TEST_PROJECT );
     }
 
     @Test
