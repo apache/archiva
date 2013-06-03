@@ -55,8 +55,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-@RunWith(ArchivaSpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public abstract class AbstractMetadataRepositoryTest
     extends TestCase
 {
@@ -1050,11 +1050,13 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateProjectVersion( TEST_REPO_ID, "org.apache.maven." + TEST_PROJECT, "other-project",
                                          versionMetadata );
 
-        List<String> expectedVersions = Collections.singletonList( TEST_PROJECT_VERSION );
-        assertEquals( expectedVersions, repository.getProjectVersions( TEST_REPO_ID, "org.apache.maven." + TEST_PROJECT,
-                                                                       "other-project" ) );
-        assertEquals( expectedVersions,
-                      repository.getProjectVersions( TEST_REPO_ID, "org.apache.maven", TEST_PROJECT ) );
+        Collection<String> versions =
+            repository.getProjectVersions( TEST_REPO_ID, "org.apache.maven." + TEST_PROJECT, "other-project" );
+        Assertions.assertThat( versions ).isNotNull().isNotEmpty().contains( TEST_PROJECT_VERSION );
+
+        versions = repository.getProjectVersions( TEST_REPO_ID, "org.apache.maven", TEST_PROJECT );
+
+        Assertions.assertThat( versions ).isNotNull().isNotEmpty().contains( TEST_PROJECT_VERSION );
     }
 
     @Test
