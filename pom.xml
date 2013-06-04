@@ -73,7 +73,7 @@
     <scmPubscmsvnImpl>javasvn</scmPubscmsvnImpl>
     <scmSkipDeletedFiles>false</scmSkipDeletedFiles>
     <maven-scm-provider-svnjava.version>2.0.5</maven-scm-provider-svnjava.version>
-    <svnkit.version>1.7.5-v1</svnkit.version>
+    <svnkit.version>1.7.8</svnkit.version>
 
 
     <!-- reporting plugins versions -->
