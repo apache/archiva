@@ -1019,7 +1019,11 @@ public abstract class AbstractMetadataRepositoryTest
         metadata.setId( TEST_PROJECT_VERSION );
         repository.updateProjectVersion( TEST_REPO_ID, namespace, TEST_PROJECT, metadata );
 
-        assertEquals( Collections.<String>emptyList(), repository.getNamespaces( TEST_REPO_ID, namespace ) );
+        Collection<String> namespaces = repository.getNamespaces( TEST_REPO_ID, namespace );
+
+        Assertions.assertThat( namespaces ).isNotNull().isEmpty();
+
+        //assertEquals( Collections.<String>emptyList(),  );
     }
 
     @Test
