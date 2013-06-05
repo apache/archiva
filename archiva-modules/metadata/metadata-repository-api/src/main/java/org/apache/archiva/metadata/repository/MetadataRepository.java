@@ -184,6 +184,13 @@ public interface MetadataRepository
     Collection<String> getRootNamespaces( String repoId )
         throws MetadataResolutionException;
 
+    /**
+     *
+     * @param repoId
+     * @param namespace
+     * @return {@link Collection} of child namespaces of the namespace argument
+     * @throws MetadataResolutionException
+     */
     Collection<String> getNamespaces( String repoId, String namespace )
         throws MetadataResolutionException;
 
