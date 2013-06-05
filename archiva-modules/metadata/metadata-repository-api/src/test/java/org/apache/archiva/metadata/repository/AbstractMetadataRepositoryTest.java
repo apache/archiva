@@ -816,7 +816,9 @@ public abstract class AbstractMetadataRepositoryTest
         Collection<String> versions =
             repository.getArtifactVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
 
-        assertEquals( Collections.singleton( TEST_PROJECT_VERSION ), versions );
+        Assertions.assertThat( versions ).isNotNull().isNotEmpty().hasSize( 1 ).containsExactly( TEST_PROJECT_VERSION );
+
+        //assertEquals( Collections.singleton( TEST_PROJECT_VERSION ), versions );
     }
 
     @Test
