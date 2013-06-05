@@ -1011,7 +1011,7 @@ public abstract class AbstractMetadataRepositoryTest
 
         //assertEquals( Arrays.asList( "apache" ), repository.getNamespaces( TEST_REPO_ID, "org" ) );
         namespaces = repository.getNamespaces( TEST_REPO_ID, "org" );
-        Assertions.assertThat( namespaces ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "org" );
+        Assertions.assertThat( namespaces ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "apache" );
 
         //assertEquals( Arrays.asList( "maven" ), repository.getNamespaces( TEST_REPO_ID, "org.apache" ) );
         namespaces = repository.getNamespaces( TEST_REPO_ID, "org.apache" );
