@@ -134,7 +134,7 @@ public abstract class AbstractMetadataRepositoryTest
     public void testGetNamespaceOnly()
         throws Exception
     {
-        assertEquals( Collections.emptyList(), repository.getRootNamespaces( TEST_REPO_ID ) );
+        Assertions.assertThat( repository.getRootNamespaces( TEST_REPO_ID ) ).isNotNull().isEmpty();
 
         repository.updateNamespace( TEST_REPO_ID, TEST_NAMESPACE );
 
