@@ -1004,10 +1004,22 @@ public abstract class AbstractMetadataRepositoryTest
     {
         repository.updateNamespace( TEST_REPO_ID, "org.apache.maven.shared" );
 
-        assertEquals( Arrays.asList( "org" ), repository.getRootNamespaces( TEST_REPO_ID ) );
-        assertEquals( Arrays.asList( "apache" ), repository.getNamespaces( TEST_REPO_ID, "org" ) );
-        assertEquals( Arrays.asList( "maven" ), repository.getNamespaces( TEST_REPO_ID, "org.apache" ) );
-        assertEquals( Arrays.asList( "shared" ), repository.getNamespaces( TEST_REPO_ID, "org.apache.maven" ) );
+        Collection<String> namespaces =  repository.getRootNamespaces( TEST_REPO_ID );
+
+        //assertEquals( Arrays.asList( "org" ), repository.getRootNamespaces( TEST_REPO_ID ) );
+        Assertions.assertThat( namespaces ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "org" );
+
+        //assertEquals( Arrays.asList( "apache" ), repository.getNamespaces( TEST_REPO_ID, "org" ) );
+        namespaces = repository.getNamespaces( TEST_REPO_ID, "org" );
+        Assertions.assertThat( namespaces ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "org" );
+
+        //assertEquals( Arrays.asList( "maven" ), repository.getNamespaces( TEST_REPO_ID, "org.apache" ) );
+        namespaces = repository.getNamespaces( TEST_REPO_ID, "org.apache" );
+        Assertions.assertThat( namespaces ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "maven" );
+
+        //assertEquals( Arrays.asList( "shared" ), repository.getNamespaces( TEST_REPO_ID, "org.apache.maven" ) );
+        namespaces = repository.getNamespaces( TEST_REPO_ID, "org.apache.maven" );
+        Assertions.assertThat( namespaces ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "shared" );
     }
 
     @Test
