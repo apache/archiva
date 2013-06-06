@@ -188,7 +188,10 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( TEST_PROJECT_VERSION, metadata.getId() );
 
         // test that namespace and project is also constructed
-        assertEquals( Collections.singletonList( TEST_NAMESPACE ), repository.getRootNamespaces( TEST_REPO_ID ) );
+        Collection<String> namespaces = repository.getRootNamespaces( TEST_REPO_ID );
+
+        Assertions.assertThat( namespaces ).isNotNull().isNotEmpty().hasSize( 1 ).contains( TEST_NAMESPACE );
+
         ProjectMetadata projectMetadata = repository.getProject( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT );
         assertNotNull( projectMetadata );
         assertEquals( TEST_PROJECT, projectMetadata.getId() );
