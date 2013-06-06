@@ -68,7 +68,7 @@ $.ajax({
               "bootstrap": "bootstrap.2.2.2",
               "jquery.validate": "jquery.validate-1.9.0",
               "jquery.json": "jquery.json-2.3.min",
-              "knockout": "knockout-2.2.0.debug",
+              "knockout": "knockout-2.2.1.debug",
               "knockout.simpleGrid": "knockout.simpleGrid",
               "knockout.select2": "knockout.select2",
               "knockout.sortable": "knockout-sortable.0.7.2",
