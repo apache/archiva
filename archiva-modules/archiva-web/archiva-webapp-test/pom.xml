@@ -318,6 +318,18 @@
                     <copy todir="${project.build.directory}/local-repo">
                       <fileset dir="src/test/resources/local-repo"/>
                     </copy>
+                    <copy todir="${project.build.directory}/errorshtmlsnap/css">
+                      <fileset dir="${webappDirectory}/css"/>
+                    </copy>
+                    <copy todir="${project.build.directory}/errorshtmlsnap/js">
+                      <fileset dir="${webappDirectory}/js"/>
+                    </copy>
+                    <copy todir="${project.build.directory}/errorshtmlsnap/img">
+                      <fileset dir="${webappDirectory}/img"/>
+                    </copy>
+                    <copy todir="${project.build.directory}/errorshtmlsnap/imgages">
+                      <fileset dir="${webappDirectory}/images"/>
+                    </copy>
                   </tasks>
                 </configuration>
               </execution>
