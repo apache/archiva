@@ -144,7 +144,8 @@ public abstract class AbstractSeleniumTest
         {
             Assert.assertFalse( getSelenium().isVisible( "login-link-a" ) );
             Assert.assertFalse( getSelenium().isVisible( "register-link-a" ) );
-            clickLinkWithLocator( "create-admin-link-a", false );
+            // skygo need to set to true for passing is that work as expected ?
+            clickLinkWithLocator( "create-admin-link-a", true );
             assertCreateAdmin();
             String fullname = getProperty( "ADMIN_FULLNAME" );
             String username = getAdminUsername();
