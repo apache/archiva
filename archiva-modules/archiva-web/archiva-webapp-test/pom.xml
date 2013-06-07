@@ -327,7 +327,7 @@
                     <copy todir="${project.build.directory}/errorshtmlsnap/img">
                       <fileset dir="${webappDirectory}/img"/>
                     </copy>
-                    <copy todir="${project.build.directory}/errorshtmlsnap/imgages">
+                    <copy todir="${project.build.directory}/errorshtmlsnap/images">
                       <fileset dir="${webappDirectory}/images"/>
                     </copy>
                   </tasks>
