@@ -33,7 +33,11 @@ import org.openqa.selenium.safari.SafariDriver;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
+import org.apache.commons.io.FileUtils;
+import org.fluentlenium.core.Fluent;
+import org.junit.Before;
 
 /**
  * @author Olivier Lamy
@@ -42,11 +46,35 @@ public class WebDriverTest
     extends FluentTest
 {
 
+    @Override
+    public Fluent takeScreenShot( String fileName )
+    {
+        try
+        {
+            // save html to have a minimum feedback if jenkins firefox not up
+            File fileNameHTML = new File( fileName + ".html" );
+            FileUtils.writeStringToFile( fileNameHTML, getDriver().getPageSource() );
+        }
+        catch ( IOException e )
+        {
+            System.out.print( e.getMessage() );
+            e.printStackTrace();
+        }
+        return super.takeScreenShot( fileName );
+    }
+    
+    @Before
+    public void init()
+    {
+        setSnapshotMode( Mode.TAKE_SNAPSHOT_ON_FAIL );
+        setSnapshotPath( new File( "target", "errorshtmlsnap" ).getAbsolutePath() );
+    }
+    
     @Test
     public void simpletest()
         throws Exception
     {
-
+        
         Properties tomcatPortProperties = new Properties();
         tomcatPortProperties.load(
             new FileInputStream( new File( System.getProperty( "tomcat.propertiesPortFilePath" ) ) ) );
