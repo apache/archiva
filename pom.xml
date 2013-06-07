@@ -101,7 +101,7 @@
     <plexus-expression-evaluator.version>2.0</plexus-expression-evaluator.version>
     <plexus-utils.version>3.0.8</plexus-utils.version>
     <asfTomcatMavenPluginVersion>2.1</asfTomcatMavenPluginVersion>
-    <tomcat7Version>7.0.39</tomcat7Version>
+    <tomcat7Version>7.0.40</tomcat7Version>
 
     <release.preparationGoals>clean install</release.preparationGoals>
   </properties>
@@ -1736,7 +1736,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.6</version>
+          <version>1.7</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
