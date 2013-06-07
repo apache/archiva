@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.fluentlenium.core.Fluent;
 import org.junit.Before;
@@ -82,7 +83,10 @@ public class WebDriverTest
         int tomcatPort = Integer.parseInt( tomcatPortProperties.getProperty( "tomcat.maven.http.port" ) );
 
         goTo( "http://localhost:" + tomcatPort + "/archiva/index.html?request_lang=en" );
-
+        
+        // wait until topbar-menu-container is feeded
+        await().atMost(5, TimeUnit.SECONDS).until("#topbar-menu").isPresent();
+        
         FluentList<FluentWebElement> elements = find( "#create-admin-link-a" );
 
         if ( !elements.isEmpty() && elements.get( 0 ).isDisplayed() )
