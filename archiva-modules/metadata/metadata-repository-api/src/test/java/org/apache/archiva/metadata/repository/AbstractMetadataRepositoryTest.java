@@ -240,15 +240,23 @@ public abstract class AbstractMetadataRepositoryTest
         MailingList mailingList = new MailingList();
         mailingList.setName( "Foo List" );
         mailingList.setOtherArchives( Collections.<String>emptyList() );
-        metadata.setMailingLists( Collections.singletonList( mailingList ) );
+        metadata.setMailingLists( Arrays.asList( mailingList ) );
         repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
 
         metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
         assertEquals( TEST_PROJECT_VERSION, metadata.getId() );
-        assertEquals( 1, metadata.getMailingLists().size() );
+
+        List<MailingList> mailingLists = metadata.getMailingLists();
+
+        Assertions.assertThat( mailingLists ).isNotNull().isNotEmpty().hasSize( 1 );
+
+        //assertEquals( 1, metadata.getMailingLists().size() );
         mailingList = metadata.getMailingLists().get( 0 );
         assertEquals( "Foo List", mailingList.getName() );
-        assertEquals( Collections.<String>emptyList(), mailingList.getOtherArchives() );
+
+        List<String> others = mailingList.getOtherArchives();
+        //assertEquals( Collections.<String>emptyList(), mailingList.getOtherArchives() );
+        Assertions.assertThat( others ).isNotNull().isEmpty();
     }
 
     @Test
@@ -540,7 +548,7 @@ public abstract class AbstractMetadataRepositoryTest
 
         testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
         //assertFalse( testFacet.toProperties().containsKey( "deleteKey" ) );
-        Map<String,String> props = testFacet.toProperties();
+        Map<String, String> props = testFacet.toProperties();
         Assertions.assertThat( props ).isNotNull().doesNotContainKey( "deleteKey" );
     }
 
