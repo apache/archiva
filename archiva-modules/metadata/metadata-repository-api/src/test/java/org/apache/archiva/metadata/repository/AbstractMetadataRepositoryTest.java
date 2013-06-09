@@ -511,9 +511,12 @@ public abstract class AbstractMetadataRepositoryTest
 
         Collection<ArtifactMetadata> artifacts =
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
-        assertEquals( 1, artifacts.size() );
+        //assertEquals( 1, artifacts.size() );
+        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 1 );
         metadata = artifacts.iterator().next();
-        assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+        //assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+        Collection<String> ids = metadata.getFacetIds();
+        Assertions.assertThat( ids ).isNotNull().isNotEmpty().hasSize( 1 ).contains( TEST_FACET_ID );
 
         TestMetadataFacet testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
         Map<String, String> facetProperties = testFacet.toProperties();
@@ -528,11 +531,17 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, metadata );
 
         artifacts = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
-        assertEquals( 1, artifacts.size() );
+        //assertEquals( 1, artifacts.size() );
+        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 1 );
         metadata = artifacts.iterator().next();
-        assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+        //assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+        ids = metadata.getFacetIds();
+        Assertions.assertThat( ids ).isNotNull().isNotEmpty().hasSize( 1 ).contains( TEST_FACET_ID );
+
         testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
-        assertFalse( testFacet.toProperties().containsKey( "deleteKey" ) );
+        //assertFalse( testFacet.toProperties().containsKey( "deleteKey" ) );
+        Map<String,String> props = testFacet.toProperties();
+        Assertions.assertThat( props ).isNotNull().doesNotContainKey( "deleteKey" );
     }
 
     @Test
