@@ -271,8 +271,8 @@ public abstract class AbstractMetadataRepositoryTest
 
         MailingList mailingList = new MailingList();
         mailingList.setName( "Foo List" );
-        mailingList.setOtherArchives( Collections.singletonList( "other archive" ) );
-        metadata.setMailingLists( Collections.singletonList( mailingList ) );
+        mailingList.setOtherArchives( Arrays.asList( "other archive" ) );
+        metadata.setMailingLists(  Arrays.asList( mailingList ) );
 
         Scm scm = new Scm();
         scm.setConnection( "connection" );
@@ -322,7 +322,8 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( 1, metadata.getMailingLists().size() );
         mailingList = metadata.getMailingLists().get( 0 );
         assertEquals( "Foo List", mailingList.getName() );
-        assertEquals( Collections.singletonList( "other archive" ), mailingList.getOtherArchives() );
+        //assertEquals( Collections.singletonList( "other archive" ), mailingList.getOtherArchives() );
+        Assertions.assertThat( mailingList.getOtherArchives() ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "other archive" );
 
         assertEquals( "connection", metadata.getScm().getConnection() );
         assertEquals( "dev conn", metadata.getScm().getDeveloperConnection() );
