@@ -611,8 +611,9 @@ public abstract class AbstractMetadataRepositoryTest
     {
         repository.addMetadataFacet( TEST_REPO_ID, new TestMetadataFacet( null ) );
 
-        assertEquals( new TestMetadataFacet( TEST_METADATA_VALUE ),
-                      repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
+        MetadataFacet metadataFacet = repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME );
+
+        assertEquals( new TestMetadataFacet( TEST_METADATA_VALUE ), metadataFacet );
     }
 
     @Test
@@ -1009,7 +1010,7 @@ public abstract class AbstractMetadataRepositoryTest
     {
         repository.updateNamespace( TEST_REPO_ID, "org.apache.maven.shared" );
 
-        Collection<String> namespaces =  repository.getRootNamespaces( TEST_REPO_ID );
+        Collection<String> namespaces = repository.getRootNamespaces( TEST_REPO_ID );
 
         //assertEquals( Arrays.asList( "org" ), repository.getRootNamespaces( TEST_REPO_ID ) );
         Assertions.assertThat( namespaces ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "org" );
