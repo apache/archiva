@@ -217,7 +217,26 @@
               org.apache.archiva.metadata.repository.cassandra;version=${project.version};-split-package:=merge-first
             </Export-Package>
             <Import-Package>
-
+                javax.annotation,
+                javax.inject,
+                javax.persistence,
+                com.google.common.base,
+                com.google.common.collect,
+                com.netflix.astyanax,
+                com.netflix.astyanax.connectionpool,
+                com.netflix.astyanax.connectionpool.exceptions,
+                com.netflix.astyanax.connectionpool.impl,
+                com.netflix.astyanax.entitystore,
+                com.netflix.astyanax.impl,
+                com.netflix.astyanax.thrift,
+                net.sf.beanlib.provider.replicator,
+                org.apache.archiva.metadata.model;version=${project.version},
+                org.apache.archiva.metadata.repository;version=${project.version},
+                org.apache.archiva.configuration,
+                org.apache.commons.lang;version="[2.4,3)",
+                org.slf4j;resolution:=optional,
+                org.springframework.context,
+                org.springframework.stereotype
             </Import-Package>
           </instructions>
         </configuration>
