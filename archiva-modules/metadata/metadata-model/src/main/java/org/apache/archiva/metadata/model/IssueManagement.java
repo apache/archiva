@@ -29,7 +29,6 @@ import java.io.Serializable;
  * @todo considering moving this to a facet - avoid referring to it externally
  */
 @XmlRootElement(name = "issueManagement")
-@Entity
 public class IssueManagement
     implements Serializable
 {
@@ -62,4 +61,5 @@ public class IssueManagement
     {
         this.system = system;
     }
+
 }

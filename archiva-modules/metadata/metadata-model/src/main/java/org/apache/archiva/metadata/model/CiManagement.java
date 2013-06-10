@@ -29,7 +29,6 @@ import java.io.Serializable;
  * @todo considering moving this to a facet - avoid referring to it externally
  */
 @XmlRootElement(name = "ciManagement")
-@Entity
 public class CiManagement
     implements Serializable
 {

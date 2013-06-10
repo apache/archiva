@@ -24,7 +24,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 @XmlRootElement(name = "scm")
-@Entity
 public class Scm
     implements Serializable
 {
