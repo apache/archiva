@@ -58,7 +58,7 @@ public class RepositoriesNamespaceTest
         throws Exception
     {
 
-        cmr = new CassandraMetadataRepository( null, null, cassandraEntityManagerFactory.getKeyspace() );
+        cmr = new CassandraMetadataRepository( null, null, cassandraEntityManagerFactory );
         clearReposAndNamespace();
 
     }

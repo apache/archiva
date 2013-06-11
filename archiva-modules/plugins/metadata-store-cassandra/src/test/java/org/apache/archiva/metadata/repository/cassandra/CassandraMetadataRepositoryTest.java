@@ -67,7 +67,7 @@ public class CassandraMetadataRepositoryTest
 
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
 
-        this.cmr = new CassandraMetadataRepository( factories, null, cassandraEntityManagerFactory.getKeyspace() );
+        this.cmr = new CassandraMetadataRepository( factories, null, cassandraEntityManagerFactory );
         this.repository = this.cmr;
 
         clearReposAndNamespace();

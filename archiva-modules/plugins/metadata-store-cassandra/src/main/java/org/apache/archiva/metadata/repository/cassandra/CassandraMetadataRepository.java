@@ -75,190 +75,46 @@ public class CassandraMetadataRepository
 
     private final Map<String, MetadataFacetFactory> metadataFacetFactories;
 
-    private Keyspace keyspace;
-
-    private EntityManager<Repository, String> repositoryEntityManager;
-
-    private EntityManager<Namespace, String> namespaceEntityManager;
-
-    private EntityManager<Project, String> projectEntityManager;
-
-    private EntityManager<ArtifactMetadataModel, String> artifactMetadataModelEntityManager;
-
-    private EntityManager<MetadataFacetModel, String> metadataFacetModelEntityManager;
-
-    private EntityManager<ProjectVersionMetadataModel, String> projectVersionMetadataModelEntityManager;
+    private CassandraEntityManagerFactory cassandraEntityManagerFactory;
 
     public CassandraMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories,
-                                        ArchivaConfiguration configuration, Keyspace keyspace )
+                                        ArchivaConfiguration configuration, CassandraEntityManagerFactory cassandraEntityManagerFactory )
     {
         this.metadataFacetFactories = metadataFacetFactories;
         this.configuration = configuration;
-
-        this.keyspace = keyspace;
-
-        try
-        {
-            Properties properties = keyspace.getKeyspaceProperties();
-            logger.info( "keyspace properties: {}", properties );
-        }
-        catch ( ConnectionException e )
-        {
-            // FIXME better logging !
-            logger.warn( e.getMessage(), e );
-        }
-
-        try
-        {
-            repositoryEntityManager =
-                new DefaultEntityManager.Builder<Repository, String>().withEntityType( Repository.class ).withKeyspace(
-                    keyspace ).build();
-            boolean exists = columnFamilyExists( "repository" );
-            // TODO very basic test we must test model change too
-            if ( !exists )
-            {
-                repositoryEntityManager.createStorage( null );
-            }
-
-            namespaceEntityManager =
-                new DefaultEntityManager.Builder<Namespace, String>().withEntityType( Namespace.class ).withKeyspace(
-                    keyspace ).build();
-
-            exists = columnFamilyExists( "namespace" );
-            if ( !exists )
-            {
-                namespaceEntityManager.createStorage( null );
-            }
-
-            projectEntityManager =
-                new DefaultEntityManager.Builder<Project, String>().withEntityType( Project.class ).withKeyspace(
-                    keyspace ).build();
-
-            exists = columnFamilyExists( "project" );
-            if ( !exists )
-            {
-                projectEntityManager.createStorage( null );
-            }
-
-            artifactMetadataModelEntityManager =
-                new DefaultEntityManager.Builder<ArtifactMetadataModel, String>().withEntityType(
-                    ArtifactMetadataModel.class ).withKeyspace( keyspace ).build();
-
-            exists = columnFamilyExists( "artifactmetadatamodel" );
-            if ( !exists )
-            {
-                artifactMetadataModelEntityManager.createStorage( null );
-            }
-
-            metadataFacetModelEntityManager =
-                new DefaultEntityManager.Builder<MetadataFacetModel, String>().withEntityType(
-                    MetadataFacetModel.class ).withKeyspace( keyspace ).build();
-
-            exists = columnFamilyExists( "metadatafacetmodel" );
-            if ( !exists )
-            {
-                metadataFacetModelEntityManager.createStorage( null );
-            }
-
-            projectVersionMetadataModelEntityManager =
-                new DefaultEntityManager.Builder<ProjectVersionMetadataModel, String>().withEntityType(
-                    ProjectVersionMetadataModel.class ).withKeyspace( keyspace ).build();
-
-            exists = columnFamilyExists( "projectversionmetadatamodel" );
-            if ( !exists )
-            {
-                projectVersionMetadataModelEntityManager.createStorage( null );
-            }
-
-        }
-        catch ( PersistenceException e )
-        {
-            // FIXME report exception
-            logger.error( e.getMessage(), e );
-        }
-        catch ( ConnectionException e )
-        {
-            // FIXME report exception
-            logger.error( e.getMessage(), e );
-        }
+        this.cassandraEntityManagerFactory = cassandraEntityManagerFactory;
     }
 
-    private boolean columnFamilyExists( String columnFamilyName )
-        throws ConnectionException
-    {
-        try
-        {
-            Properties properties = keyspace.getColumnFamilyProperties( columnFamilyName );
-            logger.debug( "getColumnFamilyProperties for {}: {}", columnFamilyName, properties );
-            return true;
-        }
-        catch ( NotFoundException e )
-        {
-            return false;
-        }
-    }
+    
 
     public EntityManager<Repository, String> getRepositoryEntityManager()
     {
-        return repositoryEntityManager;
+        return this.cassandraEntityManagerFactory.getRepositoryEntityManager();
     }
 
     public EntityManager<Namespace, String> getNamespaceEntityManager()
     {
-        return namespaceEntityManager;
-    }
-
-    public void setRepositoryEntityManager( EntityManager<Repository, String> repositoryEntityManager )
-    {
-        this.repositoryEntityManager = repositoryEntityManager;
-    }
-
-    public void setNamespaceEntityManager( EntityManager<Namespace, String> namespaceEntityManager )
-    {
-        this.namespaceEntityManager = namespaceEntityManager;
+        return this.cassandraEntityManagerFactory.getNamespaceEntityManager();
     }
 
     public EntityManager<Project, String> getProjectEntityManager()
     {
-        return projectEntityManager;
-    }
-
-    public void setProjectEntityManager( EntityManager<Project, String> projectEntityManager )
-    {
-        this.projectEntityManager = projectEntityManager;
+        return this.cassandraEntityManagerFactory.getProjectEntityManager();
     }
 
     public EntityManager<ArtifactMetadataModel, String> getArtifactMetadataModelEntityManager()
     {
-        return artifactMetadataModelEntityManager;
-    }
-
-    public void setArtifactMetadataModelEntityManager(
-        EntityManager<ArtifactMetadataModel, String> artifactMetadataModelEntityManager )
-    {
-        this.artifactMetadataModelEntityManager = artifactMetadataModelEntityManager;
+        return cassandraEntityManagerFactory.getArtifactMetadataModelEntityManager();
     }
 
     public EntityManager<MetadataFacetModel, String> getMetadataFacetModelEntityManager()
     {
-        return metadataFacetModelEntityManager;
-    }
-
-    public void setMetadataFacetModelEntityManager(
-        EntityManager<MetadataFacetModel, String> metadataFacetModelEntityManager )
-    {
-        this.metadataFacetModelEntityManager = metadataFacetModelEntityManager;
+        return this.cassandraEntityManagerFactory.getMetadataFacetModelEntityManager();
     }
 
     public EntityManager<ProjectVersionMetadataModel, String> getProjectVersionMetadataModelEntityManager()
     {
-        return projectVersionMetadataModelEntityManager;
-    }
-
-    public void setProjectVersionMetadataModelEntityManager(
-        EntityManager<ProjectVersionMetadataModel, String> projectVersionMetadataModelEntityManager )
-    {
-        this.projectVersionMetadataModelEntityManager = projectVersionMetadataModelEntityManager;
+        return this.cassandraEntityManagerFactory.getProjectVersionMetadataModelEntityManager();
     }
 
     @Override
@@ -274,24 +130,24 @@ public class CassandraMetadataRepository
     {
         try
         {
-            Repository repository = this.repositoryEntityManager.get( repositoryId );
+            Repository repository = this.getRepositoryEntityManager().get( repositoryId );
 
             if ( repository == null )
             {
                 repository = new Repository( repositoryId );
 
                 Namespace namespace = new Namespace( namespaceId, repository );
-                this.repositoryEntityManager.put( repository );
+                this.getRepositoryEntityManager().put( repository );
 
-                this.namespaceEntityManager.put( namespace );
+                this.getNamespaceEntityManager().put( namespace );
             }
             // FIXME add a Namespace id builder
-            Namespace namespace = namespaceEntityManager.get(
+            Namespace namespace = getNamespaceEntityManager().get(
                 new Namespace.KeyBuilder().withNamespace( namespaceId ).withRepositoryId( repositoryId ).build() );
             if ( namespace == null )
             {
                 namespace = new Namespace( namespaceId, repository );
-                namespaceEntityManager.put( namespace );
+                getNamespaceEntityManager().put( namespace );
             }
             return namespace;
         }
@@ -309,11 +165,11 @@ public class CassandraMetadataRepository
     {
         try
         {
-            Namespace namespace = namespaceEntityManager.get(
+            Namespace namespace = getNamespaceEntityManager().get(
                 new Namespace.KeyBuilder().withNamespace( namespaceId ).withRepositoryId( repositoryId ).build() );
             if ( namespace != null )
             {
-                namespaceEntityManager.remove( namespace );
+                getNamespaceEntityManager().remove( namespace );
             }
         }
         catch ( PersistenceException e )
@@ -332,7 +188,7 @@ public class CassandraMetadataRepository
             final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
 
             // remove data related to the repository
-            this.artifactMetadataModelEntityManager.visitAll( new Function<ArtifactMetadataModel, Boolean>()
+            this.getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
             {
                 @Override
                 public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
@@ -348,11 +204,11 @@ public class CassandraMetadataRepository
                 }
             } );
 
-            artifactMetadataModelEntityManager.remove( artifactMetadataModels );
+            getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );
 
             final List<Namespace> namespaces = new ArrayList<Namespace>();
 
-            namespaceEntityManager.visitAll( new Function<Namespace, Boolean>()
+            getNamespaceEntityManager().visitAll( new Function<Namespace, Boolean>()
             {
                 @Override
                 public Boolean apply( Namespace namespace )
@@ -368,10 +224,10 @@ public class CassandraMetadataRepository
                 }
             } );
 
-            namespaceEntityManager.remove( namespaces );
+            getNamespaceEntityManager().remove( namespaces );
 
             final List<Project> projects = new ArrayList<Project>();
-            projectEntityManager.visitAll( new Function<Project, Boolean>()
+            getProjectEntityManager().visitAll( new Function<Project, Boolean>()
             {
                 @Override
                 public Boolean apply( Project project )
@@ -387,16 +243,16 @@ public class CassandraMetadataRepository
                 }
             } );
 
-            projectEntityManager.remove( projects );
+            getProjectEntityManager().remove( projects );
 
             // TODO  cleanup or not
             //final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>(  );
-            //metadataFacetModelEntityManager.visitAll( new Function<MetadataFacetModel, Boolean>()
+            //getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
 
             final List<ProjectVersionMetadataModel> projectVersionMetadataModels =
                 new ArrayList<ProjectVersionMetadataModel>();
 
-            projectVersionMetadataModelEntityManager.visitAll( new Function<ProjectVersionMetadataModel, Boolean>()
+            getProjectVersionMetadataModelEntityManager().visitAll( new Function<ProjectVersionMetadataModel, Boolean>()
             {
                 @Override
                 public Boolean apply( ProjectVersionMetadataModel projectVersionMetadataModel )
@@ -413,12 +269,12 @@ public class CassandraMetadataRepository
                 }
             } );
 
-            projectVersionMetadataModelEntityManager.remove( projectVersionMetadataModels );
+            getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModels );
 
-            Repository repository = repositoryEntityManager.get( repositoryId );
+            Repository repository = getRepositoryEntityManager().get( repositoryId );
             if ( repository != null )
             {
-                repositoryEntityManager.remove( repository );
+                getRepositoryEntityManager().remove( repository );
             }
 
         }
@@ -436,7 +292,7 @@ public class CassandraMetadataRepository
         {
             logger.debug( "getRepositories" );
 
-            List<Repository> repositories = repositoryEntityManager.getAll();
+            List<Repository> repositories = getRepositoryEntityManager().getAll();
             if ( repositories == null )
             {
                 return Collections.emptyList();
@@ -465,7 +321,7 @@ public class CassandraMetadataRepository
         {
             final Set<String> namespaces = new HashSet<String>();
 
-            namespaceEntityManager.visitAll( new Function<Namespace, Boolean>()
+            getNamespaceEntityManager().visitAll( new Function<Namespace, Boolean>()
             {
                 // @Nullable add dependency ?
                 @Override
@@ -500,7 +356,7 @@ public class CassandraMetadataRepository
         {
             final Set<String> namespaces = new HashSet<String>();
 
-            namespaceEntityManager.visitAll( new Function<Namespace, Boolean>()
+            getNamespaceEntityManager().visitAll( new Function<Namespace, Boolean>()
             {
                 // @Nullable add dependency ?
                 @Override
@@ -550,7 +406,7 @@ public class CassandraMetadataRepository
 
             //List<Repository> namespaces = typedQuery.setParameter( "id", repoId ).getResultList();
 
-            Repository repository = repositoryEntityManager.get( repoId );
+            Repository repository = getRepositoryEntityManager().get( repoId );
 
             if ( repository == null )
             {
@@ -560,11 +416,11 @@ public class CassandraMetadataRepository
             // FIXME find correct cql query
             //String query = "select * from namespace where repository.id = '" + repoId + "';";
 
-            //List<Namespace> namespaces = namespaceEntityManager.find( query );
+            //List<Namespace> namespaces = getNamespaceEntityManager().find( query );
 
             final Set<Namespace> namespaces = new HashSet<Namespace>();
 
-            namespaceEntityManager.visitAll( new Function<Namespace, Boolean>()
+            getNamespaceEntityManager().visitAll( new Function<Namespace, Boolean>()
             {
                 // @Nullable add dependency ?
                 @Override
@@ -611,7 +467,7 @@ public class CassandraMetadataRepository
         String projectKey = new Project.KeyBuilder().withProjectId( projectMetadata.getId() ).withNamespace(
             new Namespace( projectMetadata.getNamespace(), new Repository( repositoryId ) ) ).build();
 
-        Project project = projectEntityManager.get( projectKey );
+        Project project = getProjectEntityManager().get( projectKey );
         if ( project != null )
         {
             return;
@@ -619,7 +475,7 @@ public class CassandraMetadataRepository
 
         String namespaceKey = new Namespace.KeyBuilder().withRepositoryId( repositoryId ).withNamespace(
             projectMetadata.getNamespace() ).build();
-        Namespace namespace = namespaceEntityManager.get( namespaceKey );
+        Namespace namespace = getNamespaceEntityManager().get( namespaceKey );
         if ( namespace == null )
         {
             namespace = updateOrAddNamespace( repositoryId, projectMetadata.getNamespace() );
@@ -629,7 +485,7 @@ public class CassandraMetadataRepository
 
         try
         {
-            projectEntityManager.put( project );
+            getProjectEntityManager().put( project );
         }
         catch ( PersistenceException e )
         {
@@ -646,7 +502,7 @@ public class CassandraMetadataRepository
         // cleanup ArtifactMetadataModel
         final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
 
-        artifactMetadataModelEntityManager.visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
             @Override
             public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
@@ -664,14 +520,14 @@ public class CassandraMetadataRepository
             }
         } );
 
-        artifactMetadataModelEntityManager.remove( artifactMetadataModels );
+        getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );
 
         Namespace namespace = new Namespace( namespaceId, new Repository( repositoryId ) );
 
         final List<ProjectVersionMetadataModel> projectVersionMetadataModels =
             new ArrayList<ProjectVersionMetadataModel>();
 
-        projectVersionMetadataModelEntityManager.visitAll( new Function<ProjectVersionMetadataModel, Boolean>()
+        getProjectVersionMetadataModelEntityManager().visitAll( new Function<ProjectVersionMetadataModel, Boolean>()
         {
             @Override
             public Boolean apply( ProjectVersionMetadataModel projectVersionMetadataModel )
@@ -692,12 +548,12 @@ public class CassandraMetadataRepository
 
         if ( !projectVersionMetadataModels.isEmpty() )
         {
-            projectVersionMetadataModelEntityManager.remove( projectVersionMetadataModels );
+            getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModels );
         }
 
         String key = new Project.KeyBuilder().withNamespace( namespace ).withProjectId( projectId ).build();
 
-        Project project = projectEntityManager.get( key );
+        Project project = getProjectEntityManager().get( key );
         if ( project == null )
         {
             logger.debug( "removeProject notfound" );
@@ -705,7 +561,7 @@ public class CassandraMetadataRepository
         }
         logger.debug( "removeProject {}", project );
 
-        projectEntityManager.remove( project );
+        getProjectEntityManager().remove( project );
     }
 
     @Override
@@ -713,7 +569,7 @@ public class CassandraMetadataRepository
         throws MetadataResolutionException
     {
         final Set<String> versions = new HashSet<String>();
-        projectVersionMetadataModelEntityManager.visitAll( new Function<ProjectVersionMetadataModel, Boolean>()
+        getProjectVersionMetadataModelEntityManager().visitAll( new Function<ProjectVersionMetadataModel, Boolean>()
         {
             @Override
             public Boolean apply( ProjectVersionMetadataModel projectVersionMetadataModel )
@@ -732,7 +588,7 @@ public class CassandraMetadataRepository
             }
         } );
         // FIXME use cql query
-        artifactMetadataModelEntityManager.visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
             @Override
             public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
@@ -761,7 +617,7 @@ public class CassandraMetadataRepository
         String namespaceKey =
             new Namespace.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespaceId ).build();
         // create the namespace if not exists
-        Namespace namespace = namespaceEntityManager.get( namespaceKey );
+        Namespace namespace = getNamespaceEntityManager().get( namespaceKey );
         if ( namespace == null )
         {
             namespace = updateOrAddNamespace( repositoryId, namespaceId );
@@ -770,13 +626,13 @@ public class CassandraMetadataRepository
         // create the project if not exist
         String projectKey = new Project.KeyBuilder().withNamespace( namespace ).withProjectId( projectId ).build();
 
-        Project project = projectEntityManager.get( projectKey );
+        Project project = getProjectEntityManager().get( projectKey );
         if ( project == null )
         {
             project = new Project( projectKey, projectId, namespace );
             try
             {
-                projectEntityManager.put( project );
+                getProjectEntityManager().put( project );
             }
             catch ( PersistenceException e )
             {
@@ -787,7 +643,7 @@ public class CassandraMetadataRepository
         String key = new ArtifactMetadataModel.KeyBuilder().withNamespace( namespace ).withProject( projectId ).withId(
             artifactMeta.getId() ).withProjectVersion( projectVersion ).build();
 
-        ArtifactMetadataModel artifactMetadataModel = artifactMetadataModelEntityManager.get( key );
+        ArtifactMetadataModel artifactMetadataModel = getArtifactMetadataModelEntityManager().get( key );
         if ( artifactMetadataModel == null )
         {
             artifactMetadataModel = new ArtifactMetadataModel( key, artifactMeta.getId(), repositoryId, namespaceId,
@@ -810,7 +666,7 @@ public class CassandraMetadataRepository
 
         try
         {
-            artifactMetadataModelEntityManager.put( artifactMetadataModel );
+            getArtifactMetadataModelEntityManager().put( artifactMetadataModel );
         }
         catch ( PersistenceException e )
         {
@@ -820,7 +676,7 @@ public class CassandraMetadataRepository
         key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repositoryId ).withNamespace(
             namespace ).withProjectId( projectId ).withId( projectVersion ).build();
 
-        ProjectVersionMetadataModel projectVersionMetadataModel = projectVersionMetadataModelEntityManager.get( key );
+        ProjectVersionMetadataModel projectVersionMetadataModel = getProjectVersionMetadataModelEntityManager().get( key );
 
         if ( projectVersionMetadataModel == null )
         {
@@ -830,7 +686,7 @@ public class CassandraMetadataRepository
             projectVersionMetadataModel.setId( projectVersion );
             projectVersionMetadataModel.setNamespace( namespace );
 
-            projectVersionMetadataModelEntityManager.put( projectVersionMetadataModel );
+            getProjectVersionMetadataModelEntityManager().put( projectVersionMetadataModel );
 
         }
 
@@ -846,7 +702,7 @@ public class CassandraMetadataRepository
     {
         final Set<String> versions = new HashSet<String>();
         // FIXME use cql query
-        artifactMetadataModelEntityManager.visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
             @Override
             public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
@@ -889,7 +745,7 @@ public class CassandraMetadataRepository
 
             final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>();
 
-            metadataFacetModelEntityManager.visitAll( new Function<MetadataFacetModel, Boolean>()
+            getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
             {
                 @Override
                 public Boolean apply( MetadataFacetModel metadataFacetModel )
@@ -906,7 +762,7 @@ public class CassandraMetadataRepository
                 }
             } );
 
-            metadataFacetModelEntityManager.remove( metadataFacetModels );
+            getMetadataFacetModelEntityManager().remove( metadataFacetModels );
 
             Map<String, String> properties = metadataFacet.toProperties();
 
@@ -923,7 +779,7 @@ public class CassandraMetadataRepository
                 metadataFacetModelsToAdd.add( metadataFacetModel );
             }
 
-            metadataFacetModelEntityManager.put( metadataFacetModelsToAdd );
+            getMetadataFacetModelEntityManager().put( metadataFacetModelsToAdd );
 
         }
     }
@@ -935,7 +791,7 @@ public class CassandraMetadataRepository
     {
         String namespaceKey =
             new Namespace.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespaceId ).build();
-        Namespace namespace = namespaceEntityManager.get( namespaceKey );
+        Namespace namespace = getNamespaceEntityManager().get( namespaceKey );
         if ( namespace == null )
         {
             namespace = updateOrAddNamespace( repositoryId, namespaceId );
@@ -943,18 +799,18 @@ public class CassandraMetadataRepository
 
         String key = new Project.KeyBuilder().withNamespace( namespace ).withProjectId( projectId ).build();
 
-        Project project = projectEntityManager.get( key );
+        Project project = getProjectEntityManager().get( key );
         if ( project == null )
         {
             project = new Project( key, projectId, namespace );
-            projectEntityManager.put( project );
+            getProjectEntityManager().put( project );
         }
 
         // we don't test of repository and namespace really exist !
         key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repositoryId ).withNamespace(
             namespaceId ).withProjectId( projectId ).withId( versionMetadata.getId() ).build();
 
-        ProjectVersionMetadataModel projectVersionMetadataModel = projectVersionMetadataModelEntityManager.get( key );
+        ProjectVersionMetadataModel projectVersionMetadataModel = getProjectVersionMetadataModelEntityManager().get( key );
 
         if ( projectVersionMetadataModel == null )
         {
@@ -976,7 +832,7 @@ public class CassandraMetadataRepository
 
         try
         {
-            projectVersionMetadataModelEntityManager.put( projectVersionMetadataModel );
+            getProjectVersionMetadataModelEntityManager().put( projectVersionMetadataModel );
 
             ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
             artifactMetadataModel.setArtifactMetadataModelId(
@@ -1009,7 +865,7 @@ public class CassandraMetadataRepository
     {
         // FIXME use cql query !!
         final List<String> facets = new ArrayList<String>();
-        this.metadataFacetModelEntityManager.visitAll( new Function<MetadataFacetModel, Boolean>()
+        this.getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
         {
             @Override
             public Boolean apply( MetadataFacetModel metadataFacetModel )
@@ -1044,7 +900,7 @@ public class CassandraMetadataRepository
     {
         // FIXME use cql query !!
         final List<MetadataFacetModel> facets = new ArrayList<MetadataFacetModel>();
-        this.metadataFacetModelEntityManager.visitAll( new Function<MetadataFacetModel, Boolean>()
+        this.getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
         {
             @Override
             public Boolean apply( MetadataFacetModel metadataFacetModel )
@@ -1097,7 +953,7 @@ public class CassandraMetadataRepository
         {
             String key = new MetadataFacetModel.KeyBuilder().withRepositoryId( repositoryId ).withFacetId(
                 metadataFacet.getFacetId() ).withName( metadataFacet.getName() ).build();
-            MetadataFacetModel metadataFacetModel = metadataFacetModelEntityManager.get( key );
+            MetadataFacetModel metadataFacetModel = getMetadataFacetModelEntityManager().get( key );
             if ( metadataFacetModel == null )
             {
                 metadataFacetModel = new MetadataFacetModel();
@@ -1112,7 +968,7 @@ public class CassandraMetadataRepository
 
             try
             {
-                metadataFacetModelEntityManager.put( metadataFacetModel );
+                getMetadataFacetModelEntityManager().put( metadataFacetModel );
             }
             catch ( PersistenceException e )
             {
@@ -1127,7 +983,7 @@ public class CassandraMetadataRepository
                 String key = new MetadataFacetModel.KeyBuilder().withRepositoryId( repositoryId ).withFacetId(
                     metadataFacet.getFacetId() ).withName( metadataFacet.getName() ).withKey( entry.getKey() ).build();
 
-                MetadataFacetModel metadataFacetModel = metadataFacetModelEntityManager.get( key );
+                MetadataFacetModel metadataFacetModel = getMetadataFacetModelEntityManager().get( key );
                 if ( metadataFacetModel == null )
                 {
                     metadataFacetModel = new MetadataFacetModel();
@@ -1143,7 +999,7 @@ public class CassandraMetadataRepository
                 metadataFacetModel.setValue( entry.getValue() );
                 try
                 {
-                    metadataFacetModelEntityManager.put( metadataFacetModel );
+                    getMetadataFacetModelEntityManager().put( metadataFacetModel );
                 }
                 catch ( PersistenceException e )
                 {
@@ -1162,7 +1018,7 @@ public class CassandraMetadataRepository
         final List<MetadataFacetModel> toRemove = new ArrayList<MetadataFacetModel>();
 
         // FIXME cql query
-        metadataFacetModelEntityManager.visitAll( new Function<MetadataFacetModel, Boolean>()
+        getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
         {
             @Override
             public Boolean apply( MetadataFacetModel metadataFacetModel )
@@ -1181,7 +1037,7 @@ public class CassandraMetadataRepository
         } );
         logger.debug( "removeMetadataFacets repositoryId: '{}', facetId: '{}', toRemove: {}", repositoryId, facetId,
                       toRemove );
-        metadataFacetModelEntityManager.remove( toRemove );
+        getMetadataFacetModelEntityManager().remove( toRemove );
     }
 
     @Override
@@ -1192,7 +1048,7 @@ public class CassandraMetadataRepository
         final List<MetadataFacetModel> toRemove = new ArrayList<MetadataFacetModel>();
 
         // FIXME cql query
-        metadataFacetModelEntityManager.visitAll( new Function<MetadataFacetModel, Boolean>()
+        getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
         {
             @Override
             public Boolean apply( MetadataFacetModel metadataFacetModel )
@@ -1212,7 +1068,7 @@ public class CassandraMetadataRepository
         } );
         logger.debug( "removeMetadataFacets repositoryId: '{}', facetId: '{}', toRemove: {}", repositoryId, facetId,
                       toRemove );
-        metadataFacetModelEntityManager.remove( toRemove );
+        getMetadataFacetModelEntityManager().remove( toRemove );
     }
 
     @Override
@@ -1224,7 +1080,7 @@ public class CassandraMetadataRepository
         final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
 
         // FIXME cql query
-        artifactMetadataModelEntityManager.visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
             @Override
             public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
@@ -1269,7 +1125,7 @@ public class CassandraMetadataRepository
     {
         final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>();
 
-        metadataFacetModelEntityManager.visitAll( new Function<MetadataFacetModel, Boolean>()
+        getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
         {
             @Override
             public Boolean apply( MetadataFacetModel metadataFacetModel )
@@ -1329,11 +1185,11 @@ public class CassandraMetadataRepository
 
         if ( logger.isDebugEnabled() )
         {
-            logger.debug( "all ArtifactMetadataModel: {}", artifactMetadataModelEntityManager.getAll() );
+            logger.debug( "all ArtifactMetadataModel: {}", getArtifactMetadataModelEntityManager().getAll() );
         }
 
         // FIXME cql query
-        artifactMetadataModelEntityManager.visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
             @Override
             public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
@@ -1384,7 +1240,7 @@ public class CassandraMetadataRepository
         ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
         artifactMetadataModel.setArtifactMetadataModelId( key );
 
-        artifactMetadataModelEntityManager.remove( artifactMetadataModel );
+        getArtifactMetadataModelEntityManager().remove( artifactMetadataModel );
 
         key =
             new ProjectVersionMetadataModel.KeyBuilder().withId( version ).withRepository( repositoryId ).withNamespace(
@@ -1393,7 +1249,7 @@ public class CassandraMetadataRepository
         ProjectVersionMetadataModel projectVersionMetadataModel = new ProjectVersionMetadataModel();
         projectVersionMetadataModel.setRowId( key );
 
-        projectVersionMetadataModelEntityManager.remove( projectVersionMetadataModel );
+        getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModel );
     }
 
     @Override
@@ -1411,7 +1267,7 @@ public class CassandraMetadataRepository
         ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
         artifactMetadataModel.setArtifactMetadataModelId( key );
 
-        artifactMetadataModelEntityManager.remove( artifactMetadataModel );
+        getArtifactMetadataModelEntityManager().remove( artifactMetadataModel );
     }
 
     @Override
@@ -1420,7 +1276,7 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
         final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
-        artifactMetadataModelEntityManager.visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
             @Override
             public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
@@ -1438,9 +1294,9 @@ public class CassandraMetadataRepository
                 return Boolean.TRUE;
             }
         } );
-        artifactMetadataModelEntityManager.remove( artifactMetadataModels );
+        getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );
         /*
-        metadataFacetModelEntityManager.visitAll( new Function<MetadataFacetModel, Boolean>()
+        getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
         {
             @Override
             public Boolean apply( MetadataFacetModel metadataFacetModel )
@@ -1466,7 +1322,7 @@ public class CassandraMetadataRepository
                 return Boolean.TRUE;
             }
         } );
-        metadataFacetModelEntityManager.remove( metadataFacetModels );
+        getMetadataFacetModelEntityManager().remove( metadataFacetModels );
         */
     }
 
@@ -1477,7 +1333,7 @@ public class CassandraMetadataRepository
     {
         final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
         // FIXME use cql query !
-        artifactMetadataModelEntityManager.visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
             @Override
             public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
@@ -1515,7 +1371,7 @@ public class CassandraMetadataRepository
 
         final BooleanHolder booleanHolder = new BooleanHolder();
 
-        projectEntityManager.visitAll( new Function<Project, Boolean>()
+        getProjectEntityManager().visitAll( new Function<Project, Boolean>()
         {
             @Override
             public Boolean apply( Project project )
@@ -1556,7 +1412,7 @@ public class CassandraMetadataRepository
         String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repoId ).withNamespace(
             namespace ).withProjectId( projectId ).withId( projectVersion ).build();
 
-        ProjectVersionMetadataModel projectVersionMetadataModel = projectVersionMetadataModelEntityManager.get( key );
+        ProjectVersionMetadataModel projectVersionMetadataModel = getProjectVersionMetadataModelEntityManager().get( key );
 
         if ( projectVersionMetadataModel == null )
         {
@@ -1582,7 +1438,7 @@ public class CassandraMetadataRepository
         // facets
         final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>();
         // FIXME use cql query
-        metadataFacetModelEntityManager.visitAll( new Function<MetadataFacetModel, Boolean>()
+        getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
         {
             @Override
             public Boolean apply( MetadataFacetModel metadataFacetModel )
@@ -1649,7 +1505,7 @@ public class CassandraMetadataRepository
         final Set<String> projects = new HashSet<String>();
 
         // FIXME use cql query
-        projectEntityManager.visitAll( new Function<Project, Boolean>()
+        getProjectEntityManager().visitAll( new Function<Project, Boolean>()
         {
             @Override
             public Boolean apply( Project project )
@@ -1667,7 +1523,7 @@ public class CassandraMetadataRepository
         } );
         /*
 
-        artifactMetadataModelEntityManager.visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
             @Override
             public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
@@ -1698,7 +1554,7 @@ public class CassandraMetadataRepository
 
         // FIXME use cql query
 
-        artifactMetadataModelEntityManager.visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
             @Override
             public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
@@ -1723,7 +1579,7 @@ public class CassandraMetadataRepository
             return;
         }
 
-        artifactMetadataModelEntityManager.remove( artifactMetadataModels );
+        getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );
 
         String key = new ProjectVersionMetadataModel.KeyBuilder().withProjectId( projectId ).withId(
             projectVersion ).withRepository( repoId ).withNamespace( namespace ).build();
@@ -1731,7 +1587,7 @@ public class CassandraMetadataRepository
         ProjectVersionMetadataModel projectVersionMetadataModel = new ProjectVersionMetadataModel();
         projectVersionMetadataModel.setRowId( key );
 
-        projectVersionMetadataModelEntityManager.remove( projectVersionMetadataModel );
+        getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModel );
     }
 
     @Override
@@ -1741,7 +1597,7 @@ public class CassandraMetadataRepository
     {
         final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
         // FIXME use cql query !
-        artifactMetadataModelEntityManager.visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
             @Override
             public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
@@ -1772,7 +1628,7 @@ public class CassandraMetadataRepository
 
         // retrieve facets
         final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>();
-        metadataFacetModelEntityManager.visitAll( new Function<MetadataFacetModel, Boolean>()
+        getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
         {
             @Override
             public Boolean apply( MetadataFacetModel metadataFacetModel )

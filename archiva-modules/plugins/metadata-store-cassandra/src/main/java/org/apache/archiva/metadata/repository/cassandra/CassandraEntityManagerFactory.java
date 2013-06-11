@@ -20,6 +20,13 @@ package org.apache.archiva.metadata.repository.cassandra;
  */
 
 import com.netflix.astyanax.Keyspace;
+import com.netflix.astyanax.entitystore.EntityManager;
+import org.apache.archiva.metadata.repository.cassandra.model.ArtifactMetadataModel;
+import org.apache.archiva.metadata.repository.cassandra.model.MetadataFacetModel;
+import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
+import org.apache.archiva.metadata.repository.cassandra.model.Project;
+import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
+import org.apache.archiva.metadata.repository.cassandra.model.Repository;
 
 /**
  * @author Olivier Lamy
@@ -27,5 +34,18 @@ import com.netflix.astyanax.Keyspace;
 public interface CassandraEntityManagerFactory
 {
     Keyspace getKeyspace();
+
+    EntityManager<Repository, String> getRepositoryEntityManager();
+
+    EntityManager<Namespace, String> getNamespaceEntityManager();
+
+    EntityManager<Project, String> getProjectEntityManager();
+
+    EntityManager<ArtifactMetadataModel, String> getArtifactMetadataModelEntityManager();
+
+    EntityManager<MetadataFacetModel, String> getMetadataFacetModelEntityManager();
+
+    EntityManager<ProjectVersionMetadataModel, String> getProjectVersionMetadataModelEntityManager();
+
 
 }
