@@ -229,6 +229,7 @@
                 com.netflix.astyanax.connectionpool.impl,
                 com.netflix.astyanax.entitystore,
                 com.netflix.astyanax.impl,
+                com.netflix.astyanax.ddl,
                 com.netflix.astyanax.thrift,
                 net.sf.beanlib.provider.replicator,
                 org.apache.archiva.metadata.model;version=${project.version},
@@ -255,6 +256,8 @@
             <configuration>
               <portNames>
                 <portName>cassandraPort</portName>
+                <portName>cassandra.storagePort</portName>
+                <portName>cassandra.stopPort</portName>
               </portNames>
             </configuration>
           </execution>
@@ -275,6 +278,8 @@
             </goals>
             <configuration>
               <rpcPort>${cassandraPort}</rpcPort>
+              <storagePort>${cassandra.storagePort}</storagePort>
+              <stopPort>${cassandra.stopPort}</stopPort>
               <addMainClasspath>false</addMainClasspath>
               <addTestClasspath>false</addTestClasspath>
             </configuration>
