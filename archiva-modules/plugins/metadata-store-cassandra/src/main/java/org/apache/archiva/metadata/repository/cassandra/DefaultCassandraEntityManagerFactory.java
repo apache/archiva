@@ -23,10 +23,12 @@ import com.google.common.collect.ImmutableMap;
 import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.connectionpool.NodeDiscoveryType;
+import com.netflix.astyanax.connectionpool.exceptions.BadRequestException;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolType;
 import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor;
+import com.netflix.astyanax.ddl.KeyspaceDefinition;
 import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
 import com.netflix.astyanax.thrift.ThriftFamilyFactory;
 import org.springframework.context.ApplicationContext;
@@ -40,7 +42,7 @@ import javax.inject.Inject;
  *
  * @author Olivier Lamy
  */
-@Service("archivaEntityManagerFactory#cassandra")
+@Service( "archivaEntityManagerFactory#cassandra" )
 public class DefaultCassandraEntityManagerFactory
     implements CassandraEntityManagerFactory
 {
@@ -82,7 +84,26 @@ public class DefaultCassandraEntityManagerFactory
                                                                                                "1" ).build() ).put(
             "strategy_class", "SimpleStrategy" ).build();
 
-        keyspace.createKeyspace( options );
+        // test if the namespace already exists if exception or null create it
+        boolean keyspaceExists = false;
+        try
+        {
+            KeyspaceDefinition keyspaceDefinition = keyspace.describeKeyspace();
+            if ( keyspaceDefinition != null )
+            {
+                keyspaceExists = true;
+            }
+
+        }
+        catch ( ConnectionException e )
+        {
+        }
+
+        if ( !keyspaceExists )
+        {
+            keyspace.createKeyspace( options );
+        }
+
 
     }
 
