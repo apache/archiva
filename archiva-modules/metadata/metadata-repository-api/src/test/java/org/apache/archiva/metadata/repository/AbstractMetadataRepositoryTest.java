@@ -250,12 +250,10 @@ public abstract class AbstractMetadataRepositoryTest
 
         Assertions.assertThat( mailingLists ).isNotNull().isNotEmpty().hasSize( 1 );
 
-        //assertEquals( 1, metadata.getMailingLists().size() );
         mailingList = metadata.getMailingLists().get( 0 );
         assertEquals( "Foo List", mailingList.getName() );
 
         List<String> others = mailingList.getOtherArchives();
-        //assertEquals( Collections.<String>emptyList(), mailingList.getOtherArchives() );
         Assertions.assertThat( others ).isNotNull().isEmpty();
     }
 
@@ -451,7 +449,7 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
 
         metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
-        //assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+
         Assertions.assertThat( metadata.getFacetIds() ).isNotNull().isNotEmpty().hasSize( 1 ).contains( TEST_FACET_ID );
 
         TestMetadataFacet testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
@@ -467,7 +465,7 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
 
         metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
-        //assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+
         Assertions.assertThat( metadata.getFacetIds() ).isNotNull().isNotEmpty().hasSize( 1 ).contains( TEST_FACET_ID );
         testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
         assertFalse( testFacet.toProperties().containsKey( "deleteKey" ) );
@@ -520,10 +518,10 @@ public abstract class AbstractMetadataRepositoryTest
 
         Collection<ArtifactMetadata> artifacts =
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
-        //assertEquals( 1, artifacts.size() );
+
         Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 1 );
         metadata = artifacts.iterator().next();
-        //assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+
         Collection<String> ids = metadata.getFacetIds();
         Assertions.assertThat( ids ).isNotNull().isNotEmpty().hasSize( 1 ).contains( TEST_FACET_ID );
 
@@ -540,15 +538,15 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, metadata );
 
         artifacts = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
-        //assertEquals( 1, artifacts.size() );
+
         Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 1 );
         metadata = artifacts.iterator().next();
-        //assertEquals( Collections.singleton( TEST_FACET_ID ), metadata.getFacetIds() );
+
         ids = metadata.getFacetIds();
         Assertions.assertThat( ids ).isNotNull().isNotEmpty().hasSize( 1 ).contains( TEST_FACET_ID );
 
         testFacet = (TestMetadataFacet) metadata.getFacet( TEST_FACET_ID );
-        //assertFalse( testFacet.toProperties().containsKey( "deleteKey" ) );
+
         Map<String, String> props = testFacet.toProperties();
         Assertions.assertThat( props ).isNotNull().doesNotContainKey( "deleteKey" );
     }
@@ -842,7 +840,6 @@ public abstract class AbstractMetadataRepositoryTest
 
         Assertions.assertThat( versions ).isNotNull().isNotEmpty().hasSize( 1 ).containsExactly( TEST_PROJECT_VERSION );
 
-        //assertEquals( Collections.singleton( TEST_PROJECT_VERSION ), versions );
     }
 
     @Test
@@ -945,8 +942,6 @@ public abstract class AbstractMetadataRepositoryTest
 
         List<ArtifactMetadata> artifacts = repository.getArtifactsByDateRange( TEST_REPO_ID, null, upper );
 
-        //assertTrue( .isEmpty() );
-
         Assertions.assertThat( artifacts ).isNotNull().isEmpty();
     }
 
@@ -1030,18 +1025,14 @@ public abstract class AbstractMetadataRepositoryTest
 
         Collection<String> namespaces = repository.getRootNamespaces( TEST_REPO_ID );
 
-        //assertEquals( Arrays.asList( "org" ), repository.getRootNamespaces( TEST_REPO_ID ) );
         Assertions.assertThat( namespaces ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "org" );
 
-        //assertEquals( Arrays.asList( "apache" ), repository.getNamespaces( TEST_REPO_ID, "org" ) );
         namespaces = repository.getNamespaces( TEST_REPO_ID, "org" );
         Assertions.assertThat( namespaces ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "apache" );
 
-        //assertEquals( Arrays.asList( "maven" ), repository.getNamespaces( TEST_REPO_ID, "org.apache" ) );
         namespaces = repository.getNamespaces( TEST_REPO_ID, "org.apache" );
         Assertions.assertThat( namespaces ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "maven" );
 
-        //assertEquals( Arrays.asList( "shared" ), repository.getNamespaces( TEST_REPO_ID, "org.apache.maven" ) );
         namespaces = repository.getNamespaces( TEST_REPO_ID, "org.apache.maven" );
         Assertions.assertThat( namespaces ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "shared" );
     }
@@ -1061,7 +1052,6 @@ public abstract class AbstractMetadataRepositoryTest
 
         Assertions.assertThat( namespaces ).isNotNull().isEmpty();
 
-        //assertEquals( Collections.<String>emptyList(),  );
     }
 
     @Test
@@ -1343,9 +1333,6 @@ public abstract class AbstractMetadataRepositoryTest
         Assertions.assertThat( artifactMetadatas ).isNotNull().isNotEmpty().hasSize( 2 );
 
         log.info( "artifactMetadatas: {}", artifactMetadatas );
-
-        //assertEquals( Collections.singletonList( artifact ), new ArrayList<ArtifactMetadata>(
-        //    repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, "2.0-SNAPSHOT" ) ) );
 
         repository.removeArtifact( artifactOne, "2.0-SNAPSHOT" );
 
