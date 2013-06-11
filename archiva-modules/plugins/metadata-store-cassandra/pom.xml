@@ -156,10 +156,7 @@
       </exclusions>
     </dependency>
 
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-jcl</artifactId>
-    </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
@@ -274,6 +271,8 @@
             </goals>
             <configuration>
               <rpcPort>${cassandraPort}</rpcPort>
+              <addMainClasspath>false</addMainClasspath>
+              <addTestClasspath>false</addTestClasspath>
             </configuration>
           </execution>
           <execution>
@@ -284,6 +283,13 @@
             </goals>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
     <pluginManagement>
