@@ -264,7 +264,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cassandra-maven-plugin</artifactId>
-        <version>1.2.1-1</version>
+        <version>1.2.1-2-SNAPSHOT</version>
         <executions>
           <execution>
             <id>start-cassandra</id>
@@ -284,13 +284,6 @@
             </goals>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.cassandra</groupId>
-            <artifactId>cassandra-all</artifactId>
-            <version>${cassandraVersion}</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
     <pluginManagement>
