@@ -37,6 +37,9 @@
   <alias name="repositoryStatisticsManager#default" alias="repositoryStatisticsManager"/>
   <!-- TODO olamy need to find a more dynamic way if using jcr impl -->
   <alias name="repositorySessionFactory#jcr" alias="repositorySessionFactory"/>
+  <!--
+  <alias name="repositorySessionFactory#cassandra" alias="repositorySessionFactory"/>
+  -->
 
   <alias name="environmentCheck#archiva-locked-admin-check" alias="environmentCheck#locked-admin-check"/>
   <alias name="userManager#archiva" alias="userManager#default"/>

@@ -118,10 +118,17 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-repository-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-store-jcr</artifactId>
     </dependency>
+    <!--
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-store-cassandra</artifactId>
+    </dependency>
+    -->
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-jcr-commons</artifactId>
@@ -1018,6 +1025,8 @@
             not needed as we use asyncLogger in configuration
             <Log4jContextSelector>org.apache.logging.log4j.core.async.AsyncLoggerContextSelector</Log4jContextSelector>
             -->
+            <cassandraHost>localhost</cassandraHost>
+            <cassandraPort>9160</cassandraPort>
           </systemProperties>
           <additionalClasspathDirs>
             <additionalClasspathDir>${basedir}/src/test/tomcat</additionalClasspathDir>
