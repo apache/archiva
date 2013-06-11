@@ -301,17 +301,4 @@
     </pluginManagement>
   </build>
 
-  <repositories>
-    <repository>
-      <id>archiva.snapshots</id>
-      <url>https://archiva-repository.apache.org/archiva/repository/snapshots/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
 </project>
