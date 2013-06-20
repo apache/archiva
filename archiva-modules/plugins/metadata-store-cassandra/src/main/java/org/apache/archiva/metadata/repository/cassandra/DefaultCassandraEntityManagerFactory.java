@@ -28,6 +28,7 @@ import com.netflix.astyanax.connectionpool.exceptions.NotFoundException;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolType;
 import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor;
+import com.netflix.astyanax.connectionpool.impl.Slf4jConnectionPoolMonitorImpl;
 import com.netflix.astyanax.ddl.KeyspaceDefinition;
 import com.netflix.astyanax.entitystore.DefaultEntityManager;
 import com.netflix.astyanax.entitystore.EntityManager;
@@ -98,7 +99,7 @@ public class DefaultCassandraEntityManagerFactory
             new ConnectionPoolConfigurationImpl( CLUSTER_NAME + "_" + KEYSPACE_NAME ).setSocketTimeout(
                 30000 ).setMaxTimeoutWhenExhausted( 2000 ).setMaxConnsPerHost( 20 ).setInitConnsPerHost( 10 ).setSeeds(
                 cassandraHost + ":" + cassandraPort ) ).withConnectionPoolMonitor(
-            new CountingConnectionPoolMonitor() ).buildKeyspace( ThriftFamilyFactory.getInstance() );
+            new Slf4jConnectionPoolMonitorImpl() ).buildKeyspace( ThriftFamilyFactory.getInstance() );
 
         keyspaceContext.start();
 
@@ -129,8 +130,6 @@ public class DefaultCassandraEntityManagerFactory
         {
             keyspace.createKeyspace( options );
         }
-
-
 
         try
         {
