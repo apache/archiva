@@ -51,25 +51,26 @@ public class WebDriverBrowseTest
     @Override
     public Fluent takeScreenShot( String fileName )
     {
+        File fileNameHTML = new File( "target", "errorshtmlsnap" );
         try
         {
             // save html to have a minimum feedback if jenkins firefox not up
-            File fileNameHTML = new File( fileName + ".html" );
-            FileUtils.writeStringToFile( fileNameHTML, getDriver().getPageSource() );
+            fileNameHTML = new File( fileNameHTML, fileName );
+            FileUtils.writeStringToFile( new File ( new File( "target", "errorshtmlsnap" ) , fileName + ".html"), getDriver().getPageSource() );
+
         }
         catch ( IOException e )
         {
-            System.out.print( e.getMessage() );
             e.printStackTrace();
         }
-        return super.takeScreenShot( fileName );
+        return super.takeScreenShot( fileNameHTML.getAbsolutePath() );
+
     }
 
     @Before
     public void init()
     {
         setSnapshotMode( Mode.TAKE_SNAPSHOT_ON_FAIL );
-        setSnapshotPath( new File( "target", "errorshtmlsnap" ).getAbsolutePath() );
     }
 
     @Test
@@ -118,10 +119,10 @@ public class WebDriverBrowseTest
             await().atMost( 2, TimeUnit.SECONDS ).until( "#main_browse_result" ).isPresent();
             // give me search page :( not  browse page
 
-            takeScreenShot( "search" );
+            takeScreenShot( "search.png" );
 
             goTo( "http://localhost:" + tomcatPort + "/archiva/index.html#browse?request_lang=en" );
-            takeScreenShot( "browse" );
+            takeScreenShot( "browse.png" );
             // give me a browse page
             
         }
