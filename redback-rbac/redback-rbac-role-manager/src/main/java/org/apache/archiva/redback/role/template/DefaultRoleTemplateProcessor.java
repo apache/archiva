@@ -132,11 +132,11 @@ public class DefaultRoleTemplateProcessor
                 // check if we want to remove the resources
                 Resource rbacResource = rbacManager.getResource( resource );
 
-                if ( !rbacResource.isPermanent() )
-                {
+                //if ( !rbacResource.isPermanent() )
+                //{
                     //todo we need a better way of finding if a resource is unused anymore...probably a cleaning process in the db or something
                     //rbacManager.removeResource( rbacResource );
-                }
+                //}
 
                 // todo find dangling child role references and smoke
             }
