@@ -2099,7 +2099,8 @@ ko.exportSymbol('bindingProvider', ko.bindingProvider);
         var alreadyBound = ko.utils.domData.get(node, boundElementDomDataKey);
         if (!bindings) {
             if (alreadyBound) {
-                throw Error("You cannot apply bindings multiple times to the same element.");
+              // prevent issue with #users
+              //throw Error("You cannot apply bindings multiple times to the same element.");
             }
             ko.utils.domData.set(node, boundElementDomDataKey, true);
         }

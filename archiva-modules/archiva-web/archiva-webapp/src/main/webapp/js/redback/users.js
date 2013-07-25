@@ -315,7 +315,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
     screenChange();
     var mainContent = $("#main-content");
     mainContent.html(mediumSpinnerImg());
-    mainContent.attr("data-bind",'template: {name:"usersGrid"}');
+
 
     $.ajax("restServices/redbackServices/userService/getUsers", {
         type: "GET",
@@ -327,7 +327,10 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
           var usersViewModel = new UsersViewModel();
           usersViewModel.users(mappedUsers);
           usersViewModel.originalUsers(mappedUsers);
-          ko.applyBindings(usersViewModel,jQuery("#main-content").get(0));
+          mainContent.attr("data-bind",'template: {name:"usersGrid"}');
+          $.log("before applyBindings");
+          ko.applyBindings(usersViewModel,mainContent.get(0));//mainContent.find("#usersTable" ).get(0));//
+          $.log("first applyBindings");
           mainContent.find("#users-view-tabs a:first").tab('show');
           mainContent.find("#users-view-tabs a[data-toggle='tab']").on('show', function (e) {
             if ($(e.target).attr("href")=="#createUserForm") {
@@ -336,7 +339,6 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
             if ($(e.target).attr("href")=="#users-view") {
               mainContent.find("#users-view-tabs-li-user-edit a").html($.i18n.prop("add"));
             }
-
           })
           mainContent.find("#users-view-tabs-content #users-view").addClass("active");
           applyAutocompleteOnHeaders(usersViewModel);
