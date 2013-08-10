@@ -524,6 +524,7 @@
             <basedir>${basedir}</basedir>
             <expectedVersion>${project.version}</expectedVersion>
             <archiva.logMissingI18n>true</archiva.logMissingI18n>
+            <java.awt.headless>true</java.awt.headless>
           </systemPropertyVariables>
         </configuration>
       </plugin>
