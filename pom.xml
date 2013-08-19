@@ -736,7 +736,7 @@
         <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
-          <version>0.8</version>
+          <version>0.10</version>
         </plugin>
 
         <plugin>
