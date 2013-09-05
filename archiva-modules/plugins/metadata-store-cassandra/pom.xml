@@ -32,6 +32,7 @@
 
   <properties>
     <cassandraVersion>1.2.5</cassandraVersion>
+    <astyanax.version>1.56.42</astyanax.version>
   </properties>
 
   <dependencies>
@@ -89,7 +90,7 @@
     <dependency>
       <groupId>com.netflix.astyanax</groupId>
       <artifactId>astyanax-entity-mapper</artifactId>
-      <version>1.56.37</version>
+      <version>${astyanax.version}</version>
       <exclusions>
         <exclusion>
           <groupId>stax</groupId>
@@ -121,13 +122,13 @@
     <dependency>
       <groupId>com.netflix.astyanax</groupId>
       <artifactId>astyanax-core</artifactId>
-      <version>1.56.37</version>
+      <version>${astyanax.version}</version>
     </dependency>
 
     <dependency>
       <groupId>com.netflix.astyanax</groupId>
       <artifactId>astyanax-thrift</artifactId>
-      <version>1.56.37</version>
+      <version>${astyanax.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.apache.cassandra</groupId>
