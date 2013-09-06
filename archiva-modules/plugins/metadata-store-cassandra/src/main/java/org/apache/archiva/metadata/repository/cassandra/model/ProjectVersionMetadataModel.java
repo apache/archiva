@@ -43,16 +43,16 @@ public class ProjectVersionMetadataModel
     @Id
     private String rowId;
 
-    @Column( name = "namespace" )
+    @Column(name = "namespace")
     private Namespace namespace;
 
     /**
      * id is the version
      */
-    @Column( name = "id" )
+    @Column(name = "id")
     private String id;
 
-    @Column( name = "projectId" )
+    @Column(name = "projectId")
     private String projectId;
 
     @Column(name = "url")
@@ -346,9 +346,11 @@ public class ProjectVersionMetadataModel
         public String build()
         {
             // FIXME add some controls
-            return this.repositoryId + "-" + this.namespace + "-" + this.projectId + ( this.id == null
-                ? ""
-                : "-" + this.id );
+            long hash =
+                this.repositoryId.hashCode() + this.namespace.hashCode() + this.projectId.hashCode() + ( this.id == null
+                    ? 0
+                    : +this.id.hashCode() );
+            return Long.toString( hash );
         }
     }
 }

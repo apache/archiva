@@ -33,22 +33,22 @@ public class MetadataFacetModel
 {
     // id is repositoryId + namespaceId + projectId + facetId + name + mapKey
     @Id
-    @Column( name = "id" )
+    @Column(name = "id")
     private String id;
 
-    @Column( name = "artifactMetadataModel" )
+    @Column(name = "artifactMetadataModel")
     private ArtifactMetadataModel artifactMetadataModel;
 
-    @Column( name = "facetId" )
+    @Column(name = "facetId")
     private String facetId;
 
-    @Column( name = "name" )
+    @Column(name = "name")
     private String name;
 
-    @Column( name = "key" )
+    @Column(name = "key")
     private String key;
 
-    @Column( name = "value" )
+    @Column(name = "value")
     private String value;
 
     public MetadataFacetModel()
@@ -220,10 +220,16 @@ public class MetadataFacetModel
             // FIXME add some controls
             // getArtifactMetadataModelId can have no namespace, no project and no projectid for statistics
             // only repositoryId with artifactMetadataModel
-            return ( this.artifactMetadataModel == null
-                ? this.repositoryId
-                : this.artifactMetadataModel.getArtifactMetadataModelId() ) + "-" + this.facetId + "-" + this.name + "-"
-                + this.key;
+            long hash =
+                ( this.artifactMetadataModel == null
+                ? this.repositoryId.hashCode()
+                : Long.parseLong( this.artifactMetadataModel.getArtifactMetadataModelId() ) )
+                + this.facetId.hashCode()
+                + ( this.name == null ? 0 : this.name.hashCode() )
+                + ( this.key == null ? 0 : this.key.hashCode() );
+
+            String hashStr = Long.toString( hash );
+            return hashStr;
         }
     }
 }

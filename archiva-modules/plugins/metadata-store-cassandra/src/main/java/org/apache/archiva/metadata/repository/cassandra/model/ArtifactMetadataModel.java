@@ -323,8 +323,8 @@ public class ArtifactMetadataModel
         {
             //repositoryId + namespaceId + project + projectVersion + id
             // FIXME add some controls
-            return this.repositoryId + "-" + this.namespaceId + "-" + this.project + "-" + this.projectVersion + "-"
-                + this.id;
+            long hash = this.repositoryId.hashCode()  + this.namespaceId.hashCode()  + this.project.hashCode()  + this.projectVersion.hashCode() + this.id.hashCode();
+            return Long.toString( hash );
         }
     }
 

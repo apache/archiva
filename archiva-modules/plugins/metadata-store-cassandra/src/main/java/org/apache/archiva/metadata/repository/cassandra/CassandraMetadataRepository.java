@@ -838,7 +838,7 @@ public class CassandraMetadataRepository
             artifactMetadataModel.setArtifactMetadataModelId(
                 new ArtifactMetadataModel.KeyBuilder().withId( versionMetadata.getId() ).withRepositoryId(
                     repositoryId ).withNamespace( namespaceId ).withProjectVersion(
-                    versionMetadata.getVersion() ).build() );
+                    versionMetadata.getVersion() ).withProject( projectId ).build() );
             artifactMetadataModel.setRepositoryId( repositoryId );
             artifactMetadataModel.setNamespace( namespaceId );
             artifactMetadataModel.setProject( projectId );
@@ -1295,35 +1295,7 @@ public class CassandraMetadataRepository
             }
         } );
         getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );
-        /*
-        getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
-        {
-            @Override
-            public Boolean apply( MetadataFacetModel metadataFacetModel )
-            {
-                if ( metadataFacetModel != null )
-                {
-                    ArtifactMetadataModel artifactMetadataModel = metadataFacetModel.getArtifactMetadataModel();
-                    if ( artifactMetadataModel != null )
-                    {
-                        if ( StringUtils.equals( repositoryId, artifactMetadataModel.getRepositoryId() )
-                            && StringUtils.equals( namespace, artifactMetadataModel.getNamespace() )
-                            && StringUtils.equals( project, artifactMetadataModel.getProject() ) && StringUtils.equals(
-                            version, artifactMetadataModel.getVersion() ) )
-                        {
-                            if ( StringUtils.equals( metadataFacetModel.getFacetId(), metadataFacet.getFacetId() )
-                                && StringUtils.equals( metadataFacetModel.getName(), metadataFacet.getName() ) )
-                            {
-                                metadataFacetModels.add( metadataFacetModel );
-                            }
-                        }
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-        getMetadataFacetModelEntityManager().remove( metadataFacetModels );
-        */
+
     }
 
 
@@ -1521,25 +1493,7 @@ public class CassandraMetadataRepository
                 return Boolean.TRUE;
             }
         } );
-        /*
 
-        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
-        {
-            @Override
-            public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
-            {
-                if ( artifactMetadataModel != null )
-                {
-                    if ( StringUtils.equals( repoId, artifactMetadataModel.getRepositoryId() ) && StringUtils.equals(
-                        namespace, artifactMetadataModel.getNamespace() ) )
-                    {
-                        projects.add( artifactMetadataModel.getProject() );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-        */
         return projects;
     }
 

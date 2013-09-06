@@ -31,6 +31,7 @@
   <name>Archiva Core Plugins :: Cassandra JPA Storage for Metadata</name>
 
   <properties>
+    <!-- upgrade need a new astyanax release > 1.56.42 see https://github.com/Netflix/astyanax/issues/352 -->
     <cassandraVersion>1.2.5</cassandraVersion>
     <astyanax.version>1.56.42</astyanax.version>
   </properties>
@@ -161,6 +162,12 @@
       </exclusions>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.thrift</groupId>
+      <artifactId>libthrift</artifactId>
+      <version>0.9.1</version>
+    </dependency>
+
 
     <dependency>
       <groupId>org.springframework</groupId>
@@ -264,8 +271,6 @@
           </execution>
         </executions>
       </plugin>
-      <!-- TODO use dynamic port -->
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cassandra-maven-plugin</artifactId>
