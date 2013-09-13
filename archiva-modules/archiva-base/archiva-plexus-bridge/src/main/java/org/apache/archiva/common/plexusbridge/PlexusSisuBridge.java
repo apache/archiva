@@ -52,7 +52,7 @@ public class PlexusSisuBridge
 
     private boolean containerAutoWiring = true;
 
-    private String containerClassPathScanning = PlexusConstants.SCANNING_ON;
+    private String containerClassPathScanning = PlexusConstants.SCANNING_INDEX;// PlexusConstants.SCANNING_ON;
 
     private String containerComponentVisibility = PlexusConstants.REALM_VISIBILITY;
 
