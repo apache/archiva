@@ -87,8 +87,8 @@
 
     <cxfVersion>2.6.8</cxfVersion>
     <derbyVersion>10.10.1.1</derbyVersion>
-    <httpclient.version>4.2.5</httpclient.version>
-    <httpclient.core.version>4.2.4</httpclient.core.version>
+    <httpclient.version>4.2.6</httpclient.version>
+    <httpclient.core.version>4.2.5</httpclient.core.version>
     <javaxMailVersion>1.4</javaxMailVersion>
     <jettyVersion>8.1.9.v20130131</jettyVersion>
 
