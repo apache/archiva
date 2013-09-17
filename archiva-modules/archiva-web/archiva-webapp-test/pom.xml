@@ -29,6 +29,14 @@
   <packaging>pom</packaging>
   <name>Archiva Web :: Application Tests</name>
 
+  <properties>
+    <tomcat5x.version>5.5.27</tomcat5x.version>
+    <cargo.wait>false</cargo.wait>
+    <cargo.install.dir>cargo-installs</cargo.install.dir>
+    <seleniumPluginVersion>2.3</seleniumPluginVersion>
+    <selenium-server.version>2.33.0</selenium-server.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.testng</groupId>
@@ -70,13 +78,13 @@
     <dependency>
       <groupId>org.seleniumhq.selenium.client-drivers</groupId>
       <artifactId>selenium-java-client-driver</artifactId>
-      <version>1.0.1</version>
+      <version>1.0.2</version>
       <scope>test</scope>
       <exclusions>
-	<exclusion>
-	  <groupId>commons-logging</groupId>
-	  <artifactId>commons-logging</artifactId>
-	</exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
@@ -186,6 +194,34 @@
         </executions>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>selenium-maven-plugin</artifactId>
+          <version>${seleniumPluginVersion}</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.seleniumhq.selenium</groupId>
+              <artifactId>selenium-server</artifactId>
+              <version>${selenium-server.version}</version>
+            </dependency>
+
+            <dependency>
+              <groupId>org.seleniumhq.selenium</groupId>
+              <artifactId>selenium-remote-driver</artifactId>
+              <version>${selenium-server.version}</version>
+            </dependency>
+
+            <dependency>
+              <groupId>org.seleniumhq.selenium</groupId>
+              <artifactId>selenium-api</artifactId>
+              <version>${selenium-server.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <profiles>
@@ -496,9 +532,4 @@
       </build>
     </profile>
   </profiles>
-  <properties>
-    <tomcat5x.version>5.5.27</tomcat5x.version>
-    <cargo.wait>false</cargo.wait>
-    <cargo.install.dir>cargo-installs</cargo.install.dir>
-  </properties>
 </project>
