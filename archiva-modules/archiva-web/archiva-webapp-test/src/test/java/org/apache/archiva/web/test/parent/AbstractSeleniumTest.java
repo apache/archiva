@@ -58,7 +58,7 @@ public abstract class AbstractSeleniumTest {
 	    p.load( this.getClass().getClassLoader().getResourceAsStream( "testng.properties" ) );
 	
 	    //baseUrl = getProperty( "BASE_URL" );
-	    maxWaitTimeInMs = getProperty( "MAX_WAIT_TIME_IN_MS" );
+	    maxWaitTimeInMs = System.getProperty( "MAX_WAIT_TIME_IN_MS" );
 	}
 	
 	/**
@@ -80,7 +80,16 @@ public abstract class AbstractSeleniumTest {
 
     public static Selenium getSelenium()
     {
-        return selenium == null ? null : selenium.get();
+        if (selenium.get() != null)
+        {
+            return selenium.get();
+        }
+        DefaultSelenium s =
+            new DefaultSelenium( System.getProperty("seleniumHost","localhost"), Integer.getInteger( "seleniumPort",4444), System.getProperty("browser"), baseUrl );
+        s.start();
+        s.setTimeout( maxWaitTimeInMs );
+        selenium.set( s );
+        return selenium.get();
     }
 
     protected String getProperty( String key )

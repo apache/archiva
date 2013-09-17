@@ -83,7 +83,7 @@ public class CaptureScreenShotsListener
             try
             {
                 File fileName = new File( targetPath, fileBaseName + ".html" );
-                FileUtils.writeStringToFile( fileName, selenium.getHtmlSource() );
+                FileUtils.writeStringToFile( fileName, selenium ==null? "nothing" : selenium.getHtmlSource() );
             }
             catch ( IOException ioe )
             {
@@ -92,7 +92,7 @@ public class CaptureScreenShotsListener
         }
     }
 
-    private int getStackTraceIndexOfCallingClass( String nameOfClass, StackTraceElement stackTrace[] )
+    private int getStackTraceIndexOfCallingClass( String nameOfClass, StackTraceElement[] stackTrace )
     {
         boolean match = false;
         int i = 0;
@@ -101,6 +101,11 @@ public class CaptureScreenShotsListener
             String className = stackTrace[i].getClassName();
             match = Pattern.matches( nameOfClass, className );
             i++;
+            // avoid AIOOBE
+            if ( i >= stackTrace.length )
+            {
+                return 0;
+            }
         }
         while ( match == false );
         i--;

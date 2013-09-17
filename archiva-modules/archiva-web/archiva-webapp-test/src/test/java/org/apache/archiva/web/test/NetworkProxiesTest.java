@@ -22,11 +22,11 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractRepositoryTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "networkproxies" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+@Test( groups = { "networkproxies" }, dependsOnGroups = {"login","virtualrepository"})
 public class NetworkProxiesTest 
 	extends AbstractRepositoryTest
 {
-	@Test (dependsOnMethods = { "testDeleteRepositoryGroup" } )
+	@Test
 	public void testAddNetworkProxyNullValues()
 	{
 		goToNetworkProxiesPage();

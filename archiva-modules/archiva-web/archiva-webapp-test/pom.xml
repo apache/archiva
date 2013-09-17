@@ -41,9 +41,8 @@
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>5.8</version>
+      <version>5.14.9</version>
       <scope>test</scope>
-      <classifier>jdk15</classifier>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -114,7 +113,6 @@
   </dependencies>
 
   <build>
-    <testSourceDirectory>src/test/testng</testSourceDirectory>
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
@@ -156,20 +154,15 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <properties>
+          <systemPropertyVariables>
+            <MAX_WAIT_TIME_IN_MS>60000</MAX_WAIT_TIME_IN_MS>
+            <!-- Exclude on all browsers but Firefox, as it is the only one that Selenium supports file uploads on -->
+            <excludegroups>${excluded.groups}</excludegroups>
             <!--
               Use this instead of suiteXmlFiles so that we can add the exclusion, as it is only accepted without suiteXmlFiles
             -->
-            <property>
-              <name>listener</name>
-              <value>org.apache.archiva.web.test.listener.CaptureScreenShotsListener</value>
-            </property>
-            <property>
-              <name>excludegroups</name>
-              <!-- Exclude on all browsers but Firefox, as it is the only one that Selenium supports file uploads on -->
-              <value>${excluded.groups}</value>
-            </property>
-          </properties>
+            <listener>org.apache.archiva.web.test.listener.CaptureScreenShotsListener</listener>
+          </systemPropertyVariables>
         </configuration>
         <executions>
           <execution>
@@ -179,16 +172,10 @@
               <goal>test</goal>
             </goals>
             <configuration>
-              <systemProperties>
-                <property>
-                  <name>browser</name>
-                  <value>${selenium.browser}</value>
-                </property>
-		            <property>
-                  <name>baseUrl</name>
-                  <value>${baseUrl}</value>
-                </property>
-              </systemProperties>
+              <systemPropertyVariables>
+                <browser>${selenium.browser}</browser>
+                <baseUrl>${baseUrl}</baseUrl>
+              </systemPropertyVariables>
             </configuration>
           </execution>
         </executions>

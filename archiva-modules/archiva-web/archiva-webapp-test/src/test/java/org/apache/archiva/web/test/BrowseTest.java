@@ -25,7 +25,7 @@ import org.apache.archiva.web.test.parent.AbstractBrowseTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-@Test( groups = { "browse" }, dependsOnMethods = { "testAddArtifactNullValues" } )
+@Test( groups = { "browse" }, dependsOnGroups = {"login","artifactmanagement"} )
 public class BrowseTest 
 	extends AbstractBrowseTest
 {
@@ -36,7 +36,7 @@ public class BrowseTest
 		assertBrowsePage();
 	}
 	
-	@Test( dependsOnMethods = { "testAddArtifactValidValues" } )
+	@Test
 	public void testClickArtifactFromBrowse()
 	{
 		goToBrowsePage();

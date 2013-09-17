@@ -22,7 +22,7 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractRepositoryTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "database" }, dependsOnMethods = { "testWithCorrectUsernamePassword" }, sequential = true )
+@Test( groups = { "database" }, dependsOnGroups = "login", sequential = true )
 public class DatabaseTest
 	extends AbstractRepositoryTest
 {

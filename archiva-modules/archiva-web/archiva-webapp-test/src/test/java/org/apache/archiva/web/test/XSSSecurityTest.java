@@ -25,7 +25,7 @@ import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 /**
  * Test all actions affected with XSS security issue.
  */
-@Test( groups = { "xss" }, dependsOnMethods = { "testWithCorrectUsernamePassword" }, sequential = true )
+@Test( groups = { "xss" }, dependsOnGroups = "login", sequential = true )
 public class XSSSecurityTest
     extends AbstractArchivaTest
 {

@@ -22,7 +22,7 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "auditlogsreport" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+@Test( groups = { "auditlogsreport" }, dependsOnGroups = {"login", "artifactmanagement", "userroles"} )
 public class AuditLogsReportTest
     extends AbstractArchivaTest
 {
@@ -45,7 +45,7 @@ public class AuditLogsReportTest
         assertButtonWithValuePresent( "View Audit Log" );
     }
     
-    @Test(dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+    @Test
     public void testAuditLogsReport()
     {
         goToAuditLogReports();        
@@ -53,7 +53,7 @@ public class AuditLogsReportTest
         assertTextPresent( "Latest Events" );
     }
     
-    @Test(dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+    @Test
     public void testViewAuditLogsNoDataFound()
     {
         goToAuditLogReports();        
@@ -68,7 +68,7 @@ public class AuditLogsReportTest
     }    
     
     // TODO: add test for adding via WebDAV
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
+    @Test (groups = "requiresUpload")
     public void testViewAuditLogsDataFound()
     {
         goToAuditLogReports();        
@@ -88,7 +88,7 @@ public class AuditLogsReportTest
     }
     
     // TODO: add test for adding via WebDAV
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
+    @Test ( groups = "requiresUpload")
     public void testViewAuditLogsOnlyArtifactIdIsSpecified()
     {
         goToAuditLogReports();        
@@ -108,7 +108,7 @@ public class AuditLogsReportTest
     }
     
     // TODO: add test for adding via WebDAV
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
+    @Test (groups = "requiresUpload")
     public void testViewAuditLogsForAllRepositories()
     {
         goToAuditLogReports();        
@@ -126,7 +126,7 @@ public class AuditLogsReportTest
         assertTextPresent( "admin" );
     }
     
-    @Test (dependsOnMethods = { "testAddArtifactValidValues", "testUserWithRepoManagerInternalRole" }, groups = "requiresUpload")
+    @Test (groups = "requiresUpload")
     public void testViewAuditLogsViewAuditEventsForManageableRepositoriesOnly()
     {
         String groupId = getProperty( "SNAPSHOT_GROUPID" );
@@ -162,7 +162,7 @@ public class AuditLogsReportTest
         login( getProperty( "ADMIN_USERNAME" ), getProperty( "ADMIN_PASSWORD" ) );
     }
     
-    @Test (dependsOnMethods = { "testAddArtifactValidValues" }, groups = "requiresUpload")
+    @Test ( groups = "requiresUpload")
     public void testViewAuditLogsReportForGroupId()
     {
         String groupId = getProperty("AUDITLOG_GROUPID");

@@ -25,7 +25,7 @@ import org.testng.annotations.Test;
 /**
  * Test all actions affected with CSRF security issue.
  */
-@Test( groups = { "csrf" }, dependsOnMethods = { "testWithCorrectUsernamePassword" }, sequential = true )
+@Test( groups = { "csrf" }, dependsOnGroups = "login", sequential = true )
 public class CSRFSecurityTest
     extends AbstractArchivaTest
 {

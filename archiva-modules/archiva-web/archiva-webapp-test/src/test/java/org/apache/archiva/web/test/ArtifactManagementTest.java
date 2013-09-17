@@ -22,7 +22,7 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractArtifactManagementTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "artifactmanagement" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+@Test( groups = { "artifactmanagement" }, dependsOnGroups = "login" )
 public class ArtifactManagementTest
 	extends AbstractArtifactManagementTest
 {

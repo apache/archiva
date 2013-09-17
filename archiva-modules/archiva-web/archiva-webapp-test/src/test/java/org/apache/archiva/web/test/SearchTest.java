@@ -24,7 +24,7 @@ import java.io.File;
 import org.apache.archiva.web.test.parent.AbstractSearchTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "search" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+@Test( groups = { "search" }, dependsOnGroups = "login" )
 public class SearchTest 
 	extends AbstractSearchTest
 {

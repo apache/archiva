@@ -23,7 +23,7 @@ import org.apache.archiva.web.test.parent.AbstractRepositoryTest;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
-@Test( groups = { "virtualrepository" }, dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+@Test( groups = { "virtualrepository" }, dependsOnGroups = "login")
 public class VirtualRepositoryTest 
 	extends AbstractRepositoryTest
 {
@@ -33,7 +33,7 @@ public class VirtualRepositoryTest
 		assertTextPresent( "Identifier field is required." );
 	}
 	
-	@Test(dependsOnMethods = { "testWithCorrectUsernamePassword" } )
+	@Test
 	public void testAddRepositoryGroupValidValue()
 	{
 		addRepositoryGroup( "testing" );
