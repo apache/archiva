@@ -409,6 +409,7 @@ public class EditManagedRepositoryActionTest
 
     private void assertRepositoryEquals( ManagedRepositoryConfiguration expectedRepository,
                                          ManagedRepositoryConfiguration actualRepository )
+        throws IOException
     {
         assertEquals( expectedRepository.getDaysOlder(), actualRepository.getDaysOlder() );
         assertEquals( expectedRepository.getId(), actualRepository.getId() );
@@ -416,7 +417,7 @@ public class EditManagedRepositoryActionTest
         assertEquals( expectedRepository.getLayout(), actualRepository.getLayout() );
         assertEquals(
             "expected: '" + expectedRepository.getLocation() + "' found '" + actualRepository.getLocation() + "'",
-            expectedRepository.getLocation(), actualRepository.getLocation() );
+            new File( expectedRepository.getLocation()).getCanonicalPath(), new File(actualRepository.getLocation()).getCanonicalPath() );
         assertEquals( expectedRepository.getName(), actualRepository.getName() );
         assertEquals( expectedRepository.getRefreshCronExpression(), actualRepository.getRefreshCronExpression() );
         assertEquals( expectedRepository.getRetentionCount(), actualRepository.getRetentionCount() );
