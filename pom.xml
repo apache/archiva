@@ -66,7 +66,7 @@
 
     <maven-model-converter.version>2.1</maven-model-converter.version>
     <maven.indexer.version>5.1.1</maven.indexer.version>
-    <wagon.version>2.4</wagon.version>
+    <wagon.version>2.5</wagon.version>
     <redback.version>2.1</redback.version>
     <redback.cache.version>2.1</redback.cache.version>
     <redback.quartz.version>2.0</redback.quartz.version>

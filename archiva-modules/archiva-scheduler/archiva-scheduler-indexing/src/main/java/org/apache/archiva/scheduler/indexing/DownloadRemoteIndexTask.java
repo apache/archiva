@@ -41,11 +41,11 @@ import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.events.TransferEvent;
 import org.apache.maven.wagon.events.TransferListener;
+import org.apache.maven.wagon.providers.http.AbstractHttpClientWagon;
+import org.apache.maven.wagon.providers.http.HttpConfiguration;
+import org.apache.maven.wagon.providers.http.HttpMethodConfiguration;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
-import org.apache.maven.wagon.shared.http4.AbstractHttpClientWagon;
-import org.apache.maven.wagon.shared.http4.HttpConfiguration;
-import org.apache.maven.wagon.shared.http4.HttpMethodConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
