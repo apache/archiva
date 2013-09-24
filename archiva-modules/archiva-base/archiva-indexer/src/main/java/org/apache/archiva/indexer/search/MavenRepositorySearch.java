@@ -123,7 +123,7 @@ public class MavenRepositorySearch
 
         // we retun only artifacts without classifier in quick search, olamy cannot find a way to say with this field empty
         // FIXME  cannot find a way currently to setup this in constructQuery !!!
-        return search( limits, q, indexingContextIds, NoClassifierArtifactInfoFilter.LIST, selectedRepos, false );
+        return search( limits, q, indexingContextIds, NoClassifierArtifactInfoFilter.LIST, selectedRepos, true );
 
     }
 

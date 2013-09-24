@@ -160,6 +160,14 @@ public class ArchivaIndexingTaskExecutor
 
                     if ( ac != null )
                     {
+                        // MRM-1779 pom must be indexed too
+                        // TODO make that configurable?
+                        if ( artifactFile.getPath().endsWith( ".pom" ) )
+                        {
+                            ac.getArtifactInfo().fextension = "pom";
+                            ac.getArtifactInfo().packaging = "pom";
+                            ac.getArtifactInfo().classifier = "pom";
+                        }
                         if ( indexingTask.getAction().equals( ArtifactIndexingTask.Action.ADD ) )
                         {
                             //IndexSearcher s = context.getIndexSearcher();

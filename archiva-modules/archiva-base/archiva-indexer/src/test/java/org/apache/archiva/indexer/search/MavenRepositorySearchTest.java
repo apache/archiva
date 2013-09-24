@@ -85,6 +85,10 @@ public class MavenRepositorySearchTest
 
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
+
+        files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
+            + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.pom" ) );
+
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0-sources.jar" ) );
 

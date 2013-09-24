@@ -208,6 +208,13 @@ public abstract class AbstractMavenRepositorySearch
         {
             assertTrue( "file not exists " + artifactFile.getPath(), artifactFile.exists() );
             ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile );
+
+            if ( artifactFile.getPath().endsWith( ".pom" ) )
+            {
+                ac.getArtifactInfo().fextension = "pom";
+                ac.getArtifactInfo().packaging = "pom";
+                ac.getArtifactInfo().classifier = "pom";
+            }
             nexusIndexer.addArtifactToIndex( ac, context );
             context.updateTimestamp( true );
         }

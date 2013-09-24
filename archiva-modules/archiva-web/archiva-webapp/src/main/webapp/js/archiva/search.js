@@ -1951,7 +1951,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
     this.classifier=ko.observable();
 
     //private boolean includePomArtifacts = false;
-    this.includePomArtifacts=ko.observable(false);
+    this.includePomArtifacts=ko.observable(true);
 
     this.classifier=ko.observable();
   }
