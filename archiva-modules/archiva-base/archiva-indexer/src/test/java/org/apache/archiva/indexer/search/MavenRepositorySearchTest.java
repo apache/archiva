@@ -200,7 +200,7 @@ public class MavenRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 2, results.getTotalHits() );
+        assertEquals( 3, results.getTotalHits() );
 
         SearchResultHit hit = results.getHits().get( 0 );
         assertEquals( "org.apache.archiva", hit.getGroupId() );
