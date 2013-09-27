@@ -471,6 +471,10 @@
       <input type="text" class="form-search" id="search-filter-auto-classifier"
              placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
     </th>
+    <th title="${$.i18n.prop('search.artifact.results.fileExtension')}">
+      <input type="text" class="form-search" id="search-filter-auto-fileExtension"
+             placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
+    </th>
 
   </tr>
   </thead>
@@ -481,6 +485,7 @@
     <td><a href="#" data-bind="click: function(){artifactIdView(row)}">${row.artifactId}</a></td>
     <td><a href="#" data-bind="click: function(){artifactDetailView(row)}">${row.version}</a></td>
     <td>${row.classifier}</td>
+    <td>${row.fileExtension}</td>
   </tr>
   {{/each}}
   </tbody>

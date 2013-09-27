@@ -2013,6 +2013,11 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
           headerText: $.i18n.prop('search.artifact.results.classifier'),
           rowText: "classifier",
           id: "classifier"
+        },
+        {
+          headerText: $.i18n.prop('search.artifact.results.fileExtension'),
+          rowText: "fileExtension",
+          id: "fileExtension"
         }
       ],
       pageSize: 10,
@@ -2021,6 +2026,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
         applyAutocompleteOnHeader('artifactId',self);
         applyAutocompleteOnHeader('version',self);
         applyAutocompleteOnHeader('classifier',self);
+        applyAutocompleteOnHeader('fileExtension',self);
       }
     });
 
