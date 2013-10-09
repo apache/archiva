@@ -73,7 +73,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       mainContent.find("#repository-groups-edit-available-repositories").find(".icon-plus-sign" ).off("click");
       mainContent.find("#repository-groups-edit-order-div").find(".icon-minus-sign" ).off("click");
       self.renderSortableAvailables(self.repositoryGroupsViewModel);
-      self.renderSortableChoosed(self.repositoryGroupsViewModel);
+      self.renderSortableChosed(self.repositoryGroupsViewModel);
     }
 
     this.saveRepositoryGroup=function(repositoryGroup){
@@ -105,7 +105,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       $("#main-content").find("#repository-groups-edit-order-div").find("#minus-"+idVal ).on("click",function(){
         var idVal = $(this).attr("id");
         idVal=idVal.substringAfterFirst("minus-");
-        self.removeChoosed(idVal);
+        self.removeChosed(idVal);
       });
     }
 
@@ -117,7 +117,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       });
     }
 
-    this.removeChoosed=function(idVal){
+    this.removeChosed=function(idVal){
       for (var i=0;i<self.repositoryGroupsViewModel.managedRepositories().length;i++){
         if(self.repositoryGroupsViewModel.managedRepositories()[i].id()==idVal){
           self.availableRepositories.push(repositoryGroupsViewModel.managedRepositories()[i]);
@@ -137,11 +137,11 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       });
     }
 
-    this.renderSortableChoosed=function(repositoryGroupsViewModel){
+    this.renderSortableChosed=function(repositoryGroupsViewModel){
       $("#main-content").find("#repository-groups-edit-order-div").find(".icon-minus-sign" ).on("click",function(){
         var idVal = $(this).attr("id");
         idVal=idVal.substringAfterFirst("minus-");
-        self.removeChoosed(idVal);
+        self.removeChosed(idVal);
       });
     }
   }
@@ -197,7 +197,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
             repositoryGroupViewModel.applicationUrl=applicationUrl;
             activateRepositoryGroupEditTab();
             ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-edit" ).get(0));
-            repositoryGroupViewModel.renderSortableChoosed(self);
+            repositoryGroupViewModel.renderSortableChosed(self);
             repositoryGroupViewModel.renderSortableAvailables(self);
             mainContent.find("#repository-groups-view-tabs-li-edit" ).find("a").html($.i18n.prop("edit"));
             repositoryGroupValidator();
@@ -324,7 +324,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
 
                       activateRepositoryGroupEditTab();
                       ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-edit" ).get(0));
-                      repositoryGroupViewModel.renderSortableChoosed(self.repositoryGroupsViewModel);
+                      repositoryGroupViewModel.renderSortableChosed(self.repositoryGroupsViewModel);
                       repositoryGroupViewModel.renderSortableAvailables(self.repositoryGroupsViewModel);
                     }
                     if ($(e.target).attr("href")=="#repository-groups-view") {

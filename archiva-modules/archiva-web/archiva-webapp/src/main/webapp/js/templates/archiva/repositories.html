@@ -1318,7 +1318,7 @@
         <div class="span6 dotted">
           <div id="repository-groups-edit-div" data-bind='template:{name:"repository-group-edit-tmpl"}'></div>
           <div id="repository-groups-edit-order-div" style="min-height: 80px"
-               data-bind="sortable: { template: 'repository-group-edit-order-tmpl-choosed',data:repositoryGroup.managedRepositories,afterMove:repositoryMoved}">
+               data-bind="sortable: { template: 'repository-group-edit-order-tmpl-chose',data:repositoryGroup.managedRepositories,afterMove:repositoryMoved}">
           </div>
         </div>
 
@@ -1339,7 +1339,7 @@
   </div>
 </script>
 
-<script id="repository-group-edit-order-tmpl-choosed" type="text/html">
+<script id="repository-group-edit-order-tmpl-chose" type="text/html">
   <div class="well draggable-item">
     <span class="pull-right">
       <i class="icon-minus-sign cursor-hand" id="minus-${$data.id()}"/>
@@ -1540,7 +1540,7 @@
           <div id="proxy-connectors-rules-edit-div"
                data-bind='template:{name:"proxy-connectors-rules-edit-tmpl"}'></div>
           <div id="proxy-connectors-rules-edit-order-div" style="min-height: 80px"
-               data-bind="sortable: { template: 'proxy-connectors-rules-edit-proxy-connectors-tmpl-choosen',data:proxyConnectorRule.proxyConnectors,afterMove:proxyConnectorMoved}">
+               data-bind="sortable: { template: 'proxy-connectors-rules-edit-proxy-connectors-tmpl-chosen',data:proxyConnectorRule.proxyConnectors,afterMove:proxyConnectorMoved}">
           </div>
         </div>
 
@@ -1670,7 +1670,7 @@
   </div>
 </script>
 
-<script id="proxy-connectors-rules-edit-proxy-connectors-tmpl-choosen" type="text/html">
+<script id="proxy-connectors-rules-edit-proxy-connectors-tmpl-chosen" type="text/html">
   <div class="well draggable-item">
     <i class="icon-minus-sign cursor-hand pull-right" data-source-repoId="${$data.sourceRepoId()}"
        data-target-repoId="${$data.targetRepoId()}"/>

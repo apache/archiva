@@ -173,7 +173,7 @@ define("archiva/admin/repository/maven2/proxy-connectors-rules",["jquery","i18n"
       var proxyConnectorRuleViewModel=new ProxyConnectorRuleViewModel(proxyConnectorRule,self,true);
       ko.applyBindings(proxyConnectorRuleViewModel,$("#main-content").find("#proxy-connector-rules-edit" ).get(0));
       activateProxyConnectorRulesEditTab();
-      proxyConnectorRuleViewModel.activateRemoveChoosen(self);
+      proxyConnectorRuleViewModel.activateRemoveChosen(self);
       proxyConnectorRuleViewModel.activateRemoveAvailable(self);
     }
 
@@ -208,7 +208,7 @@ define("archiva/admin/repository/maven2/proxy-connectors-rules",["jquery","i18n"
     proxyConnectorMoved=function(arg){
       $.log("repositoryMoved:"+arg.sourceIndex+" to " + arg.targetIndex);
       self.proxyConnectorRule.modified(true);
-      self.activateRemoveChoosen(self.proxyConnectorRulesViewModel);
+      self.activateRemoveChosen(self.proxyConnectorRulesViewModel);
       self.activateRemoveAvailable(self.proxyConnectorRulesViewModel);
     }
 
@@ -216,8 +216,8 @@ define("archiva/admin/repository/maven2/proxy-connectors-rules",["jquery","i18n"
       self.proxyConnectorRulesViewModel.saveProxyConnectorRule(self.proxyConnectorRule)
     }
 
-    this.removeChoosen=function(proxyConnectorRulesViewModel,sourceRepoId,targetRepoId){
-      $.log("removeChoosen:"+sourceRepoId+":"+targetRepoId);
+    this.removeChosen=function(proxyConnectorRulesViewModel,sourceRepoId,targetRepoId){
+      $.log("removeChosen:"+sourceRepoId+":"+targetRepoId);
 
       $.log("size before:"+self.proxyConnectorRule.proxyConnectors().length);
       var proxyConnectorToRemove=null;
@@ -237,9 +237,9 @@ define("archiva/admin/repository/maven2/proxy-connectors-rules",["jquery","i18n"
       mainContent.find("#proxy-connectors-rules-edit-order-div" ).find("[data-source-repoId="+sourceRepoId+"][data-target-repoId="+targetRepoId+"]" ).off("click");
     }
 
-    this.activateRemoveChoosen=function(proxyConnectorRulesViewModel){
+    this.activateRemoveChosen=function(proxyConnectorRulesViewModel){
       $("#main-content" ).find("#proxy-connectors-rules-edit-order-div" ).find(".icon-minus-sign" ).on("click", function(){
-        self.removeChoosen(proxyConnectorRulesViewModel,$(this).attr("data-source-repoId"),$(this).attr("data-target-repoId"));
+        self.removeChosen(proxyConnectorRulesViewModel,$(this).attr("data-source-repoId"),$(this).attr("data-target-repoId"));
       });
     }
 
@@ -260,7 +260,7 @@ define("archiva/admin/repository/maven2/proxy-connectors-rules",["jquery","i18n"
       $.log("size after:"+self.availableProxyConnectors().length);
       var mainContent=$("#main-content");
       mainContent.find("#proxy-connectors-rules-edit-order-div" ).find("[data-source-repoId="+sourceRepoId+"][data-target-repoId="+targetRepoId+"]" ).on("click", function(){
-        self.removeChoosen(proxyConnectorRulesViewModel,$(this).attr("data-source-repoId"),$(this).attr("data-target-repoId"));
+        self.removeChosen(proxyConnectorRulesViewModel,$(this).attr("data-source-repoId"),$(this).attr("data-target-repoId"));
       });
       mainContent.find("#proxy-connectors-rules-available-proxy-connectors" ).find("[data-source-repoId="+sourceRepoId+"][data-target-repoId="+targetRepoId+"]" ).off("click");
     }
