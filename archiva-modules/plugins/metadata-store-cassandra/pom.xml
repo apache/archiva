@@ -32,7 +32,7 @@
 
   <properties>
     <!-- upgrade need a new astyanax release > 1.56.42 see https://github.com/Netflix/astyanax/issues/352 -->
-    <cassandraVersion>1.2.5</cassandraVersion>
+    <cassandraVersion>1.2.9</cassandraVersion>
     <astyanax.version>1.56.43</astyanax.version>
   </properties>
 
