@@ -85,7 +85,7 @@
     <lucene.version>3.6.2</lucene.version>
     <jackrabbit.version>2.6.3</jackrabbit.version>
 
-    <cxfVersion>2.6.8</cxfVersion>
+    <cxfVersion>2.6.10</cxfVersion>
     <derbyVersion>10.10.1.1</derbyVersion>
     <httpclient.version>4.3.1</httpclient.version>
     <httpclient.core.version>4.3</httpclient.core.version>
