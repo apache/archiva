@@ -27,9 +27,15 @@ Apache Archiva Redback Runtime Configuration
 
 %{toc}
 
-* Apache Redback User Manager Implementation
+* Apache Redback User Manager/RbacManager Implementations
 
-  Since 1.4-M4, you can choose to switch User Manager Implementations you are using dynamically.
+  Since 1.4-M4, you can choose to switch dynamically
+
+   * User Manager Implementations (from Database and/or LDAP).
+
+   * RbacManager Implementations (from Database and/or LDAP): to manage if roles management comes from Database and/or LDAP.
+
+   []
 
 [../images/redback-runtime-conf-general.png]
 
