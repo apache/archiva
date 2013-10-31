@@ -84,7 +84,7 @@
 
     <plexusUtilsPluginsVersion>3.0.8</plexusUtilsPluginsVersion>
 
-    <jacksonVersion>1.9.11</jacksonVersion>
+    <jacksonVersion>2.2.3</jacksonVersion>
     <enunciate.docsDir />
     <enunciate.version>1.26.2</enunciate.version>
     <enunciate.debug>false</enunciate.debug>
@@ -918,10 +918,11 @@
           <version>${enunciate.version}</version>
         </dependency>
 
+        <!-- upgrade version here -->
         <dependency>
           <groupId>org.codehaus.jackson</groupId>
           <artifactId>jackson-xc</artifactId>
-          <version>${jacksonVersion}</version>
+          <version>1.9.11</version>
           <scope>provided</scope>
         </dependency>
       </dependencies>
