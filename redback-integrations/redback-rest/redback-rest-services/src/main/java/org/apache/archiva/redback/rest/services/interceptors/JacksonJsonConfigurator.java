@@ -18,8 +18,8 @@ package org.apache.archiva.redback.rest.services.interceptors;
  * under the License.
  */
 
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,6 +41,7 @@ public class JacksonJsonConfigurator
     public JacksonJsonConfigurator( ObjectMapper objectMapper )
     {
         log.info( "configure jackson ObjectMapper" );
-        objectMapper.configure( DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false );
+        objectMapper.disable( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES );
+
     }
 }

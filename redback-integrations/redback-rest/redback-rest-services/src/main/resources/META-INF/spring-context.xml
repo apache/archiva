@@ -39,11 +39,11 @@
   <context:component-scan
     base-package="org.apache.archiva.redback.rest.services"/>
 
-  <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider">
+  <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
     <property name="mapper" ref="redbackJacksonMapper"/>
   </bean>
 
-  <bean id="redbackJacksonMapper" class="org.codehaus.jackson.map.ObjectMapper">
+  <bean id="redbackJacksonMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
   </bean>
 
   <jaxrs:server id="redbackServices" address="/redbackServices">

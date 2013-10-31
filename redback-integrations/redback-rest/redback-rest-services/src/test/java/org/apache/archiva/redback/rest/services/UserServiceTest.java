@@ -19,6 +19,7 @@ package org.apache.archiva.redback.rest.services;
  * under the License.
  */
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.apache.archiva.redback.rest.api.model.Operation;
 import org.apache.archiva.redback.rest.api.model.Permission;
 import org.apache.archiva.redback.rest.api.model.ResetPasswordRequest;
@@ -30,7 +31,6 @@ import org.apache.archiva.redback.rest.services.mock.ServicesAssert;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
@@ -69,7 +69,7 @@ public class UserServiceTest
         assertFalse( users.isEmpty() );
     }
 
-    @Test (expected = ServerWebApplicationException.class)
+    @Test( expected = ServerWebApplicationException.class )
     public void getUsersWithoutAuthz()
         throws Exception
     {

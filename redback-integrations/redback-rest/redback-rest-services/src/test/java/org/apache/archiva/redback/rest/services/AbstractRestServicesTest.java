@@ -19,6 +19,7 @@ package org.apache.archiva.redback.rest.services;
  * under the License.
  */
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import junit.framework.TestCase;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.apache.archiva.redback.rest.api.model.User;
@@ -34,7 +35,6 @@ import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.servlet.CXFServlet;
-import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -133,7 +133,7 @@ public abstract class AbstractRestServicesTest
     {
         return JAXRSClientFactory.create(
             "http://localhost:" + port + "/" + getRestServicesPath() + "/fakeCreateAdminService/",
-            FakeCreateAdminService.class, Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+            FakeCreateAdminService.class, Collections.singletonList( new com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider() ) );
     }
 
     @After
