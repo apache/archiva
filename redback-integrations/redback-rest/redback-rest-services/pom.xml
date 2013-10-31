@@ -32,7 +32,7 @@
   <name>Redback :: Integration :: REST :: Services</name>
 
   <properties>
-    <tomcatVersion>7.0.40</tomcatVersion>
+    <tomcatVersion>7.0.47</tomcatVersion>
   </properties>
 
   <dependencies>
