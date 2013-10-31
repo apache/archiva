@@ -32,10 +32,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -48,11 +47,11 @@
             <Bundle-SymbolicName>org.apache.archiva.maven2.model</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Import-Package>
-              javax.xml.bind.annotation,
-              org.codehaus.jackson.annotate,
+              javax.xml.bind.annotation
             </Import-Package>
             <Export-Package>
-              org.apache.archiva.maven2.model*;version=${project.version}
+              org.apache.archiva.maven2.model*;version=${project.version},
+              com.fasterxml.jackson.annotation
             </Export-Package>
           </instructions>
         </configuration>
