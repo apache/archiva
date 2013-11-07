@@ -278,59 +278,6 @@ public class DownloadRemoteIndexTask
         }
     }
 
-    /*
-    private static final class DownloadListener
-        implements TransferListener
-    {
-        private Logger log = LoggerFactory.getLogger( getClass() );
-
-        private String resourceName;
-
-        private long startTime;
-
-        private int totalLength = 0;
-
-        public void transferInitiated( TransferEvent transferEvent )
-        {
-            startTime = System.currentTimeMillis();
-            resourceName = transferEvent.getResource().getName();
-            log.debug( "initiate transfer of {}", resourceName );
-        }
-
-        public void transferStarted( TransferEvent transferEvent )
-        {
-            this.totalLength = 0;
-            resourceName = transferEvent.getResource().getName();
-            log.info( "start transfer of {}", transferEvent.getResource().getName() );
-        }
-
-        public void transferProgress( TransferEvent transferEvent, byte[] buffer, int length )
-        {
-            log.debug( "transfer of {} : {}/{}", transferEvent.getResource().getName(), buffer.length, length );
-            this.totalLength += length;
-        }
-
-        public void transferCompleted( TransferEvent transferEvent )
-        {
-            resourceName = transferEvent.getResource().getName();
-            long endTime = System.currentTimeMillis();
-            log.info( "end of transfer file {} {} kb: {}s", transferEvent.getResource().getName(),
-                      this.totalLength / 1024, ( endTime - startTime ) / 1000 );
-        }
-
-        public void transferError( TransferEvent transferEvent )
-        {
-            log.info( "error of transfer file {}: {}", transferEvent.getResource().getName(),
-                      transferEvent.getException().getMessage(), transferEvent.getException() );
-        }
-
-        public void debug( String message )
-        {
-            log.debug( "transfer debug {}", message );
-        }
-    }
-    */
-
     private static class ZeroCopyConsumerListener
         extends ZeroCopyConsumer
     {
@@ -388,7 +335,7 @@ public class DownloadRemoteIndexTask
             this.startTime = System.currentTimeMillis();
             super.onResponseReceived( response );
             this.totalLength = response.getEntity().getContentLength();
-            log.info( "start transfer of {}, contentLength: {}", resourceName, this.totalLength );
+            log.info( "start transfer of {}, contentLength: {}", resourceName, this.totalLength / 1024 );
         }
 
         @Override
