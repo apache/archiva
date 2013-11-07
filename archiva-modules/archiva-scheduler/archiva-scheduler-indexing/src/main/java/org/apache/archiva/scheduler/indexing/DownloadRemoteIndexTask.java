@@ -23,8 +23,6 @@ import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.proxy.common.WagonFactory;
-import org.apache.archiva.proxy.common.WagonFactoryException;
-import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
@@ -34,7 +32,6 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -47,27 +44,13 @@ import org.apache.http.nio.ContentEncoder;
 import org.apache.http.nio.IOControl;
 import org.apache.http.nio.client.methods.ZeroCopyConsumer;
 import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
-import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
 import org.apache.maven.index.updater.ResourceFetcher;
-import org.apache.maven.wagon.ConnectionException;
-import org.apache.maven.wagon.ResourceDoesNotExistException;
-import org.apache.maven.wagon.StreamWagon;
-import org.apache.maven.wagon.TransferFailedException;
-import org.apache.maven.wagon.Wagon;
-import org.apache.maven.wagon.authentication.AuthenticationException;
-import org.apache.maven.wagon.authentication.AuthenticationInfo;
-import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.events.TransferEvent;
 import org.apache.maven.wagon.events.TransferListener;
-import org.apache.maven.wagon.providers.http.AbstractHttpClientWagon;
-import org.apache.maven.wagon.providers.http.HttpConfiguration;
-import org.apache.maven.wagon.providers.http.HttpMethodConfiguration;
-import org.apache.maven.wagon.proxy.ProxyInfo;
-import org.apache.maven.wagon.repository.Repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +61,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -156,7 +138,7 @@ public class DownloadRemoteIndexTask
             tempIndexDirectory.mkdirs();
             tempIndexDirectory.deleteOnExit();
             String baseIndexUrl = indexingContext.getIndexUpdateUrl();
-
+            /*
             String wagonProtocol = new URL( this.remoteRepository.getUrl() ).getProtocol();
 
             final StreamWagon wagon = (StreamWagon) wagonFactory.getWagon(
@@ -196,7 +178,7 @@ public class DownloadRemoteIndexTask
             }
             wagon.connect( new Repository( this.remoteRepository.getId(), baseIndexUrl ), authenticationInfo,
                            proxyInfo );
-
+            */
             //---------------------------------------------
 
             HttpAsyncClientBuilder builder = HttpAsyncClientBuilder.create();
@@ -220,11 +202,9 @@ public class DownloadRemoteIndexTask
                 indexDirectory.mkdirs();
             }
 
-            ResourceFetcher resourceFetcher =
-                new WagonResourceFetcher( log, tempIndexDirectory, wagon, remoteRepository );
             CloseableHttpAsyncClient closeableHttpAsyncClient = builder.build();
             closeableHttpAsyncClient.start();
-            resourceFetcher =
+            ResourceFetcher resourceFetcher =
                 new ZeroCopyResourceFetcher( log, tempIndexDirectory, remoteRepository, closeableHttpAsyncClient,
                                              baseIndexUrl );
 
@@ -245,21 +225,6 @@ public class DownloadRemoteIndexTask
 
         }
         catch ( MalformedURLException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new RuntimeException( e.getMessage(), e );
-        }
-        catch ( WagonFactoryException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new RuntimeException( e.getMessage(), e );
-        }
-        catch ( ConnectionException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new RuntimeException( e.getMessage(), e );
-        }
-        catch ( AuthenticationException e )
         {
             log.error( e.getMessage(), e );
             throw new RuntimeException( e.getMessage(), e );
@@ -344,72 +309,6 @@ public class DownloadRemoteIndexTask
         {
             log.debug( "transfer debug {}", message );
         }
-    }
-
-    private static class WagonResourceFetcher
-        implements ResourceFetcher
-    {
-
-        Logger log;
-
-        File tempIndexDirectory;
-
-        Wagon wagon;
-
-        RemoteRepository remoteRepository;
-
-        private WagonResourceFetcher( Logger log, File tempIndexDirectory, Wagon wagon,
-                                      RemoteRepository remoteRepository )
-        {
-            this.log = log;
-            this.tempIndexDirectory = tempIndexDirectory;
-            this.wagon = wagon;
-            this.remoteRepository = remoteRepository;
-        }
-
-        public void connect( String id, String url )
-            throws IOException
-        {
-            //no op  
-        }
-
-        public void disconnect()
-            throws IOException
-        {
-            // no op
-        }
-
-        public InputStream retrieve( String name )
-            throws IOException, FileNotFoundException
-        {
-            try
-            {
-                log.info( "index update retrieve file, name:{}", name );
-                File file = new File( tempIndexDirectory, name );
-                if ( file.exists() )
-                {
-                    file.delete();
-                }
-                file.deleteOnExit();
-                wagon.get( addParameters( name, this.remoteRepository ), file );
-                return new FileInputStream( file );
-            }
-            catch ( AuthorizationException e )
-            {
-                throw new IOException( e.getMessage(), e );
-            }
-            catch ( TransferFailedException e )
-            {
-                throw new IOException( e.getMessage(), e );
-            }
-            catch ( ResourceDoesNotExistException e )
-            {
-                FileNotFoundException fnfe = new FileNotFoundException( e.getMessage() );
-                fnfe.initCause( e );
-                throw fnfe;
-            }
-        }
-
     }
 
     private static class ZeroCopyResourceFetcher
