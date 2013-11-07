@@ -26,7 +26,29 @@ import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.ContentType;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.nio.ContentDecoder;
+import org.apache.http.nio.ContentEncoder;
+import org.apache.http.nio.IOControl;
+import org.apache.http.nio.client.methods.ZeroCopyConsumer;
+import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
+import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
+import org.apache.http.protocol.HttpContext;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
@@ -56,8 +78,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Olivier Lamy
@@ -170,6 +197,23 @@ public class DownloadRemoteIndexTask
             wagon.connect( new Repository( this.remoteRepository.getId(), baseIndexUrl ), authenticationInfo,
                            proxyInfo );
 
+            //---------------------------------------------
+
+            HttpAsyncClientBuilder builder = HttpAsyncClientBuilder.create();
+
+            if ( this.networkProxy != null )
+            {
+                HttpHost httpHost = new HttpHost( this.networkProxy.getHost(), this.networkProxy.getPort() );
+                builder = builder.setProxy( httpHost );
+            }
+
+            if ( this.remoteRepository.getUserName() != null )
+            {
+                BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
+                basicCredentialsProvider.setCredentials( AuthScope.ANY, new UsernamePasswordCredentials(
+                    this.remoteRepository.getUserName(), this.remoteRepository.getPassword() ) );
+            }
+
             File indexDirectory = indexingContext.getIndexDirectoryFile();
             if ( !indexDirectory.exists() )
             {
@@ -178,6 +222,12 @@ public class DownloadRemoteIndexTask
 
             ResourceFetcher resourceFetcher =
                 new WagonResourceFetcher( log, tempIndexDirectory, wagon, remoteRepository );
+            CloseableHttpAsyncClient closeableHttpAsyncClient = builder.build();
+            closeableHttpAsyncClient.start();
+            resourceFetcher =
+                new ZeroCopyResourceFetcher( log, tempIndexDirectory, remoteRepository, closeableHttpAsyncClient,
+                                             baseIndexUrl );
+
             IndexUpdateRequest request = new IndexUpdateRequest( indexingContext, resourceFetcher );
             request.setForceFullUpdate( this.fullDownload );
             request.setLocalIndexCacheDir( indexCacheDirectory );
@@ -360,29 +410,183 @@ public class DownloadRemoteIndexTask
             }
         }
 
-        // FIXME remove crappy copy/paste
-        protected String addParameters( String path, RemoteRepository remoteRepository )
+    }
+
+    private static class ZeroCopyResourceFetcher
+        implements ResourceFetcher
+    {
+
+        Logger log;
+
+        File tempIndexDirectory;
+
+        final RemoteRepository remoteRepository;
+
+        CloseableHttpAsyncClient httpclient;
+
+        String baseIndexUrl;
+
+        private ZeroCopyResourceFetcher( Logger log, File tempIndexDirectory, RemoteRepository remoteRepository,
+                                         CloseableHttpAsyncClient httpclient, String baseIndexUrl )
         {
-            if ( remoteRepository.getExtraParameters().isEmpty() )
-            {
-                return path;
-            }
-
-            boolean question = false;
-
-            StringBuilder res = new StringBuilder( path == null ? "" : path );
-
-            for ( Map.Entry<String, String> entry : remoteRepository.getExtraParameters().entrySet() )
-            {
-                if ( !question )
-                {
-                    res.append( '?' ).append( entry.getKey() ).append( '=' ).append( entry.getValue() );
-                }
-            }
-
-            return res.toString();
+            this.log = log;
+            this.tempIndexDirectory = tempIndexDirectory;
+            this.remoteRepository = remoteRepository;
+            this.httpclient = httpclient;
+            this.baseIndexUrl = baseIndexUrl;
         }
 
+        public void connect( String id, String url )
+            throws IOException
+        {
+            //no op
+        }
+
+        public void disconnect()
+            throws IOException
+        {
+            // no op
+        }
+
+        public InputStream retrieve( final String name )
+            throws IOException, FileNotFoundException
+        {
+
+            log.info( "index update retrieve file, name:{}", name );
+            File file = new File( tempIndexDirectory, name );
+            if ( file.exists() )
+            {
+                file.delete();
+            }
+            file.deleteOnExit();
+
+            ZeroCopyConsumer<File> consumer = new ZeroCopyConsumer<File>( file )
+            {
+
+                @Override
+                protected File process( final HttpResponse response, final File file, final ContentType contentType )
+                    throws Exception
+                {
+                    if ( response.getStatusLine().getStatusCode() != HttpStatus.SC_OK )
+                    {
+                        throw new ClientProtocolException( "Upload failed: " + response.getStatusLine() );
+                    }
+                    return file;
+                }
+
+                @Override
+                protected void onContentReceived( ContentDecoder decoder, IOControl ioctrl )
+                    throws IOException
+                {
+                    log.debug( "onContentReceived" );
+                    super.onContentReceived( decoder, ioctrl );
+                }
+            };
+            URL targetUrl = new URL( this.remoteRepository.getUrl() );
+            final HttpHost targetHost = new HttpHost( targetUrl.getHost(), targetUrl.getPort() );
+
+            Future<File> httpResponseFuture = httpclient.execute( new HttpAsyncRequestProducer()
+            {
+                @Override
+                public HttpHost getTarget()
+                {
+                    return targetHost;
+                }
+
+                @Override
+                public HttpRequest generateRequest()
+                    throws IOException, HttpException
+                {
+                    StringBuilder url = new StringBuilder( baseIndexUrl );
+                    if ( !StringUtils.endsWith( baseIndexUrl, "/" ) )
+                    {
+                        url.append( '/' );
+                    }
+                    HttpGet httpGet = new HttpGet( url.append( addParameters( name, remoteRepository ) ).toString() );
+                    return httpGet;
+                }
+
+                @Override
+                public void produceContent( ContentEncoder encoder, IOControl ioctrl )
+                    throws IOException
+                {
+                    // no op
+                }
+
+                @Override
+                public void requestCompleted( HttpContext context )
+                {
+                    // no op
+                }
+
+                @Override
+                public void failed( Exception ex )
+                {
+                    log.error( "http request failed", ex );
+                }
+
+                @Override
+                public boolean isRepeatable()
+                {
+                    return true;
+                }
+
+                @Override
+                public void resetRequest()
+                    throws IOException
+                {
+                    // no op
+                }
+
+                @Override
+                public void close()
+                    throws IOException
+                {
+                    // no op
+                }
+            }, consumer, null );
+            try
+            {
+                file = httpResponseFuture.get( this.remoteRepository.getTimeout(), TimeUnit.SECONDS );
+            }
+            catch ( InterruptedException e )
+            {
+                throw new IOException( e.getMessage(), e );
+            }
+            catch ( ExecutionException e )
+            {
+                throw new IOException( e.getMessage(), e );
+            }
+            catch ( TimeoutException e )
+            {
+                throw new IOException( e.getMessage(), e );
+            }
+            return new FileInputStream( file );
+        }
+
+    }
+
+    // FIXME remove crappy copy/paste
+    protected static String addParameters( String path, RemoteRepository remoteRepository )
+    {
+        if ( remoteRepository.getExtraParameters().isEmpty() )
+        {
+            return path;
+        }
+
+        boolean question = false;
+
+        StringBuilder res = new StringBuilder( path == null ? "" : path );
+
+        for ( Map.Entry<String, String> entry : remoteRepository.getExtraParameters().entrySet() )
+        {
+            if ( !question )
+            {
+                res.append( '?' ).append( entry.getKey() ).append( '=' ).append( entry.getValue() );
+            }
+        }
+
+        return res.toString();
     }
 
 

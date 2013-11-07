@@ -30,7 +30,9 @@
     <logger name="org.springframework" level="error"/>
 
     <logger name="org.apache.archiva.scheduler.indexing" level="debug"/>
-
+    <!--
+    <logger name="org.apache.http" level="debug"/>
+    -->
     <root level="info">
       <appender-ref ref="console"/>
     </root>
