@@ -215,7 +215,8 @@
               org.apache.http.nio,
               org.apache.http.nio.client.methods,
               org.apache.http.nio.protocol,
-              org.apache.http.protocol
+              org.apache.http.protocol,
+              org.apache.http.impl.nio.codecs,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>
