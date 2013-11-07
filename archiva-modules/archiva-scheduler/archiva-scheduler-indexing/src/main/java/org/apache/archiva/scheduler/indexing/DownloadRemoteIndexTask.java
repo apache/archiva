@@ -26,6 +26,7 @@ import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -39,6 +40,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.impl.nio.codecs.LengthDelimitedDecoder;
 import org.apache.http.nio.ContentDecoder;
 import org.apache.http.nio.ContentEncoder;
 import org.apache.http.nio.IOControl;
@@ -49,8 +51,6 @@ import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
 import org.apache.maven.index.updater.ResourceFetcher;
-import org.apache.maven.wagon.events.TransferEvent;
-import org.apache.maven.wagon.events.TransferListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +59,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -138,6 +139,9 @@ public class DownloadRemoteIndexTask
             tempIndexDirectory.mkdirs();
             tempIndexDirectory.deleteOnExit();
             String baseIndexUrl = indexingContext.getIndexUpdateUrl();
+
+            URL indexUrl = new URL( baseIndexUrl );
+
             /*
             String wagonProtocol = new URL( this.remoteRepository.getUrl() ).getProtocol();
 
@@ -183,18 +187,33 @@ public class DownloadRemoteIndexTask
 
             HttpAsyncClientBuilder builder = HttpAsyncClientBuilder.create();
 
+            BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
+
             if ( this.networkProxy != null )
             {
                 HttpHost httpHost = new HttpHost( this.networkProxy.getHost(), this.networkProxy.getPort() );
                 builder = builder.setProxy( httpHost );
+
+                if ( this.networkProxy.getUsername() != null )
+                {
+                    basicCredentialsProvider.setCredentials(
+                        new AuthScope( this.networkProxy.getHost(), this.networkProxy.getPort(), null, null ),
+                        new UsernamePasswordCredentials( this.networkProxy.getUsername(),
+                                                         this.networkProxy.getPassword() ) );
+                }
+
             }
 
             if ( this.remoteRepository.getUserName() != null )
             {
-                BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
-                basicCredentialsProvider.setCredentials( AuthScope.ANY, new UsernamePasswordCredentials(
-                    this.remoteRepository.getUserName(), this.remoteRepository.getPassword() ) );
+                basicCredentialsProvider.setCredentials(
+                    new AuthScope( indexUrl.getHost(), indexUrl.getPort(), null, null ),
+                    new UsernamePasswordCredentials( this.remoteRepository.getUserName(),
+                                                     this.remoteRepository.getPassword() ) );
+
             }
+
+            builder = builder.setDefaultCredentialsProvider( basicCredentialsProvider );
 
             File indexDirectory = indexingContext.getIndexDirectoryFile();
             if ( !indexDirectory.exists() )
@@ -259,7 +278,7 @@ public class DownloadRemoteIndexTask
         }
     }
 
-
+    /*
     private static final class DownloadListener
         implements TransferListener
     {
@@ -310,6 +329,96 @@ public class DownloadRemoteIndexTask
             log.debug( "transfer debug {}", message );
         }
     }
+    */
+
+    private static class ZeroCopyConsumerListener
+        extends ZeroCopyConsumer
+    {
+        private Logger log = LoggerFactory.getLogger( getClass() );
+
+        private String resourceName;
+
+        private long startTime;
+
+        private long totalLength = 0;
+
+        //private long currentLength = 0;
+
+        private ZeroCopyConsumerListener( File file, String resourceName )
+            throws FileNotFoundException
+        {
+            super( file );
+            this.resourceName = resourceName;
+        }
+
+        @Override
+        protected File process( final HttpResponse response, final File file, final ContentType contentType )
+            throws Exception
+        {
+            if ( response.getStatusLine().getStatusCode() != HttpStatus.SC_OK )
+            {
+                throw new ClientProtocolException( "Upload failed: " + response.getStatusLine() );
+            }
+            long endTime = System.currentTimeMillis();
+            log.info( "end of transfer file {} {} kb: {}s", resourceName, this.totalLength / 1024,
+                      ( endTime - startTime ) / 1000 );
+            return file;
+        }
+
+        @Override
+        protected void onContentReceived( ContentDecoder decoder, IOControl ioControl )
+            throws IOException
+        {
+            if ( decoder instanceof LengthDelimitedDecoder )
+            {
+                LengthDelimitedDecoder ldl = LengthDelimitedDecoder.class.cast( decoder );
+                long len = getLen( ldl );
+                if ( len > -1 )
+                {
+                    log.debug( "transfer of {} : {}/{}", resourceName, len / 1024, this.totalLength / 1024 );
+                }
+            }
+
+            super.onContentReceived( decoder, ioControl );
+        }
+
+        @Override
+        protected void onResponseReceived( HttpResponse response )
+        {
+            this.startTime = System.currentTimeMillis();
+            super.onResponseReceived( response );
+            this.totalLength = response.getEntity().getContentLength();
+            log.info( "start transfer of {}, contentLength: {}", resourceName, this.totalLength );
+        }
+
+        @Override
+        protected void onEntityEnclosed( HttpEntity entity, ContentType contentType )
+            throws IOException
+        {
+            super.onEntityEnclosed( entity, contentType );
+        }
+
+        private long getLen( LengthDelimitedDecoder ldl )
+        {
+            try
+            {
+                Field lenField = LengthDelimitedDecoder.class.getDeclaredField( "len" );
+                lenField.setAccessible( true );
+                long len = (Long) lenField.get( ldl );
+                return len;
+            }
+            catch ( NoSuchFieldException e )
+            {
+                log.debug( e.getMessage(), e );
+                return -1;
+            }
+            catch ( IllegalAccessException e )
+            {
+                log.debug( e.getMessage(), e );
+                return -1;
+            }
+        }
+    }
 
     private static class ZeroCopyResourceFetcher
         implements ResourceFetcher
@@ -348,7 +457,7 @@ public class DownloadRemoteIndexTask
         }
 
         public InputStream retrieve( final String name )
-            throws IOException, FileNotFoundException
+            throws IOException
         {
 
             log.info( "index update retrieve file, name:{}", name );
@@ -359,29 +468,9 @@ public class DownloadRemoteIndexTask
             }
             file.deleteOnExit();
 
-            ZeroCopyConsumer<File> consumer = new ZeroCopyConsumer<File>( file )
-            {
+            ZeroCopyConsumer<File> consumer = new ZeroCopyConsumerListener( file, name );
 
-                @Override
-                protected File process( final HttpResponse response, final File file, final ContentType contentType )
-                    throws Exception
-                {
-                    if ( response.getStatusLine().getStatusCode() != HttpStatus.SC_OK )
-                    {
-                        throw new ClientProtocolException( "Upload failed: " + response.getStatusLine() );
-                    }
-                    return file;
-                }
-
-                @Override
-                protected void onContentReceived( ContentDecoder decoder, IOControl ioctrl )
-                    throws IOException
-                {
-                    log.debug( "onContentReceived" );
-                    super.onContentReceived( decoder, ioctrl );
-                }
-            };
-            URL targetUrl = new URL( this.remoteRepository.getUrl() );
+            URL targetUrl = new URL( this.baseIndexUrl );
             final HttpHost targetHost = new HttpHost( targetUrl.getHost(), targetUrl.getPort() );
 
             Future<File> httpResponseFuture = httpclient.execute( new HttpAsyncRequestProducer()
@@ -415,7 +504,7 @@ public class DownloadRemoteIndexTask
                 @Override
                 public void requestCompleted( HttpContext context )
                 {
-                    // no op
+                    log.debug( "requestCompleted" );
                 }
 
                 @Override
@@ -427,6 +516,7 @@ public class DownloadRemoteIndexTask
                 @Override
                 public boolean isRepeatable()
                 {
+                    log.debug( "isRepeatable" );
                     return true;
                 }
 
@@ -434,15 +524,16 @@ public class DownloadRemoteIndexTask
                 public void resetRequest()
                     throws IOException
                 {
-                    // no op
+                    log.debug( "resetRequest" );
                 }
 
                 @Override
                 public void close()
                     throws IOException
                 {
-                    // no op
+                    log.debug( "close" );
                 }
+
             }, consumer, null );
             try
             {

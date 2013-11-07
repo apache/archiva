@@ -82,6 +82,10 @@
 
     <asyncLogger name="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry" level="debug"/>
 
+    <!--
+    <logger name="org.apache.archiva.scheduler.indexing" level="debug"/>
+    -->
+
     <asyncRoot level="info" includeLocation="true">
       <appender-ref ref="console"/>
       <appender-ref ref="rolling"/>
