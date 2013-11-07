@@ -52,11 +52,6 @@ public class DefaultIndexMerger
     implements IndexMerger
 {
 
-    /**
-     * default tmp created group index ttl in minutes
-     */
-    static final int DEFAULT_GROUP_INDEX_TTL = 30;
-
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
