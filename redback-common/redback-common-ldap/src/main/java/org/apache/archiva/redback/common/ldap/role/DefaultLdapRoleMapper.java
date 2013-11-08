@@ -18,9 +18,6 @@ package org.apache.archiva.redback.common.ldap.role;
  * under the License.
  */
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-
 import org.apache.archiva.redback.common.ldap.MappingException;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.common.ldap.connection.LdapException;
@@ -51,7 +48,6 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -350,37 +346,42 @@ public class DefaultLdapRoleMapper
 
             searchControls.setDerefLinkFlag( true );
             searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
-            String dn =null;
+            String dn = null;
             try
             {
                 //try to look the user up
-                User user = userManager.findUser(username);
-                if (user instanceof LdapUser)
+                User user = userManager.findUser( username );
+                if ( user instanceof LdapUser )
                 {
-                    LdapUser ldapUser = (LdapUser)user;
-                    Attribute dnAttribute = ldapUser.getOriginalAttributes().get("distinguishedName");
-                    if(dnAttribute!=null)
-                        dn = (String)dnAttribute.get();
+                    LdapUser ldapUser = LdapUser.class.cast( user );
+                    Attribute dnAttribute = ldapUser.getOriginalAttributes().get( "distinguishedName" );
+                    if ( dnAttribute != null )
+                    {
+                        dn = String.class.cast( dnAttribute.get() );
+                    }
 
                 }
             }
-            catch (UserNotFoundException e)
+            catch ( UserNotFoundException e )
             {
-                log.warn("Failed to look up user "+username+". Computing distinguished name manually",e);
+                log.warn( "Failed to look up user {}. Computing distinguished name manually", username, e );
             }
-            catch (UserManagerException e)
+            catch ( UserManagerException e )
             {
-                log.warn("Failed to look up user "+username+". Computing distinguished name manually",e);
+                log.warn( "Failed to look up user {}. Computing distinguished name manually", username, e );
             }
-            if(dn==null)
+            if ( dn == null )
             {
                 //failed to look up the user directly
                 StringBuilder builder = new StringBuilder();
-                builder.append(this.userIdAttribute).append("=").append(username).append(",").append(getBaseDn());
+                builder.append( this.userIdAttribute ).append( "=" ).append( username ).append( "," ).append(
+                    getBaseDn() );
                 dn = builder.toString();
             }
-            String filter = new StringBuilder().append( "(&" ).append( "(objectClass=" + getLdapGroupClass() + ")" )
-                .append("(").append(getLdapGroupMember()).append("=").append(dn).append(")" ).append( ")" ).toString();
+            String filter =
+                new StringBuilder().append( "(&" ).append( "(objectClass=" + getLdapGroupClass() + ")" ).append(
+                    "(" ).append( getLdapGroupMember() ).append( "=" ).append( dn ).append( ")" ).append(
+                    ")" ).toString();
 
             log.debug( "filter: {}", filter );
 
@@ -392,7 +393,7 @@ public class DefaultLdapRoleMapper
 
                 List<String> allMembers = new ArrayList<String>();
 
-                Attribute uniqueMemberAttr = searchResult.getAttributes().get(getLdapGroupMember() );
+                Attribute uniqueMemberAttr = searchResult.getAttributes().get( getLdapGroupMember() );
 
                 if ( uniqueMemberAttr != null )
                 {
@@ -596,7 +597,7 @@ public class DefaultLdapRoleMapper
             while ( namingEnumeration.hasMore() )
             {
                 SearchResult searchResult = namingEnumeration.next();
-                Attribute attribute = searchResult.getAttributes().get( getLdapGroupMember());
+                Attribute attribute = searchResult.getAttributes().get( getLdapGroupMember() );
                 if ( attribute == null )
                 {
                     BasicAttribute basicAttribute = new BasicAttribute( getLdapGroupMember() );
@@ -806,7 +807,7 @@ public class DefaultLdapRoleMapper
         return ldapGroupMember;
     }
 
-    public void setLdapGroupMember(String ldapGroupMember)
+    public void setLdapGroupMember( String ldapGroupMember )
     {
         this.ldapGroupMember = ldapGroupMember;
     }
