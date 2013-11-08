@@ -918,13 +918,6 @@
           <version>${enunciate.version}</version>
         </dependency>
 
-        <!-- upgrade version here -->
-        <dependency>
-          <groupId>org.codehaus.jackson</groupId>
-          <artifactId>jackson-xc</artifactId>
-          <version>1.9.11</version>
-          <scope>provided</scope>
-        </dependency>
       </dependencies>
       <build>
         <plugins>
