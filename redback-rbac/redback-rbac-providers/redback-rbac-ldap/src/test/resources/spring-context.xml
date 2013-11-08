@@ -30,6 +30,7 @@
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
   <alias name="rbacManager#memory" alias="rbacManager#default"/>
+  <alias name="userManager#ldap" alias="userManager#default"/>
 
   <bean name="apacheDS#test" class="org.apache.archiva.redback.components.apacheds.DefaultApacheDs"
         scope="prototype">
