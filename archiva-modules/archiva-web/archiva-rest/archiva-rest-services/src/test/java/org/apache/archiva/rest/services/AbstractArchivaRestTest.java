@@ -19,6 +19,7 @@ package org.apache.archiva.rest.services;
  */
 
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
@@ -42,7 +43,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
