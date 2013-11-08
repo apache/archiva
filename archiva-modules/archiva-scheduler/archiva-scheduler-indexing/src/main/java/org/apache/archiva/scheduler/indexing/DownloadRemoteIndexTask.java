@@ -484,7 +484,8 @@ public class DownloadRemoteIndexTask
             }, consumer, null );
             try
             {
-                file = httpResponseFuture.get( this.remoteRepository.getTimeout(), TimeUnit.SECONDS );
+                int timeOut = this.remoteRepository.getRemoteDownloadTimeout();
+                file = timeOut > 0 ? httpResponseFuture.get( timeOut, TimeUnit.SECONDS ) : httpResponseFuture.get();
             }
             catch ( InterruptedException e )
             {
