@@ -20,11 +20,17 @@ package org.apache.archiva.redback.common.ldap.role;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+
 import org.apache.archiva.redback.common.ldap.MappingException;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.common.ldap.connection.LdapException;
+import org.apache.archiva.redback.common.ldap.user.LdapUser;
 import org.apache.archiva.redback.configuration.UserConfiguration;
 import org.apache.archiva.redback.configuration.UserConfigurationKeys;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
+import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +51,7 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,6 +83,10 @@ public class DefaultLdapRoleMapper
     @Named( value = "ldapRoleMapperConfiguration#default" )
     private LdapRoleMapperConfiguration ldapRoleMapperConfiguration;
 
+    @Inject
+    @Named( value = "userManager#default" )
+    private UserManager userManager;
+
     //---------------------------
     // fields
     //---------------------------
@@ -85,6 +96,8 @@ public class DefaultLdapRoleMapper
     private String groupsDn;
 
     private String baseDn;
+
+    private String ldapGroupMember = "uniquemember";
 
     private boolean useDefaultRoleName = false;
 
@@ -112,6 +125,8 @@ public class DefaultLdapRoleMapper
             userConf.getBoolean( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME, this.useDefaultRoleName );
 
         this.userIdAttribute = userConf.getString( UserConfigurationKeys.LDAP_USER_ID_ATTRIBUTE, this.userIdAttribute );
+
+        this.ldapGroupMember = userConf.getString( UserConfigurationKeys.LDAP_GROUPS_MEMBER, this.ldapGroupMember );
     }
 
     public List<String> getAllGroups( DirContext context )
@@ -283,7 +298,7 @@ public class DefaultLdapRoleMapper
             {
                 SearchResult searchResult = namingEnumeration.next();
 
-                Attribute uniqueMemberAttr = searchResult.getAttributes().get( "uniquemember" );
+                Attribute uniqueMemberAttr = searchResult.getAttributes().get( getLdapGroupMember() );
 
                 if ( uniqueMemberAttr != null )
                 {
@@ -335,11 +350,37 @@ public class DefaultLdapRoleMapper
 
             searchControls.setDerefLinkFlag( true );
             searchControls.setSearchScope( SearchControls.SUBTREE_SCOPE );
+            String dn =null;
+            try
+            {
+                //try to look the user up
+                User user = userManager.findUser(username);
+                if (user instanceof LdapUser)
+                {
+                    LdapUser ldapUser = (LdapUser)user;
+                    Attribute dnAttribute = ldapUser.getOriginalAttributes().get("distinguishedName");
+                    if(dnAttribute!=null)
+                        dn = (String)dnAttribute.get();
 
-            String filter =
-                new StringBuilder().append( "(&" ).append( "(objectClass=" + getLdapGroupClass() + ")" ).append(
-                    "(uniquemember=" ).append( this.userIdAttribute + "=" + username + "," + this.getBaseDn() ).append(
-                    ")" ).append( ")" ).toString();
+                }
+            }
+            catch (UserNotFoundException e)
+            {
+                log.warn("Failed to look up user "+username+". Computing distinguished name manually",e);
+            }
+            catch (UserManagerException e)
+            {
+                log.warn("Failed to look up user "+username+". Computing distinguished name manually",e);
+            }
+            if(dn==null)
+            {
+                //failed to look up the user directly
+                StringBuilder builder = new StringBuilder();
+                builder.append(this.userIdAttribute).append("=").append(username).append(",").append(getBaseDn());
+                dn = builder.toString();
+            }
+            String filter = new StringBuilder().append( "(&" ).append( "(objectClass=" + getLdapGroupClass() + ")" )
+                .append("(").append(getLdapGroupMember()).append("=").append(dn).append(")" ).append( ")" ).toString();
 
             log.debug( "filter: {}", filter );
 
@@ -351,14 +392,17 @@ public class DefaultLdapRoleMapper
 
                 List<String> allMembers = new ArrayList<String>();
 
-                Attribute uniqueMemberAttr = searchResult.getAttributes().get( "uniquemember" );
+                Attribute uniqueMemberAttr = searchResult.getAttributes().get(getLdapGroupMember() );
 
                 if ( uniqueMemberAttr != null )
                 {
                     NamingEnumeration<String> allMembersEnum = (NamingEnumeration<String>) uniqueMemberAttr.getAll();
                     while ( allMembersEnum.hasMore() )
                     {
+
                         String userName = allMembersEnum.next();
+                        //the original dn
+                        allMembers.add( userName );
                         // uid=blabla we only want bla bla
                         userName = StringUtils.substringAfter( userName, "=" );
                         userName = StringUtils.substringBefore( userName, "," );
@@ -374,6 +418,13 @@ public class DefaultLdapRoleMapper
                     groupName = StringUtils.substringAfter( groupName, "=" );
                     userGroups.add( groupName );
 
+                }
+                else if ( allMembers.contains( dn ) )
+                {
+                    String groupName = searchResult.getName();
+                    // cn=blabla we only want bla bla
+                    groupName = StringUtils.substringAfter( groupName, "=" );
+                    userGroups.add( groupName );
                 }
 
 
@@ -488,8 +539,7 @@ public class DefaultLdapRoleMapper
         attributes.put( "cn", groupName );
 
         // attribute mandatory when created a group so add admin as default member
-        // TODO make this default configurable
-        BasicAttribute basicAttribute = new BasicAttribute( "uniquemember" );
+        BasicAttribute basicAttribute = new BasicAttribute( getLdapGroupMember() );
         basicAttribute.add( this.userIdAttribute + "=admin," + getBaseDn() );
         attributes.put( basicAttribute );
 
@@ -546,10 +596,10 @@ public class DefaultLdapRoleMapper
             while ( namingEnumeration.hasMore() )
             {
                 SearchResult searchResult = namingEnumeration.next();
-                Attribute attribute = searchResult.getAttributes().get( "uniquemember" );
+                Attribute attribute = searchResult.getAttributes().get( getLdapGroupMember());
                 if ( attribute == null )
                 {
-                    BasicAttribute basicAttribute = new BasicAttribute( "uniquemember" );
+                    BasicAttribute basicAttribute = new BasicAttribute( getLdapGroupMember() );
                     basicAttribute.add( this.userIdAttribute + "=" + username + "," + getBaseDn() );
                     context.modifyAttributes( "cn=" + groupName + "," + getGroupsDn(), new ModificationItem[]{
                         new ModificationItem( DirContext.ADD_ATTRIBUTE, basicAttribute ) } );
@@ -617,10 +667,10 @@ public class DefaultLdapRoleMapper
             while ( namingEnumeration.hasMore() )
             {
                 SearchResult searchResult = namingEnumeration.next();
-                Attribute attribute = searchResult.getAttributes().get( "uniquemember" );
+                Attribute attribute = searchResult.getAttributes().get( getLdapGroupMember() );
                 if ( attribute != null )
                 {
-                    BasicAttribute basicAttribute = new BasicAttribute( "uniquemember" );
+                    BasicAttribute basicAttribute = new BasicAttribute( getLdapGroupMember() );
                     basicAttribute.add( this.userIdAttribute + "=" + username + "," + getGroupsDn() );
                     context.modifyAttributes( "cn=" + groupName + "," + getGroupsDn(), new ModificationItem[]{
                         new ModificationItem( DirContext.REMOVE_ATTRIBUTE, basicAttribute ) } );
@@ -749,6 +799,16 @@ public class DefaultLdapRoleMapper
     public void setBaseDn( String baseDn )
     {
         this.baseDn = baseDn;
+    }
+
+    public String getLdapGroupMember()
+    {
+        return ldapGroupMember;
+    }
+
+    public void setLdapGroupMember(String ldapGroupMember)
+    {
+        this.ldapGroupMember = ldapGroupMember;
     }
 
     //-------------------

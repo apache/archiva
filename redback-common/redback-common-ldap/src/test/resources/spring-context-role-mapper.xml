@@ -29,6 +29,7 @@
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
   <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
+  <alias name="userManager#mock" alias="userManager#default"/>
 
   <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry"
         init-method="initialize">

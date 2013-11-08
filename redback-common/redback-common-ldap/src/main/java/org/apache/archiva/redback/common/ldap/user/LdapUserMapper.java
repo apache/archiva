@@ -64,6 +64,11 @@ public class LdapUserMapper
     /**
      *
      */
+    String distinguishedNameAttribute = "distinguishedName";
+
+    /**
+     *
+     */
     String userBaseDn;
 
     /**
@@ -142,9 +147,19 @@ public class LdapUserMapper
         return passwordAttribute;
     }
 
+    public String getDistinguishedNameAttribute()
+    {
+        return distinguishedNameAttribute;
+    }
+
+    public void setDistinguishedNameAttribute(String distinguishedNameAttribute)
+    {
+        this.distinguishedNameAttribute = distinguishedNameAttribute;
+    }
+
     public String[] getUserAttributeNames()
     {
-        return new String[]{ emailAttribute, fullNameAttribute, passwordAttribute, userIdAttribute };
+        return new String[]{ emailAttribute, fullNameAttribute, passwordAttribute, userIdAttribute, distinguishedNameAttribute };
     }
 
     public int getMaxResultCount()
@@ -303,7 +318,7 @@ public class LdapUserMapper
     public String[] getReturningAttributes()
     {
         return new String[]{ getUserIdAttribute(), getEmailAttribute(), getFullNameAttribute(),
-            getPasswordAttribute() };
+            getPasswordAttribute(), getDistinguishedNameAttribute() };
     }
 
     public UserConfiguration getUserConf()

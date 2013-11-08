@@ -1,4 +1,4 @@
-package org.apache.archiva.redback.system;
+package org.apache.archiva.redback.common.ldap.user;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -24,12 +24,14 @@ import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserManagerListener;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.UserQuery;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
  * @author Olivier Lamy
  */
+@Service( "userManager#mock" )
 public class MockUserManager
     implements UserManager
 {
