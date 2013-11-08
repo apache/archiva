@@ -18,6 +18,7 @@ package org.apache.archiva;
  * under the License.
  */
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import junit.framework.TestCase;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.ProxyConnectorService;
@@ -31,7 +32,6 @@ import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.servlet.CXFServlet;
-import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.apache.archiva.redback.rest.api.model.User;
 import org.apache.archiva.redback.rest.api.services.RoleManagementService;

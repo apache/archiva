@@ -18,12 +18,12 @@ package org.apache.archiva;
  * under the License.
  */
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.apache.archiva.web.api.RuntimeInfoService;
 import org.apache.archiva.web.model.ApplicationRuntimeInfo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
 import org.junit.Before;
 import org.junit.Test;

@@ -34,14 +34,14 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.web.spring, org.apache.archiva.web.startup, org.apache.archiva.web.runtime, org.apache.archiva.web.api,, org.apache.archiva.web.security"/>
+  <context:component-scan base-package="org.apache.archiva.web.startup, org.apache.archiva.web.runtime, org.apache.archiva.web.api,, org.apache.archiva.web.security"/>
 
   <util:properties id="archivaRuntimeProperties" location="classpath:application.properties" />
 
   <jaxrs:server id="archivaUiServices" address="/archivaUiServices">
 
     <jaxrs:providers>
-      <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider"/>
       <ref bean="authenticationInterceptor#rest"/>
       <ref bean="permissionInterceptor#rest"/>
       <ref bean="archivaRestServiceExceptionMapper"/>
