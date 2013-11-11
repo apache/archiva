@@ -85,6 +85,8 @@
     <lucene.version>3.6.2</lucene.version>
     <jackrabbit.version>2.6.3</jackrabbit.version>
 
+    <sirona.version>0.1-incubating-SNAPSHOT</sirona.version>
+
     <cxfVersion>2.6.10</cxfVersion>
     <derbyVersion>10.10.1.1</derbyVersion>
     <httpclient.version>4.3.1</httpclient.version>
@@ -910,6 +912,36 @@
         <artifactId>ant</artifactId>
         <version>1.8.3</version>
       </dependency>
+
+
+      <!-- sirona -->
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-core</artifactId>
+        <version>${sirona.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-jdbc</artifactId>
+        <version>${sirona.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-spring</artifactId>
+        <version>${sirona.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-web</artifactId>
+        <version>${sirona.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-reporting</artifactId>
+        <version>${sirona.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>

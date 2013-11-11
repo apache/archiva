@@ -40,6 +40,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -55,9 +56,12 @@ public class DownloadMergedIndexTest
 
     @BeforeClass
     public static void setAppServerBase()
+        throws IOException
     {
         previousAppServerBase = System.getProperty( "appserver.base" );
-        System.setProperty( "appserver.base", "target/" + DownloadMergedIndexTest.class.getName() );
+        System.setProperty( "appserver.base",
+                            new File( System.getProperty( "java.io.tmpdir" ) ).getCanonicalPath() + "/target/"
+                                + DownloadMergedIndexTest.class.getName() );
     }
 
     @AfterClass

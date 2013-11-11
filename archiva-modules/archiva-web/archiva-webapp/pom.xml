@@ -594,6 +594,31 @@
       </exclusions>
     </dependency>
 
+
+    <!-- sirona -->
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-reporting</artifactId>
+      <classifier>classes</classifier>
+    </dependency>
+
+
     <dependency>
       <groupId>cglib</groupId>
       <artifactId>cglib</artifactId>
@@ -1001,6 +1026,7 @@
           <path>${tomcatRunPath}</path>
           <contextFile>${tomcatContextXml}</contextFile>
           <useTestClasspath>false</useTestClasspath>
+
           <systemProperties>
             <plexus.home>${archivaAppServerBase}</plexus.home>
             <appserver.base>${archivaAppServerBase}</appserver.base>
