@@ -74,7 +74,6 @@ public class DefaultPluginsServices
         }
         catch ( IOException e )
         {
-
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }

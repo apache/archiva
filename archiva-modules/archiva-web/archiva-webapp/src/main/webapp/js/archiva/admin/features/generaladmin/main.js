@@ -20,12 +20,13 @@ define("archiva/admin/features/generaladmin/main",["jquery","i18n","utils","jque
   "knockout.sortable","jquery.ui","jquery.validate","bootstrap","select2","knockout.select2"]
     , function(jquery,i18n,utils,jqueryTmpl,ko,simpleGrid,sortable,jqueryUi,validate,bootstrap,select2) {
 
-  showMenu = function(          administrationMenuItems) {
+  showMenu = function( administrationMenuItems) {
         administrationMenuItems.push({  text : $.i18n.prop('menu.repository-scanning')      , order:2000, id: "menu-repository-scanning-list-a"    , href: "#scanningList"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryScanning();}});
         administrationMenuItems.push({  text : $.i18n.prop('menu.runtime-configuration')    , order:2010, id: "menu-runtime-configuration-list-a"  , href: "#runtimeconfig"        , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRuntimeConfiguration();}});
         administrationMenuItems.push({  text : $.i18n.prop('menu.system-status')            , order:2020, id: "menu-system-status-list-a"          , href: "#status"               , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displaySystemStatus();}});
-        administrationMenuItems.push({  text : $.i18n.prop('menu.ui-configuration')         , order:2030, id: "menu-ui-configuration-list-a"       , href: "#uiconfig"             , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayUiConfiguration();}});
-        administrationMenuItems.push({  text : $.i18n.prop('menu.reports')                  , order:2040, id: "menu-report-list-a"                 , href: "#reports"              , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayReportsPage();}});
+        administrationMenuItems.push({  text : $.i18n.prop('menu.sirona')                   , order:2030, id: "menu-system-sirona-list-a"          , href: "#sirona"               , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displaySirona();}});
+        administrationMenuItems.push({  text : $.i18n.prop('menu.ui-configuration')         , order:2040, id: "menu-ui-configuration-list-a"       , href: "#uiconfig"             , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayUiConfiguration();}});
+        administrationMenuItems.push({  text : $.i18n.prop('menu.reports')                  , order:2050, id: "menu-report-list-a"                 , href: "#reports"              , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayReportsPage();}});
  
   };
  
@@ -693,6 +694,11 @@ define("archiva/admin/features/generaladmin/main",["jquery","i18n","utils","jque
     displayScanningStats();
 
     displayCacheEntries();
+  }
+
+  displaySirona=function(){
+    window.open("sirona-monitoring/", '_blank');
+    window.focus();
   }
 
   refreshSystemStatus=function(){
