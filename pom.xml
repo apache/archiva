@@ -882,21 +882,6 @@
             </executions>
           </plugin>
         </plugins>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-deploy-plugin</artifactId>
-              <dependencies>
-                <dependency>
-                  <groupId>org.apache.maven.wagon</groupId>
-                  <artifactId>wagon-ssh</artifactId>
-                  <version>2.2</version>
-                </dependency>
-              </dependencies>
-            </plugin>
-          </plugins>
-        </pluginManagement>
       </build>
     </profile>
 
