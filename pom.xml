@@ -57,7 +57,6 @@
   </distributionManagement>
 
   <properties>
-    <siteBaseDeployment>scp://people.apache.org/www/archiva.apache.org</siteBaseDeployment>
     <snapshotsDeployUrl>http://archiva-repository.apache.org/archiva/repository/snapshots</snapshotsDeployUrl>
     <snapshotsDeployId>archiva-repository.snapshots</snapshotsDeployId>
     <releaseDeployUrl>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage/</releaseDeployUrl>
