@@ -25,11 +25,13 @@ import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
-import org.easymock.MockControl;
+import org.easymock.IMocksControl;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.easymock.EasyMock.createNiceControl;
 
 /**
  * MockConfiguration 
@@ -46,14 +48,14 @@ public class MockConfiguration
     private Set<RegistryListener> registryListeners = new HashSet<RegistryListener>();
     private Set<ConfigurationListener> configListeners = new HashSet<ConfigurationListener>();
 
-    private MockControl registryControl;
+    private IMocksControl registryControl;
 
     private Registry registryMock;
 
     public MockConfiguration()
     {
-        registryControl = MockControl.createNiceControl( Registry.class );
-        registryMock = (Registry) registryControl.getMock();
+        registryControl = createNiceControl();
+        registryMock = registryControl.createMock( Registry.class );
     }
 
     public void addChangeListener( RegistryListener listener )

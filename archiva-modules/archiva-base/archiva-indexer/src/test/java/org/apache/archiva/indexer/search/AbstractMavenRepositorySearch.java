@@ -28,6 +28,7 @@ import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.index.ArtifactContext;
@@ -36,7 +37,8 @@ import org.apache.maven.index.ArtifactScanningListener;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.ScanningResult;
 import org.apache.maven.index.context.IndexingContext;
-import org.easymock.MockControl;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -47,7 +49,6 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * @author Olivier Lamy
@@ -73,7 +74,7 @@ public abstract class AbstractMavenRepositorySearch
 
     ArtifactContextProducer artifactContextProducer;
 
-    MockControl archivaConfigControl;
+    IMocksControl archivaConfigControl;
 
     Configuration config;
 
@@ -97,9 +98,9 @@ public abstract class AbstractMavenRepositorySearch
         FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ) );
         assertFalse( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ).exists() );
 
-        archivaConfigControl = MockControl.createControl( ArchivaConfiguration.class );
+        archivaConfigControl = EasyMock.createControl( );
 
-        archivaConfig = (ArchivaConfiguration) archivaConfigControl.getMock();
+        archivaConfig = archivaConfigControl.createMock( ArchivaConfiguration.class );
 
         DefaultManagedRepositoryAdmin defaultManagedRepositoryAdmin = new DefaultManagedRepositoryAdmin();
         defaultManagedRepositoryAdmin.setArchivaConfiguration( archivaConfig );

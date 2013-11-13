@@ -28,7 +28,8 @@ import org.apache.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
-import org.easymock.MockControl;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -53,14 +54,14 @@ public class MockConfiguration
 
     private Set<ConfigurationListener> configListeners = new HashSet<ConfigurationListener>();
 
-    private MockControl registryControl;
+    private IMocksControl registryControl;
 
     private Registry registryMock;
 
     public MockConfiguration()
     {
-        registryControl = MockControl.createNiceControl( org.apache.archiva.redback.components.registry.Registry.class );
-        registryMock = (org.apache.archiva.redback.components.registry.Registry) registryControl.getMock();
+        registryControl = EasyMock.createNiceControl( );
+        registryMock = registryControl.createMock( Registry.class );
     }
 
     @PostConstruct

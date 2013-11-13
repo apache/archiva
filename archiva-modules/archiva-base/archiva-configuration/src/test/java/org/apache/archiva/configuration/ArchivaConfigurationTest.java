@@ -19,18 +19,11 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import java.io.File;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-import javax.inject.Inject;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
-import org.easymock.MockControl;
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -39,6 +32,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
 
 /**
  * Test the configuration store.
@@ -215,18 +217,21 @@ public class ArchivaConfigurationTest
         configuration.getWebapp().getUi().setAppletFindEnabled( false );
 
         // add a change listener
-        MockControl control = createConfigurationListenerMockControl();
-        ConfigurationListener listener = (ConfigurationListener) control.getMock();
+        //MockControl control = createConfigurationListenerMockControl();
+        ConfigurationListener listener = createMock( ConfigurationListener.class );// (ConfigurationListener) control.getMock();
         archivaConfiguration.addListener( listener );
 
         listener.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED ) );
-        control.setVoidCallable();
+        //control.setVoidCallable();
 
-        control.replay();
+
+        //control.replay();
+        replay( listener );
 
         archivaConfiguration.save( configuration );
 
-        control.verify();
+        //control.verify();
+        verify( listener );
 
         assertTrue( "Check file exists", file.exists() );
 
@@ -242,9 +247,9 @@ public class ArchivaConfigurationTest
         assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
     }
 
-    private static MockControl createConfigurationListenerMockControl()
+    private static ConfigurationListener createConfigurationListenerMockControl()
     {
-        return MockControl.createControl( ConfigurationListener.class );
+        return createMock( ConfigurationListener.class );// MockControl.createControl( ConfigurationListener.class );
     }
 
     @Test
@@ -301,19 +306,24 @@ public class ArchivaConfigurationTest
         configuration.getWebapp().getUi().setAppletFindEnabled( false );
 
         // add a change listener
-        MockControl control = createConfigurationListenerMockControl();
-        ConfigurationListener listener = (ConfigurationListener) control.getMock();
+        //MockControl control = createConfigurationListenerMockControl();
+        //ConfigurationListener listener = (ConfigurationListener) control.getMock();
+        ConfigurationListener listener = createConfigurationListenerMockControl();
         archivaConfiguration.addListener( listener );
 
         listener.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED ) );
 
-        control.setVoidCallable( 1 );
+        //control.setVoidCallable( 1 );
 
-        control.replay();
+        //control.replay();
+
+        replay( listener );
 
         archivaConfiguration.save( configuration );
 
-        control.verify();
+        //control.verify();
+
+        verify( listener );
 
         assertTrue( "Check file exists", userFile.exists() );
         assertFalse( "Check file not created", baseFile.exists() );

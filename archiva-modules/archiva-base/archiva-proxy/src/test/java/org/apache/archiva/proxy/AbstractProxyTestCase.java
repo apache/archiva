@@ -42,8 +42,8 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.wagon.Wagon;
-import org.easymock.ArgumentsMatcher;
-import org.easymock.MockControl;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -110,7 +110,7 @@ public abstract class AbstractProxyTestCase
 
     protected static final String REPOPATH_LEGACY_MANAGED_TARGET = "target/test-repository/legacy-managed";
 
-    protected MockControl wagonMockControl;
+    protected IMocksControl wagonMockControl;
 
     protected Wagon wagonMock;
 
@@ -205,8 +205,8 @@ public abstract class AbstractProxyTestCase
         proxyHandler = applicationContext.getBean( "repositoryProxyConnectors#test", RepositoryProxyConnectors.class );
 
         // Setup the wagon mock.
-        wagonMockControl = MockControl.createNiceControl( Wagon.class );
-        wagonMock = (Wagon) wagonMockControl.getMock();
+        wagonMockControl = EasyMock.createNiceControl( );
+        wagonMock = wagonMockControl.createMock( Wagon.class );
 
         delegate = (WagonDelegate) applicationContext.getBean( "wagon#test", Wagon.class );
 
@@ -236,7 +236,7 @@ public abstract class AbstractProxyTestCase
         }
     }
 
-
+    /*
     protected static final ArgumentsMatcher customWagonGetIfNewerMatcher = new ArgumentsMatcher()
     {
 
@@ -288,7 +288,7 @@ public abstract class AbstractProxyTestCase
             return ArrayUtils.toString( arguments );
         }
     };
-
+    */
 
     protected void assertChecksums( File expectedFile, String expectedSha1Contents, String expectedMd5Contents )
         throws Exception

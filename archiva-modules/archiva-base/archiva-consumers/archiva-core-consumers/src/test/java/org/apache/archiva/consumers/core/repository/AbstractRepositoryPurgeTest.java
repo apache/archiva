@@ -32,7 +32,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
-import org.easymock.MockControl;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -82,7 +83,7 @@ public abstract class AbstractRepositoryPurgeTest
 
     protected RepositoryPurge repoPurge;
 
-    protected MockControl listenerControl;
+    protected IMocksControl listenerControl;
 
     protected RepositoryListener listener;
 
@@ -104,9 +105,9 @@ public abstract class AbstractRepositoryPurgeTest
     
         removeMavenIndexes();
 
-        listenerControl = MockControl.createControl( RepositoryListener.class );
+        listenerControl = EasyMock.createControl( );
 
-        listener = (RepositoryListener) listenerControl.getMock();
+        listener = listenerControl.createMock( RepositoryListener.class );
 
         repositorySession = mock( RepositorySession.class );
         metadataRepository = mock( MetadataRepository.class );
@@ -195,7 +196,7 @@ public abstract class AbstractRepositoryPurgeTest
         throws Exception
     {
         removeMavenIndexes();
-        File testDir = new File( AbstractRepositoryPurgeTest.fixPath( getTestRepoRoot().getAbsolutePath() ) ) ;// AbstractRepositoryPurgeTest.fixPath( getTestRepoRoot() );
+        File testDir = new File( AbstractRepositoryPurgeTest.fixPath( getTestRepoRoot().getAbsolutePath() ) );
         FileUtils.deleteDirectory( testDir );
         File sourceDir = new File ( new File( "target/test-classes/" + TEST_REPO_ID).getAbsolutePath() );
         FileUtils.copyDirectory( sourceDir, testDir );

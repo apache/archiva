@@ -19,15 +19,16 @@ package org.apache.archiva.security;
  * under the License.
  */
 
-import org.apache.archiva.redback.users.User;
-import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.UnauthorizedException;
 import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
-import org.easymock.MockControl;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,7 +46,7 @@ public class ArchivaServletAuthenticatorTest
     @Named( value = "servletAuthenticator#test" )
     private ServletAuthenticator servletAuth;
 
-    private MockControl httpServletRequestControl;
+    private IMocksControl httpServletRequestControl;
 
     private HttpServletRequest request;
 
@@ -55,8 +56,8 @@ public class ArchivaServletAuthenticatorTest
     {
         super.setUp();
 
-        httpServletRequestControl = MockControl.createControl( HttpServletRequest.class );
-        request = (HttpServletRequest) httpServletRequestControl.getMock();
+        httpServletRequestControl = EasyMock.createControl( );
+        request = httpServletRequestControl.createMock( HttpServletRequest.class );
 
         setupRepository( "corporate" );
     }
@@ -123,7 +124,8 @@ public class ArchivaServletAuthenticatorTest
 
         assignRepositoryObserverRole( USER_ALPACA, "corporate" );
 
-        httpServletRequestControl.expectAndReturn( request.getRemoteAddr(), "192.168.111.111" );
+        //httpServletRequestControl.expectAndReturn( request.getRemoteAddr(), "192.168.111.111" );
+        EasyMock.expect( request.getRemoteAddr() ).andReturn( "192.168.111.111" );
 
         UserManager userManager = securitySystem.getUserManager();
         User user = userManager.findUser( USER_ALPACA );

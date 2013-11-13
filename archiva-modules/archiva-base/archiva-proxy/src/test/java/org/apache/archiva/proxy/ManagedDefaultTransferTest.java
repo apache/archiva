@@ -27,6 +27,7 @@ import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
+import org.easymock.EasyMock;
 import org.junit.Test;
 
 import java.io.File;
@@ -398,9 +399,12 @@ public class ManagedDefaultTransferTest
         // Configure Repository (usually done within archiva.xml configuration)
         saveRemoteRepositoryConfig( "badproxied", "Bad Proxied", "test://bad.machine.com/repo/", "default" );
 
-        wagonMock.get( path, new File( expectedFile.getAbsolutePath() + ".tmp" ) );
-        wagonMockControl.setMatcher( customWagonGetMatcher );
-        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "transfer failed" ) );
+        //wagonMock.get( path, new File( expectedFile.getAbsolutePath() + ".tmp" ) );
+        //wagonMockControl.setMatcher( customWagonGetMatcher );
+        //wagonMockControl.setThrowable( new ResourceDoesNotExistException( "transfer failed" ) );
+
+        wagonMock.get( EasyMock.eq( path), EasyMock.anyObject( File.class ) );
+        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "transfer failed" )  );
         wagonMockControl.replay();
 
         // Configure Connector (usually done within archiva.xml configuration)
@@ -438,15 +442,18 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", false );
 
         File tmpFile = new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" );
-        wagonMock.get( path, tmpFile );
 
-        wagonMockControl.setMatcher( customWagonGetMatcher );
-        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Can't find resource." ) );
+        //wagonMock.get( path, tmpFile );
+        //wagonMockControl.setMatcher( customWagonGetMatcher );
+        //wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Can't find resource." ) );
+        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
+        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "Can't find resource." ) );
 
-        wagonMock.get( path, tmpFile );
-
-        wagonMockControl.setMatcher( customWagonGetMatcher );
-        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Can't find resource." ) );
+        //wagonMock.get( path, tmpFile );
+        //wagonMockControl.setMatcher( customWagonGetMatcher );
+        //wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Can't find resource." ) );
+        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
+        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "Can't find resource." ) );
 
         wagonMockControl.replay();
 

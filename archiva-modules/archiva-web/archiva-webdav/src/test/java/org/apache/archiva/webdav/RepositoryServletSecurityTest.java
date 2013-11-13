@@ -29,25 +29,26 @@ import com.meterware.servletunit.ServletRunner;
 import com.meterware.servletunit.ServletUnitClient;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
-import org.apache.archiva.redback.authentication.AuthenticationException;
-import org.apache.archiva.redback.users.User;
-import org.apache.archiva.repository.audit.TestAuditListener;
-import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.commons.io.FileUtils;
-import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.security.ServletAuthenticator;
+import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.UnauthorizedException;
+import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
+import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.memory.SimpleUser;
-import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
-import org.apache.archiva.redback.integration.filter.authentication.basic.HttpBasicAuthentication;
-import org.easymock.MockControl;
-import org.easymock.classextension.MockClassControl;
+import org.apache.archiva.repository.audit.TestAuditListener;
+import org.apache.archiva.security.ServletAuthenticator;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.commons.io.FileUtils;
+import org.apache.jackrabbit.webdav.DavSessionProvider;
+import org.easymock.EasyMock;
+import static org.easymock.EasyMock.*;
+import org.easymock.IMocksControl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,19 +57,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-
 /**
  * RepositoryServletSecurityTest Test the flow of the authentication and authorization checks. This does not necessarily
  * perform redback security checking.
- * 
- *
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
@@ -87,11 +86,11 @@ public class RepositoryServletSecurityTest
 
     private DavSessionProvider davSessionProvider;
 
-    private MockControl servletAuthControl;
+    private IMocksControl servletAuthControl;
 
     private ServletAuthenticator servletAuth;
 
-    private MockClassControl httpAuthControl;
+    private IMocksControl httpAuthControl;
 
     private HttpAuthenticator httpAuth;
 
@@ -106,7 +105,8 @@ public class RepositoryServletSecurityTest
     {
         super.setUp();
 
-        String appserverBase =  System.getProperty( "appserver.base", new File( "target/appserver-base" ).getAbsolutePath() );
+        String appserverBase =
+            System.getProperty( "appserver.base", new File( "target/appserver-base" ).getAbsolutePath() );
 
         File testConf = new File( "src/test/resources/repository-archiva.xml" );
         File testConfDest = new File( appserverBase, "conf/archiva.xml" );
@@ -117,9 +117,10 @@ public class RepositoryServletSecurityTest
         archivaConfiguration = applicationContext.getBean( ArchivaConfiguration.class );
         Configuration config = archivaConfiguration.getConfiguration();
 
-        if (!config.getManagedRepositoriesAsMap().containsKey( REPOID_INTERNAL ))
+        if ( !config.getManagedRepositoriesAsMap().containsKey( REPOID_INTERNAL ) )
         {
-            config.addManagedRepository( createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal ) );
+            config.addManagedRepository(
+                createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal ) );
         }
         saveConfiguration( archivaConfiguration );
 
@@ -131,14 +132,14 @@ public class RepositoryServletSecurityTest
         sr.registerServlet( "/repository/*", RepositoryServlet.class.getName() );
         sc = sr.newClient();
 
-        servletAuthControl = MockControl.createControl( ServletAuthenticator.class );
-        servletAuthControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
-        servletAuth = (ServletAuthenticator) servletAuthControl.getMock();
+        servletAuthControl = EasyMock.createControl();// MockControl.createControl( ServletAuthenticator.class );
+        //servletAuthControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
+        servletAuth = servletAuthControl.createMock( ServletAuthenticator.class );
 
-        httpAuthControl =
-            MockClassControl.createControl( HttpBasicAuthentication.class, HttpBasicAuthentication.class.getMethods() );
-        httpAuthControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
-        httpAuth = (HttpAuthenticator) httpAuthControl.getMock();
+        httpAuthControl = EasyMock.createControl();
+        //MockClassControl.createControl( HttpBasicAuthentication.class, HttpBasicAuthentication.class.getMethods() );
+        //httpAuthControl.setDefaultMatcher( MockControl.ALWAYS_MATCHER );
+        httpAuth = httpAuthControl.createMock( HttpAuthenticator.class );
 
         davSessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth );
     }
@@ -217,13 +218,19 @@ public class RepositoryServletSecurityTest
         servlet.setDavSessionProvider( davSessionProvider );
 
         AuthenticationResult result = new AuthenticationResult();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, null ),
-                                           new AuthenticationException( "Authentication error" ) );
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult( anyObject( HttpServletRequest.class ),
+                                                           anyObject( HttpServletResponse.class ) ) ).andReturn( result );
+        //servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, null ),
+        //                                   new AuthenticationException( "Authentication error" ) );
+        servletAuth.isAuthenticated( EasyMock.anyObject( HttpServletRequest.class ),
+                                     EasyMock.anyObject( AuthenticationResult.class ) );
+        EasyMock.expectLastCall().andThrow( new AuthenticationException( "Authentication error" ) );
 
         servletAuth.isAuthorized( "guest", "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
-        servletAuthControl.setMatcher( MockControl.EQUALS_MATCHER );
-        servletAuthControl.setThrowable( new UnauthorizedException( "'guest' has no write access to repository" ) );
+        //servletAuthControl.setMatcher( MockControl.EQUALS_MATCHER );
+        //servletAuthControl.setThrowable( new UnauthorizedException( "'guest' has no write access to repository" ) );
+        EasyMock.expectLastCall().andThrow( new UnauthorizedException( "'guest' has no write access to repository" ) );
 
         httpAuthControl.replay();
         servletAuthControl.replay();
@@ -260,27 +267,41 @@ public class RepositoryServletSecurityTest
         servlet.setResourceFactory( archivaDavResourceFactory );
 
         AuthenticationResult result = new AuthenticationResult();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, null ),
-                                           new AuthenticationException( "Authentication error" ) );
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult( anyObject( HttpServletRequest.class ),
+                                                           anyObject( HttpServletResponse.class ) ) ).andReturn( result );
+        //servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, null ),
+        //                                   new AuthenticationException( "Authentication error" ) );
 
-        servletAuth.isAuthorized( "guest", "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
-        servletAuthControl.setMatcher( MockControl.EQUALS_MATCHER );
-        servletAuthControl.setReturnValue( true );
+        EasyMock.expect( servletAuth.isAuthenticated( anyObject( HttpServletRequest.class ),
+                                                      anyObject( AuthenticationResult.class ) ) ).andThrow(
+            new AuthenticationException( "Authentication error" ) );
+
+        //servletAuthControl.setMatcher( MockControl.EQUALS_MATCHER );
+        //servletAuthControl.setReturnValue( true );
+        EasyMock.expect(servletAuth.isAuthorized( "guest", "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD )).andReturn( true );
 
         // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
-        servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, result ),
-                                           new AuthenticationException( "Authentication error" ) );
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult( anyObject( HttpServletRequest.class ),
+                                                           anyObject( HttpServletResponse.class ) ) ).andReturn( result );
+        //httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
+        EasyMock.expect( httpAuth.getSecuritySession( anyObject( HttpSession.class ) ) ).andReturn( session );
+        //servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, result ),
+        //                                   new AuthenticationException( "Authentication error" ) );
+        EasyMock.expect(servletAuth.isAuthenticated( anyObject( HttpServletRequest.class ), eq(result) )).andThrow( new AuthenticationException( "Authentication error" ) );
 
-        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), null );
+        //httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), null );
+        EasyMock.expect( httpAuth.getSessionUser( anyObject( HttpSession.class ) ) ).andReturn( null );
 
         // check if guest has write access
-        servletAuth.isAuthorized( "guest", "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
-        servletAuthControl.setMatcher( MockControl.EQUALS_MATCHER );
-        servletAuthControl.setReturnValue( true );
+        //servletAuth.isAuthorized( "guest", "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
+        //servletAuthControl.setMatcher( MockControl.EQUALS_MATCHER );
+        //servletAuthControl.setReturnValue( true );
+        EasyMock.expect( servletAuth.isAuthorized( "guest", "internal",
+                                                   ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ) ).andReturn(
+            true );
 
         httpAuthControl.replay();
         servletAuthControl.replay();
@@ -316,20 +337,31 @@ public class RepositoryServletSecurityTest
         servlet.setResourceFactory( archivaDavResourceFactory );
 
         AuthenticationResult result = new AuthenticationResult();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult( anyObject( HttpServletRequest.class ),
+                                                           anyObject( HttpServletResponse.class ) ) ).andReturn( result );
+        //servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
+        EasyMock.expect( servletAuth.isAuthenticated( anyObject( HttpServletRequest.class ),
+                                                      anyObject( AuthenticationResult.class ) ) ).andReturn( true );
 
         // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
-        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), new SimpleUser() );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
-        servletAuthControl.expectAndThrow(
-                                           servletAuth.isAuthorized( null, session, "internal",
-                                                                     ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
-                                           new UnauthorizedException( "User not authorized" ) );
-
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult( anyObject( HttpServletRequest.class ),
+                                                           anyObject( HttpServletResponse.class ) ) ).andReturn( result );
+        //httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
+        EasyMock.expect( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ) ).andReturn( session );
+        //httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), new SimpleUser() );
+        EasyMock.expect( httpAuth.getSessionUser( ic.getRequest().getSession() ) ).andReturn( new SimpleUser() );
+        //servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
+        EasyMock.expect( servletAuth.isAuthenticated( anyObject( HttpServletRequest.class ),
+                                                      eq( result ) ) ).andReturn( true );
+        //servletAuthControl.expectAndThrow(
+        //                                   servletAuth.isAuthorized( null, session, "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
+        //                                   new UnauthorizedException( "User not authorized" ) );
+        EasyMock.expect( servletAuth.isAuthorized( anyObject( HttpServletRequest.class ), eq(session), eq("internal"),
+                                                   eq(ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD) ) ).andThrow(
+            new UnauthorizedException( "User not authorized" ) );
         httpAuthControl.replay();
         servletAuthControl.replay();
 
@@ -368,22 +400,34 @@ public class RepositoryServletSecurityTest
         servlet.setResourceFactory( archivaDavResourceFactory );
 
         AuthenticationResult result = new AuthenticationResult();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult( anyObject( HttpServletRequest.class ),
+                                                           anyObject( HttpServletResponse.class) )).andReturn( result );
+        //servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
+        EasyMock.expect( servletAuth.isAuthenticated( anyObject( HttpServletRequest.class ),
+                                                      anyObject( AuthenticationResult.class ) ) ).andReturn( true );
 
         User user = new SimpleUser();
         user.setUsername( "admin" );
-        
+
         // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
-        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), user );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
-        servletAuthControl.expectAndReturn(
-                                            servletAuth.isAuthorized( null, session, "internal",
-                                                                      ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
-                                            true );
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult(anyObject( HttpServletRequest.class ),
+                                                          anyObject( HttpServletResponse.class) ) ).andReturn( result );
+        //httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
+        EasyMock.expect( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ) ).andReturn( session );
+        //httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), user );
+        EasyMock.expect( httpAuth.getSessionUser( ic.getRequest().getSession() ) ).andReturn( user );
+        //servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
+        EasyMock.expect( servletAuth.isAuthenticated( anyObject( HttpServletRequest.class ), eq(result) ) ).andReturn(
+            true );
+        //servletAuthControl.expectAndReturn(
+        //                                    servletAuth.isAuthorized( null, session, "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
+        //                                    true );
+        EasyMock.expect( servletAuth.isAuthorized( anyObject( HttpServletRequest.class ), eq(session), eq("internal"),
+                                                   eq(ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD) ) ).andReturn(
+            true );
 
         httpAuthControl.replay();
         servletAuthControl.replay();
@@ -409,7 +453,7 @@ public class RepositoryServletSecurityTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         InvocationContext ic = sc.newInvocation( request );
@@ -423,25 +467,37 @@ public class RepositoryServletSecurityTest
         servlet.setResourceFactory( archivaDavResourceFactory );
 
         AuthenticationResult result = new AuthenticationResult();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, null ),
-                                           new AuthenticationException( "Authentication error" ) );
-        servletAuthControl.expectAndReturn(
-                                            servletAuth.isAuthorized( "guest", "internal",
-                                                                      ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ),
-                                            true );
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult( anyObject( HttpServletRequest.class ), anyObject( HttpServletResponse.class ) ) )
+            .andReturn( result );
+        //servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, null ),
+        //                                   new AuthenticationException( "Authentication error" ) );
+        EasyMock.expect( servletAuth.isAuthenticated( anyObject( HttpServletRequest.class ), anyObject( AuthenticationResult.class ) ) ).andThrow(
+            new AuthenticationException( "Authentication error" ) );
+        //servletAuthControl.expectAndReturn(
+        //                                    servletAuth.isAuthorized( "guest", "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ),
+        //                                    true );
+        EasyMock.expect( servletAuth.isAuthorized( "guest", "internal",
+                                                   ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ) ).andReturn(
+            true );
 
         // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
-        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), null );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
-        servletAuthControl.expectAndReturn(
-                                            servletAuth.isAuthorized( null, session, "internal",
-                                                                      ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
-                                            true );
-
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult( anyObject( HttpServletRequest.class ), anyObject( HttpServletResponse.class ) ) ).andReturn( result );
+        //httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
+        EasyMock.expect( httpAuth.getSecuritySession( anyObject( HttpSession.class ) ) ).andReturn( session );
+        //httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), null );
+        EasyMock.expect( httpAuth.getSessionUser( anyObject( HttpSession.class ) ) ).andReturn( null );
+        //servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
+        EasyMock.expect( servletAuth.isAuthenticated( anyObject( HttpServletRequest.class ), eq(result) ) ).andReturn(
+            true );
+        //servletAuthControl.expectAndReturn(
+        //                                    servletAuth.isAuthorized( null, session, "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
+        //                                    true );
+        EasyMock.expect( servletAuth.isAuthorized( anyObject( HttpServletRequest.class ), eq(session), eq("internal"),
+                                                   eq(ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS) ) ).andReturn(
+            true );
         httpAuthControl.replay();
         servletAuthControl.replay();
 
@@ -465,7 +521,7 @@ public class RepositoryServletSecurityTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         InvocationContext ic = sc.newInvocation( request );
@@ -473,14 +529,18 @@ public class RepositoryServletSecurityTest
         servlet.setDavSessionProvider( davSessionProvider );
 
         AuthenticationResult result = new AuthenticationResult();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, null ),
-                                           new AuthenticationException( "Authentication error" ) );
-        servletAuthControl.expectAndReturn(
-                                            servletAuth.isAuthorized( "guest", "internal",
-                                                                      ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ),
-                                            false );
-
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult( anyObject( HttpServletRequest.class ), anyObject( HttpServletResponse.class ) ) ).andReturn( result );
+        //servletAuthControl.expectAndThrow( servletAuth.isAuthenticated( null, null ),
+        //                                   new AuthenticationException( "Authentication error" ) );
+        EasyMock.expect( servletAuth.isAuthenticated( anyObject( HttpServletRequest.class ), anyObject( AuthenticationResult.class ) ) ).andThrow(
+            new AuthenticationException( "Authentication error" ) );
+        //servletAuthControl.expectAndReturn(
+        //                                    servletAuth.isAuthorized( "guest", "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ),
+        //                                    false );
+        EasyMock.expect( servletAuth.isAuthorized( "guest", "internal",
+                                                   ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ) ).andReturn(
+            false );
         httpAuthControl.replay();
         servletAuthControl.replay();
 
@@ -503,7 +563,7 @@ public class RepositoryServletSecurityTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         InvocationContext ic = sc.newInvocation( request );
@@ -517,19 +577,27 @@ public class RepositoryServletSecurityTest
         servlet.setResourceFactory( archivaDavResourceFactory );
 
         AuthenticationResult result = new AuthenticationResult();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
-
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult( anyObject( HttpServletRequest.class ), anyObject( HttpServletResponse.class ) ) ).andReturn( result );
+        //servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
+        EasyMock.expect( servletAuth.isAuthenticated( anyObject( HttpServletRequest.class ), anyObject( AuthenticationResult.class ) ) ).andReturn( true );
         // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
-        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), new SimpleUser() );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
-        servletAuthControl.expectAndReturn(
-                                            servletAuth.isAuthorized( null, session, "internal",
-                                                                      ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
-                                            true );
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult( anyObject( HttpServletRequest.class ), anyObject( HttpServletResponse.class ) ) ).andReturn( result );
+        //httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
+        EasyMock.expect( httpAuth.getSecuritySession( anyObject( HttpSession.class ) ) ).andReturn( session );
+        //httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), new SimpleUser() );
+        EasyMock.expect( httpAuth.getSessionUser( anyObject( HttpSession.class ) ) ).andReturn( new SimpleUser() );
+        //servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
+        EasyMock.expect( servletAuth.isAuthenticated( anyObject( HttpServletRequest.class ), eq(result) ) ).andReturn(
+            true );
+        //servletAuthControl.expectAndReturn(
+        //                                    servletAuth.isAuthorized( null, session, "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
+        //                                    true );
+        EasyMock.expect( servletAuth.isAuthorized( anyObject( HttpServletRequest.class ), eq(session), eq("internal"),
+                                                   eq(ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS) ) ).andReturn(
+            true );
 
         httpAuthControl.replay();
         servletAuthControl.replay();
@@ -554,7 +622,7 @@ public class RepositoryServletSecurityTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         InvocationContext ic = sc.newInvocation( request );
@@ -568,20 +636,27 @@ public class RepositoryServletSecurityTest
         servlet.setResourceFactory( archivaDavResourceFactory );
 
         AuthenticationResult result = new AuthenticationResult();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult( anyObject( HttpServletRequest.class ), anyObject( HttpServletResponse.class ) ) ).andReturn( result );
+        //servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, null ), true );
+        EasyMock.expect( servletAuth.isAuthenticated( anyObject( HttpServletRequest.class ), anyObject( AuthenticationResult.class ) ) ).andReturn( true );
 
         // ArchivaDavResourceFactory#isAuthorized()
         SecuritySession session = new DefaultSecuritySession();
-        httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
-        httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
-        httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), new SimpleUser() );
-        servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
-        servletAuthControl.expectAndThrow(
-                                           servletAuth.isAuthorized( null, session, "internal",
-                                                                     ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
-                                           new UnauthorizedException( "User not authorized to read repository." ) );
-
+        //httpAuthControl.expectAndReturn( httpAuth.getAuthenticationResult( null, null ), result );
+        EasyMock.expect( httpAuth.getAuthenticationResult( anyObject( HttpServletRequest.class ), anyObject( HttpServletResponse.class ) ) ).andReturn( result );
+        //httpAuthControl.expectAndReturn( httpAuth.getSecuritySession( ic.getRequest().getSession( true ) ), session );
+        EasyMock.expect( httpAuth.getSecuritySession( anyObject( HttpSession.class) ) ).andReturn( session );
+        //httpAuthControl.expectAndReturn( httpAuth.getSessionUser( ic.getRequest().getSession() ), new SimpleUser() );
+        EasyMock.expect( httpAuth.getSessionUser( anyObject( HttpSession.class) ) ).andReturn( new SimpleUser() );
+        //servletAuthControl.expectAndReturn( servletAuth.isAuthenticated( null, result ), true );
+        EasyMock.expect( servletAuth.isAuthenticated( anyObject( HttpServletRequest.class ), eq(result) ) ).andReturn(
+            true );
+        //servletAuthControl.expectAndThrow( servletAuth.isAuthorized( null, session, "internal", ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD ),
+        //                                   new UnauthorizedException( "User not authorized to read repository." ) );
+        EasyMock.expect( servletAuth.isAuthorized( anyObject( HttpServletRequest.class ), eq(session), eq("internal"),
+                                                   eq(ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS) ) ).andThrow(
+            new UnauthorizedException( "User not authorized to read repository." ) );
         httpAuthControl.replay();
         servletAuthControl.replay();
 

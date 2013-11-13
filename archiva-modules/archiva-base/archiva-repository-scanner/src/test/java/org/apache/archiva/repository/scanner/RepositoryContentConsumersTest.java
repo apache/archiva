@@ -26,7 +26,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.commons.lang.SystemUtils;
-import org.easymock.MockControl;
+import org.easymock.IMocksControl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.BeansException;
@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import static org.easymock.EasyMock.*;
 
 /**
  * RepositoryContentConsumersTest
@@ -243,24 +244,32 @@ public class RepositoryContentConsumersTest
     public void testExecution( )
         throws Exception
     {
-        MockControl knownControl = MockControl.createNiceControl( KnownRepositoryContentConsumer.class );
+        IMocksControl knownControl = createNiceControl( );
+
         RepositoryContentConsumers consumers = lookupRepositoryConsumers( );
-        KnownRepositoryContentConsumer selectedKnownConsumer = (KnownRepositoryContentConsumer) knownControl.getMock( );
-        KnownRepositoryContentConsumer unselectedKnownConsumer =
-            (KnownRepositoryContentConsumer) MockControl.createNiceControl(
-                KnownRepositoryContentConsumer.class ).getMock( );
+        KnownRepositoryContentConsumer selectedKnownConsumer = knownControl.createMock( KnownRepositoryContentConsumer.class );
+
+        //KnownRepositoryContentConsumer unselectedKnownConsumer =
+        //    (KnownRepositoryContentConsumer) MockControl.createNiceControl(
+        //        KnownRepositoryContentConsumer.class ).getMock( );
+
+        KnownRepositoryContentConsumer unselectedKnownConsumer = createNiceControl().createMock( KnownRepositoryContentConsumer.class );
+
 
         consumers.setApplicationContext(
             new MockApplicationContext( Arrays.asList( selectedKnownConsumer, unselectedKnownConsumer ), null ) );
 
         consumers.setSelectedKnownConsumers( Collections.singletonList( selectedKnownConsumer ) );
 
-        MockControl invalidControl = MockControl.createControl( InvalidRepositoryContentConsumer.class );
-        InvalidRepositoryContentConsumer selectedInvalidConsumer =
-            (InvalidRepositoryContentConsumer) invalidControl.getMock( );
-        InvalidRepositoryContentConsumer unselectedInvalidConsumer =
-            (InvalidRepositoryContentConsumer) MockControl.createControl(
-                InvalidRepositoryContentConsumer.class ).getMock( );
+        IMocksControl invalidControl = createControl();
+
+        InvalidRepositoryContentConsumer selectedInvalidConsumer = invalidControl.createMock( InvalidRepositoryContentConsumer.class );
+
+        //InvalidRepositoryContentConsumer unselectedInvalidConsumer =
+        //    (InvalidRepositoryContentConsumer) MockControl.createControl(
+        //        InvalidRepositoryContentConsumer.class ).getMock( );
+
+        InvalidRepositoryContentConsumer unselectedInvalidConsumer = createControl().createMock( InvalidRepositoryContentConsumer.class );
 
         consumers.setApplicationContext(
             new MockApplicationContext( null, Arrays.asList( selectedInvalidConsumer, unselectedInvalidConsumer ) ) );
@@ -274,11 +283,9 @@ public class RepositoryContentConsumersTest
         startTime.setTime( 12345678 );
 
         selectedKnownConsumer.beginScan( repo, startTime, false );
-        selectedKnownConsumer.getExcludes( );
-        knownControl.setReturnValue( Collections.EMPTY_LIST );
-        selectedKnownConsumer.getIncludes( );
-        knownControl.setReturnValue( Collections.singletonList( "**/*.txt" ) );
+        expect( selectedKnownConsumer.getIncludes( ) ).andReturn( Collections.singletonList( "**/*.txt" ) );
         selectedKnownConsumer.processFile( _OS( "path/to/test-file.txt" ), false );
+
         //        knownConsumer.completeScan();
         knownControl.replay( );
 
@@ -286,28 +293,34 @@ public class RepositoryContentConsumersTest
         //        invalidConsumer.completeScan();
         invalidControl.replay( );
 
+
         consumers.executeConsumers( repo, testFile, true );
 
         knownControl.verify( );
         invalidControl.verify( );
+        //verify( in );
 
         knownControl.reset( );
         invalidControl.reset( );
 
+
         File notIncludedTestFile = new File( "target/test-repo/path/to/test-file.xml" );
 
         selectedKnownConsumer.beginScan( repo, startTime, false );
-        selectedKnownConsumer.getExcludes( );
-        knownControl.setReturnValue( Collections.EMPTY_LIST );
-        selectedKnownConsumer.getIncludes( );
-        knownControl.setReturnValue( Collections.singletonList( "**/*.txt" ) );
+        //selectedKnownConsumer.getExcludes( );
+        //knownControl.setReturnValue( Collections.EMPTY_LIST );
+        expect( selectedKnownConsumer.getExcludes() ).andReturn( Collections.<String>emptyList() );
+
+        //selectedKnownConsumer.getIncludes( );
+        //knownControl.setReturnValue( Collections.singletonList( "**/*.txt" ) );
+        expect( selectedKnownConsumer.getIncludes( ) ).andReturn( Collections.singletonList( "**/*.txt" ) );
+
         //        knownConsumer.completeScan();
         knownControl.replay( );
 
         selectedInvalidConsumer.beginScan( repo, startTime, false );
         selectedInvalidConsumer.processFile( _OS( "path/to/test-file.xml" ), false );
-        selectedInvalidConsumer.getId( );
-        invalidControl.setReturnValue( "invalid" );
+        expect( selectedInvalidConsumer.getId() ).andReturn( "invalid" );
         //        invalidConsumer.completeScan();
         invalidControl.replay( );
 
@@ -322,15 +335,13 @@ public class RepositoryContentConsumersTest
         File excludedTestFile = new File( "target/test-repo/path/to/test-file.txt" );
 
         selectedKnownConsumer.beginScan( repo, startTime, false );
-        selectedKnownConsumer.getExcludes( );
-        knownControl.setReturnValue( Collections.singletonList( "**/test-file.txt" ) );
+        expect( selectedKnownConsumer.getExcludes() ).andReturn( Collections.singletonList( "**/test-file.txt" ) );
         //        knownConsumer.completeScan();
         knownControl.replay( );
 
         selectedInvalidConsumer.beginScan( repo, startTime, false );
         selectedInvalidConsumer.processFile( _OS( "path/to/test-file.txt" ), false );
-        selectedInvalidConsumer.getId( );
-        invalidControl.setReturnValue( "invalid" );
+        expect( selectedInvalidConsumer.getId() ).andReturn( "invalid" );
         //        invalidConsumer.completeScan();
         invalidControl.replay( );
 
