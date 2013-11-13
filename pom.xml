@@ -83,7 +83,7 @@
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
 
     <lucene.version>3.6.2</lucene.version>
-    <jackrabbit.version>2.6.3</jackrabbit.version>
+    <jackrabbit.version>2.6.4</jackrabbit.version>
 
     <sirona.version>0.1-incubating-SNAPSHOT</sirona.version>
 
