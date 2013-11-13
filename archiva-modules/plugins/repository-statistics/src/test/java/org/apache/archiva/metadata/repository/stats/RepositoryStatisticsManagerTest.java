@@ -100,14 +100,10 @@ public class RepositoryStatisticsManagerTest
         stats.setTotalGroupCount( 529 );
         stats.setTotalFileCount( 56229 );
 
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacets( TEST_REPO_ID,
-        //                                                                                 RepositoryStatistics.FACET_ID ),
-        //                                                   Arrays.asList( FIRST_TEST_SCAN, SECOND_TEST_SCAN ) );
+
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn(
             Arrays.asList( FIRST_TEST_SCAN, SECOND_TEST_SCAN ) );
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.getMetadataFacet( TEST_REPO_ID,
-        //                                                                                RepositoryStatistics.FACET_ID,
-        //                                                                                SECOND_TEST_SCAN ), stats );
+
         expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID,
                                                      SECOND_TEST_SCAN ) ).andReturn( stats );
 
@@ -132,9 +128,7 @@ public class RepositoryStatisticsManagerTest
     public void testGetLatestStatsWhenEmpty()
         throws Exception
     {
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ),
-        //    Collections.emptyList() );
+
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn(
             Collections.<String>emptyList() );
         metadataRepositoryControl.replay();
@@ -157,17 +151,13 @@ public class RepositoryStatisticsManagerTest
         walkRepository( 1 );
 
         metadataRepository.addMetadataFacet( TEST_REPO_ID, stats );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ),
-        //    Arrays.asList( stats.getName() ) );
+
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn(
             Arrays.asList( stats.getName() ) );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, stats.getName() ),
-        //    stats );
+
         expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID,
                                                      stats.getName() ) ).andReturn( stats );
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false );
+
         expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false );
 
         metadataRepositoryControl.replay();
@@ -205,24 +195,17 @@ public class RepositoryStatisticsManagerTest
         RepositoryStatistics stats2 = createTestStats( startTime2, current );
         metadataRepository.addMetadataFacet( TEST_REPO_ID, stats2 );
 
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ),
-        //    Arrays.asList( stats1.getName(), stats2.getName() ) );
+
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn(
             Arrays.asList( stats1.getName(), stats2.getName() ) );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, stats2.getName() ),
-        //    stats2 );
+
         expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID,
                                                      stats2.getName() ) ).andReturn( stats2 );
         metadataRepository.removeMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID );
 
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ),
-        //    Collections.emptyList() );
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn(
             Collections.<String>emptyList() );
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false, 2 );
+
         expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false ).times( 2 );
         metadataRepositoryControl.replay();
 
@@ -244,9 +227,7 @@ public class RepositoryStatisticsManagerTest
     public void testDeleteStatsWhenEmpty()
         throws Exception
     {
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ),
-        //    Collections.emptyList(), 2 );
+
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn(
             Collections.<String>emptyList() ).times( 2 );
         metadataRepository.removeMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID );
@@ -275,19 +256,15 @@ public class RepositoryStatisticsManagerTest
         addStats( new Date( current.getTime() - 1000 ), current );
 
         ArrayList<String> keys = new ArrayList<String>( statsCreated.keySet() );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ), keys );
+
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         // only match the middle one
         String key = keys.get( 1 );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
-        //    statsCreated.get( key ) );
+
         expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
 
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false, 3 );
         expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false ).times( 3 );
 
         metadataRepositoryControl.replay();
@@ -323,25 +300,19 @@ public class RepositoryStatisticsManagerTest
         addStats( new Date( current.getTime() - 1000 ), current );
 
         List<String> keys = new ArrayList<String>( statsCreated.keySet() );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ), keys );
+
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         String key = keys.get( 1 );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
-        //    statsCreated.get( key ) );
+
         expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
 
         key = keys.get( 2 );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
-        //    statsCreated.get( key ) );
+
         expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
 
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false, 3 );
         expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false ).times( 3 );
 
         metadataRepositoryControl.replay();
@@ -377,23 +348,18 @@ public class RepositoryStatisticsManagerTest
         addStats( new Date( current.getTime() - 1000 ), current );
 
         List<String> keys = new ArrayList<String>( statsCreated.keySet() );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ), keys );
+
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         String key = keys.get( 0 );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
-        //    statsCreated.get( key ) );
+
         expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
         key = keys.get( 1 );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
-        //    statsCreated.get( key ) );
+
         expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false, 3 );
+
         expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false ).times( 3 );
 
         metadataRepositoryControl.replay();
@@ -430,29 +396,22 @@ public class RepositoryStatisticsManagerTest
         addStats( new Date( current.getTime() - 1000 ), current );
 
         ArrayList<String> keys = new ArrayList<String>( statsCreated.keySet() );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ), keys );
+
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         String key = keys.get( 0 );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
-        //    statsCreated.get( key ) );
+
         expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
         key = keys.get( 1 );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
-        //    statsCreated.get( key ) );
+
         expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
         key = keys.get( 2 );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ),
-        //    statsCreated.get( key ) );
+
         expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false, 3 );
+
         expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false ).times( 3 );
 
         metadataRepositoryControl.replay();
@@ -489,10 +448,9 @@ public class RepositoryStatisticsManagerTest
         addStats( new Date( current.getTime() - 1000 ), current );
 
         ArrayList<String> keys = new ArrayList<String>( statsCreated.keySet() );
-        //metadataRepositoryControl.expectAndReturn(
-        //    metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ), keys );
+
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.canObtainAccess( Session.class ), false, 3 );
+
         expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false ).times( 3 );
 
         metadataRepositoryControl.replay();
@@ -562,164 +520,104 @@ public class RepositoryStatisticsManagerTest
     {
         for ( int i = 0; i < count; i++ )
         {
-            //metadataRepositoryControl.expectAndReturn( metadataRepository.getRootNamespaces( TEST_REPO_ID ),
-            //                                           Arrays.asList( "com", "org" ) );
+
             expect( metadataRepository.getRootNamespaces( TEST_REPO_ID ) ).andReturn( Arrays.asList( "com", "org" ) );
-            //metadataRepositoryControl.expectAndReturn( metadataRepository.getProjects( TEST_REPO_ID, "com" ),
-            //                                           Arrays.asList() );
+
             expect( metadataRepository.getProjects( TEST_REPO_ID, "com" ) ).andReturn( Arrays.<String>asList() );
-            //metadataRepositoryControl.expectAndReturn( metadataRepository.getNamespaces( TEST_REPO_ID, "com" ),
-            //                                           Arrays.asList( "example" ) );
+
             expect( metadataRepository.getNamespaces( TEST_REPO_ID, "com" ) ).andReturn( Arrays.asList( "example" ) );
-            //metadataRepositoryControl.expectAndReturn( metadataRepository.getNamespaces( TEST_REPO_ID, "com.example" ),
-            //                                           Arrays.asList() );
+
             expect( metadataRepository.getNamespaces( TEST_REPO_ID, "com.example" ) ).andReturn(
                 Arrays.<String>asList() );
-            //metadataRepositoryControl.expectAndReturn( metadataRepository.getProjects( TEST_REPO_ID, "com.example" ),
-            //                                           Arrays.asList( "example-project" ) );
+
             expect( metadataRepository.getProjects( TEST_REPO_ID, "com.example" ) ).andReturn(
                 Arrays.asList( "example-project" ) );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getProjectVersions( TEST_REPO_ID, "com.example", "example-project" ),
-            //    Arrays.asList( "1.0", "1.1" ) );
+
             expect( metadataRepository.getProjectVersions( TEST_REPO_ID, "com.example", "example-project" ) ).andReturn(
                 Arrays.asList( "1.0", "1.1" ) );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getArtifacts( TEST_REPO_ID, "com.example", "example-project", "1.0" ),
-            //    Arrays.asList( createArtifact( "com.example", "example-project", "1.0", "jar" ),
-            //                   createArtifact( "com.example", "example-project", "1.0", "pom" ) ) );
+
             expect(
                 metadataRepository.getArtifacts( TEST_REPO_ID, "com.example", "example-project", "1.0" ) ).andReturn(
                 Arrays.asList( createArtifact( "com.example", "example-project", "1.0", "jar" ),
                                createArtifact( "com.example", "example-project", "1.0", "pom" ) ) );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getArtifacts( TEST_REPO_ID, "com.example", "example-project", "1.1" ),
-            //    Arrays.asList( createArtifact( "com.example", "example-project", "1.1", "jar" ),
-            //                   createArtifact( "com.example", "example-project", "1.1", "pom" ) ) );
+
             expect(
                 metadataRepository.getArtifacts( TEST_REPO_ID, "com.example", "example-project", "1.1" ) ).andReturn(
                 Arrays.asList( createArtifact( "com.example", "example-project", "1.1", "jar" ),
                                createArtifact( "com.example", "example-project", "1.1", "pom" ) ) );
 
-            //metadataRepositoryControl.expectAndReturn( metadataRepository.getNamespaces( TEST_REPO_ID, "org" ),
-            //                                           Arrays.asList( "apache", "codehaus" ) );
+
             expect( metadataRepository.getNamespaces( TEST_REPO_ID, "org" ) ).andReturn( Arrays.asList( "apache", "codehaus" ) );
-            //metadataRepositoryControl.expectAndReturn( metadataRepository.getNamespaces( TEST_REPO_ID, "org.apache" ),
-            //                                           Arrays.asList( "archiva", "maven" ) );
+
             expect( metadataRepository.getNamespaces( TEST_REPO_ID, "org.apache" ) ).andReturn( Arrays.asList( "archiva", "maven" )  );
-            //metadataRepositoryControl.expectAndReturn( metadataRepository.getProjects( TEST_REPO_ID, "org.apache" ),
-            //                                           Arrays.asList() );
+
+
             expect( metadataRepository.getProjects( TEST_REPO_ID, "org.apache" ) ).andReturn( Arrays.<String>asList() );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getNamespaces( TEST_REPO_ID, "org.apache.archiva" ), Arrays.asList() );
+
             expect( metadataRepository.getNamespaces( TEST_REPO_ID, "org.apache.archiva" ) ).andReturn( Arrays.<String>asList() );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getProjects( TEST_REPO_ID, "org.apache.archiva" ),
-            ///    Arrays.asList( "metadata-repository-api", "metadata-model" ) );
+
             expect( metadataRepository.getProjects( TEST_REPO_ID, "org.apache.archiva" ) ).andReturn( Arrays.asList( "metadata-repository-api", "metadata-model" ) );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getProjectVersions( TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api" ),
-            //    Arrays.asList( "1.3-SNAPSHOT", "1.3" ) );
+
             expect( metadataRepository.getProjectVersions( TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api" ) )
                 .andReturn( Arrays.asList( "1.3-SNAPSHOT", "1.3" )  );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api",
-            //                                     "1.3-SNAPSHOT" ),
-            //    Arrays.asList( createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT", "jar" ),
-            //                   createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT",
-            //                                   "pom" ) ) );
+
+
             expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT", "jar" ),
                                            createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT",
                                                            "pom" ) )  );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api", "1.3" ),
-            //    Arrays.asList( createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3", "jar" ),
-            //                   createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3", "pom" ) ) );
+
             expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api", "1.3" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3", "jar" ),
                                            createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3", "pom" ) ) );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getProjectVersions( TEST_REPO_ID, "org.apache.archiva", "metadata-model" ),
-            //    Arrays.asList( "1.3-SNAPSHOT", "1.3" ) );
+
             expect( metadataRepository.getProjectVersions( TEST_REPO_ID, "org.apache.archiva", "metadata-model" ) )
                 .andReturn( Arrays.asList( "1.3-SNAPSHOT", "1.3" )  );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT" ),
-            //    Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT", "jar" ),
-            //                   createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT", "pom" ) ) );
+
             expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT", "jar" ),
                                            createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT", "pom" ) ) );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3" ),
-            //    Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3", "jar" ),
-            //                   createArtifact( "org.apache.archiva", "metadata-model", "1.3", "pom" ) ) );
+
             expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3", "jar" ),
                                            createArtifact( "org.apache.archiva", "metadata-model", "1.3", "pom" ) ) );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getNamespaces( TEST_REPO_ID, "org.apache.maven" ), Arrays.asList() );
+
             expect( metadataRepository.getNamespaces( TEST_REPO_ID, "org.apache.maven" ) ).andReturn( Arrays.<String>asList() );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getProjects( TEST_REPO_ID, "org.apache.maven" ), Arrays.asList( "maven-model" ) );
+
             expect( metadataRepository.getProjects( TEST_REPO_ID, "org.apache.maven" ) )
                 .andReturn( Arrays.asList( "maven-model" )  );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getProjectVersions( TEST_REPO_ID, "org.apache.maven", "maven-model" ),
-            //    Arrays.asList( "2.2.1" ) );
+
             expect( metadataRepository.getProjectVersions( TEST_REPO_ID, "org.apache.maven", "maven-model" ) )
                 .andReturn( Arrays.asList( "2.2.1" ) );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.maven", "maven-model", "2.2.1" ),
-            //    Arrays.asList( createArtifact( "org.apache.archiva", "maven-model", "2.2.1", "jar" ),
-            //                   createArtifact( "org.apache.archiva", "maven-model", "2.2.1", "pom" ) ) );
+
             expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.maven", "maven-model", "2.2.1" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "maven-model", "2.2.1", "jar" ),
                                            createArtifact( "org.apache.archiva", "maven-model", "2.2.1", "pom" ) ) );
-            //metadataRepositoryControl.expectAndReturn( metadataRepository.getNamespaces( TEST_REPO_ID, "org.codehaus" ),
-            //                                           Arrays.asList( "plexus" ) );
+
             expect( metadataRepository.getNamespaces( TEST_REPO_ID, "org.codehaus" ) ).andReturn( Arrays.asList( "plexus" ) );
-            //metadataRepositoryControl.expectAndReturn( metadataRepository.getProjects( TEST_REPO_ID, "org" ),
-            //                                           Arrays.asList() );
+
             expect( metadataRepository.getProjects( TEST_REPO_ID, "org" ) ).andReturn( Arrays.<String>asList(  ) );
-            //metadataRepositoryControl.expectAndReturn( metadataRepository.getProjects( TEST_REPO_ID, "org.codehaus" ),
-            //                                           Arrays.asList() );
+
             expect( metadataRepository.getProjects( TEST_REPO_ID, "org.codehaus" ) )
                 .andReturn( Arrays.<String>asList(  ) );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getNamespaces( TEST_REPO_ID, "org.codehaus.plexus" ), Arrays.asList() );
+
             expect( metadataRepository.getNamespaces( TEST_REPO_ID, "org.codehaus.plexus" ) )
                 .andReturn( Arrays.<String>asList(  ) );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getProjects( TEST_REPO_ID, "org.codehaus.plexus" ),
-            //    Arrays.asList( "plexus-spring" ) );
+
             expect( metadataRepository.getProjects( TEST_REPO_ID, "org.codehaus.plexus" ) )
                 .andReturn( Arrays.asList( "plexus-spring" )  );
 
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getProjectVersions( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring" ),
-            //    Arrays.asList( "1.0", "1.1", "1.2" ) );
             expect( metadataRepository.getProjectVersions( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring" ) )
                 .andReturn( Arrays.asList( "1.0", "1.1", "1.2" ) );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getArtifacts( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.0" ),
-            //    Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.0", "jar" ),
-            //                   createArtifact( "org.codehaus.plexus", "plexus-spring", "1.0", "pom" ) ) );
+
             expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.0" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.0", "jar" ),
                                            createArtifact( "org.codehaus.plexus", "plexus-spring", "1.0", "pom" ) ) );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getArtifacts( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.1" ),
-            //    Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.1", "jar" ),
-            //                   createArtifact( "org.codehaus.plexus", "plexus-spring", "1.1", "pom" ) ) );
+
             expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.1" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.1", "jar" ),
                                            createArtifact( "org.codehaus.plexus", "plexus-spring", "1.1", "pom" ) )  );
-            //metadataRepositoryControl.expectAndReturn(
-            //    metadataRepository.getArtifacts( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2" ),
-            //    Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.2", "jar" ),
-            //                   createArtifact( "org.codehaus.plexus", "plexus-spring", "1.2", "pom" ) ) );
+
             expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.2", "jar" ),
                                            createArtifact( "org.codehaus.plexus", "plexus-spring", "1.2", "pom" ) )  );

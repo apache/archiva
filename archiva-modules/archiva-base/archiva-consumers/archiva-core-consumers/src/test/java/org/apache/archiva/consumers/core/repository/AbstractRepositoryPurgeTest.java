@@ -19,8 +19,6 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
-import java.io.File;
-import javax.inject.Inject;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -35,19 +33,24 @@ import org.apache.maven.index.context.IndexingContext;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
+import javax.inject.Inject;
+import java.io.File;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 /**
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@RunWith(ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" })
 public abstract class AbstractRepositoryPurgeTest
 {
     public static final String TEST_REPO_ID = "test-repo";
@@ -102,17 +105,16 @@ public abstract class AbstractRepositoryPurgeTest
     public void setUp()
         throws Exception
     {
-    
+
         removeMavenIndexes();
 
-        listenerControl = EasyMock.createControl( );
+        listenerControl = EasyMock.createControl();
 
         listener = listenerControl.createMock( RepositoryListener.class );
 
         repositorySession = mock( RepositorySession.class );
         metadataRepository = mock( MetadataRepository.class );
         when( repositorySession.getRepository() ).thenReturn( metadataRepository );
-
 
 
     }
@@ -137,25 +139,25 @@ public abstract class AbstractRepositoryPurgeTest
         }
     }
 
-    protected static String fixPath( String path ) 
+    protected static String fixPath( String path )
     {
         if ( path.contains( " " ) )
         {
-            LoggerFactory.getLogger(AbstractRepositoryPurgeTest.class.getName()).error(
-                "You are building and testing with a path: \n "
-                + path + " containing space. Consider relocating.");
-            return path.replaceAll(" ", "&amp;20");
+            LoggerFactory.getLogger( AbstractRepositoryPurgeTest.class.getName() ).error(
+                "You are building and testing with a path: \n " + path + " containing space. Consider relocating." );
+            return path.replaceAll( " ", "&amp;20" );
         }
         return path;
     }
-    
+
     public ManagedRepository getRepoConfiguration( String repoId, String repoName )
     {
         config = new ManagedRepository();
         config.setId( repoId );
         config.setName( repoName );
         config.setDaysOlder( TEST_DAYS_OLDER );
-        String path =  AbstractRepositoryPurgeTest.fixPath( new File( "target/test-" + getName() + "/" + repoId ).getAbsolutePath() );       
+        String path = AbstractRepositoryPurgeTest.fixPath(
+            new File( "target/test-" + getName() + "/" + repoId ).getAbsolutePath() );
         config.setLocation( path );
         config.setReleases( true );
         config.setSnapshots( true );
@@ -198,13 +200,15 @@ public abstract class AbstractRepositoryPurgeTest
         removeMavenIndexes();
         File testDir = new File( AbstractRepositoryPurgeTest.fixPath( getTestRepoRoot().getAbsolutePath() ) );
         FileUtils.deleteDirectory( testDir );
-        File sourceDir = new File ( new File( "target/test-classes/" + TEST_REPO_ID).getAbsolutePath() );
+        File sourceDir = new File( new File( "target/test-classes/" + TEST_REPO_ID ).getAbsolutePath() );
         FileUtils.copyDirectory( sourceDir, testDir );
 
-        File releasesTestDir = new File( AbstractRepositoryPurgeTest.fixPath( new File( "target/test-" + getName() + "/" + RELEASES_TEST_REPO_ID ).getAbsolutePath() ) );
-        
+        File releasesTestDir = new File( AbstractRepositoryPurgeTest.fixPath(
+            new File( "target/test-" + getName() + "/" + RELEASES_TEST_REPO_ID ).getAbsolutePath() ) );
+
         FileUtils.deleteDirectory( releasesTestDir );
-        File sourceReleasesDir = new File ( new File( "target/test-classes/" + RELEASES_TEST_REPO_ID).getAbsolutePath() );
+        File sourceReleasesDir =
+            new File( new File( "target/test-classes/" + RELEASES_TEST_REPO_ID ).getAbsolutePath() );
         FileUtils.copyDirectory( sourceReleasesDir, releasesTestDir );
 
         return AbstractRepositoryPurgeTest.fixPath( testDir.getAbsolutePath() );

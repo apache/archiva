@@ -72,10 +72,6 @@ public class CacheFailuresTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES, false );
 
-        //wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
-        //wagonMockControl.setMatcher( customWagonGetMatcher );
-        //wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
-
         wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
 
         EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
@@ -119,10 +115,6 @@ public class CacheFailuresTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        //wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
-        //wagonMockControl.setMatcher( customWagonGetMatcher );
-        //wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
-
         wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
         EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
 
@@ -134,11 +126,6 @@ public class CacheFailuresTransferTest
 
         // Second attempt to download same artifact DOES NOT use cache
         wagonMockControl.reset();
-
-
-        //wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
-        //wagonMockControl.setMatcher( customWagonGetMatcher );
-        //wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
 
         wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
         EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );

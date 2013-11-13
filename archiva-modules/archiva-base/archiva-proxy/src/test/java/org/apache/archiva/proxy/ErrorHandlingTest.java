@@ -566,9 +566,6 @@ public class ErrorHandlingTest
     private void simulateGetError( String path, File expectedFile, Exception throwable )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
-        //wagonMock.get( path, createExpectedTempFile( expectedFile ) );
-        //wagonMockControl.setMatcher(customWagonGetMatcher);
-        //wagonMockControl.setThrowable( throwable, 1 );
         wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
         EasyMock.expectLastCall().andThrow(throwable );
     }
@@ -576,9 +573,6 @@ public class ErrorHandlingTest
     private void simulateGetIfNewerError( String path, File expectedFile, TransferFailedException exception )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
-        //wagonMock.getIfNewer( path, createExpectedTempFile( expectedFile ), expectedFile.lastModified() );
-        //wagonMockControl.setMatcher(customWagonGetIfNewerMatcher);
-        //wagonMockControl.setThrowable( exception, 1 );
         wagonMock.getIfNewer( EasyMock.eq( path ), EasyMock.anyObject( File.class ), EasyMock.eq( expectedFile.lastModified() ));
         EasyMock.expectLastCall().andThrow( exception );
     }

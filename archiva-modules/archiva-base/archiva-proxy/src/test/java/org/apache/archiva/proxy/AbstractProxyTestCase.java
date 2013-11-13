@@ -184,7 +184,6 @@ public abstract class AbstractProxyTestCase
 
         repoConfig = managedLegacyRepository.getRepository();
 
-        //config.getConfiguration().addManagedRepository( repoConfig );
         applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository( repoConfig, false, null );
 
         // Setup target (proxied to) repository.

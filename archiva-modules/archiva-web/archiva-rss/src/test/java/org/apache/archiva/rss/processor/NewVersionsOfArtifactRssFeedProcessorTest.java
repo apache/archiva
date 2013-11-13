@@ -88,27 +88,13 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
         reqParams.put( RssFeedProcessor.KEY_GROUP_ID, GROUP_ID );
         reqParams.put( RssFeedProcessor.KEY_ARTIFACT_ID, ARTIFACT_ID );
 
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.getRepositories(), Collections.singletonList(
-        //    TEST_REPO ) );
         expect( metadataRepository.getRepositories() ).andReturn( Collections.singletonList( TEST_REPO ) );
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.getProjectVersions( TEST_REPO, GROUP_ID,
-        //                                                                                  ARTIFACT_ID ), Arrays.asList(
-        //    "1.0.1", "1.0.2", "1.0.3-SNAPSHOT" ) );
         expect( metadataRepository.getProjectVersions( TEST_REPO, GROUP_ID, ARTIFACT_ID ) ).andReturn(
             Arrays.asList( "1.0.1", "1.0.2", "1.0.3-SNAPSHOT" ) );
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID,
-        //                                                                            "1.0.1" ),
-        //                                           Collections.singletonList( artifact1 ) );
         expect( metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.1" ) ).andReturn(
             Collections.singletonList( artifact1 ) );
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID,
-        //                                                                            "1.0.2" ),
-        //                                           Collections.singletonList( artifact2 ) );
         expect( metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.2" ) ).andReturn(
             Collections.singletonList( artifact2 ) );
-        //metadataRepositoryControl.expectAndReturn( metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID,
-        //                                                                            "1.0.3-SNAPSHOT" ),
-        //                                           Collections.singletonList( artifact3 ) );
         expect( metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.3-SNAPSHOT" ) ).andReturn(
             Collections.singletonList( artifact3 ) );
         metadataRepositoryControl.replay();

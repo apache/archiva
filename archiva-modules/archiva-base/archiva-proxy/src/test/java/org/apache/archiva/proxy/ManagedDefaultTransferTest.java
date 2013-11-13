@@ -399,10 +399,6 @@ public class ManagedDefaultTransferTest
         // Configure Repository (usually done within archiva.xml configuration)
         saveRemoteRepositoryConfig( "badproxied", "Bad Proxied", "test://bad.machine.com/repo/", "default" );
 
-        //wagonMock.get( path, new File( expectedFile.getAbsolutePath() + ".tmp" ) );
-        //wagonMockControl.setMatcher( customWagonGetMatcher );
-        //wagonMockControl.setThrowable( new ResourceDoesNotExistException( "transfer failed" ) );
-
         wagonMock.get( EasyMock.eq( path), EasyMock.anyObject( File.class ) );
         EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "transfer failed" )  );
         wagonMockControl.replay();
@@ -443,15 +439,9 @@ public class ManagedDefaultTransferTest
 
         File tmpFile = new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" );
 
-        //wagonMock.get( path, tmpFile );
-        //wagonMockControl.setMatcher( customWagonGetMatcher );
-        //wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Can't find resource." ) );
         wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
         EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "Can't find resource." ) );
 
-        //wagonMock.get( path, tmpFile );
-        //wagonMockControl.setMatcher( customWagonGetMatcher );
-        //wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Can't find resource." ) );
         wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
         EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "Can't find resource." ) );
 

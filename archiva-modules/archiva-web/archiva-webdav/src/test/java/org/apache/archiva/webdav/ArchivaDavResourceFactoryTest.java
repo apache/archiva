@@ -137,11 +137,9 @@ public class ArchivaDavResourceFactoryTest
         archivaConfiguration = archivaConfigurationControl.createMock( ArchivaConfiguration.class );
 
         config = new Configuration();
-        //archivaConfiguration.getConfiguration();
-        //archivaConfigurationControl.setReturnValue( config, 5, 20 );
         expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 5, 20 );
         archivaConfiguration.save( config );
-        //archivaConfigurationControl.setVoidCallable( 1, 4 );
+
         expectLastCall().times( 1, 4 );
         archivaConfigurationControl.replay();
 
@@ -228,49 +226,36 @@ public class ArchivaDavResourceFactoryTest
         try
         {
             archivaConfigurationControl.reset();
-            //archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
+
             expect( archivaConfiguration.getConfiguration() ).andReturn( config );
-            //requestControl.expectAndReturn( request.getMethod(), "GET", 2 );
+
             expect( request.getMethod() ).andReturn( "GET" ).times( 2 );
-            //requestControl.expectAndReturn( request.getPathInfo(), "org/apache/archiva", 0, 2 );
+
             expect( request.getPathInfo() ).andReturn( "org/apache/archiva" ).times( 0, 2 );
-            //repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( RELEASES_REPO ),
-            //                                           releasesRepo );
+
             expect( repoFactory.getManagedRepositoryContent( RELEASES_REPO ) ).andReturn( releasesRepo );
-            //requestControl.expectAndReturn( request.getRemoteAddr(), "http://localhost:8080", 2 );
+
             expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 2 );
-            //requestControl.expectAndReturn( request.getDavSession(), new ArchivaDavSession(), 2 );
+
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 2 );
 
-            //repoRequestControl.expectAndReturn(
-            //    repoRequest.isSupportFile( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ),
-            //    false );
             expect( repoRequest.isSupportFile(
                 "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( true );
-            //repoRequestControl.expectAndReturn(
-            //    repoRequest.isDefault( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ), false );
+
             expect(
                 repoRequest.isDefault( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn(
                 false );
-            //repoRequestControl.expectAndReturn(
-            //    repoRequest.toArtifactReference( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ),
-            //    null );
+
             expect( repoRequest.toArtifactReference(
                 "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( null );
-            //repoRequestControl.expectAndReturn(
-            //    repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar", internalRepo ),
-            //    new File( config.findManagedRepositoryById( INTERNAL_REPO ).getLocation(),
-            //              "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
+
             expect( repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar",
                                               internalRepo ) ).andReturn(
                 new File( config.findManagedRepositoryById( INTERNAL_REPO ).getLocation(),
                           "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
-            //repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ),
-            //                                           internalRepo );
+
             expect( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ) ).andReturn( internalRepo );
-            //repoRequestControl.expectAndReturn(
-            //        repoRequest.isArchetypeCatalog( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ),
-            //        false );
+
             expect( repoRequest.isArchetypeCatalog(
                 "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( false );
             archivaConfigurationControl.replay();
@@ -318,49 +303,37 @@ public class ArchivaDavResourceFactoryTest
         try
         {
             archivaConfigurationControl.reset();
-            //archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
+
             expect( archivaConfiguration.getConfiguration() ).andReturn( config );
-            //requestControl.expectAndReturn( request.getMethod(), "GET", 2 );
+
             expect( request.getMethod() ).andReturn( "GET" ).times( 2 );
-            //requestControl.expectAndReturn( request.getPathInfo(), "org/apache/archiva", 0, 2 );
+
             expect( request.getPathInfo() ).andReturn( "org/apache/archiva" ).times( 0, 2 );
-            //repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ),
-            //                                           internalRepo );
+
             expect( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ) ).andReturn( internalRepo );
-            //repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( RELEASES_REPO ),
-            //                                           releasesRepo );
+
             expect( repoFactory.getManagedRepositoryContent( RELEASES_REPO ) ).andReturn( releasesRepo );
-            //requestControl.expectAndReturn( request.getRemoteAddr(), "http://localhost:8080", 2 );
+
             expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 2 );
-            //requestControl.expectAndReturn( request.getDavSession(), new ArchivaDavSession(), 2 );
+
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 2 );
-            //repoRequestControl.expectAndReturn(
-            //    repoRequest.isSupportFile( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ),
-            //    false );
+
             expect( repoRequest.isSupportFile(
                 "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( false );
-            //repoRequestControl.expectAndReturn(
-            //    repoRequest.isDefault( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ), false );
+
             expect(
                 repoRequest.isDefault( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn(
                 false );
-            //repoRequestControl.expectAndReturn(
-            //    repoRequest.toArtifactReference( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ),
-            //    null );
+
             expect( repoRequest.toArtifactReference(
                 "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( null );
-            //repoRequestControl.expectAndReturn(
-            //    repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar", internalRepo ),
-            //    new File( config.findManagedRepositoryById( INTERNAL_REPO ).getLocation(),
-            //              "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
+
             expect( repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar",
                                               internalRepo ) ).andReturn(
                 new File( config.findManagedRepositoryById( INTERNAL_REPO ).getLocation(),
                           "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
 
-            //repoRequestControl.expectAndReturn(
-            //        repoRequest.isArchetypeCatalog( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ),
-            //        false );
+
             expect( repoRequest.isArchetypeCatalog(
                 "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( false );
             archivaConfigurationControl.replay();
@@ -411,57 +384,41 @@ public class ArchivaDavResourceFactoryTest
         try
         {
             archivaConfigurationControl.reset();
-            //archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
+
             expect( archivaConfiguration.getConfiguration() ).andReturn( config );
-            //requestControl.expectAndReturn( request.getMethod(), "GET", 4 );
+
             expect( request.getMethod() ).andReturn( "GET" ).times( 4 );
-            //requestControl.expectAndReturn( request.getPathInfo(), "org/apache/archiva", 0, 2 );
+
             expect( request.getPathInfo() ).andReturn( "org/apache/archiva" ).times( 0, 2 );
-            //repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ),
-            //                                           internalRepo );
+
             expect( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ) ).andReturn( internalRepo );
-            //repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( LOCAL_MIRROR_REPO ),
-            //                                           localMirrorRepo );
+
             expect( repoFactory.getManagedRepositoryContent( LOCAL_MIRROR_REPO ) ).andReturn( localMirrorRepo );
-            //requestControl.expectAndReturn( request.getRemoteAddr(), "http://localhost:8080", 4 );
+
             expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 4 );
-            //requestControl.expectAndReturn( request.getDavSession(), new ArchivaDavSession(), 4 );
+
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 4 );
-            //repoRequestControl.expectAndReturn(
-            //    repoRequest.isSupportFile( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ), false,
-            //    2 );
+
             expect( repoRequest.isSupportFile(
                 "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( false ).times( 2 );
-            //repoRequestControl.expectAndReturn(
-            //    repoRequest.isDefault( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ), false, 2 );
+
             expect(
                 repoRequest.isDefault( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn(
                 false ).times( 2 );
-            //repoRequestControl.expectAndReturn(
-            //    repoRequest.toArtifactReference( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ),
-            //    null, 2 );
+
             expect( repoRequest.toArtifactReference(
                 "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( null ).times( 2 );
-            //repoRequestControl.expectAndReturn(
-            //repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar",
-            //                          internalRepo ),
-            //new File( config.findManagedRepositoryById( INTERNAL_REPO ).getLocation(),
-            //          "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
+
             expect( repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar",
                                               internalRepo ) ).andReturn(
                 new File( config.findManagedRepositoryById( INTERNAL_REPO ).getLocation(),
                           "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
-            //repoRequestControl.expectAndReturn(
-            //    repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar", localMirrorRepo ),
-            //    new File( config.findManagedRepositoryById( LOCAL_MIRROR_REPO ).getLocation(),
-            //              "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
+
             expect( repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar",
                                               localMirrorRepo ) )
                 .andReturn( new File( config.findManagedRepositoryById( LOCAL_MIRROR_REPO ).getLocation(),
                                       "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
-            //repoRequestControl.expectAndReturn(
-            //    repoRequest.isArchetypeCatalog( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ),
-            //    false, 2 );
+
             expect( repoRequest.isArchetypeCatalog( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( false ).times( 2 );
             archivaConfigurationControl.replay();
             requestControl.replay();
@@ -502,31 +459,27 @@ public class ArchivaDavResourceFactoryTest
         try
         {
             archivaConfigurationControl.reset();
-            //archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
+
             expect( archivaConfiguration.getConfiguration() ).andReturn( config );
-            //repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ),
-            //                                           internalRepo );
+
             expect( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ) ).andReturn( internalRepo );
-            //requestControl.expectAndReturn( request.getMethod(), "GET", 3 );
+
             expect( request.getMethod() ).andReturn( "GET" ).times( 3 );
-            //requestControl.expectAndReturn( request.getRemoteAddr(), "http://localhost:8080", 3 );
+
             expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 3 );
-            //requestControl.expectAndReturn( request.getDavSession(), new ArchivaDavSession(), 2 );
+
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 2 );
-            //requestControl.expectAndReturn( request.getRequestURI(),
-            //                                "http://localhost:8080/archiva/repository/" + INTERNAL_REPO + "/eclipse/jdtcore/maven-metadata.xml" );
+
             expect( request.getRequestURI() ).andReturn( "http://localhost:8080/archiva/repository/" + INTERNAL_REPO + "/eclipse/jdtcore/maven-metadata.xml" );
             response.setHeader( "Pragma", "no-cache" );
-            //responseControl.setVoidCallable();
+
             expectLastCall();
 
             response.setHeader( "Cache-Control", "no-cache" );
-            //responseControl.setVoidCallable();
+
             expectLastCall();
 
-            //long date = 2039842134;
             response.setDateHeader( eq("Last-Modified"), anyLong() );
-            //responseControl.setVoidCallable();
             expectLastCall();
 
             archivaConfigurationControl.replay();
@@ -565,16 +518,15 @@ public class ArchivaDavResourceFactoryTest
         try
         {
             archivaConfigurationControl.reset();
-            //archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
+
             expect( archivaConfiguration.getConfiguration() ).andReturn( config );
-            //repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ),
-            //                                           internalRepo );
+
             expect( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ) ).andReturn( internalRepo );
-            //requestControl.expectAndReturn( request.getMethod(), "GET", 2 );
+
             expect( request.getMethod() ).andReturn( "GET" ).times( 2 );
-            //requestControl.expectAndReturn( request.getRemoteAddr(), "http://localhost:8080", 2 );
+
             expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 2 );
-            //requestControl.expectAndReturn( request.getDavSession(), new ArchivaDavSession(), 2 );
+
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 2 );
 
             archivaConfigurationControl.replay();
@@ -615,16 +567,15 @@ public class ArchivaDavResourceFactoryTest
         try
         {
             archivaConfigurationControl.reset();
-            //archivaConfigurationControl.expectAndReturn( archivaConfiguration.getConfiguration(), config );
+
             expect( archivaConfiguration.getConfiguration() ).andReturn( config );
-            //repoContentFactoryControl.expectAndReturn( repoFactory.getManagedRepositoryContent( LEGACY_REPO ),
-            //                                           legacyRepo );
+
             expect( repoFactory.getManagedRepositoryContent( LEGACY_REPO ) ).andReturn( legacyRepo );
-            //requestControl.expectAndReturn( request.getMethod(), "GET", 2 );
+
             expect( request.getMethod() ).andReturn( "GET" ).times( 2 );
-            //requestControl.expectAndReturn( request.getRemoteAddr(), "http://localhost:8080", 2 );
+
             expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 2 );
-            //requestControl.expectAndReturn( request.getDavSession(), new ArchivaDavSession(), 2 );
+
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 2 );
 
             archivaConfigurationControl.replay();
