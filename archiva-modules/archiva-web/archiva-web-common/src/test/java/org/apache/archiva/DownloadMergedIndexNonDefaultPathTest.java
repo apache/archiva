@@ -56,7 +56,7 @@ public class DownloadMergedIndexNonDefaultPathTest
     public static void setAppServerBase()
     {
         previousAppServerBase = System.getProperty( "appserver.base" );
-        System.setProperty( "appserver.base", "target/" + DownloadMergedIndexNonDefaultPathTest.class.getName() );
+        System.setProperty( "appserver.base", System.getProperty( "basedir" ) + "/target/" + DownloadMergedIndexNonDefaultPathTest.class.getName() );
     }
 
     @AfterClass
@@ -175,11 +175,17 @@ public class DownloadMergedIndexNonDefaultPathTest
         repositoriesService.scheduleDownloadRemoteIndex( remoteId, true, true );
 
         // wait a bit
+        /*
         timeout = 20000;
         while ( timeout > 0 )
         {
             Thread.sleep( 500 );
             timeout -= 500;
+        }*/
+        // wait the end
+        while ( !repositoriesService.getRunningRemoteDownloadIds().getStrings().isEmpty() )
+        {
+            Thread.sleep( 500 );
         }
 
         SearchService searchService = getSearchService();

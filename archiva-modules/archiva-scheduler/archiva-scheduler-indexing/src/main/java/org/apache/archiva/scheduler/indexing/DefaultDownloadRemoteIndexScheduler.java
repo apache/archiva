@@ -236,4 +236,9 @@ public class DefaultDownloadRemoteIndexScheduler
     {
         this.taskScheduler = taskScheduler;
     }
+
+    public List<String> getRunningRemoteDownloadIds()
+    {
+        return runningRemoteDownloadIds;
+    }
 }

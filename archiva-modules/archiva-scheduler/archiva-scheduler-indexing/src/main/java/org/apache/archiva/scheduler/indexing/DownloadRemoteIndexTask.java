@@ -232,15 +232,18 @@ public class DownloadRemoteIndexTask
             request.setLocalIndexCacheDir( indexCacheDirectory );
 
             this.indexUpdater.fetchAndUpdateIndex( request );
-            stopWatch.stop();
-            log.info( "time update index from remote for repository {}: {} s", this.remoteRepository.getId(),
-                      ( stopWatch.getTime() / 1000 ) );
 
             // index packing optionnal ??
             //IndexPackingRequest indexPackingRequest =
             //    new IndexPackingRequest( indexingContext, indexingContext.getIndexDirectoryFile() );
             //indexPacker.packIndex( indexPackingRequest );
+
             indexingContext.updateTimestamp( true );
+
+            stopWatch.stop();
+            log.info( "time update index from remote for repository {}: {} s", this.remoteRepository.getId(),
+                      ( stopWatch.getTime() / 1000 ) );
+
 
         }
         catch ( MalformedURLException e )
@@ -263,7 +266,7 @@ public class DownloadRemoteIndexTask
             deleteDirectoryQuiet( tempIndexDirectory );
             this.runningRemoteDownloadIds.remove( this.remoteRepository.getId() );
         }
-        log.info( "end download remote index for remote repository " + this.remoteRepository.getId() );
+        log.info( "end download remote index for remote repository {}", this.remoteRepository.getId() );
     }
 
     private void deleteDirectoryQuiet( File f )
@@ -304,7 +307,7 @@ public class DownloadRemoteIndexTask
         {
             if ( response.getStatusLine().getStatusCode() != HttpStatus.SC_OK )
             {
-                throw new ClientProtocolException( "Upload failed: " + response.getStatusLine() );
+                throw new ClientProtocolException( "Download failed: " + response.getStatusLine() );
             }
             long endTime = System.currentTimeMillis();
             log.info( "end of transfer file {} {} kb: {}s", resourceName, this.totalLength / 1024,

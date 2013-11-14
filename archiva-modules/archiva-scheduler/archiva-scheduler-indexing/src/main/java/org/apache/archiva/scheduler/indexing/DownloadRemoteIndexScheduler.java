@@ -18,6 +18,8 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
+import java.util.List;
+
 /**
  * @author Olivier Lamy
  * @since 1.4-M1
@@ -26,4 +28,6 @@ public interface DownloadRemoteIndexScheduler
 {
     void scheduleDownloadRemote( String repositoryId, boolean now, boolean fullDownload )
         throws DownloadRemoteIndexException;
+
+    List<String> getRunningRemoteDownloadIds();
 }

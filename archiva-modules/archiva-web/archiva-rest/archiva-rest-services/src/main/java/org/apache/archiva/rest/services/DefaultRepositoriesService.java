@@ -64,6 +64,7 @@ import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
+import org.apache.archiva.rest.api.model.StringList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
@@ -1151,6 +1152,12 @@ public class DefaultRepositoriesService
         RepositoryMetadataWriter.write( metadata, metadataFile );
         ChecksummedFile checksum = new ChecksummedFile( metadataFile );
         checksum.fixChecksums( algorithms );
+    }
+
+    @Override
+    public StringList getRunningRemoteDownloadIds()
+    {
+        return new StringList( downloadRemoteIndexScheduler.getRunningRemoteDownloadIds() );
     }
 
     public ManagedRepositoryAdmin getManagedRepositoryAdmin()
