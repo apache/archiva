@@ -1,4 +1,4 @@
-package org.apache.archiva;
+package org.apache.archiva.remotedownload;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -186,6 +186,7 @@ public class DownloadMergedIndexNonDefaultPathTest
         while ( !repositoriesService.getRunningRemoteDownloadIds().getStrings().isEmpty() )
         {
             Thread.sleep( 500 );
+            log.debug( "still running remote download" );
         }
 
         SearchService searchService = getSearchService();
