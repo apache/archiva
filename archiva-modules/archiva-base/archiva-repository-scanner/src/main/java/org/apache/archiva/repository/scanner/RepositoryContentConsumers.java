@@ -283,7 +283,7 @@ public class RepositoryContentConsumers
             // yuck. In case you can't read this, it says
             // "process the file if the consumer has it in the includes list, and not in the excludes list"
             BaseFile baseFile = new BaseFile( repository.getLocation(), localFile );
-            ConsumerWantsFilePredicate predicate = new ConsumerWantsFilePredicate();
+            ConsumerWantsFilePredicate predicate = new ConsumerWantsFilePredicate( repository );
             predicate.setBasefile( baseFile );
             predicate.setCaseSensitive( false );
 

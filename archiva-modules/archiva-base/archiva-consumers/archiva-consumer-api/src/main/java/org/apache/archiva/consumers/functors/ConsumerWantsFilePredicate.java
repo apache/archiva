@@ -21,16 +21,18 @@ package org.apache.archiva.consumers.functors;
 
 import java.util.List;
 
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.archiva.common.utils.BaseFile;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
+import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.types.selectors.SelectorUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * ConsumerWantsFilePredicate 
- *
- *
+ * ConsumerWantsFilePredicate
  */
 public class ConsumerWantsFilePredicate
     implements Predicate
@@ -43,6 +45,23 @@ public class ConsumerWantsFilePredicate
 
     private long changesSince = 0;
 
+    private ManagedRepository managedRepository;
+
+    private Logger logger = LoggerFactory.getLogger( getClass() );
+
+    /**
+     * @deprecated use constructor with ManagedRepository
+     */
+    public ConsumerWantsFilePredicate()
+    {
+        // no-op
+    }
+
+    public ConsumerWantsFilePredicate( ManagedRepository managedRepository )
+    {
+        this.managedRepository = managedRepository;
+    }
+
     public boolean evaluate( Object object )
     {
         boolean satisfies = false;
@@ -53,7 +72,7 @@ public class ConsumerWantsFilePredicate
             if ( wantsFile( consumer, FilenameUtils.separatorsToUnix( basefile.getRelativePath() ) ) )
             {
                 satisfies = true;
-                
+
                 // regardless of the timestamp, we record that it was wanted so it doesn't get counted as invalid
                 wantedFileCount++;
 
@@ -111,6 +130,16 @@ public class ConsumerWantsFilePredicate
                     // Definately does NOT WANT FILE.
                     return false;
                 }
+            }
+        }
+
+        if ( managedRepository != null )
+        {
+            String indexDirectory = managedRepository.getIndexDirectory();
+            if ( StringUtils.startsWith( relativePath, indexDirectory ) )
+            {
+                logger.debug( "ignore file {} part of the index directory {}", relativePath, indexDirectory );
+                return false;
             }
         }
 

@@ -91,7 +91,7 @@ public class RepositoryScannerInstance
         consumerProcessFile.setConsumerTimings( consumerTimings );
         consumerProcessFile.setConsumerCounts( consumerCounts );
 
-        this.consumerWantsFile = new ConsumerWantsFilePredicate();
+        this.consumerWantsFile = new ConsumerWantsFilePredicate( repository );
 
         stats = new RepositoryScanStatistics();
         stats.setRepositoryId( repository.getId() );
