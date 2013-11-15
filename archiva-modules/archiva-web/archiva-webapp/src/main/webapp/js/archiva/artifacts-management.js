@@ -48,7 +48,8 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
       }
       var url="restServices/archivaUiServices/fileUploadService/save/"+this.repositoryId()+"/"+this.groupId()+"/"+this.artifactId();
       url+="/"+this.version()+"/"+this.packaging();
-      if (this.generatePom()){
+      $.log("this.generatePom():'"+this.generatePom()+"'");
+      if (this.generatePom()==true){
         url+="?generatePom=true";
       }
       $.ajax(url, {
