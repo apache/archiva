@@ -134,7 +134,7 @@ public class DefaultFileUploadService
             //Content-Disposition: form-data; name="files[]"; filename="org.apache.karaf.features.command-2.2.2.jar"
             String fileName = file.getContentDisposition().getParameter( "filename" );
 
-            File tmpFile = File.createTempFile( "upload-artifact", "tmp" );
+            File tmpFile = File.createTempFile( "upload-artifact", ".tmp" );
             tmpFile.deleteOnExit();
             IOUtils.copy( file.getDataHandler().getInputStream(), new FileOutputStream( tmpFile ) );
             FileMetadata fileMetadata = new FileMetadata( fileName, tmpFile.length(), "theurl" );
