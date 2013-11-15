@@ -64,7 +64,9 @@
               org.apache.commons.collections;version="[3.2,4)",
               org.apache.commons.io;version="[1.4,2)",
               org.codehaus.plexus.util,
-              org.apache.tools.ant.types.selectors
+              org.apache.tools.ant.types.selectors,
+              org.apache.commons.lang,
+              org.slf4j
             </Import-Package>
           </instructions>
         </configuration>
