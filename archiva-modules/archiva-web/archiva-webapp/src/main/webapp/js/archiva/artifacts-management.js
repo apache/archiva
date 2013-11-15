@@ -82,7 +82,7 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          mainContent.html($("#file-upload-screen" ).html());
+          mainContent.html($("#file-upload-screen").html());
           $.ajax("restServices/archivaServices/browseService/userRepositories", {
               type: "GET",
               dataType: 'json',

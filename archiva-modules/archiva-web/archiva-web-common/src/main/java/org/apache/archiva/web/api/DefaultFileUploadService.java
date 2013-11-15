@@ -128,7 +128,7 @@ public class DefaultFileUploadService
             // skygo: http header form pomFile was once sending 1 for true and void for false
             // leading to permanent false value for pomFile if using toBoolean(); use , "1", ""
             boolean pomFile = BooleanUtils.toBoolean( getStringValue( multipartBody, "pomFile" ) );
-            
+
             Attachment file = multipartBody.getAttachment( "files[]" );
 
             //Content-Disposition: form-data; name="files[]"; filename="org.apache.karaf.features.command-2.2.2.jar"
@@ -219,6 +219,32 @@ public class DefaultFileUploadService
         {
             return Boolean.FALSE;
         }
+
+        try
+        {
+            ManagedRepository managedRepository = managedRepositoryAdmin.getManagedRepository( repositoryId );
+
+            if ( managedRepository == null )
+            {
+                // TODO i18n ?
+                throw new ArchivaRestServiceException( "Cannot find managed repository with id " + repositoryId,
+                                                       Response.Status.BAD_REQUEST.getStatusCode(), null );
+            }
+
+            if ( VersionUtil.isSnapshot( version ) && !managedRepository.isSnapshots() )
+            {
+                // TODO i18n ?
+                throw new ArchivaRestServiceException(
+                    "Managed repository with id " + repositoryId + " do not accept snapshots",
+                    Response.Status.BAD_REQUEST.getStatusCode(), null );
+            }
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
+        }
+
         // get from the session file with groupId/artifactId
 
         Iterable<FileMetadata> filesToAdd = Iterables.filter( fileMetadatas, new Predicate<FileMetadata>()
