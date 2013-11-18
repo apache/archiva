@@ -41,6 +41,7 @@
     <rest.admin.pwd />
     <test.useTomcat>false</test.useTomcat>
     <archiva.groupIndexTtl>30</archiva.groupIndexTtl>
+    <archiva.sirona.configuration></archiva.sirona.configuration>
   </properties>
 
   <dependencies>
@@ -997,6 +998,7 @@
             -->
             <cassandraHost>localhost</cassandraHost>
             <cassandraPort>9160</cassandraPort>
+            <org.apache.sirona.configuration>${archiva.sirona.configuration}</org.apache.sirona.configuration>
           </systemProperties>
           <additionalClasspathDirs>
             <additionalClasspathDir>${basedir}/src/test/tomcat</additionalClasspathDir>
