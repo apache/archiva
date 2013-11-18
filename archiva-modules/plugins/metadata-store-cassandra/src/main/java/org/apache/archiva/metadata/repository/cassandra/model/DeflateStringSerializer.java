@@ -22,7 +22,6 @@ package org.apache.archiva.metadata.repository.cassandra.model;
 
 import com.netflix.astyanax.serializers.AbstractSerializer;
 import com.netflix.astyanax.serializers.ComparatorType;
-import org.apache.cassandra.db.marshal.UTF8Type;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -34,16 +33,16 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.zip.Deflater;
-import java.util.zip.DeflaterInputStream;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
 
 /**
- * For Huge String we use a  compression
+ * For Huge String we use a deflate compression
  * @author Olivier Lamy
+ * @since 2.0.0
  */
-public class HugeStringSerializer
+public class DeflateStringSerializer
     extends AbstractSerializer<String>
 {
 
@@ -51,11 +50,11 @@ public class HugeStringSerializer
 
     private static final String UTF_8 = "UTF-8";
 
-    private static final HugeStringSerializer instance = new HugeStringSerializer();
+    private static final DeflateStringSerializer instance = new DeflateStringSerializer();
 
     private static final Charset charset = Charset.forName( UTF_8 );
 
-    public static HugeStringSerializer get()
+    public static DeflateStringSerializer get()
     {
         return instance;
     }
@@ -147,45 +146,4 @@ public class HugeStringSerializer
         return instance.getString( byteBuffer );
     }
 
-    /*
-    private static final String UTF_8 = "UTF-8";
-    private static final HugeStringSerializer instance = new HugeStringSerializer();
-    private static final Charset charset = Charset.forName(UTF_8);
-
-    public static HugeStringSerializer get() {
-        return instance;
-    }
-
-    @Override
-    public ByteBuffer toByteBuffer(String obj) {
-        if (obj == null) {
-            return null;
-        }
-        return ByteBuffer.wrap(obj.getBytes(charset));
-    }
-
-    @Override
-    public String fromByteBuffer(ByteBuffer byteBuffer) {
-        if (byteBuffer == null) {
-            return null;
-        }
-        final ByteBuffer dup = byteBuffer.duplicate();
-        return charset.decode(dup).toString();
-    }
-
-    @Override
-    public ComparatorType getComparatorType() {
-        return ComparatorType.UTF8TYPE;
-    }
-
-    @Override
-    public ByteBuffer fromString(String str) {
-        return UTF8Type.instance.fromString(str);
-    }
-
-    @Override
-    public String getString(ByteBuffer byteBuffer) {
-        return UTF8Type.instance.getString(byteBuffer);
-    }
-    */
 }

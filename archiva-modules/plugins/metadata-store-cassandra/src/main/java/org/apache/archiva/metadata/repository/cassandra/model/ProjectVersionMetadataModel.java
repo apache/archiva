@@ -43,7 +43,7 @@ public class ProjectVersionMetadataModel
 {
     // repositoryId + namespace + projectId + id (version)
     @Id
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String rowId;
 
     @Column( name = "namespace" )
@@ -53,23 +53,23 @@ public class ProjectVersionMetadataModel
      * id is the version
      */
     @Column( name = "id" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String id;
 
     @Column( name = "projectId" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String projectId;
 
     @Column( name = "url" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String url;
 
     @Column( name = "name" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String name;
 
     @Column( name = "description" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String description;
 
     @Column( name = "organization" )

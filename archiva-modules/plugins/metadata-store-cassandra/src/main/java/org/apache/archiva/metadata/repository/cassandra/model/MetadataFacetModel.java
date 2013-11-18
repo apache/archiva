@@ -20,7 +20,6 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  */
 
 import com.netflix.astyanax.entitystore.Serializer;
-import com.netflix.astyanax.serializers.GzipStringSerializer;
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
 import javax.persistence.Column;
@@ -38,26 +37,26 @@ public class MetadataFacetModel
     // id is repositoryId + namespaceId + projectId + facetId + name + mapKey
     @Id
     @Column( name = "id" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String id;
 
     @Column( name = "artifactMetadataModel" )
     private ArtifactMetadataModel artifactMetadataModel;
 
     @Column( name = "facetId" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String facetId;
 
     @Column( name = "key" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String key;
 
     @Column( name = "name" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String name;
 
     @Column( name = "value" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String value;
 
     public MetadataFacetModel()

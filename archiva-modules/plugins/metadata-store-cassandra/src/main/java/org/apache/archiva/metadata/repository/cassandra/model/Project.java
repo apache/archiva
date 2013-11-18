@@ -36,11 +36,11 @@ public class Project
 {
     @Id
     @Column( name = "projectKey" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String projectKey;
 
     @Column( name = "projectId" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String projectId;
 
 

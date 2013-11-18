@@ -41,31 +41,31 @@ public class ArtifactMetadataModel
 
     // repositoryId + namespaceId + project + projectVersion + id
     @Id
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String artifactMetadataModelId;
 
     @Column( name = "id" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String id;
 
     @Column( name = "repositoryId" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String repositoryId;
 
     @Column( name = "namespace" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String namespace;
 
     @Column( name = "project" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String project;
 
     @Column( name = "projectVersion" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String projectVersion;
 
     @Column( name = "version" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String version;
 
     @Column( name = "fileLastModified" )
@@ -77,11 +77,11 @@ public class ArtifactMetadataModel
     private long size;
 
     @Column( name = "md5" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String md5;
 
     @Column( name = "sha1" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String sha1;
 
     @Column( name = "whenGathered" )

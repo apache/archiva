@@ -26,8 +26,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -41,11 +39,11 @@ public class Repository
 
     @Id
     @Column( name = "id" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String id;
 
     @Column(name = "name")
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String name;
 
     //private transient List<Namespace> namespaces = new ArrayList<Namespace>();

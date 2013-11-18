@@ -39,11 +39,11 @@ public class Namespace
 
     @Id
     @Column( name = "id" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String id;
 
     @Column( name = "name" )
-    @Serializer( HugeStringSerializer.class )
+    @Serializer( DeflateStringSerializer.class )
     private String name;
 
     @Column( name = "repository" )
