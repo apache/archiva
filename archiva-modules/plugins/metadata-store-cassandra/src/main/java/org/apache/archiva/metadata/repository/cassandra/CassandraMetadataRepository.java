@@ -59,6 +59,7 @@ import java.util.Set;
 
 /**
  * @author Olivier Lamy
+ * @since 2.0.0
  */
 public class CassandraMetadataRepository
     implements MetadataRepository

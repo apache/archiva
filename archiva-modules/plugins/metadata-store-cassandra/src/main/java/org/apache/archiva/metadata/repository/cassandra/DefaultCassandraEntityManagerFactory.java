@@ -54,6 +54,7 @@ import java.util.Properties;
  * FIXME make all configuration not hardcoded :-)
  *
  * @author Olivier Lamy
+ * @since 2.0.0
  */
 @Service( "archivaEntityManagerFactory#cassandra" )
 public class DefaultCassandraEntityManagerFactory

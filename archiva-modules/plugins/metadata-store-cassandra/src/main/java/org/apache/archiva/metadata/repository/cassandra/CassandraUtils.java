@@ -21,6 +21,7 @@ package org.apache.archiva.metadata.repository.cassandra;
 
 /**
  * @author Olivier Lamy
+ * @since 2.0.0
  */
 public class CassandraUtils
 {

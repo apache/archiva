@@ -36,6 +36,7 @@ import java.util.Map;
 
 /**
  * @author Olivier Lamy
+ * @since 2.0.0
  */
 @Service("repositorySessionFactory#cassandra")
 public class CassandraRepositorySessionFactory

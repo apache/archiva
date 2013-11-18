@@ -33,6 +33,7 @@ import java.util.Date;
  * Cassandra storage model for {@link org.apache.archiva.metadata.model.ArtifactMetadata}
  *
  * @author Olivier Lamy
+ * @since 2.0.0
  */
 @Entity
 public class ArtifactMetadataModel

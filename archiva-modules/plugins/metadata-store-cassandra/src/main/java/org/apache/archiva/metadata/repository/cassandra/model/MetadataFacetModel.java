@@ -30,6 +30,7 @@ import javax.persistence.Id;
  * Cassandra storage model for {@link org.apache.archiva.metadata.model.MetadataFacet}
  *
  * @author Olivier Lamy
+ * @since 2.0.0
  */
 @Entity
 public class MetadataFacetModel

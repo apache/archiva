@@ -30,9 +30,9 @@ import java.io.Serializable;
 
 /**
  * @author Olivier Lamy
+ * @since 2.0.0
  */
 @Entity
-//@Table( name = "namespace", schema = "ArchivaKeySpace@archiva")
 public class Namespace
     implements Serializable
 {
