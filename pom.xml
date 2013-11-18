@@ -1629,10 +1629,6 @@
       </plugin>
       <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat6-maven-plugin</artifactId>
-       </plugin>
-      <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
         <artifactId>tomcat7-maven-plugin</artifactId>
         <dependencies>
           <dependency>
@@ -1820,11 +1816,6 @@
           <configuration>
             <jdkLevel>1.5</jdkLevel>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.tomcat.maven</groupId>
-          <artifactId>tomcat6-maven-plugin</artifactId>
-          <version>${asfTomcatMavenPluginVersion}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.tomcat.maven</groupId>
