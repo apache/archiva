@@ -27,7 +27,6 @@ import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.netflix.astyanax.connectionpool.exceptions.NotFoundException;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolType;
-import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor;
 import com.netflix.astyanax.connectionpool.impl.Slf4jConnectionPoolMonitorImpl;
 import com.netflix.astyanax.ddl.KeyspaceDefinition;
 import com.netflix.astyanax.entitystore.DefaultEntityManager;
@@ -46,6 +45,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
 import java.util.Properties;
@@ -72,6 +72,8 @@ public class DefaultCassandraEntityManagerFactory
     private AstyanaxContext<Keyspace> keyspaceContext;
 
     private Keyspace keyspace;
+
+    private boolean started = false;
 
     private EntityManager<Repository, String> repositoryEntityManager;
 
@@ -101,9 +103,10 @@ public class DefaultCassandraEntityManagerFactory
                 cassandraHost + ":" + cassandraPort ) ).withConnectionPoolMonitor(
             new Slf4jConnectionPoolMonitorImpl() ).buildKeyspace( ThriftFamilyFactory.getInstance() );
 
-        keyspaceContext.start();
+        this.start();
 
         keyspace = keyspaceContext.getClient();
+        //Partitioner partitioner = keyspace.getPartitioner();
 
         ImmutableMap<String, Object> options = ImmutableMap.<String, Object>builder().put( "strategy_options",
                                                                                            ImmutableMap.<String, Object>builder().put(
@@ -146,7 +149,7 @@ public class DefaultCassandraEntityManagerFactory
         {
             repositoryEntityManager =
                 new DefaultEntityManager.Builder<Repository, String>().withEntityType( Repository.class ).withKeyspace(
-                    keyspace ).build();
+                    keyspace ).withAutoCommit( true ).build();
             boolean exists = columnFamilyExists( "repository" );
             // TODO very basic test we must test model change too
             if ( !exists )
@@ -156,7 +159,7 @@ public class DefaultCassandraEntityManagerFactory
 
             namespaceEntityManager =
                 new DefaultEntityManager.Builder<Namespace, String>().withEntityType( Namespace.class ).withKeyspace(
-                    keyspace ).build();
+                    keyspace ).withAutoCommit( true ).build();
 
             exists = columnFamilyExists( "namespace" );
             if ( !exists )
@@ -166,7 +169,7 @@ public class DefaultCassandraEntityManagerFactory
 
             projectEntityManager =
                 new DefaultEntityManager.Builder<Project, String>().withEntityType( Project.class ).withKeyspace(
-                    keyspace ).build();
+                    keyspace ).withAutoCommit( true ).build();
 
             exists = columnFamilyExists( "project" );
             if ( !exists )
@@ -176,7 +179,7 @@ public class DefaultCassandraEntityManagerFactory
 
             artifactMetadataModelEntityManager =
                 new DefaultEntityManager.Builder<ArtifactMetadataModel, String>().withEntityType(
-                    ArtifactMetadataModel.class ).withKeyspace( keyspace ).build();
+                    ArtifactMetadataModel.class ).withAutoCommit( true ).withKeyspace( keyspace ).build();
 
             exists = columnFamilyExists( "artifactmetadatamodel" );
             if ( !exists )
@@ -186,7 +189,7 @@ public class DefaultCassandraEntityManagerFactory
 
             metadataFacetModelEntityManager =
                 new DefaultEntityManager.Builder<MetadataFacetModel, String>().withEntityType(
-                    MetadataFacetModel.class ).withKeyspace( keyspace ).build();
+                    MetadataFacetModel.class ).withAutoCommit( true ).withKeyspace( keyspace ).build();
 
             exists = columnFamilyExists( "metadatafacetmodel" );
             if ( !exists )
@@ -196,7 +199,7 @@ public class DefaultCassandraEntityManagerFactory
 
             projectVersionMetadataModelEntityManager =
                 new DefaultEntityManager.Builder<ProjectVersionMetadataModel, String>().withEntityType(
-                    ProjectVersionMetadataModel.class ).withKeyspace( keyspace ).build();
+                    ProjectVersionMetadataModel.class ).withAutoCommit( true ).withKeyspace( keyspace ).build();
 
             exists = columnFamilyExists( "projectversionmetadatamodel" );
             if ( !exists )
@@ -215,6 +218,29 @@ public class DefaultCassandraEntityManagerFactory
             // FIXME report exception
             logger.error( e.getMessage(), e );
         }
+    }
+
+    public void start()
+    {
+        keyspaceContext.start();
+        started = true;
+    }
+
+    @PreDestroy
+    public void shutdown()
+    {
+        if ( keyspaceContext != null )
+        {
+            keyspaceContext.shutdown();
+            started = false;
+        }
+    }
+
+
+    @Override
+    public boolean started()
+    {
+        return started;
     }
 
     private boolean columnFamilyExists( String columnFamilyName )

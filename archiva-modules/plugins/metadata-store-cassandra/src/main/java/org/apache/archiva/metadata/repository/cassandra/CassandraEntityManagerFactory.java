@@ -35,6 +35,12 @@ public interface CassandraEntityManagerFactory
 {
     Keyspace getKeyspace();
 
+    void start();
+
+    void shutdown();
+
+    boolean started();
+
     EntityManager<Repository, String> getRepositoryEntityManager();
 
     EntityManager<Namespace, String> getNamespaceEntityManager();

@@ -19,6 +19,10 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  * under the License.
  */
 
+import com.netflix.astyanax.entitystore.Serializer;
+import com.netflix.astyanax.serializers.GzipStringSerializer;
+import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -33,22 +37,27 @@ public class MetadataFacetModel
 {
     // id is repositoryId + namespaceId + projectId + facetId + name + mapKey
     @Id
-    @Column(name = "id")
+    @Column( name = "id" )
+    @Serializer( HugeStringSerializer.class )
     private String id;
 
-    @Column(name = "artifactMetadataModel")
+    @Column( name = "artifactMetadataModel" )
     private ArtifactMetadataModel artifactMetadataModel;
 
-    @Column(name = "facetId")
+    @Column( name = "facetId" )
+    @Serializer( HugeStringSerializer.class )
     private String facetId;
 
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "key")
+    @Column( name = "key" )
+    @Serializer( HugeStringSerializer.class )
     private String key;
 
-    @Column(name = "value")
+    @Column( name = "name" )
+    @Serializer( HugeStringSerializer.class )
+    private String name;
+
+    @Column( name = "value" )
+    @Serializer( HugeStringSerializer.class )
     private String value;
 
     public MetadataFacetModel()
@@ -220,16 +229,13 @@ public class MetadataFacetModel
             // FIXME add some controls
             // getArtifactMetadataModelId can have no namespace, no project and no projectid for statistics
             // only repositoryId with artifactMetadataModel
-            long hash =
-                ( this.artifactMetadataModel == null
-                ? this.repositoryId.hashCode()
-                : Long.parseLong( this.artifactMetadataModel.getArtifactMetadataModelId() ) )
-                + this.facetId.hashCode()
-                + ( this.name == null ? 0 : this.name.hashCode() )
-                + ( this.key == null ? 0 : this.key.hashCode() );
+            String str = CassandraUtils.generateKey( this.artifactMetadataModel == null
+                                                         ? this.repositoryId
+                                                         : this.artifactMetadataModel.getArtifactMetadataModelId(),
+                                                     this.facetId, this.name, this.key );
 
-            String hashStr = Long.toString( hash );
-            return hashStr;
+            //return Long.toString( str.hashCode() );
+            return str;
         }
     }
 }

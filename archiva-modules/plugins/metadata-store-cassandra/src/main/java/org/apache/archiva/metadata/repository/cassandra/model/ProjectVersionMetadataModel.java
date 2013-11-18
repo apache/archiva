@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  * under the License.
  */
 
+import com.netflix.astyanax.entitystore.Serializer;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.IssueManagement;
@@ -26,6 +27,7 @@ import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.Scm;
+import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,52 +43,58 @@ public class ProjectVersionMetadataModel
 {
     // repositoryId + namespace + projectId + id (version)
     @Id
+    @Serializer( HugeStringSerializer.class )
     private String rowId;
 
-    @Column(name = "namespace")
+    @Column( name = "namespace" )
     private Namespace namespace;
 
     /**
      * id is the version
      */
-    @Column(name = "id")
+    @Column( name = "id" )
+    @Serializer( HugeStringSerializer.class )
     private String id;
 
-    @Column(name = "projectId")
+    @Column( name = "projectId" )
+    @Serializer( HugeStringSerializer.class )
     private String projectId;
 
-    @Column(name = "url")
+    @Column( name = "url" )
+    @Serializer( HugeStringSerializer.class )
     private String url;
 
-    @Column(name = "name")
+    @Column( name = "name" )
+    @Serializer( HugeStringSerializer.class )
     private String name;
 
-    @Column(name = "description")
+    @Column( name = "description" )
+    @Serializer( HugeStringSerializer.class )
     private String description;
 
-    @Column(name = "organization")
+    @Column( name = "organization" )
     private Organization organization;
 
-    @Column(name = "issueManagement")
+    @Column( name = "issueManagement" )
     private IssueManagement issueManagement;
 
-    @Column(name = "scm")
+    @Column( name = "scm" )
     private Scm scm;
 
-    @Column(name = "ciManagement")
+    @Column( name = "ciManagement" )
     private CiManagement ciManagement;
 
     // FIXME store those values in a separate table
-    @Column(name = "licenses")
+    @Column( name = "licenses" )
     private List<License> licenses = new ArrayList<License>();
 
-    @Column(name = "mailingLists")
+    @Column( name = "mailingLists" )
     private List<MailingList> mailingLists = new ArrayList<MailingList>();
 
-    @Column(name = "dependencies")
+    @Column( name = "dependencies" )
     private List<Dependency> dependencies = new ArrayList<Dependency>();
 
-    @Column(name = "incomplete")
+    @Column( name = "incomplete" )
     private boolean incomplete;
 
     public String getProjectId()
@@ -346,11 +354,7 @@ public class ProjectVersionMetadataModel
         public String build()
         {
             // FIXME add some controls
-            long hash =
-                this.repositoryId.hashCode() + this.namespace.hashCode() + this.projectId.hashCode() + ( this.id == null
-                    ? 0
-                    : +this.id.hashCode() );
-            return Long.toString( hash );
+            return CassandraUtils.generateKey( this.repositoryId, this.namespace, this.projectId, this.id );
         }
     }
 }

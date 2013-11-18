@@ -57,10 +57,12 @@ public class RepositoriesNamespaceTest
     public void setup()
         throws Exception
     {
-
         cmr = new CassandraMetadataRepository( null, null, cassandraEntityManagerFactory );
+        if ( !cassandraEntityManagerFactory.started() )
+        {
+            cassandraEntityManagerFactory.start();
+        }
         clearReposAndNamespace();
-
     }
 
     @After
@@ -68,6 +70,7 @@ public class RepositoriesNamespaceTest
         throws Exception
     {
         clearReposAndNamespace();
+        cassandraEntityManagerFactory.shutdown();
     }
 
 
@@ -91,7 +94,7 @@ public class RepositoriesNamespaceTest
             Assertions.assertThat( cmr.getRepositories() ).isNotEmpty().hasSize( 1 );
             Assertions.assertThat( cmr.getNamespaces( "release" ) ).isNotEmpty().hasSize( 1 );
 
-            n = cmr.getNamespaceEntityManager().get( "release" + "-" + "org" );
+            n = cmr.getNamespaceEntityManager().get( "release" + CassandraUtils.SEPARATOR + "org" );
 
             Assertions.assertThat( n ).isNotNull();
             Assertions.assertThat( n.getRepository() ).isNotNull();
@@ -117,17 +120,22 @@ public class RepositoriesNamespaceTest
     protected void clearReposAndNamespace()
         throws Exception
     {
+        /*
         List<Project> projects = cmr.getProjectEntityManager().getAll();
-
         cmr.getProjectEntityManager().remove( projects );
+        */
+        cmr.getProjectEntityManager().truncate();
 
+        /*
         List<Namespace> namespaces = cmr.getNamespaceEntityManager().getAll();
-
         cmr.getNamespaceEntityManager().remove( namespaces );
+        */
+        cmr.getNamespaceEntityManager().truncate();
 
+        /*
         List<Repository> repositories = cmr.getRepositoryEntityManager().getAll();
-
         cmr.getRepositoryEntityManager().remove( repositories );
-
+        */
+        cmr.getRepositoryEntityManager().truncate();
     }
 }

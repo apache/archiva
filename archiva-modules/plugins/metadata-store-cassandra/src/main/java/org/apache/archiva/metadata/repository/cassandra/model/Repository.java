@@ -19,6 +19,8 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  * under the License.
  */
 
+import com.netflix.astyanax.entitystore.Serializer;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -37,16 +39,16 @@ public class Repository
     implements Serializable
 {
 
-    private static final long serialVersionUID = 1L;
-
     @Id
     @Column( name = "id" )
+    @Serializer( HugeStringSerializer.class )
     private String id;
 
     @Column(name = "name")
+    @Serializer( HugeStringSerializer.class )
     private String name;
 
-    private transient List<Namespace> namespaces = new ArrayList<Namespace>();
+    //private transient List<Namespace> namespaces = new ArrayList<Namespace>();
 
     public Repository()
     {
@@ -79,7 +81,7 @@ public class Repository
         this.name = name;
     }
 
-
+    /*
     public List<Namespace> getNamespaces()
     {
         if ( this.namespaces == null )
@@ -93,6 +95,7 @@ public class Repository
     {
         this.namespaces = namespaces;
     }
+    */
 
     @Override
     public boolean equals( Object o )
@@ -129,7 +132,7 @@ public class Repository
         final StringBuilder sb = new StringBuilder( "Repository{" );
         sb.append( "id='" ).append( id ).append( '\'' );
         sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", namespaces=" ).append( namespaces );
+        //sb.append( ", namespaces=" ).append( namespaces );
         sb.append( '}' );
         return sb.toString();
     }

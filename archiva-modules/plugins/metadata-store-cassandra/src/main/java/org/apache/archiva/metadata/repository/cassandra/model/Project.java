@@ -19,6 +19,9 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  * under the License.
  */
 
+import com.netflix.astyanax.entitystore.Serializer;
+import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -33,9 +36,11 @@ public class Project
 {
     @Id
     @Column( name = "projectKey" )
+    @Serializer( HugeStringSerializer.class )
     private String projectKey;
 
     @Column( name = "projectId" )
+    @Serializer( HugeStringSerializer.class )
     private String projectId;
 
 
@@ -157,7 +162,8 @@ public class Project
         public String build()
         {
             // FIXME add some controls
-            return new Namespace.KeyBuilder().withNamespace( this.namespace ).build() + "-" + this.projectId;
+            return CassandraUtils.generateKey( new Namespace.KeyBuilder().withNamespace( this.namespace ).build(),
+                                               this.projectId );
         }
     }
 }

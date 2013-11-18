@@ -31,8 +31,11 @@
   <name>Archiva Core Plugins :: Cassandra JPA Storage for Metadata</name>
 
   <properties>
-    <cassandraVersion>1.2.9</cassandraVersion>
-    <astyanax.version>1.56.43</astyanax.version>
+    <!--
+    <cassandraVersion>1.2.11</cassandraVersion>
+    -->
+    <cassandraVersion>2.0.2</cassandraVersion>
+    <astyanax.version>1.56.44</astyanax.version>
   </properties>
 
   <dependencies>
@@ -249,7 +252,10 @@
                 org.apache.commons.lang;version="[2.4,3)",
                 org.slf4j;resolution:=optional,
                 org.springframework.context,
-                org.springframework.stereotype
+                org.springframework.stereotype,
+                com.netflix.astyanax.serializers,
+              org.apache.commons.codec.binary,
+              org.apache.commons.io
             </Import-Package>
           </instructions>
         </configuration>
@@ -277,7 +283,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cassandra-maven-plugin</artifactId>
-        <version>1.2.5-1-SNAPSHOT</version>
+        <version>2.0.0-1-SNAPSHOT</version>
         <executions>
           <execution>
             <id>start-cassandra</id>

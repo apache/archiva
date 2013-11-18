@@ -81,8 +81,8 @@ public class DefaultRepositoryStatisticsManager
         {
             String name = scans.get( scans.size() - 1 );
             RepositoryStatistics repositoryStatistics =
-                (RepositoryStatistics) metadataRepository.getMetadataFacet( repositoryId, RepositoryStatistics.FACET_ID,
-                                                                            name );
+                RepositoryStatistics.class.cast( metadataRepository.getMetadataFacet( repositoryId, RepositoryStatistics.FACET_ID,
+                                                                            name ));
             stopWatch.stop();
             log.debug( "time to find last RepositoryStatistics: {} ms", stopWatch.getTime() );
             return repositoryStatistics;

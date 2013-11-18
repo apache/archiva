@@ -19,6 +19,10 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  * under the License.
  */
 
+import com.netflix.astyanax.entitystore.Serializer;
+import com.netflix.astyanax.serializers.LongSerializer;
+import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -37,39 +41,51 @@ public class ArtifactMetadataModel
 
     // repositoryId + namespaceId + project + projectVersion + id
     @Id
+    @Serializer( HugeStringSerializer.class )
     private String artifactMetadataModelId;
 
-    @Column(name = "id")
+    @Column( name = "id" )
+    @Serializer( HugeStringSerializer.class )
     private String id;
 
-    @Column(name = "repositoryId")
+    @Column( name = "repositoryId" )
+    @Serializer( HugeStringSerializer.class )
     private String repositoryId;
 
-    @Column(name = "namespace")
+    @Column( name = "namespace" )
+    @Serializer( HugeStringSerializer.class )
     private String namespace;
 
-    @Column(name = "project")
+    @Column( name = "project" )
+    @Serializer( HugeStringSerializer.class )
     private String project;
 
-    @Column(name = "projectVersion")
+    @Column( name = "projectVersion" )
+    @Serializer( HugeStringSerializer.class )
     private String projectVersion;
 
-    @Column(name = "version")
+    @Column( name = "version" )
+    @Serializer( HugeStringSerializer.class )
     private String version;
 
-    @Column(name = "fileLastModified")
+    @Column( name = "fileLastModified" )
+    @Serializer( LongSerializer.class )
     private long fileLastModified;
 
-    @Column(name = "size")
+    @Column( name = "size" )
+    @Serializer( LongSerializer.class )
     private long size;
 
-    @Column(name = "md5")
+    @Column( name = "md5" )
+    @Serializer( HugeStringSerializer.class )
     private String md5;
 
-    @Column(name = "sha1")
+    @Column( name = "sha1" )
+    @Serializer( HugeStringSerializer.class )
     private String sha1;
 
-    @Column(name = "whenGathered")
+    @Column( name = "whenGathered" )
+    @Serializer( LongSerializer.class )
     private long whenGathered;
 
     public ArtifactMetadataModel()
@@ -323,8 +339,13 @@ public class ArtifactMetadataModel
         {
             //repositoryId + namespaceId + project + projectVersion + id
             // FIXME add some controls
-            long hash = this.repositoryId.hashCode()  + this.namespaceId.hashCode()  + this.project.hashCode()  + this.projectVersion.hashCode() + this.id.hashCode();
-            return Long.toString( hash );
+
+            String str =
+                CassandraUtils.generateKey( this.repositoryId, this.namespaceId, this.project, this.projectVersion,
+                                            this.id );
+
+            //return Long.toString( str.hashCode() );
+            return str;
         }
     }
 

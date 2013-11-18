@@ -19,6 +19,9 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  * under the License.
  */
 
+import com.netflix.astyanax.entitystore.Serializer;
+import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -34,16 +37,16 @@ public class Namespace
     implements Serializable
 {
 
-    private static final long serialVersionUID = 1L;
-
     @Id
-    @Column(name = "id")
+    @Column( name = "id" )
+    @Serializer( HugeStringSerializer.class )
     private String id;
 
-    @Column(name = "name")
+    @Column( name = "name" )
+    @Serializer( HugeStringSerializer.class )
     private String name;
 
-    @Column(name = "repository")
+    @Column( name = "repository" )
     private Repository repository;
 
     //@ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
@@ -93,17 +96,6 @@ public class Namespace
     {
         this.repository = repository;
     }
-
-    /*
-    public String getRepositoryId()
-    {
-        return repositoryId;
-    }
-
-    public void setRepositoryId( String repositoryId )
-    {
-        this.repositoryId = repositoryId;
-    }*/
 
     @Override
     public boolean equals( Object o )
@@ -184,7 +176,7 @@ public class Namespace
         public String build()
         {
             // FIXME add some controls
-            return this.repositoryId + "-" + this.namespace;
+            return CassandraUtils.generateKey( this.repositoryId, this.namespace );
         }
     }
 }

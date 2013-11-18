@@ -73,14 +73,14 @@ public class CassandraMetadataRepository
     private CassandraEntityManagerFactory cassandraEntityManagerFactory;
 
     public CassandraMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories,
-                                        ArchivaConfiguration configuration, CassandraEntityManagerFactory cassandraEntityManagerFactory )
+                                        ArchivaConfiguration configuration,
+                                        CassandraEntityManagerFactory cassandraEntityManagerFactory )
     {
         this.metadataFacetFactories = metadataFacetFactories;
         this.configuration = configuration;
         this.cassandraEntityManagerFactory = cassandraEntityManagerFactory;
     }
 
-    
 
     public EntityManager<Repository, String> getRepositoryEntityManager()
     {
@@ -314,7 +314,25 @@ public class CassandraMetadataRepository
     {
         try
         {
-            final Set<String> namespaces = new HashSet<String>();
+
+            //final List<Namespace> namespaceList =
+            //    getNamespaceEntityManager().find( "SELECT name FROM namespace WHERE repository.id='"+ repoId + "'" );
+
+            //final Set<String> namespaces = new HashSet<String>( namespaceList.size() );
+
+            final Set<String> namespaces = new HashSet<String>( );
+
+            /*
+            for ( Namespace namespace : namespaceList )
+            {
+                String name = namespace.getName();
+                if ( StringUtils.isNotEmpty( name ) )
+                {
+                    namespaces.add( StringUtils.substringBefore( name, "." ) );
+                }
+            }
+            */
+
 
             getNamespaceEntityManager().visitAll( new Function<Namespace, Boolean>()
             {
@@ -322,8 +340,8 @@ public class CassandraMetadataRepository
                 @Override
                 public Boolean apply( Namespace namespace )
                 {
-                    if ( namespace != null && namespace.getRepository() != null && StringUtils.equalsIgnoreCase( repoId,
-                                                                                                                 namespace.getRepository().getId() ) )
+                    if ( namespace != null && namespace.getRepository() != null
+                        && StringUtils.equalsIgnoreCase( repoId, namespace.getRepository().getId() ) )
                     {
                         String name = namespace.getName();
                         if ( StringUtils.isNotEmpty( name ) )
@@ -413,7 +431,8 @@ public class CassandraMetadataRepository
 
             //List<Namespace> namespaces = getNamespaceEntityManager().find( query );
 
-            final Set<Namespace> namespaces = new HashSet<Namespace>();
+            //final Set<Namespace> namespaces = new HashSet<Namespace>();
+            final Set<String> namespaces = new HashSet<String>();
 
             getNamespaceEntityManager().visitAll( new Function<Namespace, Boolean>()
             {
@@ -424,18 +443,21 @@ public class CassandraMetadataRepository
                     if ( namespace != null && namespace.getRepository() != null && StringUtils.equalsIgnoreCase( repoId,
                                                                                                                  namespace.getRepository().getId() ) )
                     {
-                        namespaces.add( namespace );
+                        namespaces.add( namespace.getId() );
                     }
                     return Boolean.TRUE;
                 }
             } );
 
-            repository.setNamespaces( new ArrayList<Namespace>( namespaces ) );
 
+            /*
+
+            repository.setNamespaces( new ArrayList<Namespace>( namespaces ) );
             if ( repository == null || repository.getNamespaces().isEmpty() )
             {
                 return Collections.emptyList();
             }
+
             List<String> namespaceIds = new ArrayList<String>( repository.getNamespaces().size() );
 
             for ( Namespace n : repository.getNamespaces() )
@@ -444,7 +466,10 @@ public class CassandraMetadataRepository
             }
 
             logger.debug( "getNamespaces for repository '{}' found {}", repoId, namespaceIds.size() );
+
             return namespaceIds;
+            */
+            return new ArrayList<String>( namespaces );
         }
         catch ( PersistenceException e )
         {
@@ -671,7 +696,8 @@ public class CassandraMetadataRepository
         key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repositoryId ).withNamespace(
             namespace ).withProjectId( projectId ).withId( projectVersion ).build();
 
-        ProjectVersionMetadataModel projectVersionMetadataModel = getProjectVersionMetadataModelEntityManager().get( key );
+        ProjectVersionMetadataModel projectVersionMetadataModel =
+            getProjectVersionMetadataModelEntityManager().get( key );
 
         if ( projectVersionMetadataModel == null )
         {
@@ -805,7 +831,8 @@ public class CassandraMetadataRepository
         key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repositoryId ).withNamespace(
             namespaceId ).withProjectId( projectId ).withId( versionMetadata.getId() ).build();
 
-        ProjectVersionMetadataModel projectVersionMetadataModel = getProjectVersionMetadataModelEntityManager().get( key );
+        ProjectVersionMetadataModel projectVersionMetadataModel =
+            getProjectVersionMetadataModelEntityManager().get( key );
 
         if ( projectVersionMetadataModel == null )
         {
@@ -823,7 +850,6 @@ public class CassandraMetadataRepository
         projectVersionMetadataModel.setMailingLists( versionMetadata.getMailingLists() );
         projectVersionMetadataModel.setDependencies( versionMetadata.getDependencies() );
         projectVersionMetadataModel.setLicenses( versionMetadata.getLicenses() );
-
 
         try
         {
@@ -1379,7 +1405,8 @@ public class CassandraMetadataRepository
         String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repoId ).withNamespace(
             namespace ).withProjectId( projectId ).withId( projectVersion ).build();
 
-        ProjectVersionMetadataModel projectVersionMetadataModel = getProjectVersionMetadataModelEntityManager().get( key );
+        ProjectVersionMetadataModel projectVersionMetadataModel =
+            getProjectVersionMetadataModelEntityManager().get( key );
 
         if ( projectVersionMetadataModel == null )
         {
