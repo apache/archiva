@@ -1867,6 +1867,16 @@
     </profile>
 
     <profile>
+      <id>jdk-1.7</id>
+      <activation>
+        <jdk>1.7</jdk>
+      </activation>
+      <modules>
+        <module>archiva-modules/plugins/metadata-store-cassandra</module>
+      </modules>
+    </profile>
+
+    <profile>
       <!-- profile to run javascript webapp and it tests -->
       <id>it-js</id>
       <modules>
