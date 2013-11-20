@@ -316,15 +316,21 @@ public class CassandraMetadataRepository
         try
         {
 
-            //final List<Namespace> namespaceList =
-            //    getNamespaceEntityManager().find( "SELECT name FROM namespace WHERE repository.id='"+ repoId + "'" );
 
-            //final Set<String> namespaces = new HashSet<String>( namespaceList.size() );
+            RootNamesSpaceVisitAll rootNamesSpaceVisitAll = new RootNamesSpaceVisitAll( repoId );
 
-            final Set<String> namespaces = new HashSet<String>( );
+            getNamespaceEntityManager().visitAll( rootNamesSpaceVisitAll );
 
+            return rootNamesSpaceVisitAll.namespaces;
+
+
+            // using cql query with index
             /*
-            for ( Namespace namespace : namespaceList )
+            List<Namespace> namespacesList = getNamespaceEntityManager().find( "SELECT * from namespace where id <> null AND repositoryid = '" + repoId + "'" );
+
+            Set<String> namespaces = new HashSet<String>();
+
+            for (Namespace namespace : namespacesList)
             {
                 String name = namespace.getName();
                 if ( StringUtils.isNotEmpty( name ) )
@@ -332,33 +338,43 @@ public class CassandraMetadataRepository
                     namespaces.add( StringUtils.substringBefore( name, "." ) );
                 }
             }
-            */
-
-
-            getNamespaceEntityManager().visitAll( new Function<Namespace, Boolean>()
-            {
-                // @Nullable add dependency ?
-                @Override
-                public Boolean apply( Namespace namespace )
-                {
-                    if ( namespace != null && namespace.getRepository() != null
-                        && StringUtils.equalsIgnoreCase( repoId, namespace.getRepository().getId() ) )
-                    {
-                        String name = namespace.getName();
-                        if ( StringUtils.isNotEmpty( name ) )
-                        {
-                            namespaces.add( StringUtils.substringBefore( name, "." ) );
-                        }
-                    }
-                    return Boolean.TRUE;
-                }
-            } );
 
             return namespaces;
+            */
+
         }
-        catch ( PersistenceException e )
+        catch ( Exception e )
         {
             throw new MetadataResolutionException( e.getMessage(), e );
+        }
+    }
+
+    private static class RootNamesSpaceVisitAll
+        implements Function<Namespace, Boolean>
+    {
+        private String repoId;
+
+        Set<String> namespaces = new HashSet<String>();
+
+        private RootNamesSpaceVisitAll( String repoId )
+        {
+            this.repoId = repoId;
+        }
+
+        // @Nullable add dependency ?
+        @Override
+        public Boolean apply( Namespace namespace )
+        {
+            if ( namespace != null && namespace.getRepository() != null && StringUtils.equalsIgnoreCase( repoId,
+                                                                                                         namespace.getRepository().getId() ) )
+            {
+                String name = namespace.getName();
+                if ( StringUtils.isNotEmpty( name ) )
+                {
+                    namespaces.add( StringUtils.substringBefore( name, "." ) );
+                }
+            }
+            return Boolean.TRUE;
         }
     }
 
@@ -368,39 +384,11 @@ public class CassandraMetadataRepository
     {
         try
         {
-            final Set<String> namespaces = new HashSet<String>();
+            final FindNamesSpaceVisitAll findNamesSpaceVisitAll  = new FindNamesSpaceVisitAll( repoId, namespaceId );
 
-            getNamespaceEntityManager().visitAll( new Function<Namespace, Boolean>()
-            {
-                // @Nullable add dependency ?
-                @Override
-                public Boolean apply( Namespace namespace )
-                {
-                    if ( namespace != null && namespace.getRepository() != null && StringUtils.equalsIgnoreCase( repoId,
-                                                                                                                 namespace.getRepository().getId() ) )
-                    {
-                        String currentNamespace = namespace.getName();
-                        // we only return childs
-                        if ( StringUtils.startsWith( currentNamespace, namespaceId ) && (
-                            StringUtils.length( currentNamespace ) > StringUtils.length( namespaceId ) ) )
-                        {
-                            // store after namespaceId '.' but before next '.'
-                            // call org namespace org.apache.maven.shared -> stored apache
+            getNamespaceEntityManager().visitAll( findNamesSpaceVisitAll );
 
-                            String calledNamespace =
-                                StringUtils.endsWith( namespaceId, "." ) ? namespaceId : namespaceId + ".";
-                            String storedNamespace = StringUtils.substringAfter( currentNamespace, calledNamespace );
-
-                            storedNamespace = StringUtils.substringBefore( storedNamespace, "." );
-
-                            namespaces.add( storedNamespace );
-                        }
-                    }
-                    return Boolean.TRUE;
-                }
-            } );
-
-            return namespaces;
+            return findNamesSpaceVisitAll.namespaces;
         }
         catch ( PersistenceException e )
         {
@@ -408,6 +396,50 @@ public class CassandraMetadataRepository
         }
 
     }
+
+    private static class FindNamesSpaceVisitAll
+        implements Function<Namespace, Boolean>
+    {
+        private String repoId;
+
+        private String namespaceId;
+
+        Set<String> namespaces = new HashSet<String>();
+
+        private FindNamesSpaceVisitAll( String repoId, String namespaceId )
+        {
+            this.repoId = repoId;
+            this.namespaceId = namespaceId;
+        }
+
+        // @Nullable add dependency ?
+        @Override
+        public Boolean apply( Namespace namespace )
+        {
+            if ( namespace != null && namespace.getRepository() != null && StringUtils.equalsIgnoreCase( repoId,
+                                                                                                         namespace.getRepository().getId() ) )
+            {
+                String currentNamespace = namespace.getName();
+                // we only return childs
+                if ( StringUtils.startsWith( currentNamespace, namespaceId ) && (
+                    StringUtils.length( currentNamespace ) > StringUtils.length( namespaceId ) ) )
+                {
+                    // store after namespaceId '.' but before next '.'
+                    // call org namespace org.apache.maven.shared -> stored apache
+
+                    String calledNamespace =
+                        StringUtils.endsWith( namespaceId, "." ) ? namespaceId : namespaceId + ".";
+                    String storedNamespace = StringUtils.substringAfter( currentNamespace, calledNamespace );
+
+                    storedNamespace = StringUtils.substringBefore( storedNamespace, "." );
+
+                    namespaces.add( storedNamespace );
+                }
+            }
+            return Boolean.TRUE;
+        }
+    }
+
 
     public List<String> getNamespaces( final String repoId )
         throws MetadataResolutionException

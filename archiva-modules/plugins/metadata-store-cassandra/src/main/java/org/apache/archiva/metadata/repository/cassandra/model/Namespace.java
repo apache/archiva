@@ -38,7 +38,6 @@ public class Namespace
 {
 
     @Id
-    @Column( name = "id" )
     @Serializer( DeflateStringSerializer.class )
     private String id;
 
@@ -46,8 +45,13 @@ public class Namespace
     @Serializer( DeflateStringSerializer.class )
     private String name;
 
-    @Column( name = "repository" )
-    private Repository repository;
+    @Column( name = "repositoryid" )
+    @Serializer( DeflateStringSerializer.class )
+    private String repositoryId;
+
+    @Column( name = "repositoryname" )
+    @Serializer( DeflateStringSerializer.class )
+    private String repositoryName;
 
     //@ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
     //@JoinColumn(name = "repository_id")
@@ -64,7 +68,8 @@ public class Namespace
     {
         this.id = new KeyBuilder().withNamespace( id ).withRepositoryId( repository.getId() ).build();
         this.name = id;
-        this.repository = repository;
+        this.repositoryId = repository.getId();
+        this.repositoryName = repository.getName();
     }
 
     public String getId()
@@ -89,12 +94,13 @@ public class Namespace
 
     public Repository getRepository()
     {
-        return repository;
+        return new Repository(this.repositoryId);
     }
 
     public void setRepository( Repository repository )
     {
-        this.repository = repository;
+        this.repositoryId = repository.getId();
+        this.repositoryName = repository.getName();
     }
 
     @Override
@@ -115,7 +121,7 @@ public class Namespace
         {
             return false;
         }
-        if ( !repository.getId().equals( namespace.repository.getId() ) )
+        if ( !repositoryId.equals( namespace.repositoryId ) )
         {
             return false;
         }
@@ -127,7 +133,7 @@ public class Namespace
     public int hashCode()
     {
         int result = id.hashCode();
-        result = 31 * result + repository.getId().hashCode();
+        result = 31 * result + repositoryId.hashCode();
         return result;
     }
 
@@ -137,7 +143,7 @@ public class Namespace
         final StringBuilder sb = new StringBuilder( "Namespace{" );
         sb.append( "id='" ).append( id ).append( '\'' );
         sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", repository='" ).append( repository ).append( '\'' );
+        sb.append( ", repository='" ).append( repositoryId ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

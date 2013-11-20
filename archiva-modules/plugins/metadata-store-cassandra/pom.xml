@@ -256,8 +256,8 @@
                 org.springframework.context,
                 org.springframework.stereotype,
                 com.netflix.astyanax.serializers,
-              org.apache.commons.codec.binary,
-              org.apache.commons.io
+                org.apache.commons.codec.binary,
+                org.apache.commons.io
             </Import-Package>
           </instructions>
         </configuration>
