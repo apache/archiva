@@ -210,10 +210,16 @@ public class DefaultFileUploadService
         return fileMetadatas == null ? Collections.<FileMetadata>emptyList() : fileMetadatas;
     }
 
-    public Boolean save( String repositoryId, final String groupId, final String artifactId, String version,
-                         String packaging, final boolean generatePom )
+    public Boolean save( String repositoryId, String groupId, String artifactId, String version,
+                         String packaging, boolean generatePom )
         throws ArchivaRestServiceException
     {
+        repositoryId = StringUtils.trim( repositoryId );
+        groupId = StringUtils.trim( groupId );
+        artifactId = StringUtils.trim( artifactId );
+        version = StringUtils.trim( version );
+        packaging = StringUtils.trim( packaging );
+
         List<FileMetadata> fileMetadatas = getSessionFilesList();
         if ( fileMetadatas == null || fileMetadatas.isEmpty() )
         {
