@@ -943,6 +943,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-cassandra</artifactId>
+        <version>${sirona.version}</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
         <version>${plexus-utils.version}</version>

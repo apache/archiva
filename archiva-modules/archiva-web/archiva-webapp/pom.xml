@@ -119,12 +119,12 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-store-jcr</artifactId>
     </dependency>
-    <!--
+
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-store-cassandra</artifactId>
     </dependency>
-    -->
+
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-jcr-commons</artifactId>
@@ -608,6 +608,10 @@
       <classifier>classes</classifier>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.sirona</groupId>
+      <artifactId>sirona-cassandra</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>cglib</groupId>
@@ -998,7 +1002,7 @@
             -->
             <cassandraHost>localhost</cassandraHost>
             <cassandraPort>9160</cassandraPort>
-            <org.apache.sirona.configuration>${archiva.sirona.configuration}</org.apache.sirona.configuration>
+            <org.apache.sirona.configuration.sirona.properties>${archiva.sirona.configuration}</org.apache.sirona.configuration.sirona.properties>
           </systemProperties>
           <additionalClasspathDirs>
             <additionalClasspathDir>${basedir}/src/test/tomcat</additionalClasspathDir>
