@@ -303,4 +303,17 @@
   -->
   <!-- END SNIPPET: jcr-location -->
 
+  <!--
+
+  <bean class="org.apache.sirona.spring.BeanNameMonitoringAutoProxyCreator">
+    <property name="beanNames">
+      <list>
+        <value>Default**</value>
+        <value>**#rest</value>
+        <value>**#default</value>
+      </list>
+    </property>
+  </bean>
+  -->
+
 </beans>

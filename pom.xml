@@ -68,7 +68,7 @@
     <maven.indexer.version>5.1.1</maven.indexer.version>
     <wagon.version>2.5</wagon.version>
     <redback.version>2.2-SNAPSHOT</redback.version>
-    <redback.cache.version>2.1</redback.cache.version>
+    <redback.cache.version>2.2-SNAPSHOT</redback.cache.version>
     <redback.quartz.version>2.0</redback.quartz.version>
     <redback.registry.version>2.1</redback.registry.version>
     <redback.spring-utils.version>2.0</redback.spring-utils.version>
@@ -1498,8 +1498,8 @@
 
       <dependency>
         <groupId>net.sf.ehcache</groupId>
-        <artifactId>ehcache-core</artifactId>
-        <version>2.6.6</version>
+        <artifactId>ehcache</artifactId>
+        <version>2.7.4</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -1601,7 +1601,7 @@
                     <exclude>com.google.code.atinject:atinject</exclude>
                     <exclude>org.codehaus.plexus.cache:plexus-cache-api</exclude>
                     <exclude>org.codehaus.plexus.cache:plexus-cache-ehcache</exclude>
-                    <exclude>net.sf.ehcache:ehcache</exclude>
+                    <exclude>net.sf.ehcache:ehcache-core</exclude>
                     <exclude>org.codehaus.plexus.registry:plexus-registry-api</exclude>
                     <exclude>org.codehaus.plexus.registry:plexus-registry-commons</exclude>
                     <exclude>org.codehaus.plexus:plexus-taskqueue</exclude>

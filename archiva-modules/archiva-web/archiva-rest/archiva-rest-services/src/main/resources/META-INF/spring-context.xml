@@ -50,7 +50,6 @@
 
     <jaxrs:providers>
       <ref bean="jsonProvider"/>
-
       <ref bean="authenticationInterceptor#rest"/>
       <ref bean="permissionInterceptor#rest"/>
       <ref bean="archivaRestServiceExceptionMapper"/>
