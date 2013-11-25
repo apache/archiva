@@ -16,8 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","knockout.simpleGrid","jqueryFileTree","prettify", "d3"]
-, function(jquery,i18n,jqueryTmpl,select2,ko,koSimpleGrid,jqueryFileTree,prettify,d3) {
+define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","knockout.simpleGrid","jqueryFileTree"
+  ,"prettify", "d3", "typeahead"]
+, function(jquery,i18n,jqueryTmpl,select2,ko,koSimpleGrid,jqueryFileTree,prettify,d3,typeahead) {
 
   //-----------------------------------------
   // browse part
@@ -1956,34 +1957,6 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
     this.classifier=ko.observable();
   }
 
-  applyAutocompleteOnHeader=function(property,resultViewModel){
-    $( "#main-content").find("#search-filter-auto-"+property ).autocomplete({
-      minLength: 0,
-			source: function(request, response){
-        $.log("source auto filter search");
-        var founds=[];
-        $(resultViewModel.artifacts()).each(function(idx,artifact){
-          if(artifact[property] && artifact[property].startsWith(request.term)){
-            founds.push(artifact[property]);
-          }
-        });
-        response(unifyArray(founds,true));
-      },
-      select: function( event, ui ) {
-        $.log("property:"+property+','+ui.item.value);
-        var artifacts=[];
-        $(resultViewModel.artifacts()).each(function(idx,artifact){
-          if(artifact[property] && artifact[property].startsWith(ui.item.value)){
-            artifacts.push(artifact);
-          }
-        });
-        $.log("property:"+property+','+ui.item.value+",size:"+artifacts.length);
-        resultViewModel.artifacts(artifacts);
-        return false;
-      }
-    });
-  }
-
   /**
    * search results view model: display a grid with autocomplete filtering on grid headers
    * @param artifacts
@@ -2025,12 +1998,41 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
       gridUpdateCallBack: function(){
         $.log("gridUpdateCallBack search result");
         applyAutocompleteOnHeader('groupId',self);
+        $.log("applyAutocompleteOnHeader groupId done ");
         applyAutocompleteOnHeader('artifactId',self);
         applyAutocompleteOnHeader('version',self);
         applyAutocompleteOnHeader('classifier',self);
         applyAutocompleteOnHeader('fileExtension',self);
       }
     });
+
+    applyAutocompleteOnHeader=function(property,resultViewModel){
+      $.log("applyAutocompleteOnHeader property:"+property);
+      var values=[];
+      $(resultViewModel.artifacts()).each(function(idx,artifact){
+        var value=artifact[property];
+        if(value!=null && $.inArray(value, values)<0){
+          values.push(value);
+        }
+      });
+
+      var box = $( "#main-content").find("#search-filter-auto-"+property );
+      box.typeahead(
+          {
+            local: values
+          }
+      );
+
+      box.bind('typeahead:selected', function(obj, datum, name) {
+        var artifacts=[];
+        $(resultViewModel.artifacts()).each(function(idx,artifact){
+          if(artifact[property] && artifact[property].startsWith(datum.value)){
+            artifacts.push(artifact);
+          }
+        });
+        resultViewModel.artifacts(artifacts);
+      });
+    }
 
     groupIdView=function(artifact){
       displayBrowseGroupId(artifact.groupId);
