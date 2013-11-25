@@ -30,7 +30,7 @@
       <!--PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/-->
       <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n}" />
     </Console>
-    <FastRollingFile name="rolling" fileName="${logsDirectory}/archiva.log"
+    <RollingRandomAccessFile name="rolling" fileName="${logsDirectory}/archiva.log"
                      filePattern="${logsDirectory}/archiva-%d{MM-dd-yyyy}.log" immediateFlush="false" append="true">
       <PatternLayout>
         <pattern>%d [%t] %-5p %c %x - %m%n</pattern>
@@ -38,7 +38,7 @@
       <Policies>
         <TimeBasedTriggeringPolicy />
       </Policies>
-    </FastRollingFile>
+    </RollingRandomAccessFile>
   </appenders>
   <loggers>
 

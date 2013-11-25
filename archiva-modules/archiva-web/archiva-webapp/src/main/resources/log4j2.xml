@@ -27,7 +27,7 @@
 
   <appenders>
 
-    <FastRollingFile name="rolling" fileName="${logsDirectory}/archiva.log"
+    <RollingRandomAccessFile name="rolling" fileName="${logsDirectory}/archiva.log"
                  filePattern="${logsDirectory}/archiva-%d{yyyyMMdd}.log"
                  immediateFlush="false" append="true">
       <PatternLayout>
@@ -36,9 +36,9 @@
       <Policies>
         <TimeBasedTriggeringPolicy />
       </Policies>
-    </FastRollingFile>
+    </RollingRandomAccessFile>
 
-    <FastRollingFile name="auditlog" fileName="${logsDirectory}/archiva-audit.log"
+    <RollingRandomAccessFile name="auditlog" fileName="${logsDirectory}/archiva-audit.log"
                  filePattern="${logsDirectory}/archiva-audit-%d{yyyyMMdd}.log"
                  immediateFlush="false" append="true">
       <PatternLayout>
@@ -47,9 +47,9 @@
       <Policies>
         <TimeBasedTriggeringPolicy />
       </Policies>
-    </FastRollingFile>
+    </RollingRandomAccessFile>
 
-    <FastRollingFile name="redbackAuditLog" fileName="${logsDirectory}/archiva-security-audit.log"
+    <RollingRandomAccessFile name="redbackAuditLog" fileName="${logsDirectory}/archiva-security-audit.log"
                  filePattern="${logsDirectory}/archiva-security-audit.log-%d{yyyyMMdd}.log"
                  immediateFlush="false" append="true">
       <PatternLayout>
@@ -58,7 +58,7 @@
       <Policies>
         <TimeBasedTriggeringPolicy />
       </Policies>
-    </FastRollingFile>
+    </RollingRandomAccessFile>
 
   </appenders>
   <loggers>
