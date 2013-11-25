@@ -880,17 +880,18 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
   };
 
   drawQuickSearchAutocomplete=function(selector){
-
-    $( selector ? selector : "#quick-search-autocomplete" ).typeahead(
+    var box = $( selector ? selector : "#quick-search-autocomplete" );
+    box.typeahead(
         {
           name: 'quick-search-result',
           remote: 'restServices/archivaServices/searchService/quickSearch?queryString=%QUERY',
           valueKey: 'artifactId',
+          maxParallelRequests:1,
           limit: 50
         }
     );
 
-    $( selector ? selector : "#quick-search-autocomplete" ).bind('typeahead:selected', function(obj, datum, name) {
+    box.bind('typeahead:selected', function(obj, datum, name) {
       window.sammyArchivaApplication.setLocation("#quicksearch~" + datum.artifactId);
     });
   };

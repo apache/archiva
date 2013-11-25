@@ -1419,6 +1419,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
     if (selectedRepo){
       url+="?repositoryId="+encodeURIComponent(selectedRepo);
     }
+
     $( "#main-content").find("#browse-autocomplete" ).autocomplete({
       minLength: 2,
 			source: function(request, response){
@@ -2017,12 +2018,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
       });
 
       var box = $( "#main-content").find("#search-filter-auto-"+property );
-      box.typeahead(
-          {
-            local: values,
-            maxParallelRequests:2
-          }
-      );
+      box.typeahead( { local: values } );
 
       box.bind('typeahead:selected', function(obj, datum, name) {
         var artifacts=[];

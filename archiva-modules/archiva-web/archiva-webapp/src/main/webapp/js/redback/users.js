@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("redback.users",["jquery","utils","i18n","jquery.validate","knockout","knockout.simpleGrid"],
-function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
+define("redback.users",["jquery","utils","i18n","jquery.validate","knockout","knockout.simpleGrid","typeahead"],
+function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
 
   /**
    * view model used for users grid
@@ -47,11 +47,15 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
           filter: true
         }
       ],
-      pageSize: 10
+      pageSize: 10,
+      gridUpdateCallBack: function(){
+       $.log("gridUpdateCallBack users result");
+        applyAutocompleteOnHeaders(self);
+      }
     });
     clearFilters=function(){
       self.users(self.originalUsers());
-      applyAutocompleteOnHeaders(self);
+
     };
     filterLocked=function(){
       var founds=[];
@@ -61,7 +65,6 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
         }
       });
       self.users(founds);
-      applyAutocompleteOnHeaders(self);
     }
     filterNonLocked=function(){
       var founds=[];
@@ -71,7 +74,6 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
         }
       });
       self.users(founds);
-      applyAutocompleteOnHeaders(self);
     }
 
     filterPasswordChangeRequired=function(){
@@ -82,7 +84,6 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
         }
       });
       self.users(founds);
-      applyAutocompleteOnHeaders(self);
     }
     filterPasswordChangeNotRequired=function(){
       var founds=[];
@@ -92,7 +93,6 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
         }
       });
       self.users(founds);
-      applyAutocompleteOnHeaders(self);
     }
 
 
@@ -281,6 +281,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
   }
 
   applyAutocompleteOnHeader=function(property,usersViewModel){
+
     $("#main-content").find("#users-grid-filter-auto-"+property ).autocomplete({
       minLength: 0,
       source: function(request, response){
@@ -306,6 +307,31 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
         return false;
       }
     });
+
+    /*
+    olamy: doesn't work????
+    var values=[];
+    $(usersViewModel.users()).each(function(idx,user){
+      var value=user[property];
+      if(value!=null && $.inArray(value, values)<0){
+        values.push(value);
+      }
+    });
+    var jid = "#users-grid-filter-auto-"+property;
+    $.log("applyAutocompleteOnHeader:"+values.length+" for " + jid);
+
+    var box = $("#main-content").find(jid);
+
+    box.typeahead( { local: values } );
+    box.bind('typeahead:selected', function(obj, datum, name) {
+      var users=[];
+      $(usersViewModel.users()).each(function(idx,user){
+        if(user[property] && user[property]() && user[property]().indexOf(datum.value)>=0){
+          users.push(user);
+        }
+      });
+      usersViewModel.users(users);
+    });*/
   }
 
   /**
@@ -341,7 +367,6 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
             }
           })
           mainContent.find("#users-view-tabs-content #users-view").addClass("active");
-          applyAutocompleteOnHeaders(usersViewModel);
           mainContent.find("#usersTable").find('.dropdown-toggle').dropdown();
         }
       }
