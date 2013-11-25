@@ -2019,7 +2019,8 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
       var box = $( "#main-content").find("#search-filter-auto-"+property );
       box.typeahead(
           {
-            local: values
+            local: values,
+            maxParallelRequests:2
           }
       );
 

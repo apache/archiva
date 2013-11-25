@@ -17,9 +17,9 @@
  * under the License.
  */
 define("archiva.main",["jquery","jquery.ui","sammy","jquery.tmpl",'i18n',"jquery.cookie","bootstrap","archiva.search",
-         "jquery.validate","jquery.json","knockout","redback.templates","archiva.templates",
+         "jquery.validate","jquery.json","knockout","typeahead","hogan","redback.templates","archiva.templates",
           "redback.roles","redback","archiva.artifacts-management","archiva.docs"],
-function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryValidate,jqueryJson,ko) {
+function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryValidate,jqueryJson,ko,typeahead) {
 
   /**
    * reccord a cookie for session with the logged user
@@ -881,37 +881,19 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
   drawQuickSearchAutocomplete=function(selector){
 
-    $( selector ? selector : "#quick-search-autocomplete" ).autocomplete({
-      minLength: 3,
-      delay: 600,
-			source: function(request, response){
-        $.get("restServices/archivaServices/searchService/quickSearch?queryString="+encodeURIComponent(request.term),
-           function(data) {
-             var res = mapArtifacts(data);
-             var uniqId = [];
-             var uniqArtifactIds=[];
-             for (var i= 0;i<res.length;i++){
-               if ( $.inArray(res[i].artifactId,uniqId)<0){
-                 uniqId.push(res[i].artifactId);
-                 uniqArtifactIds.push(res[i]);
-               }
-             }
-             response(uniqArtifactIds);
-           }
-        );
-      },
-            select: function(event, ui) {
-                $.log("select artifactId:" + ui.item.artifactId);
-                window.sammyArchivaApplication.setLocation("#quicksearch~" + ui.item.artifactId);
-            }
-        }).data("autocomplete")._renderItem = function(ul, item) {
-            return $("<li></li>")
-                    .data("item.autocomplete", item)
-                    .append("<a>" + item.artifactId + "</a>")
-                    .appendTo(ul);
-        };
+    $( selector ? selector : "#quick-search-autocomplete" ).typeahead(
+        {
+          name: 'quick-search-result',
+          remote: 'restServices/archivaServices/searchService/quickSearch?queryString=%QUERY',
+          valueKey: 'artifactId',
+          limit: 50
+        }
+    );
 
-    };
+    $( selector ? selector : "#quick-search-autocomplete" ).bind('typeahead:selected', function(obj, datum, name) {
+      window.sammyArchivaApplication.setLocation("#quicksearch~" + datum.artifactId);
+    });
+  };
 
 
 });

@@ -608,10 +608,12 @@
       <classifier>classes</classifier>
     </dependency>
 
+    <!--
     <dependency>
       <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-ehcache-agent</artifactId>
     </dependency>
+    -->
 
     <dependency>
       <groupId>org.apache.sirona</groupId>

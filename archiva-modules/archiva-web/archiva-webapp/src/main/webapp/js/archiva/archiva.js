@@ -84,6 +84,7 @@ $.ajax({
               "jqueryFileTree": "jqueryFileTree-1.0.1",
               "d3": "d3.min.3.1.5",
               "typeahead": "typeahead.min.0.9.3",
+              "hogan": "hogan-2.0.0",
               "redback": "redback/redback",
               "redback.roles": "redback/roles",
               "redback.user": "redback/user",
