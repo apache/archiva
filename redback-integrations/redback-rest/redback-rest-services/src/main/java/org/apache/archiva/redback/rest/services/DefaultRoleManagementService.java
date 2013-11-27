@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -261,6 +262,9 @@ public class DefaultRoleManagementService
             {
                 effectivelyAssignedRoles.add( new Role( r ) );
             }
+
+            Collections.sort( effectivelyAssignedRoles, RoleComparator.INSTANCE  );
+
             return effectivelyAssignedRoles;
         }
         catch ( RbacManagerException rme )
@@ -268,6 +272,17 @@ public class DefaultRoleManagementService
             // ignore, this can happen when the user has no roles assigned  
         }
         return new ArrayList<Role>( 0 );
+    }
+
+    private static class RoleComparator implements Comparator<Role> {
+
+        private static RoleComparator INSTANCE = new RoleComparator();
+
+        @Override
+        public int compare( Role role, Role role2 )
+        {
+            return role.getName().compareTo( role2.getName() );
+        }
     }
 
 
