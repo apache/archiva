@@ -188,7 +188,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,jqueryui,typeahead) {
             var mappedRoles = $.map(data, function(item) {
               return item.name;
             });
-            user.assignedRoles = ko.observableArray(mappedRoles);
+            user.assignedRoles = ko.observableArray(mappedRoles.sort());
 
             // user form binding
             var createUserForm = mainContent.find("#createUserForm");
