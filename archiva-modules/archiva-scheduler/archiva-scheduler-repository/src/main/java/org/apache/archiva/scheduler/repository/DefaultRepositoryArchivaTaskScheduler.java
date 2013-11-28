@@ -62,31 +62,19 @@ public class DefaultRepositoryArchivaTaskScheduler
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
-    /**
-     *
-     */
     @Inject
     private Scheduler scheduler;
 
     @Inject
     private CronExpressionValidator cronValidator;
 
-    /**
-     *
-     */
     @Inject
     @Named( value = "taskQueue#repository-scanning" )
     private TaskQueue repositoryScanningQueue;
 
-    /**
-     *
-     */
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 
-    /**
-     *
-     */
     @Inject
     @Named( value = "repositoryStatisticsManager#default" )
     private RepositoryStatisticsManager repositoryStatisticsManager;
