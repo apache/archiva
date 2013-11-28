@@ -20,9 +20,10 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
   "knockout.simpleGrid","jquery.validate","bootstrap","jquery.fileupload","jquery.fileupload.ui"]
     , function(jquery,i18n,utils,jqueryTmpl,ko) {
 
-  ArtifactUpload=function(classifier,pomFile){
+  ArtifactUpload=function(classifier,pomFile,packaging){
     this.classifier=classifier;
     this.pomFile=pomFile;
+    this.packaging=packaging;
   }
 
   ArtifactUploadViewModel=function(managedRepositories){
@@ -102,19 +103,22 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
                     submit: function (e, data) {
                       var $this = $(this);
                       $this.fileupload('send', data);
-                      artifactUploadViewModel.artifactUploads.push(new ArtifactUpload(data.formData.classifier,data.formData.pomFile));
+                      artifactUploadViewModel.artifactUploads.push(new ArtifactUpload(data.formData.classifier,data.formData.pomFile,data.formData.packaging));
                       return false;
                     }
                   }
                 );
                 fileUpload.bind('fileuploadsubmit', function (e, data) {
                   var pomFile = data.context.find('#pomFile' ).is(":checked");
-                  var classifier = data.context.find('#classifier' ).val();
+                  var classifier = data.context.find('#classifier').val();
+                  var packaging = data.context.find('#packaging' ).val();
+                  $.log("packaging:"+packaging);
                   if (!data.formData){
                     data.formData={};
                   }
                   data.formData.pomFile = pomFile;
                   data.formData.classifier = classifier;
+                  data.formData.packaging = packaging;
                 });
               }
           });

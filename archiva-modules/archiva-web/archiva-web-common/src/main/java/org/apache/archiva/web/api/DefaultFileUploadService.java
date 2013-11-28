@@ -184,6 +184,11 @@ public class DefaultFileUploadService
         File file = new File( SystemUtils.getJavaIoTmpDir(), fileName );
         log.debug( "delete file:{},exists:{}", file.getPath(), file.exists() );
         boolean removed = getSessionFileMetadatas().remove( new FileMetadata( fileName ) );
+        // try with full name as ui only know the file name
+        if ( !removed )
+        {
+            removed = getSessionFileMetadatas().remove( new FileMetadata( file.getPath() ) );
+        }
         if ( file.exists() )
         {
             return file.delete();
