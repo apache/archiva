@@ -85,7 +85,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * @author Olivier Lamy
  */
-@Service( "fileUploadService#rest" )
+@Service("fileUploadService#rest")
 public class DefaultFileUploadService
     extends AbstractRestService
     implements FileUploadService
@@ -107,7 +107,7 @@ public class DefaultFileUploadService
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
     @Inject
-    @Named( value = "archivaTaskScheduler#repository" )
+    @Named(value = "archivaTaskScheduler#repository")
     private ArchivaTaskScheduler scheduler;
 
     private String getStringValue( MultipartBody multipartBody, String attachmentId )
@@ -125,6 +125,7 @@ public class DefaultFileUploadService
         {
 
             String classifier = getStringValue( multipartBody, "classifier" );
+            String packaging = getStringValue( multipartBody, "packaging" );
             // skygo: http header form pomFile was once sending 1 for true and void for false
             // leading to permanent false value for pomFile if using toBoolean(); use , "1", ""
             boolean pomFile = BooleanUtils.toBoolean( getStringValue( multipartBody, "pomFile" ) );
@@ -142,6 +143,7 @@ public class DefaultFileUploadService
             fileMetadata.setClassifier( classifier );
             fileMetadata.setDeleteUrl( tmpFile.getName() );
             fileMetadata.setPomFile( pomFile );
+            fileMetadata.setPackaging( packaging );
 
             log.info( "uploading file: {}", fileMetadata );
 
@@ -181,8 +183,7 @@ public class DefaultFileUploadService
     {
         File file = new File( SystemUtils.getJavaIoTmpDir(), fileName );
         log.debug( "delete file:{},exists:{}", file.getPath(), file.exists() );
-        boolean removed = getSessionFileMetadatas().remove(
-            new FileMetadata( SystemUtils.getJavaIoTmpDir().getPath() + "/" + fileName ) );
+        boolean removed = getSessionFileMetadatas().remove( new FileMetadata( fileName ) );
         if ( file.exists() )
         {
             return file.delete();
@@ -196,8 +197,9 @@ public class DefaultFileUploadService
         List<FileMetadata> fileMetadatas = new ArrayList( getSessionFileMetadatas() );
         for ( FileMetadata fileMetadata : fileMetadatas )
         {
-            deleteFile( new File( fileMetadata.getServerFileName() ).getName() );
+            deleteFile( new File( fileMetadata.getServerFileName() ).getPath() );
         }
+        getSessionFileMetadatas().clear();
         return Boolean.TRUE;
     }
 
@@ -210,8 +212,8 @@ public class DefaultFileUploadService
         return fileMetadatas == null ? Collections.<FileMetadata>emptyList() : fileMetadatas;
     }
 
-    public Boolean save( String repositoryId, String groupId, String artifactId, String version,
-                         String packaging, boolean generatePom )
+    public Boolean save( String repositoryId, String groupId, String artifactId, String version, String packaging,
+                         boolean generatePom )
         throws ArchivaRestServiceException
     {
         repositoryId = StringUtils.trim( repositoryId );
@@ -362,7 +364,8 @@ public class DefaultFileUploadService
             artifactReference.setGroupId( groupId );
             artifactReference.setVersion( version );
             artifactReference.setClassifier( fileMetadata.getClassifier() );
-            artifactReference.setType( packaging );
+            artifactReference.setType(
+                StringUtils.isEmpty( fileMetadata.getPackaging() ) ? packaging : fileMetadata.getPackaging() );
 
             ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
 
@@ -430,6 +433,7 @@ public class DefaultFileUploadService
             }
             catch ( IOException ie )
             {
+                log.error( "IOException copying file: {}", ie.getMessage(), ie );
                 throw new ArchivaRestServiceException(
                     "Overwriting released artifacts in repository '" + repoConfig.getId() + "' is not allowed.",
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), ie );

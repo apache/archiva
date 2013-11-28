@@ -45,6 +45,8 @@ public class FileMetadata
 
     private String classifier;
 
+    private String packaging;
+
     private boolean pomFile;
 
     public FileMetadata()
@@ -157,6 +159,16 @@ public class FileMetadata
         this.serverFileName = serverFileName;
     }
 
+    public String getPackaging()
+    {
+        return packaging;
+    }
+
+    public void setPackaging( String packaging )
+    {
+        this.packaging = packaging;
+    }
+
     @Override
     public boolean equals( Object o )
     {
@@ -188,9 +200,8 @@ public class FileMetadata
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder();
-        sb.append( "FileMetadata" );
-        sb.append( "{name='" ).append( name ).append( '\'' );
+        final StringBuilder sb = new StringBuilder( "FileMetadata{" );
+        sb.append( "name='" ).append( name ).append( '\'' );
         sb.append( ", serverFileName='" ).append( serverFileName ).append( '\'' );
         sb.append( ", size=" ).append( size );
         sb.append( ", url='" ).append( url ).append( '\'' );
@@ -198,6 +209,7 @@ public class FileMetadata
         sb.append( ", deleteType='" ).append( deleteType ).append( '\'' );
         sb.append( ", errorKey='" ).append( errorKey ).append( '\'' );
         sb.append( ", classifier='" ).append( classifier ).append( '\'' );
+        sb.append( ", packaging='" ).append( packaging ).append( '\'' );
         sb.append( ", pomFile=" ).append( pomFile );
         sb.append( '}' );
         return sb.toString();
