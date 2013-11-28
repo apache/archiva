@@ -36,7 +36,7 @@
     <maxWaitTimeInMs>10000</maxWaitTimeInMs>
 
     <seleniumPluginVersion>2.3</seleniumPluginVersion>
-    <selenium-server.version>2.33.0</selenium-server.version>
+    <selenium-server.version>2.37.1</selenium-server.version>
   </properties>
 
   <dependencies>
