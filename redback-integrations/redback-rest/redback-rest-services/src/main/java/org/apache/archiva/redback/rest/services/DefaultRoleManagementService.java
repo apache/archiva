@@ -631,7 +631,11 @@ public class DefaultRoleManagementService
                 Collection<org.apache.archiva.redback.rbac.Role> appRoles =
                     filterApplicationRoles( modelApplication, allRoles, modelApplication.getTemplates() );
 
-                applicationRoles.setGlobalRoles( toRoleNames( appRoles ) );
+                List<String> roleNames = new ArrayList<String>( toRoleNames( appRoles ) );
+
+                Collections.sort( roleNames );
+
+                applicationRoles.setGlobalRoles( roleNames );
 
                 Set<String> resources = discoverResources( modelApplication.getTemplates(), appRoles );
 
@@ -651,7 +655,11 @@ public class DefaultRoleManagementService
                     }
                 }
 
+                Collections.sort( appRoleNames );
+
                 applicationRoles.setGlobalRoles( appRoleNames );
+
+                Collections.sort( appRoleNames );
 
                 applicationRolesList.add( applicationRoles );
             }
