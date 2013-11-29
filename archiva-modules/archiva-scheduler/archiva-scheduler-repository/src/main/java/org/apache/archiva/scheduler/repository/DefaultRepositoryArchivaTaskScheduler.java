@@ -36,8 +36,13 @@ import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.lang.time.StopWatch;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
+import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
+import org.quartz.TriggerBuilder;
 import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.slf4j.Logger;
@@ -357,23 +362,27 @@ public class DefaultRepositoryArchivaTaskScheduler
             cronString = CRON_HOURLY;
         }
 
-        // setup the unprocessed artifact job
-        JobDetail repositoryJob = new JobDetailImpl( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP,
-                                                     RepositoryTaskJob.class );
+        JobDataMap jobDataMap = new JobDataMap( );
+        jobDataMap.put( TASK_QUEUE, repositoryScanningQueue );
+        jobDataMap.put( TASK_REPOSITORY, repoConfig.getId() );
 
-        repositoryJob.getJobDataMap().put( TASK_QUEUE, repositoryScanningQueue );
-        repositoryJob.getJobDataMap().put( TASK_REPOSITORY, repoConfig.getId() );
+        // setup the unprocessed artifact job
+        JobDetail repositoryJob = JobBuilder.newJob( RepositoryTaskJob.class )
+                                        .withIdentity( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP )
+                                        .setJobData( jobDataMap )
+                                        .build();
 
         try
         {
-            CronTriggerImpl trigger =
-                new CronTriggerImpl( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP,
-                                     cronString );
+            CronTrigger trigger = TriggerBuilder.newTrigger()
+                    .withIdentity( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP )
+                    .withSchedule( CronScheduleBuilder.cronSchedule( cronString ) )
+                    .build();
 
             jobs.add( REPOSITORY_JOB + ":" + repoConfig.getId() );
             scheduler.scheduleJob( repositoryJob, trigger );
         }
-        catch ( ParseException e )
+        catch ( RuntimeException e )
         {
             log.error(
                 "ParseException in repository scanning cron expression, disabling repository scanning for '': {}",
