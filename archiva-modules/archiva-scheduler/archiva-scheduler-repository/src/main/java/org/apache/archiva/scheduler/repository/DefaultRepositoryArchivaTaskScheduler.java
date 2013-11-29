@@ -36,6 +36,7 @@ import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.lang.time.StopWatch;
+import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 import org.quartz.impl.JobDetailImpl;
 import org.quartz.impl.triggers.CronTriggerImpl;
@@ -140,8 +141,8 @@ public class DefaultRepositoryArchivaTaskScheduler
                     }
                     catch ( MetadataRepositoryException e )
                     {
-                        log.warn( "Unable to determine if a repository is already scanned, skipping initial scan: "
-                                      + e.getMessage(), e );
+                        log.warn( "Unable to determine if a repository is already scanned, skipping initial scan: {}",
+                                  e.getMessage(), e );
                     }
                 }
             }
@@ -286,7 +287,7 @@ public class DefaultRepositoryArchivaTaskScheduler
                     }
                     catch ( SchedulerException e )
                     {
-                        log.error( "error restarting job: " + REPOSITORY_JOB + ":" + repoConfig.getId() );
+                        log.error( "error restarting job: '{}' : '{}'", REPOSITORY_JOB, repoConfig.getId() );
                     }
                 }
             }
@@ -317,7 +318,7 @@ public class DefaultRepositoryArchivaTaskScheduler
 
         if ( !queuedRepos.contains( repoId ) )
         {
-            log.info( "Repository [" + repoId + "] is queued to be scanned as it hasn't been previously." );
+            log.info( "Repository [{}] is queued to be scanned as it hasn't been previously.", repoId );
 
             try
             {
@@ -326,7 +327,7 @@ public class DefaultRepositoryArchivaTaskScheduler
             }
             catch ( TaskQueueException e )
             {
-                log.error( "Error occurred while queueing repository [" + repoId + "] task : " + e.getMessage() );
+                log.error( "Error occurred while queueing repository [{}] task : {}", e.getMessage(), repoId );
             }
         }
     }
@@ -357,9 +358,8 @@ public class DefaultRepositoryArchivaTaskScheduler
         }
 
         // setup the unprocessed artifact job
-        JobDetailImpl repositoryJob =
-            new JobDetailImpl( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP,
-                               RepositoryTaskJob.class );
+        JobDetail repositoryJob = new JobDetailImpl( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP,
+                                                     RepositoryTaskJob.class );
 
         repositoryJob.getJobDataMap().put( TASK_QUEUE, repositoryScanningQueue );
         repositoryJob.getJobDataMap().put( TASK_REPOSITORY, repoConfig.getId() );
@@ -375,8 +375,9 @@ public class DefaultRepositoryArchivaTaskScheduler
         }
         catch ( ParseException e )
         {
-            log.error( "ParseException in repository scanning cron expression, disabling repository scanning for '"
-                           + repoConfig.getId() + "': " + e.getMessage() );
+            log.error(
+                "ParseException in repository scanning cron expression, disabling repository scanning for '': {}",
+                repoConfig.getId(), e.getMessage() );
         }
 
     }
