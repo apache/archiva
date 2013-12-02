@@ -161,7 +161,7 @@ public class MailGeneratorTest
 
         assertNotNull( content );
         
-        log.info( "mail content " + content );
+        log.info( "mail content {}", content );
         
         assertTrue( content.indexOf( "baseUrl" ) == -1 ); // make sure everything is properly populate
         assertTrue( content.indexOf( "MY_APPLICATION_URL/security" ) > 0 ); // make sure everything is properly populate

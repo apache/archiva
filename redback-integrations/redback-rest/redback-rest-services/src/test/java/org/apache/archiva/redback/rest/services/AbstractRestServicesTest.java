@@ -113,7 +113,7 @@ public abstract class AbstractRestServicesTest
 
         this.port = tomcat.getConnector().getLocalPort();
 
-        log.info( "start server on port " + this.port );
+        log.info( "start server on port {}", this.port );
 
         UserService userService = getUserService();
 

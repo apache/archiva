@@ -100,7 +100,7 @@ public class RoleManagementServiceTest
 
             List<Role> roles = getRoleManagementService( authorizationHeader ).getEffectivelyAssignedRoles( "toto" );
 
-            log.info( "toto roles:" + roles );
+            log.info( "toto roles: {}", roles );
 
             assertTrue( roles.contains( new Role( "User Administrator" ) ) );
         }
@@ -123,7 +123,7 @@ public class RoleManagementServiceTest
 
         for ( Role role : roles )
         {
-            log.info( "role:" + role );
+            log.info( "role: {}", role );
         }
     }
 
@@ -133,7 +133,7 @@ public class RoleManagementServiceTest
     {
         Role role = getRoleManagementService( authorizationHeader ).getRole( "User Administrator" );
 
-        log.info( "role:" + role );
+        log.info( "role: {}", role );
 
     }
 
@@ -246,7 +246,7 @@ public class RoleManagementServiceTest
 
         for ( ApplicationRoles applicationRoles : applicationRoleList )
         {
-            log.info( "applicationRoles:" + applicationRoles );
+            log.info( "applicationRoles: {}", applicationRoles );
         }
     }
 

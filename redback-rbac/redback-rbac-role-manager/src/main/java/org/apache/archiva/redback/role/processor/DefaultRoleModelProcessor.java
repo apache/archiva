@@ -258,8 +258,7 @@ public class DefaultRoleModelProcessor
                     {
                         if ( !role.getPermissions().contains( permission ) )
                         {
-                            log.info( "Adding new permission '" + permission.getName() + "' to role '" + role.getName()
-                                          + "'" );
+                            log.info( "Adding new permission '{}' to role '{}'", permission.getName(), role.getName() );
                             role.addPermission( permission );
                             changed = true;
                         }
@@ -272,8 +271,7 @@ public class DefaultRoleModelProcessor
                         if ( !permissions.contains( permission ) )
                         {
                             log.info(
-                                "Removing old permission '" + permission.getName() + "' from role '" + role.getName()
-                                    + "'" );
+                                "Removing old permission '{}' from role '{}'", permission.getName(), role.getName() );
                             role.removePermission( permission );
                             changed = true;
                         }

@@ -325,8 +325,8 @@ public class DefaultRoleTemplateProcessor
                 {
                     if ( !role.getPermissions().contains( permission ) )
                     {
-                        log.info(
-                            "Adding new permission '" + permission.getName() + "' to role '" + role.getName() + "'" );
+                        log.info( "Adding new permission '{}' to role '{}'",
+                                  permission.getName(), role.getName() );
                         role.addPermission( permission );
                         changed = true;
                     }

@@ -314,7 +314,7 @@ public class UserServiceTest
         throws Exception
     {
         Collection<Permission> permissions = getUserService( authorizationHeader ).getUserPermissions( "admin" );
-        log.info( "admin permisssions:" + permissions );
+        log.info( "admin permisssions: {}", permissions );
     }
 
     @Test
@@ -323,7 +323,7 @@ public class UserServiceTest
     {
         createGuestIfNeeded();
         Collection<Permission> permissions = getUserService().getCurrentUserPermissions();
-        log.info( "guest permisssions:" + permissions );
+        log.info( "guest permisssions: {}", permissions );
     }
 
     @Test
@@ -331,7 +331,7 @@ public class UserServiceTest
         throws Exception
     {
         Collection<Operation> operations = getUserService( authorizationHeader ).getUserOperations( "admin" );
-        log.info( "admin operations:" + operations );
+        log.info( "admin operations: {}", operations );
     }
 
     @Test
@@ -340,7 +340,7 @@ public class UserServiceTest
     {
         createGuestIfNeeded();
         Collection<Operation> operations = getUserService().getCurrentUserOperations();
-        log.info( "guest operations:" + operations );
+        log.info( "guest operations: {}", operations );
     }
 
     @Test

@@ -77,7 +77,7 @@ public class LdapBindAuthenticatorTest
         suffix =
             apacheDs.addSimplePartition( "test", new String[]{ "redback", "plexus", "codehaus", "org" } ).getSuffix();
 
-        log.info( "DN Suffix: " + suffix );
+        log.info( "DN Suffix: {}", suffix );
 
         apacheDs.startServer();
 
