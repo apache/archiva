@@ -198,7 +198,7 @@ public class LdapBindAuthenticator
         }
         catch ( NamingException e )
         {
-            log.warn( "skip exception closing naming search result " + e.getMessage() );
+            log.warn( "skip exception closing naming search result {}", e.getMessage() );
         }
     }
 }

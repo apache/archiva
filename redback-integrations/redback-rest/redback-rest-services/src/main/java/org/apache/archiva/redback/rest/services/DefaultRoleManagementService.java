@@ -407,7 +407,7 @@ public class DefaultRoleManagementService
                     }
                     catch ( UserNotFoundException e )
                     {
-                        log.warn( "User '" + userAssignment.getPrincipal() + "' doesn't exist.", e );
+                        log.warn( "User '{}' doesn't exist.", userAssignment.getPrincipal(), e );
                     }
                 }
             }
@@ -428,7 +428,7 @@ public class DefaultRoleManagementService
                         }
                         catch ( UserNotFoundException e )
                         {
-                            log.warn( "User '" + userAssignment.getPrincipal() + "' doesn't exist.", e );
+                            log.warn( "User '{}' doesn't exist.", userAssignment.getPrincipal(), e );
                         }
                     }
                 }

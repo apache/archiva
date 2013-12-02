@@ -80,7 +80,7 @@ public abstract class AbstractRBACManager
             }
             catch ( Exception e )
             {
-                log.warn( "Unable to trigger .rbacInit( boolean ) to " + listener.getClass().getName(), e );
+                log.warn( "Unable to trigger .rbacInit( boolean ) to {}", listener.getClass().getName(), e );
             }
         }
     }
@@ -95,7 +95,7 @@ public abstract class AbstractRBACManager
             }
             catch ( Exception e )
             {
-                log.warn( "Unable to trigger .rbacRoleSaved( Role ) to " + listener.getClass().getName(), e );
+                log.warn( "Unable to trigger .rbacRoleSaved( Role ) to {}", listener.getClass().getName(), e );
             }
         }
     }
@@ -110,7 +110,7 @@ public abstract class AbstractRBACManager
             }
             catch ( Exception e )
             {
-                log.warn( "Unable to trigger .rbacRoleRemoved( Role ) to " + listener.getClass().getName(), e );
+                log.warn( "Unable to trigger .rbacRoleRemoved( Role ) to {}", listener.getClass().getName(), e );
             }
         }
     }
@@ -125,7 +125,7 @@ public abstract class AbstractRBACManager
             }
             catch ( Exception e )
             {
-                log.warn( "Unable to trigger .rbacPermissionSaved( Permission ) to " + listener.getClass().getName(),
+                log.warn( "Unable to trigger .rbacPermissionSaved( Permission ) to {}", listener.getClass().getName(),
                           e );
             }
         }
@@ -141,7 +141,7 @@ public abstract class AbstractRBACManager
             }
             catch ( Exception e )
             {
-                log.warn( "Unable to trigger .rbacPermissionRemoved( Permission ) to " + listener.getClass().getName(),
+                log.warn( "Unable to trigger .rbacPermissionRemoved( Permission ) to {}", listener.getClass().getName(),
                           e );
             }
         }
@@ -158,7 +158,7 @@ public abstract class AbstractRBACManager
             catch ( Exception e )
             {
                 log.warn(
-                    "Unable to trigger .rbacUserAssignmentSaved( UserAssignment ) to " + listener.getClass().getName(),
+                    "Unable to trigger .rbacUserAssignmentSaved( UserAssignment ) to {}", listener.getClass().getName(),
                     e );
             }
         }
@@ -174,8 +174,8 @@ public abstract class AbstractRBACManager
             }
             catch ( Exception e )
             {
-                log.warn( "Unable to trigger .rbacUserAssignmentRemoved( UserAssignment ) to "
-                              + listener.getClass().getName(), e );
+                log.warn( "Unable to trigger .rbacUserAssignmentRemoved( UserAssignment ) to {}",
+                              listener.getClass().getName(), e );
             }
         }
     }
@@ -594,7 +594,7 @@ public abstract class AbstractRBACManager
                 {
                     // the client application might not manage role clean up totally correctly so we want to notify
                     // of a child role issue and offer a clean up process at some point
-                    log.warn( "dangling child role: " + roleName + " on " + role.getName() );
+                    log.warn( "dangling child role: {} on {}", roleName, role.getName() );
                 }
             }
         }

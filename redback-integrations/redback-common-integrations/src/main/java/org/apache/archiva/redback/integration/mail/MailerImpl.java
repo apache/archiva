@@ -93,7 +93,7 @@ public class MailerImpl
     {
         if ( recipients.isEmpty() )
         {
-            log.warn( "Mail Not Sent - No mail recipients for email. subject [" + subject + "]" );
+            log.warn( "Mail Not Sent - No mail recipients for email. subject [{}]", subject );
             return;
         }
 

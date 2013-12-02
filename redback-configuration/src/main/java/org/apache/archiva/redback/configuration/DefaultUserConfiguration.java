@@ -129,7 +129,7 @@ public class DefaultUserConfiguration
                 }
                 catch ( EvaluatorException e )
                 {
-                    log.warn( "Unable to resolve configuration name: " + e.getMessage(), e );
+                    log.warn( "Unable to resolve configuration name: {}", e.getMessage(), e );
                 }
                 log.info( "Attempting to find configuration [{}] (resolved to [{}])", configName, configName );
 

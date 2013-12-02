@@ -261,7 +261,7 @@ public class JdoUserManager
         }
         catch ( UserNotFoundException e )
         {
-            log.warn( "Unable to delete user " + username + ", user not found.", e );
+            log.warn( "Unable to delete user {}, user not found.", username, e );
         }
     }
 

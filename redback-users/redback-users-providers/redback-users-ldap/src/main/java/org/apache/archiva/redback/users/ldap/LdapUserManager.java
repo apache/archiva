@@ -440,7 +440,7 @@ public class LdapUserManager
         }
         catch ( LdapControllerException e )
         {
-            log.warn( "Failed to search for user: " + principal, e );
+            log.warn( "Failed to search for user: {}", principal, e );
             return false;
         }
         catch ( LdapException e )
@@ -462,7 +462,7 @@ public class LdapUserManager
         }
         catch ( LdapException e )
         {
-            log.warn( "failed to get a ldap connection " + e.getMessage(), e );
+            log.warn( "failed to get a ldap connection {}", e.getMessage(), e );
             throw new LdapException( "failed to get a ldap connection " + e.getMessage(), e );
         }
     }

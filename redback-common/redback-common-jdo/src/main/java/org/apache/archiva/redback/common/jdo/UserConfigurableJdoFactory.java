@@ -77,7 +77,7 @@ public class UserConfigurableJdoFactory
         catch ( InterpolationException e )
         {
             // ignore interpolation issue
-            log.warn( "skip issue during interpolation " + e.getMessage() );
+            log.warn( "skip issue during interpolation {}", e.getMessage() );
             return value;
         }
     }
