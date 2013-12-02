@@ -76,15 +76,15 @@ public class VelocityMailGenerator
         }
         catch ( ParseErrorException e )
         {
-            log.error( "Unable to generate email for template '" + templateFile + "': " + e.getMessage(), e );
+            log.error( "Unable to generate email for template '{}': {}", templateFile, e.getMessage(), e );
         }
         catch ( MethodInvocationException e )
         {
-            log.error( "Unable to generate email for template '" + templateFile + "': " + e.getMessage(), e );
+            log.error( "Unable to generate email for template '{}': {}", templateFile, e.getMessage(), e );
         }
         catch ( Exception e )
         {
-            log.error( "Unable to generate email for template '" + templateFile + "': " + e.getMessage(), e );
+            log.error( "Unable to generate email for template '{}': {}", templateFile, e.getMessage(), e );
         }
 
         return writer.getBuffer().toString();

@@ -136,15 +136,15 @@ public class MailerImpl
         }
         catch ( AddressException e )
         {
-            log.error( "Unable to send message, subject [" + subject + "]", e );
+            log.error( "Unable to send message, subject [{}]", subject, e );
         }
         catch ( MessagingException e )
         {
-            log.error( "Unable to send message, subject [" + subject + "]", e );
+            log.error( "Unable to send message, subject [{}]", subject, e );
         }
         catch ( UnsupportedEncodingException e )
         {
-            log.error( "Unable to send message, subject [" + subject + "]", e );
+            log.error( "Unable to send message, subject [{}]", subject, e );
         }
     }
 }

@@ -516,7 +516,7 @@ public class DefaultRoleManagementService
             }
             catch ( RbacManagerException e )
             {
-                log.error( "error during assign role " + role.getName() + " to user " + username, e );
+                log.error( "error during assign role {} to user {}" , role.getName(), username, e );
                 throw new RedbackServiceException(
                     new ErrorMessage( "error.assign.role.user", new String[]{ role.getName(), username } ) );
             }
@@ -557,7 +557,7 @@ public class DefaultRoleManagementService
             }
             catch ( RbacManagerException e )
             {
-                log.error( "error during unassign role " + role.getName() + " to user " + username, e );
+                log.error( "error during assign role {} to user {}" , role.getName(), username, e );
                 throw new RedbackServiceException(
                     new ErrorMessage( "error.unassign.role.user", new String[]{ role.getName(), username } ) );
             }

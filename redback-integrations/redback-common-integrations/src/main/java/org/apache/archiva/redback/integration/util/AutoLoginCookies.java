@@ -211,7 +211,7 @@ public class AutoLoginCookies
         }
         catch ( KeyManagerException e )
         {
-            log.error( "KeyManagerException: " + e.getMessage(), e );
+            log.error( "KeyManagerException: {}", e.getMessage(), e );
         }
 
         return null;

@@ -138,11 +138,11 @@ public class LdapUserManager
         }
         catch ( LdapControllerException e )
         {
-            log.error( "Error mapping user: " + user.getUsername() + " to LDAP attributes.", e );
+            log.error( "Error mapping user: {} to LDAP attributes.", user.getUsername(), e );
         }
         catch ( MappingException e )
         {
-            log.error( "Error mapping user: " + user.getUsername() + " to LDAP attributes.", e );
+            log.error( "Error mapping user: {} to LDAP attributes.", user.getUsername(), e );
         }
         finally
         {
@@ -178,7 +178,7 @@ public class LdapUserManager
         }
         catch ( LdapControllerException e )
         {
-            log.error( "Failed to delete user: " + username, e );
+            log.error( "Failed to delete user: {}", username, e );
         }
         catch ( LdapException e )
         {
@@ -396,11 +396,11 @@ public class LdapUserManager
         }
         catch ( LdapControllerException e )
         {
-            log.error( "Failed to update user: " + user.getUsername(), e );
+            log.error( "Failed to update user: {}", user.getUsername(), e );
         }
         catch ( MappingException e )
         {
-            log.error( "Failed to update user: " + user.getUsername(), e );
+            log.error( "Failed to update user: {}", user.getUsername(), e );
         }
         catch ( LdapException e )
         {

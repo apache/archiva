@@ -210,7 +210,7 @@ public class DefaultUserService
         }
         catch ( RoleManagerException rpe )
         {
-            log.error( "RoleProfile Error: " + rpe.getMessage(), rpe );
+            log.error( "RoleProfile Error: {}", rpe.getMessage(), rpe );
             throw new RedbackServiceException( new ErrorMessage( "assign.role.failure", null ) );
         }
         catch ( UserManagerException e )
@@ -647,7 +647,7 @@ public class DefaultUserService
         }
         catch ( RoleManagerException rpe )
         {
-            log.error( "RoleProfile Error: " + rpe.getMessage(), rpe );
+            log.error( "RoleProfile Error: {}", rpe.getMessage(), rpe );
             throw new RedbackServiceException( new ErrorMessage( "assign.role.failure", null ) );
         }
         catch ( UserManagerException e )
