@@ -50,38 +50,14 @@ public class DefaultPluginsServices
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
+    private String adminPlugins;
+
     @Inject
     public DefaultPluginsServices( ApplicationContext applicationContext )
+        throws IOException
     {
         this.appCont = applicationContext;
-    }
 
-    private void feed( List<String> repository, String key )
-        throws ArchivaRestServiceException
-    {
-        log.debug( "Feeding: {}", key );
-        repository.clear();
-        Resource[] xmlResources;
-        try
-        {
-            xmlResources = appCont.getResources( "/**/" + key + "/**/main.js" );
-            for ( Resource rc : xmlResources )
-            {
-                String tmp = rc.getURL().toString();
-                tmp = tmp.substring( tmp.lastIndexOf( key ) + key.length() + 1, tmp.length() - 8 );
-                repository.add( "archiva/admin/" + key + "/" + tmp + "/main" );
-            }
-        }
-        catch ( IOException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(), e );
-        }
-    }
-
-    @Override
-    public String getAdminPlugins()
-        throws ArchivaRestServiceException
-    {
         // rebuild
         feed( repositoryType, "repository" );
         feed( adminFeatures, "features" );
@@ -97,12 +73,35 @@ public class DefaultPluginsServices
         log.debug( "getAdminPlugins: {}", sb.toString() );
         if ( sb.length() > 1 )
         {
-            return sb.substring( 0, sb.length() - 1 );
+            adminPlugins = sb.substring( 0, sb.length() - 1 );
         }
         else
         {
-            return sb.toString();
+            adminPlugins = sb.toString();
+        }
+    }
+
+    private void feed( List<String> repository, String key )
+        throws IOException
+    {
+        log.info( "Feeding: {}", key );
+        repository.clear();
+        Resource[] xmlResources;
+
+        xmlResources = appCont.getResources( "/**/" + key + "/**/main.js" );
+        for ( Resource rc : xmlResources )
+        {
+            String tmp = rc.getURL().toString();
+            tmp = tmp.substring( tmp.lastIndexOf( key ) + key.length() + 1, tmp.length() - 8 );
+            repository.add( "archiva/admin/" + key + "/" + tmp + "/main" );
         }
 
+    }
+
+    @Override
+    public String getAdminPlugins()
+        throws ArchivaRestServiceException
+    {
+        return  adminPlugins;
     }
 }
