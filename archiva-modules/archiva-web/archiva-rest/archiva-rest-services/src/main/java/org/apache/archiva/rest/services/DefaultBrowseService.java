@@ -281,8 +281,8 @@ public class DefaultBrowseService
                     catch ( MetadataResolutionException e )
                     {
                         log.warn(
-                            "Skipping invalid metadata while compiling shared model for " + groupId + ":" + artifactId
-                                + " in repo " + repoId + ": " + e.getMessage() );
+                            "Skipping invalid metadata while compiling shared model for {}:{} in repo {}: {}",
+                            groupId, artifactId, repoId, e.getMessage() );
                     }
                 }
             }

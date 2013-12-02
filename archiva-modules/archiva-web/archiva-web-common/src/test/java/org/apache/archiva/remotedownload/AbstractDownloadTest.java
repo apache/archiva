@@ -128,7 +128,7 @@ public abstract class AbstractDownloadTest
         this.server.start();
         Connector connector = this.server.getConnectors()[0];
         this.port = connector.getLocalPort();
-        log.info( "start server on port " + this.port );
+        log.info( "start server on port {}", this.port );
 
         User user = new User();
         user.setEmail( "toto@toto.fr" );

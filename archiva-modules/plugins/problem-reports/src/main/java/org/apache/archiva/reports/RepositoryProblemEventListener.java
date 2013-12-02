@@ -51,7 +51,7 @@ public class RepositoryProblemEventListener
         }
         catch ( MetadataRepositoryException e )
         {
-            log.warn( "Unable to remove metadata facet as part of delete event: " + e.getMessage(), e );
+            log.warn( "Unable to remove metadata facet as part of delete event: {}", e.getMessage(), e );
         }
     }
 
@@ -69,8 +69,8 @@ public class RepositoryProblemEventListener
         }
         catch ( MetadataRepositoryException e )
         {
-            log.warn( "Unable to remove repository problem facets for the version being corrected in the repository: "
-                          + e.getMessage(), e );
+            log.warn( "Unable to remove repository problem facets for the version being corrected in the repository: {}",
+                          e.getMessage(), e );
         }
     }
 
@@ -92,7 +92,7 @@ public class RepositoryProblemEventListener
         }
         catch ( MetadataRepositoryException e )
         {
-            log.warn( "Unable to add repository problem facets for the version being removed: " + e.getMessage(), e );
+            log.warn( "Unable to add repository problem facets for the version being removed: {}", e.getMessage(), e );
         }
     }
 

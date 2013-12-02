@@ -110,7 +110,7 @@ public class DefaultWagonFactory
         }
         catch ( Exception e )
         {
-            logger.warn( "fail to configure User-Agent: " + e.getMessage(), e );
+            logger.warn( "fail to configure User-Agent: {}", e.getMessage(), e );
         }
     }
 }

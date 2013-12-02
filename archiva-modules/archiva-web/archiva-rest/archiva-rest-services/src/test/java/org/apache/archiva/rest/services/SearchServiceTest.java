@@ -130,7 +130,7 @@ public class SearchServiceTest
 
         for ( Artifact artifact : artifacts )
         {
-            log.info( "url:" + artifact.getUrl() );
+            log.info( "url: {}", artifact.getUrl() );
             String version = artifact.getVersion();
             assertTrue( artifact.getUrl().contains( version ) );
 
@@ -231,7 +231,7 @@ public class SearchServiceTest
 
         for ( Artifact artifact : artifacts )
         {
-            log.info( "url:" + artifact.getUrl() );
+            log.info( "url: {}", artifact.getUrl() );
             String version = artifact.getVersion();
             assertEquals( "http://localhost:" + port
                               + "/repository/test-repo/org/apache/karaf/features/org.apache.karaf.features.core/"
@@ -269,7 +269,7 @@ public class SearchServiceTest
         assertTrue( " not 1 results for Bundle ExportPackage org.apache.karaf.features.command.completers but "
                         + artifacts.size() + ":" + artifacts, artifacts.size() == 1 );
 
-        log.info( "artifact url " + artifacts.get( 0 ).getUrl() );
+        log.info( "artifact url {}", artifacts.get( 0 ).getUrl() );
         deleteTestRepo( testRepoId );
     }
 
@@ -333,7 +333,7 @@ public class SearchServiceTest
         assertTrue( " not 0 results for Bundle ExportPackage org.apache.karaf.features.command.completers but "
                         + artifacts.size() + ":" + artifacts, artifacts.size() == 1 );
 
-        log.info( "artifact url " + artifacts.get( 0 ).getUrl() );
+        log.info( "artifact url {}", artifacts.get( 0 ).getUrl() );
         deleteTestRepo( testRepoId );
     }
 
@@ -354,7 +354,7 @@ public class SearchServiceTest
         SearchService searchService = getSearchService( authorizationHeader );
 
         Collection<String> groupIds = searchService.getAllGroupIds( Arrays.asList( testRepoId ) ).getGroupIds();
-        log.info( "groupIds  " + groupIds );
+        log.info( "groupIds  {}", groupIds );
         assertFalse( groupIds.isEmpty() );
         assertTrue( groupIds.contains( "commons-cli" ) );
         assertTrue( groupIds.contains( "org.apache.felix" ) );
@@ -384,7 +384,7 @@ public class SearchServiceTest
             new SearchRequest( "org.foo", "studio-all-update-site", null, null, null, Arrays.asList( "test-repo" ) );
 
         List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
-        log.info( "artifacts:" + artifacts );
+        log.info( "artifacts: {}", artifacts );
         assertEquals( 1, artifacts.size() );
         deleteTestRepo( testRepoId );
     }

@@ -142,13 +142,13 @@ public class RepositoryModelResolver
                 {
                     log.info(
                         "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
-                        new Object[]{ model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() } );
+                        model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() );
                 }
                 catch ( Exception e )
                 {
                     log.warn(
                         "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
-                        new Object[]{ model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() } );
+                        model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() );
 
                     continue;
                 }

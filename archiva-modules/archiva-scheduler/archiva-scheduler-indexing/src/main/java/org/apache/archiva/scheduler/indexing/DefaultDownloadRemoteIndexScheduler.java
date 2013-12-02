@@ -205,7 +205,7 @@ public class DefaultDownloadRemoteIndexScheduler
                 }
                 catch ( IllegalArgumentException e )
                 {
-                    log.warn( "Unable to schedule remote index download: " + e.getLocalizedMessage() );
+                    log.warn( "Unable to schedule remote index download: {}", e.getLocalizedMessage() );
                 }
 
                 if ( remoteRepository.isDownloadRemoteIndexOnStartup() )

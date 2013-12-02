@@ -134,11 +134,11 @@ public class LegacyConverterArtifactConsumer
         }
         catch ( LayoutException e )
         {
-            log.warn( "Unable to convert artifact: " + path + " : " + e.getMessage(), e );
+            log.warn( "Unable to convert artifact: {} : {}",path , e.getMessage(), e );
         }
         catch ( ArtifactConversionException e )
         {
-            log.warn( "Unable to convert artifact: " + path + " : " + e.getMessage(), e );
+            log.warn( "Unable to convert artifact: {} : {}",path , e.getMessage(), e );
         }
     }
 

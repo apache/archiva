@@ -39,7 +39,7 @@ public class RemoteRepositoryAdminTest
         List<RemoteRepository> remoteRepositories = remoteRepositoryAdmin.getRemoteRepositories();
         assertNotNull( remoteRepositories );
         assertTrue( remoteRepositories.size() > 0 );
-        log.info( "remote " + remoteRepositories );
+        log.info( "remote {}", remoteRepositories );
     }
 
     @Test

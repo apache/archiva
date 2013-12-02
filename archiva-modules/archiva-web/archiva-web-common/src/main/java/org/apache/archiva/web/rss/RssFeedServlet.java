@@ -263,7 +263,7 @@ public class RssFeedServlet
                 }
                 catch ( DecoderException ie )
                 {
-                    log.warn( "Error decoding username and password.", ie.getMessage() );
+                    log.warn( "Error decoding username and password: {}", ie.getMessage() );
                 }
 
                 if ( usernamePassword == null || usernamePassword.trim().equals( "" ) )

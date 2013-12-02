@@ -568,7 +568,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "default", repository.getLayout() );
         assertTrue( "check managed repositories", repository.isScanned() );
 
-        log.info( "knowContentConsumers " + configuration.getRepositoryScanning().getKnownContentConsumers() );
+        log.info( "knowContentConsumers {}", configuration.getRepositoryScanning().getKnownContentConsumers() );
 
         assertFalse(
             configuration.getRepositoryScanning().getKnownContentConsumers().contains( "update-db-artifact" ) );

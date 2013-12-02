@@ -376,7 +376,7 @@ public class MetadataTools
         {
             // TODO: [monitor] consider a monitor for this event.
             // TODO: consider a read-redo on monitor return code?
-            log.warn( "Unable to read metadata: " + metadataFile.getAbsolutePath(), e );
+            log.warn( "Unable to read metadata: {}", metadataFile.getAbsolutePath(), e );
             return null;
         }
     }
@@ -401,7 +401,7 @@ public class MetadataTools
         {
             // TODO: [monitor] consider a monitor for this event.
             // TODO: consider a read-redo on monitor return code?
-            log.warn( "Unable to read metadata: " + metadataFile.getAbsolutePath(), e );
+            log.warn( "Unable to read metadata: {}", metadataFile.getAbsolutePath(), e );
             return null;
         }
     }
@@ -426,7 +426,7 @@ public class MetadataTools
         {
             // TODO: [monitor] consider a monitor for this event.
             // TODO: consider a read-redo on monitor return code?
-            log.warn( "Unable to read metadata: " + metadataFile.getAbsolutePath(), e );
+            log.warn( "Unable to read metadata: {}", metadataFile.getAbsolutePath(), e );
             return null;
         }
     }

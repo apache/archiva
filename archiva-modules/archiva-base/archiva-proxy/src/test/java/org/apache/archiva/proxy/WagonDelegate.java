@@ -65,7 +65,7 @@ public class WagonDelegate
     public boolean getIfNewer( String resourceName, File destination, long timestamp )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
-        log.info( ".getIfNewer(" + resourceName + ", " + destination + ", " + timestamp + ")" );
+        log.info( ".getIfNewer({}, {}, {})", resourceName, destination, timestamp );
 
         boolean result = delegate.getIfNewer( resourceName, destination, timestamp );
         createIfMissing( destination );

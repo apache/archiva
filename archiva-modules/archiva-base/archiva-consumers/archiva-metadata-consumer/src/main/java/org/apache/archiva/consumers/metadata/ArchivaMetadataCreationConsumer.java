@@ -206,15 +206,15 @@ public class ArchivaMetadataCreationConsumer
         catch ( MetadataRepositoryException e )
         {
             log.warn(
-                "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}" + e.getMessage(),
-                new Object[]{ path, repoId, e.getMessage() }, e );
+                "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}" ,
+                path, repoId, e.getMessage(), e );
             repositorySession.revert();
         }
         catch ( RepositoryStorageRuntimeException e )
         {
             log.warn(
-                "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}" + e.getMessage(),
-                new Object[]{ path, repoId, e.getMessage() }, e );
+                "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}",
+                path, repoId, e.getMessage(), e );
             repositorySession.revert();
         }
         finally

@@ -82,7 +82,7 @@ public class DefaultReportRepositoriesService
                 }
                 catch ( MetadataRepositoryException e )
                 {
-                    log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                    log.warn( "Unable to retrieve stats, assuming is empty: {}", e.getMessage(), e );
                 }
             }
 
@@ -109,7 +109,7 @@ public class DefaultReportRepositoriesService
             }
             catch ( MetadataRepositoryException e )
             {
-                log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                log.warn( "Unable to retrieve stats, assuming is empty: {}", e.getMessage(), e );
             }
             if ( stats == null || stats.isEmpty() )
             {

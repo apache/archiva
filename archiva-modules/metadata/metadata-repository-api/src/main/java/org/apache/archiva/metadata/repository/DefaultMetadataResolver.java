@@ -126,7 +126,7 @@ public class DefaultMetadataResolver
                 }
                 catch ( MetadataRepositoryException e )
                 {
-                    log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                    log.warn( "Unable to persist resolved information: {}", e.getMessage(), e );
                 }
 
                 session.markDirty();
@@ -193,7 +193,7 @@ public class DefaultMetadataResolver
                     }
                     catch ( MetadataRepositoryException e )
                     {
-                        log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                        log.warn( "Unable to persist resolved information: {}", e.getMessage(), e );
                     }
                 }
                 session.markDirty();
@@ -233,7 +233,7 @@ public class DefaultMetadataResolver
                     }
                     catch ( MetadataRepositoryException e )
                     {
-                        log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                        log.warn( "Unable to persist resolved information: {}", e.getMessage(), e );
                     }
                 }
                 session.markDirty();
@@ -276,7 +276,7 @@ public class DefaultMetadataResolver
                         }
                         catch ( MetadataRepositoryException e )
                         {
-                            log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                            log.warn( "Unable to persist resolved information: {}", e.getMessage(), e );
                         }
                     }
                 }
@@ -327,13 +327,13 @@ public class DefaultMetadataResolver
                     }
                     catch ( MetadataRepositoryException e )
                     {
-                        log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                        log.warn( "Unable to persist resolved information: {}", e.getMessage(), e );
                     }
                     catch ( RepositoryStorageMetadataInvalidException e )
                     {
                         log.warn(
-                            "Not update project in metadata repository due to an error resolving it from storage: "
-                                + e.getMessage() );
+                            "Not update project in metadata repository due to an error resolving it from storage: {}",
+                                 e.getMessage() );
 
                         for ( RepositoryListener listener : listeners )
                         {
@@ -391,7 +391,7 @@ public class DefaultMetadataResolver
                     }
                     catch ( MetadataRepositoryException e )
                     {
-                        log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                        log.warn( "Unable to persist resolved information: {}", e.getMessage(), e );
                     }
                 }
                 session.markDirty();

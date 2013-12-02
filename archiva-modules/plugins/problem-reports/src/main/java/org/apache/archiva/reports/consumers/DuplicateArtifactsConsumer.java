@@ -178,7 +178,7 @@ public class DuplicateArtifactsConsumer
             }
             catch ( Exception e )
             {
-                log.warn( "Not reporting problem for invalid artifact in checksum check: " + e.getMessage() );
+                log.warn( "Not reporting problem for invalid artifact in checksum check: {}", e.getMessage() );
                 return;
             }
 

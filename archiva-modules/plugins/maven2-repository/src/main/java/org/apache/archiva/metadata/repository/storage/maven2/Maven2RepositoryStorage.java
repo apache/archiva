@@ -211,7 +211,7 @@ public class Maven2RepositoryStorage
                 catch ( XMLException e )
                 {
                     // unable to parse metadata - log it, and continue with the version as the original SNAPSHOT version
-                    log.warn( "Invalid metadata: " + metadataFile + " - " + e.getMessage() );
+                    log.warn( "Invalid metadata: {} - {}", metadataFile, e.getMessage() );
                 }
             }
 
@@ -290,8 +290,8 @@ public class Maven2RepositoryStorage
                     if ( ( problem.getException() instanceof FileNotFoundException && e.getModelId() != null &&
                         !e.getModelId().equals( problem.getModelId() ) ) )
                     {
-                        log.warn( "The artifact's parent POM file '" + file + "' cannot be resolved. " +
-                                      "Using defaults for project version metadata.." );
+                        log.warn( "The artifact's parent POM file '{}' cannot be resolved. " +
+                                      "Using defaults for project version metadata..", file );
 
                         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
                         metadata.setId( readMetadataRequest.getProjectVersion() );

@@ -134,7 +134,7 @@ public class ArchivaLockedAdminEnvironmentCheck
                 }
                 catch ( RbacManagerException e )
                 {
-                    log.warn( "Exception when checking for locked admin user: " + e.getMessage(), e );
+                    log.warn( "Exception when checking for locked admin user: {}", e.getMessage(), e );
                 }
 
                 checked = true;

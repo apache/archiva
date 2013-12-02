@@ -268,11 +268,11 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( RepositoryNotFoundException e )
             {
-                log.warn( "Unable to use proxy connector: " + e.getMessage(), e );
+                log.warn( "Unable to use proxy connector: {}", e.getMessage(), e );
             }
             catch ( RepositoryException e )
             {
-                log.warn( "Unable to use proxy connector: " + e.getMessage(), e );
+                log.warn( "Unable to use proxy connector: {}", e.getMessage(), e );
             }
 
 
@@ -447,8 +447,8 @@ public class DefaultRepositoryProxyConnectors
             catch ( ProxyException e )
             {
                 log.warn(
-                    "Transfer error from repository \"" + targetRepository.getRepository().getId() + "\" for resource "
-                        + path + ", continuing to next repository. Error message: {}", e.getMessage() );
+                    "Transfer error from repository {} for resource {}, continuing to next repository. Error message: {}",
+                    targetRepository.getRepository().getId(), path, e.getMessage() );
                 log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ),
                            "Transfer error from repository \"" + targetRepository.getRepository().getId()
                                + "\" for resource " + path + ", continuing to next repository. Error message: {}",
@@ -457,8 +457,7 @@ public class DefaultRepositoryProxyConnectors
             catch ( RepositoryAdminException e )
             {
                 log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ),
-                           "Transfer error from repository \"" + targetRepository.getRepository().getId()
-                               + "\" for resource " + path + ", continuing to next repository. Error message: {}",
+                           "Transfer error from repository {} for resource {}, continuing to next repository. Error message: {}",targetRepository.getRepository().getId(), path,
                            e.getMessage(), e );
                 log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ), "Full stack trace", e );
             }
@@ -517,16 +516,14 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( ProxyException e )
             {
-                log.warn( "Transfer error from repository \"" + targetRepository.getRepository().getId()
-                              + "\" for versioned Metadata " + logicalPath
-                              + ", continuing to next repository. Error message: " + e.getMessage() );
+                log.warn( "Transfer error from repository {} for versioned Metadata {}, continuing to next repository. Error message: {}",
+                          targetRepository.getRepository().getId(), logicalPath, e.getMessage() );
                 log.debug( "Full stack trace", e );
             }
             catch ( RepositoryAdminException e )
             {
-                log.warn( "Transfer error from repository \"" + targetRepository.getRepository().getId()
-                              + "\" for versioned Metadata " + logicalPath
-                              + ", continuing to next repository. Error message: " + e.getMessage() );
+                log.warn( "Transfer error from repository {} for versioned Metadata {}, continuing to next repository. Error message: {}",
+                          targetRepository.getRepository().getId(), logicalPath, e.getMessage() );
                 log.debug( "Full stack trace", e );
             }
         }
@@ -544,7 +541,7 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( RepositoryMetadataException e )
             {
-                log.warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
+                log.warn( "Unable to update metadata {}:{}", localFile.getAbsolutePath(), e.getMessage(), e );
             }
         }
 
@@ -928,7 +925,7 @@ public class DefaultRepositoryProxyConnectors
         catch ( ProxyException e )
         {
             urlFailureCache.cacheFailure( url );
-            log.warn( "Transfer failed on checksum: " + url + " : " + e.getMessage(), e );
+            log.warn( "Transfer failed on checksum: {} : {}",url ,e.getMessage(), e );
             // Critical issue, pass it on.
             throw e;
         }
@@ -1088,8 +1085,8 @@ public class DefaultRepositoryProxyConnectors
         }
 
         log.warn(
-            "Transfer error from repository \"" + content.getRepository().getId() + "\" for artifact " + Keys.toKey(
-                artifact ) + ", continuing to next repository. Error message: " + exception.getMessage() );
+            "Transfer error from repository {} for artifact {} , continuing to next repository. Error message: {}",
+            content.getRepository().getId(), Keys.toKey( artifact), exception.getMessage() );
         log.debug( "Full stack trace", exception );
     }
 
@@ -1214,12 +1211,12 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( ConnectionException e )
         {
-            log.warn( "Could not connect to " + remoteRepository.getRepository().getName() + ": " + e.getMessage() );
+            log.warn( "Could not connect to {}: {}", remoteRepository.getRepository().getName(),  e.getMessage() );
             connected = false;
         }
         catch ( AuthenticationException e )
         {
-            log.warn( "Could not connect to " + remoteRepository.getRepository().getName() + ": " + e.getMessage() );
+            log.warn( "Could not connect to {}: {}", remoteRepository.getRepository().getName(),  e.getMessage() );
             connected = false;
         }
 

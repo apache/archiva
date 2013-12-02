@@ -336,7 +336,7 @@ public class DefaultArchivaConfiguration
                     else
                     {
                         // Policy key doesn't exist. Don't add it to golden version.
-                        log.warn( "Policy [" + policyId + "] does not exist." );
+                        log.warn( "Policy [{}] does not exist.", policyId );
                     }
                 }
 

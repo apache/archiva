@@ -389,7 +389,7 @@ public class DefaultManagedRepositoryAdmin
             catch ( MetadataRepositoryException e )
             {
                 //throw new RepositoryAdminException( e.getMessage(), e );
-                log.warn( "skip error during removing repository from MetadatRepository:" + e.getMessage(), e );
+                log.warn( "skip error during removing repository from MetadatRepository:{}", e.getMessage(), e );
             }
             finally
             {

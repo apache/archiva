@@ -188,7 +188,7 @@ public class SecuritySynchronization
             EnvironmentCheck check = entry.getValue();
             List<String> v = new ArrayList<String>();
             check.validateEnvironment( v );
-            log.info( "Environment Check: " + entry.getKey() + " -> " + v.size() + " violation(s)" );
+            log.info( "Environment Check: {} -> {} violation(s)", entry.getKey(), v.size() );
             for ( String s : v )
             {
                 violations.add( "[" + entry.getKey() + "] " + s );
@@ -247,8 +247,7 @@ public class SecuritySynchronization
             }
             catch ( RbacManagerException e )
             {
-                log.warn( "Unable to add role [" + ArchivaRoleConstants.toRepositoryObserverRoleName( repoId ) + "] to "
-                              + principal + " user.", e );
+                log.warn( "Unable to add role [{}] to {} user.", ArchivaRoleConstants.toRepositoryObserverRoleName( repoId ), principal, e );
             }
         }
     }

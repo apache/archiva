@@ -165,7 +165,7 @@ public class DefaultManagedRepositoriesService
             }
             catch ( MetadataRepositoryException e )
             {
-                log.warn( "Error retrieving repository statistics: " + e.getMessage(), e );
+                log.warn( "Error retrieving repository statistics: {}", e.getMessage(), e );
             }
             if ( stats != null )
             {

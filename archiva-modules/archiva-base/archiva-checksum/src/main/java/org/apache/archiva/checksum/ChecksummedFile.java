@@ -175,7 +175,7 @@ public class ChecksummedFile
             }
             catch ( IOException e )
             {
-                log.warn( "Unable to update checksum:" + e.getMessage() );
+                log.warn( "Unable to update checksum:{}", e.getMessage() );
                 return false;
             }
 
@@ -200,7 +200,7 @@ public class ChecksummedFile
             }
             catch ( IOException e )
             {
-                log.warn( "Unable to read / parse checksum: " + e.getMessage() );
+                log.warn( "Unable to read / parse checksum: {}", e.getMessage() );
                 return false;
             }
 

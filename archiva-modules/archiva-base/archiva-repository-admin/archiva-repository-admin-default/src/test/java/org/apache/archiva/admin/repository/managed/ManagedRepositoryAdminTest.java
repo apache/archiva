@@ -48,7 +48,7 @@ public class ManagedRepositoryAdminTest
         List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
         assertNotNull( repos );
         assertTrue( repos.size() > 0 );
-        log.info( "repos " + repos );
+        log.info( "repos {}", repos );
 
         // check default internal
         ManagedRepository internal = findManagedRepoById( repos, "internal" );

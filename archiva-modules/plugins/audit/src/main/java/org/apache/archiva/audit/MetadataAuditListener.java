@@ -64,7 +64,7 @@ public class MetadataAuditListener
             }
             catch ( MetadataRepositoryException e )
             {
-                log.warn( "Unable to write audit event to repository: " + e.getMessage(), e );
+                log.warn( "Unable to write audit event to repository: {}", e.getMessage(), e );
             }
             finally
             {

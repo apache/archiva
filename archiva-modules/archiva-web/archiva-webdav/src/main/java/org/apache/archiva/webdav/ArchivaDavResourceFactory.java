@@ -629,7 +629,7 @@ public class ArchivaDavResourceFactory
                     }
                     catch ( LayoutException e )
                     {
-                        log.warn( "Artifact path '" + resourcePath + "' is invalid." );
+                        log.warn( "Artifact path '{}' is invalid." ,resourcePath );
                     }
                 }
 

@@ -197,7 +197,7 @@ public class DownloadArtifactsTest
         }
         catch ( Throwable e )
         {
-            log.info( "fail to get zipEntries " + e.getMessage(), e );
+            log.info( "fail to get zipEntries {}", e.getMessage(), e );
         }
         return Collections.emptyList();
     }

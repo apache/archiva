@@ -150,7 +150,7 @@ public abstract class AbstractRepositoryServletProxiedTestCase
 
         int port = repo.server.getConnectors()[0].getLocalPort();
         repo.url = "http://localhost:" + port + repo.context;
-        log.info( "Remote HTTP Server started on " + repo.url );
+        log.info( "Remote HTTP Server started on {}", repo.url );
 
         repo.config = createRemoteRepository( repo.id, "Testable [" + repo.id + "] Remote Repo", repo.url );
 

@@ -77,8 +77,8 @@ public class ArchivaServletAuthenticator
         {
             if ( authzResult.getException() != null )
             {
-                log.info( "Authorization Denied [ip=" + request.getRemoteAddr() + ",permission=" + permission + ",repo="
-                              + repositoryId + "] : " + authzResult.getException().getMessage() );
+                log.info( "Authorization Denied [ip={},permission={},repo={}] : {}", request.getRemoteAddr(),
+                          permission, repositoryId, authzResult.getException().getMessage() );
 
                 throw new UnauthorizedException( "Access denied for repository " + repositoryId );
             }

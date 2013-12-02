@@ -224,6 +224,6 @@ public class Banner
     public static void display( String version )
     {
         String banner = getBanner( version );
-        LoggerFactory.getLogger( Banner.class ).info( StringUtils.repeat( "_", 25 ) + eol + banner );
+        LoggerFactory.getLogger( Banner.class ).info( "{} {}, {}" , StringUtils.repeat( "_", 25 ), eol, banner );
     }
 }

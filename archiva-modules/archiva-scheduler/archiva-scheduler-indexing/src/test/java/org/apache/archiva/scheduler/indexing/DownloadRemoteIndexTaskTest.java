@@ -88,7 +88,7 @@ public class DownloadRemoteIndexTaskTest
         this.server.start();
         Connector connector = this.server.getConnectors()[0];
         this.port = connector.getLocalPort();
-        log.info( "start server on port " + this.port );
+        log.info( "start server on port {}", this.port );
         nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
     }
 
@@ -140,7 +140,7 @@ public class DownloadRemoteIndexTaskTest
 
         FlatSearchResponse response = nexusIndexer.searchFlat( rq );
 
-        log.info( "returned hit count:" + response.getReturnedHitsCount() );
+        log.info( "returned hit count:{}", response.getReturnedHitsCount() );
         assertEquals( 8, response.getReturnedHitsCount() );
     }
 

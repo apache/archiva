@@ -229,7 +229,7 @@ public class DownloadRemoteIndexTask
             deleteDirectoryQuiet( tempIndexDirectory );
             this.runningRemoteDownloadIds.remove( this.remoteRepository.getId() );
         }
-        log.info( "end download remote index for remote repository " + this.remoteRepository.getId() );
+        log.info( "end download remote index for remote repository {}", this.remoteRepository.getId() );
     }
 
     private void deleteDirectoryQuiet( File f )

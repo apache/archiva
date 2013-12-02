@@ -213,7 +213,7 @@ public abstract class AbstractProxyTestCase
 
         CacheManager.getInstance().clearAll();
 
-        log.info( "\n.\\ " + name + "() \\._________________________________________\n" );
+        log.info( "\n.\\ {}() \\._________________________________________\n", name );
     }
 
     @After

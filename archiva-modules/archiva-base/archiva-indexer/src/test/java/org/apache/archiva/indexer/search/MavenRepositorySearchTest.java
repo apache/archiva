@@ -828,7 +828,7 @@ public class MavenRepositorySearchTest
 
         archivaConfigControl.verify();
 
-        log.info( "groupIds: " + groupIds );
+        log.info( "groupIds: {}", groupIds );
 
         assertEquals( 3, groupIds.size() );
         assertTrue( groupIds.contains( "com" ) );
