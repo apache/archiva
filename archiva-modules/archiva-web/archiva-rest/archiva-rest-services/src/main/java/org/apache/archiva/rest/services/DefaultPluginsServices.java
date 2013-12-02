@@ -59,7 +59,7 @@ public class DefaultPluginsServices
     private void feed( List<String> repository, String key )
         throws ArchivaRestServiceException
     {
-        log.info( "Feeding: {}", key );
+        log.debug( "Feeding: {}", key );
         repository.clear();
         Resource[] xmlResources;
         try
