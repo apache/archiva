@@ -25,6 +25,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
   //-----------------------------------------
 
   BrowseViewModel=function(browseResultEntries,parentBrowseViewModel,groupId,repositoryId,feedsUrl){
+    $.log("BrowseViewModel:"+repositoryId);
     var self=this;
     this.browseResultEntries=browseResultEntries;
     this.parentBrowseViewModel=parentBrowseViewModel;
@@ -41,9 +42,12 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
     }
     displayParentGroupId=function(){
       $.log("called displayParentGroupId groupId:"+self.parentBrowseViewModel.groupId);
+
       // if null parent is root level
-      if (self.parentBrowseViewModel.groupId){
-        displayGroupDetail(self.parentBrowseViewModel.groupId,self.parentBrowseViewModel);
+      if (self.parentBrowseViewModel.groupId && self.parentBrowseViewModel.groupId.indexOf(".")>=1){
+        // remove last part of the groupId
+        window.sammyArchivaApplication.setLocation("#browse/"+groupId.substringBeforeLast('.'));
+        //displayGroupDetail(self.parentBrowseViewModel.groupId,self.parentBrowseViewModel);
       } else {
         browseRoot();
       }
@@ -1203,7 +1207,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
                 var mainContent = $("#main-content");
                 mainContent.html($("#browse-tmpl" ).tmpl());
                 mainContent.find("#browse_result").html(mediumSpinnerImg());
-                var parentBrowseViewModel=new BrowseViewModel(null,null,null,repositoryId);
+                var parentBrowseViewModel=new BrowseViewModel(null,null,groupId,repositoryId);
                 var url="restServices/archivaServices/browseService/browseGroupId/"+encodeURIComponent(groupId);
                 var feedsUrl=applicationUrl?applicationUrl:window.location.toString().substringBeforeLast("/").substringBeforeLast("/");
                 if (repositoryId){
@@ -1532,7 +1536,7 @@ define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","kno
     clearUserMessages();
     var mainContent = $("#main-content");
     mainContent.find("#browse_result").html(mediumSpinnerImg());
-    var parentBrowseViewModel=new BrowseViewModel(null,null,null);
+    var parentBrowseViewModel=new BrowseViewModel(null,null,groupId);
     displayGroupDetail(groupId,parentBrowseViewModel,null);
   }
 

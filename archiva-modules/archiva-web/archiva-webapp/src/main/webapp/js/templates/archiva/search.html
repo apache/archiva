@@ -45,8 +45,8 @@
 
       <!-- if null we are on root level -->
       {{if $root.parentBrowseViewModel}}
-      <li class="browse-list" data-bind="click:function(){displayParentGroupId()}">
-        <a href="#">..</a>
+      <li class="browse-list">
+        <a data-bind="click:function(){displayParentGroupId()}" href="#">.. foo</a>
       </li>
       {{/if}}
       {{each(i,browseResultEntry) browseResultEntries}}
