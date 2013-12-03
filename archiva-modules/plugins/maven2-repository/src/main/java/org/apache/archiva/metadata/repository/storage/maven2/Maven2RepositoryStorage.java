@@ -51,6 +51,7 @@ import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.xml.XMLException;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
@@ -69,6 +70,7 @@ import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.model.building.ModelProblem;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.apache.maven.wagon.PathUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,14 +107,8 @@ import java.util.Map;
 public class Maven2RepositoryStorage
     implements RepositoryStorage
 {
-    /**
-     *
-     */
     private ModelBuilder builder;
 
-    /**
-     *
-     */
     @Inject
     private RemoteRepositoryAdmin remoteRepositoryAdmin;
 
@@ -125,9 +121,6 @@ public class Maven2RepositoryStorage
     @Inject
     private NetworkProxyAdmin networkProxyAdmin;
 
-    /**
-     *
-     */
     @Inject
     @Named ( value = "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
@@ -150,8 +143,7 @@ public class Maven2RepositoryStorage
     @PostConstruct
     public void initialize()
     {
-        DefaultModelBuilderFactory defaultModelBuilderFactory = new DefaultModelBuilderFactory();
-        builder = defaultModelBuilderFactory.newInstance();
+        builder = new DefaultModelBuilderFactory().newInstance();
 
     }
 
@@ -718,9 +710,81 @@ public class Maven2RepositoryStorage
         }
     }
 
+
+    public String getFilePath( String requestPath, ManagedRepository managedRepository )
+    {
+        // extract artifact reference from url
+        // groupId:artifactId:version:packaging:classifier
+        //org/apache/archiva/archiva-checksum/1.4-M4-SNAPSHOT/archiva-checksum-1.4-M4-SNAPSHOT.jar
+        String logicalResource = null;
+        String requestPathInfo = StringUtils.defaultString( requestPath );
+
+        //remove prefix ie /repository/blah becomes /blah
+        requestPathInfo = removePrefix( requestPathInfo );
+
+        // Remove prefixing slash as the repository id doesn't contain it;
+        if ( requestPathInfo.startsWith( "/" ) )
+        {
+            requestPathInfo = requestPathInfo.substring( 1 );
+        }
+
+        int slash = requestPathInfo.indexOf( '/' );
+        if ( slash > 0 )
+        {
+            logicalResource = requestPathInfo.substring( slash );
+
+            if ( logicalResource.endsWith( "/.." ) )
+            {
+                logicalResource += "/";
+            }
+
+            if ( logicalResource != null && logicalResource.startsWith( "//" ) )
+            {
+                logicalResource = logicalResource.substring( 1 );
+            }
+
+            if ( logicalResource == null )
+            {
+                logicalResource = "/";
+            }
+        }
+        else
+        {
+            logicalResource = "/";
+        }
+        return logicalResource;
+
+    }
+
+
+
     //-----------------------------
     // internal
     //-----------------------------
+
+    /**
+     * FIXME remove
+     * @param href
+     * @return
+     */
+    private static String removePrefix( final String href )
+    {
+        String[] parts = StringUtils.split( href, '/' );
+        parts = (String[]) ArrayUtils.subarray( parts, 1, parts.length );
+        if ( parts == null || parts.length == 0 )
+        {
+            return "/";
+        }
+
+        String joinedString = StringUtils.join( parts, '/' );
+        if ( href.endsWith( "/" ) )
+        {
+            joinedString = joinedString + "/";
+        }
+
+        return joinedString;
+    }
+
     private static void populateArtifactMetadataFromFile( ArtifactMetadata metadata, File file )
     {
         metadata.setWhenGathered( new Date() );
@@ -891,6 +955,8 @@ public class Maven2RepositoryStorage
         }
     }
 
+
+
     private static final class PomFilenameFilter
         implements FilenameFilter
     {
@@ -933,4 +999,6 @@ public class Maven2RepositoryStorage
             return pomFile.equals( name );
         }
     }
+
+
 }

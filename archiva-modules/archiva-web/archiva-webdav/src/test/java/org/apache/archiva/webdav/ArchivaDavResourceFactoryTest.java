@@ -182,6 +182,7 @@ public class ArchivaDavResourceFactoryTest
         resourceFactory.setRepositoryRequest( repoRequest );
         resourceFactory.setConnectors( new OverridingRepositoryProxyConnectors() );
         resourceFactory.setRemoteRepositoryAdmin( remoteRepositoryAdmin );
+        resourceFactory.setManagedRepositoryAdmin( defaultManagedRepositoryAdmin );
     }
 
     private ManagedRepository createManagedRepository( String id, String location, String layout )
@@ -227,7 +228,7 @@ public class ArchivaDavResourceFactoryTest
         {
             archivaConfigurationControl.reset();
 
-            expect( archivaConfiguration.getConfiguration() ).andReturn( config );
+            expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 3 );
 
             expect( request.getMethod() ).andReturn( "GET" ).times( 2 );
 
@@ -304,7 +305,7 @@ public class ArchivaDavResourceFactoryTest
         {
             archivaConfigurationControl.reset();
 
-            expect( archivaConfiguration.getConfiguration() ).andReturn( config );
+            expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 3 );
 
             expect( request.getMethod() ).andReturn( "GET" ).times( 2 );
 
@@ -385,7 +386,7 @@ public class ArchivaDavResourceFactoryTest
         {
             archivaConfigurationControl.reset();
 
-            expect( archivaConfiguration.getConfiguration() ).andReturn( config );
+            expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 3 );
 
             expect( request.getMethod() ).andReturn( "GET" ).times( 4 );
 
@@ -460,7 +461,7 @@ public class ArchivaDavResourceFactoryTest
         {
             archivaConfigurationControl.reset();
 
-            expect( archivaConfiguration.getConfiguration() ).andReturn( config );
+            expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 2 );
 
             expect( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ) ).andReturn( internalRepo );
 
@@ -519,7 +520,7 @@ public class ArchivaDavResourceFactoryTest
         {
             archivaConfigurationControl.reset();
 
-            expect( archivaConfiguration.getConfiguration() ).andReturn( config );
+            expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 2 );
 
             expect( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ) ).andReturn( internalRepo );
 
@@ -568,7 +569,7 @@ public class ArchivaDavResourceFactoryTest
         {
             archivaConfigurationControl.reset();
 
-            expect( archivaConfiguration.getConfiguration() ).andReturn( config );
+            expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 2 );
 
             expect( repoFactory.getManagedRepositoryContent( LEGACY_REPO ) ).andReturn( legacyRepo );
 

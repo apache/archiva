@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository.storage;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -59,4 +60,11 @@ public interface RepositoryStorage
 
     void applyServerSideRelocation( ManagedRepositoryContent managedRepository, ArtifactReference artifact )
         throws ProxyDownloadException;
+
+    /**
+     * @param requestPath the web uri request
+     * @return the file path
+     * @since 2.0.0
+     */
+    String getFilePath( String requestPath, ManagedRepository managedRepository );
 }

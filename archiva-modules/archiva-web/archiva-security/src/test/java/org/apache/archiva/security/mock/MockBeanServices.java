@@ -18,6 +18,7 @@ package org.apache.archiva.security.mock;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -141,5 +142,11 @@ public class MockBeanServices
         throws TaskQueueException
     {
         return false;
+    }
+
+    @Override
+    public String getFilePath( String requestPath, ManagedRepository managedRepository )
+    {
+        return null;
     }
 }

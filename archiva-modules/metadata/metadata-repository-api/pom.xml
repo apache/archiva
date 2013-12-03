@@ -90,7 +90,8 @@
               org.slf4j;resolution:=optional,
               org.apache.archiva.model,
               org.apache.archiva.policies,
-              org.apache.archiva.repository
+              org.apache.archiva.repository,
+              org.apache.archiva.admin.model.beans
             </Import-Package>
           </instructions>
         </configuration>
