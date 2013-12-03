@@ -39,20 +39,6 @@ public class RepositoryPathUtilTest
         href = "path/to/my/resource";
         assertEquals( "to", RepositoryPathUtil.getRepositoryName( href ) );
 
-        href = "mypath";
-        assertEquals( "/", RepositoryPathUtil.getLogicalResource( href ) );
     }
 
-    @Test
-    public void testGetLogicalPath()
-    {
-        String href = "/repository/internal/org/apache/maven/someartifact.jar";
-        assertEquals( "/org/apache/maven/someartifact.jar", RepositoryPathUtil.getLogicalResource( href ) );
-
-        href = "repository/internal/org/apache/maven/someartifact.jar";
-        assertEquals( "/org/apache/maven/someartifact.jar", RepositoryPathUtil.getLogicalResource( href ) );
-
-        href = "repository/internal/org/apache/maven/";
-        assertEquals( "/org/apache/maven/", RepositoryPathUtil.getLogicalResource( href ) );
-    }
 }
