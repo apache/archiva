@@ -27,6 +27,10 @@ import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.archiva.webdav.RepositoryServlet;
+import org.apache.catalina.Context;
+import org.apache.catalina.deploy.ApplicationListener;
+import org.apache.catalina.deploy.ApplicationParameter;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
@@ -68,6 +72,8 @@ public abstract class AbstractDownloadTest
 
     public Server server = null;
 
+    public Tomcat tomcat;
+
     public int port;
 
     public static String encode( String uid, String password )
@@ -101,6 +107,8 @@ public abstract class AbstractDownloadTest
     {
 
         System.setProperty( "redback.admin.creation.file", "target/auto-admin-creation.properties" );
+
+        /*
         this.server = new Server( 0 );
 
         ServletContextHandler context = new ServletContextHandler();
@@ -128,6 +136,31 @@ public abstract class AbstractDownloadTest
         this.server.start();
         Connector connector = this.server.getConnectors()[0];
         this.port = connector.getLocalPort();
+        */
+        tomcat = new Tomcat();
+        tomcat.setBaseDir( System.getProperty( "java.io.tmpdir" ) );
+        tomcat.setPort( 0 );
+
+        Context context = tomcat.addContext( "", System.getProperty( "java.io.tmpdir" ) );
+
+        ApplicationParameter applicationParameter = new ApplicationParameter();
+        applicationParameter.setName( "contextConfigLocation" );
+        applicationParameter.setValue( getSpringConfigLocation() );
+        context.addApplicationParameter( applicationParameter );
+
+        context.addApplicationListener( new ApplicationListener( ContextLoaderListener.class.getName(), false ) );
+
+        tomcat.addServlet( context, "cxf", new CXFServlet() );
+        context.addServletMapping( "/" + getRestServicesPath() + "/*" , "cxf" );
+
+        tomcat.addServlet( context, "archivarepo", new RepositoryServlet() );
+        context.addServletMapping( "/repository/*" , "archivarepo" );
+
+        tomcat.start();
+
+        port = tomcat.getConnector().getLocalPort();
+
+
         log.info( "start server on port {}", this.port );
 
         User user = new User();
@@ -151,6 +184,10 @@ public abstract class AbstractDownloadTest
         if ( this.server != null )
         {
             this.server.stop();
+        }
+        if (this.tomcat != null)
+        {
+            this.tomcat.stop();
         }
     }
 
