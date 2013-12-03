@@ -798,7 +798,6 @@ public class DefaultRepositoryProxyConnectors
 
         try
         {
-            Wagon wagon = null;
 
             transferResources( connector, remoteRepository, tmpMd5, tmpSha1, tmpResource, url, remotePath, resource,
                                workingDirectory, repository );
