@@ -63,6 +63,7 @@ public interface RepositoryStorage
 
     /**
      * @param requestPath the web uri request
+     * @param managedRepository the used managed repository
      * @return the file path
      * @since 2.0.0
      */
