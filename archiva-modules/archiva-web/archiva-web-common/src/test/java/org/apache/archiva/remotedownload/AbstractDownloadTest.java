@@ -108,35 +108,6 @@ public abstract class AbstractDownloadTest
 
         System.setProperty( "redback.admin.creation.file", "target/auto-admin-creation.properties" );
 
-        /*
-        this.server = new Server( 0 );
-
-        ServletContextHandler context = new ServletContextHandler();
-
-        context.setContextPath( "/" );
-
-        context.setInitParameter( "contextConfigLocation", getSpringConfigLocation() );
-
-        ContextLoaderListener contextLoaderListener = new ContextLoaderListener();
-
-        context.addEventListener( contextLoaderListener );
-
-        ServletHolder sh = new ServletHolder( CXFServlet.class );
-
-        SessionHandler sessionHandler = new SessionHandler();
-
-        context.setSessionHandler( sessionHandler );
-
-        context.addServlet( sh, "/" + getRestServicesPath() + "/*" );
-
-        ServletHolder repoSh = new ServletHolder( RepositoryServlet.class );
-        context.addServlet( repoSh, "/repository/*" );
-
-        server.setHandler( context );
-        this.server.start();
-        Connector connector = this.server.getConnectors()[0];
-        this.port = connector.getLocalPort();
-        */
         tomcat = new Tomcat();
         tomcat.setBaseDir( System.getProperty( "java.io.tmpdir" ) );
         tomcat.setPort( 0 );
