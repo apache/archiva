@@ -35,10 +35,10 @@ public class RepositoryPathUtilTest
     public void testGetRepositoryId()
     {
         String href = "/path/to/my/resource";
-        Assertions.assertThat( RepositoryPathUtil.getRepositoryName( href ) ).equals( "to" );
+        Assertions.assertThat( RepositoryPathUtil.getRepositoryName( href ) ).isEqualTo( "to" );
 
         href = "path/to/my/resource";
-        Assertions.assertThat( RepositoryPathUtil.getRepositoryName( href ) ).equals( "to" );
+        Assertions.assertThat( RepositoryPathUtil.getRepositoryName( href ) ).isEqualTo( "to" );
 
     }
 
