@@ -322,11 +322,11 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = getServletUnitClient().getResource( request );
 
         assertResponseOK( response );
-        assertTrue( StringUtils.contains( response.getText(), "Collection" ) );
-        assertTrue( StringUtils.contains( response.getText(), "dummy/dummy-artifact" ) );
-        assertTrue( StringUtils.contains( response.getText(), "1.0" ) );
+        Assertions.assertThat( response.getText() ).contains( "Collection" );
+        Assertions.assertThat( response.getText() ).contains( "dummy/dummy-artifact" );
+        Assertions.assertThat( response.getText() ).contains( "1.0" );
         Assertions.assertThat( response.getText() ).contains( "2.0" );
-        //assertTrue( StringUtils.contains( response.getText(), "2.0" ) );
+
     }
 
     protected void assertResponseMethodNotAllowed( WebResponse response )
