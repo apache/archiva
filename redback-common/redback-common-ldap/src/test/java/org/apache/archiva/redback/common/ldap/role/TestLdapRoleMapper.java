@@ -25,7 +25,7 @@ import org.apache.archiva.redback.common.ldap.connection.LdapConnectionFactory;
 import org.apache.archiva.redback.components.apacheds.ApacheDs;
 import org.apache.archiva.redback.policy.PasswordEncoder;
 import org.apache.archiva.redback.policy.encoders.SHA1PasswordEncoder;
-import org.fest.assertions.Assertions;
+import org.fest.assertions.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

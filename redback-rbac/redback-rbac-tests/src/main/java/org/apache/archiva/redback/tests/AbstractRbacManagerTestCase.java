@@ -16,7 +16,6 @@ package org.apache.archiva.redback.tests;
  * limitations under the License.
  */
 
-import org.fest.assertions.Assertions;
 import junit.framework.TestCase;
 import org.apache.archiva.redback.rbac.Operation;
 import org.apache.archiva.redback.rbac.RBACManager;
@@ -27,6 +26,7 @@ import org.apache.archiva.redback.rbac.UserAssignment;
 import org.apache.archiva.redback.rbac.Permission;
 import org.apache.archiva.redback.rbac.RbacPermanentException;
 import org.apache.archiva.redback.tests.utils.RBACDefaults;
+import org.fest.assertions.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;

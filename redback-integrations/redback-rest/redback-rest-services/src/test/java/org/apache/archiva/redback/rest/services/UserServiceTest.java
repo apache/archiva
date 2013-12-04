@@ -31,6 +31,7 @@ import org.apache.archiva.redback.rest.services.mock.ServicesAssert;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.fest.assertions.api.Assertions;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
@@ -38,7 +39,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -152,7 +152,7 @@ public class UserServiceTest
 
             log.info( "messageContent: {}", messageContent );
 
-            assertThat( messageContent ).contains( "Use the following URL to validate your account." ).contains(
+            Assertions.assertThat( messageContent ).contains( "Use the following URL to validate your account." ).contains(
                 "http://wine.fr/bordeaux" ).containsIgnoringCase( "toto" );
 
             assertTrue( service.validateUserFromKey( key ) );
@@ -211,7 +211,7 @@ public class UserServiceTest
 
             log.info( "messageContent: {}", messageContent );
 
-            assertThat( messageContent ).contains( "Use the following URL to validate your account." ).contains(
+            Assertions.assertThat( messageContent ).contains( "Use the following URL to validate your account." ).contains(
                 "http://localhost:" + port ).containsIgnoringCase( "toto" );
 
             assertTrue( service.validateUserFromKey( key ) );
@@ -292,7 +292,7 @@ public class UserServiceTest
 
             String messageContent = emailMessages.get( 1 ).getText();
 
-            assertThat( messageContent ).contains( "Password Reset" ).contains( "Username: toto" ).contains(
+            Assertions.assertThat( messageContent ).contains( "Password Reset" ).contains( "Username: toto" ).contains(
                 "http://foo.fr/bar" );
 
 

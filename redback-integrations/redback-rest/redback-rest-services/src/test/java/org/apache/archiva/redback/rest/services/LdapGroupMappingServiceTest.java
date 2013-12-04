@@ -23,8 +23,8 @@ import org.apache.archiva.redback.rest.api.model.LdapGroupMapping;
 import org.apache.archiva.redback.rest.api.services.LdapGroupMappingService;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.commons.lang.StringUtils;
-import org.fest.assertions.Assertions;
-import org.fest.assertions.Condition;
+import org.fest.assertions.api.Assertions;
+import org.fest.assertions.core.Condition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
@@ -167,7 +167,7 @@ public class LdapGroupMappingServiceTest
 
             List<String> allGroups = service.getLdapGroups().getStrings();
 
-            Assertions.assertThat( allGroups ).isNotNull().isNotEmpty().hasSize( 3 ).contains( groups.toArray() );
+            Assertions.assertThat( allGroups ).isNotNull().isNotEmpty().hasSize( 3 ).containsAll( groups );
         }
         catch ( Exception e )
         {
@@ -213,16 +213,11 @@ public class LdapGroupMappingServiceTest
 
             mappings = service.getLdapGroupMappings();
 
-            Assertions.assertThat( mappings ).isNotNull().isNotEmpty().hasSize( 4 ).satisfies( new Condition<List<?>>()
-            {
-                @Override
-                public boolean matches( List<?> objects )
+            Assertions.assertThat( mappings ).isNotNull().isNotEmpty().hasSize( 4 ).are(
+                new Condition<LdapGroupMapping>()
                 {
-                    boolean res = false;
-
-                    List<LdapGroupMapping> mappingList = (List<LdapGroupMapping>) objects;
-
-                    for ( LdapGroupMapping mapping : mappingList )
+                    @Override
+                    public boolean matches( LdapGroupMapping mapping )
                     {
                         if ( StringUtils.equals( "ldap group", mapping.getGroup() ) )
                         {
@@ -230,11 +225,10 @@ public class LdapGroupMappingServiceTest
                                 "redback role" );
                             return true;
                         }
-                    }
 
-                    return res;
-                }
-            } );
+                        return true;
+                    }
+                } );
 
             service.removeLdapGroupMapping( "ldap group" );
 
