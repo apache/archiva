@@ -713,6 +713,7 @@ public class Maven2RepositoryStorage
 
     public String getFilePath( String requestPath, ManagedRepository managedRepository )
     {
+        // managedRepository can be null
         // extract artifact reference from url
         // groupId:artifactId:version:packaging:classifier
         //org/apache/archiva/archiva-checksum/1.4-M4-SNAPSHOT/archiva-checksum-1.4-M4-SNAPSHOT.jar

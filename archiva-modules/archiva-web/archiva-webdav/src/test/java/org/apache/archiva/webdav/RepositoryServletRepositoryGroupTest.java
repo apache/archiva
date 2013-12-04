@@ -30,6 +30,7 @@ import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.fest.assertions.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -324,7 +325,8 @@ public class RepositoryServletRepositoryGroupTest
         assertTrue( StringUtils.contains( response.getText(), "Collection" ) );
         assertTrue( StringUtils.contains( response.getText(), "dummy/dummy-artifact" ) );
         assertTrue( StringUtils.contains( response.getText(), "1.0" ) );
-        assertTrue( StringUtils.contains( response.getText(), "2.0" ) );
+        Assertions.assertThat( response.getText() ).contains( "2.0" );
+        //assertTrue( StringUtils.contains( response.getText(), "2.0" ) );
     }
 
     protected void assertResponseMethodNotAllowed( WebResponse response )

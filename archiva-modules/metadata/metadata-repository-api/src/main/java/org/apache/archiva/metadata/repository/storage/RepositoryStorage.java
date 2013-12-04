@@ -62,8 +62,10 @@ public interface RepositoryStorage
         throws ProxyDownloadException;
 
     /**
+     * add an other method to evaluate real path as when receiving -SNAPSHOT (for maven storage)
+     * request redirect to the last build
      * @param requestPath the web uri request
-     * @param managedRepository the used managed repository
+     * @param managedRepository the used managed repository can be <code>null</code> so last version won't be resolved
      * @return the file path
      * @since 2.0.0
      */
