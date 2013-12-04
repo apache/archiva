@@ -22,7 +22,7 @@ appendArchivaVersion=function(){
 };
 
 timestampNoCache=function(){
-  if (window.archivaRuntimeInfo.version.match("SNAPSHOT$")){
+  if (window.archivaRuntimeInfo.version && window.archivaRuntimeInfo.version.match("SNAPSHOT$")){
     return "&archivaTimestamp="+window.archivaRuntimeInfo.timestamp+(window.archivaRuntimeInfo.devMode?"&_="+jQuery.now():"");
   }
   return "";
