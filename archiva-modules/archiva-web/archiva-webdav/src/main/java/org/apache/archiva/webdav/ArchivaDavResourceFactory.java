@@ -236,7 +236,7 @@ public class ArchivaDavResourceFactory
                 }
                 catch ( RepositoryAdminException e )
                 {
-                    throw new DavException( 500, e );
+                    throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
                 }
             }
             else
@@ -310,7 +310,7 @@ public class ArchivaDavResourceFactory
             }
             catch ( RepositoryAdminException e )
             {
-                throw new DavException( 500, e );
+                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
             }
         }
 
@@ -485,7 +485,7 @@ public class ArchivaDavResourceFactory
                 }
                 catch ( RepositoryAdminException e )
                 {
-                    storedExceptions.add( new DavException( 500, e ) );
+                    storedExceptions.add( new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e ) );
                 }
             }
         }
@@ -706,7 +706,7 @@ public class ArchivaDavResourceFactory
         }
         catch ( RepositoryAdminException e )
         {
-            throw new DavException( 500, e );
+            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
         }
         return resource;
     }
@@ -1278,11 +1278,11 @@ public class ArchivaDavResourceFactory
         }
         catch ( RepositoryAdminException e )
         {
-            throw new DavException( 500, e );
+            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
         }
         catch ( IndexMergerException e )
         {
-            throw new DavException( 500, e );
+            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
         }
     }
 
