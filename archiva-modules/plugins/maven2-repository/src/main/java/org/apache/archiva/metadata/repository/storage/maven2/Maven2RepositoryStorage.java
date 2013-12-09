@@ -106,7 +106,7 @@ import java.util.Map;
  * within the session in the context of a single managed repository's resolution needs.
  * <p/>
  */
-@Service ( "repositoryStorage#maven2" )
+@Service( "repositoryStorage#maven2" )
 public class Maven2RepositoryStorage
     implements RepositoryStorage
 {
@@ -125,7 +125,7 @@ public class Maven2RepositoryStorage
     private NetworkProxyAdmin networkProxyAdmin;
 
     @Inject
-    @Named ( value = "repositoryPathTranslator#maven2" )
+    @Named( value = "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
     @Inject
@@ -135,7 +135,7 @@ public class Maven2RepositoryStorage
     private ApplicationContext applicationContext;
 
     @Inject
-    @Named ( value = "pathParser#default")
+    @Named( value = "pathParser#default" )
     private PathParser pathParser;
 
     private static final Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
@@ -289,8 +289,8 @@ public class Maven2RepositoryStorage
                     if ( ( problem.getException() instanceof FileNotFoundException && e.getModelId() != null &&
                         !e.getModelId().equals( problem.getModelId() ) ) )
                     {
-                        log.warn( "The artifact's parent POM file '{}' cannot be resolved. " +
-                                      "Using defaults for project version metadata..", file );
+                        log.warn( "The artifact's parent POM file '{}' cannot be resolved. "
+                                      + "Using defaults for project version metadata..", file );
 
                         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
                         metadata.setId( readMetadataRequest.getProjectVersion() );
@@ -377,7 +377,7 @@ public class Maven2RepositoryStorage
         }
         catch ( RepositoryAdminException e )
         {
-            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage(), e);
+            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage(), e );
         }
     }
 
@@ -523,7 +523,7 @@ public class Maven2RepositoryStorage
         }
         catch ( RepositoryAdminException e )
         {
-            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage(), e);
+            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage(), e );
         }
     }
 
@@ -765,34 +765,59 @@ public class Maven2RepositoryStorage
     }
 
     public String getFilePathWithVersion( final String requestPath, ManagedRepositoryContent managedRepositoryContent )
-        throws LayoutException, XMLException
+        throws XMLException
     {
-        String requestPathNoRepository = removePrefix( requestPath );
-        ArtifactReference artifactReference = pathParser.toArtifactReference( requestPathNoRepository );
+
+        if (StringUtils.endsWith( requestPath, METADATA_FILENAME ))
+        {
+            return getFilePath( requestPath, managedRepositoryContent.getRepository() );
+        }
+
 
         String filePath = getFilePath( requestPath, managedRepositoryContent.getRepository() );
 
-        if (StringUtils.endsWith( artifactReference.getVersion(), "SNAPSHOT" ))
+        String requestPathNoRepository = removePrefix( requestPath );
+
+        ArtifactReference artifactReference = null;
+        try
+        {
+            artifactReference = pathParser.toArtifactReference( filePath );
+        }
+        catch ( LayoutException e )
+        {
+            return filePath;
+        }
+
+        if ( StringUtils.endsWith( artifactReference.getVersion(), "SNAPSHOT" ) )
         {
             // read maven metadata to get last timestamp
-            File metadataDir = new File( managedRepositoryContent.getRepoRoot(), filePath).getParentFile();
-            ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( new File(metadataDir, METADATA_FILENAME ) );
+            File metadataDir = new File( managedRepositoryContent.getRepoRoot(), filePath ).getParentFile();
+            if ( !metadataDir.exists() )
+            {
+                return filePath;
+            }
+            File metadataFile = new File( metadataDir, METADATA_FILENAME );
+            if ( !metadataFile.exists() )
+            {
+                return filePath;
+            }
+            ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( metadataFile );
             int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
             String timestamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
 
             // org/apache/archiva/archiva-checksum/1.4-M4-SNAPSHOT/archiva-checksum-1.4-M4-SNAPSHOT.jar
             // ->  archiva-checksum-1.4-M4-20130425.081822-1.jar
 
-            filePath = StringUtils.replace( filePath, artifactReference.getArtifactId() + "-" + artifactReference.getVersion(),
-                                            artifactReference.getArtifactId() + "-" + StringUtils.remove( artifactReference.getVersion(), "-SNAPSHOT")
-                                                + "-" + timestamp + "-" + buildNumber );
+            filePath =
+                StringUtils.replace( filePath, artifactReference.getArtifactId() + "-" + artifactReference.getVersion(),
+                                     artifactReference.getArtifactId() + "-" + StringUtils.remove(
+                                         artifactReference.getVersion(), "-SNAPSHOT" ) + "-" + timestamp + "-"
+                                         + buildNumber );
 
         }
 
         return filePath;
     }
-
-
 
     //-----------------------------
     // internal
@@ -800,6 +825,7 @@ public class Maven2RepositoryStorage
 
     /**
      * FIXME remove
+     *
      * @param href
      * @return
      */
@@ -990,7 +1016,6 @@ public class Maven2RepositoryStorage
 
         }
     }
-
 
 
     private static final class PomFilenameFilter

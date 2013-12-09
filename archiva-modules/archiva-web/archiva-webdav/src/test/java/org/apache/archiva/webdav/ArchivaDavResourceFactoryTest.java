@@ -524,9 +524,9 @@ public class ArchivaDavResourceFactoryTest
 
             expect( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ) ).andReturn( internalRepo );
 
-            expect( request.getMethod() ).andReturn( "GET" ).times( 2 );
+            expect( request.getMethod() ).andReturn( "GET" ).times( 3 );
 
-            expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 2 );
+            expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 3 );
 
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 2 );
 
@@ -575,7 +575,7 @@ public class ArchivaDavResourceFactoryTest
 
             expect( request.getMethod() ).andReturn( "GET" ).times( 2 );
 
-            expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 2 );
+            expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 3 );
 
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 2 );
 
