@@ -27,6 +27,8 @@ import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.archiva.xml.XMLException;
 
 import java.util.Collection;
 
@@ -70,4 +72,9 @@ public interface RepositoryStorage
      * @since 2.0.0
      */
     String getFilePath( String requestPath, ManagedRepository managedRepository );
+
+    String getFilePathWithVersion( final String requestPath, ManagedRepositoryContent managedRepositoryContent )
+        throws LayoutException, XMLException;
+
+
 }

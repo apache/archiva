@@ -527,6 +527,28 @@ public class ArchivaDavResourceFactory
         return path;
     }
 
+    private String evaluatePathWithVersion( ArchivaDavResourceLocator archivaLocator, ManagedRepositoryContent managedRepositoryContent )
+        throws DavException
+    {
+        String layout = managedRepositoryContent.getRepository() == null ? new ManagedRepository( ).getLayout() : managedRepositoryContent.getRepository().getLayout();
+        RepositoryStorage repositoryStorage =
+            this.applicationContext.getBean( "repositoryStorage#" + layout, RepositoryStorage.class );
+        try
+        {
+            return repositoryStorage.getFilePathWithVersion( archivaLocator.getResourcePath(), managedRepositoryContent );
+        }
+        catch ( LayoutException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
+        }
+        catch ( XMLException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
+        }
+    }
+
     private DavResource processRepository( final DavServletRequest request, ArchivaDavResourceLocator archivaLocator,
                                            String activePrincipal, ManagedRepositoryContent managedRepositoryContent,
                                            ManagedRepository managedRepository )
@@ -535,7 +557,8 @@ public class ArchivaDavResourceFactory
         DavResource resource = null;
         if ( isAuthorized( request, managedRepositoryContent.getId() ) )
         {
-            String path = getLogicalResource( archivaLocator, managedRepository, false );
+            // Maven Centric part ask evaluation if -SNAPSHOT
+            String path = evaluatePathWithVersion(archivaLocator, managedRepositoryContent);
             if ( path.startsWith( "/" ) )
             {
                 path = path.substring( 1 );

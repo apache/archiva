@@ -91,7 +91,9 @@
               org.apache.archiva.model,
               org.apache.archiva.policies,
               org.apache.archiva.repository,
-              org.apache.archiva.admin.model.beans
+              org.apache.archiva.admin.model.beans,
+              org.apache.archiva.repository.layout,
+              org.apache.archiva.xml
             </Import-Package>
           </instructions>
         </configuration>

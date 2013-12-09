@@ -35,6 +35,7 @@ import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
@@ -50,6 +51,8 @@ import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.PathParser;
+import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -130,6 +133,10 @@ public class Maven2RepositoryStorage
 
     @Inject
     private ApplicationContext applicationContext;
+
+    @Inject
+    @Named ( value = "pathParser#default")
+    private PathParser pathParser;
 
     private static final Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
 
@@ -757,6 +764,34 @@ public class Maven2RepositoryStorage
 
     }
 
+    public String getFilePathWithVersion( final String requestPath, ManagedRepositoryContent managedRepositoryContent )
+        throws LayoutException, XMLException
+    {
+        String requestPathNoRepository = removePrefix( requestPath );
+        ArtifactReference artifactReference = pathParser.toArtifactReference( requestPathNoRepository );
+
+        String filePath = getFilePath( requestPath, managedRepositoryContent.getRepository() );
+
+        if (StringUtils.endsWith( artifactReference.getVersion(), "SNAPSHOT" ))
+        {
+            // read maven metadata to get last timestamp
+            File metadataDir = new File( managedRepositoryContent.getRepoRoot(), filePath).getParentFile();
+            ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( new File(metadataDir, METADATA_FILENAME ) );
+            int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
+            String timestamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
+
+            // org/apache/archiva/archiva-checksum/1.4-M4-SNAPSHOT/archiva-checksum-1.4-M4-SNAPSHOT.jar
+            // ->  archiva-checksum-1.4-M4-20130425.081822-1.jar
+
+            filePath = StringUtils.replace( filePath, artifactReference.getArtifactId() + "-" + artifactReference.getVersion(),
+                                            artifactReference.getArtifactId() + "-" + StringUtils.remove( artifactReference.getVersion(), "-SNAPSHOT")
+                                                + "-" + timestamp + "-" + buildNumber );
+
+        }
+
+        return filePath;
+    }
+
 
 
     //-----------------------------
@@ -1002,4 +1037,13 @@ public class Maven2RepositoryStorage
     }
 
 
+    public PathParser getPathParser()
+    {
+        return pathParser;
+    }
+
+    public void setPathParser( PathParser pathParser )
+    {
+        this.pathParser = pathParser;
+    }
 }
