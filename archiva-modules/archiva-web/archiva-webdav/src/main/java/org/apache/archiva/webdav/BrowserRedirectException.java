@@ -19,6 +19,7 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.storage.RelocationException;
 import org.apache.jackrabbit.webdav.DavException;
 
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +34,21 @@ public class BrowserRedirectException
     public BrowserRedirectException( String location )
     {
         super( HttpServletResponse.SC_MOVED_PERMANENTLY );
+        this.location = location;
+    }
+
+    /**
+     *
+     * @param location
+     * @param relocationType see {@link RelocationException.RelocationType}
+     * @since 2.0.0
+     */
+    public BrowserRedirectException( String location, RelocationException.RelocationType relocationType )
+    {
+        super( relocationType == RelocationException.RelocationType.TEMPORARY
+                   ? HttpServletResponse.SC_MOVED_TEMPORARILY
+                   : HttpServletResponse.SC_MOVED_PERMANENTLY );
+
         this.location = location;
     }
 

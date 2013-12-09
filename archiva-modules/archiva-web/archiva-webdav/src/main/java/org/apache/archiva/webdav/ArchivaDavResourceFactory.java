@@ -540,8 +540,8 @@ public class ArchivaDavResourceFactory
         }
         catch ( RelocationException e )
         {
-            log.error( e.getMessage(), e );
-            throw new BrowserRedirectException( e.getPath() );
+            log.debug( "Relocation to {}", e.getPath() );
+            throw new BrowserRedirectException( e.getPath(), e.getRelocationType() );
         }
         catch ( XMLException e )
         {
