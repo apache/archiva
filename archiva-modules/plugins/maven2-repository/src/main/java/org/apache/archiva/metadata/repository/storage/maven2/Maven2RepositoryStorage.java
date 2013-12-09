@@ -773,10 +773,7 @@ public class Maven2RepositoryStorage
             return getFilePath( requestPath, managedRepositoryContent.getRepository() );
         }
 
-
         String filePath = getFilePath( requestPath, managedRepositoryContent.getRepository() );
-
-        String requestPathNoRepository = removePrefix( requestPath );
 
         ArtifactReference artifactReference = null;
         try
