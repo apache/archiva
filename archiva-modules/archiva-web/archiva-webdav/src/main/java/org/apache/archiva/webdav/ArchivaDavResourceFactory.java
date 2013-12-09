@@ -528,7 +528,7 @@ public class ArchivaDavResourceFactory
         return path;
     }
 
-    private String evaluatePathWithVersion( ArchivaDavResourceLocator archivaLocator, ManagedRepositoryContent managedRepositoryContent )
+    private String evaluatePathWithVersion( ArchivaDavResourceLocator archivaLocator, ManagedRepositoryContent managedRepositoryContent, String contextPath )
         throws DavException
     {
         String layout = managedRepositoryContent.getRepository() == null ? new ManagedRepository( ).getLayout() : managedRepositoryContent.getRepository().getLayout();
@@ -540,8 +540,10 @@ public class ArchivaDavResourceFactory
         }
         catch ( RelocationException e )
         {
-            log.debug( "Relocation to {}", e.getPath() );
-            throw new BrowserRedirectException( e.getPath(), e.getRelocationType() );
+            String path = e.getPath();
+            log.debug( "Relocation to {}", path );
+
+            throw new BrowserRedirectException(contextPath + ( StringUtils.startsWith( path, "/" ) ? "": "/" ) + path, e.getRelocationType() );
         }
         catch ( XMLException e )
         {
@@ -559,7 +561,7 @@ public class ArchivaDavResourceFactory
         if ( isAuthorized( request, managedRepositoryContent.getId() ) )
         {
             // Maven Centric part ask evaluation if -SNAPSHOT
-            String path = evaluatePathWithVersion(archivaLocator, managedRepositoryContent);
+            String path = evaluatePathWithVersion(archivaLocator, managedRepositoryContent, request.getContextPath());
             if ( path.startsWith( "/" ) )
             {
                 path = path.substring( 1 );

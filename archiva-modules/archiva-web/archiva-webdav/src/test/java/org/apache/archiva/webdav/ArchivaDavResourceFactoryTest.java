@@ -240,8 +240,9 @@ public class ArchivaDavResourceFactoryTest
 
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 2 );
 
-            expect( repoRequest.isSupportFile(
-                "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( true );
+            expect( request.getContextPath() ).andReturn( "" ).times( 2 );
+
+            expect( repoRequest.isSupportFile( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( true );
 
             expect(
                 repoRequest.isDefault( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn(
@@ -319,8 +320,9 @@ public class ArchivaDavResourceFactoryTest
 
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 2 );
 
-            expect( repoRequest.isSupportFile(
-                "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( false );
+            expect( request.getContextPath() ).andReturn( "" ).times( 2 );
+
+            expect( repoRequest.isSupportFile( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( false );
 
             expect(
                 repoRequest.isDefault( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn(
@@ -400,8 +402,9 @@ public class ArchivaDavResourceFactoryTest
 
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 4 );
 
-            expect( repoRequest.isSupportFile(
-                "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( false ).times( 2 );
+            expect( request.getContextPath() ).andReturn( "" ).times( 2 );
+
+            expect( repoRequest.isSupportFile( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( false ).times( 2 );
 
             expect(
                 repoRequest.isDefault( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn(
@@ -469,6 +472,8 @@ public class ArchivaDavResourceFactoryTest
 
             expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 3 );
 
+            expect( request.getContextPath() ).andReturn( "" ).times( 1 );
+
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 2 );
 
             expect( request.getRequestURI() ).andReturn( "http://localhost:8080/archiva/repository/" + INTERNAL_REPO + "/eclipse/jdtcore/maven-metadata.xml" );
@@ -530,6 +535,8 @@ public class ArchivaDavResourceFactoryTest
 
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 2 );
 
+            expect( request.getContextPath() ).andReturn( "" ).times( 2 );
+
             archivaConfigurationControl.replay();
             repoContentFactoryControl.replay();
             requestControl.replay();
@@ -578,6 +585,8 @@ public class ArchivaDavResourceFactoryTest
             expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 3 );
 
             expect( request.getDavSession() ).andReturn( new ArchivaDavSession() ).times( 2 );
+
+            expect( request.getContextPath() ).andReturn( "" ).times( 2 );
 
             archivaConfigurationControl.replay();
             repoContentFactoryControl.replay();
