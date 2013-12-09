@@ -36,8 +36,10 @@ import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
+import org.apache.archiva.xml.XMLException;
 
 import java.util.Collection;
 
@@ -146,6 +148,13 @@ public class MockBeanServices
 
     @Override
     public String getFilePath( String requestPath, ManagedRepository managedRepository )
+    {
+        return null;
+    }
+
+    @Override
+    public String getFilePathWithVersion( String requestPath, ManagedRepositoryContent managedRepositoryContent )
+        throws LayoutException, XMLException
     {
         return null;
     }
