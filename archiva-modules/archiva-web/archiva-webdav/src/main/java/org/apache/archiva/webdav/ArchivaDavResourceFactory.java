@@ -39,6 +39,7 @@ import org.apache.archiva.indexer.merger.IndexMergerRequest;
 import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
+import org.apache.archiva.metadata.repository.storage.RelocationException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
@@ -537,10 +538,10 @@ public class ArchivaDavResourceFactory
         {
             return repositoryStorage.getFilePathWithVersion( archivaLocator.getResourcePath(), managedRepositoryContent );
         }
-        catch ( LayoutException e )
+        catch ( RelocationException e )
         {
             log.error( e.getMessage(), e );
-            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
+            throw new BrowserRedirectException( e.getPath() );
         }
         catch ( XMLException e )
         {

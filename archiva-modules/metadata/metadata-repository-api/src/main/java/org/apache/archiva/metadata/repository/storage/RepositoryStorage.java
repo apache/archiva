@@ -74,7 +74,7 @@ public interface RepositoryStorage
     String getFilePath( String requestPath, ManagedRepository managedRepository );
 
     String getFilePathWithVersion( final String requestPath, ManagedRepositoryContent managedRepositoryContent )
-        throws LayoutException, XMLException;
+        throws RelocationException, XMLException;
 
 
 }

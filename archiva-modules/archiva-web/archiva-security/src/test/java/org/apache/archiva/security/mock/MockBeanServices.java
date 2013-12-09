@@ -154,7 +154,6 @@ public class MockBeanServices
 
     @Override
     public String getFilePathWithVersion( String requestPath, ManagedRepositoryContent managedRepositoryContent )
-        throws LayoutException, XMLException
     {
         return null;
     }

@@ -38,6 +38,7 @@ import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
+import org.apache.archiva.metadata.repository.storage.RelocationException;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
@@ -765,10 +766,10 @@ public class Maven2RepositoryStorage
     }
 
     public String getFilePathWithVersion( final String requestPath, ManagedRepositoryContent managedRepositoryContent )
-        throws XMLException
+        throws XMLException, RelocationException
     {
 
-        if (StringUtils.endsWith( requestPath, METADATA_FILENAME ))
+        if ( StringUtils.endsWith( requestPath, METADATA_FILENAME ) )
         {
             return getFilePath( requestPath, managedRepositoryContent.getRepository() );
         }
@@ -810,6 +811,10 @@ public class Maven2RepositoryStorage
                                      artifactReference.getArtifactId() + "-" + StringUtils.remove(
                                          artifactReference.getVersion(), "-SNAPSHOT" ) + "-" + timestamp + "-"
                                          + buildNumber );
+
+            throw new RelocationException(
+                "/repository/" + managedRepositoryContent.getRepository().getId() +
+                    ( StringUtils.startsWith( filePath, "/" ) ? "" : "/" ) + filePath, RelocationException.RelocationType.TEMPORARY );
 
         }
 
