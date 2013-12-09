@@ -52,7 +52,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.runner.RunWith;
 
@@ -66,7 +72,7 @@ public abstract class AbstractDownloadTest
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
-    static String previousAppServerBase;
+    protected static String previousAppServerBase;
 
     public String authorizationHeader = getAdminAuthzHeader();
 
@@ -283,4 +289,23 @@ public abstract class AbstractDownloadTest
             FakeCreateAdminService.class );
     }
 
+
+    protected List<String> getZipEntriesNames( ZipFile zipFile )
+    {
+        try
+        {
+            List<String> entriesNames = new ArrayList<String>();
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while ( entries.hasMoreElements() )
+            {
+                entriesNames.add( entries.nextElement().getName() );
+            }
+            return entriesNames;
+        }
+        catch ( Throwable e )
+        {
+            log.info( "fail to get zipEntries {}", e.getMessage(), e );
+        }
+        return Collections.emptyList();
+    }
 }

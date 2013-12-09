@@ -183,24 +183,7 @@ public class DownloadArtifactsTest
         file.deleteOnExit();
     }
 
-    private List<String> getZipEntriesNames( ZipFile zipFile )
-    {
-        try
-        {
-            List<String> entriesNames = new ArrayList<String>();
-            Enumeration<? extends ZipEntry> entries = zipFile.entries();
-            while ( entries.hasMoreElements() )
-            {
-                entriesNames.add( entries.nextElement().getName() );
-            }
-            return entriesNames;
-        }
-        catch ( Throwable e )
-        {
-            log.info( "fail to get zipEntries {}", e.getMessage(), e );
-        }
-        return Collections.emptyList();
-    }
+
 
 
     public static class RedirectServlet
