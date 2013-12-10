@@ -45,15 +45,9 @@ import java.util.Set;
 public class DefaultRepositoryScanner
     implements RepositoryScanner
 {
-    /**
-     *
-     */
     @Inject
     private FileTypes filetypes;
 
-    /**
-     *
-     */
     @Inject
     private RepositoryContentConsumers consumerUtil;
 
