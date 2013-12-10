@@ -100,7 +100,8 @@ public class ArchivaStartup
         WebApplicationContext applicationContext =
             WebApplicationContextUtils.getRequiredWebApplicationContext( contextEvent.getServletContext() );
 
-
+        // we log using servlet mechanism as due to some possible problem with slf4j when container shutdown
+        // so servletContext.log
         ServletContext servletContext = contextEvent.getServletContext();
 
         // TODO check this stop
