@@ -60,9 +60,6 @@ public class ArchivaIndexingTaskExecutor
 {
     private Logger log = LoggerFactory.getLogger( ArchivaIndexingTaskExecutor.class );
 
-    /**
-     *
-     */
     private IndexPacker indexPacker;
 
     private ArtifactContextProducer artifactContextProducer;

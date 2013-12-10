@@ -57,29 +57,17 @@ public class ArchivaRepositoryScanningTaskExecutor
 {
     private Logger log = LoggerFactory.getLogger( ArchivaRepositoryScanningTaskExecutor.class );
 
-    /**
-     *
-     */
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
-    /**
-     * The repository scanner component.
-     */
     @Inject
     private RepositoryScanner repoScanner;
 
-    /**
-     *
-     */
     @Inject
     private RepositoryContentConsumers consumers;
 
     private Task task;
 
-    /**
-     *
-     */
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
