@@ -161,8 +161,8 @@ public class ArchivaCli
     {
         // hack around poorly configurable project builder by pointing all repositories back at this location to be self
         // contained
-        PlexusSisuBridge plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
-        WagonManager wagonManager = plexusSisuBridge.lookup( WagonManager.class );
+
+        WagonManager wagonManager = lookup( WagonManager.class );
         wagonManager.addMirror( "internal", "*", new File( path ).toURL().toExternalForm() );
 
         ManagedRepository repo = new ManagedRepository();
@@ -179,7 +179,7 @@ public class ArchivaCli
         List<String> ignoredContent = new ArrayList<String>();
         ignoredContent.addAll( Arrays.asList( RepositoryScanner.IGNORABLE_CONTENT ) );
 
-        RepositoryScanner scanner = (RepositoryScanner) lookup( RepositoryScanner.class );
+        RepositoryScanner scanner = lookup( RepositoryScanner.class );
 
         try
         {
@@ -194,7 +194,7 @@ public class ArchivaCli
         }
     }
 
-    private Object lookup( Class<?> clazz )
+    private <T>T lookup( Class<T> clazz )
         throws PlexusSisuBridgeException
     {
         PlexusSisuBridge plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
@@ -232,8 +232,8 @@ public class ArchivaCli
 
         for ( Map.Entry<String, KnownRepositoryContentConsumer> entry : availableConsumers.entrySet() )
         {
-            String consumerHint = (String) entry.getKey();
-            RepositoryContentConsumer consumer = (RepositoryContentConsumer) entry.getValue();
+            String consumerHint = entry.getKey();
+            RepositoryContentConsumer consumer = entry.getValue();
             System.out.println(
                 "  " + consumerHint + ": " + consumer.getDescription() + " (" + consumer.getClass().getName() + ")" );
         }
@@ -262,8 +262,7 @@ public class ArchivaCli
     private void doConversion( String properties )
         throws FileNotFoundException, IOException, RepositoryConversionException, PlexusSisuBridgeException
     {
-        LegacyRepositoryConverter legacyRepositoryConverter =
-            (LegacyRepositoryConverter) lookup( LegacyRepositoryConverter.class );
+        LegacyRepositoryConverter legacyRepositoryConverter = lookup( LegacyRepositoryConverter.class );
 
         Properties p = new Properties();
 
