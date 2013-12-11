@@ -33,7 +33,6 @@
          This module should depend on NO OTHER ARCHIVA MODULES.
          If you feel tempted to add one, discuss it first in the
          archiva-dev@maven.apache.org mailing-list.
-            joakime@apache.org
       -->
     <dependency>
       <groupId>commons-lang</groupId>
@@ -47,15 +46,11 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>xalan</groupId>
       <artifactId>xalan</artifactId>
       <version>2.7.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.sisu</groupId>
-      <artifactId>org.eclipse.sisu.plexus</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.indexer</groupId>
@@ -64,6 +59,12 @@
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
+    </dependency>
+    -->
+    <dependency>
+      <groupId>org.eclipse.sisu</groupId>
+      <artifactId>org.eclipse.sisu.plexus</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>dom4j</groupId>
