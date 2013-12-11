@@ -176,8 +176,8 @@ public class RepositoryModelResolver
                     int buildNumber = snapshotVersion.getBuildNumber();
                     String snapshotPath =
                         StringUtils.replaceChars( groupId, '.', '/' ) + '/' + artifactId + '/' + version + '/'
-                            + artifactId + '-' + StringUtils.remove( version, "-SNAPSHOT" ) + '-' + lastVersion + '-'
-                            + buildNumber + ".pom";
+                            + artifactId + '-' + StringUtils.remove( version, "-" + VersionUtil.SNAPSHOT )
+                            + '-' + lastVersion + '-' + buildNumber + ".pom";
 
                     log.debug( "use snapshot path {} for maven coordinate {}:{}:{}", snapshotPath, groupId, artifactId,
                                version );

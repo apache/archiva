@@ -786,7 +786,7 @@ public class Maven2RepositoryStorage
             return filePath;
         }
 
-        if ( StringUtils.endsWith( artifactReference.getVersion(), "SNAPSHOT" ) )
+        if ( StringUtils.endsWith( artifactReference.getVersion(), VersionUtil.SNAPSHOT ) )
         {
             // read maven metadata to get last timestamp
             File metadataDir = new File( managedRepositoryContent.getRepoRoot(), filePath ).getParentFile();
@@ -809,7 +809,7 @@ public class Maven2RepositoryStorage
             filePath =
                 StringUtils.replace( filePath, artifactReference.getArtifactId() + "-" + artifactReference.getVersion(),
                                      artifactReference.getArtifactId() + "-" + StringUtils.remove(
-                                         artifactReference.getVersion(), "-SNAPSHOT" ) + "-" + timestamp + "-"
+                                         artifactReference.getVersion(), "-" + VersionUtil.SNAPSHOT ) + "-" + timestamp + "-"
                                          + buildNumber );
 
             throw new RelocationException(
