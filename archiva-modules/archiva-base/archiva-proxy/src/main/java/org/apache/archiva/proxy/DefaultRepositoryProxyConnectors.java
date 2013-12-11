@@ -105,48 +105,27 @@ public class DefaultRepositoryProxyConnectors
 {
     private Logger log = LoggerFactory.getLogger( DefaultRepositoryProxyConnectors.class );
 
-    /**
-     *
-     */
     @Inject
     @Named(value = "archivaConfiguration#default")
     private ArchivaConfiguration archivaConfiguration;
 
-    /**
-     *
-     */
     @Inject
     @Named(value = "repositoryContentFactory#default")
     private RepositoryContentFactory repositoryFactory;
 
-    /**
-     *
-     */
     @Inject
     @Named(value = "metadataTools#default")
     private MetadataTools metadataTools;
 
-    /**
-     *
-     */
     @Inject
     private Map<String, PreDownloadPolicy> preDownloadPolicies;
 
-    /**
-     *
-     */
     @Inject
     private Map<String, PostDownloadPolicy> postDownloadPolicies;
 
-    /**
-     *
-     */
     @Inject
     private Map<String, DownloadErrorPolicy> downloadErrorPolicies;
 
-    /**
-     *
-     */
     @Inject
     private UrlFailureCache urlFailureCache;
 
@@ -154,15 +133,9 @@ public class DefaultRepositoryProxyConnectors
 
     private Map<String, ProxyInfo> networkProxyMap = new ConcurrentHashMap<String, ProxyInfo>();
 
-    /**
-     *
-     */
     @Inject
     private WagonFactory wagonFactory;
 
-    /**
-     *
-     */
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
     private ArchivaTaskScheduler scheduler;
