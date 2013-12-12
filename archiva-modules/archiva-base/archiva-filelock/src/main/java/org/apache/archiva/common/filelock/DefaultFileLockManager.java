@@ -19,10 +19,10 @@ package org.apache.archiva.common.filelock;
  * under the License.
  */
 
+import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StopWatch;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -67,7 +67,8 @@ public class DefaultFileLockManager
             {
                 if ( timeout > 0 )
                 {
-                    long delta = stopWatch.getTotalTimeMillis();
+                    long delta = stopWatch.getTime();
+                    log.debug( "delta {}, timeout {}", delta, timeout );
                     if ( delta > timeout )
                     {
                         log.warn( "Cannot acquire read lock within {} millis. Will skip the file: {}", timeout, file );
@@ -120,7 +121,8 @@ public class DefaultFileLockManager
             {
                 if ( timeout > 0 )
                 {
-                    long delta = stopWatch.getTotalTimeMillis();
+                    long delta = stopWatch.getTime();
+                    log.debug( "delta {}, timeout {}", delta, timeout );
                     if ( delta > timeout )
                     {
                         log.warn( "Cannot acquire read lock within {} millis. Will skip the file: {}", timeout, file );
