@@ -109,7 +109,8 @@
             <Import-Package>
               org.slf4j,
               org.springframework.stereotype,
-              org.springframework.util
+              org.springframework.util,
+              org.apache.commons.lang.time
             </Import-Package>
           </instructions>
         </configuration>
