@@ -32,6 +32,7 @@
   <modules>
     <module>archiva-test-utils</module>
     <module>archiva-common</module>
+    <module>archiva-filelock</module>
     <module>archiva-model</module>
     <module>archiva-configuration</module>
     <module>archiva-checksum</module>

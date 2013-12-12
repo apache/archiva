@@ -201,6 +201,7 @@ public class ArchivaDavResource
             FileInputStream is = null;
             try
             {
+                // TODO file lock library
                 // Write content to stream
                 is = new FileInputStream( localResource );
                 IOUtils.copy( is, outputContext.getOutputStream() );

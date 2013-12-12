@@ -83,6 +83,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1091,6 +1092,9 @@ public class DefaultRepositoryProxyConnectors
         }
 
         target.getParentFile().mkdirs();
+        // TODO file lock library
+        RandomAccessFile raf;
+
         if ( !temp.renameTo( target ) )
         {
             log.warn( "Unable to rename tmp file to its final name... resorting to copy command." );
