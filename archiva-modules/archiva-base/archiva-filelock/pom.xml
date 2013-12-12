@@ -102,7 +102,9 @@
               org.apache.archiva.common*;version=${project.version}
             </Export-Package>
             <Import-Package>
-
+              org.slf4j,
+              org.springframework.stereotype,
+              org.springframework.util
             </Import-Package>
           </instructions>
         </configuration>
