@@ -34,7 +34,7 @@ public class DefaultFileLockManagerTest
     @Named( value = "fileLockManager#default" )
     FileLockManager fileLockManager;
 
-    class ConcurentFileWrite
+    class ConcurrentFileWrite
         extends MultithreadedTestCase
     {
 
@@ -47,7 +47,7 @@ public class DefaultFileLockManagerTest
 
         File largeJar = new File( System.getProperty( "basedir" ), "src/test/cassandra-all-2.0.3.jar" );
 
-        ConcurentFileWrite( FileLockManager fileLockManager )
+        ConcurrentFileWrite( FileLockManager fileLockManager )
             throws IOException
         {
             this.fileLockManager = fileLockManager;
@@ -248,11 +248,11 @@ public class DefaultFileLockManagerTest
     public void testWrite()
         throws Throwable
     {
-        ConcurentFileWrite concurentFileWrite = new ConcurentFileWrite( fileLockManager );
-        //concurentFileWrite.setTrace( true );
-        TestFramework.runOnce( concurentFileWrite );
-        logger.info( "success: {}", concurentFileWrite.success );
-        Assert.assertEquals( 10, concurentFileWrite.success.intValue() );
+        ConcurrentFileWrite concurrentFileWrite = new ConcurrentFileWrite( fileLockManager );
+        //concurrentFileWrite.setTrace( true );
+        TestFramework.runOnce( concurrentFileWrite );
+        logger.info( "success: {}", concurrentFileWrite.success );
+        Assert.assertEquals( 10, concurrentFileWrite.success.intValue() );
     }
 
 }
