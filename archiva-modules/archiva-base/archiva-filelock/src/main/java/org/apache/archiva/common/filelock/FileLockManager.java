@@ -28,10 +28,10 @@ import java.io.FileNotFoundException;
 public interface FileLockManager
 {
     Lock writeFileLock( File file )
-        throws FileLockException, FileNotFoundException;
+        throws FileLockException, FileLockTimeoutException;
 
     Lock readFileLock( File file )
-        throws FileLockException, FileNotFoundException;
+        throws FileLockException, FileLockTimeoutException;
 
     void release( Lock lock )
         throws FileLockException, FileNotFoundException;

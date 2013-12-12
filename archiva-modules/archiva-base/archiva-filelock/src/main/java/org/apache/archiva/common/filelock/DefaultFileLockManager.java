@@ -47,7 +47,7 @@ public class DefaultFileLockManager
 
     @Override
     public Lock readFileLock( File file )
-        throws FileLockException, FileNotFoundException
+        throws FileLockException, FileLockTimeoutException
     {
         if ( skipLocking )
         {
@@ -57,43 +57,50 @@ public class DefaultFileLockManager
         StopWatch stopWatch = new StopWatch();
         boolean acquired = false;
 
-        Lock lock = new Lock( file, false );
-
-        stopWatch.start();
-
-        while ( !acquired )
+        try
         {
-            if ( timeout > 0 )
+            Lock lock = new Lock( file, false );
+
+            stopWatch.start();
+
+            while ( !acquired )
             {
-                long delta = stopWatch.getTotalTimeMillis();
-                if ( delta > timeout )
+                if ( timeout > 0 )
                 {
-                    log.warn( "Cannot acquire read lock within {} millis. Will skip the file: {}", timeout, file );
-                    // we could not get the lock within the timeout period, so return null
-                    return null;
+                    long delta = stopWatch.getTotalTimeMillis();
+                    if ( delta > timeout )
+                    {
+                        log.warn( "Cannot acquire read lock within {} millis. Will skip the file: {}", timeout, file );
+                        // we could not get the lock within the timeout period, so  throw  FileLockTimeoutException
+                        throw new FileLockTimeoutException();
+                    }
+                }
+                try
+                {
+                    lock.openLock( false, timeout > 0 );
+                    acquired = true;
+                }
+                catch ( IOException e )
+                {
+                    throw new FileLockException( e.getMessage(), e );
+                }
+                catch ( IllegalStateException e )
+                {
+                    log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
                 }
             }
-            try
-            {
-                lock.openLock( false, timeout > 0 );
-                acquired = true;
-            }
-            catch ( IOException e )
-            {
-                throw new FileLockException( e.getMessage(), e );
-            }
-            catch ( IllegalStateException e )
-            {
-                log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
-            }
+            return lock;
         }
-        return lock;
+        catch ( FileNotFoundException e )
+        {
+            throw new FileLockException( e.getMessage(), e );
+        }
     }
 
 
     @Override
     public Lock writeFileLock( File file )
-        throws FileLockException, FileNotFoundException
+        throws FileLockException, FileLockTimeoutException
     {
         if ( skipLocking )
         {
@@ -103,37 +110,44 @@ public class DefaultFileLockManager
         StopWatch stopWatch = new StopWatch();
         boolean acquired = false;
 
-        Lock lock = new Lock( file, true );
-
-        stopWatch.start();
-
-        while ( !acquired )
+        try
         {
-            if ( timeout > 0 )
+            Lock lock = new Lock( file, true );
+
+            stopWatch.start();
+
+            while ( !acquired )
             {
-                long delta = stopWatch.getTotalTimeMillis();
-                if ( delta > timeout )
+                if ( timeout > 0 )
                 {
-                    log.warn( "Cannot acquire read lock within {} millis. Will skip the file: {}", timeout, file );
-                    // we could not get the lock within the timeout period, so return null
-                    return null;
+                    long delta = stopWatch.getTotalTimeMillis();
+                    if ( delta > timeout )
+                    {
+                        log.warn( "Cannot acquire read lock within {} millis. Will skip the file: {}", timeout, file );
+                        // we could not get the lock within the timeout period, so throw FileLockTimeoutException
+                        throw new FileLockTimeoutException();
+                    }
+                }
+                try
+                {
+                    lock.openLock( true, timeout > 0 );
+                    acquired = true;
+                }
+                catch ( IOException e )
+                {
+                    throw new FileLockException( e.getMessage(), e );
+                }
+                catch ( IllegalStateException e )
+                {
+                    log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
                 }
             }
-            try
-            {
-                lock.openLock( true, timeout > 0 );
-                acquired = true;
-            }
-            catch ( IOException e )
-            {
-                throw new FileLockException( e.getMessage(), e );
-            }
-            catch ( IllegalStateException e )
-            {
-                log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
-            }
+            return lock;
         }
-        return lock;
+        catch ( FileNotFoundException e )
+        {
+            throw new FileLockException( e.getMessage(), e );
+        }
 
     }
 

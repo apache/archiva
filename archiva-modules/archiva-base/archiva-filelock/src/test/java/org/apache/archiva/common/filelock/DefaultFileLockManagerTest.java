@@ -81,7 +81,7 @@ public class DefaultFileLockManagerTest
         }
 
         public void thread1()
-            throws FileLockException, IOException
+            throws FileLockException, FileLockTimeoutException, IOException
         {
             logger.info( "thread1" );
             Lock lock = fileLockManager.writeFileLock( this.file );
@@ -99,7 +99,7 @@ public class DefaultFileLockManagerTest
         }
 
         public void thread2()
-            throws FileLockException, IOException
+            throws FileLockException, FileLockTimeoutException, IOException
         {
             logger.info( "thread2" );
             Lock lock = fileLockManager.writeFileLock( this.file );
@@ -117,7 +117,7 @@ public class DefaultFileLockManagerTest
         }
 
         public void thread3()
-            throws FileLockException, IOException
+            throws FileLockException, FileLockTimeoutException, IOException
         {
             logger.info( "thread3" );
             Lock lock = fileLockManager.readFileLock( this.file );
@@ -135,7 +135,7 @@ public class DefaultFileLockManagerTest
         }
 
         public void thread4()
-            throws FileLockException, IOException
+            throws FileLockException, FileLockTimeoutException, IOException
         {
             logger.info( "thread4" );
             Lock lock = fileLockManager.writeFileLock( this.file );
@@ -153,7 +153,7 @@ public class DefaultFileLockManagerTest
         }
 
         public void thread5()
-            throws FileLockException, IOException
+            throws FileLockException, FileLockTimeoutException, IOException
         {
             logger.info( "thread5" );
             Lock lock = fileLockManager.writeFileLock( this.file );
@@ -171,7 +171,7 @@ public class DefaultFileLockManagerTest
         }
 
         public void thread6()
-            throws FileLockException, IOException
+            throws FileLockException, FileLockTimeoutException, IOException
         {
             logger.info( "thread6" );
             Lock lock = fileLockManager.readFileLock( this.file );
@@ -189,7 +189,7 @@ public class DefaultFileLockManagerTest
         }
 
         public void thread7()
-            throws FileLockException, IOException
+            throws FileLockException, FileLockTimeoutException, IOException
         {
             logger.info( "thread7" );
             Lock lock = fileLockManager.writeFileLock( this.file );
@@ -207,7 +207,7 @@ public class DefaultFileLockManagerTest
         }
 
         public void thread8()
-            throws FileLockException, IOException
+            throws FileLockException, FileLockTimeoutException, IOException
         {
             logger.info( "thread8" );
             Lock lock = fileLockManager.readFileLock( this.file );
@@ -225,7 +225,7 @@ public class DefaultFileLockManagerTest
         }
 
         public void thread9()
-            throws FileLockException, IOException
+            throws FileLockException, FileLockTimeoutException, IOException
         {
             logger.info( "thread7" );
             Lock lock = fileLockManager.writeFileLock( this.file );
@@ -243,7 +243,7 @@ public class DefaultFileLockManagerTest
         }
 
         public void thread10()
-            throws FileLockException, IOException
+            throws FileLockException, FileLockTimeoutException, IOException
         {
             logger.info( "thread10" );
             Lock lock = fileLockManager.readFileLock( this.file );
