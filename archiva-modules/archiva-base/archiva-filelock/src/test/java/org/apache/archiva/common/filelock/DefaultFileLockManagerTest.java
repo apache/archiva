@@ -4,6 +4,7 @@ import edu.umd.cs.mtc.MultithreadedTestCase;
 import edu.umd.cs.mtc.TestFramework;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Olivier Lamy
@@ -35,6 +37,9 @@ public class DefaultFileLockManagerTest
     class ConcurentFileWrite
         extends MultithreadedTestCase
     {
+
+
+        AtomicInteger success = new AtomicInteger( 0 );
 
         FileLockManager fileLockManager;
 
@@ -71,6 +76,7 @@ public class DefaultFileLockManagerTest
                 fileLockManager.release( lock );
             }
             logger.info( "thread1 ok" );
+            success.incrementAndGet();
         }
 
         public void thread2()
@@ -88,6 +94,7 @@ public class DefaultFileLockManagerTest
                 fileLockManager.release( lock );
             }
             logger.info( "thread2 ok" );
+            success.incrementAndGet();
         }
 
         public void thread3()
@@ -105,6 +112,7 @@ public class DefaultFileLockManagerTest
                 fileLockManager.release( lock );
             }
             logger.info( "thread3 ok" );
+            success.incrementAndGet();
         }
 
         public void thread4()
@@ -122,6 +130,7 @@ public class DefaultFileLockManagerTest
                 fileLockManager.release( lock );
             }
             logger.info( "thread4 ok" );
+            success.incrementAndGet();
         }
 
         public void thread5()
@@ -139,6 +148,7 @@ public class DefaultFileLockManagerTest
                 fileLockManager.release( lock );
             }
             logger.info( "thread5 ok" );
+            success.incrementAndGet();
         }
 
         public void thread6()
@@ -156,6 +166,7 @@ public class DefaultFileLockManagerTest
                 fileLockManager.release( lock );
             }
             logger.info( "thread6 ok" );
+            success.incrementAndGet();
         }
 
         public void thread7()
@@ -173,6 +184,7 @@ public class DefaultFileLockManagerTest
                 fileLockManager.release( lock );
             }
             logger.info( "thread7 ok" );
+            success.incrementAndGet();
         }
 
         public void thread8()
@@ -190,8 +202,44 @@ public class DefaultFileLockManagerTest
                 fileLockManager.release( lock );
             }
             logger.info( "thread8 ok" );
+            success.incrementAndGet();
         }
 
+        public void thread9()
+            throws FileLockException, IOException
+        {
+            logger.info( "thread7" );
+            Lock lock = fileLockManager.writeFileLock( this.file );
+            try
+            {
+                lock.getFile().delete();
+                FileUtils.copyFile( largeJar, lock.getFile() );
+            }
+            finally
+            {
+                fileLockManager.release( lock );
+            }
+            logger.info( "thread9 ok" );
+            success.incrementAndGet();
+        }
+
+        public void thread10()
+            throws FileLockException, IOException
+        {
+            logger.info( "thread10" );
+            Lock lock = fileLockManager.readFileLock( this.file );
+            try
+            {
+                IOUtils.copy( new FileInputStream( lock.getFile() ),
+                              new FileOutputStream( File.createTempFile( "foo", ".jar" ) ) );
+            }
+            finally
+            {
+                fileLockManager.release( lock );
+            }
+            logger.info( "thread8 ok" );
+            success.incrementAndGet();
+        }
 
 
     }
@@ -203,6 +251,8 @@ public class DefaultFileLockManagerTest
         ConcurentFileWrite concurentFileWrite = new ConcurentFileWrite( fileLockManager );
         //concurentFileWrite.setTrace( true );
         TestFramework.runOnce( concurentFileWrite );
+        logger.info( "success: {}", concurentFileWrite.success );
+        Assert.assertEquals( 10, concurentFileWrite.success.intValue() );
     }
 
 }

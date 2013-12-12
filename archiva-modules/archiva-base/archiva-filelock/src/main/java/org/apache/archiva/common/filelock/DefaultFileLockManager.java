@@ -3,11 +3,11 @@ package org.apache.archiva.common.filelock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import java.nio.channels.OverlappingFileLockException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -24,121 +24,98 @@ public class DefaultFileLockManager
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
+    private int timeout = 0;
+
     @Override
     public Lock readFileLock( File file )
-        throws FileLockException
+        throws FileLockException, FileNotFoundException
     {
         if ( skipLocking )
         {
+            return new Lock( file );
+
+        }
+        StopWatch stopWatch = new StopWatch();
+        boolean acquired = false;
+
+        Lock lock = new Lock( file, false );
+
+        stopWatch.start();
+
+        while ( !acquired )
+        {
+            if ( timeout > 0 )
+            {
+                long delta = stopWatch.getTotalTimeMillis();
+                if ( delta > timeout )
+                {
+                    log.warn( "Cannot acquire read lock within {} millis. Will skip the file: {}", timeout, file );
+                    // we could not get the lock within the timeout period, so return null
+                    return null;
+                }
+            }
             try
             {
-                return new Lock( file, false );
+                lock.openLock( false, timeout > 0 );
+                acquired = true;
             }
             catch ( IOException e )
             {
                 throw new FileLockException( e.getMessage(), e );
             }
-        }
-        Lock lock = lockFiles.get( file );
-        if ( lock == null )
-        {
-            try
+            catch ( IllegalStateException e )
             {
-                lock = new Lock( file, false );
-                Lock current = lockFiles.putIfAbsent( file, lock );
-                if ( current != null )
-                {
-                    lock = current;
-                }
-                return lock;
-            }
-            catch ( IOException e )
-            {
-                throw new FileLockException( e.getMessage(), e );
-            }
-            catch ( OverlappingFileLockException e )
-            {
-                log.debug( "OverlappingFileLockException: {}", e.getMessage() );
-                if ( lock == null )
-                {
-                    lock = lockFiles.get( file );
-                }
+                log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
             }
         }
-        // FIXME add a timeout on getting that!!!
-        while ( true )
-        {
-            log.debug( "wait read lock" );
-            synchronized ( lock )
-            {
-                if ( lock.getFileLock().isShared() || !lock.getFileLock().isValid() )
-                {
-                    lock.addFileClient( Thread.currentThread() );
-                    return lock;
-                }
-            }
-        }
-        //return lock;
+        return lock;
     }
+
 
     @Override
     public Lock writeFileLock( File file )
-        throws FileLockException
+        throws FileLockException, FileNotFoundException
     {
-        try
+        if ( skipLocking )
         {
-            if ( skipLocking )
-            {
-                return new Lock( file, true );
-            }
+            return new Lock( file );
+        }
 
-            // FIXME add a timeout on getting that!!!
-            while ( true )
-            {
-                Lock lock = lockFiles.get( file );
-                log.debug( "wait write lock" );
-                if ( lock != null )
-                {
-                    synchronized ( lock )
-                    {
-                        if ( lock.getFileLock().isValid() || lock.getFileClients().size() > 0 )
-                        {
-                            continue;
-                        }
-                        return lock;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        lock = new Lock( file, true );
-                    }
-                    catch ( OverlappingFileLockException e )
-                    {
-                        log.debug( "OverlappingFileLockException: {}", e.getMessage() );
-                        if ( lock == null )
-                        {
-                            lock = lockFiles.get( file );
-                        }
+        StopWatch stopWatch = new StopWatch();
+        boolean acquired = false;
 
-                        lock = lockFiles.get( file );
-                        log.debug( "OverlappingFileLockException get: {}", lock );
-                    }
-                    Lock current = lockFiles.putIfAbsent( file, lock );
-                    if ( current != null )
-                    {
-                        lock = current;
-                    }
-                    return lock;
+        Lock lock = new Lock( file, true );
+
+        stopWatch.start();
+
+        while ( !acquired )
+        {
+            if ( timeout > 0 )
+            {
+                long delta = stopWatch.getTotalTimeMillis();
+                if ( delta > timeout )
+                {
+                    log.warn( "Cannot acquire read lock within {} millis. Will skip the file: {}", timeout, file );
+                    // we could not get the lock within the timeout period, so return null
+                    return null;
                 }
             }
+            try
+            {
+                lock.openLock( true, timeout > 0 );
+                acquired = true;
+            }
+            catch ( IOException e )
+            {
+                throw new FileLockException( e.getMessage(), e );
+            }
+            catch ( IllegalStateException e )
+            {
+                log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
+            }
+        }
+        return lock;
 
-        }
-        catch ( IOException e )
-        {
-            throw new FileLockException( e.getMessage(), e );
-        }
     }
 
     @Override
@@ -156,22 +133,23 @@ public class DefaultFileLockManager
         }
         try
         {
-            if ( lock.isWrite().get() )
-            {
-                lock.getFileLock().release();
-            }
-            synchronized ( lock )
-            {
-                lock.close();
-                if ( lock.getFileClients().size() < 1 )
-                {
-                    lockFiles.remove( lock.getFile() );
-                }
-            }
+            lock.close();
         }
         catch ( IOException e )
         {
             throw new FileLockException( e.getMessage(), e );
         }
     }
+
+    public int getTimeout()
+    {
+        return timeout;
+    }
+
+    public void setTimeout( int timeout )
+    {
+        this.timeout = timeout;
+    }
+
+
 }

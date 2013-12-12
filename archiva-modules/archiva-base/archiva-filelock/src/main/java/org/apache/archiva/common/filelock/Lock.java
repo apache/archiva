@@ -1,9 +1,11 @@
 package org.apache.archiva.common.filelock;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,12 +25,22 @@ public class Lock
 
     private FileLock fileLock;
 
+    private RandomAccessFile randomAccessFile;
+
+    private FileChannel fileChannel;
+
+    public Lock( File file )
+    {
+        this.file = file;
+    }
+
     public Lock( File file, boolean write )
-        throws FileNotFoundException, IOException
+        throws FileNotFoundException
     {
         this.file = file;
         this.write = new AtomicBoolean( write );
-        this.openLock( write );
+        randomAccessFile = new RandomAccessFile( file, write ? "rw" : "r" );
+        fileChannel = randomAccessFile.getChannel();
     }
 
     public File getFile()
@@ -51,14 +63,14 @@ public class Lock
         this.write.set( write );
     }
 
-    public FileLock getFileLock()
+    public boolean isShared()
     {
-        return fileLock;
+        return this.fileLock.isValid() && this.fileLock.isShared();
     }
 
-    public void setFileLock( FileLock fileLock )
+    public boolean isValid()
     {
-        this.fileLock = fileLock;
+        return this.fileLock.isValid();
     }
 
     public Map<Thread, AtomicInteger> getFileClients()
@@ -79,20 +91,52 @@ public class Lock
     protected void close()
         throws IOException
     {
-        if ( this.write.get() )
+        IOException ioException = null;
+        try
         {
             this.fileLock.release();
-            fileClients.remove( Thread.currentThread() );
         }
+        catch ( IOException e )
+        {
+            ioException = e;
+        }
+
+        closeQuietly( fileChannel );
+        closeQuietly( randomAccessFile );
+
+        fileClients.remove( Thread.currentThread() );
+
+        if ( ioException != null )
+        {
+            throw ioException;
+        }
+
     }
 
-    public void openLock( boolean write )
+    protected void openLock( boolean write, boolean timeout )
         throws IOException
     {
         fileClients.put( Thread.currentThread(), new AtomicInteger( 1 ) );
-        RandomAccessFile raf = new RandomAccessFile( file, write ? "rw" : "r" );
-        this.fileLock = raf.getChannel().lock( 1, 1, !write );
+
+        this.fileLock = timeout
+            ? fileChannel.tryLock( 0L, Long.MAX_VALUE, write ? false : true )
+            : fileChannel.lock( 0L, Long.MAX_VALUE, write ? false : true );
+
     }
+
+
+    private void closeQuietly( Closeable closeable )
+    {
+        try
+        {
+            closeable.close();
+        }
+        catch ( IOException e )
+        {
+            // ignore
+        }
+    }
+
 
     @Override
     public String toString()
