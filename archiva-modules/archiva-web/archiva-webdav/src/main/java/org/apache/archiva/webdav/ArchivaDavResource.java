@@ -22,6 +22,10 @@ package org.apache.archiva.webdav;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
+import org.apache.archiva.common.filelock.FileLockException;
+import org.apache.archiva.common.filelock.FileLockManager;
+import org.apache.archiva.common.filelock.FileLockTimeoutException;
+import org.apache.archiva.common.filelock.Lock;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
@@ -100,14 +104,16 @@ public class ArchivaDavResource
 
     public static final String COMPLIANCE_CLASS = "1, 2";
 
-    private ArchivaTaskScheduler scheduler;
+    private final ArchivaTaskScheduler scheduler;
+
+    private final FileLockManager fileLockManager;
 
     private Logger log = LoggerFactory.getLogger( ArchivaDavResource.class );
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepository repository,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               RepositoryArchivaTaskScheduler scheduler )
+                               RepositoryArchivaTaskScheduler scheduler, FileLockManager fileLockManager )
     {
         this.localResource = new File( localResource );
         this.logicalResource = logicalResource;
@@ -122,15 +128,16 @@ public class ArchivaDavResource
         this.mimeTypes = mimeTypes;
         this.auditListeners = auditListeners;
         this.scheduler = scheduler;
+        this.fileLockManager = fileLockManager;
     }
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepository repository,
                                String remoteAddr, String principal, DavSession session,
                                ArchivaDavResourceLocator locator, DavResourceFactory factory, MimeTypes mimeTypes,
-                               List<AuditListener> auditListeners, RepositoryArchivaTaskScheduler scheduler )
+                               List<AuditListener> auditListeners, RepositoryArchivaTaskScheduler scheduler , FileLockManager fileLockManager )
     {
         this( localResource, logicalResource, repository, session, locator, factory, mimeTypes, auditListeners,
-              scheduler );
+              scheduler, fileLockManager );
 
         this.remoteAddr = remoteAddr;
         this.principal = principal;
@@ -196,25 +203,37 @@ public class ArchivaDavResource
             outputContext.setContentType( mimeTypes.getMimeType( localResource.getName() ) );
         }
 
-        if ( !isCollection() && outputContext.hasStream() )
+        try
         {
-            FileInputStream is = null;
-            try
+            if ( !isCollection() && outputContext.hasStream() )
             {
-                // TODO file lock library
-                // Write content to stream
-                is = new FileInputStream( localResource );
-                IOUtils.copy( is, outputContext.getOutputStream() );
+                Lock lock = fileLockManager.readFileLock( localResource );
+                FileInputStream is = null;
+                try
+                {
+                    // Write content to stream
+                    is = new FileInputStream( lock.getFile() );
+                    IOUtils.copy( is, outputContext.getOutputStream() );
+                }
+                finally
+                {
+                    IOUtils.closeQuietly( is );
+                    fileLockManager.release( lock );
+                }
             }
-            finally
+            else if ( outputContext.hasStream() )
             {
-                IOUtils.closeQuietly( is );
+                IndexWriter writer = new IndexWriter( this, localResource, logicalResource );
+                writer.write( outputContext );
             }
         }
-        else if ( outputContext.hasStream() )
+        catch ( FileLockException e )
         {
-            IndexWriter writer = new IndexWriter( this, localResource, logicalResource );
-            writer.write( outputContext );
+            throw new IOException( e.getMessage(), e );
+        }
+        catch ( FileLockTimeoutException e )
+        {
+            throw new IOException( e.getMessage(), e );
         }
     }
 

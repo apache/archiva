@@ -27,6 +27,7 @@ import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.audit.Auditable;
+import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.common.utils.PathUtil;
@@ -178,6 +179,10 @@ public class ArchivaDavResourceFactory
     @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler scheduler;
 
+    @Inject
+    @Named(value= "fileLockManager#default")
+    private FileLockManager fileLockManager;
+
     private ApplicationContext applicationContext;
 
     @Inject
@@ -268,7 +273,7 @@ public class ArchivaDavResourceFactory
                     resource = new ArchivaDavResource( resourceFile.getAbsolutePath(), locator.getResourcePath(), null,
                                                        request.getRemoteAddr(), activePrincipal,
                                                        request.getDavSession(), archivaLocator, this, mimeTypes,
-                                                       auditListeners, scheduler );
+                                                       auditListeners, scheduler, fileLockManager );
                     setHeaders( response, locator, resource );
                     return resource;
                 }
@@ -345,7 +350,7 @@ public class ArchivaDavResourceFactory
                         resource =
                             new ArchivaDavResource( metadataChecksum.getAbsolutePath(), logicalResource.getPath(), null,
                                                     request.getRemoteAddr(), activePrincipal, request.getDavSession(),
-                                                    archivaLocator, this, mimeTypes, auditListeners, scheduler );
+                                                    archivaLocator, this, mimeTypes, auditListeners, scheduler, fileLockManager );
                     }
                 }
                 else
@@ -384,7 +389,7 @@ public class ArchivaDavResourceFactory
                                 new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource.getPath(), null,
                                                         request.getRemoteAddr(), activePrincipal,
                                                         request.getDavSession(), archivaLocator, this, mimeTypes,
-                                                        auditListeners, scheduler );
+                                                        auditListeners, scheduler, fileLockManager );
                         }
                         catch ( RepositoryMetadataException r )
                         {
@@ -440,7 +445,7 @@ public class ArchivaDavResourceFactory
             File resourceFile = new File( temporaryIndexDirectory, requestedFileName );
             resource = new ArchivaDavResource( resourceFile.getAbsolutePath(), requestedFileName, null,
                                                request.getRemoteAddr(), activePrincipal, request.getDavSession(),
-                                               archivaLocator, this, mimeTypes, auditListeners, scheduler );
+                                               archivaLocator, this, mimeTypes, auditListeners, scheduler, fileLockManager );
 
         }
         else
@@ -571,7 +576,7 @@ public class ArchivaDavResourceFactory
             resource =
                 new ArchivaDavResource( resourceFile.getAbsolutePath(), path, managedRepositoryContent.getRepository(),
                                         request.getRemoteAddr(), activePrincipal, request.getDavSession(),
-                                        archivaLocator, this, mimeTypes, auditListeners, scheduler );
+                                        archivaLocator, this, mimeTypes, auditListeners, scheduler, fileLockManager );
 
             if ( WebdavMethodUtil.isReadMethod( request.getMethod() ) )
             {
@@ -604,7 +609,7 @@ public class ArchivaDavResourceFactory
                                                         managedRepositoryContent.getRepository(),
                                                         request.getRemoteAddr(), activePrincipal,
                                                         request.getDavSession(), archivaLocator, this, mimeTypes,
-                                                        auditListeners, scheduler );
+                                                        auditListeners, scheduler, fileLockManager );
                         }
                         catch ( LayoutException e )
                         {
@@ -726,7 +731,7 @@ public class ArchivaDavResourceFactory
             File resourceFile = new File( managedRepositoryContent.getRepoRoot(), logicalResource );
             resource = new ArchivaDavResource( resourceFile.getAbsolutePath(), logicalResource,
                                                managedRepositoryContent.getRepository(), davSession, archivaLocator,
-                                               this, mimeTypes, auditListeners, scheduler );
+                                               this, mimeTypes, auditListeners, scheduler, fileLockManager );
 
             resource.addLockManager( lockManager );
         }

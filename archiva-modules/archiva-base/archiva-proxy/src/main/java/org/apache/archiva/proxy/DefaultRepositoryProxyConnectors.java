@@ -25,6 +25,10 @@ import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.ProxyConnectorRuleType;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
+import org.apache.archiva.common.filelock.FileLockException;
+import org.apache.archiva.common.filelock.FileLockManager;
+import org.apache.archiva.common.filelock.FileLockTimeoutException;
+import org.apache.archiva.common.filelock.Lock;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ConfigurationNames;
@@ -143,6 +147,10 @@ public class DefaultRepositoryProxyConnectors
 
     @Inject
     private NetworkProxyAdmin networkProxyAdmin;
+
+    @Inject
+    @Named( value = "fileLockManager#default" )
+    private FileLockManager fileLockManager;
 
     @PostConstruct
     public void initialize()
@@ -431,8 +439,8 @@ public class DefaultRepositoryProxyConnectors
             catch ( RepositoryAdminException e )
             {
                 log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ),
-                           "Transfer error from repository {} for resource {}, continuing to next repository. Error message: {}",targetRepository.getRepository().getId(), path,
-                           e.getMessage(), e );
+                           "Transfer error from repository {} for resource {}, continuing to next repository. Error message: {}",
+                           targetRepository.getRepository().getId(), path, e.getMessage(), e );
                 log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ), "Full stack trace", e );
             }
         }
@@ -490,14 +498,16 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( ProxyException e )
             {
-                log.warn( "Transfer error from repository {} for versioned Metadata {}, continuing to next repository. Error message: {}",
-                          targetRepository.getRepository().getId(), logicalPath, e.getMessage() );
+                log.warn(
+                    "Transfer error from repository {} for versioned Metadata {}, continuing to next repository. Error message: {}",
+                    targetRepository.getRepository().getId(), logicalPath, e.getMessage() );
                 log.debug( "Full stack trace", e );
             }
             catch ( RepositoryAdminException e )
             {
-                log.warn( "Transfer error from repository {} for versioned Metadata {}, continuing to next repository. Error message: {}",
-                          targetRepository.getRepository().getId(), logicalPath, e.getMessage() );
+                log.warn(
+                    "Transfer error from repository {} for versioned Metadata {}, continuing to next repository. Error message: {}",
+                    targetRepository.getRepository().getId(), logicalPath, e.getMessage() );
                 log.debug( "Full stack trace", e );
             }
         }
@@ -898,7 +908,7 @@ public class DefaultRepositoryProxyConnectors
         catch ( ProxyException e )
         {
             urlFailureCache.cacheFailure( url );
-            log.warn( "Transfer failed on checksum: {} : {}",url ,e.getMessage(), e );
+            log.warn( "Transfer failed on checksum: {} : {}", url, e.getMessage(), e );
             // Critical issue, pass it on.
             throw e;
         }
@@ -1059,7 +1069,7 @@ public class DefaultRepositoryProxyConnectors
 
         log.warn(
             "Transfer error from repository {} for artifact {} , continuing to next repository. Error message: {}",
-            content.getRepository().getId(), Keys.toKey( artifact), exception.getMessage() );
+            content.getRepository().getId(), Keys.toKey( artifact ), exception.getMessage() );
         log.debug( "Full stack trace", exception );
     }
 
@@ -1086,40 +1096,51 @@ public class DefaultRepositoryProxyConnectors
     private void moveTempToTarget( File temp, File target )
         throws ProxyException
     {
-        if ( target.exists() && !target.delete() )
-        {
-            throw new ProxyException( "Unable to overwrite existing target file: " + target.getAbsolutePath() );
-        }
 
-        target.getParentFile().mkdirs();
         // TODO file lock library
-        RandomAccessFile raf;
-
-        if ( !temp.renameTo( target ) )
+        Lock lock = null;
+        try
         {
-            log.warn( "Unable to rename tmp file to its final name... resorting to copy command." );
+            lock = fileLockManager.writeFileLock( target );
+            if ( lock.getFile().exists() && !lock.getFile().delete() )
+            {
+                throw new ProxyException( "Unable to overwrite existing target file: " + target.getAbsolutePath() );
+            }
 
-            try
+            lock.getFile().getParentFile().mkdirs();
+
+            if ( !temp.renameTo( lock.getFile() ) )
             {
-                FileUtils.copyFile( temp, target );
-            }
-            catch ( IOException e )
-            {
-                if ( target.exists() )
+                log.warn( "Unable to rename tmp file to its final name... resorting to copy command." );
+
+                try
                 {
-                    log.debug( "Tried to copy file {} to {} but file with this name already exists.", temp.getName(),
-                               target.getAbsolutePath() );
+                    FileUtils.copyFile( temp, lock.getFile() );
                 }
-                else
+                catch ( IOException e )
                 {
-                    throw new ProxyException(
-                        "Cannot copy tmp file " + temp.getAbsolutePath() + " to its final location", e );
+                    if ( lock.getFile().exists() )
+                    {
+                        log.debug( "Tried to copy file {} to {} but file with this name already exists.",
+                                   temp.getName(), lock.getFile().getAbsolutePath() );
+                    }
+                    else
+                    {
+                        throw new ProxyException(
+                            "Cannot copy tmp file " + temp.getAbsolutePath() + " to its final location", e );
+                    }
+                }
+                finally
+                {
+                    FileUtils.deleteQuietly( temp );
                 }
             }
-            finally
-            {
-                FileUtils.deleteQuietly( temp );
-            }
+        } catch( FileLockException e)
+        {
+            throw new ProxyException( e.getMessage(), e );
+        } catch (FileLockTimeoutException e)
+        {
+            throw new ProxyException( e.getMessage(), e );
         }
     }
 
@@ -1187,12 +1208,12 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( ConnectionException e )
         {
-            log.warn( "Could not connect to {}: {}", remoteRepository.getRepository().getName(),  e.getMessage() );
+            log.warn( "Could not connect to {}: {}", remoteRepository.getRepository().getName(), e.getMessage() );
             connected = false;
         }
         catch ( AuthenticationException e )
         {
-            log.warn( "Could not connect to {}: {}", remoteRepository.getRepository().getName(),  e.getMessage() );
+            log.warn( "Could not connect to {}: {}", remoteRepository.getRepository().getName(), e.getMessage() );
             connected = false;
         }
 

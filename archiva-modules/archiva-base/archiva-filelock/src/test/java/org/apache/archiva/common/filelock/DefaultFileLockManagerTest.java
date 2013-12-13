@@ -70,7 +70,7 @@ public class DefaultFileLockManagerTest
             throws IOException
         {
             this.fileLockManager = fileLockManager;
-            file.createNewFile();
+            //file.createNewFile();
 
         }
 

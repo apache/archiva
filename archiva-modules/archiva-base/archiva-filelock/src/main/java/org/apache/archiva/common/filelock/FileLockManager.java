@@ -27,9 +27,23 @@ import java.io.FileNotFoundException;
  */
 public interface FileLockManager
 {
+    /**
+     *
+     * @param file
+     * @return
+     * @throws FileLockException
+     * @throws FileLockTimeoutException
+     */
     Lock writeFileLock( File file )
         throws FileLockException, FileLockTimeoutException;
 
+    /**
+     *
+     * @param file
+     * @return
+     * @throws FileLockException
+     * @throws FileLockTimeoutException
+     */
     Lock readFileLock( File file )
         throws FileLockException, FileLockTimeoutException;
 

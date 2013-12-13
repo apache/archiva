@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * @author Olivier Lamy
  */
-@Service("fileLockManager#default")
+@Service( "fileLockManager#default" )
 public class DefaultFileLockManager
     implements FileLockManager
 {
@@ -44,6 +44,7 @@ public class DefaultFileLockManager
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     private int timeout = 0;
+
 
     @Override
     public Lock readFileLock( File file )
@@ -56,7 +57,7 @@ public class DefaultFileLockManager
         }
         StopWatch stopWatch = new StopWatch();
         boolean acquired = false;
-
+        mkdirs( file.getParentFile() );
         try
         {
             Lock lock = new Lock( file, false );
@@ -107,6 +108,8 @@ public class DefaultFileLockManager
         {
             return new Lock( file );
         }
+
+        mkdirs( file.getParentFile() );
 
         StopWatch stopWatch = new StopWatch();
         boolean acquired = false;
@@ -174,6 +177,36 @@ public class DefaultFileLockManager
         {
             throw new FileLockException( e.getMessage(), e );
         }
+    }
+
+    private boolean mkdirs( File directory )
+    {
+        if ( directory == null )
+        {
+            return false;
+        }
+
+        if ( directory.exists() )
+        {
+            return false;
+        }
+        if ( directory.mkdir() )
+        {
+            return true;
+        }
+
+        File canonDir = null;
+        try
+        {
+            canonDir = directory.getCanonicalFile();
+        }
+        catch ( IOException e )
+        {
+            return false;
+        }
+
+        File parentDir = canonDir.getParentFile();
+        return ( parentDir != null && ( mkdirs( parentDir ) || parentDir.exists() ) && canonDir.mkdir() );
     }
 
     public int getTimeout()
