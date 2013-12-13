@@ -21,6 +21,7 @@ package org.apache.archiva.common.filelock;
 
 /**
  * @author Olivier Lamy
+ * @since 2.0.0
  */
 public class FileLockTimeoutException
     extends Exception

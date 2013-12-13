@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Olivier Lamy
+ * @since 2.0.0
  */
 public class Lock
 {

@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author Olivier Lamy
+ * @since 2.0.0
  */
 @Service( "fileLockManager#default" )
 public class DefaultFileLockManager

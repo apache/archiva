@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 
 /**
  * @author Olivier Lamy
+ * @since 2.0.0
  */
 public interface FileLockManager
 {
