@@ -94,6 +94,7 @@ public class DefaultFileLockManager
 
                 try
                 {
+                    createNewFileQuietly( file );
                     lock.openLock( false, timeout > 0 );
                     acquired = true;
                 }
@@ -170,7 +171,7 @@ public class DefaultFileLockManager
 
                 try
                 {
-                    file.createNewFile();
+                    createNewFileQuietly( file );
                     lock.openLock( true, timeout > 0 );
                     acquired = true;
                 }
