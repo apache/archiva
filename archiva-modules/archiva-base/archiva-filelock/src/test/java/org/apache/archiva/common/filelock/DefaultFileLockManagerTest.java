@@ -24,6 +24,7 @@ import edu.umd.cs.mtc.TestFramework;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -42,15 +43,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Olivier Lamy
  */
-@RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml" } )
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml" })
 public class DefaultFileLockManagerTest
 {
 
     final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "fileLockManager#default" )
+    @Named(value = "fileLockManager#default")
     FileLockManager fileLockManager;
 
     class ConcurrentFileWrite
@@ -261,6 +262,14 @@ public class DefaultFileLockManagerTest
         }
 
 
+    }
+
+
+    @Before
+    public void initialize()
+    {
+        fileLockManager.setSkipLocking( false );
+        fileLockManager.clearLockFiles();
     }
 
     @Test

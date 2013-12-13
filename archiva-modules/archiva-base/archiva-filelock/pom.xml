@@ -119,6 +119,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <!-- jvm holds lock on file so use a new one per test -->
+          <reuseForks>false</reuseForks>
           <systemPropertyVariables>
             <buildDirectory>${project.build.directory}</buildDirectory>
             <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>

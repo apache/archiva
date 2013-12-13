@@ -24,6 +24,7 @@ import edu.umd.cs.mtc.TestFramework;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -42,18 +43,26 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Olivier Lamy
  */
-@RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml" } )
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml" })
 public class DefaultFileLockManagerTimeoutTest
 {
 
     final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "fileLockManager#default" )
+    @Named(value = "fileLockManager#default")
     FileLockManager fileLockManager;
 
+    @Before
+    public void initialize()
+    {
+        fileLockManager.setSkipLocking( false );
 
+        fileLockManager.setTimeout( 5000 );
+
+        fileLockManager.clearLockFiles();
+    }
 
     @Test( expected = FileLockTimeoutException.class )
     public void testTimeout()
@@ -63,8 +72,6 @@ public class DefaultFileLockManagerTimeoutTest
         File file = new File( System.getProperty( "buildDirectory" ), "foo.txt" );
 
         File largeJar = new File( System.getProperty( "basedir" ), "src/test/cassandra-all-2.0.3.jar" );
-
-        fileLockManager.setTimeout( 5000 );
 
         Lock lock = fileLockManager.writeFileLock( file );
 

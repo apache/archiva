@@ -51,6 +51,8 @@ public interface FileLockManager
     void release( Lock lock )
         throws FileLockException, FileNotFoundException;
 
+    void clearLockFiles();
+
     int getTimeout();
 
     void setTimeout( int timeout );

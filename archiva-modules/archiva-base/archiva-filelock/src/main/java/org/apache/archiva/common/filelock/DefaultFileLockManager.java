@@ -41,7 +41,7 @@ public class DefaultFileLockManager
     // TODO currently we create lock for read and write!!
     // the idea could be to store lock here with various clients read/write
     // only read could be a more simple lock and acquire a write lock means waiting the end of all reading threads
-    //private static final ConcurrentMap<File, Lock> lockFiles = new ConcurrentHashMap<File, Lock>( 64 );
+    private static final ConcurrentMap<File, Lock> lockFiles = new ConcurrentHashMap<File, Lock>( 64 );
 
     private boolean skipLocking = false;
 
@@ -64,12 +64,14 @@ public class DefaultFileLockManager
         mkdirs( file.getParentFile() );
         try
         {
+
             Lock lock = new Lock( file, false );
 
             stopWatch.start();
 
             while ( !acquired )
             {
+
                 if ( timeout > 0 )
                 {
                     long delta = stopWatch.getTime();
@@ -81,8 +83,18 @@ public class DefaultFileLockManager
                         throw new FileLockTimeoutException();
                     }
                 }
+
+                Lock current = lockFiles.get( file );
+
+                if ( current != null )
+                {
+                    log.debug( "read lock file exist continue wait" );
+                    continue;
+                }
+
                 try
                 {
+                    file.createNewFile();
                     lock.openLock( false, timeout > 0 );
                     acquired = true;
                 }
@@ -95,9 +107,14 @@ public class DefaultFileLockManager
                     log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
                 }
             }
+            Lock current = lockFiles.putIfAbsent( file, lock );
+            if ( current != null )
+            {
+                lock = current;
+            }
             return lock;
         }
-        catch ( FileNotFoundException e )
+        catch ( IOException e )
         {
             throw new FileLockException( e.getMessage(), e );
         }
@@ -137,8 +154,18 @@ public class DefaultFileLockManager
                         throw new FileLockTimeoutException();
                     }
                 }
+
+                Lock current = lockFiles.get( file );
+
+                if ( current != null )
+                {
+                    log.debug( "write lock file exist continue wait" );
+                    continue;
+                }
+
                 try
                 {
+                    file.createNewFile();
                     lock.openLock( true, timeout > 0 );
                     acquired = true;
                 }
@@ -151,6 +178,13 @@ public class DefaultFileLockManager
                     log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
                 }
             }
+
+            Lock current = lockFiles.putIfAbsent( file, lock );
+            if ( current != null )
+            {
+                lock = current;
+            }
+
             return lock;
         }
         catch ( FileNotFoundException e )
@@ -175,12 +209,18 @@ public class DefaultFileLockManager
         }
         try
         {
+            lockFiles.remove( lock.getFile() );
             lock.close();
         }
         catch ( IOException e )
         {
             throw new FileLockException( e.getMessage(), e );
         }
+    }
+
+    public void clearLockFiles()
+    {
+        lockFiles.clear();
     }
 
     private boolean mkdirs( File directory )
