@@ -43,7 +43,7 @@ public class DefaultFileLockManager
     // only read could be a more simple lock and acquire a write lock means waiting the end of all reading threads
     private static final ConcurrentMap<File, Lock> lockFiles = new ConcurrentHashMap<File, Lock>( 64 );
 
-    private boolean skipLocking = false;
+    private boolean skipLocking = true;
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
