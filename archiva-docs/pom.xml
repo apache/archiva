@@ -31,7 +31,7 @@
 
   <properties>
     <siteFilePath>${user.home}/archiva-sites/archiva-docs-${project.version}/</siteFilePath>
-    <scmPubCheckoutDirectory>${user.home}/archiva-sites/archiva-docs-${project.version}-content</scmPubCheckoutDirectory>
+    <scmPubCheckoutDirectory>${basedir}/.site-content</scmPubCheckoutDirectory>
   </properties>
 
   <build>
