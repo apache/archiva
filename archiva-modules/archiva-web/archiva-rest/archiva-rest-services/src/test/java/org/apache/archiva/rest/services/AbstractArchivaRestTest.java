@@ -232,7 +232,7 @@ public abstract class AbstractArchivaRestTest
         return service;
     }
 
-    protected RedbackRuntimeConfigurationService getArchivaRuntimeConfigurationService()
+    protected RedbackRuntimeConfigurationService getRedbackRuntimeConfigurationService()
     {
         RedbackRuntimeConfigurationService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",

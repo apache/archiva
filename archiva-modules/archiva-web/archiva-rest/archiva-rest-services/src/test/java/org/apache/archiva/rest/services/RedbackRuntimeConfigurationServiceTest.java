@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * @author Olivier Lamy
  */
-public class ArchivaRuntimeConfigurationServiceTest
+public class RedbackRuntimeConfigurationServiceTest
     extends AbstractArchivaRestTest
 {
     @Test
@@ -39,7 +39,7 @@ public class ArchivaRuntimeConfigurationServiceTest
         throws Exception
     {
         RedbackRuntimeConfiguration redbackRuntimeConfiguration =
-            getArchivaRuntimeConfigurationService().getRedbackRuntimeConfiguration();
+            getRedbackRuntimeConfigurationService().getRedbackRuntimeConfiguration();
         assertEquals( "jdo", redbackRuntimeConfiguration.getUserManagerImpls().get( 0 ) );
     }
 
@@ -48,14 +48,14 @@ public class ArchivaRuntimeConfigurationServiceTest
         throws Exception
     {
         RedbackRuntimeConfiguration redbackRuntimeConfiguration =
-            getArchivaRuntimeConfigurationService().getRedbackRuntimeConfiguration();
+            getRedbackRuntimeConfigurationService().getRedbackRuntimeConfiguration();
         assertEquals( "jdo", redbackRuntimeConfiguration.getUserManagerImpls().get( 0 ) );
 
         redbackRuntimeConfiguration.setUserManagerImpls( Arrays.asList( "foo" ) );
 
-        getArchivaRuntimeConfigurationService().updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
+        getRedbackRuntimeConfigurationService().updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
 
-        redbackRuntimeConfiguration = getArchivaRuntimeConfigurationService().getRedbackRuntimeConfiguration();
+        redbackRuntimeConfiguration = getRedbackRuntimeConfigurationService().getRedbackRuntimeConfiguration();
         assertEquals( "foo", redbackRuntimeConfiguration.getUserManagerImpls().get( 0 ) );
 
     }
@@ -65,7 +65,7 @@ public class ArchivaRuntimeConfigurationServiceTest
     public void usermanagersinformations()
         throws Exception
     {
-        RedbackRuntimeConfigurationService service = getArchivaRuntimeConfigurationService();
+        RedbackRuntimeConfigurationService service = getRedbackRuntimeConfigurationService();
         List<UserManagerImplementationInformation> infos = service.getUserManagerImplementationInformations();
         Assertions.assertThat( infos ).isNotNull().isNotEmpty().contains(
             new UserManagerImplementationInformation( "jdo", null, false ) );
@@ -76,7 +76,7 @@ public class ArchivaRuntimeConfigurationServiceTest
     public void rbacmanagersinformations()
         throws Exception
     {
-        RedbackRuntimeConfigurationService service = getArchivaRuntimeConfigurationService();
+        RedbackRuntimeConfigurationService service = getRedbackRuntimeConfigurationService();
         List<RBACManagerImplementationInformation> infos = service.getRbacManagerImplementationInformations();
         Assertions.assertThat( infos ).isNotNull().isNotEmpty().contains(
             new RBACManagerImplementationInformation( "jdo", null, false ) );
