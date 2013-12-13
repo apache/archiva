@@ -287,6 +287,7 @@
   <ul class="nav nav-tabs">
     <li class="active" id="network-configuration-form-li"><a href="#network-configuration-form-content" data-toggle="tab">${$.i18n.prop('runtime-configuration.maven.network.title')}</a></li>
     <li id="cache-failure-form-li"><a href="#cache-failure-form-content" data-toggle="tab">${$.i18n.prop('runtime-configuration.cache.failure.title')}</a></li>
+    <li id="filelocking-form-li"><a href="#filelocking-form-content" data-toggle="tab">${$.i18n.prop('runtime-configuration.filelocking.title')}</a></li>
   </ul>
 
   <div class="tab-content">
@@ -297,8 +298,10 @@
       <div id="network-configuration-form" data-bind='template: {name:"network-configuration-form-tmpl"}'></div>
     </div>
     <div class="tab-pane" id="cache-failure-form-content">
-
       <div id="cache-failure-form" data-bind='template: {name:"cache-failure-form-tmpl"}'></div>
+    </div>
+    <div class="tab-pane" id="filelocking-form-content">
+      <div id="filelocking-form" data-bind='template: {name:"filelocking-form-tmpl"}'></div>
     </div>
   </div>
 </script>
@@ -369,12 +372,43 @@
       </div>
     </div>
 
+
+
     <button id="cache-failure-form-btn-save" data-loading-text="${$.i18n.prop('common.loading')}"
             data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
 
   </form>
 
 </script>
+
+
+<script id="filelocking-form-tmpl" type="text/html">
+
+  <form class="well form-horizontal" id="filelocking-form-id">
+
+    <div class="control-group">
+      <label class="control-label" for="skipLocking">${$.i18n.prop('runtime.fileLockConfiguration.skipLocking.label')}</label>
+      <div class="controls">
+        <input type="checkbox" class="xlarge" data-bind="checked: archivaRuntimeConfiguration().fileLockConfiguration().skipLocking"
+               id="skipLocking" name="skipLocking" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="lockingTimeout">${$.i18n.prop('runtime.fileLockConfiguration.lockingTimeout.label')}</label>
+      <div class="controls">
+        <input type="text" class="xlarge required digits" data-bind="value: archivaRuntimeConfiguration().fileLockConfiguration().lockingTimeout"
+               id="lockingTimeout" name="lockingTimeout" />
+      </div>
+    </div>
+
+    <button id="filelocking-form-btn-save" data-loading-text="${$.i18n.prop('common.loading')}"
+            data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
+
+  </form>
+
+</script>
+
 
 <script id="system-status-main" type="text/html">
   <div class="page-header">

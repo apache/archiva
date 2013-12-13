@@ -317,7 +317,8 @@ define("archiva/admin/features/generaladmin/main",["jquery","i18n","utils","jque
         var archivaRuntimeConfiguration=mapArchivaRuntimeConfiguration(data);
         var archivaRuntimeConfigurationViewModel=new ArchivaRuntimeConfigurationViewModel(archivaRuntimeConfiguration);
         ko.applyBindings(archivaRuntimeConfigurationViewModel,mainContent.find("#cache-failure-form").get(0));
-        var validator = mainContent.find("#cache-failure-form-id")
+        ko.applyBindings(archivaRuntimeConfigurationViewModel,mainContent.find("#filelocking-form").get(0));
+        mainContent.find("#cache-failure-form-id")
                 .validate({
                             showErrors: function(validator, errorMap, errorList) {
                               customShowError(mainContent.find("#cache-failure-form-id" ),validator,errorMap,errorMap);
@@ -362,16 +363,31 @@ define("archiva/admin/features/generaladmin/main",["jquery","i18n","utils","jque
     }
   }
 
-  ArchivaRuntimeConfiguration=function(cacheConfiguration){
-    this.urlFailureCacheConfiguration=ko.observable(cacheConfiguration);
+  FileLockConfiguration=function(skipLocking,lockingTimeout){
+    //private boolean skipLocking = true;
+    this.skipLocking=ko.observable(skipLocking);
+    //private int lockingTimeout = 0;
+    this.lockingTimeout=ko.observable(lockingTimeout) ;
   }
 
+  ArchivaRuntimeConfiguration=function(cacheConfiguration,fileLockConfiguration){
+    this.urlFailureCacheConfiguration=ko.observable(cacheConfiguration);
+    this.fileLockConfiguration=ko.observable(fileLockConfiguration);
+  }
+
+  mapFileLockConfiguration=function(data){
+    if (!data){
+      return null;
+    }
+    return new FileLockConfiguration(data.skipLocking,data.lockingTimeout);
+  }
 
   mapArchivaRuntimeConfiguration=function(data){
     if(!data){
       return null;
     }
-    return new ArchivaRuntimeConfiguration(data.urlFailureCacheConfiguration?mapCacheConfiguration(data.urlFailureCacheConfiguration):null);
+    return new ArchivaRuntimeConfiguration(data.urlFailureCacheConfiguration?mapCacheConfiguration(data.urlFailureCacheConfiguration):null,
+                                           data.fileLockConfiguration?mapFileLockConfiguration(data.fileLockConfiguration):null);
   }
   //---------------------------
   // organisation/appearance configuration part

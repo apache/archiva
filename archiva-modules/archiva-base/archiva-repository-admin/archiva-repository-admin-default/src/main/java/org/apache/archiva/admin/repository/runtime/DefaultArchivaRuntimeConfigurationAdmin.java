@@ -162,6 +162,13 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
         }
 
+        if ( archivaRuntimeConfiguration.getFileLockConfiguration() != null )
+        {
+            res.setFileLockConfiguration(
+                new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getFileLockConfiguration(),
+                                                    FileLockConfiguration.class ) );
+        }
+
         return res;
     }
 
