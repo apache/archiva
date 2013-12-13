@@ -50,6 +50,8 @@ Configuration of Apache Archiva
 
     * {{{./url-cache-failure-configuration.html} Url Cache Failure configuration}}
 
+    * {{{./file-locking-configuration.html} File Locking configuration}}
+
     * {{{./redback-runtime-configuration.html} Redback Runtime configuration}}
 
     []
