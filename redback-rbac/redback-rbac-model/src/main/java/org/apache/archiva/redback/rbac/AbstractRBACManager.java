@@ -157,9 +157,8 @@ public abstract class AbstractRBACManager
             }
             catch ( Exception e )
             {
-                log.warn(
-                    "Unable to trigger .rbacUserAssignmentSaved( UserAssignment ) to {}", listener.getClass().getName(),
-                    e );
+                log.warn( "Unable to trigger .rbacUserAssignmentSaved( UserAssignment ) to {}",
+                          listener.getClass().getName(), e );
             }
         }
     }
@@ -175,7 +174,7 @@ public abstract class AbstractRBACManager
             catch ( Exception e )
             {
                 log.warn( "Unable to trigger .rbacUserAssignmentRemoved( UserAssignment ) to {}",
-                              listener.getClass().getName(), e );
+                          listener.getClass().getName(), e );
             }
         }
     }
@@ -739,6 +738,14 @@ public abstract class AbstractRBACManager
             {
                 // Found a bad roleName! - trigger new List save
                 //it.remove();
+                childRoleNamesUpdated = true;
+            }
+            catch ( RbacManagerException e )
+            {
+                if ( !( e.getCause() instanceof RbacObjectNotFoundException ) )
+                {
+                    throw e;
+                }
                 childRoleNamesUpdated = true;
             }
         }
