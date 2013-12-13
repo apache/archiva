@@ -22,6 +22,7 @@ import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.CacheConfiguration;
+import org.apache.archiva.admin.model.beans.FileLockConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
@@ -38,7 +39,7 @@ import javax.inject.Named;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service("archivaRuntimeConfigurationAdmin#default")
+@Service( "archivaRuntimeConfigurationAdmin#default" )
 public class DefaultArchivaRuntimeConfigurationAdmin
     implements ArchivaRuntimeConfigurationAdmin
 {
@@ -57,6 +58,12 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         ArchivaRuntimeConfiguration archivaRuntimeConfiguration = getArchivaRuntimeConfiguration();
 
         boolean save = false;
+
+        // NPE free
+        if ( archivaRuntimeConfiguration.getFileLockConfiguration() == null )
+        {
+            archivaRuntimeConfiguration.setFileLockConfiguration( new FileLockConfiguration() );
+        }
 
         // NPE free
         if ( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration() == null )
@@ -177,6 +184,13 @@ public class DefaultArchivaRuntimeConfigurationAdmin
                 new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration(),
                                                     org.apache.archiva.configuration.CacheConfiguration.class ) );
 
+        }
+
+        if ( archivaRuntimeConfiguration.getFileLockConfiguration() != null )
+        {
+            res.setFileLockConfiguration(
+                new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getFileLockConfiguration(),
+                                                    org.apache.archiva.configuration.FileLockConfiguration.class ) );
         }
 
         return res;

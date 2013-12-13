@@ -1485,6 +1485,14 @@
             <type>CacheConfiguration</type>
           </association>
         </field>
+        <field>
+          <name>fileLockConfiguration</name>
+          <description>the FileLocking configuration</description>
+          <version>1.4.0+</version>
+          <association>
+            <type>FileLockConfiguration</type>
+          </association>
+        </field>
       </fields>
     </class>
 
@@ -1661,6 +1669,27 @@
       </fields>
     </class>
 
+    <class>
+      <name>FileLockConfiguration</name>
+      <version>1.4.0+</version>
+      <description>File Locking configuration.</description>
+      <fields>
+        <field>
+          <name>skipLocking</name>
+          <description>skipping the locking mechanism</description>
+          <version>1.4.0+</version>
+          <type>boolean</type>
+          <defaultValue>true</defaultValue>
+        </field>
+        <field>
+          <name>lockingTimeout</name>
+          <description>maximum time to wait to get the file lock (0 infinite)</description>
+          <version>1.4.0+</version>
+          <type>int</type>
+          <defaultValue>0</defaultValue>
+        </field>
+      </fields>
+    </class>
 
     <class>
       <name>CacheConfiguration</name>
