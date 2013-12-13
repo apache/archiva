@@ -37,7 +37,10 @@ import java.util.concurrent.ConcurrentMap;
 public class DefaultFileLockManager
     implements FileLockManager
 {
-    private static final ConcurrentMap<File, Lock> lockFiles = new ConcurrentHashMap<File, Lock>( 64 );
+    // TODO currently we create lock for read and write!!
+    // the idea could be to store lock here with various clients read/write
+    // only read could be a more simple lock and acquire a write lock means waiting the end of all reading threads
+    //private static final ConcurrentMap<File, Lock> lockFiles = new ConcurrentHashMap<File, Lock>( 64 );
 
     private boolean skipLocking = false;
 
