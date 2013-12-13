@@ -94,9 +94,14 @@ public class DefaultFileLockManager
 
                 try
                 {
-                    file.createNewFile();
                     lock.openLock( false, timeout > 0 );
                     acquired = true;
+                }
+                catch ( FileNotFoundException e )
+                {
+                    // can happen if an other thread has deleted the file
+                    log.debug( "read Lock skip: {} try to create file", e.getMessage() );
+                    createNewFileQuietly( file );
                 }
                 catch ( IOException e )
                 {
@@ -169,6 +174,12 @@ public class DefaultFileLockManager
                     lock.openLock( true, timeout > 0 );
                     acquired = true;
                 }
+                catch ( FileNotFoundException e )
+                {
+                    // can happen if an other thread has deleted the file
+                    log.debug( "write Lock skip: {} try to create file", e.getMessage() );
+                    createNewFileQuietly( file );
+                }
                 catch ( IOException e )
                 {
                     throw new FileLockException( e.getMessage(), e );
@@ -187,11 +198,29 @@ public class DefaultFileLockManager
 
             return lock;
         }
-        catch ( FileNotFoundException e )
+
+        catch (
+
+            FileNotFoundException e
+
+            )
+
         {
             throw new FileLockException( e.getMessage(), e );
         }
 
+    }
+
+    private void createNewFileQuietly( File file )
+    {
+        try
+        {
+            file.createNewFile();
+        }
+        catch ( IOException e )
+        {
+            // skip that
+        }
     }
 
     @Override
