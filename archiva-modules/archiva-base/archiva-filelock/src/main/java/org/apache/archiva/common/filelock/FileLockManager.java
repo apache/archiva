@@ -39,4 +39,8 @@ public interface FileLockManager
     int getTimeout();
 
     void setTimeout( int timeout );
+
+    boolean isSkipLocking();
+
+    void setSkipLocking( boolean skipLocking);
 }

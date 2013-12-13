@@ -186,5 +186,13 @@ public class DefaultFileLockManager
         this.timeout = timeout;
     }
 
+    public boolean isSkipLocking()
+    {
+        return skipLocking;
+    }
 
+    public void setSkipLocking( boolean skipLocking )
+    {
+        this.skipLocking = skipLocking;
+    }
 }
