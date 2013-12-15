@@ -69,7 +69,7 @@
 
     <scmPubCheckoutDirectory />
     <scmTryUpdate>true</scmTryUpdate>
-    <scmPubscmsvnImpl>javasvn</scmPubscmsvnImpl>
+    <scmPubscmsvnImpl>svn</scmPubscmsvnImpl>
     <scmSkipDeletedFiles>false</scmSkipDeletedFiles>
     <maven-scm-provider-svnjava.version>2.0.6</maven-scm-provider-svnjava.version>
     <svnkit.version>1.8.1</svnkit.version>
