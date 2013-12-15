@@ -72,14 +72,14 @@
     <scmPubscmsvnImpl>javasvn</scmPubscmsvnImpl>
     <scmSkipDeletedFiles>false</scmSkipDeletedFiles>
     <maven-scm-provider-svnjava.version>2.0.6</maven-scm-provider-svnjava.version>
-    <svnkit.version>1.7.8</svnkit.version>
+    <svnkit.version>1.8.1</svnkit.version>
 
 
     <!-- reporting plugins versions -->
     <maven-project-info-reports-plugin.version>2.7</maven-project-info-reports-plugin.version>
     <checkstyleVersion>2.9.1</checkstyleVersion>
     <jxrVersion>2.3</jxrVersion>
-    <javadocPluginVersion>2.9</javadocPluginVersion>
+    <javadocPluginVersion>2.9.1</javadocPluginVersion>
 
     <plexusUtilsPluginsVersion>3.0.8</plexusUtilsPluginsVersion>
 
@@ -960,6 +960,19 @@
     </profile>
 
   </profiles>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>maven.tmatesoft.com.releases</id>
+      <url>http://maven.tmatesoft.com/content/repositories/releases</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
 </project>
 
