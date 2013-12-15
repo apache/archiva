@@ -82,8 +82,6 @@ public class DefaultPasswordService
         throws RedbackServiceException
     {
 
-        //RedbackRequestInformation redbackRequestInformation = RedbackAuthenticationThreadLocal.get();
-
         String principal = null;
 
         if ( StringUtils.isEmpty( password ) )
