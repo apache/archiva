@@ -9,3 +9,4 @@ build
 *.iws
 .DS_Store
 .extract
+.site-content/
