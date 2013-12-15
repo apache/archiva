@@ -81,7 +81,7 @@
     <jxrVersion>2.3</jxrVersion>
     <javadocPluginVersion>2.9.1</javadocPluginVersion>
 
-    <plexusUtilsPluginsVersion>3.0.8</plexusUtilsPluginsVersion>
+    <plexusUtilsPluginsVersion>3.0.15</plexusUtilsPluginsVersion>
 
     <jacksonVersion>2.3.0</jacksonVersion>
     <enunciate.docsDir />
