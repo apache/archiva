@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -91,6 +92,12 @@ public class DefaultFileLockManager
                 if ( current != null )
                 {
                     log.debug( "read lock file exist continue wait" );
+                    // close RandomAccessFile!!!
+                    RandomAccessFile raf =  lock.getRandomAccessFile();
+                    if (raf != null)
+                    {
+                        raf.close();
+                    }
                     continue;
                 }
 
@@ -168,14 +175,21 @@ public class DefaultFileLockManager
 
                 Lock current = lockFiles.get( file );
 
-                if ( current != null )
-                {
-                    log.debug( "write lock file exist continue wait" );
-                    continue;
-                }
-
                 try
                 {
+
+                    if ( current != null )
+                    {
+                        log.debug( "write lock file exist continue wait" );
+                        // close RandomAccessFile!!!
+                        RandomAccessFile raf =  lock.getRandomAccessFile();
+                        if (raf != null)
+                        {
+                            raf.close();
+                        }
+                        continue;
+                    }
+
                     createNewFileQuietly( file );
                     lock.openLock( true, timeout > 0 );
                     acquired = true;

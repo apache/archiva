@@ -144,6 +144,10 @@ public class Lock
 
     }
 
+    protected RandomAccessFile getRandomAccessFile()
+    {
+        return randomAccessFile;
+    }
 
     private void closeQuietly( Closeable closeable )
     {
