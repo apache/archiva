@@ -50,7 +50,7 @@ function(jquery,jqueryui,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
       pageSize: 10,
       gridUpdateCallBack: function(){
        $.log("gridUpdateCallBack users result");
-        applyAutocompleteOnHeaders(self);
+        applyAutocompleteOnUsersHeaders(self);
       }
     });
     clearFilters=function(){
@@ -280,7 +280,7 @@ function(jquery,jqueryui,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
 
   }
 
-  applyAutocompleteOnHeader=function(property,usersViewModel){
+  applyAutocompleteOnHeaderUsers=function(property,usersViewModel){
 
     $("#main-content").find("#users-grid-filter-auto-"+property ).autocomplete({
       minLength: 0,
@@ -318,7 +318,7 @@ function(jquery,jqueryui,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
       }
     });
     var jid = "#users-grid-filter-auto-"+property;
-    $.log("applyAutocompleteOnHeader:"+values.length+" for " + jid);
+    $.log("applyAutocompleteOnHeaderUsers:"+values.length+" for " + jid);
 
     var box = $("#main-content").find(jid);
 
@@ -374,10 +374,10 @@ function(jquery,jqueryui,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
 
   }
 
-  applyAutocompleteOnHeaders=function(usersViewModel){
-    applyAutocompleteOnHeader("username",usersViewModel);
-    applyAutocompleteOnHeader("fullName",usersViewModel);
-    applyAutocompleteOnHeader("email",usersViewModel);
+  applyAutocompleteOnUsersHeaders=function(usersViewModel){
+    applyAutocompleteOnHeaderUsers("username",usersViewModel);
+    applyAutocompleteOnHeaderUsers("fullName",usersViewModel);
+    applyAutocompleteOnHeaderUsers("email",usersViewModel);
   }
 
   activateUsersGridTab=function(){
