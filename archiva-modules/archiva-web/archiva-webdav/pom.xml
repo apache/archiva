@@ -280,7 +280,8 @@
               org.codehaus.plexus.util*,
               org.apache.archiva.common.filelock,
               org.codehaus.redback.integration.filter.authentication,
-              org.slf4j;resolution:=optional
+              org.slf4j;resolution:=optional,
+              com.google.common.io
             </Import-Package>
           </instructions>
         </configuration>
