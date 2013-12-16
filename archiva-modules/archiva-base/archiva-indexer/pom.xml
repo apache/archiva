@@ -196,6 +196,8 @@
               org.apache.lucene*;version="[3,4)",
               org.springframework*;version="[3,4)",
               org.apache.maven.index*,
+              org.apache.archiva.redback.components.scheduler,
+              org.quartz,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>
