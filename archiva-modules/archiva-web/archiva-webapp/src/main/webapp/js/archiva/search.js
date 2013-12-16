@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva.search",["jquery","i18n","jquery.tmpl","select2","knockout","knockout.simpleGrid","jqueryFileTree"
-  ,"prettify", "d3","jquery.ui", "typeahead"]
-, function(jquery,i18n,jqueryTmpl,select2,ko,koSimpleGrid,jqueryFileTree,prettify,d3,jqueryui,typeahead) {
+define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","knockout","knockout.simpleGrid","jqueryFileTree"
+  ,"prettify", "d3", "typeahead"]
+, function(jquery,jqueryui,i18n,jqueryTmpl,select2,ko,koSimpleGrid,jqueryFileTree,prettify,d3,typeahead) {
 
   //-----------------------------------------
   // browse part

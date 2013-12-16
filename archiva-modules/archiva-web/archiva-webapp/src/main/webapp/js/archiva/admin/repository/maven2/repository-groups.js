@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva/admin/repository/maven2/repository-groups",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","jquery.ui","knockout"
+define("archiva/admin/repository/maven2/repository-groups",["jquery","jquery.ui","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout"
   ,"knockout.simpleGrid","knockout.sortable","archiva/admin/repository/maven2/repositories"],
-function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
+function(jquery,jqueryUi,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 
   RepositoryGroup=function(id,repositories,mergedIndexPath,mergedIndexTtl){
 

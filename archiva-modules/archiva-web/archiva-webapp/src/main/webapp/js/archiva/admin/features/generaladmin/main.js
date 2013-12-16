@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva/admin/features/generaladmin/main",["jquery","i18n","utils","jquery.tmpl","knockout","knockout.simpleGrid",
-  "knockout.sortable","jquery.ui","jquery.validate","bootstrap","select2","knockout.select2"]
-    , function(jquery,i18n,utils,jqueryTmpl,ko,simpleGrid,sortable,jqueryUi,validate,bootstrap,select2) {
+define("archiva/admin/features/generaladmin/main",["jquery","jquery.ui","i18n","utils","jquery.tmpl","knockout","knockout.simpleGrid",
+  "knockout.sortable","jquery.validate","bootstrap","select2","knockout.select2"]
+    , function(jquery,jqueryUi,i18n,utils,jqueryTmpl,ko,simpleGrid,sortable,validate,bootstrap,select2) {
 
   showMenu = function( administrationMenuItems) {
         administrationMenuItems.push({  text : $.i18n.prop('menu.repository-scanning')      , order:2000, id: "menu-repository-scanning-list-a"    , href: "#scanningList"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryScanning();}});
