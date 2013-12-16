@@ -102,7 +102,10 @@ public class DefaultFileLockManager
             {
                 // can happen if an other thread has deleted the file
                 // close RandomAccessFile!!!
-                closeQuietly( lock.getRandomAccessFile() );
+                if ( lock != null )
+                {
+                    closeQuietly( lock.getRandomAccessFile() );
+                }
                 log.debug( "read Lock skip: {} try to create file", e.getMessage() );
                 createNewFileQuietly( file );
             }
@@ -178,8 +181,10 @@ public class DefaultFileLockManager
             {
                 // can happen if an other thread has deleted the file
                 // close RandomAccessFile!!!
-                closeQuietly( lock.getRandomAccessFile() );
-
+                if ( lock != null )
+                {
+                    closeQuietly( lock.getRandomAccessFile() );
+                }
                 log.debug( "write Lock skip: {} try to create file", e.getMessage() );
                 createNewFileQuietly( file );
             }
