@@ -85,7 +85,7 @@
     <lucene.version>3.6.2</lucene.version>
     <jackrabbit.version>2.6.5</jackrabbit.version>
 
-    <sirona.version>0.1-incubating-SNAPSHOT</sirona.version>
+    <sirona.version>0.1-incubating</sirona.version>
 
     <cxfVersion>2.6.10</cxfVersion>
     <derbyVersion>10.10.1.1</derbyVersion>
