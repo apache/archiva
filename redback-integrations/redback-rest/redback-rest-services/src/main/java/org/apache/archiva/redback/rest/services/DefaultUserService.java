@@ -330,7 +330,7 @@ public class DefaultUserService
         try
         {
             String previousEncodedPassword =
-                securitySystem.getUserManager().findUser( user.getUsername() ).getEncodedPassword();
+                securitySystem.getUserManager().findUser( user.getUsername(), false ).getEncodedPassword();
 
             // check oldPassword with the current one
 
@@ -373,7 +373,7 @@ public class DefaultUserService
     {
         try
         {
-            org.apache.archiva.redback.users.User rawUser = userManager.findUser( user.getUsername() );
+            org.apache.archiva.redback.users.User rawUser = userManager.findUser( user.getUsername(), false );
             rawUser.setFullName( user.getFullName() );
             rawUser.setEmail( user.getEmail() );
             rawUser.setValidated( user.isValidated() );
