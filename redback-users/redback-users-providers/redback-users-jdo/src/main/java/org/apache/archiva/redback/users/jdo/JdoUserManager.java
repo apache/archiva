@@ -410,7 +410,7 @@ public class JdoUserManager
         catch ( RedbackStoreException e )
         {
             throw new UserManagerException(
-                "Unable to update the '" + object.getClass().getName() + "' object in the jdo database.", e );
+                "Unable to update the '" + object.getClass().getName() + "' object in the jdo database. Cause: " + e.getMessage(), e );
         }
     }
 
