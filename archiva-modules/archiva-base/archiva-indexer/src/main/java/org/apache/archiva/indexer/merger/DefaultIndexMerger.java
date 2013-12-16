@@ -80,8 +80,8 @@ public class DefaultIndexMerger
         StopWatch stopWatch = new StopWatch();
         stopWatch.reset();
         stopWatch.start();
-        File tempRepoFile = Files.createTempDir();
-        tempRepoFile.deleteOnExit();
+
+        File tempRepoFile = indexMergerRequest.getMergedIndexDirectory();
 
         String tempRepoId = tempRepoFile.getName();
 

@@ -33,7 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -58,6 +60,25 @@ public class DefaultRepositoryGroupAdmin
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
+    private File groupsDirectory;
+
+    @PostConstruct
+    public void initialize()
+    {
+        String appServerBase = getRegistry().getString( "appserver.base" );
+        groupsDirectory = new File( appServerBase + File.separatorChar + "groups" );
+        if ( !groupsDirectory.exists() )
+        {
+            groupsDirectory.mkdirs();
+        }
+    }
+
+    @Override
+    public File getMergedIndexDirectory( String repositoryGroupId )
+    {
+        return new File( groupsDirectory, repositoryGroupId );
+    }
+
     public List<RepositoryGroup> getRepositoriesGroups()
         throws RepositoryAdminException
     {
@@ -68,7 +89,8 @@ public class DefaultRepositoryGroupAdmin
         {
             repositoriesGroups.add( new RepositoryGroup( repositoryGroupConfiguration.getId(), new ArrayList<String>(
                 repositoryGroupConfiguration.getRepositories() ) ).mergedIndexPath(
-                repositoryGroupConfiguration.getMergedIndexPath() ).mergedIndexTtl( repositoryGroupConfiguration.getMergedIndexTtl() ) );
+                repositoryGroupConfiguration.getMergedIndexPath() ).mergedIndexTtl(
+                repositoryGroupConfiguration.getMergedIndexTtl() ) );
         }
 
         return repositoriesGroups;
@@ -285,7 +307,7 @@ public class DefaultRepositoryGroupAdmin
                 "Invalid character(s) found in identifier. Only the following characters are allowed: alphanumeric, '.', '-' and '_'" );
         }
 
-        if ( repositoryGroup.getMergedIndexTtl() <= 0)
+        if ( repositoryGroup.getMergedIndexTtl() <= 0 )
         {
             throw new RepositoryAdminException( "Merged Index TTL must be greater than 0." );
         }
