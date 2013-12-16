@@ -102,6 +102,13 @@ public class MockUserManager
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public User findUser( String username, boolean useCache )
+        throws UserNotFoundException, UserManagerException
+    {
+        return null;
+    }
+
     public User getGuestUser()
         throws UserNotFoundException, UserManagerException
     {

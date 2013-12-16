@@ -51,24 +51,24 @@ import java.util.List;
 /**
  * @author <a href="jesse@codehaus.org"> jesse
  */
-@Service( "userManager#ldap" )
+@Service("userManager#ldap")
 public class LdapUserManager
     extends AbstractUserManager
     implements UserManager
 {
     @Inject
-    @Named( value = "ldapConnectionFactory#configurable" )
+    @Named(value = "ldapConnectionFactory#configurable")
     private LdapConnectionFactory connectionFactory;
 
     @Inject
     private LdapController controller;
 
     @Inject
-    @Named( value = "userMapper#ldap" )
+    @Named(value = "userMapper#ldap")
     private UserMapper mapper;
 
     @Inject
-    @Named( value = "userConfiguration#default" )
+    @Named(value = "userConfiguration#default")
     private UserConfiguration userConf;
 
     @Inject
@@ -195,7 +195,8 @@ public class LdapUserManager
         // TODO Implement erase!
     }
 
-    public User findUser( String username )
+    @Override
+    public User findUser( String username, boolean useCache )
         throws UserNotFoundException, UserManagerException
     {
         if ( username == null )
@@ -203,15 +204,17 @@ public class LdapUserManager
             throw new UserNotFoundException( "Unable to find user based on null username." );
         }
 
-        // REDBACK-289/MRM-1488
-        // look for the user in the cache first
-        LdapUser ldapUser = ldapCacheService.getUser( username );
-        if ( ldapUser != null )
+        if ( useCache )
         {
-            log.debug( "User {} found in cache.", username );
-            return ldapUser;
+            // REDBACK-289/MRM-1488
+            // look for the user in the cache first
+            LdapUser ldapUser = ldapCacheService.getUser( username );
+            if ( ldapUser != null )
+            {
+                log.debug( "User {} found in cache.", username );
+                return ldapUser;
+            }
         }
-
         LdapConnection ldapConnection = null;
 
         try
@@ -249,6 +252,12 @@ public class LdapUserManager
         {
             closeLdapConnection( ldapConnection );
         }
+    }
+
+    public User findUser( String username )
+        throws UserNotFoundException, UserManagerException
+    {
+        return findUser( username, true );
     }
 
     public List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )

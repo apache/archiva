@@ -107,6 +107,13 @@ public class ConfigurableUserManager
     }
 
     @Override
+    public User findUser( String username, boolean useCache )
+        throws UserNotFoundException, UserManagerException
+    {
+        return userManagerImpl.findUser( username, useCache );
+    }
+
+    @Override
     public User getGuestUser()
         throws UserNotFoundException, UserManagerException
     {

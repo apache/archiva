@@ -300,6 +300,13 @@ public class JdoUserManager
         return (User) getObjectById( username, null );
     }
 
+    @Override
+    public User findUser( String username, boolean useCache )
+        throws UserNotFoundException, UserManagerException
+    {
+        return findUser( username );
+    }
+
     public boolean userExists( String principal )
         throws UserManagerException
     {

@@ -212,6 +212,13 @@ public class MemoryUserManager
         return user;
     }
 
+    @Override
+    public User findUser( String username, boolean useCache )
+        throws UserNotFoundException, UserManagerException
+    {
+        return findUser( username );
+    }
+
     public List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
     {
         triggerInit();

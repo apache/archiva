@@ -136,6 +136,9 @@ public interface UserManager
     User findUser( String username )
         throws UserNotFoundException, UserManagerException;
 
+    User findUser( String username, boolean useCache )
+        throws UserNotFoundException, UserManagerException;
+
     /**
      * Get the guest user.
      *

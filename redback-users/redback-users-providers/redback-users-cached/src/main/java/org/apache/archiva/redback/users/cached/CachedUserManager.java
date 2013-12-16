@@ -137,6 +137,14 @@ public class CachedUserManager
         }
     }
 
+    @Override
+    public User findUser( String username, boolean useCache )
+        throws UserNotFoundException, UserManagerException
+    {
+        // force use of cache here :-)
+        return findUser( username );
+    }
+
     public User getGuestUser()
         throws UserNotFoundException, UserManagerException
     {

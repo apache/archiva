@@ -107,7 +107,7 @@ public class DefaultPasswordService
 
             String encodedPassword = passwordValidator.validatePassword( password, principal );
 
-            User user = securitySystem.getUserManager().findUser( principal );
+            User user = securitySystem.getUserManager().findUser( principal, false );
             user.setPassword( password );
             user.setEncodedPassword( encodedPassword );
             user = securitySystem.getUserManager().updateUser( user );
