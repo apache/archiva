@@ -63,76 +63,65 @@ public class DefaultFileLockManager
         StopWatch stopWatch = new StopWatch();
         boolean acquired = false;
         mkdirs( file.getParentFile() );
-        try
+
+        Lock lock = null;
+
+        stopWatch.start();
+
+        while ( !acquired )
         {
 
-            Lock lock = null;
-
-            stopWatch.start();
-
-            while ( !acquired )
+            if ( timeout > 0 )
             {
-
-                if ( timeout > 0 )
+                long delta = stopWatch.getTime();
+                log.debug( "delta {}, timeout {}", delta, timeout );
+                if ( delta > timeout )
                 {
-                    long delta = stopWatch.getTime();
-                    log.debug( "delta {}, timeout {}", delta, timeout );
-                    if ( delta > timeout )
-                    {
-                        log.warn( "Cannot acquire read lock within {} millis. Will skip the file: {}", timeout, file );
-                        // we could not get the lock within the timeout period, so  throw  FileLockTimeoutException
-                        throw new FileLockTimeoutException();
-                    }
-                }
-
-                lock = new Lock( file, false );
-
-                Lock current = lockFiles.get( file );
-
-                if ( current != null )
-                {
-                    log.debug( "read lock file exist continue wait" );
-                    // close RandomAccessFile!!!
-                    RandomAccessFile raf =  lock.getRandomAccessFile();
-                    if (raf != null)
-                    {
-                        raf.close();
-                    }
-                    continue;
-                }
-
-                try
-                {
-                    createNewFileQuietly( file );
-                    lock.openLock( false, timeout > 0 );
-                    acquired = true;
-                }
-                catch ( FileNotFoundException e )
-                {
-                    // can happen if an other thread has deleted the file
-                    log.debug( "read Lock skip: {} try to create file", e.getMessage() );
-                    createNewFileQuietly( file );
-                }
-                catch ( IOException e )
-                {
-                    throw new FileLockException( e.getMessage(), e );
-                }
-                catch ( IllegalStateException e )
-                {
-                    log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
+                    log.warn( "Cannot acquire read lock within {} millis. Will skip the file: {}", timeout, file );
+                    // we could not get the lock within the timeout period, so  throw  FileLockTimeoutException
+                    throw new FileLockTimeoutException();
                 }
             }
-            Lock current = lockFiles.putIfAbsent( file, lock );
+
+            Lock current = lockFiles.get( file );
+
             if ( current != null )
             {
-                lock = current;
+                log.debug( "read lock file exist continue wait" );
+                continue;
             }
-            return lock;
+
+            try
+            {
+                lock = new Lock( file, false );
+                createNewFileQuietly( file );
+                lock.openLock( false, timeout > 0 );
+                acquired = true;
+            }
+            catch ( FileNotFoundException e )
+            {
+                // can happen if an other thread has deleted the file
+                // close RandomAccessFile!!!
+                closeQuietly( lock.getRandomAccessFile() );
+                log.debug( "read Lock skip: {} try to create file", e.getMessage() );
+                createNewFileQuietly( file );
+            }
+            catch ( IOException e )
+            {
+                throw new FileLockException( e.getMessage(), e );
+            }
+            catch ( IllegalStateException e )
+            {
+                log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
+            }
         }
-        catch ( IOException e )
+        Lock current = lockFiles.putIfAbsent( file, lock );
+        if ( current != null )
         {
-            throw new FileLockException( e.getMessage(), e );
+            lock = current;
         }
+        return lock;
+
     }
 
 
@@ -150,85 +139,86 @@ public class DefaultFileLockManager
         StopWatch stopWatch = new StopWatch();
         boolean acquired = false;
 
+        Lock lock = null;
+
+        stopWatch.start();
+
+        while ( !acquired )
+        {
+
+            if ( timeout > 0 )
+            {
+                long delta = stopWatch.getTime();
+                log.debug( "delta {}, timeout {}", delta, timeout );
+                if ( delta > timeout )
+                {
+                    log.warn( "Cannot acquire read lock within {} millis. Will skip the file: {}", timeout, file );
+                    // we could not get the lock within the timeout period, so throw FileLockTimeoutException
+                    throw new FileLockTimeoutException();
+                }
+            }
+
+            Lock current = lockFiles.get( file );
+
+            try
+            {
+
+                if ( current != null )
+                {
+                    log.debug( "write lock file exist continue wait" );
+
+                    continue;
+                }
+                lock = new Lock( file, true );
+                createNewFileQuietly( file );
+                lock.openLock( true, timeout > 0 );
+                acquired = true;
+            }
+            catch ( FileNotFoundException e )
+            {
+                // can happen if an other thread has deleted the file
+                // close RandomAccessFile!!!
+                closeQuietly( lock.getRandomAccessFile() );
+
+                log.debug( "write Lock skip: {} try to create file", e.getMessage() );
+                createNewFileQuietly( file );
+            }
+            catch ( IOException e )
+            {
+                throw new FileLockException( e.getMessage(), e );
+            }
+            catch ( IllegalStateException e )
+            {
+                log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
+            }
+        }
+
+        Lock current = lockFiles.putIfAbsent( file, lock );
+        if ( current != null )
+        {
+            lock = current;
+        }
+
+        return lock;
+
+
+    }
+
+    private void closeQuietly( RandomAccessFile randomAccessFile )
+    {
+        if ( randomAccessFile == null )
+        {
+            return;
+        }
+
         try
         {
-            Lock lock = null;
-
-            stopWatch.start();
-
-            while ( !acquired )
-            {
-
-                if ( timeout > 0 )
-                {
-                    long delta = stopWatch.getTime();
-                    log.debug( "delta {}, timeout {}", delta, timeout );
-                    if ( delta > timeout )
-                    {
-                        log.warn( "Cannot acquire read lock within {} millis. Will skip the file: {}", timeout, file );
-                        // we could not get the lock within the timeout period, so throw FileLockTimeoutException
-                        throw new FileLockTimeoutException();
-                    }
-                }
-
-                lock = new Lock( file, true );
-
-                Lock current = lockFiles.get( file );
-
-                try
-                {
-
-                    if ( current != null )
-                    {
-                        log.debug( "write lock file exist continue wait" );
-                        // close RandomAccessFile!!!
-                        RandomAccessFile raf =  lock.getRandomAccessFile();
-                        if (raf != null)
-                        {
-                            raf.close();
-                        }
-                        continue;
-                    }
-
-                    createNewFileQuietly( file );
-                    lock.openLock( true, timeout > 0 );
-                    acquired = true;
-                }
-                catch ( FileNotFoundException e )
-                {
-                    // can happen if an other thread has deleted the file
-                    log.debug( "write Lock skip: {} try to create file", e.getMessage() );
-                    createNewFileQuietly( file );
-                }
-                catch ( IOException e )
-                {
-                    throw new FileLockException( e.getMessage(), e );
-                }
-                catch ( IllegalStateException e )
-                {
-                    log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
-                }
-            }
-
-            Lock current = lockFiles.putIfAbsent( file, lock );
-            if ( current != null )
-            {
-                lock = current;
-            }
-
-            return lock;
+            randomAccessFile.close();
         }
-
-        catch (
-
-            FileNotFoundException e
-
-            )
-
+        catch ( IOException e )
         {
-            throw new FileLockException( e.getMessage(), e );
+            // ignore
         }
-
     }
 
     private void createNewFileQuietly( File file )
