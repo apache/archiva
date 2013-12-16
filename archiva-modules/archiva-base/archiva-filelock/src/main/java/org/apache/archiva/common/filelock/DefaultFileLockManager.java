@@ -65,7 +65,7 @@ public class DefaultFileLockManager
         try
         {
 
-            Lock lock = new Lock( file, false );
+            Lock lock = null;
 
             stopWatch.start();
 
@@ -83,6 +83,8 @@ public class DefaultFileLockManager
                         throw new FileLockTimeoutException();
                     }
                 }
+
+                lock = new Lock( file, false );
 
                 Lock current = lockFiles.get( file );
 
@@ -143,12 +145,13 @@ public class DefaultFileLockManager
 
         try
         {
-            Lock lock = new Lock( file, true );
+            Lock lock = null;
 
             stopWatch.start();
 
             while ( !acquired )
             {
+
                 if ( timeout > 0 )
                 {
                     long delta = stopWatch.getTime();
@@ -160,6 +163,8 @@ public class DefaultFileLockManager
                         throw new FileLockTimeoutException();
                     }
                 }
+
+                lock = new Lock( file, true );
 
                 Lock current = lockFiles.get( file );
 
