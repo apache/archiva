@@ -136,6 +136,15 @@ public interface UserManager
     User findUser( String username )
         throws UserNotFoundException, UserManagerException;
 
+    /**
+     * Find a User using a User name.
+     *
+     * @param username the username to find.
+     * @param useCache to use or not caching
+     * @return the user.
+     * @since 2.2
+     * @throws UserNotFoundException if the user was not found.
+     */
     User findUser( String username, boolean useCache )
         throws UserNotFoundException, UserManagerException;
 
