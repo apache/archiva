@@ -32,6 +32,7 @@ import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserManagerListener;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.UserQuery;
@@ -357,6 +358,13 @@ public class SecuritySystemStub
                 throws UserNotFoundException
             {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public User findUser( String username, boolean useCache )
+                throws UserNotFoundException, UserManagerException
+            {
+                return null;
             }
 
             public User getGuestUser()

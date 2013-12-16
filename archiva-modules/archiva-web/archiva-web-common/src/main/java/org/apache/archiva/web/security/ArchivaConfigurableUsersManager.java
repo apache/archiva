@@ -188,12 +188,12 @@ public class ArchivaConfigurableUsersManager
         }
     }
 
-    public User findUser( String username )
-        throws UserManagerException
+    @Override
+    public User findUser( String username, boolean useCache )
+        throws UserNotFoundException, UserManagerException
     {
-
         User user = null;
-        if ( useUsersCache() )
+        if ( useUsersCache() && useCache )
         {
             user = usersCache.get( username );
             if ( user != null )
@@ -240,6 +240,12 @@ public class ArchivaConfigurableUsersManager
         }
 
         return user;
+    }
+
+    public User findUser( String username )
+        throws UserManagerException
+    {
+        return findUser( username, useUsersCache() );
     }
 
 
@@ -365,7 +371,10 @@ public class ArchivaConfigurableUsersManager
     public User updateUser( User user )
         throws UserNotFoundException, UserManagerException
     {
-        user = userManagerPerId.get( user.getUserManagerId() ).updateUser( user );
+
+        UserManager userManager = userManagerPerId.get( user.getUserManagerId() );
+
+        user = userManager.updateUser( user );
 
         if ( useUsersCache() )
         {
