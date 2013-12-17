@@ -1,4 +1,4 @@
-package org.apache.archiva.scheduler.repository.model;
+package org.apache.archiva.admin.mock;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,25 +19,27 @@ package org.apache.archiva.scheduler.repository.model;
  * under the License.
  */
 
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
-import org.apache.archiva.scheduler.ArchivaTaskScheduler;
+import org.apache.archiva.admin.model.beans.RepositoryGroup;
+import org.apache.archiva.scheduler.MergedRemoteIndexesScheduler;
+import org.springframework.stereotype.Service;
 
 /**
- * Scheduling component for archiva repositories
+ * @author Olivier Lamy
  */
-public interface RepositoryArchivaTaskScheduler
-    extends ArchivaTaskScheduler<RepositoryTask>
+@Service
+public class MockMergedRemoteIndexesScheduler
+    implements MergedRemoteIndexesScheduler
 {
 
-    boolean isProcessingRepositoryTask( String repositoryId );
+    @Override
+    public void schedule( RepositoryGroup repositoryGroup )
+    {
+        // no op
+    }
 
-    boolean isProcessingRepositoryTask( RepositoryTask task );
-
-    void queueTask( RepositoryTask task )
-        throws TaskQueueException;
-
-    boolean unQueueTask( RepositoryTask task )
-        throws TaskQueueException;
-
-
+    @Override
+    public void unschedule( RepositoryGroup repositoryGroup )
+    {
+        // no op
+    }
 }

@@ -1313,10 +1313,7 @@ public class ArchivaDavResourceFactory
 
             IndexMergerRequest indexMergerRequest = new IndexMergerRequest( authzRepos, true, repositoryGroupConfiguration.getId(),
                                     repositoryGroupConfiguration.getMergedIndexPath(),
-                                    repositoryGroupConfiguration.getMergedIndexTtl() ).mergedIndexDirectory(
-                tempRepoFile );
-
-
+                                    repositoryGroupConfiguration.getMergedIndexTtl() ).mergedIndexDirectory( tempRepoFile );
 
             MergedRemoteIndexesTask.MergedRemoteIndexesTaskRequest taskRequest =
                 new MergedRemoteIndexesTask.MergedRemoteIndexesTaskRequest(indexMergerRequest, indexMerger);

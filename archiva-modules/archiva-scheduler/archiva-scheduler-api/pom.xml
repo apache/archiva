@@ -51,6 +51,7 @@
             </Export-Package>
             <Import-Package>
               org.apache.archiva.redback.components.taskqueue,
+              org.apache.archiva.admin.model.beans
             </Import-Package>
           </instructions>
         </configuration>

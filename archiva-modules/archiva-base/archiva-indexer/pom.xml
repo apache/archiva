@@ -198,6 +198,7 @@
               org.apache.maven.index*,
               org.apache.archiva.redback.components.scheduler,
               org.quartz,
+              org.apache.archiva.scheduler,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>

@@ -27,7 +27,11 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ConfigurationEvent;
+import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.archiva.scheduler.MergedRemoteIndexesScheduler;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +42,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +65,9 @@ public class DefaultRepositoryGroupAdmin
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
+    @Inject
+    private MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler;
+
     private File groupsDirectory;
 
     @PostConstruct
@@ -71,7 +79,21 @@ public class DefaultRepositoryGroupAdmin
         {
             groupsDirectory.mkdirs();
         }
+
+        try
+        {
+            for ( RepositoryGroup repositoryGroup : getRepositoriesGroups() )
+            {
+                mergedRemoteIndexesScheduler.schedule( repositoryGroup );
+            }
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.warn( "fail to getRepositoriesGroups {}", e.getMessage(), e );
+        }
+
     }
+
 
     @Override
     public File getMergedIndexDirectory( String repositoryGroupId )
@@ -121,10 +143,12 @@ public class DefaultRepositoryGroupAdmin
         repositoryGroupConfiguration.setRepositories( repositoryGroup.getRepositories() );
         repositoryGroupConfiguration.setMergedIndexPath( repositoryGroup.getMergedIndexPath() );
         repositoryGroupConfiguration.setMergedIndexTtl( repositoryGroup.getMergedIndexTtl() );
+        repositoryGroupConfiguration.setCronExpression( repositoryGroup.getCronExpression() );
         Configuration configuration = getArchivaConfiguration().getConfiguration();
         configuration.addRepositoryGroup( repositoryGroupConfiguration );
         saveConfiguration( configuration );
         triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.ADD_REPO_GROUP, auditInformation );
+        mergedRemoteIndexesScheduler.schedule( repositoryGroup );
         return Boolean.TRUE;
     }
 
@@ -134,6 +158,8 @@ public class DefaultRepositoryGroupAdmin
         Configuration configuration = getArchivaConfiguration().getConfiguration();
         RepositoryGroupConfiguration repositoryGroupConfiguration =
             configuration.getRepositoryGroupsAsMap().get( repositoryGroupId );
+        mergedRemoteIndexesScheduler.unschedule(
+            new RepositoryGroup( repositoryGroupId, Collections.<String>emptyList() ) );
         if ( repositoryGroupConfiguration == null )
         {
             throw new RepositoryAdminException(
@@ -141,6 +167,7 @@ public class DefaultRepositoryGroupAdmin
         }
         configuration.removeRepositoryGroup( repositoryGroupConfiguration );
         triggerAuditEvent( repositoryGroupId, null, AuditEvent.DELETE_REPO_GROUP, auditInformation );
+
         return Boolean.TRUE;
     }
 
@@ -166,6 +193,7 @@ public class DefaultRepositoryGroupAdmin
         repositoryGroupConfiguration.setRepositories( repositoryGroup.getRepositories() );
         repositoryGroupConfiguration.setMergedIndexPath( repositoryGroup.getMergedIndexPath() );
         repositoryGroupConfiguration.setMergedIndexTtl( repositoryGroup.getMergedIndexTtl() );
+        repositoryGroupConfiguration.setCronExpression( repositoryGroup.getCronExpression() );
         configuration.addRepositoryGroup( repositoryGroupConfiguration );
 
         saveConfiguration( configuration );
@@ -173,6 +201,8 @@ public class DefaultRepositoryGroupAdmin
         {
             triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.MODIFY_REPO_GROUP, auditInformation );
         }
+        mergedRemoteIndexesScheduler.unschedule( repositoryGroup );
+        mergedRemoteIndexesScheduler.schedule( repositoryGroup );
         return Boolean.TRUE;
     }
 

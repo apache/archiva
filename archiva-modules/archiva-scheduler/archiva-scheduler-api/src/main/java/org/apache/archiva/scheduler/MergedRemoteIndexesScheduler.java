@@ -1,4 +1,4 @@
-package org.apache.archiva.scheduler.repository.model;
+package org.apache.archiva.scheduler;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,25 +19,22 @@ package org.apache.archiva.scheduler.repository.model;
  * under the License.
  */
 
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
-import org.apache.archiva.scheduler.ArchivaTaskScheduler;
+import org.apache.archiva.admin.model.beans.RepositoryGroup;
 
 /**
- * Scheduling component for archiva repositories
+ * @author Olivier Lamy
+ * @since 2.0.0
  */
-public interface RepositoryArchivaTaskScheduler
-    extends ArchivaTaskScheduler<RepositoryTask>
+public interface MergedRemoteIndexesScheduler
 {
 
-    boolean isProcessingRepositoryTask( String repositoryId );
+    /**
+     * will check if this repository group need to a schedule a cron to download/merge
+     * remote indexes
+     * @param repositoryGroup
+     */
+    void schedule( RepositoryGroup repositoryGroup );
 
-    boolean isProcessingRepositoryTask( RepositoryTask task );
-
-    void queueTask( RepositoryTask task )
-        throws TaskQueueException;
-
-    boolean unQueueTask( RepositoryTask task )
-        throws TaskQueueException;
-
+    void unschedule( RepositoryGroup repositoryGroup );
 
 }

@@ -19,14 +19,9 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
-import org.apache.archiva.redback.components.scheduler.AbstractJob;
 import org.apache.maven.index.context.IndexingContext;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
 
 /**
  * @author Olivier Lamy
@@ -58,7 +53,7 @@ public class MergedRemoteIndexesTask
         }
     }
 
-    public MergedRemoteIndexesTaskResult execute( )
+    public MergedRemoteIndexesTaskResult execute()
         throws IndexMergerException
     {
         IndexMerger indexMerger = mergedRemoteIndexesTaskRequest.indexMerger;
@@ -100,6 +95,34 @@ public class MergedRemoteIndexesTask
         {
             this.indexMerger = indexMerger;
         }
+
+        @Override
+        public boolean equals( Object o )
+        {
+            if ( this == o )
+            {
+                return true;
+            }
+            if ( o == null || getClass() != o.getClass() )
+            {
+                return false;
+            }
+
+            MergedRemoteIndexesTaskRequest that = (MergedRemoteIndexesTaskRequest) o;
+
+            if ( !indexMergerRequest.equals( that.indexMergerRequest ) )
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return indexMergerRequest.hashCode();
+        }
     }
 
     public static class MergedRemoteIndexesTaskResult
@@ -120,5 +143,33 @@ public class MergedRemoteIndexesTask
         {
             this.indexingContext = indexingContext;
         }
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( !( o instanceof MergedRemoteIndexesTask ) )
+        {
+            return false;
+        }
+
+        MergedRemoteIndexesTask that = (MergedRemoteIndexesTask) o;
+
+        if ( !mergedRemoteIndexesTaskRequest.equals( that.mergedRemoteIndexesTaskRequest ) )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return mergedRemoteIndexesTaskRequest.hashCode();
     }
 }
