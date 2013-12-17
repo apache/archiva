@@ -65,6 +65,8 @@ public class DefaultIndexMerger
 
     private List<TemporaryGroupIndex> temporaryGroupIndexes = new CopyOnWriteArrayList<TemporaryGroupIndex>();
 
+    private List<String> runningGroups = new CopyOnWriteArrayList<String>();
+
     @Inject
     public DefaultIndexMerger( PlexusSisuBridge plexusSisuBridge, MavenIndexerUtils mavenIndexerUtils )
         throws PlexusSisuBridgeException
@@ -77,19 +79,29 @@ public class DefaultIndexMerger
     public IndexingContext buildMergedIndex( IndexMergerRequest indexMergerRequest )
         throws IndexMergerException
     {
+        String groupId = indexMergerRequest.getGroupId();
+
+        if ( runningGroups.contains( groupId ) )
+        {
+            log.info( "skip build merge remote indexes for id: '{}' as already running", groupId );
+            return null;
+        }
+
+        runningGroups.add( groupId );
+
         StopWatch stopWatch = new StopWatch();
         stopWatch.reset();
         stopWatch.start();
 
-        File tempRepoFile = indexMergerRequest.getMergedIndexDirectory();
+        File mergedIndexDirectory = indexMergerRequest.getMergedIndexDirectory();
 
-        String tempRepoId = tempRepoFile.getName();
+        String tempRepoId = mergedIndexDirectory.getName();
 
         try
         {
-            File indexLocation = new File( tempRepoFile, indexMergerRequest.getMergedIndexPath() );
+            File indexLocation = new File( mergedIndexDirectory, indexMergerRequest.getMergedIndexPath() );
             IndexingContext indexingContext =
-                indexer.addIndexingContext( tempRepoId, tempRepoId, tempRepoFile, indexLocation, null, null,
+                indexer.addIndexingContext( tempRepoId, tempRepoId, mergedIndexDirectory, indexLocation, null, null,
                                             mavenIndexerUtils.getAllIndexCreators() );
 
             for ( String repoId : indexMergerRequest.getRepositoriesIds() )
@@ -108,8 +120,8 @@ public class DefaultIndexMerger
                 IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexLocation );
                 indexPacker.packIndex( request );
             }
-            temporaryGroupIndexes.add(
-                new TemporaryGroupIndex( tempRepoFile, tempRepoId, indexMergerRequest.getGroupId(), indexMergerRequest.getMergedIndexTtl() ) );
+            temporaryGroupIndexes.add( new TemporaryGroupIndex( mergedIndexDirectory, tempRepoId, groupId,
+                                                                indexMergerRequest.getMergedIndexTtl() ) );
             stopWatch.stop();
             log.info( "merged index for repos {} in {} s", indexMergerRequest.getRepositoriesIds(),
                       stopWatch.getTime() );
@@ -122,6 +134,10 @@ public class DefaultIndexMerger
         catch ( UnsupportedExistingLuceneIndexException e )
         {
             throw new IndexMergerException( e.getMessage(), e );
+        }
+        finally
+        {
+            runningGroups.remove( groupId );
         }
     }
 
