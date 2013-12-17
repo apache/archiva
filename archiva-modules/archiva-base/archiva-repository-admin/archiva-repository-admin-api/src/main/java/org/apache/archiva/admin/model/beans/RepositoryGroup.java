@@ -176,7 +176,7 @@ public class RepositoryGroup
         this.cronExpression = cronExpression;
     }
 
-    public RepositoryGroup mergedIndexCronExpression( String mergedIndexCronExpression )
+    public RepositoryGroup cronExpression( String mergedIndexCronExpression )
     {
         this.cronExpression = mergedIndexCronExpression;
         return this;

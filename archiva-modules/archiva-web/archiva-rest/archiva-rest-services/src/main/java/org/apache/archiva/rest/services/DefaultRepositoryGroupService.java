@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * @author Olivier Lamy
  */
-@Service( "repositoryGroupService#rest" )
+@Service("repositoryGroupService#rest")
 public class DefaultRepositoryGroupService
     extends AbstractRestService
     implements RepositoryGroupService
@@ -52,8 +52,8 @@ public class DefaultRepositoryGroupService
             for ( org.apache.archiva.admin.model.beans.RepositoryGroup repoGroup : repositoryGroupAdmin.getRepositoriesGroups() )
             {
                 repositoriesGroups.add( new RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
-                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() )
-                        .mergedIndexTtl( repoGroup.getMergedIndexTtl() ) );
+                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() ).mergedIndexTtl(
+                    repoGroup.getMergedIndexTtl() ).cronExpression( repoGroup.getCronExpression() ) );
             }
             return repositoriesGroups;
         }
@@ -83,8 +83,9 @@ public class DefaultRepositoryGroupService
         {
             return repositoryGroupAdmin.addRepositoryGroup(
                 new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
-                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() )
-                    .mergedIndexTtl( repoGroup.getMergedIndexTtl() ), getAuditInformation() );
+                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() ).mergedIndexTtl(
+                    repoGroup.getMergedIndexTtl() ).cronExpression( repoGroup.getCronExpression() ),
+                getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -99,8 +100,9 @@ public class DefaultRepositoryGroupService
         {
             return repositoryGroupAdmin.updateRepositoryGroup(
                 new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
-                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() )
-                    .mergedIndexTtl( repoGroup.getMergedIndexTtl() ), getAuditInformation() );
+                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() ).mergedIndexTtl(
+                    repoGroup.getMergedIndexTtl() ).cronExpression( repoGroup.getCronExpression() ),
+                getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {

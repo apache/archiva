@@ -84,7 +84,7 @@ public class DefaultRepositoryGroupAdmin
         {
             for ( RepositoryGroup repositoryGroup : getRepositoriesGroups() )
             {
-                mergedRemoteIndexesScheduler.schedule( repositoryGroup );
+                mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ) );
             }
         }
         catch ( RepositoryAdminException e )
@@ -112,7 +112,8 @@ public class DefaultRepositoryGroupAdmin
             repositoriesGroups.add( new RepositoryGroup( repositoryGroupConfiguration.getId(), new ArrayList<String>(
                 repositoryGroupConfiguration.getRepositories() ) ).mergedIndexPath(
                 repositoryGroupConfiguration.getMergedIndexPath() ).mergedIndexTtl(
-                repositoryGroupConfiguration.getMergedIndexTtl() ) );
+                repositoryGroupConfiguration.getMergedIndexTtl() ).cronExpression(
+                repositoryGroupConfiguration.getCronExpression() ) );
         }
 
         return repositoriesGroups;
@@ -148,7 +149,7 @@ public class DefaultRepositoryGroupAdmin
         configuration.addRepositoryGroup( repositoryGroupConfiguration );
         saveConfiguration( configuration );
         triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.ADD_REPO_GROUP, auditInformation );
-        mergedRemoteIndexesScheduler.schedule( repositoryGroup );
+        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ) );
         return Boolean.TRUE;
     }
 
@@ -202,7 +203,7 @@ public class DefaultRepositoryGroupAdmin
             triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.MODIFY_REPO_GROUP, auditInformation );
         }
         mergedRemoteIndexesScheduler.unschedule( repositoryGroup );
-        mergedRemoteIndexesScheduler.schedule( repositoryGroup );
+        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ) );
         return Boolean.TRUE;
     }
 

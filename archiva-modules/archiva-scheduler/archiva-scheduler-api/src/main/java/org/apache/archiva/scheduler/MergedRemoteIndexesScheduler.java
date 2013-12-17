@@ -21,6 +21,8 @@ package org.apache.archiva.scheduler;
 
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
 
+import java.io.File;
+
 /**
  * @author Olivier Lamy
  * @since 2.0.0
@@ -33,7 +35,7 @@ public interface MergedRemoteIndexesScheduler
      * remote indexes
      * @param repositoryGroup
      */
-    void schedule( RepositoryGroup repositoryGroup );
+    void schedule( RepositoryGroup repositoryGroup, File directory );
 
     void unschedule( RepositoryGroup repositoryGroup );
 

@@ -22,6 +22,7 @@ package org.apache.archiva.indexer.merger;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
 import org.apache.archiva.scheduler.MergedRemoteIndexesScheduler;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
@@ -52,23 +53,18 @@ public class DefaultMergedRemoteIndexesScheduler
     private TaskScheduler taskScheduler;
 
     @Inject
-    private RepositoryGroupAdmin repositoryGroupAdmin;
-
-    @Inject
     private IndexMerger indexMerger;
 
     private Map<String, ScheduledFuture> scheduledFutureMap = new ConcurrentHashMap<String, ScheduledFuture>();
 
     @Override
-    public void schedule( RepositoryGroup repositoryGroup )
+    public void schedule( RepositoryGroup repositoryGroup, File directory )
     {
-        if ( repositoryGroup.getCronExpression() == null )
+        if ( StringUtils.isEmpty( repositoryGroup.getCronExpression() ) )
         {
             return;
         }
         CronTrigger cronTrigger = new CronTrigger( repositoryGroup.getCronExpression() );
-
-        File directory = repositoryGroupAdmin.getMergedIndexDirectory( repositoryGroup.getId() );
 
         List<String> repositories = repositoryGroup.getRepositories();
 
@@ -78,6 +74,9 @@ public class DefaultMergedRemoteIndexesScheduler
 
         MergedRemoteIndexesTaskRequest taskRequest =
             new MergedRemoteIndexesTaskRequest( indexMergerRequest, indexMerger );
+
+        logger.info( "schedule merge remote index for group {} with cron {}", repositoryGroup.getId(),
+                     repositoryGroup.getCronExpression() );
 
         ScheduledFuture scheduledFuture =
             taskScheduler.schedule( new MergedRemoteIndexesTask( taskRequest ), cronTrigger );
