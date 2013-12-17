@@ -38,7 +38,7 @@ import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.indexer.merger.IndexMerger;
 import org.apache.archiva.indexer.merger.IndexMergerException;
 import org.apache.archiva.indexer.merger.IndexMergerRequest;
-import org.apache.archiva.indexer.merger.MergedRemoteIndexesTaskJob;
+import org.apache.archiva.indexer.merger.MergedRemoteIndexesTask;
 import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
@@ -72,7 +72,6 @@ import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.archiva.webdav.util.MimeTypes;
-import org.apache.archiva.webdav.util.RepositoryPathUtil;
 import org.apache.archiva.webdav.util.TemporaryGroupIndexSessionCleaner;
 import org.apache.archiva.webdav.util.WebdavMethodUtil;
 import org.apache.archiva.xml.XMLException;
@@ -1317,12 +1316,14 @@ public class ArchivaDavResourceFactory
                                     repositoryGroupConfiguration.getMergedIndexTtl() ).mergedIndexDirectory(
                 tempRepoFile );
 
-            MergedRemoteIndexesTaskJob job = new MergedRemoteIndexesTaskJob();
 
-            MergedRemoteIndexesTaskJob.MergedRemoteIndexesTaskRequest taskRequest =
-                new MergedRemoteIndexesTaskJob.MergedRemoteIndexesTaskRequest(indexMergerRequest, indexMerger);
 
-            IndexingContext indexingContext = job.execute( taskRequest ).getIndexingContext();
+            MergedRemoteIndexesTask.MergedRemoteIndexesTaskRequest taskRequest =
+                new MergedRemoteIndexesTask.MergedRemoteIndexesTaskRequest(indexMergerRequest, indexMerger);
+
+            MergedRemoteIndexesTask job = new MergedRemoteIndexesTask( taskRequest );
+
+            IndexingContext indexingContext = job.execute().getIndexingContext();
 
             File mergedRepoDir = indexingContext.getIndexDirectoryFile();
             TemporaryGroupIndex temporaryGroupIndex =

@@ -32,20 +32,33 @@ import java.io.File;
  * @author Olivier Lamy
  * @since 2.0.0
  */
-public class MergedRemoteIndexesTaskJob
-    extends AbstractJob
+public class MergedRemoteIndexesTask
+    implements Runnable
 {
 
     private Logger logger = LoggerFactory.getLogger( getClass() );
 
-    @Override
-    public void execute( JobExecutionContext context )
-        throws JobExecutionException
-    {
+    private MergedRemoteIndexesTaskRequest mergedRemoteIndexesTaskRequest;
 
+    public MergedRemoteIndexesTask( MergedRemoteIndexesTaskRequest mergedRemoteIndexesTaskRequest )
+    {
+        this.mergedRemoteIndexesTaskRequest = mergedRemoteIndexesTaskRequest;
     }
 
-    public MergedRemoteIndexesTaskResult execute( MergedRemoteIndexesTaskRequest mergedRemoteIndexesTaskRequest )
+    @Override
+    public void run()
+    {
+        try
+        {
+            this.execute();
+        }
+        catch ( IndexMergerException e )
+        {
+            logger.error( e.getMessage(), e );
+        }
+    }
+
+    public MergedRemoteIndexesTaskResult execute( )
         throws IndexMergerException
     {
         IndexMerger indexMerger = mergedRemoteIndexesTaskRequest.indexMerger;
