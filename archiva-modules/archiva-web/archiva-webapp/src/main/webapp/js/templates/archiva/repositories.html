@@ -1449,6 +1449,13 @@
                        data-bind="value: repositoryGroup.mergedIndexTtl"/>
             </div>
           </div>
+          <div class="control-group">
+            <label class="control-label" for="cronExpression">${$.i18n.prop('repository.group.cronExpression')}</label>
+            <div class="controls">
+              <input type="text" class="input-large" id="cronExpression" name="cronExpression"
+                     data-bind="value: repositoryGroup.cronExpression"/>
+            </div>
+          </div>
           <div>
             <a href="${window.archivaRuntimeInfo.baseUrl}/repository/${repositoryGroup.id()}" target="_blank">
             {{if repositoryGroup.id()}}

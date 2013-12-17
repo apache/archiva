@@ -55,7 +55,7 @@ public class RepositoryGroup
      * default model value is empty so none
      * @since 2.0.0
      */
-    private String mergedIndexCronExpression;
+    private String cronExpression;
 
     public RepositoryGroup()
     {
@@ -166,19 +166,19 @@ public class RepositoryGroup
         return this;
     }
 
-    public String getMergedIndexCronExpression()
+    public String getCronExpression()
     {
-        return mergedIndexCronExpression;
+        return cronExpression;
     }
 
-    public void setMergedIndexCronExpression( String mergedIndexCronExpression )
+    public void setCronExpression( String cronExpression )
     {
-        this.mergedIndexCronExpression = mergedIndexCronExpression;
+        this.cronExpression = cronExpression;
     }
 
     public RepositoryGroup mergedIndexCronExpression( String mergedIndexCronExpression )
     {
-        this.mergedIndexCronExpression = mergedIndexCronExpression;
+        this.cronExpression = mergedIndexCronExpression;
         return this;
     }
 
@@ -215,7 +215,7 @@ public class RepositoryGroup
         sb.append( ", repositories=" ).append( repositories );
         sb.append( ", mergedIndexPath='" ).append( mergedIndexPath ).append( '\'' );
         sb.append( ", mergedIndexTtl=" ).append( mergedIndexTtl );
-        sb.append( ", mergedIndexCronExpression='" ).append( mergedIndexCronExpression ).append( '\'' );
+        sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

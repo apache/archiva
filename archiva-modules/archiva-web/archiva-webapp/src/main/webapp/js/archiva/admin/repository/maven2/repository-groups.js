@@ -20,7 +20,7 @@ define("archiva/admin/repository/maven2/repository-groups",["jquery","jquery.ui"
   ,"knockout.simpleGrid","knockout.sortable","archiva/admin/repository/maven2/repositories"],
 function(jquery,jqueryUi,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 
-  RepositoryGroup=function(id,repositories,mergedIndexPath,mergedIndexTtl){
+  RepositoryGroup=function(id,repositories,mergedIndexPath,mergedIndexTtl,cronExpression){
 
     var self=this;
 
@@ -43,6 +43,9 @@ function(jquery,jqueryUi,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
     // to store managedRepositories description not sended to server
     this.managedRepositories=ko.observableArray([]);
     this.managedRepositories.subscribe(function(newValue){self.modified(true)});
+
+    this.cronExpression = ko.observable(cronExpression);
+    this.cronExpression.subscribe(function(newValue){self.modified(true)});
 
     this.modified=ko.observable(false);
   }
@@ -223,7 +226,9 @@ function(jquery,jqueryUi,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
       var userMessages=$("#user-messages");
       userMessages.html(mediumSpinnerImg());
       var valid = $("#main-content").find("#repository-group-edit-form" ).valid();
-
+      if (valid==false) {
+        return;
+      }
 
       $("#repository-group-save" ).button('loading');
       $.ajax("restServices/archivaServices/repositoryGroupService/updateRepositoryGroup",
@@ -395,15 +400,22 @@ function(jquery,jqueryUi,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
         rules: {
             id: {
               required: true
-              },
+            },
             mergedIndexPath:{
               required:true
+            },
+          cronExpression: {
+              remote: {
+                url: "restServices/archivaServices/commonServices/validateCronExpression",
+                type: "get"
             }
+          }
         },
         showErrors: function(validator, errorMap, errorList) {
            customShowError("#main-content #repository-group-edit-form",validator,errorMap,errorMap);
         }
     });
+    validator.settings.messages["cronExpression"]=$.i18n.prop("cronExpression.notvalid");
     return validator;
   }
 
@@ -418,7 +430,8 @@ function(jquery,jqueryUi,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
   }
 
   mapRepositoryGroup=function(data){
-    return new RepositoryGroup(data.id, mapStringArray(data.repositories),data.mergedIndexPath,data.mergedIndexTtl);
+    return new RepositoryGroup(data.id, mapStringArray(data.repositories),data.mergedIndexPath
+        ,data.mergedIndexTtl,data.cronExpression);
   }
 
 });
