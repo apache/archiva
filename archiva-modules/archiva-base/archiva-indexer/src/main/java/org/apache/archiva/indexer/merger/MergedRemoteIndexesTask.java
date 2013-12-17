@@ -56,93 +56,12 @@ public class MergedRemoteIndexesTask
     public MergedRemoteIndexesTaskResult execute()
         throws IndexMergerException
     {
-        IndexMerger indexMerger = mergedRemoteIndexesTaskRequest.indexMerger;
+        IndexMerger indexMerger = mergedRemoteIndexesTaskRequest.getIndexMerger();
 
         IndexingContext indexingContext =
-            indexMerger.buildMergedIndex( mergedRemoteIndexesTaskRequest.indexMergerRequest );
+            indexMerger.buildMergedIndex( mergedRemoteIndexesTaskRequest.getIndexMergerRequest() );
 
         return new MergedRemoteIndexesTaskResult( indexingContext );
-    }
-
-    public static class MergedRemoteIndexesTaskRequest
-    {
-        private IndexMergerRequest indexMergerRequest;
-
-        private IndexMerger indexMerger;
-
-        public MergedRemoteIndexesTaskRequest( IndexMergerRequest indexMergerRequest, IndexMerger indexMerger )
-        {
-            this.indexMergerRequest = indexMergerRequest;
-            this.indexMerger = indexMerger;
-        }
-
-        public IndexMergerRequest getIndexMergerRequest()
-        {
-            return indexMergerRequest;
-        }
-
-        public void setIndexMergerRequest( IndexMergerRequest indexMergerRequest )
-        {
-            this.indexMergerRequest = indexMergerRequest;
-        }
-
-        public IndexMerger getIndexMerger()
-        {
-            return indexMerger;
-        }
-
-        public void setIndexMerger( IndexMerger indexMerger )
-        {
-            this.indexMerger = indexMerger;
-        }
-
-        @Override
-        public boolean equals( Object o )
-        {
-            if ( this == o )
-            {
-                return true;
-            }
-            if ( o == null || getClass() != o.getClass() )
-            {
-                return false;
-            }
-
-            MergedRemoteIndexesTaskRequest that = (MergedRemoteIndexesTaskRequest) o;
-
-            if ( !indexMergerRequest.equals( that.indexMergerRequest ) )
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return indexMergerRequest.hashCode();
-        }
-    }
-
-    public static class MergedRemoteIndexesTaskResult
-    {
-        private IndexingContext indexingContext;
-
-        public MergedRemoteIndexesTaskResult( IndexingContext indexingContext )
-        {
-            this.indexingContext = indexingContext;
-        }
-
-        public IndexingContext getIndexingContext()
-        {
-            return indexingContext;
-        }
-
-        public void setIndexingContext( IndexingContext indexingContext )
-        {
-            this.indexingContext = indexingContext;
-        }
     }
 
     @Override

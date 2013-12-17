@@ -39,6 +39,7 @@ import org.apache.archiva.indexer.merger.IndexMerger;
 import org.apache.archiva.indexer.merger.IndexMergerException;
 import org.apache.archiva.indexer.merger.IndexMergerRequest;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesTask;
+import org.apache.archiva.indexer.merger.MergedRemoteIndexesTaskRequest;
 import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
@@ -1315,8 +1316,8 @@ public class ArchivaDavResourceFactory
                                     repositoryGroupConfiguration.getMergedIndexPath(),
                                     repositoryGroupConfiguration.getMergedIndexTtl() ).mergedIndexDirectory( tempRepoFile );
 
-            MergedRemoteIndexesTask.MergedRemoteIndexesTaskRequest taskRequest =
-                new MergedRemoteIndexesTask.MergedRemoteIndexesTaskRequest(indexMergerRequest, indexMerger);
+            MergedRemoteIndexesTaskRequest taskRequest =
+                new MergedRemoteIndexesTaskRequest(indexMergerRequest, indexMerger);
 
             MergedRemoteIndexesTask job = new MergedRemoteIndexesTask( taskRequest );
 

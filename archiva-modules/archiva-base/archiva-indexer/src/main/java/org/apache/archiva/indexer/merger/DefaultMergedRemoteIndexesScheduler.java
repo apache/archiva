@@ -76,8 +76,8 @@ public class DefaultMergedRemoteIndexesScheduler
             new IndexMergerRequest( repositories, true, repositoryGroup.getId(), repositoryGroup.getMergedIndexPath(),
                                     repositoryGroup.getMergedIndexTtl() ).mergedIndexDirectory( directory );
 
-        MergedRemoteIndexesTask.MergedRemoteIndexesTaskRequest taskRequest =
-            new MergedRemoteIndexesTask.MergedRemoteIndexesTaskRequest( indexMergerRequest, indexMerger );
+        MergedRemoteIndexesTaskRequest taskRequest =
+            new MergedRemoteIndexesTaskRequest( indexMergerRequest, indexMerger );
 
         ScheduledFuture scheduledFuture =
             taskScheduler.schedule( new MergedRemoteIndexesTask( taskRequest ), cronTrigger );
