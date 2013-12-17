@@ -66,7 +66,7 @@ $.ajax({
               "jquery.ui.widget": "jquery.ui.widget-1.9.2",
               "jquery.cookie": "jquery.cookie.1.0.0",
               "bootstrap": "bootstrap.2.2.2",
-              "jquery.validate": "jquery.validate-1.11.1",
+              "jquery.validate": "jquery.validate.1.11.1.min",
               "jquery.json": "jquery.json-2.3.min",
               "knockout": "knockout-2.3.0.debug",
               "knockout.simpleGrid": "knockout.simpleGrid",
