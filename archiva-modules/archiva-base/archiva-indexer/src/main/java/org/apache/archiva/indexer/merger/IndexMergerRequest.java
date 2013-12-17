@@ -47,6 +47,8 @@ public class IndexMergerRequest
 
     private File mergedIndexDirectory;
 
+    private boolean temporary;
+
     public IndexMergerRequest( Collection<String> repositoriesIds, boolean packIndex, String groupId )
     {
         this.repositoriesIds = repositoriesIds;
@@ -133,6 +135,22 @@ public class IndexMergerRequest
         return this;
     }
 
+    public boolean isTemporary()
+    {
+        return temporary;
+    }
+
+    public void setTemporary( boolean temporary )
+    {
+        this.temporary = temporary;
+    }
+
+
+    public IndexMergerRequest temporary( boolean temporary )
+    {
+        this.temporary = temporary;
+        return this;
+    }
 
     @Override
     public String toString()
@@ -143,7 +161,8 @@ public class IndexMergerRequest
         sb.append( ", groupId='" ).append( groupId ).append( '\'' );
         sb.append( ", mergedIndexPath='" ).append( mergedIndexPath ).append( '\'' );
         sb.append( ", mergedIndexTtl=" ).append( mergedIndexTtl );
-        sb.append( ", mergedIndexDirectory='" ).append( mergedIndexDirectory ).append( '\'' );
+        sb.append( ", mergedIndexDirectory=" ).append( mergedIndexDirectory );
+        sb.append( ", temporary=" ).append( temporary );
         sb.append( '}' );
         return sb.toString();
     }

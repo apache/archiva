@@ -20,11 +20,15 @@ package org.apache.archiva.indexer.merger;
 
 import com.google.common.io.Files;
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.RepositoryGroup;
+import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
@@ -53,9 +57,6 @@ public class DefaultIndexMerger
 {
 
     private Logger log = LoggerFactory.getLogger( getClass() );
-
-    @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     private MavenIndexerUtils mavenIndexerUtils;
 
@@ -120,8 +121,12 @@ public class DefaultIndexMerger
                 IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexLocation );
                 indexPacker.packIndex( request );
             }
-            temporaryGroupIndexes.add( new TemporaryGroupIndex( mergedIndexDirectory, tempRepoId, groupId,
-                                                                indexMergerRequest.getMergedIndexTtl() ) );
+
+            if ( indexMergerRequest.isTemporary() )
+            {
+                temporaryGroupIndexes.add( new TemporaryGroupIndex( mergedIndexDirectory, tempRepoId, groupId,
+                                                                    indexMergerRequest.getMergedIndexTtl() ) );
+            }
             stopWatch.stop();
             log.info( "merged index for repos {} in {} s", indexMergerRequest.getRepositoriesIds(),
                       stopWatch.getTime() );
