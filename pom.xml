@@ -1883,9 +1883,15 @@
     </profile>
 
     <profile>
+      <!--
       <id>jdk-1.7</id>
+      -->
+      <id>cassandra</id>
       <activation>
-        <jdk>1.7</jdk>
+        <property>
+          <name>cassandra</name>
+          <value>true</value>
+        </property>
       </activation>
       <modules>
         <module>archiva-modules/plugins/metadata-store-cassandra</module>
