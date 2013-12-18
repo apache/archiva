@@ -35,6 +35,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.fest.assertions.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +58,6 @@ import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class DownloadRemoteIndexTaskTest
-    extends TestCase
 {
 
     private Server server;
@@ -81,7 +81,6 @@ public class DownloadRemoteIndexTaskTest
     public void initialize()
         throws Exception
     {
-        super.setUp();
         server = new Server( 0 );
         createContext( server, new File( "src/test/" ) );
 
@@ -109,7 +108,6 @@ public class DownloadRemoteIndexTaskTest
         throws Exception
     {
         server.stop();
-        super.tearDown();
     }
 
     @Test
@@ -141,7 +139,7 @@ public class DownloadRemoteIndexTaskTest
         FlatSearchResponse response = nexusIndexer.searchFlat( rq );
 
         log.info( "returned hit count:{}", response.getReturnedHitsCount() );
-        assertEquals( 8, response.getReturnedHitsCount() );
+        Assertions.assertThat( response.getReturnedHitsCount() ).isEqualTo( 8 );
     }
 
 
