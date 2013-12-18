@@ -19,7 +19,6 @@ package org.apache.archiva;
  * under the License.
  */
 
-import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.redback.rest.api.services.RoleManagementService;
 import org.apache.archiva.remotedownload.AbstractDownloadTest;
@@ -29,12 +28,7 @@ import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.apache.maven.wagon.repository.Repository;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,14 +48,6 @@ public class DownloadSnapshotTest
     extends AbstractDownloadTest
 {
     protected Logger log = LoggerFactory.getLogger( getClass() );
-
-    public Server redirectServer = null;
-
-    public int redirectPort;
-
-    public Server repoServer = null;
-
-    public int repoServerPort;
 
     @BeforeClass
     public static void setAppServerBase()
