@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.channels.ClosedChannelException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -35,7 +36,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author Olivier Lamy
  * @since 2.0.0
  */
-@Service( "fileLockManager#default" )
+@Service("fileLockManager#default")
 public class DefaultFileLockManager
     implements FileLockManager
 {
@@ -255,6 +256,11 @@ public class DefaultFileLockManager
         {
             lockFiles.remove( lock.getFile() );
             lock.close();
+        }
+        catch ( ClosedChannelException e )
+        {
+            // skip this one
+            log.debug( "ignore ClosedChannelException: {}", e.getMessage() );
         }
         catch ( IOException e )
         {
