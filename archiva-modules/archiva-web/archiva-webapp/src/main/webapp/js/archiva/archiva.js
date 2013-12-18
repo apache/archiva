@@ -92,13 +92,8 @@ $.ajax({
               "redback.templates": "redback/redback-tmpl",
               "archiva.cookie-information":"archiva/cookie-information",
               "archiva.templates": "archiva/main-tmpl",
-             // "archiva.repositories": "archiva/repositories",
-             // "archiva.network-proxies": "archiva/network-proxies",
-             // "archiva.proxy-connectors": "archiva/proxy-connectors",
-             // "archiva.repository-groups": "archiva/repository-groups",
               "archiva.artifacts-management": "archiva/artifacts-management",
               "archiva.search": "archiva/search",
-             // "archiva.proxy-connectors-rules": "archiva/proxy-connectors-rules",
               "archiva.docs": "archiva/docs",
               "archiva.main": "archiva/main"
           }
