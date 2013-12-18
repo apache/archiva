@@ -146,6 +146,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid) {
            var viewModel = new RoleViewModel(role);
            ko.applyBindings(viewModel,mainContent.find("#roles-view-tabs-content #role-edit").get(0));
            activateRoleEditTab();
+           activateRoleUsersListTab();
          }
         }
       );
