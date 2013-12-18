@@ -23,6 +23,8 @@ import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.scheduler.MergedRemoteIndexesScheduler;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+
 /**
  * @author Olivier Lamy
  */
@@ -32,7 +34,7 @@ public class MockMergedRemoteIndexesScheduler
 {
 
     @Override
-    public void schedule( RepositoryGroup repositoryGroup )
+    public void schedule( RepositoryGroup repositoryGroup, File directory )
     {
         // no op
     }
