@@ -95,9 +95,6 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
       url: 'restServices/redbackServices/loginService/logout'
     } ).always(
         function(){
-          // go to welcome on logout
-          //window.sammyArchivaApplication.setLocation("#welcome");
-          //$.log("displayWelcome");
           window.sammyArchivaApplication.setLocation("#welcome");
           displayWelcome();
         }
@@ -772,9 +769,9 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
   displayWelcome=function(){
     checkCreateAdminLink(function(){
-      //window.sammyArchivaApplication.setLocation("#search")
       $("#main-content" ).html($("#welcome" ).tmpl({runtimeInfo: window.archivaRuntimeInfo}));
       drawQuickSearchAutocomplete("#quick-search-autocomplete-welcome");
+      updateAppearanceToolBar();
     });
   };
 
