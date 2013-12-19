@@ -25,7 +25,7 @@
 
 File Locking configuration
 
-  Some race condition can happen when retrieving a file from a Proxy with multiple threads.
+  Some race condition can happen when retrieving the same file in the same time from a Proxy with multiple threads.
 
   Currently it's not activated per default
 
