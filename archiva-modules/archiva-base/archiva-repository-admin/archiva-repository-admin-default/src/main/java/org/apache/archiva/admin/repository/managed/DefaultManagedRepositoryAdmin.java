@@ -730,26 +730,6 @@ public class DefaultManagedRepositoryAdmin
     }
 
 
-    private void addRepositoryRoles( ManagedRepository newRepository )
-        throws RoleManagerException
-    {
-        String repoId = newRepository.getId();
-
-        // TODO: double check these are configured on start up
-        // TODO: belongs in the business logic
-
-        if ( !getRoleManager().templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
-        {
-            getRoleManager().createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
-        }
-
-        if ( !getRoleManager().templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
-        {
-            getRoleManager().createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
-        }
-    }
-
-
     private void addRepositoryRoles( String repoId )
         throws RoleManagerException
     {
