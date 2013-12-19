@@ -575,17 +575,19 @@ public class DefaultFileUploadService
     private void copyFile( File sourceFile, File targetPath, String targetFilename, boolean fixChecksums )
         throws IOException
     {
-        FileOutputStream out = new FileOutputStream( new File( targetPath, targetFilename ) );
-        FileInputStream input = new FileInputStream( sourceFile );
+        FileOutputStream out = null;
+        FileInputStream input = null;
 
         try
         {
+            out = new FileOutputStream( new File( targetPath, targetFilename ) );
+            input = new FileInputStream( sourceFile );
             IOUtils.copy( input, out );
         }
         finally
         {
-            out.close();
-            input.close();
+            IOUtils.closeQuietly( out );
+            IOUtils.closeQuietly( input );
         }
 
         if ( fixChecksums )
