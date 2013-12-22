@@ -124,8 +124,6 @@ public class DownloadArtifactsTest
         this.redirectPort = redirectServer.getConnectors()[0].getLocalPort();
         log.info( "redirect server port {}", redirectPort );
 
-
-
     }
 
     @After

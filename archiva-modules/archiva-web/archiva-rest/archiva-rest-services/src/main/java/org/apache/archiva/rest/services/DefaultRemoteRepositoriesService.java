@@ -37,6 +37,8 @@ import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.providers.http.AbstractHttpClientWagon;
 import org.apache.maven.wagon.providers.http.HttpConfiguration;
 import org.apache.maven.wagon.providers.http.HttpMethodConfiguration;
+import org.apache.maven.wagon.providers.http.HttpWagon;
+import org.apache.maven.wagon.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -170,7 +172,7 @@ public class DefaultRemoteRepositoriesService
 
             wagon.setReadTimeout( remoteRepository.getRemoteDownloadTimeout() * 1000 );
             wagon.setTimeout( remoteRepository.getTimeout() * 1000 );
-
+            HttpWagon foo;
             if ( wagon instanceof AbstractHttpClientWagon )
             {
                 HttpConfiguration httpConfiguration = new HttpConfiguration();
@@ -181,37 +183,14 @@ public class DefaultRemoteRepositoriesService
                 AbstractHttpClientWagon.class.cast( wagon ).setHttpConfiguration( httpConfiguration );
             }
 
+            wagon.connect( new Repository( remoteRepository.getId(), remoteRepository.getUrl() ) );
+
             // we only check connectivity as remote repo can be empty
             wagon.getFileList( "/" );
 
             return Boolean.TRUE;
         }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
-        }
-        catch ( MalformedURLException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
-        }
-        catch ( WagonFactoryException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
-        }
-        catch ( TransferFailedException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
-        }
-        catch ( ResourceDoesNotExistException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
-        }
-        catch ( AuthorizationException e )
+        catch ( Exception e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );

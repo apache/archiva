@@ -1,4 +1,4 @@
-package org.apache.archiva;
+package org.apache.archiva.remotedownload;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,7 +21,6 @@ package org.apache.archiva;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.redback.rest.api.services.RoleManagementService;
-import org.apache.archiva.remotedownload.AbstractDownloadTest;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
