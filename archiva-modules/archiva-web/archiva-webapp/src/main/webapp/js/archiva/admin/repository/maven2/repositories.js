@@ -1217,12 +1217,31 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
               ],
               pageSize: 5,
               gridUpdateCallBack: function(){
-                //$("#main-content" ).find("#remote-repositories-table").find("[title]").tooltip();
+                $.log("remote repositories gridUpdateCallBack");
+
+
+                mainContent.find(".remote-check").each(function( index ) {
+                  var repoId = $( this ).attr("id");
+                  console.log( index + ": " + repoId);
+                  $.ajax({
+                           url: "restServices/archivaServices/remoteRepositoriesService/checkRemoteConnectivity/"+repoId.substringAfterFirst("remote-check-"),
+                           type: "GET",
+                           success: function(result){
+                             if(result="true"){
+                               mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-clear.png" )
+                             } else {
+                               mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-severe-alert-16-16.png" )
+                             }
+                           }
+                         })
+                });
+
+
               }
             });
             var mainContent = $("#main-content");
             ko.applyBindings(remoteRepositoriesViewModel,mainContent.find("#remote-repositories-view").get(0));
-            mainContent.find("#remote-repositories-pills #remote-repositories-view-a").tab('show')
+            mainContent.find("#remote-repositories-pills #remote-repositories-view-a").tab('show');
             removeMediumSpinnerImg(mainContent.find("#remote-repositories-content"));
             activatePopoverDoc();
             if(successFnRemoteRepositories){

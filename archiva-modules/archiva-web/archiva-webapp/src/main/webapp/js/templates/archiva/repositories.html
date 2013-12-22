@@ -485,6 +485,7 @@
     <th>${$.i18n.prop('modified')}</th>
     <th>${$.i18n.prop('description')}</th>
     <th>${$.i18n.prop('remoterepository.downloadremoteindex')}</th>
+    <th>${$.i18n.prop('remoterepository.remotecheck')}</th>
   </tr>
   </thead>
   <tbody>
@@ -530,6 +531,11 @@
                   <i class="icon-refresh icon-white"/>
                 </span>
       </a>
+    </td>
+    <td>
+      <img class="remote-check" id="remote-check-${row.id()}" src="images/small-spinner.gif"/>
+      weather-severe-alert-16-16.png
+
     </td>
   </tr>
   {{/each}}
