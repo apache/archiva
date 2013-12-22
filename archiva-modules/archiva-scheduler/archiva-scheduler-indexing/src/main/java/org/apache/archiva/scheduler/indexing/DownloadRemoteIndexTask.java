@@ -135,19 +135,18 @@ public class DownloadRemoteIndexTask
             final StreamWagon wagon = (StreamWagon) wagonFactory.getWagon(
                 new WagonFactoryRequest( wagonProtocol, this.remoteRepository.getExtraHeaders() ).networkProxy(
                     this.networkProxy ) );
-            int timeoutInMilliseconds = remoteRepository.getTimeout() * 1000;
             // FIXME olamy having 2 config values
-            wagon.setReadTimeout( timeoutInMilliseconds );
-            wagon.setTimeout( timeoutInMilliseconds );
+            wagon.setReadTimeout( remoteRepository.getRemoteDownloadTimeout() * 1000 );
+            wagon.setTimeout( remoteRepository.getTimeout() * 1000 );
 
             if ( wagon instanceof AbstractHttpClientWagon )
             {
                 HttpConfiguration httpConfiguration = new HttpConfiguration();
                 HttpMethodConfiguration httpMethodConfiguration = new HttpMethodConfiguration();
                 httpMethodConfiguration.setUsePreemptive( true );
-                httpMethodConfiguration.setReadTimeout( timeoutInMilliseconds );
+                httpMethodConfiguration.setReadTimeout( remoteRepository.getRemoteDownloadTimeout() * 1000 );
                 httpConfiguration.setGet( httpMethodConfiguration );
-                ( (AbstractHttpClientWagon) wagon ).setHttpConfiguration( httpConfiguration );
+                AbstractHttpClientWagon.class.cast( wagon ).setHttpConfiguration( httpConfiguration );
             }
 
             wagon.addTransferListener( new DownloadListener() );
