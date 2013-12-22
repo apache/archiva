@@ -1224,16 +1224,18 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
                   var repoId = $( this ).attr("id");
                   console.log( index + ": " + repoId);
                   $.ajax({
-                           url: "restServices/archivaServices/remoteRepositoriesService/checkRemoteConnectivity/"+repoId.substringAfterFirst("remote-check-"),
-                           type: "GET",
-                           success: function(result){
-                             if(result="true"){
-                               mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-clear.png" )
-                             } else {
-                               mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-severe-alert-16-16.png" )
-                             }
-                           }
-                         })
+                    url: "restServices/archivaServices/remoteRepositoriesService/checkRemoteConnectivity/"+repoId.substringAfterFirst("remote-check-"),
+                    type: "GET",
+                    dataType: 'text',
+                    success: function(result){
+                      $.log("result:"+result);
+                      if(result=="true"){
+                        mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-clear.png" )
+                      } else {
+                        mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-severe-alert-16-16.png" )
+                      }
+                    }
+                  });
                 });
 
 

@@ -171,15 +171,16 @@ public class DefaultRemoteRepositoriesService
                 new WagonFactoryRequest( wagonProtocol, remoteRepository.getExtraHeaders() ).networkProxy(
                     networkProxy ) );
 
-            wagon.setReadTimeout( remoteRepository.getRemoteDownloadTimeout() * 1000 );
-            wagon.setTimeout( remoteRepository.getTimeout() * 1000 );
-            HttpWagon foo;
+            // hardcoded value as it's a check of the remote repo connectivity
+            wagon.setReadTimeout( 4000 );
+            wagon.setTimeout( 3000 );
+
             if ( wagon instanceof AbstractHttpClientWagon )
             {
                 HttpConfiguration httpConfiguration = new HttpConfiguration();
                 HttpMethodConfiguration httpMethodConfiguration = new HttpMethodConfiguration();
                 httpMethodConfiguration.setUsePreemptive( true );
-                httpMethodConfiguration.setReadTimeout( remoteRepository.getRemoteDownloadTimeout() * 1000 );
+                httpMethodConfiguration.setReadTimeout( 4000 );
                 httpConfiguration.setGet( httpMethodConfiguration );
                 AbstractHttpClientWagon.class.cast( wagon ).setHttpConfiguration( httpConfiguration );
             }
