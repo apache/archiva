@@ -1,4 +1,5 @@
 package org.apache.archiva.rest.services;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -189,6 +190,11 @@ public class DefaultRemoteRepositoriesService
             wagon.getFileList( "/" );
 
             return Boolean.TRUE;
+        }
+        catch ( TransferFailedException e )
+        {
+            log.info( "TransferFailedException :{}", e.getMessage() );
+            return Boolean.FALSE;
         }
         catch ( Exception e )
         {
