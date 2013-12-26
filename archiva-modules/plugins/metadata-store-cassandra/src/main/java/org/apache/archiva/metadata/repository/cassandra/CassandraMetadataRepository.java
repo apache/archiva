@@ -23,7 +23,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.netflix.astyanax.entitystore.EntityManager;
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.FacetedMetadata;
@@ -42,6 +41,7 @@ import org.apache.archiva.metadata.repository.cassandra.model.Project;
 import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
 import org.apache.archiva.metadata.repository.cassandra.model.Repository;
 import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -870,7 +870,7 @@ public class CassandraMetadataRepository
         if ( projectVersionMetadataModel == null )
         {
             projectVersionMetadataModel =
-                new BeanReplicator().replicateBean( versionMetadata, ProjectVersionMetadataModel.class );
+                getModelMapper().map( versionMetadata, ProjectVersionMetadataModel.class );
             projectVersionMetadataModel.setRowId( key );
         }
         projectVersionMetadataModel.setProjectId( projectId );
@@ -1162,7 +1162,7 @@ public class CassandraMetadataRepository
 
         for ( ArtifactMetadataModel model : artifactMetadataModels )
         {
-            ArtifactMetadata artifactMetadata = new BeanReplicator().replicateBean( model, ArtifactMetadata.class );
+            ArtifactMetadata artifactMetadata = getModelMapper().map( model, ArtifactMetadata.class );
             populateFacets( artifactMetadata );
             artifactMetadatas.add( artifactMetadata );
         }
@@ -1269,7 +1269,7 @@ public class CassandraMetadataRepository
 
         for ( ArtifactMetadataModel model : artifactMetadataModels )
         {
-            ArtifactMetadata artifactMetadata = new BeanReplicator().replicateBean( model, ArtifactMetadata.class );
+            ArtifactMetadata artifactMetadata = getModelMapper().map( model, ArtifactMetadata.class );
             populateFacets( artifactMetadata );
             artifactMetadatas.add( artifactMetadata );
         }
@@ -1380,7 +1380,7 @@ public class CassandraMetadataRepository
 
         for ( ArtifactMetadataModel model : artifactMetadataModels )
         {
-            ArtifactMetadata artifactMetadata = new BeanReplicator().replicateBean( model, ArtifactMetadata.class );
+            ArtifactMetadata artifactMetadata = getModelMapper().map( model, ArtifactMetadata.class );
             populateFacets( artifactMetadata );
             artifactMetadatas.add( artifactMetadata );
         }
@@ -1450,7 +1450,7 @@ public class CassandraMetadataRepository
         }
 
         ProjectVersionMetadata projectVersionMetadata =
-            new BeanReplicator().replicateBean( projectVersionMetadataModel, ProjectVersionMetadata.class );
+            getModelMapper().map( projectVersionMetadataModel, ProjectVersionMetadata.class );
 
         logger.debug( "getProjectVersion repoId: '{}', namespace: '{}', projectId: '{}', projectVersion: {} -> {}",
                       repoId, namespace, projectId, projectVersion, projectVersionMetadata );
@@ -1630,7 +1630,7 @@ public class CassandraMetadataRepository
 
         for ( ArtifactMetadataModel model : artifactMetadataModels )
         {
-            ArtifactMetadata artifactMetadata = new BeanReplicator().replicateBean( model, ArtifactMetadata.class );
+            ArtifactMetadata artifactMetadata = getModelMapper().map( model, ArtifactMetadata.class );
             populateFacets( artifactMetadata );
             artifactMetadatas.add( artifactMetadata );
         }
@@ -1750,5 +1750,16 @@ public class CassandraMetadataRepository
     {
         throw new IllegalArgumentException(
             "Access using " + aClass + " is not supported on the cassandra metadata storage" );
+    }
+
+
+    private static class ModelMapperHolder
+    {
+        private static ModelMapper MODEL_MAPPER = new ModelMapper();
+    }
+
+    protected ModelMapper getModelMapper()
+    {
+        return ModelMapperHolder.MODEL_MAPPER;
     }
 }

@@ -18,9 +18,9 @@ package org.apache.archiva.dependency.tree.maven2;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
+import org.modelmapper.ModelMapper;
 import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.graph.DependencyVisitor;
 
@@ -49,7 +49,7 @@ public class TreeDependencyNodeVisitor
     public boolean visitEnter( DependencyNode dependencyNode )
     {
         TreeEntry entry = new TreeEntry(
-            new BeanReplicator().replicateBean( dependencyNode.getDependency().getArtifact(), Artifact.class ) );
+            getModelMapper().map( dependencyNode.getDependency().getArtifact(), Artifact.class ) );
         entry.getArtifact().setScope( dependencyNode.getDependency().getScope() );
         entry.setParent( currentEntry );
         currentEntry = entry;
@@ -70,5 +70,15 @@ public class TreeDependencyNodeVisitor
     {
         currentEntry = currentEntry.getParent();
         return true;
+    }
+
+    private static class ModelMapperHolder
+    {
+        private static ModelMapper MODEL_MAPPER = new ModelMapper();
+    }
+
+    protected ModelMapper getModelMapper()
+    {
+        return ModelMapperHolder.MODEL_MAPPER;
     }
 }

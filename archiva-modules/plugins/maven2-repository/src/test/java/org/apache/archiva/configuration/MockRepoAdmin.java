@@ -18,7 +18,6 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
@@ -33,6 +32,7 @@ import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorOrderComparat
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.context.IndexingContext;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -279,7 +279,7 @@ public class MockRepoAdmin
     {
         return proxyConnectorConfiguration == null
             ? null
-            : new BeanReplicator().replicateBean( proxyConnectorConfiguration, ProxyConnector.class );
+            : new ModelMapper().map( proxyConnectorConfiguration, ProxyConnector.class );
     }
 
     public List<ProxyConnectorRule> getProxyConnectorRules()

@@ -19,7 +19,6 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.indexer.search.SearchFields;
@@ -139,7 +138,7 @@ public class DefaultSearchService
         {
             return Collections.emptyList();
         }
-        SearchFields searchField = new BeanReplicator().replicateBean( searchRequest, SearchFields.class );
+        SearchFields searchField = getModelMapper().map( searchRequest, SearchFields.class );
         SearchResultLimits limits = new SearchResultLimits( 0 );
 
         // if no repos set we use ones available for the user
@@ -219,7 +218,7 @@ public class DefaultSearchService
                 for ( String version : hit.getVersions() )
                 {
 
-                    Artifact versionned = new BeanReplicator().replicateBean( hit, Artifact.class );
+                    Artifact versionned = getModelMapper().map( hit, Artifact.class );
 
                     if ( StringUtils.isNotBlank( version ) )
                     {

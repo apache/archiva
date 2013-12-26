@@ -26,6 +26,7 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
@@ -46,6 +47,8 @@ import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.PrincipalNotFoundException;
 import org.apache.archiva.security.UserRepositories;
 import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -83,7 +86,7 @@ public abstract class AbstractRestService
      * FIXME: this could be multiple implementations and needs to be configured.
      */
     @Inject
-    @Named(value = "repositorySessionFactory")
+    @Named( value = "repositorySessionFactory" )
     protected RepositorySessionFactory repositorySessionFactory;
 
     @Inject
@@ -96,7 +99,7 @@ public abstract class AbstractRestService
     protected RepositoryContentFactory repositoryContentFactory;
 
     @Inject
-    @Named(value = "archivaTaskScheduler#repository")
+    @Named( value = "archivaTaskScheduler#repository" )
     protected DefaultRepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
 
@@ -311,5 +314,32 @@ public abstract class AbstractRestService
             return false;
         }
         return true;
+    }
+
+    private static class ModelMapperHolder
+    {
+        private static ModelMapper MODEL_MAPPER = new ModelMapper();
+
+        static
+        {
+            MODEL_MAPPER.addMappings( new SearchResultHitMap() );
+        }
+    }
+
+
+    private static class SearchResultHitMap
+        extends PropertyMap<SearchResultHit, Artifact>
+    {
+        protected void configure()
+        {
+            skip().setId( null );
+        }
+    }
+
+    ;
+
+    protected ModelMapper getModelMapper()
+    {
+        return ModelMapperHolder.MODEL_MAPPER;
     }
 }

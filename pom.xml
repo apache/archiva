@@ -581,21 +581,6 @@
       </dependency>
 
       <dependency>
-        <groupId>net.sf.beanlib</groupId>
-        <artifactId>beanlib</artifactId>
-        <version>5.0.2beta</version>
-        <exclusions>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>aopalliance</groupId>
-            <artifactId>aopalliance</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
         <version>${commons-codec.version}</version>

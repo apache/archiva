@@ -18,7 +18,6 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.RepositoryCommonValidator;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
@@ -170,7 +169,7 @@ public class DefaultManagedRepositoriesService
             if ( stats != null )
             {
                 ArchivaRepositoryStatistics archivaRepositoryStatistics =
-                    new BeanReplicator().replicateBean( stats, ArchivaRepositoryStatistics.class );
+                    getModelMapper().map( stats, ArchivaRepositoryStatistics.class );
                 archivaRepositoryStatistics.setDuration( archivaRepositoryStatistics.getScanEndTime().getTime()
                                                              - archivaRepositoryStatistics.getScanStartTime().getTime() );
                 archivaRepositoryStatistics.setLastScanDate(
