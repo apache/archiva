@@ -18,7 +18,6 @@ package org.apache.archiva.admin.repository.networkproxy;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
@@ -143,13 +142,13 @@ public class DefaultNetworkProxyAdmin
     {
         return networkProxyConfiguration == null
             ? null
-            : new BeanReplicator().replicateBean( networkProxyConfiguration, NetworkProxy.class );
+            : getModelMapper().map( networkProxyConfiguration, NetworkProxy.class );
     }
 
     protected NetworkProxyConfiguration getNetworkProxyConfiguration( NetworkProxy networkProxy )
     {
         return networkProxy == null
             ? null
-            : new BeanReplicator().replicateBean( networkProxy, NetworkProxyConfiguration.class );
+            : getModelMapper().map( networkProxy, NetworkProxyConfiguration.class );
     }
 }

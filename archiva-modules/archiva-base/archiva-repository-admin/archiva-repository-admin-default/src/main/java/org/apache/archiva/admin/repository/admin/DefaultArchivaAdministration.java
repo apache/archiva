@@ -18,7 +18,6 @@ package org.apache.archiva.admin.repository.admin;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
@@ -81,7 +80,7 @@ public class DefaultArchivaAdministration
         for ( org.apache.archiva.configuration.LegacyArtifactPath legacyArtifactPath : getArchivaConfiguration().getConfiguration().getLegacyArtifactPaths() )
         {
             legacyArtifactPaths.add(
-                new BeanReplicator().replicateBean( legacyArtifactPath, LegacyArtifactPath.class ) );
+                getModelMapper().map( legacyArtifactPath, LegacyArtifactPath.class ) );
         }
         return legacyArtifactPaths;
     }
@@ -91,8 +90,8 @@ public class DefaultArchivaAdministration
     {
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
-        configuration.addLegacyArtifactPath( new BeanReplicator().replicateBean( legacyArtifactPath,
-                                                                                 org.apache.archiva.configuration.LegacyArtifactPath.class ) );
+        configuration.addLegacyArtifactPath( getModelMapper().map( legacyArtifactPath,
+                                                                   org.apache.archiva.configuration.LegacyArtifactPath.class ) );
 
         saveConfiguration( configuration );
         triggerAuditEvent( "", "", AuditEvent.ADD_LEGACY_PATH, auditInformation );
@@ -160,7 +159,7 @@ public class DefaultArchivaAdministration
         {
             return null;
         }
-        return new BeanReplicator().replicateBean( fileType, FileType.class );
+        return getModelMapper().map( fileType, FileType.class );
     }
 
     public void addFileType( FileType fileType, AuditInformation auditInformation )
@@ -174,7 +173,7 @@ public class DefaultArchivaAdministration
         }
 
         configuration.getRepositoryScanning().addFileType(
-            new BeanReplicator().replicateBean( fileType, org.apache.archiva.configuration.FileType.class ) );
+            getModelMapper().map( fileType, org.apache.archiva.configuration.FileType.class ) );
         saveConfiguration( configuration );
     }
 
@@ -272,7 +271,7 @@ public class DefaultArchivaAdministration
         List<FileType> fileTypes = new ArrayList<FileType>( configFileTypes.size() );
         for ( org.apache.archiva.configuration.FileType fileType : configFileTypes )
         {
-            fileTypes.add( new BeanReplicator().replicateBean( fileType, FileType.class ) );
+            fileTypes.add( getModelMapper().map( fileType, FileType.class ) );
         }
         return fileTypes;
     }
@@ -300,7 +299,7 @@ public class DefaultArchivaAdministration
         {
             return null;
         }
-        return new BeanReplicator().replicateBean( organisationInformation, OrganisationInformation.class );
+        return getModelMapper().map( organisationInformation, OrganisationInformation.class );
     }
 
     public void setOrganisationInformation( OrganisationInformation organisationInformation )
@@ -310,8 +309,8 @@ public class DefaultArchivaAdministration
         if ( organisationInformation != null )
         {
             org.apache.archiva.configuration.OrganisationInformation organisationInformationModel =
-                new BeanReplicator().replicateBean( organisationInformation,
-                                                    org.apache.archiva.configuration.OrganisationInformation.class );
+                getModelMapper().map( organisationInformation,
+                                      org.apache.archiva.configuration.OrganisationInformation.class );
             configuration.setOrganisationInfo( organisationInformationModel );
         }
         else
@@ -334,7 +333,7 @@ public class DefaultArchivaAdministration
         {
             return null;
         }
-        return new BeanReplicator().replicateBean( userInterfaceOptions, UiConfiguration.class );
+        return getModelMapper().map( userInterfaceOptions, UiConfiguration.class );
     }
 
     public void updateUiConfiguration( UiConfiguration uiConfiguration )
@@ -345,7 +344,7 @@ public class DefaultArchivaAdministration
         {
 
             UserInterfaceOptions userInterfaceOptions =
-                new BeanReplicator().replicateBean( uiConfiguration, UserInterfaceOptions.class );
+                getModelMapper().map( uiConfiguration, UserInterfaceOptions.class );
             configuration.getWebapp().setUi( userInterfaceOptions );
         }
         else
@@ -366,7 +365,7 @@ public class DefaultArchivaAdministration
         {
             return null;
         }
-        return new BeanReplicator().replicateBean( networkConfiguration, NetworkConfiguration.class );
+        return getModelMapper().map( networkConfiguration, NetworkConfiguration.class );
     }
 
     public void setNetworkConfiguration( NetworkConfiguration networkConfiguration )
@@ -379,8 +378,8 @@ public class DefaultArchivaAdministration
         }
         else
         {
-            configuration.setNetworkConfiguration( new BeanReplicator().replicateBean( networkConfiguration,
-                                                                                       org.apache.archiva.configuration.NetworkConfiguration.class ) );
+            configuration.setNetworkConfiguration( getModelMapper().map( networkConfiguration,
+                                                                         org.apache.archiva.configuration.NetworkConfiguration.class ) );
         }
         setupWagon( networkConfiguration );
         saveConfiguration( configuration );

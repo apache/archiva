@@ -28,6 +28,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.components.registry.Registry;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,6 +90,16 @@ public abstract class AbstractRepositoryAdmin
             throw new RepositoryAdminException(
                 "Error occurred while saving the configuration: " + e.getLocalizedMessage(), e );
         }
+    }
+
+    private static class ModelMapperHolder
+    {
+        private static ModelMapper MODEL_MAPPER = new ModelMapper();
+    }
+
+    protected ModelMapper getModelMapper()
+    {
+        return ModelMapperHolder.MODEL_MAPPER;
     }
 
     public List<AuditListener> getAuditListeners()

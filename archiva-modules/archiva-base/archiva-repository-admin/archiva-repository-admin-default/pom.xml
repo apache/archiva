@@ -66,22 +66,8 @@
       <artifactId>spring-taskqueue</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.sf.beanlib</groupId>
-      <artifactId>beanlib</artifactId>
-        <exclusions>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>aopalliance</groupId>
-            <artifactId>aopalliance</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-          </exclusion>
-        </exclusions>
+      <groupId>org.modelmapper</groupId>
+      <artifactId>modelmapper</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
@@ -254,7 +240,7 @@
             <Import-Package>
               javax.annotation,
               javax.inject,
-              net.sf.beanlib.provider.replicator,
+              org.modelmapper,
               org.apache.archiva.admin.model*;version=${project.version},
               org.apache.archiva.audit;version=${project.version},
               org.apache.archiva.common.plexusbridge;version=${project.version},

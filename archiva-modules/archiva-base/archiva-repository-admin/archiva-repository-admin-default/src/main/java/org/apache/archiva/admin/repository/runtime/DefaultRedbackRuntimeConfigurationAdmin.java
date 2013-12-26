@@ -18,13 +18,13 @@ package org.apache.archiva.admin.repository.runtime;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.CacheConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.beans.LdapGroupMapping;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
+import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
@@ -43,7 +43,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +54,7 @@ import java.util.Set;
  */
 @Service( "redbackRuntimeConfigurationAdmin#default" )
 public class DefaultRedbackRuntimeConfigurationAdmin
+    extends AbstractRepositoryAdmin
     implements RedbackRuntimeConfigurationAdmin, UserConfiguration
 {
 
@@ -298,20 +298,18 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         org.apache.archiva.configuration.RedbackRuntimeConfiguration runtimeConfiguration )
     {
         RedbackRuntimeConfiguration redbackRuntimeConfiguration =
-            new BeanReplicator().replicateBean( runtimeConfiguration, RedbackRuntimeConfiguration.class );
+            getModelMapper().map( runtimeConfiguration, RedbackRuntimeConfiguration.class );
 
         if ( runtimeConfiguration.getLdapConfiguration() != null )
         {
             redbackRuntimeConfiguration.setLdapConfiguration(
-                new BeanReplicator().replicateBean( runtimeConfiguration.getLdapConfiguration(),
-                                                    LdapConfiguration.class ) );
+                getModelMapper().map( runtimeConfiguration.getLdapConfiguration(), LdapConfiguration.class ) );
         }
 
         if ( runtimeConfiguration.getUsersCacheConfiguration() != null )
         {
             redbackRuntimeConfiguration.setUsersCacheConfiguration(
-                new BeanReplicator().replicateBean( runtimeConfiguration.getUsersCacheConfiguration(),
-                                                    CacheConfiguration.class ) );
+                getModelMapper().map( runtimeConfiguration.getUsersCacheConfiguration(), CacheConfiguration.class ) );
         }
 
         if ( redbackRuntimeConfiguration.getLdapConfiguration() == null )
@@ -378,16 +376,16 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         RedbackRuntimeConfiguration redbackRuntimeConfiguration )
     {
         org.apache.archiva.configuration.RedbackRuntimeConfiguration res =
-            new BeanReplicator().replicateBean( redbackRuntimeConfiguration,
-                                                org.apache.archiva.configuration.RedbackRuntimeConfiguration.class );
+            getModelMapper().map( redbackRuntimeConfiguration,
+                                  org.apache.archiva.configuration.RedbackRuntimeConfiguration.class );
 
         if ( redbackRuntimeConfiguration.getLdapConfiguration() == null )
         {
             redbackRuntimeConfiguration.setLdapConfiguration( new LdapConfiguration() );
         }
         res.setLdapConfiguration(
-            new BeanReplicator().replicateBean( redbackRuntimeConfiguration.getLdapConfiguration(),
-                                                org.apache.archiva.configuration.LdapConfiguration.class ) );
+            getModelMapper().map( redbackRuntimeConfiguration.getLdapConfiguration(),
+                                  org.apache.archiva.configuration.LdapConfiguration.class ) );
 
         if ( redbackRuntimeConfiguration.getUsersCacheConfiguration() == null )
         {
@@ -396,8 +394,8 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
 
         res.setUsersCacheConfiguration(
-            new BeanReplicator().replicateBean( redbackRuntimeConfiguration.getUsersCacheConfiguration(),
-                                                org.apache.archiva.configuration.CacheConfiguration.class ) );
+            getModelMapper().map( redbackRuntimeConfiguration.getUsersCacheConfiguration(),
+                                  org.apache.archiva.configuration.CacheConfiguration.class ) );
 
         List<LdapGroupMapping> ldapGroupMappings = redbackRuntimeConfiguration.getLdapGroupMappings();
 

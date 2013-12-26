@@ -18,12 +18,12 @@ package org.apache.archiva.admin.repository.runtime;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.CacheConfiguration;
 import org.apache.archiva.admin.model.beans.FileLockConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
@@ -41,6 +41,7 @@ import javax.inject.Named;
  */
 @Service( "archivaRuntimeConfigurationAdmin#default" )
 public class DefaultArchivaRuntimeConfigurationAdmin
+    extends AbstractRepositoryAdmin
     implements ArchivaRuntimeConfigurationAdmin
 {
 
@@ -151,22 +152,22 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
 
         ArchivaRuntimeConfiguration res =
-            new BeanReplicator().replicateBean( archivaRuntimeConfiguration, ArchivaRuntimeConfiguration.class );
+            getModelMapper().map( archivaRuntimeConfiguration, ArchivaRuntimeConfiguration.class );
 
         if ( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration() != null )
         {
 
             res.setUrlFailureCacheConfiguration(
-                new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration(),
-                                                    CacheConfiguration.class ) );
+                getModelMapper().map( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration(),
+                                      CacheConfiguration.class ) );
 
         }
 
         if ( archivaRuntimeConfiguration.getFileLockConfiguration() != null )
         {
             res.setFileLockConfiguration(
-                new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getFileLockConfiguration(),
-                                                    FileLockConfiguration.class ) );
+                getModelMapper().map( archivaRuntimeConfiguration.getFileLockConfiguration(),
+                                      FileLockConfiguration.class ) );
         }
 
         return res;
@@ -181,23 +182,23 @@ public class DefaultArchivaRuntimeConfigurationAdmin
         }
 
         org.apache.archiva.configuration.ArchivaRuntimeConfiguration res =
-            new BeanReplicator().replicateBean( archivaRuntimeConfiguration,
-                                                org.apache.archiva.configuration.ArchivaRuntimeConfiguration.class );
+            getModelMapper().map( archivaRuntimeConfiguration,
+                                  org.apache.archiva.configuration.ArchivaRuntimeConfiguration.class );
 
         if ( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration() != null )
         {
 
             res.setUrlFailureCacheConfiguration(
-                new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration(),
-                                                    org.apache.archiva.configuration.CacheConfiguration.class ) );
+                getModelMapper().map( archivaRuntimeConfiguration.getUrlFailureCacheConfiguration(),
+                                      org.apache.archiva.configuration.CacheConfiguration.class ) );
 
         }
 
         if ( archivaRuntimeConfiguration.getFileLockConfiguration() != null )
         {
             res.setFileLockConfiguration(
-                new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getFileLockConfiguration(),
-                                                    org.apache.archiva.configuration.FileLockConfiguration.class ) );
+                getModelMapper().map( archivaRuntimeConfiguration.getFileLockConfiguration(),
+                                      org.apache.archiva.configuration.FileLockConfiguration.class ) );
         }
 
         return res;

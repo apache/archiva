@@ -18,7 +18,6 @@ package org.apache.archiva.admin.repository.proxyconnector;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
@@ -211,14 +210,14 @@ public class DefaultProxyConnectorAdmin
     {
         return proxyConnector == null
             ? null
-            : new BeanReplicator().replicateBean( proxyConnector, ProxyConnectorConfiguration.class );
+            : getModelMapper().map( proxyConnector, ProxyConnectorConfiguration.class );
     }
 
     protected ProxyConnector getProxyConnector( ProxyConnectorConfiguration proxyConnectorConfiguration )
     {
         return proxyConnectorConfiguration == null
             ? null
-            : new BeanReplicator().replicateBean( proxyConnectorConfiguration, ProxyConnector.class );
+            : getModelMapper().map( proxyConnectorConfiguration, ProxyConnector.class );
     }
 
     protected void validateProxyConnector( ProxyConnector proxyConnector )

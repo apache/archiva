@@ -575,6 +575,12 @@
       </dependency>
 
       <dependency>
+        <groupId>org.modelmapper</groupId>
+        <artifactId>modelmapper</artifactId>
+        <version>0.6.2</version>
+      </dependency>
+
+      <dependency>
         <groupId>net.sf.beanlib</groupId>
         <artifactId>beanlib</artifactId>
         <version>5.0.2beta</version>
