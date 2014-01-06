@@ -25,16 +25,11 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.catalina.Container;
-import org.apache.catalina.startup.Tomcat;
-import org.apache.commons.lang.StringUtils;
 import org.fest.assertions.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.servlet.Servlet;
 import java.io.File;
-import java.util.Enumeration;
 
 /**
  * RepositoryServletTest

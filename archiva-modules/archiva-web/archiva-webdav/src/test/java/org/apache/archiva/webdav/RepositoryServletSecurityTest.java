@@ -40,10 +40,6 @@ import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.util.MavenIndexerCleaner;
-import org.apache.catalina.Container;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.deploy.ApplicationParameter;
-import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -58,11 +54,15 @@ import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletConfig;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
 import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -79,7 +79,7 @@ import static org.easymock.EasyMock.eq;
  * perform redback security checking.
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context-servlet-security-test.xml" } )
 public class RepositoryServletSecurityTest
     extends TestCase
 {
@@ -88,6 +88,7 @@ public class RepositoryServletSecurityTest
 
     protected File repoRootInternal;
 
+    @Inject
     protected ArchivaConfiguration archivaConfiguration;
 
     private DavSessionProvider davSessionProvider;
@@ -101,12 +102,6 @@ public class RepositoryServletSecurityTest
     private HttpAuthenticator httpAuth;
 
     private RepositoryServlet servlet;
-
-    protected Tomcat tomcat;
-
-    protected static int port;
-
-    StandardContext context;
 
     @Inject
     ApplicationContext applicationContext;
@@ -126,7 +121,6 @@ public class RepositoryServletSecurityTest
 
         repoRootInternal = new File( appserverBase, "data/repositories/internal" );
 
-        archivaConfiguration = applicationContext.getBean( ArchivaConfiguration.class );
         Configuration config = archivaConfiguration.getConfiguration();
 
         if ( !config.getManagedRepositoriesAsMap().containsKey( REPOID_INTERNAL ) )
@@ -138,27 +132,6 @@ public class RepositoryServletSecurityTest
 
         CacheManager.getInstance().clearAll();
 
-        tomcat = new Tomcat();
-        tomcat.setBaseDir( System.getProperty( "java.io.tmpdir" ) );
-        tomcat.setPort( 0 );
-
-        context = StandardContext.class.cast( tomcat.addContext( "", System.getProperty( "java.io.tmpdir" ) ) );
-
-        ApplicationParameter applicationParameter = new ApplicationParameter();
-        applicationParameter.setName( "contextConfigLocation" );
-        applicationParameter.setValue( getSpringConfigLocation() );
-        context.addApplicationParameter( applicationParameter );
-
-        context.addApplicationListener( ContextLoaderListener.class.getName() );
-
-        context.addApplicationListener( MavenIndexerCleaner.class.getName() );
-
-        Tomcat.addServlet( context, "repository", new UnauthenticatedRepositoryServlet() );
-        context.addServletMapping( "/repository/*", "repository" );
-
-        tomcat.start();
-
-        this.port = tomcat.getConnector().getLocalPort();
 
         servletAuthControl = EasyMock.createControl();
 
@@ -170,21 +143,26 @@ public class RepositoryServletSecurityTest
 
         davSessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth );
 
-        // FIXME use mock to avoid starting Tomcat
-        //RepositoryServlet repositoryServlet = new RepositoryServlet();
-        //MockServletConfig mockServletConfig = new MockServletConfig();
+        final MockServletContext mockServletContext = new MockServletContext();
 
-        //MockServletContext mockServletContext = new MockServletContext(  );
-        //mockServletContext
+        WebApplicationContext webApplicationContext =
+            new AbstractRepositoryServletTestCase.TestWebapplicationContext( applicationContext, mockServletContext );
 
-        //repositoryServlet.init( mockServletConfig );
+        mockServletContext.setAttribute( WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
+                                         webApplicationContext );
 
-        servlet = RepositoryServlet.class.cast( findServlet( "repository" ) );
-    }
+        MockServletConfig mockServletConfig = new MockServletConfig()
+        {
+            @Override
+            public ServletContext getServletContext()
+            {
+                return mockServletContext;
+            }
+        };
 
-    protected String getSpringConfigLocation()
-    {
-        return "classpath*:/META-INF/spring-context.xml,classpath*:/spring-context-servlet-security-test.xml";
+        servlet = new RepositoryServlet();
+
+        servlet.init( mockServletConfig );
     }
 
     protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location )
@@ -229,32 +207,12 @@ public class RepositoryServletSecurityTest
             FileUtils.deleteDirectory( repoRootInternal );
         }
 
-        servlet = null;
-
-        if ( this.tomcat != null )
-        {
-            this.tomcat.stop();
-        }
+        applicationContext.getBean( MavenIndexerCleaner.class ).cleanupIndex();
 
         super.tearDown();
     }
 
-    protected Servlet findServlet( String name )
-        throws Exception
-    {
-        Container[] childs = context.findChildren();
-        for ( Container container : childs )
-        {
-            if ( StringUtils.equals( container.getName(), name ) )
-            {
-                Tomcat.ExistingStandardWrapper esw = Tomcat.ExistingStandardWrapper.class.cast( container );
-                Servlet servlet = esw.loadServlet();
 
-                return servlet;
-            }
-        }
-        return null;
-    }
 
     // test deploy with invalid user, and guest has no write access to repo
     // 401 must be returned

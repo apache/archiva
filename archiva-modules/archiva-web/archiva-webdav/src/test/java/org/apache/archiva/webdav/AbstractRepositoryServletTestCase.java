@@ -36,8 +36,6 @@ import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
 import org.apache.archiva.webdav.util.MavenIndexerCleaner;
-import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -111,13 +109,6 @@ public abstract class AbstractRepositoryServletTestCase
     {
         saveConfiguration( archivaConfiguration );
     }
-
-    protected Tomcat tomcat;
-
-    protected static int port;
-
-
-    StandardContext context;
 
     @Before
     public void setUp()
@@ -193,7 +184,7 @@ public abstract class AbstractRepositoryServletTestCase
     }
 
 
-    static class TestWebapplicationContext
+    public static class TestWebapplicationContext
         implements WebApplicationContext
     {
         private ApplicationContext applicationContext;
@@ -673,11 +664,6 @@ public abstract class AbstractRepositoryServletTestCase
         if ( repoRootLegacy.exists() )
         {
             FileUtils.deleteDirectory( repoRootLegacy );
-        }
-
-        if ( this.tomcat != null )
-        {
-            this.tomcat.stop();
         }
 
     }
