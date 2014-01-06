@@ -95,6 +95,9 @@ public abstract class AbstractRepositoryServletTestCase
 
     protected static int port;
 
+
+    StandardContext context;
+
     @Before
     public void setUp()
         throws Exception
@@ -140,9 +143,6 @@ public abstract class AbstractRepositoryServletTestCase
 
     }
 
-    StandardContext context;
-
-    UnauthenticatedRepositoryServlet servlet;
 
     protected void startRepository()
         throws Exception
@@ -151,7 +151,7 @@ public abstract class AbstractRepositoryServletTestCase
         tomcat.setBaseDir( System.getProperty( "java.io.tmpdir" ) );
         tomcat.setPort( 0 );
 
-        context = (StandardContext) tomcat.addContext( "", System.getProperty( "java.io.tmpdir" ) );
+        context = StandardContext.class.cast( tomcat.addContext( "", System.getProperty( "java.io.tmpdir" ) ) );
 
         ApplicationParameter applicationParameter = new ApplicationParameter();
         applicationParameter.setName( "contextConfigLocation" );
@@ -162,9 +162,7 @@ public abstract class AbstractRepositoryServletTestCase
 
         context.addApplicationListener( MavenIndexerCleaner.class.getName() );
 
-        servlet = new UnauthenticatedRepositoryServlet();
-
-        Tomcat.addServlet( context, "repository", servlet );
+        Tomcat.addServlet( context, "repository", new UnauthenticatedRepositoryServlet() );
         context.addServletMapping( "/repository/*", "repository" );
 
         Tomcat.addServlet( context, "reinitservlet", new ReinitServlet() );
