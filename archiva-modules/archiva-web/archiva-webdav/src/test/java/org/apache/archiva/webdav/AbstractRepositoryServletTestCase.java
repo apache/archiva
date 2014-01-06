@@ -539,15 +539,29 @@ public abstract class AbstractRepositoryServletTestCase
     protected WebResponse getWebResponse( String path )
         throws Exception
     {
+        return getWebResponse( new GetMethodWebRequest( "http://localhost" + path ) );
+    }
+
+    protected WebResponse getWebResponse( WebRequest webRequest )
+        throws Exception
+    {
 
         //WebClient client = newClient();
         //client.getPage( "http://localhost:" + port + "/reinit/reload" );
         //return client.getPage( "http://localhost:" + port + path ).getWebResponse();
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRequestURI( path );
+        request.setRequestURI( webRequest.getUrl().getPath() );
         request.addHeader( "User-Agent", "Apache Archiva unit test" );
-        request.setMethod( "GET" );
+
+        request.setMethod( webRequest.getHttpMethod().name() );
+
+        /*
+        if (webRequest.getHttpMethod() == HttpMethod.PUT)
+        {
+            request.set
+        } */
+
         final MockHttpServletResponse response = execute( request );
         return new WebResponse( null, null, 1 )
         {
@@ -580,8 +594,8 @@ public abstract class AbstractRepositoryServletTestCase
             public String getContentAsString()
                 throws UnsupportedEncodingException
             {
-                String errorMessage  = getErrorMessage();
-                return ( errorMessage != null ) ? errorMessage: super.getContentAsString();
+                String errorMessage = getErrorMessage();
+                return ( errorMessage != null ) ? errorMessage : super.getContentAsString();
             }
         };
         this.unauthenticatedRepositoryServlet.service( request, response );
@@ -612,7 +626,6 @@ public abstract class AbstractRepositoryServletTestCase
         {
             super( new URL( url ), HttpMethod.PUT );
             this.url = url;
-
         }
 
 
@@ -631,7 +644,7 @@ public abstract class AbstractRepositoryServletTestCase
         public WebResponse getResponse( WebRequest request )
             throws Exception
         {
-            return abstractRepositoryServletTestCase.getWebResponse( request.getUrl().getPath() );
+            return abstractRepositoryServletTestCase.getWebResponse( request );
         }
 
         public WebResponse getResource( WebRequest request )
