@@ -135,7 +135,6 @@ public abstract class AbstractRepositoryServletTestCase
         }
         FileUtils.copyFile( testConf, testConfDest );
 
-
         repoRootInternal = new File( appserverBase, "data/repositories/internal" );
         repoRootLegacy = new File( appserverBase, "data/repositories/legacy" );
         Configuration config = archivaConfiguration.getConfiguration();
@@ -508,10 +507,10 @@ public abstract class AbstractRepositoryServletTestCase
     protected WebResponse getWebResponse( String path )
         throws Exception
     {
-        return getWebResponse( new GetMethodWebRequest( "http://localhost" + path ) );
+        return getWebResponse( new GetMethodWebRequest( "http://localhost" + path ) );//, false );
     }
 
-    protected WebResponse getWebResponse( WebRequest webRequest )
+    protected WebResponse getWebResponse( WebRequest webRequest ) //, boolean followRedirect )
         throws Exception
     {
 
@@ -526,6 +525,14 @@ public abstract class AbstractRepositoryServletTestCase
         request.setMethod( webRequest.getHttpMethod().name() );
 
         final MockHttpServletResponse response = execute( request );
+
+        if ( response.getStatus() == HttpServletResponse.SC_MOVED_PERMANENTLY
+            || response.getStatus() == HttpServletResponse.SC_MOVED_TEMPORARILY )
+        {
+            String location = response.getHeader( "Location" );
+            log.debug("follow redirect to {}", location);
+            return getWebResponse( new GetMethodWebRequest( location ) );
+        }
 
         return new WebResponse( null, null, 1 )
         {
@@ -608,7 +615,14 @@ public abstract class AbstractRepositoryServletTestCase
         public WebResponse getResponse( WebRequest request )
             throws Exception
         {
-            return abstractRepositoryServletTestCase.getWebResponse( request );
+            return getResponse( request, false );
+        }
+
+        public WebResponse getResponse( WebRequest request, boolean followRedirect )
+            throws Exception
+        {
+            // alwasy following redirect as it's normal
+            return abstractRepositoryServletTestCase.getWebResponse( request );//, followRedirect );
         }
 
         public WebResponse getResource( WebRequest request )

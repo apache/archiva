@@ -99,7 +99,7 @@ public class RepositoryServletBrowseTest
 
         WebRequest request =
             new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId" );
-        WebResponse response = getServletUnitClient().getResponse( request );
+        WebResponse response = getServletUnitClient().getResponse( request, true );
         assertEquals( "1st Response", HttpServletResponse.SC_OK, response.getStatusCode() );
 
         request = new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId/" );
