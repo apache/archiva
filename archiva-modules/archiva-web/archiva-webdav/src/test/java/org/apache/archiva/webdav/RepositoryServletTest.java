@@ -68,22 +68,6 @@ public class RepositoryServletTest
         assertRepositoryValid( servlet, REPOID_INTERNAL );
     }
 
-    Servlet findServlet( String name )
-        throws Exception
-    {
-        Container[] childs = context.findChildren();
-        for ( Container container : childs )
-        {
-            if ( StringUtils.equals( container.getName(), name ) )
-            {
-                Tomcat.ExistingStandardWrapper esw = Tomcat.ExistingStandardWrapper.class.cast( container );
-                Servlet servlet = esw.loadServlet();
-
-                return servlet;
-            }
-        }
-        return null;
-    }
 
     @Test
     public void testGetRepositoryAfterDelete()
@@ -106,7 +90,7 @@ public class RepositoryServletTest
     public void testGetRepositoryAfterAdd()
         throws Exception
     {
-        RepositoryServlet servlet =RepositoryServlet.class.cast( findServlet( "repository" ) );
+        RepositoryServlet servlet = RepositoryServlet.class.cast( findServlet( "repository" ) );
         assertNotNull( servlet );
 
         ArchivaConfiguration archivaConfiguration = servlet.getConfiguration();
@@ -154,6 +138,7 @@ public class RepositoryServletTest
         WebRequest request = new GetMethodWebRequest( path );
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseNotFound( response );
-        Assertions.assertThat( response.getContentAsString() ).contains(            "Invalid path to Artifact: legacy paths should have an expected type ending in [s] in the second part of the path." );
+        Assertions.assertThat( response.getContentAsString() ).contains(
+            "Invalid path to Artifact: legacy paths should have an expected type ending in [s] in the second part of the path." );
     }
 }

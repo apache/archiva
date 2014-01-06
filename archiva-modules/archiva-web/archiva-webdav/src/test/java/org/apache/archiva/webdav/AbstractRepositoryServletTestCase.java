@@ -35,11 +35,13 @@ import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.util.MavenIndexerCleaner;
 import org.apache.archiva.webdav.util.ReinitServlet;
+import org.apache.catalina.Container;
 import org.apache.catalina.Context;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -50,6 +52,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.context.ContextLoaderListener;
 
 import javax.inject.Inject;
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
@@ -60,8 +63,8 @@ import java.nio.charset.Charset;
 /**
  * AbstractRepositoryServletTestCase
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/repository-servlet-simple.xml" } )
+@RunWith(ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/repository-servlet-simple.xml" })
 public abstract class AbstractRepositoryServletTestCase
     extends TestCase
 {
@@ -135,14 +138,14 @@ public abstract class AbstractRepositoryServletTestCase
         applicationContext.getBean( MavenIndexerCleaner.class ).cleanupIndex();
 
 
-
     }
 
     StandardContext context;
 
     UnauthenticatedRepositoryServlet servlet;
 
-    protected void startRepository() throws Exception
+    protected void startRepository()
+        throws Exception
     {
         tomcat = new Tomcat();
         tomcat.setBaseDir( System.getProperty( "java.io.tmpdir" ) );
@@ -164,13 +167,29 @@ public abstract class AbstractRepositoryServletTestCase
         Tomcat.addServlet( context, "repository", servlet );
         context.addServletMapping( "/repository/*", "repository" );
 
-
         Tomcat.addServlet( context, "reinitservlet", new ReinitServlet() );
         context.addServletMapping( "/reinit/*", "reinitservlet" );
 
         tomcat.start();
 
         this.port = tomcat.getConnector().getLocalPort();
+    }
+
+    protected Servlet findServlet( String name )
+        throws Exception
+    {
+        Container[] childs = context.findChildren();
+        for ( Container container : childs )
+        {
+            if ( StringUtils.equals( container.getName(), name ) )
+            {
+                Tomcat.ExistingStandardWrapper esw = Tomcat.ExistingStandardWrapper.class.cast( container );
+                Servlet servlet = esw.loadServlet();
+
+                return servlet;
+            }
+        }
+        return null;
     }
 
     protected String getSpringConfigLocation()
