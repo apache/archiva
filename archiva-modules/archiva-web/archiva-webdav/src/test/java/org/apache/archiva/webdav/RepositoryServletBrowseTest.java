@@ -22,16 +22,21 @@ package org.apache.archiva.webdav;
 
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
+import org.fest.assertions.api.Assertions;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * RepositoryServletBrowseTest
- *
- *
  */
 public class RepositoryServletBrowseTest
     extends AbstractRepositoryServletTestCase
@@ -61,9 +66,12 @@ public class RepositoryServletBrowseTest
 
         // dumpResponse( response );
 
-        String expectedLinks[] = new String[]{ ".indexer/", "commons-lang/", "net/", "org/" };
-        // @FIXME
-        //assertLinks( expectedLinks, response.getLinks() );
+        List<String> expectedLinks = Arrays.asList( ".indexer/", "commons-lang/", "net/", "org/" );
+
+        Document document = Jsoup.parse( response.getContentAsString() );
+        Elements elements = document.getElementsByTag( "a" );
+
+        assertLinks( expectedLinks, elements );
     }
 
     @Test
@@ -74,9 +82,12 @@ public class RepositoryServletBrowseTest
         WebResponse response = getServletUnitClient().getResponse( request );
         assertEquals( "Response", HttpServletResponse.SC_OK, response.getStatusCode() );
 
-        String expectedLinks[] = new String[]{ "../", "apache/", "codehaus/" };
-        // @FIXME
-        //assertLinks( expectedLinks, response.getLinks() );
+        List<String> expectedLinks = Arrays.asList( "../", "apache/", "codehaus/" );
+
+        Document document = Jsoup.parse( response.getContentAsString() );
+        Elements elements = document.getElementsByTag( "a" );
+
+        assertLinks( expectedLinks, elements );
     }
 
     @Test
@@ -106,15 +117,15 @@ public class RepositoryServletBrowseTest
         assertEquals( "4th Response", HttpServletResponse.SC_NOT_FOUND, response.getStatusCode() );
     }
 
-    // @FIXME
-    /*
-    private void assertLinks( String expectedLinks[], WebLink actualLinks[] )
+    private void assertLinks( List<String> expectedLinks, Elements actualLinks )
     {
-        assertEquals( "Links.length", expectedLinks.length, actualLinks.length );
-        for ( int i = 0; i < actualLinks.length; i++ )
+        Assertions.assertThat( actualLinks ).hasSize( expectedLinks.size() );
+
+        for ( int i = 0; i < actualLinks.size(); i++ )
         {
-            assertEquals( "Link[" + i + "]", expectedLinks[i], actualLinks[i].getURLString() );
+            Element element = actualLinks.get( i );
+            assertEquals( "Link[" + i + "]", expectedLinks.get( i ), element.attr( "href" ) );
         }
     }
-    */
+
 }

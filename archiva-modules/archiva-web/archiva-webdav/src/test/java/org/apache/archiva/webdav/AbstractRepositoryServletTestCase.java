@@ -28,21 +28,16 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.util.MavenIndexerCleaner;
-import org.apache.archiva.webdav.util.ReinitServlet;
-import org.apache.catalina.Container;
-import org.apache.catalina.Context;
 import org.apache.catalina.core.StandardContext;
-import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.velocity.app.event.ReferenceInsertionEventHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -63,11 +58,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.GenericWebApplicationContext;
-import org.springframework.web.context.support.StaticWebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.inject.Inject;
 import javax.servlet.Servlet;
@@ -101,11 +92,14 @@ public abstract class AbstractRepositoryServletTestCase
 
     protected File repoRootLegacy;
 
-
+    @Inject
     protected ArchivaConfiguration archivaConfiguration;
 
     @Inject
     protected ApplicationContext applicationContext;
+
+    @Inject
+    protected ManagedRepositoryAdmin managedRepositoryAdmin;
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
@@ -141,7 +135,6 @@ public abstract class AbstractRepositoryServletTestCase
         }
         FileUtils.copyFile( testConf, testConfDest );
 
-        archivaConfiguration = applicationContext.getBean( ArchivaConfiguration.class );
 
         repoRootInternal = new File( appserverBase, "data/repositories/internal" );
         repoRootLegacy = new File( appserverBase, "data/repositories/legacy" );
@@ -151,6 +144,8 @@ public abstract class AbstractRepositoryServletTestCase
 
         config.addManagedRepository(
             createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal, true ) );
+
+        managedRepositoryAdmin.createIndexContext( managedRepositoryAdmin.getManagedRepository( REPOID_INTERNAL ) );
 
         config.addManagedRepository(
             createManagedRepository( REPOID_LEGACY, "Legacy Format Test Repo", repoRootLegacy, "legacy", true ) );
@@ -174,32 +169,6 @@ public abstract class AbstractRepositoryServletTestCase
     protected void startRepository()
         throws Exception
     {
-        /*
-        tomcat = new Tomcat();
-        tomcat.setBaseDir( System.getProperty( "java.io.tmpdir" ) );
-        tomcat.setPort( 0 );
-
-        context = StandardContext.class.cast( tomcat.addContext( "", System.getProperty( "java.io.tmpdir" ) ) );
-
-        ApplicationParameter applicationParameter = new ApplicationParameter();
-        applicationParameter.setName( "contextConfigLocation" );
-        applicationParameter.setValue( getSpringConfigLocation() );
-        context.addApplicationParameter( applicationParameter );
-
-        context.addApplicationListener( ContextLoaderListener.class.getName() );
-
-        context.addApplicationListener( MavenIndexerCleaner.class.getName() );
-
-        Tomcat.addServlet( context, "repository", new UnauthenticatedRepositoryServlet() );
-        context.addServletMapping( "/repository/*", "repository" );
-
-        Tomcat.addServlet( context, "reinitservlet", new ReinitServlet() );
-        context.addServletMapping( "/reinit/*", "reinitservlet" );
-
-        tomcat.start();
-
-        this.port = tomcat.getConnector().getLocalPort();
-        */
 
         final MockServletContext mockServletContext = new MockServletContext();
 
@@ -556,13 +525,8 @@ public abstract class AbstractRepositoryServletTestCase
 
         request.setMethod( webRequest.getHttpMethod().name() );
 
-        /*
-        if (webRequest.getHttpMethod() == HttpMethod.PUT)
-        {
-            request.set
-        } */
-
         final MockHttpServletResponse response = execute( request );
+
         return new WebResponse( null, null, 1 )
         {
             @Override
