@@ -124,6 +124,8 @@ public class RepositoryServletRepositoryGroupTest
         FileUtils.deleteDirectory( repoRootInvalid );
 
         saveConfiguration( archivaConfiguration );
+
+        startRepository();
     }
 
     @Override

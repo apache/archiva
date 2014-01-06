@@ -46,6 +46,7 @@ public class RepositoryServletNoProxyTest
     {
         super.setUp();
         archivaConfiguration.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>() );
+        startRepository();
     }
 
     @Test

@@ -25,6 +25,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -67,6 +68,14 @@ public class RepositoryServletTest
 
         ManagedRepository repository = servlet.getRepository( REPOID_INTERNAL );
         assertNull( repository );
+    }
+
+    @Before
+    @Override
+    public void setUp() throws Exception
+    {
+        super.setUp();
+        startRepository();
     }
 
     @Test

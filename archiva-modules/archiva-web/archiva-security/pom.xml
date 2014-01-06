@@ -192,6 +192,11 @@
       <artifactId>metadata-store-file</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

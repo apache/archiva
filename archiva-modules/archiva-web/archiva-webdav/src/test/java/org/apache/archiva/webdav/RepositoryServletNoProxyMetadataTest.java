@@ -22,6 +22,7 @@ package org.apache.archiva.webdav;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -33,6 +34,15 @@ import java.nio.charset.Charset;
 public class RepositoryServletNoProxyMetadataTest
     extends AbstractRepositoryServletTestCase
 {
+
+    @Before
+    @Override
+    public void setUp() throws Exception
+    {
+        super.setUp();
+        startRepository();
+    }
+
     @Test
     public void testGetVersionMetadataDefaultLayout()
         throws Exception

@@ -47,6 +47,8 @@ public class RepositoryServletBrowseTest
         new File( repoRootInternal, "org/codehaus/mojo/" ).mkdirs();
         new File( repoRootInternal, "net/sourceforge" ).mkdirs();
         new File( repoRootInternal, "commons-lang" ).mkdirs();
+
+        startRepository();
     }
 
     @Test

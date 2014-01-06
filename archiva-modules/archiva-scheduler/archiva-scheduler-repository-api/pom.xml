@@ -68,6 +68,12 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
   <build>
     <plugins>

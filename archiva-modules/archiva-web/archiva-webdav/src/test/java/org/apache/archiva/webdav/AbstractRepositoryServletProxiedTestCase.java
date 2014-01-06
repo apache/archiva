@@ -93,10 +93,12 @@ public abstract class AbstractRepositoryServletProxiedTestCase
     protected RemoteRepoInfo remoteSnapshots;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
         super.setUp();
+        startRepository();
     }
 
     @Override

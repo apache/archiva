@@ -158,6 +158,11 @@
       <artifactId>wagon-http-lightweight</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <pluginManagement>

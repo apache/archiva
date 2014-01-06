@@ -28,6 +28,7 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
+import org.junit.Before;
 import org.junit.Test;
 
 
@@ -40,6 +41,14 @@ public class RepositoryServletDeployTest
     extends AbstractRepositoryServletTestCase
 {
     private static final String ARTIFACT_DEFAULT_LAYOUT = "/path/to/artifact/1.0.0/artifact-1.0.0.jar";
+
+    @Before
+    @Override
+    public void setUp() throws Exception
+    {
+        super.setUp();
+        startRepository();
+    }
 
     @Test
     public void testPutWithMissingParentCollection()

@@ -34,6 +34,7 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.util.MavenIndexerCleaner;
+import org.apache.archiva.webdav.util.ReinitServlet;
 import org.apache.catalina.Context;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.startup.Tomcat;
@@ -132,6 +133,12 @@ public abstract class AbstractRepositoryServletTestCase
 
         applicationContext.getBean( MavenIndexerCleaner.class ).cleanupIndex();
 
+
+
+    }
+
+    protected void startRepository() throws Exception
+    {
         tomcat = new Tomcat();
         tomcat.setBaseDir( System.getProperty( "java.io.tmpdir" ) );
         tomcat.setPort( 0 );
@@ -150,10 +157,13 @@ public abstract class AbstractRepositoryServletTestCase
         Tomcat.addServlet( context, "repository", new UnauthenticatedRepositoryServlet() );
         context.addServletMapping( "/repository/*", "repository" );
 
+
+        Tomcat.addServlet( context, "reinitservlet", new ReinitServlet() );
+        context.addServletMapping( "/reinit/*", "reinitservlet" );
+
         tomcat.start();
 
         this.port = tomcat.getConnector().getLocalPort();
-
     }
 
     protected String getSpringConfigLocation()
@@ -193,6 +203,7 @@ public abstract class AbstractRepositoryServletTestCase
         webClient.getOptions().setJavaScriptEnabled( false );
         webClient.getOptions().setCssEnabled( false );
         webClient.getOptions().setAppletEnabled( false );
+        webClient.getOptions().setThrowExceptionOnFailingStatusCode( false );
         webClient.setAjaxController( new NicelyResynchronizingAjaxController() );
         return webClient;
     }
@@ -201,7 +212,9 @@ public abstract class AbstractRepositoryServletTestCase
     protected static WebResponse getWebResponse( String path )
         throws Exception
     {
-        return newClient().getPage( "http://localhost:" + port + path ).getWebResponse();
+        WebClient client = newClient();
+        client.getPage( "http://localhost:" + port + "/reinit/reload" );
+        return client.getPage( "http://localhost:" + port + path ).getWebResponse();
     }
 
     public static class GetMethodWebRequest
