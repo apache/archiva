@@ -25,15 +25,19 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.catalina.Container;
+import org.apache.catalina.startup.Tomcat;
+import org.apache.commons.lang.StringUtils;
+import org.fest.assertions.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.servlet.Servlet;
 import java.io.File;
+import java.util.Enumeration;
 
 /**
- * RepositoryServletTest 
- *
- *
+ * RepositoryServletTest
  */
 public class RepositoryServletTest
     extends AbstractRepositoryServletTestCase
@@ -44,21 +48,49 @@ public class RepositoryServletTest
 
     private static final String NEW_REPOSITORY_NAME = "New Repository";
 
+    @Before
+    @Override
+    public void setUp()
+        throws Exception
+    {
+        super.setUp();
+        startRepository();
+    }
+
     @Test
     public void testGetRepository()
         throws Exception
     {
-        RepositoryServlet servlet = null;//(RepositoryServlet) getServletUnitClient().newInvocation( REQUEST_PATH ).getServlet();
+
+        RepositoryServlet servlet = RepositoryServlet.class.cast( findServlet( "repository" ) );
         assertNotNull( servlet );
 
         assertRepositoryValid( servlet, REPOID_INTERNAL );
+    }
+
+    Servlet findServlet( String name )
+        throws Exception
+    {
+        Container[] childs = context.findChildren();
+        for ( Container container : childs )
+        {
+            if ( StringUtils.equals( container.getName(), name ) )
+            {
+                Tomcat.ExistingStandardWrapper esw = Tomcat.ExistingStandardWrapper.class.cast( container );
+                Servlet servlet = esw.loadServlet();
+
+                return servlet;
+            }
+        }
+        return null;
     }
 
     @Test
     public void testGetRepositoryAfterDelete()
         throws Exception
     {
-        RepositoryServlet servlet = null;//(RepositoryServlet) getServletUnitClient().newInvocation( REQUEST_PATH ).getServlet();
+        RepositoryServlet servlet = RepositoryServlet.class.cast( findServlet( "repository" ) );
+
         assertNotNull( servlet );
 
         ArchivaConfiguration archivaConfiguration = servlet.getConfiguration();
@@ -70,19 +102,11 @@ public class RepositoryServletTest
         assertNull( repository );
     }
 
-    @Before
-    @Override
-    public void setUp() throws Exception
-    {
-        super.setUp();
-        startRepository();
-    }
-
     @Test
     public void testGetRepositoryAfterAdd()
         throws Exception
     {
-        RepositoryServlet servlet = null;//(RepositoryServlet) getServletUnitClient().newInvocation( REQUEST_PATH ).getServlet();
+        RepositoryServlet servlet =RepositoryServlet.class.cast( findServlet( "repository" ) );
         assertNotNull( servlet );
 
         ArchivaConfiguration archivaConfiguration = servlet.getConfiguration();
@@ -114,7 +138,7 @@ public class RepositoryServletTest
         String path = REQUEST_PATH + ".index/filecontent/segments.gen";
 
         populateRepo( repoRootInternal, ".index/filecontent/segments.gen", "index file" );
-        
+
         WebRequest request = new GetMethodWebRequest( path );
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
@@ -130,6 +154,6 @@ public class RepositoryServletTest
         WebRequest request = new GetMethodWebRequest( path );
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseNotFound( response );
-        assertEquals( "Invalid path to Artifact: legacy paths should have an expected type ending in [s] in the second part of the path.", response.getStatusMessage() );
+        Assertions.assertThat( response.getContentAsString() ).contains(            "Invalid path to Artifact: legacy paths should have an expected type ending in [s] in the second part of the path." );
     }
 }

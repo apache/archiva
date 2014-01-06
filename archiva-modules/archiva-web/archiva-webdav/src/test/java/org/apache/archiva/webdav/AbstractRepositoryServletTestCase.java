@@ -36,6 +36,7 @@ import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.util.MavenIndexerCleaner;
 import org.apache.archiva.webdav.util.ReinitServlet;
 import org.apache.catalina.Context;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.FileUtils;
@@ -137,13 +138,17 @@ public abstract class AbstractRepositoryServletTestCase
 
     }
 
+    StandardContext context;
+
+    UnauthenticatedRepositoryServlet servlet;
+
     protected void startRepository() throws Exception
     {
         tomcat = new Tomcat();
         tomcat.setBaseDir( System.getProperty( "java.io.tmpdir" ) );
         tomcat.setPort( 0 );
 
-        Context context = tomcat.addContext( "", System.getProperty( "java.io.tmpdir" ) );
+        context = (StandardContext) tomcat.addContext( "", System.getProperty( "java.io.tmpdir" ) );
 
         ApplicationParameter applicationParameter = new ApplicationParameter();
         applicationParameter.setName( "contextConfigLocation" );
@@ -154,7 +159,9 @@ public abstract class AbstractRepositoryServletTestCase
 
         context.addApplicationListener( MavenIndexerCleaner.class.getName() );
 
-        Tomcat.addServlet( context, "repository", new UnauthenticatedRepositoryServlet() );
+        servlet = new UnauthenticatedRepositoryServlet();
+
+        Tomcat.addServlet( context, "repository", servlet );
         context.addServletMapping( "/repository/*", "repository" );
 
 
