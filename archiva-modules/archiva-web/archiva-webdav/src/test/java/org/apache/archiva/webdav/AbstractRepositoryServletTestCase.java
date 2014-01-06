@@ -514,10 +514,6 @@ public abstract class AbstractRepositoryServletTestCase
         throws Exception
     {
 
-        //WebClient client = newClient();
-        //client.getPage( "http://localhost:" + port + "/reinit/reload" );
-        //return client.getPage( "http://localhost:" + port + path ).getWebResponse();
-
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setRequestURI( webRequest.getUrl().getPath() );
         request.addHeader( "User-Agent", "Apache Archiva unit test" );
@@ -553,6 +549,12 @@ public abstract class AbstractRepositoryServletTestCase
             public int getStatusCode()
             {
                 return response.getStatus();
+            }
+
+            @Override
+            public String getResponseHeaderValue( String headerName )
+            {
+                return response.getHeader( headerName );
             }
         };
     }
