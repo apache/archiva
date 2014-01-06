@@ -790,6 +790,7 @@
             <exclude>.settings/**</exclude>
             <exclude>.site-content/**</exclude>
             <exclude>.java-version</exclude>
+            <exclude>patch.diff</exclude>
           </excludes>
         </configuration>
         <executions>
