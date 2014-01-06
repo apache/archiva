@@ -42,29 +42,54 @@ import org.apache.catalina.deploy.ApplicationParameter;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.velocity.app.event.ReferenceInsertionEventHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.NoSuchMessageException;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletConfig;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.GenericWebApplicationContext;
+import org.springframework.web.context.support.StaticWebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.inject.Inject;
 import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * AbstractRepositoryServletTestCase
  */
-@RunWith(ArchivaSpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:/repository-servlet-simple.xml" })
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:spring-context.xml",
+    "classpath*:/repository-servlet-simple.xml" } )
 public abstract class AbstractRepositoryServletTestCase
     extends TestCase
 {
@@ -143,10 +168,13 @@ public abstract class AbstractRepositoryServletTestCase
 
     }
 
+    protected UnauthenticatedRepositoryServlet unauthenticatedRepositoryServlet =
+        new UnauthenticatedRepositoryServlet();
 
     protected void startRepository()
         throws Exception
     {
+        /*
         tomcat = new Tomcat();
         tomcat.setBaseDir( System.getProperty( "java.io.tmpdir" ) );
         tomcat.setPort( 0 );
@@ -171,11 +199,286 @@ public abstract class AbstractRepositoryServletTestCase
         tomcat.start();
 
         this.port = tomcat.getConnector().getLocalPort();
+        */
+
+        final MockServletContext mockServletContext = new MockServletContext();
+
+        WebApplicationContext webApplicationContext =
+            new TestWebapplicationContext( applicationContext, mockServletContext );
+
+        mockServletContext.setAttribute( WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
+                                         webApplicationContext );
+
+        MockServletConfig mockServletConfig = new MockServletConfig()
+        {
+            @Override
+            public ServletContext getServletContext()
+            {
+                return mockServletContext;
+            }
+        };
+
+        unauthenticatedRepositoryServlet.init( mockServletConfig );
+
+    }
+
+
+    static class TestWebapplicationContext
+        implements WebApplicationContext
+    {
+        private ApplicationContext applicationContext;
+
+        private ServletContext servletContext;
+
+        TestWebapplicationContext( ApplicationContext applicationContext, ServletContext servletContext )
+        {
+            this.applicationContext = applicationContext;
+        }
+
+        @Override
+        public ServletContext getServletContext()
+        {
+            return servletContext;
+        }
+
+        @Override
+        public String getId()
+        {
+            return applicationContext.getId();
+        }
+
+        @Override
+        public String getApplicationName()
+        {
+            return applicationContext.getApplicationName();
+        }
+
+        @Override
+        public String getDisplayName()
+        {
+            return applicationContext.getDisplayName();
+        }
+
+        @Override
+        public long getStartupDate()
+        {
+            return applicationContext.getStartupDate();
+        }
+
+        @Override
+        public ApplicationContext getParent()
+        {
+            return applicationContext.getParent();
+        }
+
+        @Override
+        public AutowireCapableBeanFactory getAutowireCapableBeanFactory()
+            throws IllegalStateException
+        {
+            return applicationContext.getAutowireCapableBeanFactory();
+        }
+
+        @Override
+        public void publishEvent( ApplicationEvent applicationEvent )
+        {
+            applicationContext.publishEvent( applicationEvent );
+        }
+
+        @Override
+        public Environment getEnvironment()
+        {
+            return applicationContext.getEnvironment();
+        }
+
+        @Override
+        public BeanFactory getParentBeanFactory()
+        {
+            return applicationContext.getParentBeanFactory();
+        }
+
+        @Override
+        public boolean containsLocalBean( String s )
+        {
+            return applicationContext.containsLocalBean( s );
+        }
+
+        @Override
+        public boolean containsBeanDefinition( String s )
+        {
+            return applicationContext.containsBeanDefinition( s );
+        }
+
+        @Override
+        public int getBeanDefinitionCount()
+        {
+            return applicationContext.getBeanDefinitionCount();
+        }
+
+        @Override
+        public String[] getBeanDefinitionNames()
+        {
+            return applicationContext.getBeanDefinitionNames();
+        }
+
+        @Override
+        public String[] getBeanNamesForType( Class<?> aClass )
+        {
+            return applicationContext.getBeanNamesForType( aClass );
+        }
+
+        @Override
+        public String[] getBeanNamesForType( Class<?> aClass, boolean b, boolean b2 )
+        {
+            return applicationContext.getBeanNamesForType( aClass, b, b2 );
+        }
+
+        @Override
+        public <T> Map<String, T> getBeansOfType( Class<T> tClass )
+            throws BeansException
+        {
+            return applicationContext.getBeansOfType( tClass );
+        }
+
+        @Override
+        public <T> Map<String, T> getBeansOfType( Class<T> tClass, boolean b, boolean b2 )
+            throws BeansException
+        {
+            return applicationContext.getBeansOfType( tClass, b, b2 );
+        }
+
+        @Override
+        public String[] getBeanNamesForAnnotation( Class<? extends Annotation> aClass )
+        {
+            return applicationContext.getBeanNamesForAnnotation( aClass );
+        }
+
+        @Override
+        public Map<String, Object> getBeansWithAnnotation( Class<? extends Annotation> aClass )
+            throws BeansException
+        {
+            return applicationContext.getBeansWithAnnotation( aClass );
+        }
+
+        @Override
+        public <A extends Annotation> A findAnnotationOnBean( String s, Class<A> aClass )
+            throws NoSuchBeanDefinitionException
+        {
+            return applicationContext.findAnnotationOnBean( s, aClass );
+        }
+
+        @Override
+        public Object getBean( String s )
+            throws BeansException
+        {
+            return applicationContext.getBean( s );
+        }
+
+        @Override
+        public <T> T getBean( String s, Class<T> tClass )
+            throws BeansException
+        {
+            return applicationContext.getBean( s, tClass );
+        }
+
+        @Override
+        public <T> T getBean( Class<T> tClass )
+            throws BeansException
+        {
+            return applicationContext.getBean( tClass );
+        }
+
+        @Override
+        public Object getBean( String s, Object... objects )
+            throws BeansException
+        {
+            return applicationContext.getBean( s, objects );
+        }
+
+        @Override
+        public boolean containsBean( String s )
+        {
+            return applicationContext.containsBean( s );
+        }
+
+        @Override
+        public boolean isSingleton( String s )
+            throws NoSuchBeanDefinitionException
+        {
+            return applicationContext.isSingleton( s );
+        }
+
+        @Override
+        public boolean isPrototype( String s )
+            throws NoSuchBeanDefinitionException
+        {
+            return applicationContext.isPrototype( s );
+        }
+
+        @Override
+        public boolean isTypeMatch( String s, Class<?> aClass )
+            throws NoSuchBeanDefinitionException
+        {
+            return applicationContext.isTypeMatch( s, aClass );
+        }
+
+        @Override
+        public Class<?> getType( String s )
+            throws NoSuchBeanDefinitionException
+        {
+            return applicationContext.getType( s );
+        }
+
+        @Override
+        public String[] getAliases( String s )
+        {
+            return applicationContext.getAliases( s );
+        }
+
+        @Override
+        public String getMessage( String s, Object[] objects, String s2, Locale locale )
+        {
+            return applicationContext.getMessage( s, objects, s2, locale );
+        }
+
+        @Override
+        public String getMessage( String s, Object[] objects, Locale locale )
+            throws NoSuchMessageException
+        {
+            return applicationContext.getMessage( s, objects, locale );
+        }
+
+        @Override
+        public String getMessage( MessageSourceResolvable messageSourceResolvable, Locale locale )
+            throws NoSuchMessageException
+        {
+            return applicationContext.getMessage( messageSourceResolvable, locale );
+        }
+
+        @Override
+        public Resource[] getResources( String s )
+            throws IOException
+        {
+            return applicationContext.getResources( s );
+        }
+
+        @Override
+        public Resource getResource( String s )
+        {
+            return applicationContext.getResource( s );
+        }
+
+        @Override
+        public ClassLoader getClassLoader()
+        {
+            return applicationContext.getClassLoader();
+        }
     }
 
     protected Servlet findServlet( String name )
         throws Exception
     {
+        return unauthenticatedRepositoryServlet;
+        /*
         Container[] childs = context.findChildren();
         for ( Container container : childs )
         {
@@ -187,7 +490,7 @@ public abstract class AbstractRepositoryServletTestCase
                 return servlet;
             }
         }
-        return null;
+        return null;*/
     }
 
     protected String getSpringConfigLocation()
@@ -233,12 +536,56 @@ public abstract class AbstractRepositoryServletTestCase
     }
 
 
-    protected static WebResponse getWebResponse( String path )
+    protected WebResponse getWebResponse( String path )
         throws Exception
     {
-        WebClient client = newClient();
-        client.getPage( "http://localhost:" + port + "/reinit/reload" );
-        return client.getPage( "http://localhost:" + port + path ).getWebResponse();
+
+        //WebClient client = newClient();
+        //client.getPage( "http://localhost:" + port + "/reinit/reload" );
+        //return client.getPage( "http://localhost:" + port + path ).getWebResponse();
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI( path );
+        request.addHeader( "User-Agent", "Apache Archiva unit test" );
+        request.setMethod( "GET" );
+        final MockHttpServletResponse response = execute( request );
+        return new WebResponse( null, null, 1 )
+        {
+            @Override
+            public String getContentAsString()
+            {
+                try
+                {
+                    return response.getContentAsString();
+                }
+                catch ( UnsupportedEncodingException e )
+                {
+                    throw new RuntimeException( e.getMessage(), e );
+                }
+            }
+
+            @Override
+            public int getStatusCode()
+            {
+                return response.getStatus();
+            }
+        };
+    }
+
+    protected MockHttpServletResponse execute( HttpServletRequest request )
+        throws Exception
+    {
+        MockHttpServletResponse response = new MockHttpServletResponse()
+        {
+            public String getContentAsString()
+                throws UnsupportedEncodingException
+            {
+                String errorMessage  = getErrorMessage();
+                return ( errorMessage != null ) ? errorMessage: super.getContentAsString();
+            }
+        };
+        this.unauthenticatedRepositoryServlet.service( request, response );
+        return response;
     }
 
     public static class GetMethodWebRequest
@@ -274,15 +621,17 @@ public abstract class AbstractRepositoryServletTestCase
     public static class ServletUnitClient
     {
 
-        public ServletUnitClient()
-        {
+        AbstractRepositoryServletTestCase abstractRepositoryServletTestCase;
 
+        public ServletUnitClient( AbstractRepositoryServletTestCase abstractRepositoryServletTestCase )
+        {
+            this.abstractRepositoryServletTestCase = abstractRepositoryServletTestCase;
         }
 
         public WebResponse getResponse( WebRequest request )
             throws Exception
         {
-            return getWebResponse( request.getUrl().getPath() );
+            return abstractRepositoryServletTestCase.getWebResponse( request.getUrl().getPath() );
         }
 
         public WebResponse getResource( WebRequest request )
@@ -294,7 +643,7 @@ public abstract class AbstractRepositoryServletTestCase
 
     public ServletUnitClient getServletUnitClient()
     {
-        return new ServletUnitClient();
+        return new ServletUnitClient( this );
     }
 
     @Override

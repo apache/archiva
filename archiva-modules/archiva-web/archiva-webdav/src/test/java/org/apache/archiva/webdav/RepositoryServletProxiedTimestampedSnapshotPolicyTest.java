@@ -43,8 +43,8 @@ public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
     public void setup()
         throws Exception
     {
-        super.setUp();
         archivaConfiguration.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>() );
+        super.setUp();
     }
 
     @After
