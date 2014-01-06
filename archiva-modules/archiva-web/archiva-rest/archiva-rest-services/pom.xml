@@ -386,14 +386,11 @@
       <artifactId>tomcat-embed-logging-juli</artifactId>
       <scope>test</scope>
     </dependency>
-    <!--
     <dependency>
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>tomcat-servlet-api</artifactId>
-      <version>${tomcat7Version}</version>
-      <scope>provided</scope>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>test</scope>
     </dependency>
-    -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-metadata-consumer</artifactId>
