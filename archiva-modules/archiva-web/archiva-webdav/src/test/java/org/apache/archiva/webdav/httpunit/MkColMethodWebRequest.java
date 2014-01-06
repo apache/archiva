@@ -20,6 +20,7 @@ package org.apache.archiva.webdav.httpunit;
  */
 
 
+import com.gargoylesoftware.htmlunit.HttpMethod;
 import com.gargoylesoftware.htmlunit.WebRequest;
 
 import java.net.URL;
@@ -37,8 +38,5 @@ public class MkColMethodWebRequest
         super( new URL( urlString ) );
     }
 
-    public String getMethod()
-    {
-        return "MKCOL";
-    }
+
 }

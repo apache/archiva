@@ -34,10 +34,12 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
 import org.apache.archiva.webdav.util.MavenIndexerCleaner;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -520,6 +522,18 @@ public abstract class AbstractRepositoryServletTestCase
 
         request.setMethod( webRequest.getHttpMethod().name() );
 
+        if (webRequest.getHttpMethod() == HttpMethod.PUT )
+        {
+            PutMethodWebRequest putRequest = PutMethodWebRequest.class.cast( webRequest );
+            request.setContentType( putRequest.contentType );
+            request.setContent( IOUtils.toByteArray( putRequest.inputStream ) );
+        }
+
+        if ( webRequest instanceof MkColMethodWebRequest )
+        {
+            request.setMethod( "MKCOL" );
+        }
+
         final MockHttpServletResponse response = execute( request );
 
         if ( response.getStatus() == HttpServletResponse.SC_MOVED_PERMANENTLY
@@ -594,11 +608,17 @@ public abstract class AbstractRepositoryServletTestCase
     {
         String url;
 
+        InputStream inputStream;
+
+        String contentType;
+
         public PutMethodWebRequest( String url, InputStream inputStream, String contentType )
             throws Exception
         {
             super( new URL( url ), HttpMethod.PUT );
             this.url = url;
+            this.inputStream = inputStream;
+            this.contentType = contentType;
         }
 
 
