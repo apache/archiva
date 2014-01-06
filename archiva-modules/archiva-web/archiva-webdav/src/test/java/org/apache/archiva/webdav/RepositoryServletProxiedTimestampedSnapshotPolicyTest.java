@@ -19,10 +19,8 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.HttpUnitOptions;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.junit.After;
@@ -202,7 +200,7 @@ public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
 
         // --- Execution
         // process the response code later, not via an exception.
-        HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
+        //HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + resourcePath );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -215,11 +213,11 @@ public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
                 assertResponseOK( response );
                 assertTrue( "Invalid Test Case: Can't expect managed contents with "
                                 + "test that doesn't have a managed copy in the first place.", hasManagedCopy );
-                assertEquals( "Expected managed file contents", expectedManagedContents, response.getText() );
+                assertEquals( "Expected managed file contents", expectedManagedContents, response.getContentAsString() );
                 break;
             case EXPECT_REMOTE_CONTENTS:
                 assertResponseOK( response );
-                assertEquals( "Expected remote file contents", expectedRemoteContents, response.getText() );
+                assertEquals( "Expected remote file contents", expectedRemoteContents, response.getContentAsString() );
                 break;
             case EXPECT_NOT_FOUND:
                 assertResponseNotFound( response );

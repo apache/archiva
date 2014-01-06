@@ -19,10 +19,9 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.HttpUnitOptions;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
+
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
@@ -55,12 +54,12 @@ public abstract class AbstractRepositoryServletProxiedMetadataTestCase
         throws Exception
     {
         // process the response code later, not via an exception.
-        HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
+        //HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + path );
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
-        return response.getText();
+        return response.getContentAsString();
     }
 
     protected String createVersionMetadata( String groupId, String artifactId, String version )

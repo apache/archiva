@@ -19,11 +19,9 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.HttpUnitOptions;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
 
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.junit.Test;
 
@@ -68,13 +66,13 @@ public class RepositoryServletProxiedRelocatedTest
 
         // --- Execution
         // process the response code later, not via an exception.
-        HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
+        //HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + resourcePath );
         WebResponse response = getServletUnitClient().getResponse( request );
 
         // --- Verification
         assertResponseOK( response );
-        assertEquals( "Expected remote file contents", expectedRemoteContents, response.getText() );
+        assertEquals( "Expected remote file contents", expectedRemoteContents, response.getContentAsString() );
     }
 }

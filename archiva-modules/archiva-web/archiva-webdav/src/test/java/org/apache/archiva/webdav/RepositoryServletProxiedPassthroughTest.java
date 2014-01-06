@@ -21,10 +21,8 @@ package org.apache.archiva.webdav;
 
 import java.io.File;
 
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.HttpUnitOptions;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -151,7 +149,7 @@ public class RepositoryServletProxiedPassthroughTest
 
         // --- Execution
         // process the response code later, not via an exception.
-        HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
+        //HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + path );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -164,11 +162,11 @@ public class RepositoryServletProxiedPassthroughTest
                 assertResponseOK( response );
                 assertTrue( "Invalid Test Case: Can't expect managed contents with "
                     + "test that doesn't have a managed copy in the first place.", hasManagedCopy );
-                assertEquals( "Expected managed file contents", expectedManagedContents, response.getText() );
+                assertEquals( "Expected managed file contents", expectedManagedContents, response.getContentAsString() );
                 break;
             case EXPECT_REMOTE_CONTENTS:
                 assertResponseOK( response, path );
-                assertEquals( "Expected remote file contents", expectedRemoteContents, response.getText() );
+                assertEquals( "Expected remote file contents", expectedRemoteContents, response.getContentAsString() );
                 break;
             case EXPECT_NOT_FOUND:
                 assertResponseNotFound( response );

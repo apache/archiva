@@ -565,5 +565,11 @@ public class RepositoryContentConsumersTest
         {
             return null;
         }
+
+        @Override
+        public String[] getBeanNamesForAnnotation( Class<? extends Annotation> aClass )
+        {
+            return new String[0];
+        }
     }
 }

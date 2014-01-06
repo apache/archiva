@@ -19,15 +19,13 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.PutMethodWebRequest;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
-
 import java.io.File;
 import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
 import org.junit.Test;
@@ -228,7 +226,7 @@ public class RepositoryServletDeployTest
 
         WebResponse response = getServletUnitClient().getResponse( request );
         
-        assertEquals(HttpServletResponse.SC_CONFLICT, response.getResponseCode());
+        assertEquals(HttpServletResponse.SC_CONFLICT, response.getStatusCode());
         
         File mkColLocalPath = new File(repoRootInternal, "path/to/");
         assertFalse(mkColLocalPath.exists());
@@ -238,13 +236,13 @@ public class RepositoryServletDeployTest
     {
         assertNotNull( "Should have recieved a response", response );
         assertEquals( "Should have been a 204/NO CONTENT response code.", HttpServletResponse.SC_NO_CONTENT, response
-            .getResponseCode() );
+            .getStatusCode() );
     }
     
     protected void assertResponseCreated( WebResponse response )
     {
         assertNotNull( "Should have recieved a response", response );
         assertEquals( "Should have been a 201/CREATED response code.", HttpServletResponse.SC_CREATED, response
-            .getResponseCode() );
+            .getStatusCode() );
     }
 }

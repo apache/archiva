@@ -19,10 +19,9 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.PutMethodWebRequest;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
+
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
@@ -156,8 +155,8 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = getServletUnitClient().getResponse( request );
 
         assertResponseOK( response );
-        Assertions.assertThat( response.getText() ).isEqualTo( "first" );
-        //assertEquals( "Expected file contents", "first", response.getText() );
+        Assertions.assertThat( response.getContentAsString() ).isEqualTo( "first" );
+        //assertEquals( "Expected file contents", "first", response.getContentAsString() );
     }
 
     /*
@@ -178,8 +177,8 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = getServletUnitClient().getResponse( request );
 
         assertResponseOK( response );
-        //assertEquals( "Expected file contents", "last", response.getText() );
-        Assertions.assertThat( response.getText() ).isEqualTo( "last" );
+        //assertEquals( "Expected file contents", "last", response.getContentAsString() );
+        Assertions.assertThat( response.getContentAsString() ).isEqualTo( "last" );
     }
 
     /*
@@ -263,7 +262,7 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = getServletUnitClient().getResource( request );
 
         File returnedMetadata = new File( "target/test-classes/retrievedMetadataFile.xml" );
-        FileUtils.writeStringToFile( returnedMetadata, response.getText() );
+        FileUtils.writeStringToFile( returnedMetadata, response.getContentAsString() );
         ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( returnedMetadata );
 
         assertResponseOK( response );
@@ -295,9 +294,9 @@ public class RepositoryServletRepositoryGroupTest
 
         assertResponseOK( response );
         //assertEquals( "add113b0d7f8c6adb92a5015a7a3701081edf998  maven-metadata-group-with-valid-repos.xml",
-        //              response.getText() );
+        //              response.getContentAsString() );
 
-        Assertions.assertThat( response.getText() )
+        Assertions.assertThat( response.getContentAsString() )
             .isEqualTo( "add113b0d7f8c6adb92a5015a7a3701081edf998  maven-metadata-group-with-valid-repos.xml" );
 
         // request the md5 checksum of the metadata
@@ -307,9 +306,9 @@ public class RepositoryServletRepositoryGroupTest
 
         assertResponseOK( response );
         //assertEquals( "5b85ea4aa5f52bb76760041a52f98de8  maven-metadata-group-with-valid-repos.xml",
-        //              response.getText().trim() );
+        //              response.getContentAsString().trim() );
 
-        Assertions.assertThat( response.getText() )
+        Assertions.assertThat( response.getContentAsString() )
             .isEqualTo( "5b85ea4aa5f52bb76760041a52f98de8  maven-metadata-group-with-valid-repos.xml" );
     }
 
@@ -336,7 +335,7 @@ public class RepositoryServletRepositoryGroupTest
 
         assertResponseOK( response );
 
-        Assertions.assertThat( response.getText() ).contains( "Collection" )
+        Assertions.assertThat( response.getContentAsString() ).contains( "Collection" )
             .contains( "dummy/dummy-artifact" )
             .contains( "1.0" )
             .contains( "2.0" );
@@ -349,7 +348,7 @@ public class RepositoryServletRepositoryGroupTest
         Assertions.assertThat( response ).isNotNull();
         //assertEquals( "Should have been an 405/Method Not Allowed response code.",
         //              HttpServletResponse.SC_METHOD_NOT_ALLOWED, response.getResponseCode() );
-        Assertions.assertThat( response.getResponseCode() ).isEqualTo( HttpServletResponse.SC_METHOD_NOT_ALLOWED );
+        Assertions.assertThat( response.getStatusCode() ).isEqualTo( HttpServletResponse.SC_METHOD_NOT_ALLOWED );
     }
 
     protected RepositoryGroupConfiguration createRepositoryGroup( String id, List<String> repositories )

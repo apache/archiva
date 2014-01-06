@@ -19,21 +19,26 @@ package org.apache.archiva.webdav.httpunit;
  * under the License.
  */
 
-import com.meterware.httpunit.HeaderOnlyWebRequest;
+
+import com.gargoylesoftware.htmlunit.WebRequest;
+
+import java.net.URL;
 
 /**
  * MkColMethodWebRequest
  * See RFC-2518 Section 8.3
  */
-public class MkColMethodWebRequest extends HeaderOnlyWebRequest
+public class MkColMethodWebRequest
+    extends WebRequest
 {
     public MkColMethodWebRequest( String urlString )
+        throws Exception
     {
-        super(urlString);
+        super( new URL( urlString ) );
     }
 
-    @Override
-    public String getMethod() {
+    public String getMethod()
+    {
         return "MKCOL";
     }
 }

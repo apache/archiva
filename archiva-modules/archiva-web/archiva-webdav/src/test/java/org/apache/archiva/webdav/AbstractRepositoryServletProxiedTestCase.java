@@ -19,8 +19,9 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebResponse;
+
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.policies.CachedFailuresPolicy;
@@ -29,11 +30,9 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.After;
 import org.junit.Before;
@@ -43,7 +42,6 @@ import java.nio.charset.Charset;
 
 /**
  * AbstractRepositoryServletProxiedTestCase
- *
  *
  */
 public abstract class AbstractRepositoryServletProxiedTestCase
@@ -160,8 +158,9 @@ public abstract class AbstractRepositoryServletProxiedTestCase
     protected void assertServerSetupCorrectly( RemoteRepoInfo remoteRepo )
         throws Exception
     {
-        WebConversation wc = new WebConversation();
-        WebResponse response = wc.getResponse( remoteRepo.url );
+        //WebConversation wc = new WebConversation();
+        WebRequest request = new GetMethodWebRequest( remoteRepo.url );
+        WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
     }
 

@@ -19,9 +19,8 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
@@ -48,7 +47,7 @@ public class RepositoryServletTest
     public void testGetRepository()
         throws Exception
     {
-        RepositoryServlet servlet = (RepositoryServlet) getServletUnitClient().newInvocation( REQUEST_PATH ).getServlet();
+        RepositoryServlet servlet = null;//(RepositoryServlet) getServletUnitClient().newInvocation( REQUEST_PATH ).getServlet();
         assertNotNull( servlet );
 
         assertRepositoryValid( servlet, REPOID_INTERNAL );
@@ -58,7 +57,7 @@ public class RepositoryServletTest
     public void testGetRepositoryAfterDelete()
         throws Exception
     {
-        RepositoryServlet servlet = (RepositoryServlet) getServletUnitClient().newInvocation( REQUEST_PATH ).getServlet();
+        RepositoryServlet servlet = null;//(RepositoryServlet) getServletUnitClient().newInvocation( REQUEST_PATH ).getServlet();
         assertNotNull( servlet );
 
         ArchivaConfiguration archivaConfiguration = servlet.getConfiguration();
@@ -74,7 +73,7 @@ public class RepositoryServletTest
     public void testGetRepositoryAfterAdd()
         throws Exception
     {
-        RepositoryServlet servlet = (RepositoryServlet) getServletUnitClient().newInvocation( REQUEST_PATH ).getServlet();
+        RepositoryServlet servlet = null;//(RepositoryServlet) getServletUnitClient().newInvocation( REQUEST_PATH ).getServlet();
         assertNotNull( servlet );
 
         ArchivaConfiguration archivaConfiguration = servlet.getConfiguration();
@@ -110,7 +109,7 @@ public class RepositoryServletTest
         WebRequest request = new GetMethodWebRequest( path );
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
-        assertEquals( "index file", response.getText() );        
+        assertEquals( "index file", response.getContentAsString() );
     }
 
     @Test
@@ -122,6 +121,6 @@ public class RepositoryServletTest
         WebRequest request = new GetMethodWebRequest( path );
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseNotFound( response );
-        assertEquals( "Invalid path to Artifact: legacy paths should have an expected type ending in [s] in the second part of the path.", response.getResponseMessage() );
+        assertEquals( "Invalid path to Artifact: legacy paths should have an expected type ending in [s] in the second part of the path.", response.getStatusMessage() );
     }
 }

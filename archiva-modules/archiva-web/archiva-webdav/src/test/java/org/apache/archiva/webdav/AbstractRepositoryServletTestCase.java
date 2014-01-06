@@ -19,10 +19,11 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.HttpUnitOptions;
-import com.meterware.httpunit.WebResponse;
-import com.meterware.servletunit.ServletRunner;
-import com.meterware.servletunit.ServletUnitClient;
+import com.gargoylesoftware.htmlunit.HttpMethod;
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
@@ -33,6 +34,9 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.util.MavenIndexerCleaner;
+import org.apache.catalina.Context;
+import org.apache.catalina.deploy.ApplicationParameter;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -41,18 +45,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.web.context.ContextLoaderListener;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.Charset;
 
 /**
  * AbstractRepositoryServletTestCase
  */
-@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/repository-servlet-simple.xml" } )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/repository-servlet-simple.xml" } )
 public abstract class AbstractRepositoryServletTestCase
     extends TestCase
 {
@@ -64,9 +71,6 @@ public abstract class AbstractRepositoryServletTestCase
 
     protected File repoRootLegacy;
 
-    protected ServletUnitClient servletUnitClient;
-
-    private ServletRunner servletRunner;
 
     protected ArchivaConfiguration archivaConfiguration;
 
@@ -81,6 +85,10 @@ public abstract class AbstractRepositoryServletTestCase
     {
         saveConfiguration( archivaConfiguration );
     }
+
+    protected Tomcat tomcat;
+
+    protected static int port;
 
     @Before
     public void setUp()
@@ -122,12 +130,41 @@ public abstract class AbstractRepositoryServletTestCase
 
         CacheManager.getInstance().clearAll();
 
-        HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
-
         applicationContext.getBean( MavenIndexerCleaner.class ).cleanupIndex();
+
+        tomcat = new Tomcat();
+        tomcat.setBaseDir( System.getProperty( "java.io.tmpdir" ) );
+        tomcat.setPort( 0 );
+
+        Context context = tomcat.addContext( "", System.getProperty( "java.io.tmpdir" ) );
+
+        ApplicationParameter applicationParameter = new ApplicationParameter();
+        applicationParameter.setName( "contextConfigLocation" );
+        applicationParameter.setValue( getSpringConfigLocation() );
+        context.addApplicationParameter( applicationParameter );
+
+        context.addApplicationListener( ContextLoaderListener.class.getName() );
+
+        context.addApplicationListener( MavenIndexerCleaner.class.getName() );
+
+        Tomcat.addServlet( context, "repository", new UnauthenticatedRepositoryServlet() );
+        context.addServletMapping( "/repository/*", "repository" );
+
+        tomcat.start();
+
+        this.port = tomcat.getConnector().getLocalPort();
 
     }
 
+    protected String getSpringConfigLocation()
+    {
+        return "classpath*:/META-INF/spring-context.xml,classpath*:spring-context.xml";
+    }
+
+
+
+
+    /*
     protected ServletUnitClient getServletUnitClient()
         throws Exception
     {
@@ -142,6 +179,85 @@ public abstract class AbstractRepositoryServletTestCase
         servletUnitClient = servletRunner.newClient();
 
         return servletUnitClient;
+    }*/
+
+    /*
+    protected <P extends Page> P page(final String path) throws IOException {
+        return newClient().getPage(base.toExternalForm() + "repository/" + path);
+    }
+    */
+
+    protected static WebClient newClient()
+    {
+        final WebClient webClient = new WebClient();
+        webClient.getOptions().setJavaScriptEnabled( false );
+        webClient.getOptions().setCssEnabled( false );
+        webClient.getOptions().setAppletEnabled( false );
+        webClient.setAjaxController( new NicelyResynchronizingAjaxController() );
+        return webClient;
+    }
+
+
+    protected static WebResponse getWebResponse( String path )
+        throws Exception
+    {
+        return newClient().getPage( "http://localhost:" + port + path ).getWebResponse();
+    }
+
+    public static class GetMethodWebRequest
+        extends WebRequest
+    {
+        String url;
+
+        public GetMethodWebRequest( String url )
+            throws Exception
+        {
+            super( new URL( url ) );
+            this.url = url;
+
+        }
+    }
+
+    public static class PutMethodWebRequest
+        extends WebRequest
+    {
+        String url;
+
+        public PutMethodWebRequest( String url, InputStream inputStream, String contentType )
+            throws Exception
+        {
+            super( new URL( url ), HttpMethod.PUT );
+            this.url = url;
+
+        }
+
+
+    }
+
+    public static class ServletUnitClient
+    {
+
+        public ServletUnitClient()
+        {
+
+        }
+
+        public WebResponse getResponse( WebRequest request )
+            throws Exception
+        {
+            return getWebResponse( request.getUrl().getPath() );
+        }
+
+        public WebResponse getResource( WebRequest request )
+            throws Exception
+        {
+            return getResponse( request );
+        }
+    }
+
+    public ServletUnitClient getServletUnitClient()
+    {
+        return new ServletUnitClient();
     }
 
     @Override
@@ -149,16 +265,6 @@ public abstract class AbstractRepositoryServletTestCase
     public void tearDown()
         throws Exception
     {
-
-        if ( servletUnitClient != null )
-        {
-            servletUnitClient.clearContents();
-        }
-
-        if ( servletRunner != null )
-        {
-            servletRunner.shutDown();
-        }
 
         if ( repoRootInternal.exists() )
         {
@@ -170,7 +276,11 @@ public abstract class AbstractRepositoryServletTestCase
             FileUtils.deleteDirectory( repoRootLegacy );
         }
 
-        super.tearDown();
+        if ( this.tomcat != null )
+        {
+            this.tomcat.stop();
+        }
+
     }
 
 
@@ -182,7 +292,7 @@ public abstract class AbstractRepositoryServletTestCase
         assertTrue( "File <" + actualFile.getAbsolutePath() + "> should be a file (not a dir/link/device/etc).",
                     actualFile.isFile() );
 
-        String actualContents = FileUtils.readFileToString( actualFile, Charset.defaultCharset()  );
+        String actualContents = FileUtils.readFileToString( actualFile, Charset.defaultCharset() );
         assertEquals( "File Contents of <" + actualFile.getAbsolutePath() + ">", expectedContents, actualContents );
     }
 
@@ -198,37 +308,38 @@ public abstract class AbstractRepositoryServletTestCase
 
     protected void assertResponseOK( WebResponse response )
     {
+
         assertNotNull( "Should have recieved a response", response );
         Assert.assertEquals( "Should have been an OK response code", HttpServletResponse.SC_OK,
-                             response.getResponseCode() );
+                             response.getStatusCode() );
     }
 
     protected void assertResponseOK( WebResponse response, String path )
     {
         assertNotNull( "Should have recieved a response", response );
         Assert.assertEquals( "Should have been an OK response code for path: " + path, HttpServletResponse.SC_OK,
-                             response.getResponseCode() );
+                             response.getStatusCode() );
     }
 
     protected void assertResponseNotFound( WebResponse response )
     {
         assertNotNull( "Should have recieved a response", response );
         Assert.assertEquals( "Should have been an 404/Not Found response code.", HttpServletResponse.SC_NOT_FOUND,
-                             response.getResponseCode() );
+                             response.getStatusCode() );
     }
 
     protected void assertResponseInternalServerError( WebResponse response )
     {
         assertNotNull( "Should have recieved a response", response );
         Assert.assertEquals( "Should have been an 500/Internal Server Error response code.",
-                             HttpServletResponse.SC_INTERNAL_SERVER_ERROR, response.getResponseCode() );
+                             HttpServletResponse.SC_INTERNAL_SERVER_ERROR, response.getStatusCode() );
     }
 
     protected void assertResponseConflictError( WebResponse response )
     {
         assertNotNull( "Should have received a response", response );
         Assert.assertEquals( "Should have been a 409/Conflict response code.", HttpServletResponse.SC_CONFLICT,
-                             response.getResponseCode() );
+                             response.getStatusCode() );
     }
 
     protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location,
