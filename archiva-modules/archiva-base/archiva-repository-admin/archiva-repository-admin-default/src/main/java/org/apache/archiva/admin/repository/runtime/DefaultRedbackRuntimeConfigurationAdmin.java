@@ -52,7 +52,7 @@ import java.util.Set;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "redbackRuntimeConfigurationAdmin#default" )
+@Service("redbackRuntimeConfigurationAdmin#default")
 public class DefaultRedbackRuntimeConfigurationAdmin
     extends AbstractRepositoryAdmin
     implements RedbackRuntimeConfigurationAdmin, UserConfiguration
@@ -64,12 +64,18 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
-    @Named( value = "userConfiguration#redback" )
+    @Named(value = "userConfiguration#redback")
     private UserConfiguration userConfiguration;
 
     @Inject
-    @Named( value = "cache#users" )
+    @Named(value = "cache#users")
     private Cache usersCache;
+
+    @Inject
+    public DefaultRedbackRuntimeConfigurationAdmin( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
+    }
 
     @PostConstruct
     public void initialize()
@@ -383,19 +389,16 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         {
             redbackRuntimeConfiguration.setLdapConfiguration( new LdapConfiguration() );
         }
-        res.setLdapConfiguration(
-            getModelMapper().map( redbackRuntimeConfiguration.getLdapConfiguration(),
-                                  org.apache.archiva.configuration.LdapConfiguration.class ) );
+        res.setLdapConfiguration( getModelMapper().map( redbackRuntimeConfiguration.getLdapConfiguration(),
+                                                        org.apache.archiva.configuration.LdapConfiguration.class ) );
 
         if ( redbackRuntimeConfiguration.getUsersCacheConfiguration() == null )
         {
             redbackRuntimeConfiguration.setUsersCacheConfiguration( new CacheConfiguration() );
         }
 
-
-        res.setUsersCacheConfiguration(
-            getModelMapper().map( redbackRuntimeConfiguration.getUsersCacheConfiguration(),
-                                  org.apache.archiva.configuration.CacheConfiguration.class ) );
+        res.setUsersCacheConfiguration( getModelMapper().map( redbackRuntimeConfiguration.getUsersCacheConfiguration(),
+                                                              org.apache.archiva.configuration.CacheConfiguration.class ) );
 
         List<LdapGroupMapping> ldapGroupMappings = redbackRuntimeConfiguration.getLdapGroupMappings();
 
