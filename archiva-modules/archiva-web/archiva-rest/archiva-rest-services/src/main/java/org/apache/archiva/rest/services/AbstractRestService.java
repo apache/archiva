@@ -49,6 +49,7 @@ import org.apache.archiva.security.UserRepositories;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -323,6 +324,7 @@ public abstract class AbstractRestService
         static
         {
             MODEL_MAPPER.addMappings( new SearchResultHitMap() );
+            MODEL_MAPPER.getConfiguration().setMatchingStrategy( MatchingStrategies.STRICT );
         }
     }
 

@@ -29,6 +29,7 @@ import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,15 +57,14 @@ public abstract class AbstractRepositoryAdmin
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
-    @Named( value = "commons-configuration" )
+    @Named(value = "commons-configuration")
     private Registry registry;
 
     protected void triggerAuditEvent( String repositoryId, String resource, String action,
                                       AuditInformation auditInformation )
     {
         User user = auditInformation == null ? null : auditInformation.getUser();
-        AuditEvent event =
-            new AuditEvent( repositoryId, user == null ? "null" : user.getUsername(), resource, action );
+        AuditEvent event = new AuditEvent( repositoryId, user == null ? "null" : user.getUsername(), resource, action );
         event.setRemoteIP( auditInformation == null ? "null" : auditInformation.getRemoteAddr() );
 
         for ( AuditListener listener : getAuditListeners() )
@@ -95,6 +95,12 @@ public abstract class AbstractRepositoryAdmin
     private static class ModelMapperHolder
     {
         private static ModelMapper MODEL_MAPPER = new ModelMapper();
+
+        static
+        {
+            MODEL_MAPPER.getConfiguration().setMatchingStrategy( MatchingStrategies.STRICT );
+        }
+
     }
 
     protected ModelMapper getModelMapper()
