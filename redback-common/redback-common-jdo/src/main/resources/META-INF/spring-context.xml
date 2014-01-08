@@ -25,6 +25,11 @@
         default-lazy-init="true">
 
   <bean name="jdoFactory#users" class="org.apache.archiva.redback.common.jdo.UserConfigurableJdoFactory">
+    <constructor-arg>
+      <ref bean="userConfiguration#default"/>
+    </constructor-arg>
+    <!--
     <property name="config" ref="userConfiguration#default"/>
+    -->
   </bean>
 </beans>

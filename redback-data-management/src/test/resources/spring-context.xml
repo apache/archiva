@@ -29,7 +29,12 @@
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
   <bean name="jdoFactory#users" class="org.apache.archiva.redback.common.jdo.UserConfigurableJdoFactory">
+    <constructor-arg>
+      <ref bean="userConfiguration#default"/>
+    </constructor-arg>
+    <!--
     <property name="config" ref="userConfiguration#default"/>
+    -->
     <!--
     <property name="driverName" value="org.apache.derby.jdbc.EmbeddedDriver"/>
     <property name="url" value="jdbc:derby:memory:users-test" />

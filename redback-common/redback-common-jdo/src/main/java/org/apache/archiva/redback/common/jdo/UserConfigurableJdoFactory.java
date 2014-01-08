@@ -37,34 +37,38 @@ import javax.inject.Named;
  * UserConfigurableJdoFactory
  *
  * @author <a href="mailto:joakim@erdfelt.com">Joakim Erdfelt</a>
- *
  */
-@Service( "jdoFactory#users" )
+@Service("jdoFactory#users")
 public class UserConfigurableJdoFactory
     extends DefaultConfigurableJdoFactory
 {
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
+    private UserConfiguration userConfiguration;
+
     @Inject
-    @Named( value = "userConfiguration#default" )
-    private UserConfiguration config;
+    public UserConfigurableJdoFactory(
+        @Named( value = "userConfiguration#default" ) UserConfiguration userConfiguration )
+    {
+        this.userConfiguration = userConfiguration;
+    }
 
     private String getConfigString( String key, String currentValue, String defaultValue )
     {
         String valueFromSysProps = System.getProperty( "redback." + key );
-        if (StringUtils.isNotEmpty( valueFromSysProps ))
+        if ( StringUtils.isNotEmpty( valueFromSysProps ) )
         {
             return valueFromSysProps;
         }
         String value = null;
         if ( StringUtils.isNotEmpty( currentValue ) )
         {
-            value = config.getString( key, currentValue );
+            value = userConfiguration.getString( key, currentValue );
         }
         else
         {
-            value = config.getString( key, defaultValue );
+            value = userConfiguration.getString( key, defaultValue );
         }
         // do some interpolation as we can have some ${plexus.home} etc...
         StringSearchInterpolator interpolator = new StringSearchInterpolator();
@@ -116,13 +120,13 @@ public class UserConfigurableJdoFactory
         super.initialize();
     }
 
-    public UserConfiguration getConfig()
+    public UserConfiguration getUserConfiguration()
     {
-        return config;
+        return userConfiguration;
     }
 
-    public void setConfig( UserConfiguration config )
+    public void setUserConfiguration( UserConfiguration userConfiguration )
     {
-        this.config = config;
+        this.userConfiguration = userConfiguration;
     }
 }
