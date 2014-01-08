@@ -72,7 +72,7 @@
     <scmPubscmsvnImpl>svn</scmPubscmsvnImpl>
     <scmSkipDeletedFiles>false</scmSkipDeletedFiles>
     <maven-scm-provider-svnjava.version>2.0.6</maven-scm-provider-svnjava.version>
-    <svnkit.version>1.8.1</svnkit.version>
+    <svnkit.version>1.8.2</svnkit.version>
 
 
     <!-- reporting plugins versions -->
@@ -960,19 +960,6 @@
     </profile>
 
   </profiles>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>maven.tmatesoft.com.releases</id>
-      <url>http://maven.tmatesoft.com/content/repositories/releases</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
 
 </project>
 
