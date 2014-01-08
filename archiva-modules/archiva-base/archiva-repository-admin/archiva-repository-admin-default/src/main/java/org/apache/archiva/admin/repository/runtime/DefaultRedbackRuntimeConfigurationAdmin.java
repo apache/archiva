@@ -52,7 +52,7 @@ import java.util.Set;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service("redbackRuntimeConfigurationAdmin#default")
+@Service( "redbackRuntimeConfigurationAdmin#default" )
 public class DefaultRedbackRuntimeConfigurationAdmin
     extends AbstractRepositoryAdmin
     implements RedbackRuntimeConfigurationAdmin, UserConfiguration
@@ -60,21 +60,20 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
-    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
-    @Inject
-    @Named(value = "userConfiguration#redback")
     private UserConfiguration userConfiguration;
 
-    @Inject
-    @Named(value = "cache#users")
     private Cache usersCache;
 
     @Inject
-    public DefaultRedbackRuntimeConfigurationAdmin( ArchivaConfiguration archivaConfiguration )
+    public DefaultRedbackRuntimeConfigurationAdmin( ArchivaConfiguration archivaConfiguration, @Named(
+        value = "userConfiguration#redback" ) UserConfiguration userConfiguration,
+                                                    @Named( value = "cache#users" ) Cache usersCache )
     {
         this.archivaConfiguration = archivaConfiguration;
+        this.userConfiguration = userConfiguration;
+        this.usersCache = usersCache;
     }
 
     @PostConstruct
