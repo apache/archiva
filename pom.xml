@@ -122,12 +122,6 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>httpunit</groupId>
-        <artifactId>httpunit</artifactId>
-        <version>1.7</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>org.apache.tomcat.embed</groupId>
         <artifactId>tomcat-embed-core</artifactId>
         <version>${tomcat7Version}</version>
