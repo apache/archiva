@@ -609,6 +609,7 @@ public class DefaultRepositoriesService
         if ( !VersionUtil.isGenericSnapshot( version ) )
         {
             Artifact artifact = new Artifact( namespace, projectId, version );
+            artifact.setRepositoryId( repositoryId );
             return deleteArtifact( artifact );
         }
 
