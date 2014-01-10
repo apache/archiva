@@ -146,13 +146,14 @@ public class Maven3DependencyTreeBuilder
             return;
         }
 
+        List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
+        Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
+
         try
         {
             // MRM-1411
             // TODO: this is a workaround for a lack of proxy capability in the resolvers - replace when it can all be
             //       handled there. It doesn't cache anything locally!
-            List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
-            Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
 
             Map<String, List<ProxyConnector>> proxyConnectorsMap = proxyConnectorAdmin.getProxyConnectorAsMap();
             List<ProxyConnector> proxyConnectors = proxyConnectorsMap.get( repository.getId() );
@@ -179,7 +180,15 @@ public class Maven3DependencyTreeBuilder
         }
 
         // FIXME take care of relative path
-        resolve( repository.getLocation(), groupId, artifactId, version, dependencyVisitor );
+        ResolveRequest resolveRequest = new ResolveRequest();
+        resolveRequest.dependencyVisitor = dependencyVisitor;
+        resolveRequest.localRepoDir = repository.getLocation();
+        resolveRequest.groupId = groupId;
+        resolveRequest.artifactId = artifactId;
+        resolveRequest.version = version;
+        resolveRequest.remoteRepositories = remoteRepositories;
+        resolveRequest.networkProxies = networkProxies;
+        resolve( resolveRequest );
     }
 
 
@@ -197,24 +206,39 @@ public class Maven3DependencyTreeBuilder
         return treeEntries;
     }
 
+    private static class ResolveRequest
+    {
+        String localRepoDir, groupId, artifactId, version;
 
-    private void resolve( String localRepoDir, String groupId, String artifactId, String version,
-                          DependencyVisitor dependencyVisitor )
+        DependencyVisitor dependencyVisitor;
+
+        List<RemoteRepository> remoteRepositories;
+
+        Map<String, NetworkProxy> networkProxies;
+
+    }
+
+
+    private void resolve( ResolveRequest resolveRequest )
     {
 
         RepositorySystem system = newRepositorySystem();
 
-        RepositorySystemSession session = newRepositorySystemSession( system, localRepoDir );
+        RepositorySystemSession session = newRepositorySystemSession( system, resolveRequest.localRepoDir );
 
-        org.sonatype.aether.artifact.Artifact artifact =
-            new DefaultArtifact( groupId + ":" + artifactId + ":" + version );
+        org.sonatype.aether.artifact.Artifact artifact = new DefaultArtifact(
+            resolveRequest.groupId + ":" + resolveRequest.artifactId + ":" + resolveRequest.version );
 
         CollectRequest collectRequest = new CollectRequest();
         collectRequest.setRoot( new Dependency( artifact, "" ) );
 
-        // add remote repositories ?
-        collectRequest.addRepository( new org.sonatype.aether.repository.RemoteRepository( "fake", "default", "http://maven.apache.org" ) );
-
+        // add remote repositories
+        for ( RemoteRepository remoteRepository : resolveRequest.remoteRepositories )
+        {
+            collectRequest.addRepository(
+                new org.sonatype.aether.repository.RemoteRepository( remoteRepository.getId(), "default",
+                                                                     remoteRepository.getUrl() ) );
+        }
         collectRequest.setRequestContext( "project" );
 
         //collectRequest.addRepository( repo );
@@ -222,7 +246,7 @@ public class Maven3DependencyTreeBuilder
         try
         {
             CollectResult collectResult = system.collectDependencies( session, collectRequest );
-            collectResult.getRoot().accept( dependencyVisitor );
+            collectResult.getRoot().accept( resolveRequest.dependencyVisitor );
             log.debug( "test" );
         }
         catch ( DependencyCollectionException e )

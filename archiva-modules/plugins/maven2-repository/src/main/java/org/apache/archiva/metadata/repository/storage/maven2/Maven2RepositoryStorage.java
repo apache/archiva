@@ -223,7 +223,7 @@ public class Maven2RepositoryStorage
             String id = readMetadataRequest.getProjectId() + "-" + artifactVersion + ".pom";
             File file =
                 pathTranslator.toFile( basedir, readMetadataRequest.getNamespace(), readMetadataRequest.getProjectId(),
-                                       artifactVersion, id );
+                                       readMetadataRequest.getProjectVersion(), id );
 
             if ( !file.exists() )
             {

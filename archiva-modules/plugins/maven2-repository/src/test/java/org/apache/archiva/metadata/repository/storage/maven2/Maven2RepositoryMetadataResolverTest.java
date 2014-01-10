@@ -342,7 +342,7 @@ public class Maven2RepositoryMetadataResolverTest
     {
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata(
             new ReadMetadataRequest( TEST_REPO_ID, "org.apache", "apache", "5-SNAPSHOT" ) );
-        MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
+        MavenProjectFacet facet = MavenProjectFacet.class.cast( metadata.getFacet( MavenProjectFacet.FACET_ID ) );
         assertEquals( "pom", facet.getPackaging() );
         assertEquals( "http://www.apache.org/", metadata.getUrl() );
         assertNull( facet.getParent() );
