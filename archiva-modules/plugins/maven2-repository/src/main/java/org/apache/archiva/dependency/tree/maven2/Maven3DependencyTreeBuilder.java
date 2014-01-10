@@ -213,7 +213,7 @@ public class Maven3DependencyTreeBuilder
         collectRequest.setRoot( new Dependency( artifact, "" ) );
 
         // add remote repositories ?
-        //collectRequest.addRepository(  )
+        collectRequest.addRepository( new org.sonatype.aether.repository.RemoteRepository( "fake", "default", "http://maven.apache.org" ) );
 
         collectRequest.setRequestContext( "project" );
 

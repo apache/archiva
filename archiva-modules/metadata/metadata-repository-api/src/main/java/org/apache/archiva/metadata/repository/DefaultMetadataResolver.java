@@ -101,7 +101,7 @@ public class DefaultMetadataResolver
             {
                 ReadMetadataRequest readMetadataRequest =
                     new ReadMetadataRequest().repositoryId( repoId ).namespace( namespace ).projectId(
-                        projectId ).projectVersion( projectVersion );
+                        projectId ).projectVersion( projectVersion ).browsingRequest( true );
                 metadata = repositoryStorage.readProjectVersionMetadata( readMetadataRequest );
 
                 log.debug( "Resolved project version metadata from storage: {}", metadata );

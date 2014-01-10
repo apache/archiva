@@ -169,31 +169,35 @@ public class Maven2RepositoryStorage
         {
             ManagedRepository managedRepository =
                 managedRepositoryAdmin.getManagedRepository( readMetadataRequest.getRepositoryId() );
-
             String artifactVersion = readMetadataRequest.getProjectVersion();
-            if ( VersionUtil.isSnapshot(
-                readMetadataRequest.getProjectVersion() ) ) // skygo trying to improve speed by honoring managed configuration MRM-1658
+            // olamy: in case of browsing via the ui we can mix repos (parent of a SNAPSHOT can come from release repo)
+            if ( !readMetadataRequest.isBrowsingRequest() )
             {
-                if ( managedRepository.isReleases() && !managedRepository.isSnapshots() )
+
+                if ( VersionUtil.isSnapshot(
+                    artifactVersion ) ) // skygo trying to improve speed by honoring managed configuration MRM-1658
                 {
-                    throw new RepositoryStorageRuntimeException( "lookforsnaponreleaseonly",
-                                                                 "managed repo is configured for release only" );
+                    if ( managedRepository.isReleases() && !managedRepository.isSnapshots() )
+                    {
+                        throw new RepositoryStorageRuntimeException( "lookforsnaponreleaseonly",
+                                                                     "managed repo is configured for release only" );
+                    }
                 }
-            }
-            else
-            {
-                if ( !managedRepository.isReleases() && managedRepository.isSnapshots() )
+                else
                 {
-                    throw new RepositoryStorageRuntimeException( "lookforsreleaseonsneponly",
-                                                                 "managed repo is configured for snapshot only" );
+                    if ( !managedRepository.isReleases() && managedRepository.isSnapshots() )
+                    {
+                        throw new RepositoryStorageRuntimeException( "lookforsreleaseonsneponly",
+                                                                     "managed repo is configured for snapshot only" );
+                    }
                 }
             }
             File basedir = new File( managedRepository.getLocation() );
-            if ( VersionUtil.isSnapshot( readMetadataRequest.getProjectVersion() ) )
+            if ( VersionUtil.isSnapshot( artifactVersion ) )
             {
                 File metadataFile = pathTranslator.toFile( basedir, readMetadataRequest.getNamespace(),
-                                                           readMetadataRequest.getProjectId(),
-                                                           readMetadataRequest.getProjectVersion(), METADATA_FILENAME );
+                                                           readMetadataRequest.getProjectId(), artifactVersion,
+                                                           METADATA_FILENAME );
                 try
                 {
                     ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
@@ -219,7 +223,7 @@ public class Maven2RepositoryStorage
             String id = readMetadataRequest.getProjectId() + "-" + artifactVersion + ".pom";
             File file =
                 pathTranslator.toFile( basedir, readMetadataRequest.getNamespace(), readMetadataRequest.getProjectId(),
-                                       readMetadataRequest.getProjectVersion(), id );
+                                       artifactVersion, id );
 
             if ( !file.exists() )
             {
@@ -256,6 +260,13 @@ public class Maven2RepositoryStorage
                         }
                     }
                 }
+            }
+
+            // That's a browsing request so we can a mix of SNAPSHOT and release artifacts (especially with snapshots which
+            // can have released parent pom
+            if ( readMetadataRequest.isBrowsingRequest() )
+            {
+                remoteRepositories.addAll( remoteRepositoryAdmin.getRemoteRepositories() );
             }
 
             ModelBuildingRequest req =
@@ -809,12 +820,12 @@ public class Maven2RepositoryStorage
             filePath =
                 StringUtils.replace( filePath, artifactReference.getArtifactId() + "-" + artifactReference.getVersion(),
                                      artifactReference.getArtifactId() + "-" + StringUtils.remove(
-                                         artifactReference.getVersion(), "-" + VersionUtil.SNAPSHOT ) + "-" + timestamp + "-"
-                                         + buildNumber );
+                                         artifactReference.getVersion(), "-" + VersionUtil.SNAPSHOT ) + "-" + timestamp
+                                         + "-" + buildNumber );
 
-            throw new RelocationException(
-                "/repository/" + managedRepositoryContent.getRepository().getId() +
-                    ( StringUtils.startsWith( filePath, "/" ) ? "" : "/" ) + filePath, RelocationException.RelocationType.TEMPORARY );
+            throw new RelocationException( "/repository/" + managedRepositoryContent.getRepository().getId() +
+                                               ( StringUtils.startsWith( filePath, "/" ) ? "" : "/" ) + filePath,
+                                           RelocationException.RelocationType.TEMPORARY );
 
         }
 
