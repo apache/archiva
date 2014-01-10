@@ -233,7 +233,7 @@ public class Maven3DependencyTreeBuilder
 
     }
 
-    public static RepositorySystem newRepositorySystem()
+    private RepositorySystem newRepositorySystem()
     {
         DefaultServiceLocator locator = new DefaultServiceLocator();
         locator.addService( RepositoryConnectorFactory.class,
@@ -247,7 +247,7 @@ public class Maven3DependencyTreeBuilder
         return locator.getService( RepositorySystem.class );
     }
 
-    public static RepositorySystemSession newRepositorySystemSession( RepositorySystem system, String localRepoDir )
+    private RepositorySystemSession newRepositorySystemSession( RepositorySystem system, String localRepoDir )
     {
         MavenRepositorySystemSession session = new MavenRepositorySystemSession();
 
