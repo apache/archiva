@@ -883,7 +883,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
           name: 'quick-search-result',
           remote: 'restServices/archivaServices/searchService/quickSearch?queryString=%QUERY',
           valueKey: 'artifactId',
-          maxParallelRequests:1,
+          maxParallelRequests:0,
           limit: 50
         }
     );

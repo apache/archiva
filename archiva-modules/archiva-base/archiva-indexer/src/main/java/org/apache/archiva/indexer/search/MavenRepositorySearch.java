@@ -261,6 +261,7 @@ public class MavenRepositorySearch
         try
         {
             FlatSearchRequest request = new FlatSearchRequest( q );
+
             request.setContexts( getIndexingContexts( indexingContextIds ) );
 
             FlatSearchResponse response = indexer.searchFlat( request );
