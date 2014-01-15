@@ -1423,7 +1423,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
   }
 
   enableAutocompleBrowse=function(groupId){
-    $.log("enableAutocompleBrowse");
+    $.log("enableAutocompleBrowse with groupId:'"+groupId+"'");
     $("#select_browse_repository" ).select2({width: "resolve"});
     // browse-autocomplete
     var url="restServices/archivaServices/browseService/rootGroups";
@@ -1441,9 +1441,9 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
         {
           name: 'browse-result',
           remote: {
-            url: groupId?url+'/%QUERY':url,
+            url: url,//groupId?url+'/%QUERY':url,
             beforeSend: function(jqXhr){
-              $.log("beforeSend");
+              $.log("beforeSend browseBox.val():'"+browseBox.val()+"'");
             },
             filter: function(parsedResponse){
               var request = browseBox.val();
@@ -1492,10 +1492,12 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
                       result=browseResultEntries;
                     }
                     var filtered = [];
+                    $.log("filtering with request '"+request+"'");
                     for(var i=0;i<browseResultEntries.length;i++){
                       if (groupId){
                         if (browseResultEntries[i].name.startsWith(groupId+'.'+request)){
-                          filtered.push(browseResultEntries[i]);
+                          var item = browseResultEntries[i];
+                          filtered.push(item.name.substring(groupId.length+1, item.name.length));
                         }
                       } else {
                         if (browseResultEntries[i].name.startsWith(request)){
