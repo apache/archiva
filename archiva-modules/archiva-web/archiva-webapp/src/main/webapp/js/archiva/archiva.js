@@ -82,7 +82,7 @@ $.ajax({
               "sammy": "sammy.0.7.4",
               "select2": "select2.min-3.2",
               "jqueryFileTree": "jqueryFileTree-1.0.1",
-              "d3": "d3.min.3.1.5",
+              "d3": "d3.v3.min",
               "typeahead": "typeahead.min.0.9.3",
               "hogan": "hogan-2.0.0",
               "redback": "redback/redback",
