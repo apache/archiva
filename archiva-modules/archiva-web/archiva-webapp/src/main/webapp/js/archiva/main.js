@@ -697,7 +697,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
           if (groupId){
             displayBrowseGroupId(groupId);
           } else {
-            displayBrowse(true);
+            displayBrowse(true,null);
           }
         });
         this.get('#browse~:repositoryId/:groupId',function(context){

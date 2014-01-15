@@ -1532,7 +1532,11 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
         if (selectedRepo){
           location+="~"+selectedRepo;
         }
-        location+="/"+theGroupId+"."+datum.name;
+        if(theGroupId){
+          location+="/"+theGroupId+"."+datum.name;
+        }else{
+          location+="/"+datum.name;
+        }
         $.log("location:"+location);
         window.sammyArchivaApplication.setLocation(location);
       }
