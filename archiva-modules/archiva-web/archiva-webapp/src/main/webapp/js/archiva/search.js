@@ -1434,14 +1434,14 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     if (selectedRepo){
       url+="?repositoryId="+encodeURIComponent(selectedRepo);
     }
-
+    var theGroupId=groupId;
     var browseBox = $("#main-content").find("#browse-autocomplete" );
 
     browseBox.typeahead(
         {
           name: 'browse-result',
           remote: {
-            url: url,//groupId?url+'/%QUERY':url,
+            url: url,
             beforeSend: function(jqXhr){
               $.log("beforeSend browseBox.val():'"+browseBox.val()+"'");
             },
@@ -1497,7 +1497,8 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
                       if (groupId){
                         if (browseResultEntries[i].name.startsWith(groupId+'.'+request)){
                           var item = browseResultEntries[i];
-                          filtered.push(item.name.substring(groupId.length+1, item.name.length));
+                          item.name=item.name.substring(groupId.length+1, item.name.length);
+                          filtered.push(item);
                         }
                       } else {
                         if (browseResultEntries[i].name.startsWith(request)){
@@ -1514,29 +1515,17 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
           valueKey: 'name',
           maxParallelRequests:0,
           limit: 50,
-          template: [
-            '<p>{{name}}</p>'
-          ].join(''),
+          template: '<p>{{name}}</p>',
           engine: Hogan
         }
     );
 
     browseBox.on('typeahead:selected', function(obj, datum) {
-      $.log(obj);
+      $.log("typeahead:selected:"+datum.name+":"+datum.project+",groupId:"+theGroupId);
       //window.sammyArchivaApplication.setLocation("#quicksearch~" + datum.artifactId);
 
       if (datum.project){
-        // value org.apache.maven/maven-archiver
-        // split this org.apache.maven and maven-archiver
-        var id=datum.name;
-        var values = id.split(".");
-        var groupId="";
-        for (var i = 0;i<values.length-1;i++){
-          groupId+=values[i];
-          if (i<values.length-2)groupId+=".";
-        }
-        var artifactId=values[values.length-1];
-        goToArtifactDetail(groupId,artifactId);
+        goToArtifactDetail(theGroupId,datum.name);
       } else {
         var selectedRepo=getSelectedBrowsingRepository();
         var location ="#browse";
@@ -1544,6 +1533,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
           location+="~"+selectedRepo;
         }
         location+="/"+datum.name;
+        //browseBox.typeahead('destroy');
         window.sammyArchivaApplication.setLocation(location);
       }
 
