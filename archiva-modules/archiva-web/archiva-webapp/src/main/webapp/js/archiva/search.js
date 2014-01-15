@@ -209,7 +209,9 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     browseResult.show();
     mainContent.find("#browse_artifact" ).hide();
     var browseBreadCrumb=mainContent.find("#browse_breadcrumb");
-    mainContent.find("#main_browse_result_content").hide( "slide", {}, 300,
+    $.log("before slide");
+    //mainContent.find("#main_browse_result_content").hide( "slide", {}, 300,
+    mainContent.find("#main_browse_result_content").animate( {},300,"slide",
         function(){
           browseResult.html(mediumSpinnerImg());
           browseBreadCrumb.html(smallSpinnerImg());
@@ -378,8 +380,8 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     }
 
     this.display=function(afterCallbackFn){
-      mainContent.find("#browse_breadcrumb").hide("slide", {}, 300,function(){
-        mainContent.find("#browse_artifact").hide("slide", {}, 300,function(){
+      mainContent.find("#browse_breadcrumb").animate({},300,"slide",function(){
+        mainContent.find("#browse_artifact").animate({},300,"slide",function(){
 
           mainContent.find("#browse_artifact_detail").show();
           mainContent.find("#browse_artifact_detail").html(mediumSpinnerImg());
@@ -1285,7 +1287,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
                 mainContent.find("#browse_artifact_detail").hide();
                 mainContent.find("#browse_result").hide();
                 $.log("before slide");
-                mainContent.find("#main_browse_result_content").hide("slide", {}, 300,function(){
+                mainContent.find("#main_browse_result_content").animate({},300,"slide",function(){
                   $.log("yup");
                   mainContent.find("#browse_breadcrumb").html(smallSpinnerImg());
                   mainContent.find("#browse_artifact").show();
