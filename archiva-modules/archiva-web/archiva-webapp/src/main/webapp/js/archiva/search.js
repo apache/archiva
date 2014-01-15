@@ -33,7 +33,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     this.repositoryId=repositoryId;
     this.feedsUrl=feedsUrl;
     displayGroupId=function(groupId){
-      $.log("BrowseViewModel#displayGroupId,self.repositoryId:"+self.repositoryId);
+      $.log("BrowseViewModel#displayGroupId"+groupId+",self.repositoryId:"+self.repositoryId);
       if(self.repositoryId){
         window.sammyArchivaApplication.setLocation("#browse~"+self.repositoryId+"/"+groupId);
       } else {
@@ -1209,6 +1209,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
               success: function(applicationUrl){
 
                 var mainContent = $("#main-content");
+                mainContent.empty();
                 mainContent.html($("#browse-tmpl" ).tmpl());
                 mainContent.find("#browse_result").html(mediumSpinnerImg());
                 var parentBrowseViewModel=new BrowseViewModel(null,null,groupId,repositoryId);
@@ -1439,9 +1440,11 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
 
     browseBox.typeahead(
         {
-          name: 'browse-result',
+          name: 'browse-result-'+$.now() ,////hack to avoid local storage caching
+          local: [],
           remote: {
             url: url,
+            cache: false,
             beforeSend: function(jqXhr){
               $.log("beforeSend browseBox.val():'"+browseBox.val()+"'");
             },
