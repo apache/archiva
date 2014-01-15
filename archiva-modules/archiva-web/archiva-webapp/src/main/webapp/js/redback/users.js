@@ -16,8 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("redback.users",["jquery","jquery.ui","utils","i18n","jquery.validate","knockout","knockout.simpleGrid","typeahead"],
-function(jquery,jqueryui,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
+define("redback.users",["jquery","utils","i18n","jquery.validate","knockout","knockout.simpleGrid","typeahead"],
+function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
 
   /**
    * view model used for users grid
@@ -281,57 +281,15 @@ function(jquery,jqueryui,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
   }
 
   applyAutocompleteOnHeaderUsers=function(property,usersViewModel){
-
-    $("#main-content").find("#users-grid-filter-auto-"+property ).autocomplete({
-      minLength: 0,
-      source: function(request, response){
-        var founds=[];
-        $.log("source:"+request.term+",users:"+usersViewModel.users().length)
-        $(usersViewModel.users()).each(function(idx,user){
-          if(user[property] && user[property]() && user[property]().indexOf(request.term)>=0){
-            founds.push(user[property]());
-          }
-        });
-        response(unifyArray(founds,true));
-      },
-      select: function( event, ui ) {
-        $.log("property:"+property+','+ui.item.value);
-        var users=[];
-        $(usersViewModel.users()).each(function(idx,user){
-          if(user[property] && user[property]() && user[property]().indexOf(ui.item.value)>=0){
-            users.push(user);
-          }
-        });
-        $.log("property:"+property+','+ui.item.value+",size:"+users.length);
-        usersViewModel.users(users);
-        return false;
-      }
-    });
-
-    /*
-    olamy: doesn't work????
-    var values=[];
+    var founds=[];
     $(usersViewModel.users()).each(function(idx,user){
-      var value=user[property];
-      if(value!=null && $.inArray(value, values)<0){
-        values.push(value);
+      if(user[property] && user[property]()){
+        founds.push(user[property]());
       }
     });
-    var jid = "#users-grid-filter-auto-"+property;
-    $.log("applyAutocompleteOnHeaderUsers:"+values.length+" for " + jid);
-
-    var box = $("#main-content").find(jid);
-
-    box.typeahead( { local: values } );
-    box.bind('typeahead:selected', function(obj, datum, name) {
-      var users=[];
-      $(usersViewModel.users()).each(function(idx,user){
-        if(user[property] && user[property]() && user[property]().indexOf(datum.value)>=0){
-          users.push(user);
-        }
-      });
-      usersViewModel.users(users);
-    });*/
+    $("#main-content").find("#users-grid-filter-auto-"+property ).typeahead({
+        local: founds
+    });
   }
 
   /**

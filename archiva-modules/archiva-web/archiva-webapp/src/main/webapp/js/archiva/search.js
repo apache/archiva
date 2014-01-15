@@ -1455,7 +1455,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
           return;
         }
         var dotEnd=request.term.endsWith(".");
-        // org.apache. requets with org.apache
+        // org.apache. request with org.apache
         // org.apa request with org before last dot and filter response with startsWith
           if (request.term.indexOf(".")>=0){
             if (dotEnd){
@@ -1520,12 +1520,15 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
         }
         return false;
       }
-		}).data( "autocomplete" )._renderItem = function( ul, item ) {
+		})
+    ._renderItem = function( ul, item ) {
+          $.log("_renderItem");
 					return $( "<li></li>" )
 						.data( "item.autocomplete", item )
 						.append( groupId ? "<a>" +  item.name.substring(groupId.length+1, item.name.length) + "</a>": "<a>" + item.name + "</a>" )
 						.appendTo( ul );
 				};
+
   }
 
   /**
