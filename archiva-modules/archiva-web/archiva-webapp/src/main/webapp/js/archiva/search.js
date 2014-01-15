@@ -380,6 +380,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     }
 
     this.display=function(afterCallbackFn){
+      $.log("display");
       mainContent.find("#browse_breadcrumb").animate({},300,"slide",function(){
         mainContent.find("#browse_artifact").animate({},300,"slide",function(){
 
@@ -1287,7 +1288,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
                 mainContent.find("#browse_artifact_detail").hide();
                 mainContent.find("#browse_result").hide();
                 $.log("before slide");
-                mainContent.find("#main_browse_result_content").animate({},300,"slide",function(){
+                mainContent.find("#main_browse_result_content" ).animate({},500,"linear",function(){
                   $.log("yup");
                   mainContent.find("#browse_breadcrumb").html(smallSpinnerImg());
                   mainContent.find("#browse_artifact").show();
