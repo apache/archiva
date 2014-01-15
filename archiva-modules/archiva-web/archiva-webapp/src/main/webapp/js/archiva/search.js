@@ -1424,7 +1424,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
 
   enableAutocompleBrowse=function(groupId){
     $.log("enableAutocompleBrowse with groupId:'"+groupId+"'");
-    $("#select_browse_repository" ).select2({width: "resolve"});
+    $("#select_browse_repository").select2({width: "resolve"});
     // browse-autocomplete
     var url="restServices/archivaServices/browseService/rootGroups";
     if (groupId){
@@ -1532,8 +1532,8 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
         if (selectedRepo){
           location+="~"+selectedRepo;
         }
-        location+="/"+datum.name;
-        //browseBox.typeahead('destroy');
+        location+="/"+theGroupId+"."+datum.name;
+        $.log("location:"+location);
         window.sammyArchivaApplication.setLocation(location);
       }
 
