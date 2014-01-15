@@ -202,6 +202,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
   }
 
   displayGroupDetail=function(groupId,parentBrowseViewModel,restUrl,repositoryId,feedsUrl){
+    $.log("displayGroupDetail");
     var mainContent = $("#main-content");
     mainContent.find("#browse_artifact_detail").hide();
     var browseResult=mainContent.find("#browse_result");
@@ -1222,6 +1223,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
                   mainContent.find("#selected_repository" ).html($("#selected_repository_tmpl" )
                                                                      .tmpl({repositories:data,selected:"",feedsUrl:null}));
                 }
+
                 displayGroupDetail(groupId,parentBrowseViewModel,url,repositoryId,feedsUrl);
 
               }
