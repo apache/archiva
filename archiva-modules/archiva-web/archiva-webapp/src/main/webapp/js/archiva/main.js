@@ -437,6 +437,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
                                                          if(contentDisplayFn){
                                                            contentDisplayFn(groupId,artifactId,version,artifactVersionDetailViewModel);
                                                          }
+                                                         $("#main-content" ).find("#browse_artifact" ).hide();
                                                        }
               );
 
