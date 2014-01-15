@@ -195,11 +195,11 @@ public class DefaultBrowseService
             new ArrayList<BrowseResultEntry>( namespaces.size() + projects.size() );
         for ( String namespace : namespaces )
         {
-            browseGroupResultEntries.add( new BrowseResultEntry( namespace, false ) );
+            browseGroupResultEntries.add( new BrowseResultEntry( namespace, false ).groupId( namespace ) );
         }
         for ( String project : projects )
         {
-            browseGroupResultEntries.add( new BrowseResultEntry( groupId + '.' + project, true ) );
+            browseGroupResultEntries.add( new BrowseResultEntry( groupId + '.' + project, true ).groupId( groupId ).artifactId( project ) );
         }
         Collections.sort( browseGroupResultEntries );
         return new BrowseResult( browseGroupResultEntries );

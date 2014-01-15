@@ -1528,7 +1528,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
       //window.sammyArchivaApplication.setLocation("#quicksearch~" + datum.artifactId);
 
       if (datum.project){
-        goToArtifactDetail(theGroupId,datum.name);
+        goToArtifactDetail(datum.groupId,datum.artifactId);
       } else {
         var selectedRepo=getSelectedBrowsingRepository();
         var location ="#browse";
@@ -1677,15 +1677,17 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     if (data.browseResultEntries) {
       return $.isArray(data.browseResultEntries) ?
          $.map(data.browseResultEntries,function(item){
-           return new BrowseResultEntry(item.name, item.project);
+           return new BrowseResultEntry(item.name, item.project,item.groupId,item.artifactId);
          } ).sort(function(a, b){return a.name.localeCompare(b.name)}): [data.browseResultEntries];
     }
     return [];
   }
 
-  BrowseResultEntry=function(name,project){
+  BrowseResultEntry=function(name,project,groupId,artifactId){
     this.name=name;
     this.project=project;
+    this.groupId=groupId;
+    this.artifactId=artifactId;
   }
 
   BreadCrumbEntry=function(groupId,displayValue){

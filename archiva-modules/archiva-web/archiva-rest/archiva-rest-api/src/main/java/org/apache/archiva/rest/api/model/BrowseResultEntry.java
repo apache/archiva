@@ -34,6 +34,16 @@ public class BrowseResultEntry
 
     private boolean project;
 
+    /**
+     * @since 2.0.0
+     */
+    private String groupId;
+
+    /**
+     * @since 2.0.0
+     */
+    private String artifactId;
+
     public BrowseResultEntry()
     {
         // no op
@@ -70,13 +80,46 @@ public class BrowseResultEntry
         return this.name.compareTo( browseGroupResultEntry.name );
     }
 
+    public String getGroupId()
+    {
+        return groupId;
+    }
+
+    public void setGroupId( String groupId )
+    {
+        this.groupId = groupId;
+    }
+
+    public BrowseResultEntry groupId( String groupId )
+    {
+        this.groupId = groupId;
+        return this;
+    }
+
+    public String getArtifactId()
+    {
+        return artifactId;
+    }
+
+    public void setArtifactId( String artifactId )
+    {
+        this.artifactId = artifactId;
+    }
+
+    public BrowseResultEntry artifactId( String artifactId )
+    {
+        this.artifactId = artifactId;
+        return this;
+    }
+
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder();
-        sb.append( "BrowseResultEntry" );
-        sb.append( "{name='" ).append( name ).append( '\'' );
+        final StringBuilder sb = new StringBuilder( "BrowseResultEntry{" );
+        sb.append( "name='" ).append( name ).append( '\'' );
         sb.append( ", project=" ).append( project );
+        sb.append( ", groupId='" ).append( groupId ).append( '\'' );
+        sb.append( ", artifactId='" ).append( artifactId ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }
