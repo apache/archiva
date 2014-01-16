@@ -610,6 +610,7 @@ public class DefaultRepositoriesService
         {
             Artifact artifact = new Artifact( namespace, projectId, version );
             artifact.setRepositoryId( repositoryId );
+            artifact.setContext( repositoryId );
             return deleteArtifact( artifact );
         }
 
@@ -711,6 +712,12 @@ public class DefaultRepositoriesService
     {
 
         String repositoryId = artifact.getContext();
+        // some rest call can use context or repositoryId
+        // so try both!!
+        if ( StringUtils.isEmpty( repositoryId ) )
+        {
+            repositoryId = artifact.getRepositoryId();
+        }
         if ( StringUtils.isEmpty( repositoryId ) )
         {
             throw new ArchivaRestServiceException( "repositoryId cannot be null", 400, null );
