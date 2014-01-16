@@ -46,8 +46,8 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/trunk</developerConnection>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/branches/2.0.0-RC</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/branches/2.0.0-RC</developerConnection>
     <url>http://svn.apache.org/viewvc/archiva/trunk</url>
   </scm>
 
