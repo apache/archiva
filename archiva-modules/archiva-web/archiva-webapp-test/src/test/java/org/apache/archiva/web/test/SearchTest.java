@@ -22,14 +22,20 @@ package org.apache.archiva.web.test;
 import java.io.File;
 
 import org.apache.archiva.web.test.parent.AbstractSearchTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "search" }, dependsOnGroups = "login" )
+@Test( groups = { "search" } )
 public class SearchTest 
 	extends AbstractSearchTest
 {
-	
-	public void testSearchNonExistingArtifact()
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+    }
+
+    public void testSearchNonExistingArtifact()
 		throws Exception
 	{
 		searchForArtifact( getProperty( "SEARCH_BAD_ARTIFACT" ) );
@@ -38,19 +44,19 @@ public class SearchTest
     
 	public void testSearchExistingArtifact()
 	{
-		searchForArtifact( getProperty( "ARTIFACT_ARTIFACTID" ) );
+		searchForArtifact( "searchArtifactId" );
 		assertTextPresent( "Results" );
 		assertTextPresent( "Hits: 1 to 1 of 1" );
-		assertLinkPresent( "test" );
+		assertLinkPresent( "searchArtifactId" );
 	}
 	
 	public void testViewSearchedArtifact()
     {
-		searchForArtifact( getProperty( "ARTIFACT_ARTIFACTID" ) );
-		clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) );
+		searchForArtifact( "searchArtifactId" );
+		clickLinkWithText( "searchArtifactId" );
 		assertPage( "Apache Archiva \\ Browse Repository" );
-		assertTextPresent( getProperty( "ARTIFACT_ARTIFACTID" ) );
-		clickLinkWithText( getProperty( "ARTIFACT_VERSION" ) + "/"  );
+		assertTextPresent( "searchArtifactId" );
+		clickLinkWithText( "1.0/"  );
 		assertPage( "Apache Archiva \\ Browse Repository" );
     }
 	
@@ -68,27 +74,27 @@ public class SearchTest
 
     public void testSearchExistingArtifactUsingAdvancedSearchArtifactId()
     {
-        searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, getProperty( "REPOSITORYID" ), null, null );
+        searchForArtifactAdvancedSearch( null, "searchArtifactId", null, getProperty( "REPOSITORYID" ), null, null );
 		assertTextPresent( "Results" );
 		assertTextPresent( "Hits: 1 to 1 of 1" );
-		assertLinkPresent( "test" );   
+		assertLinkPresent( "searchArtifactId" );
     }
     
     public void testSearchExistingArtifactUsingAdvancedSearchGroupId()
     {
-        searchForArtifactAdvancedSearch( getProperty( "GROUPID" ), null, null, getProperty( "REPOSITORYID" ), null, null );
+        searchForArtifactAdvancedSearch( "searchGroup", null, null, getProperty( "REPOSITORYID" ), null, null );
         assertTextPresent( "Results" );
         assertTextPresent( "Hits: 1 to 1 of 1" );
-        assertLinkPresent( "test" );   
+        assertLinkPresent( "searchGroup" );
     }
     
     public void testSearchExistingArtifactUsingAdvancedSearchNotInRepository()
     {
-        searchForArtifactAdvancedSearch( null, getProperty( "ARTIFACT_ARTIFACTID" ), null, "snapshots", null, null );
+        searchForArtifactAdvancedSearch( null, "searchArtifactId", null, "snapshots", null, null );
         assertTextPresent( "No results found" );
         assertTextNotPresent( "Results" );
         assertTextNotPresent( "Hits: 1 to 1 of 1" );
-        assertLinkNotPresent( "test" );   
+        assertLinkNotPresent( "searchArtifactId" );
     }
 }
 

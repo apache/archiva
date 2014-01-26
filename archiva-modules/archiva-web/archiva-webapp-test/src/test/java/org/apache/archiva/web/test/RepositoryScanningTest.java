@@ -20,14 +20,21 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractRepositoryTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
-@Test( groups = { "reposcan" }, dependsOnGroups = "login", sequential = true )
+@Test( groups = { "reposcan" }, sequential = true )
 public class RepositoryScanningTest 
 	extends AbstractRepositoryTest
 {
-	public void testAddArtifactFileType_NullValue()
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+    }
+
+    public void testAddArtifactFileType_NullValue()
 	{
 		goToRepositoryScanningPage();
 		clickAddIcon( "newpattern_0" );

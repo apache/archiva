@@ -19,16 +19,23 @@ package org.apache.archiva.web.test;
  * under the License.
  */
 
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 
 /**
  * Test all actions affected with XSS security issue.
  */
-@Test( groups = { "xss" }, dependsOnGroups = "login", sequential = true )
+@Test( groups = { "xss" }, sequential = true )
 public class XSSSecurityTest
     extends AbstractArchivaTest
 {
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+    }
+
     public void testDeleteArtifactImmunityToURLCrossSiteScripting()
     {
         getSelenium().open( "/archiva/deleteArtifact!doDelete.action?groupId=\"/>1<script>alert('xss')</script>&artifactId=\"/>1<script>alert('xss')</script>&version=\"/>1<script>alert('xss')</script>&repositoryId=\"/>1<script>alert('xss')</script>");

@@ -36,7 +36,7 @@ import org.testng.annotations.Test;
  * @version $Id$
  */
 
-@Test ( groups = { "login" }, dependsOnGroups = "about")
+@Test ( groups = { "login" } )
 public class LoginTest 
 	extends AbstractArchivaTest
 {
@@ -52,11 +52,7 @@ public class LoginTest
     @Test( dependsOnMethods = { "testWithBadUsername" }, alwaysRun = true )
     public void testWithBadPassword()
     {
-        goToLoginPage();
-        getSelenium().type( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
-        getSelenium().type( "loginForm_password", "badPassword" );
-        getSelenium().click( "loginForm__login" );
-        getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        login( getProperty( "ADMIN_USERNAME" ), "badPassword", false, "Login Page" );
         assertTextPresent( "You have entered an incorrect username and/or password" );
     }
 
@@ -83,28 +79,9 @@ public class LoginTest
     @Test( groups = { "loginSuccess" }, dependsOnMethods = { "testWithEmptyPassword" }, alwaysRun = true )
     public void testWithCorrectUsernamePassword()
     {
-        goToLoginPage();
-        getSelenium().type( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
-        getSelenium().type( "loginForm_password", getProperty( "ADMIN_PASSWORD" ) );
-        getSelenium().click( "loginForm__login" );
-        getSelenium().waitForPageToLoad( maxWaitTimeInMs );
+        loginAsAdmin();
         assertTextPresent( "Edit Details" );
         assertTextPresent( "Logout" );
         assertTextPresent( getProperty( "ADMIN_USERNAME" ) );
-    }
-	
-	@BeforeTest
-    public void open()
-        throws Exception
-    {
-        super.open();
-    }
-
-    @Override
-    @AfterTest
-    public void close()
-        throws Exception
-    {
-        super.close();
     }
 }

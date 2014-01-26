@@ -233,12 +233,16 @@ public abstract class AbstractRepositoryTest
 			clickButtonWithValue( "Add Repository" );
 	}
 	
-	public void deleteRemoteRepository()
+	public void deleteRemoteRepository( String id, boolean validate )
 	{
 		goToRepositoriesPage();
-		clickLinkWithXPath( "//div[@id='contentArea']/div/div[8]/div[1]/a[2]" );
+        String xpath = "//div[@id='contentArea']//a[contains(@href,'confirmDeleteRemoteRepository.action?repoid=" + id + "')]";
+        if ( validate || isElementPresent( "xpath=" + xpath ) )
+        {
+            clickLinkWithXPath( xpath );
 		assertDeleteRemoteRepositoryPage();
 		clickButtonWithValue( "Confirm" );
+        }
 	}
 	
 	public void editRemoteRepository( String fieldName, String value)
@@ -274,12 +278,16 @@ public abstract class AbstractRepositoryTest
                 clickButtonWithValue( "Update Repository" );
         }
 	
-	public void deleteManagedRepository()
+	public void deleteManagedRepository( String id, boolean validate )
 	{
-		clickLinkWithXPath( "//div[@id='contentArea']/div/div[5]/div[1]/a[2]" );
-		assertPage( "Apache Archiva \\ Admin: Delete Managed Repository" );
-		clickButtonWithValue( "Delete Configuration Only" );
-	}
+        String xpath = "//div[@id='contentArea']//a[contains(@href,'confirmDeleteRepository.action?repoid=" + id + "')]";
+        if ( validate || isElementPresent( "xpath=" + xpath ) )
+        {
+            clickLinkWithXPath( xpath );
+            assertPage( "Apache Archiva \\ Admin: Delete Managed Repository" );
+            clickButtonWithValue( "Delete Configuration Only" );
+        }
+    }
 	
 	public String getRepositoryDir()
 	{

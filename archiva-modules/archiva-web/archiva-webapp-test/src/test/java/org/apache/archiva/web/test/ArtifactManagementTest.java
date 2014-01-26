@@ -20,15 +20,25 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractArtifactManagementTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "artifactmanagement" }, dependsOnGroups = "login" )
+@Test( groups = { "artifactmanagement" } )
 public class ArtifactManagementTest
 	extends AbstractArtifactManagementTest
 {
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+    }
 
-	
-	public void testAddArtifactNullValues()
+    public void tearDown()
+    {
+        deleteArtifact( getGroupId(), "testAddArtifactValidValues", getVersion(), getRepositoryId() );
+    }
+
+    public void testAddArtifactNullValues()
 	{
 		goToAddArtifactPage();
 		clickButtonWithValue( "Submit" );
@@ -86,7 +96,7 @@ public class ArtifactManagementTest
     @Test(groups = "requiresUpload")
 	public void testAddArtifactValidValues()
 	{
-		addArtifact( getGroupId() , "testAddArtifactValidValues", getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
+		addArtifact( getGroupId() , "testAddArtifactValidValues", getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId() );
 		assertTextPresent( "Artifact 'test:testAddArtifactValidValues:1.0' was successfully deployed to repository 'internal'" );
 	}
 		
@@ -94,7 +104,7 @@ public class ArtifactManagementTest
     @Test(groups = "requiresUpload")
 	public void testAddArtifactBlockRedeployments()
 	{
-            addArtifact( getGroupId() , getArtifactId(), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
+            addArtifact( getGroupId() , getProperty( "ARTIFACT_ARTIFACTID" ), getVersion(), getPackaging() , getArtifactFilePath(), getRepositoryId() );
             assertTextPresent( "Overwriting released artifacts in repository '" + getRepositoryId() + "' is not allowed." );
 	}
 	

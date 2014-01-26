@@ -20,13 +20,20 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractRepositoryTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "database" }, dependsOnGroups = "login", sequential = true )
+@Test( groups = { "database" }, sequential = true )
 public class DatabaseTest
 	extends AbstractRepositoryTest
 {
-	public void testUpdateCron_NullValue()
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+    }
+
+    public void testUpdateCron_NullValue()
 	{
 		goToDatabasePage();
 		setFieldValue( "database_cron" , "");

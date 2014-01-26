@@ -20,13 +20,20 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractRepositoryTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "networkproxies" }, dependsOnGroups = {"login","virtualrepository"})
+@Test( groups = { "networkproxies" })
 public class NetworkProxiesTest 
 	extends AbstractRepositoryTest
 {
-	@Test
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+    }
+
+    @Test
 	public void testAddNetworkProxyNullValues()
 	{
 		goToNetworkProxiesPage();

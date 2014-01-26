@@ -4,6 +4,11 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.archiva.web.test.XPathExpressionUtil;
+import org.apache.archiva.web.test.listener.CaptureScreenShotsListener;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.Listeners;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -24,12 +29,37 @@ import org.apache.archiva.web.test.XPathExpressionUtil;
  * under the License.
  */
 
+@Listeners(value = CaptureScreenShotsListener.class)
 public abstract class AbstractArchivaTest
     extends AbstractSeleniumTest
 {
     protected String username;
 
     protected String fullname;
+
+    @BeforeSuite( alwaysRun = true )
+    @Parameters( { "baseUrl", "browser", "seleniumHost", "seleniumPort" } )
+    public void initializeArchiva( @Optional( "http://localhost:9696/archiva/" ) String baseUrl,
+                                   @Optional( "*firefox" ) String browser,
+                                   @Optional( "localhost" ) String seleniumHost,
+                                   @Optional( "4444" ) int seleniumPort ) throws Exception
+    {
+        super.open( baseUrl, browser, seleniumHost, seleniumPort );
+        getSelenium().open( baseUrl );
+        String title = getSelenium().getTitle();
+        if ( title.endsWith( "Create Admin User" ) )
+        {
+            assertCreateAdmin();
+            String fullname = getProperty( "ADMIN_FULLNAME" );
+            String username = getProperty( "ADMIN_USERNAME" );
+            String mail = getProperty( "ADMIN_EMAIL" );
+            String password = getProperty( "ADMIN_PASSWORD" );
+            submitAdminData( fullname, mail, password );
+            assertUserLoggedIn( username );
+            submit();
+            clickLinkWithText( "Logout" );
+        }
+    }
 
     public String getUserEmail()
     {
@@ -351,7 +381,7 @@ public abstract class AbstractArchivaTest
     public void checkResourceRoleWithValue( String value )
     {
         assertResourceRolesCheckBoxPresent( value );
-        getSelenium().click( "xpath=//input[@name='addDSelectedRoles' and @value='" + value + "']" );
+            getSelenium().click( "xpath=//input[@name='addDSelectedRoles' and @value='" + value + "']" );
     }
 
 
@@ -687,5 +717,20 @@ public abstract class AbstractArchivaTest
         assertLinkNotPresent( "Edit Details" );
         assertLinkNotPresent( "Logout" );
         assertLinkPresent( "Login" );
+    }
+
+    protected void loginAsAdmin()
+    {
+        login( getProperty( "ADMIN_USERNAME" ), getProperty( "ADMIN_PASSWORD" ) );
+    }
+
+    protected void createUserWithRole( String username, String fullname, String email, String password )
+    {
+        createUser( username, fullname, email, password, true );
+        clickLinkWithText( username );
+        clickLinkWithText( "Edit Roles" );
+        checkResourceRoleWithValue( fullname ); 
+
+        clickButtonWithValue( "Submit" );
     }
 }

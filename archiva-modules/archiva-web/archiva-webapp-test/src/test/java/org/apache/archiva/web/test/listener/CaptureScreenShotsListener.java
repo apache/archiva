@@ -30,6 +30,7 @@ import org.apache.commons.io.FileUtils;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import com.thoughtworks.selenium.Selenium;
+import org.testng.annotations.Listeners;
 
 public class CaptureScreenShotsListener
     extends TestListenerAdapter

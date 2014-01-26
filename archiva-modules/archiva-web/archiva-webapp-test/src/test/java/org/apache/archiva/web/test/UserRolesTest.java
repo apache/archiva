@@ -20,14 +20,20 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "userroles" }, dependsOnGroups = "login")
+@Test( groups = { "userroles" })
 public class UserRolesTest 
 	extends AbstractArchivaTest
 {
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+    }
 
-	public void testBasicAddDeleteUser()
+    public void testBasicAddDeleteUser()
 	{
 		username = getProperty( "GUEST_USERNAME" );
 		fullname = getProperty( "GUEST_FULLNAME" );
@@ -205,12 +211,8 @@ public class UserRolesTest
 	{
 		username = getProperty("REPOMANAGER_INTERNAL_USERNAME");
 		fullname = getProperty("REPOMANAGER_INTERNAL_FULLNAME");
-		
-		createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);
-		clickLinkWithText( username );
-		clickLinkWithText( "Edit Roles" );
-		checkResourceRoleWithValue( fullname );
-		clickButtonWithValue( "Submit" );
+
+        createUserWithRole( username, fullname, getUserEmail(), getUserRolePassword() );
 
         logout();
         login(username, getUserRolePassword());
@@ -226,8 +228,8 @@ public class UserRolesTest
         logout();
         login( getAdminUsername() , getAdminPassword() );
 	}
-	
-	/*@Test (dependsOnMethods = { "testUserWithRepoManagerInternalRole" } )
+
+    /*@Test (dependsOnMethods = { "testUserWithRepoManagerInternalRole" } )
 	public void testUserWithRepoManagerSnapshotsRole()
 	{
 		username = getProperty("REPOMANAGER_SNAPSHOTS_USERNAME");
@@ -259,12 +261,8 @@ public class UserRolesTest
 	{
 		username = getProperty( "REPOOBSERVER_INTERNAL_USERNAME" );
 		fullname = getProperty( "REPOOBSERVER_INTERNAL_FULLNAME" );
-		
-		createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);
-		clickLinkWithText( username );
-		clickLinkWithText( "Edit Roles" );
-		checkResourceRoleWithValue( fullname );
-		clickButtonWithValue( "Submit" );
+
+        createUserWithRole( username, fullname, getUserEmail(), getUserRolePassword() );
 
         logout();
         login(username, getUserRolePassword());

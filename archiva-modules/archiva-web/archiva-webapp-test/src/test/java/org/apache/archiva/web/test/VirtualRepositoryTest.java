@@ -20,14 +20,21 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractRepositoryTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
-@Test( groups = { "virtualrepository" }, dependsOnGroups = "login")
+@Test( groups = { "virtualrepository" })
 public class VirtualRepositoryTest 
 	extends AbstractRepositoryTest
 {
-	public void testAddRepositoryGroupNullValue()
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+    }
+
+    public void testAddRepositoryGroupNullValue()
 	{
 		addRepositoryGroup( " " );
 		assertTextPresent( "Identifier field is required." );

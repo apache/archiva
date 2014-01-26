@@ -20,13 +20,20 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractArtifactReportsTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "reports" }, dependsOnGroups = "login")
+@Test( groups = { "reports" })
 public class ReportsTest 
 	extends AbstractArtifactReportsTest
 {
-	//TODO Tests for repository with defects
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+    }
+
+    //TODO Tests for repository with defects
 	
 	public void testRepoStatisticsWithoutRepoCompared()
 	{

@@ -19,23 +19,31 @@ package org.apache.archiva.web.test;
  * under the License.
  */
 
-import org.apache.archiva.web.test.parent.AbstractArchivaTest;
+import org.apache.archiva.web.test.parent.AbstractArtifactManagementTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "auditlogsreport" }, dependsOnGroups = {"login", "artifactmanagement", "userroles"} )
+@Test( groups = { "auditlogsreport" } )
 public class AuditLogsReportTest
-    extends AbstractArchivaTest
+    extends AbstractArtifactManagementTest
 {
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+        addArtifact( getGroupId(), "testAudit", getVersion(), getPackaging(), getArtifactFilePath(), getRepositoryId() );
+    }
+
     private void goToAuditLogReports()
     {
         getSelenium().open( "/archiva/report/queryAuditLogReport.action" );
     }
-    
+
     private void assertAuditLogsReportPage()
-    {   
+    {
         assertPage( "Apache Archiva \\ Audit Log Report" );
         assertTextPresent( "Audit Log Report" );
-        
+
         assertElementPresent( "repository" );
         assertElementPresent( "groupId" );
         assertElementPresent( "artifactId" );
@@ -44,88 +52,88 @@ public class AuditLogsReportTest
         assertElementPresent( "rowCount" );
         assertButtonWithValuePresent( "View Audit Log" );
     }
-    
+
     @Test
     public void testAuditLogsReport()
     {
-        goToAuditLogReports();        
+        goToAuditLogReports();
         assertAuditLogsReportPage();
         assertTextPresent( "Latest Events" );
     }
-    
+
     @Test
     public void testViewAuditLogsNoDataFound()
     {
-        goToAuditLogReports();        
+        goToAuditLogReports();
         assertAuditLogsReportPage();
-        
+
         setFieldValue( "groupId", "non.existing" );
         submit();
-        
-        assertPage( "Apache Archiva \\ Audit Log Report" );   
+
+        assertPage( "Apache Archiva \\ Audit Log Report" );
         assertTextPresent( "Results" );
         assertTextPresent( "No audit logs found." );
-    }    
-    
+    }
+
     // TODO: add test for adding via WebDAV
     @Test (groups = "requiresUpload")
     public void testViewAuditLogsDataFound()
     {
-        goToAuditLogReports();        
+        goToAuditLogReports();
         assertAuditLogsReportPage();
-        
+
         selectValue( "repository", "internal" );
         setFieldValue( "groupId", "test" );
         submit();
-                
+
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
+        assertTextPresent( "testAudit-1.0.jar" );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
     }
-    
+
     // TODO: add test for adding via WebDAV
     @Test ( groups = "requiresUpload")
     public void testViewAuditLogsOnlyArtifactIdIsSpecified()
     {
-        goToAuditLogReports();        
+        goToAuditLogReports();
         assertAuditLogsReportPage();
-        
+
         selectValue( "repository", "internal" );
         setFieldValue( "artifactId", "test" );
         submit();
-                
+
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
+        assertTextPresent( "testAudit-1.0.jar" );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
     }
-    
+
     // TODO: add test for adding via WebDAV
     @Test (groups = "requiresUpload")
     public void testViewAuditLogsForAllRepositories()
     {
-        goToAuditLogReports();        
+        goToAuditLogReports();
         assertAuditLogsReportPage();
-        
+
         selectValue( "repository", "all" );
         submit();
-        
+
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
+        assertTextPresent( "testAudit-1.0.jar" );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
     }
-    
+
     @Test (groups = "requiresUpload")
     public void testViewAuditLogsViewAuditEventsForManageableRepositoriesOnly()
     {
@@ -134,14 +142,26 @@ public class AuditLogsReportTest
         String version = getProperty( "SNAPSHOT_VERSION" );
         String repo = getProperty( "SNAPSHOT_REPOSITORYID" );
         String packaging = getProperty( "SNAPSHOT_PACKAGING" );
-        
-        addArtifact( groupId, artifactId, version, packaging, getProperty( "SNAPSHOT_ARTIFACTFILEPATH" ), repo );        
+
+        addArtifact( groupId, artifactId, version, packaging, getProperty( "SNAPSHOT_ARTIFACTFILEPATH" ), repo );
         assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + version +
-            "' was successfully deployed to repository '" + repo + "'" );
-        
-        clickLinkWithText( "Logout" );
-                
-        login( getProperty( "REPOMANAGER_INTERNAL_USERNAME" ), getUserRoleNewPassword() );
+                               "' was successfully deployed to repository '" + repo + "'" );
+
+        goToUserManagementPage();
+        String username = "testAuditUser";
+        if ( !isLinkPresent( username ) )
+        {
+            createUserWithRole( username, "Repository Manager - internal", getUserEmail(), getUserRolePassword() );
+
+            logout();
+            login( username, getUserRolePassword() );
+            changePassword( getUserRolePassword(), getUserRoleNewPassword() );
+        }
+        else
+        {
+            logout();
+            login( username, getUserRoleNewPassword() );
+        }
 
         goToAuditLogReports();
         assertAuditLogsReportPage();
@@ -152,16 +172,16 @@ public class AuditLogsReportTest
         assertAuditLogsReportPage();
         assertTextPresent( "Results" );
         assertTextNotPresent( "No audit logs found." );
-        assertTextPresent( "testAddArtifactValidValues-1.0.jar" );
+        assertTextPresent( "testAudit-1.0.jar" );
         assertTextPresent( "Uploaded File" );
         assertTextPresent( "internal" );
         assertTextPresent( "admin" );
 
         assertTextNotPresent( artifactId + "-" + version + "." + packaging );
         clickLinkWithText( "Logout" );
-        login( getProperty( "ADMIN_USERNAME" ), getProperty( "ADMIN_PASSWORD" ) );
+        loginAsAdmin();
     }
-    
+
     @Test ( groups = "requiresUpload")
     public void testViewAuditLogsReportForGroupId()
     {
@@ -171,15 +191,15 @@ public class AuditLogsReportTest
         String packaging = getProperty("PACKAGING");
         String repositoryId = getProperty("REPOSITORYID");
         String expectedArtifact = getProperty("AUDITLOG_EXPECTED_ARTIFACT");
-    		
+
         addArtifact( groupId, artifactId, version, packaging,  getProperty( "SNAPSHOT_ARTIFACTFILEPATH" ), repositoryId );
-    			
+
         goToAuditLogReports();
-    			
+
         selectValue( "repository", repositoryId );
         setFieldValue( "groupId", groupId );
         submit();
-    	                
+
         assertAuditLogsReportPage();
         assertTextPresent( expectedArtifact );
         assertTextPresent( repositoryId );

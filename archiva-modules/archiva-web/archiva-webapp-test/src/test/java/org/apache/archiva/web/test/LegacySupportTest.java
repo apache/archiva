@@ -20,13 +20,20 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractArtifactManagementTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "legacysupport" }, dependsOnGroups = "login", sequential = true )
-public class LegacySupportTest 
+@Test( groups = { "legacysupport" }, sequential = true )
+public class LegacySupportTest
 	extends AbstractArtifactManagementTest
 {
-	public void testAddLegacyArtifact_NullValues()
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+    }
+
+    public void testAddLegacyArtifact_NullValues()
 	{
 		goToLegacySupportPage();
 		clickLinkWithText( "Add" );

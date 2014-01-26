@@ -23,14 +23,20 @@ import java.io.File;
 
 import org.apache.archiva.web.test.parent.AbstractBrowseTest;
 import org.testng.Assert;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "browse" }, dependsOnGroups = {"login","artifactmanagement"} )
+@Test( groups = { "browse" } )
 public class BrowseTest 
 	extends AbstractBrowseTest
 {
-	
-	public void testBrowseArtifact()
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+    }
+
+    public void testBrowseArtifact()
 	{
 		goToBrowsePage();
 		assertBrowsePage();
@@ -41,7 +47,7 @@ public class BrowseTest
 	{
 		goToBrowsePage();
 		assertBrowsePage();
-		clickLinkWithText( getProperty( "ARTIFACT_ARTIFACTID" ) + "/" );
+		clickLinkWithText( getProperty( "ARTIFACT_GROUPID" ) + "/" );
 		assertPage( "Apache Archiva \\ Browse Repository" );
 		assertTextPresent( "Artifacts" );
 	}

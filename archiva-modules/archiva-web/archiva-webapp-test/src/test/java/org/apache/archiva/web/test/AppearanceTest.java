@@ -20,12 +20,19 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-@Test(groups = { "appearance" }, dependsOnGroups = "login", sequential = true)
+@Test(groups = { "appearance" }, sequential = true)
 public class AppearanceTest
     extends AbstractArchivaTest
 {
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+    }
+
     public void testAddAppearanceEmptyValues()
     {
         goToAppearancePage();

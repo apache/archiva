@@ -33,6 +33,7 @@ import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
 import org.apache.commons.io.IOUtils;
 import org.testng.Assert;
+import org.testng.annotations.AfterSuite;
 
 /**
  * @author <a href="mailto:evenisse@apache.org">Emmanuel Venisse</a>
@@ -51,22 +52,18 @@ public abstract class AbstractSeleniumTest {
 
     private final static String PROPERTIES_SEPARATOR = "=";    
 
-    public void open()
-	    throws Exception
-	{
-	    p = new Properties();
-	    p.load( this.getClass().getClassLoader().getResourceAsStream( "testng.properties" ) );
-	
-	    //baseUrl = getProperty( "BASE_URL" );
-	    maxWaitTimeInMs = System.getProperty( "MAX_WAIT_TIME_IN_MS" );
-	}
-	
 	/**
      * Initialize selenium
      */
     public void open( String baseUrl, String browser, String seleniumHost, int seleniumPort )
         throws Exception
     {
+        p = new Properties();
+        p.load( this.getClass().getClassLoader().getResourceAsStream( "testng.properties" ) );
+
+        //baseUrl = getProperty( "BASE_URL" );
+        maxWaitTimeInMs = System.getProperty( "MAX_WAIT_TIME_IN_MS" );
+
         this.baseUrl = baseUrl;
 
         if ( getSelenium() == null )
@@ -80,16 +77,7 @@ public abstract class AbstractSeleniumTest {
 
     public static Selenium getSelenium()
     {
-        if (selenium.get() != null)
-        {
-            return selenium.get();
-        }
-        DefaultSelenium s =
-            new DefaultSelenium( System.getProperty("seleniumHost","localhost"), Integer.getInteger( "seleniumPort",4444), System.getProperty("browser"), baseUrl );
-        s.start();
-        s.setTimeout( maxWaitTimeInMs );
-        selenium.set( s );
-        return selenium.get();
+        return selenium == null ? null : selenium.get();
     }
 
     protected String getProperty( String key )
@@ -126,6 +114,7 @@ public abstract class AbstractSeleniumTest {
 	    /**
      * Close selenium session. Called from AfterSuite method of sub-class
      */
+    @AfterSuite
     public void close()
         throws Exception
     {
@@ -199,7 +188,7 @@ public abstract class AbstractSeleniumTest {
 	
 	public void assertImgWithAlt( String alt )
 	{
-	   assertElementPresent( "/¯img[@alt='" + alt + "']" );
+	   assertElementPresent( "//img[@alt='" + alt + "']" );
 	}
 	
 	public void assertImgWithAltAtRowCol( boolean isALink, String alt, int row, int column )

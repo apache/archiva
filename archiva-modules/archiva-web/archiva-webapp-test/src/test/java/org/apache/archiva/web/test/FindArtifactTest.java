@@ -20,13 +20,20 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-@Test( groups = { "findartifact" }, dependsOnGroups = "login", sequential = true )
+@Test( groups = { "findartifact" }, sequential = true )
 public class FindArtifactTest
 	extends AbstractArchivaTest
 {
-	public void testFindArtifactNullValues()
+    @BeforeTest
+    public void setUp()
+    {
+        loginAsAdmin();
+    }
+
+    public void testFindArtifactNullValues()
 	{
 		goToFindArtifactPage();
 		clickButtonWithValue( "Search" );
