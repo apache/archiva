@@ -71,6 +71,7 @@ public class CSRFSecurityTest
     }
 
     // TODO: TEMPORARILY DISABLED TO ADDRESS METHOD PARAMETER
+    @Test(enabled = false)
     public void testCSRFDisableProxyConnector()
     {
         getSelenium().open( baseUrl );
@@ -80,6 +81,7 @@ public class CSRFSecurityTest
     }
 
     // TODO: TEMPORARILY DISABLED TO ADDRESS METHOD PARAMETER
+    @Test(enabled = false)
     public void testCSRFDeleteProxyConnector()
     {
         getSelenium().open( baseUrl );
