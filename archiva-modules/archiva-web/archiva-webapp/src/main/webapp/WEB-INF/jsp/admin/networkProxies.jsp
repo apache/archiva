@@ -89,10 +89,10 @@
         <s:url id="editNetworkProxyUrl" encode="true" action="editNetworkProxy">
           <s:param name="proxyid" value="%{#attr.proxy.id}" />
         </s:url>
-        <s:url id="deleteNetworkProxyUrl" encode="true" action="deleteNetworkProxy" method="confirm">
+        <s:url id="deleteNetworkProxyUrl" encode="true" action="deleteNetworkProxy">
           <s:param name="proxyid" value="%{#attr.proxy.id}" />
-          <s:param name="struts.token.name">struts.token</s:param>
-          <s:param name="struts.token"><s:property value="struts.token"/></s:param>
+          <s:param name="struts.token.name">token</s:param>
+          <s:param name="token"><s:property value="token"/></s:param>
         </s:url>
         <s:a href="%{editNetworkProxyUrl}">
           <img src="<c:url value="/images/icons/edit.png" />" />

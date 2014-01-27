@@ -22,51 +22,12 @@
     "http://struts.apache.org/dtds/struts-2.0.dtd"> 
 
 <struts>
+  <constant name="struts.action.excludePattern" value="^/$,^/repository/.*" />
+
   <!-- Include plexus-security xwork configurations. -->
   <include file="struts-security.xml"/>
 
-  <package name="default-stacks" extends="struts-default">
-    <interceptors>
-      <interceptor-stack name="defaultStack">
-        <interceptor-ref name="exception"/>
-        <interceptor-ref name="alias"/>
-        <interceptor-ref name="servletConfig"/>
-        <interceptor-ref name="prepare"/>
-        <interceptor-ref name="i18n"/>
-        <interceptor-ref name="chain"/>
-        <interceptor-ref name="debugging"/>
-        <interceptor-ref name="profiling"/>
-        <interceptor-ref name="scopedModelDriven"/>
-        <interceptor-ref name="modelDriven"/>
-        <interceptor-ref name="fileUpload"/>
-        <interceptor-ref name="checkbox"/>
-        <interceptor-ref name="staticParams"/>
-        <interceptor-ref name="params">
-          <param name="excludeParams">dojo\..*,^struts\..*,.*\\.*,.*\(.*,.*\).*,.*@.*</param>
-        </interceptor-ref>
-        <interceptor-ref name="conversionError"/>
-        <interceptor-ref name="validation">
-          <param name="excludeMethods">input,back,cancel,browse</param>
-        </interceptor-ref>
-        <interceptor-ref name="workflow">
-          <param name="excludeMethods">input,back,cancel,browse</param>
-        </interceptor-ref>
-      </interceptor-stack>
-
-      <interceptor-stack name="basicStack">
-        <interceptor-ref name="exception"/>
-        <interceptor-ref name="servletConfig"/>
-        <interceptor-ref name="prepare"/>
-        <interceptor-ref name="checkbox"/>
-        <interceptor-ref name="params">
-          <param name="excludeParams">dojo\..*,^struts\..*,.*\\.*,.*\(.*,.*\).*,.*@.*</param>
-        </interceptor-ref>
-        <interceptor-ref name="conversionError"/>
-      </interceptor-stack>
-    </interceptors>
-  </package>
-
-  <package name="base" extends="default-stacks">
+  <package name="base" extends="struts-default">
     <interceptors>
       <interceptor name="configuration" class="configurationInterceptor"/>
       <interceptor name="redbackForceAdminUser" class="redbackForceAdminUserInterceptor"/>
@@ -130,43 +91,43 @@
     <global-results>
       <!-- The following security-* result names arrive from the plexus-security package -->
 
-      <result name="security-login-success" type="redirect-action">index</result>
-      <result name="security-login-cancel" type="redirect-action">index</result>
-      <result name="security-login-locked" type="redirect-action">
+      <result name="security-login-success" type="redirectAction">index</result>
+      <result name="security-login-cancel" type="redirectAction">index</result>
+      <result name="security-login-locked" type="redirectAction">
         <param name="actionName">index</param>
         <param name="infoMessage">Account Locked</param>
       </result>
-      <result name="security-logout" type="redirect-action">index</result>
-      <result name="requires-authentication" type="redirect-action">
+      <result name="security-logout" type="redirectAction">index</result>
+      <result name="requires-authentication" type="redirectAction">
         <param name="actionName">login</param>
         <param name="namespace">/security</param>
       </result>
-      <result name="requires-authorization" type="redirect-action">
+      <result name="requires-authorization" type="redirectAction">
         <param name="actionName">login</param>
         <param name="namespace">/security</param>
       </result>
-      <result name="security-register-success" type="redirect-action">
+      <result name="security-register-success" type="redirectAction">
         <param name="actionName">login</param>
         <param name="namespace">/security</param>
       </result>
-      <result name="security-register-cancel" type="redirect-action">
+      <result name="security-register-cancel" type="redirectAction">
         <param name="actionName">login</param>
         <param name="namespace">/security</param>
       </result>
-      <result name="security-account-success" type="redirect-action">index</result>
-      <result name="security-account-cancel" type="redirect-action">
+      <result name="security-account-success" type="redirectAction">index</result>
+      <result name="security-account-cancel" type="redirectAction">
         <param name="actionName">login</param>
         <param name="namespace">/security</param>
       </result>
-      <result name="security-admin-user-created" type="redirect-action">
+      <result name="security-admin-user-created" type="redirectAction">
         <param name="actionName">login</param>
         <param name="namespace">/security</param>
       </result>
-      <result name="security-admin-user-needed" type="redirect-action">
+      <result name="security-admin-user-needed" type="redirectAction">
         <param name="actionName">addadmin</param>
         <param name="namespace">/security</param>
       </result>
-      <result name="security-must-change-password" type="redirect-action">
+      <result name="security-must-change-password" type="redirectAction">
         <param name="actionName">password</param>
         <param name="namespace">/security</param>
       </result>
@@ -187,7 +148,7 @@
          allowing plexus-security to call out from its own set of actions
          into the application webapp, using global result names. -->
     <action name="redbackRedirect" class="redback-redirect" method="redirect">
-      <result type="redirect-action">browse</result>
+      <result type="redirectAction">browse</result>
     </action>
 
     <action name="index" class="searchAction" method="input">
@@ -212,13 +173,21 @@
 
 	<action name="upload" class="uploadAction" method="input">      
       <result name="input">/WEB-INF/jsp/upload.jsp</result>
+    </action>
+
+	<action name="upload_submit" class="uploadAction" method="doUpload">
+      <result name="input">/WEB-INF/jsp/upload.jsp</result>
       <result name="error">/WEB-INF/jsp/upload.jsp</result>
       <result name="success">/WEB-INF/jsp/upload.jsp</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
       <interceptor-ref name="fileUpload"/>
     </action>
 
-	<action name="deleteArtifact" class="deleteArtifactAction" method="input">      
+	<action name="deleteArtifact" class="deleteArtifactAction" method="input">
+      <result name="input">/WEB-INF/jsp/deleteArtifact.jsp</result>
+    </action>
+
+	<action name="deleteArtifact_submit" class="deleteArtifactAction" method="doDelete">
       <result name="input">/WEB-INF/jsp/deleteArtifact.jsp</result>
       <result name="error">/WEB-INF/jsp/deleteArtifact.jsp</result>
       <result name="success">/WEB-INF/jsp/deleteArtifact.jsp</result>
@@ -277,7 +246,7 @@
 
   </package>
 
-  <package name="components" namespace="/components" extends="default-stacks">
+  <package name="components" namespace="/components" extends="struts-default">
     <default-interceptor-ref name="basicStack"/>
     <action name="companyInfo" class="organisationInfo">
       <result>/WEB-INF/jsp/components/companyLogo.jsp</result>
@@ -300,7 +269,7 @@
     <action name="addRepositoryGroup" class="repositoryGroupsAction" method="addRepositoryGroup">
       <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
-      <result name="success" type="redirect-action">repositoryGroups</result>
+      <result name="success" type="redirectAction">repositoryGroups</result>
       <interceptor-ref name="configuredPrepareParamsStack">
         <param name="tokenSession.includeMethods">*</param>
       </interceptor-ref>
@@ -316,7 +285,7 @@
     <action name="deleteRepositoryGroup" class="deleteRepositoryGroupAction" method="delete">
       <result name="input">/WEB-INF/jsp/admin/deleteRepositoryGroup.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/deleteRepositoryGroup.jsp</result>
-      <result name="success" type="redirect-action">repositoryGroups</result>
+      <result name="success" type="redirectAction">repositoryGroups</result>
       <interceptor-ref name="configuredPrepareParamsStack">
         <param name="tokenSession.includeMethods">*</param>
       </interceptor-ref>
@@ -325,28 +294,28 @@
     <action name="addRepositoryToGroup" class="repositoryGroupsAction" method="addRepositoryToGroup">
       <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
-      <result name="success" type="redirect-action">repositoryGroups</result>
+      <result name="success" type="redirectAction">repositoryGroups</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 	
     <action name="removeRepositoryFromGroup" class="repositoryGroupsAction" method="removeRepositoryFromGroup">
       <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
-      <result name="success" type="redirect-action">repositoryGroups</result>
+      <result name="success" type="redirectAction">repositoryGroups</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 	
     <action name="sortDownRepositoryFromGroup" class="sortRepositoriesAction" method="sortDown">
       <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
-      <result name="success" type="redirect-action">repositoryGroups</result>
+      <result name="success" type="redirectAction">repositoryGroups</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 	
     <action name="sortUpRepositoryFromGroup" class="sortRepositoriesAction" method="sortUp">
       <result name="input">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/repositoryGroups.jsp</result>
-      <result name="success" type="redirect-action">repositoryGroups</result>
+      <result name="success" type="redirectAction">repositoryGroups</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
@@ -354,25 +323,34 @@
 
     <action name="repositories" class="repositoriesAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/repositories.jsp</result>
-      <result name="confirm" type="redirect-action">deleteRepository</result>
+      <result name="confirm" type="redirectAction">deleteRepository</result>
     </action>
 
     <action name="indexRepository" class="schedulerAction" method="scanRepository">
-      <result type="redirect-action">repositories</result>
+      <result type="redirectAction">repositories</result>
     </action>
     
     <action name="addRepository" class="addManagedRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/addRepository.jsp</result>
+    </action>
+
+    <action name="addRepository_commit" class="addManagedRepositoryAction" method="commit">
+      <result name="input">/WEB-INF/jsp/admin/addRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/addRepository.jsp</result>
       <result name="confirm">/WEB-INF/jsp/admin/confirmAddRepository.jsp</result>
-      <result name="success" type="redirect-action">repositories</result>
+      <result name="success" type="redirectAction">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <action name="editRepository" class="editManagedRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/editRepository.jsp</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="editRepository_commit" class="editManagedRepositoryAction" method="commit">
+      <result name="input">/WEB-INF/jsp/admin/editRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/editRepository.jsp</result>
-      <result name="success" type="redirect-action">repositories</result>
+      <result name="success" type="redirectAction">repositories</result>
       <result name="confirm">/WEB-INF/jsp/admin/confirmAddRepository.jsp</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
@@ -387,7 +365,7 @@
     <action name="deleteRepository" class="deleteManagedRepositoryAction" method="delete">
       <result name="input">/WEB-INF/jsp/admin/deleteRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/deleteRepository.jsp</result>
-      <result name="success" type="redirect-action">repositories</result>
+      <result name="success" type="redirectAction">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack">
         <param name="tokenSession.includeMethods">*</param>
       </interceptor-ref>
@@ -395,15 +373,20 @@
 
     <action name="addRemoteRepository" class="addRemoteRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/addRemoteRepository.jsp</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="addRemoteRepository_commit" class="addRemoteRepositoryAction" method="commit">
+      <result name="input">/WEB-INF/jsp/admin/addRemoteRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/addRemoteRepository.jsp</result>
-      <result name="success" type="redirect-action">repositories</result>
+      <result name="success" type="redirectAction">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <action name="editRemoteRepository" class="editRemoteRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
-      <result name="success" type="redirect-action">repositories</result>
+      <result name="success" type="redirectAction">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
@@ -415,7 +398,7 @@
     <action name="deleteRemoteRepository" class="deleteRemoteRepositoryAction" method="delete">
       <result name="input">/WEB-INF/jsp/admin/deleteRemoteRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/deleteRemoteRepository.jsp</result>
-      <result name="success" type="redirect-action">repositories</result>
+      <result name="success" type="redirectAction">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
@@ -427,31 +410,31 @@
 
     <action name="addProxyConnector" class="addProxyConnectorAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/addProxyConnector.jsp</result>
-      <result name="success" type="redirect-action">proxyConnectors</result>
+      <result name="success" type="redirectAction">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <action name="editProxyConnector" class="editProxyConnectorAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
-      <result name="success" type="redirect-action">proxyConnectors</result>
+      <result name="success" type="redirectAction">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <action name="sortUpProxyConnector" class="sortProxyConnectorsAction" method="sortUp">
       <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
-      <result name="success" type="redirect-action">proxyConnectors</result>
+      <result name="success" type="redirectAction">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <action name="sortDownProxyConnector" class="sortProxyConnectorsAction" method="sortDown">
       <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
-      <result name="success" type="redirect-action">proxyConnectors</result>
+      <result name="success" type="redirectAction">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <action name="deleteProxyConnector" class="deleteProxyConnectorAction" method="confirm">
       <result name="input">/WEB-INF/jsp/admin/deleteProxyConnector.jsp</result>
-      <result name="success" type="redirect-action">proxyConnectors</result>
+      <result name="success" type="redirectAction">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack">
         <param name="tokenSession.includeMethods">*</param>
       </interceptor-ref>
@@ -459,13 +442,13 @@
     
     <action name="enableProxyConnector" class="enableProxyConnectorAction" method="confirm">
       <result name="input">/WEB-INF/jsp/admin/enableProxyConnector.jsp</result>
-      <result name="success" type="redirect-action">proxyConnectors</result>
+      <result name="success" type="redirectAction">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <action name="disableProxyConnector" class="disableProxyConnectorAction" method="confirm">
       <result name="input">/WEB-INF/jsp/admin/disableProxyConnector.jsp</result>
-      <result name="success" type="redirect-action">proxyConnectors</result>
+      <result name="success" type="redirectAction">proxyConnectors</result>
       <interceptor-ref name="configuredPrepareParamsStack">
         <param name="tokenSession.includeMethods">*</param>  
       </interceptor-ref>
@@ -480,19 +463,19 @@
 
     <action name="addNetworkProxy" class="configureNetworkProxyAction" method="add">
       <result name="input">/WEB-INF/jsp/admin/editNetworkProxy.jsp</result>
-      <result name="success" type="redirect-action">networkProxies</result>
+      <result name="success" type="redirectAction">networkProxies</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <action name="editNetworkProxy" class="configureNetworkProxyAction" method="edit">
       <result name="input">/WEB-INF/jsp/admin/editNetworkProxy.jsp</result>
-      <result name="success" type="redirect-action">networkProxies</result>
+      <result name="success" type="redirectAction">networkProxies</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <action name="saveNetworkProxy" class="configureNetworkProxyAction" method="save">
       <result name="input">/WEB-INF/jsp/admin/editNetworkProxy.jsp</result>
-      <result name="success" type="redirect-action">networkProxies</result>
+      <result name="success" type="redirectAction">networkProxies</result>
       <interceptor-ref name="configuredPrepareParamsStack">
         <param name="tokenSession.includeMethods">*</param>
       </interceptor-ref>
@@ -500,7 +483,14 @@
 
     <action name="deleteNetworkProxy" class="configureNetworkProxyAction" method="confirm">
       <result name="input">/WEB-INF/jsp/admin/deleteNetworkProxy.jsp</result>
-      <result name="success" type="redirect-action">networkProxies</result>
+      <interceptor-ref name="configuredPrepareParamsStack">
+        <param name="tokenSession.includeMethods">*</param>
+      </interceptor-ref>
+    </action>
+
+    <action name="deleteNetworkProxy_submit" class="configureNetworkProxyAction" method="delete">
+      <result name="input">/WEB-INF/jsp/admin/deleteNetworkProxy.jsp</result>
+      <result name="success" type="redirectAction">networkProxies</result>
       <interceptor-ref name="configuredPrepareParamsStack">
         <param name="tokenSession.includeMethods">*</param>
       </interceptor-ref>
@@ -510,11 +500,45 @@
 
     <action name="repositoryScanning" class="repositoryScanningAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
-      <result name="success" type="redirect-action">
+    </action>
+
+    <action name="repositoryScanning_addFiletypePattern" class="repositoryScanningAction" method="addFiletypePattern">
+      <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
+      <result name="success" type="redirectAction">
         <param name="actionName">repositoryScanning</param>
       </result>
       <interceptor-ref name="configuredArchivaStack">
-        <param name="tokenSession.includeMethods">removeFiletypePattern,addFiletypePattern,updateKnownConsumers,updateInvalidConsumers</param>
+        <param name="tokenSession.includeMethods">addFiletypePattern</param>
+      </interceptor-ref>
+    </action>
+
+    <action name="repositoryScanning_removeFiletypePattern" class="repositoryScanningAction" method="removeFiletypePattern">
+      <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">repositoryScanning</param>
+      </result>
+      <interceptor-ref name="configuredArchivaStack">
+        <param name="tokenSession.includeMethods">removeFiletypePattern</param>
+      </interceptor-ref>
+    </action>
+
+    <action name="repositoryScanning_updateKnownConsumers" class="repositoryScanningAction" method="updateKnownConsumers">
+      <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">repositoryScanning</param>
+      </result>
+      <interceptor-ref name="configuredArchivaStack">
+        <param name="tokenSession.includeMethods">updateKnownConsumers</param>
+      </interceptor-ref>
+    </action>
+
+    <action name="repositoryScanning_updateInvalidConsumers" class="repositoryScanningAction" method="updateInvalidConsumers">
+      <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">repositoryScanning</param>
+      </result>
+      <interceptor-ref name="configuredArchivaStack">
+        <param name="tokenSession.includeMethods">updateInvalidConsumers</param>
       </interceptor-ref>
     </action>
 
@@ -522,16 +546,40 @@
 
     <action name="database" class="databaseAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/database.jsp</result>
-      <result name="success" type="redirect-action">
+    </action>
+
+    <action name="database_updateSchedule" class="databaseAction" method="updateSchedule">
+      <result name="input">/WEB-INF/jsp/admin/database.jsp</result>
+      <result name="success" type="redirectAction">
         <param name="actionName">database</param>
       </result>
       <interceptor-ref name="configuredArchivaStack">
-        <param name="tokenSession.includeMethods">updateSchedule,updateUnprocessedConsumers,updateCleanupConsumers</param>
+        <param name="tokenSession.includeMethods">updateSchedule</param>
+      </interceptor-ref>
+    </action>
+
+    <action name="database_updateUnprocessedConsumers" class="databaseAction" method="updateUnprocessedConsumers">
+      <result name="input">/WEB-INF/jsp/admin/database.jsp</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">database</param>
+      </result>
+      <interceptor-ref name="configuredArchivaStack">
+        <param name="tokenSession.includeMethods">updateUnprocessedConsumers</param>
+      </interceptor-ref>
+    </action>
+
+    <action name="database_updateCleanupConsumers" class="databaseAction" method="updateCleanupConsumers">
+      <result name="input">/WEB-INF/jsp/admin/database.jsp</result>
+      <result name="success" type="redirectAction">
+        <param name="actionName">database</param>
+      </result>
+      <interceptor-ref name="configuredArchivaStack">
+        <param name="tokenSession.includeMethods">updateCleanupConsumers</param>
       </interceptor-ref>
     </action>
 
     <action name="updateDatabase" class="schedulerAction" method="updateDatabase">
-      <result type="redirect-action">database</result>
+      <result type="redirectAction">database</result>
     </action>
 
     <!-- .\ CONFIGURATION \.___________________________________________ -->
@@ -546,7 +594,7 @@
 
     <action name="saveAppearance" class="editOrganisationInfo">
       <result name="input">/WEB-INF/jsp/admin/editAppearance.jsp</result>
-      <result type="redirect-action">
+      <result type="redirectAction">
         <param name="actionName">configureAppearance</param>
         <param name="namespace">/admin</param>
       </result>
@@ -560,22 +608,26 @@
 
     <action name="legacyArtifactPath" class="legacyArtifactPathAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/legacyArtifactPath.jsp</result>
-      <result name="success" type="redirect-action">
+      <result name="success" type="redirectAction">
         <param name="actionName">legacyArtifactPath</param>
       </result>
     </action>
 
     <action name="addLegacyArtifactPath" class="addLegacyArtifactPathAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/addLegacyArtifactPath.jsp</result>
+    </action>
+
+    <action name="addLegacyArtifactPath_commit" class="addLegacyArtifactPathAction" method="commit">
+      <result name="input">/WEB-INF/jsp/admin/addLegacyArtifactPath.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/addLegacyArtifactPath.jsp</result>
-      <result name="success" type="redirect-action">legacyArtifactPath</result>
+      <result name="success" type="redirectAction">legacyArtifactPath</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>
 
     <action name="deleteLegacyArtifactPath" class="deleteLegacyArtifactPathAction" method="delete">
       <result name="input">/WEB-INF/jsp/admin/legacyArtifactPath.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/legacyArtifactPath.jsp</result>
-      <result name="success" type="redirect-action">legacyArtifactPath</result>
+      <result name="success" type="redirectAction">legacyArtifactPath</result>
       <interceptor-ref name="configuredPrepareParamsStack">
         <param name="tokenSession.includeMethods">*</param>
       </interceptor-ref>

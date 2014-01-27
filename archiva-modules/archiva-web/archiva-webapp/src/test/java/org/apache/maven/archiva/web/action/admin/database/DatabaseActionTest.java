@@ -20,19 +20,21 @@ package org.apache.maven.archiva.web.action.admin.database;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import com.opensymphony.xwork2.ActionContext;
+import junit.framework.TestCase;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
 import org.apache.maven.archiva.configuration.Configuration;
 import org.apache.maven.archiva.configuration.DatabaseScanningConfiguration;
-import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 import org.easymock.MockControl;
 
 /**
  * DatabaseActionTest
  */
 public class DatabaseActionTest
-    extends PlexusInSpringTestCase 
+    extends TestCase
 {   
     private DatabaseAction action;
     
@@ -45,7 +47,7 @@ public class DatabaseActionTest
     protected void setUp() 
         throws Exception
     {
-        super.setUp();
+        ActionContext.setContext( new ActionContext( new HashMap<String, Object>() ) );
 
         archivaConfigControl = MockControl.createControl( ArchivaConfiguration.class );
         archivaConfig = (ArchivaConfiguration) archivaConfigControl.getMock();
@@ -77,12 +79,6 @@ public class DatabaseActionTest
         action.setArchivaConfiguration( archivaConfig );
     }
     
-    protected void tearDown()
-        throws Exception
-    {
-        super.tearDown();
-    }
-
     public void testUpdateUnprocessedConsumers()
     throws Exception
     {

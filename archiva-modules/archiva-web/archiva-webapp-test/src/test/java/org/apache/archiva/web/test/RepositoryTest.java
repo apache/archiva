@@ -57,7 +57,7 @@ public class RepositoryTest
         public void testAddManagedRepoInvalidValues()
         {
                 goToRepositoriesPage();
-		getSelenium().open( "/archiva/admin/addRepository.action" );	;
+		getSelenium().open( "/archiva/admin/addRepository.action" );
 		addManagedRepository( "<> \\/~+[ ]'\"", "<>\\~+[]'\"" , "<> ~+[ ]'\"" , "<> ~+[ ]'\"", "Maven 2.x Repository", "", "-1", "101" );
 		assertTextPresent( "Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
 		assertTextPresent( "Directory must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );

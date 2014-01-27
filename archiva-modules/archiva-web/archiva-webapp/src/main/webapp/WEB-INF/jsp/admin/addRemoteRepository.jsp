@@ -33,8 +33,8 @@
 <div id="contentArea">
 
   <s:actionmessage/>
-  <s:form method="post" action="addRemoteRepository!commit" namespace="/admin" validate="true">
-    <s:textfield name="repository.id" label="Identifier" size="10" required="true"/>
+  <s:form method="post" action="addRemoteRepository_commit" namespace="/admin" validate="true">
+    <s:textfield name="repository.id" label="Identifier" size="10" requiredLabel="true"/>
     <%@ include file="/WEB-INF/jsp/admin/include/remoteRepositoryForm.jspf" %>
     <s:submit value="Add Repository"/>
   </s:form>

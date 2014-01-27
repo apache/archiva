@@ -82,13 +82,13 @@
       </ul>
   </s:if>
 
-  <s:form method="post" action="addLegacyArtifactPath!commit" namespace="/admin" validate="true">
-    <s:textfield name="legacyArtifactPath.path" label="Path" size="50" required="true" onchange="parse( this.value )"/>
-    <s:textfield name="groupId" label="GroupId" size="20" required="true"/>
-    <s:textfield name="artifactId" label="ArtifactId" size="20" required="true"/>
-    <s:textfield name="version" label="Version" size="20" required="true"/>
-    <s:textfield name="classifier" label="Classifier" size="20" required="false"/>
-    <s:textfield name="type" label="Type" size="20" required="true"/>
+  <s:form method="post" action="addLegacyArtifactPath_commit" namespace="/admin" validate="true">
+    <s:textfield name="legacyArtifactPath.path" label="Path" size="50" requiredLabel="true" onchange="parse( this.value )"/>
+    <s:textfield name="groupId" label="GroupId" size="20" requiredLabel="true"/>
+    <s:textfield name="artifactId" label="ArtifactId" size="20" requiredLabel="true"/>
+    <s:textfield name="version" label="Version" size="20" requiredLabel="true"/>
+    <s:textfield name="classifier" label="Classifier" size="20" requiredLabel="false"/>
+    <s:textfield name="type" label="Type" size="20" requiredLabel="true"/>
     <s:submit value="Add Legacy Artifact Path"/>
   </s:form>
 

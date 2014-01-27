@@ -52,7 +52,7 @@
       Are you sure you want to delete network proxy <code><c:out value="${proxyid}" /></code> ?
   </p>
 
-  <s:form method="post" action="deleteNetworkProxy!delete" namespace="/admin" validate="true">
+  <s:form method="post" action="deleteNetworkProxy_submit" namespace="/admin" validate="true">
     <s:hidden name="proxyid"/>
     <s:token/>
     <s:submit value="Delete"/>

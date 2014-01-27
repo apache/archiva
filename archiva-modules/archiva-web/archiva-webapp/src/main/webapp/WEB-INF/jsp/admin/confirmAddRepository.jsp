@@ -126,8 +126,8 @@
       <s:hidden name="repository.deleteReleasedSnapshots" value="%{#attr.repository.deleteReleasedSnapshots}"/>
       
       <c:choose>      
-        <c:when test="${action == 'addRepository'}">
-      	  <s:submit value="Save" method="confirmAdd"/>
+        <c:when test="${action == 'addRepository_commit'}">
+      	  <s:submit value="Save" name="confirm" />
       	</c:when>
       	<c:otherwise>
       	  <s:submit value="Save" method="confirmUpdate"/>

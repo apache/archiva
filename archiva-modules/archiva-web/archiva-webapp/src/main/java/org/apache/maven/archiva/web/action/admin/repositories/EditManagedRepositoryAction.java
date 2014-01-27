@@ -56,8 +56,6 @@ public class EditManagedRepositoryAction
     private ManagedRepositoryConfiguration repository;
 
     private String repoid;
-    
-    private final String action = "editRepository";
 
     /**
      * @plexus.requirement role-hint="jdo"
@@ -238,7 +236,7 @@ public class EditManagedRepositoryAction
     
     public String getAction()
     {
-        return action;
+        return "editRepository_commit";
     }
 
     // for testing

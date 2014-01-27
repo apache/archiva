@@ -54,7 +54,7 @@ public class RepositoryScanningTest
 	{
 		setFieldValue( "newpattern_0" , "**/*.zip" );
 		clickAddIcon( "newpattern_0" );
-		Assert.assertEquals(getSelenium().getText("//span[@class='errorMessage']"), "Not adding pattern \"**/*.zip\" to filetype artifacts as it already exists." );
+		Assert.assertEquals(getSelenium().getText("//ul[@class='errorMessage']//span"), "Not adding pattern \"**/*.zip\" to filetype artifacts as it already exists." );
 	}
 	
 	@Test (dependsOnMethods = { "testAddArtifactFileType_ExistingValue" } )
@@ -78,7 +78,7 @@ public class RepositoryScanningTest
 	{
 		setFieldValue( "newpattern_1" , "**/*-" );
 		clickAddIcon( "newpattern_1" );
-		Assert.assertEquals(getSelenium().getText("//span[@class='errorMessage']"), "Not adding pattern \"**/*-\" to filetype auto-remove as it already exists." );
+		Assert.assertEquals(getSelenium().getText("//ul[@class='errorMessage']//span"), "Not adding pattern \"**/*-\" to filetype auto-remove as it already exists." );
 	}
 	
 	@Test (dependsOnMethods = { "testAddAutoRemove_ExistingValue" } )
@@ -102,7 +102,7 @@ public class RepositoryScanningTest
 	{
 		setFieldValue( "newpattern_2" , "" );
 		clickAddIcon( "newpattern_2" );
-		Assert.assertEquals(getSelenium().getText("//span[@class='errorMessage']"), "Unable to process blank pattern." );
+		Assert.assertEquals(getSelenium().getText("//ul[@class='errorMessage']//span"), "Unable to process blank pattern." );
 	}
 	
 	@Test (dependsOnMethods = { "testAddIgnoredArtifacts_NullValue" } )
@@ -110,7 +110,7 @@ public class RepositoryScanningTest
 	{
 		setFieldValue( "newpattern_2" , "**/*.sh" );
 		clickAddIcon( "newpattern_2" );
-		Assert.assertEquals(getSelenium().getText("//span[@class='errorMessage']"), "Not adding pattern \"**/*.sh\" to filetype ignored as it already exists." );
+		Assert.assertEquals(getSelenium().getText("//ul[@class='errorMessage']//span"), "Not adding pattern \"**/*.sh\" to filetype ignored as it already exists." );
 	}
 	
 	@Test (dependsOnMethods = { "testAddIgnoredArtifacts_ExistingValue" } )
@@ -135,7 +135,7 @@ public class RepositoryScanningTest
 	{
 		setFieldValue( "newpattern_3" , "" );
 		clickAddIcon( "newpattern_3" );
-		Assert.assertEquals(getSelenium().getText("//span[@class='errorMessage']"), "Unable to process blank pattern." );
+		Assert.assertEquals(getSelenium().getText("//ul[@class='errorMessage']//span"), "Unable to process blank pattern." );
 	}
 	
 	@Test (dependsOnMethods = { "testAddIndexableContent_NullValue" } )
@@ -143,7 +143,7 @@ public class RepositoryScanningTest
 	{
 		setFieldValue( "newpattern_3" , "**/*.xml" );
 		clickAddIcon( "newpattern_3" );
-		Assert.assertEquals(getSelenium().getText("//span[@class='errorMessage']"), "Not adding pattern \"**/*.xml\" to filetype indexable-content as it already exists." );
+		Assert.assertEquals(getSelenium().getText("//ul[@class='errorMessage']//span"), "Not adding pattern \"**/*.xml\" to filetype indexable-content as it already exists." );
 	}
 	
 	@Test (dependsOnMethods = { "testAddIndexableContent_ExistingValue" } )

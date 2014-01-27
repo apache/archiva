@@ -38,32 +38,32 @@ public class XSSSecurityTest
 
     public void testDeleteArtifactImmunityToURLCrossSiteScripting()
     {
-        getSelenium().open( "/archiva/deleteArtifact!doDelete.action?groupId=\"/>1<script>alert('xss')</script>&artifactId=\"/>1<script>alert('xss')</script>&version=\"/>1<script>alert('xss')</script>&repositoryId=\"/>1<script>alert('xss')</script>");
+        getSelenium().open( "/archiva/deleteArtifact_submit.action?groupId=\"/>1<script>alert('xss')</script>&artifactId=\"/>1<script>alert('xss')</script>&version=\"/>1<script>alert('xss')</script>&repositoryId=\"/>1<script>alert('xss')</script>");
         assertDeleteArtifactPage();
         assertTextPresent( "Invalid version." );
         assertTextPresent( "User is not authorized to delete artifacts in repository '\"/>1<script>alert('xss')</script>'." );
         assertTextPresent( "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Repository id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-        assertElementValue("//input[@id='deleteArtifact_groupId']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='deleteArtifact_artifactId']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='deleteArtifact_version']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//select[@id='deleteArtifact_repositoryId']", "internal");
+        assertElementValue("//input[@id='deleteArtifact_submit_groupId']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='deleteArtifact_submit_artifactId']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='deleteArtifact_submit_version']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//select[@id='deleteArtifact_submit_repositoryId']", "internal");
     }
 
     public void testDeleteArtifactImmunityToEncodedURLCrossSiteScripting()
     {
-        getSelenium().open( "/archiva/deleteArtifact!doDelete.action?groupId=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&artifactId=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&version=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&repositoryId=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E");
+        getSelenium().open( "/archiva/deleteArtifact_submit.action?groupId=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&artifactId=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&version=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&repositoryId=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E");
         assertDeleteArtifactPage();
         assertTextPresent( "Invalid version." );
         assertTextPresent( "User is not authorized to delete artifacts in repository '\"/>1<script>alert('xss')</script>'." );
         assertTextPresent( "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Repository id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-        assertElementValue("//input[@id='deleteArtifact_groupId']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='deleteArtifact_artifactId']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='deleteArtifact_version']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//select[@id='deleteArtifact_repositoryId']", "internal");
+        assertElementValue("//input[@id='deleteArtifact_submit_groupId']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='deleteArtifact_submit_artifactId']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='deleteArtifact_submit_version']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//select[@id='deleteArtifact_submit_repositoryId']", "internal");
     }
 
     public void testEditAppearanceImmunityToURLCrossSiteScripting()
@@ -85,7 +85,7 @@ public class XSSSecurityTest
 
     public void testAddLegacyArtifactImmunityToURLCrossSiteScripting()
     {
-        getSelenium().open( "/archiva/admin/addLegacyArtifactPath!commit.action?legacyArtifactPath.path=\"/>1<script>alert('xss')</script>&groupId=\"/>1<script>alert('xss')</script>&artifactId=\"/>1<script>alert('xss')</script>&version=\"/>1<script>alert('xss')</script>&classifier=\"/>1<script>alert('xss')</script>&type=\"/>1<script>alert('xss')</script>");
+        getSelenium().open( "/archiva/admin/addLegacyArtifactPath_commit.action?legacyArtifactPath.path=\"/>1<script>alert('xss')</script>&groupId=\"/>1<script>alert('xss')</script>&artifactId=\"/>1<script>alert('xss')</script>&version=\"/>1<script>alert('xss')</script>&classifier=\"/>1<script>alert('xss')</script>&type=\"/>1<script>alert('xss')</script>");
         assertAddLegacyArtifactPathPage();
         assertTextPresent( "Legacy path must only contain alphanumeric characters, forward-slashes(/), back-slashes(\\), underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
@@ -93,17 +93,17 @@ public class XSSSecurityTest
         assertTextPresent( "Version must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Classifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Type must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-        assertElementValue("//input[@id='addLegacyArtifactPath_legacyArtifactPath_path']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='addLegacyArtifactPath_artifactId']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='addLegacyArtifactPath_version']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='addLegacyArtifactPath_groupId']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='addLegacyArtifactPath_classifier']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='addLegacyArtifactPath_type']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='addLegacyArtifactPath_commit_legacyArtifactPath_path']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='addLegacyArtifactPath_commit_artifactId']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='addLegacyArtifactPath_commit_version']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='addLegacyArtifactPath_commit_groupId']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='addLegacyArtifactPath_commit_classifier']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='addLegacyArtifactPath_commit_type']", "\"/>1<script>alert('xss')</script>");
     }
 
     public void testAddLegacyArtifactImmunityToEncodedURLCrossSiteScripting()
     {
-        getSelenium().open( "/archiva/admin/addLegacyArtifactPath!commit.action?legacyArtifactPath.path=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&groupId=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&artifactId=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&version=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&classifier=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&type=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E");
+        getSelenium().open( "/archiva/admin/addLegacyArtifactPath_commit.action?legacyArtifactPath.path=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&groupId=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&artifactId=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&version=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&classifier=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E&type=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E");
         assertAddLegacyArtifactPathPage();
         assertTextPresent( "Legacy path must only contain alphanumeric characters, forward-slashes(/), back-slashes(\\), underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
@@ -111,24 +111,24 @@ public class XSSSecurityTest
         assertTextPresent( "Version must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Classifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
         assertTextPresent( "Type must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
-        assertElementValue("//input[@id='addLegacyArtifactPath_legacyArtifactPath_path']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='addLegacyArtifactPath_artifactId']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='addLegacyArtifactPath_version']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='addLegacyArtifactPath_groupId']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='addLegacyArtifactPath_classifier']", "\"/>1<script>alert('xss')</script>");
-        assertElementValue("//input[@id='addLegacyArtifactPath_type']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='addLegacyArtifactPath_commit_legacyArtifactPath_path']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='addLegacyArtifactPath_commit_artifactId']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='addLegacyArtifactPath_commit_version']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='addLegacyArtifactPath_commit_groupId']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='addLegacyArtifactPath_commit_classifier']", "\"/>1<script>alert('xss')</script>");
+        assertElementValue("//input[@id='addLegacyArtifactPath_commit_type']", "\"/>1<script>alert('xss')</script>");
     }
 
     public void testDeleteNetworkProxyImmunityToURLCrossSiteScripting()
     {
-        getSelenium().open( "/archiva/admin/deleteNetworkProxy!confirm.action?proxyid=\"/>1<script>alert('xss')</script>");
+        getSelenium().open( "/archiva/admin/deleteNetworkProxy.action?proxyid=\"/>1<script>alert('xss')</script>");
         assertTextPresent( "Security Alert - Invalid Token Found" );
         assertTextPresent( "Possible CSRF attack detected! Invalid token found in the request." );
     }
 
     public void testDeleteNetworkProxyImmunityToEncodedURLCrossSiteScripting()
     {
-        getSelenium().open( "/archiva/admin/deleteNetworkProxy!confirm.action?proxyid=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E");
+        getSelenium().open( "/archiva/admin/deleteNetworkProxy.action?proxyid=%22%2F%3E1%3Cscript%3Ealert('xss')%3C%2Fscript%3E");
         assertTextPresent( "Security Alert - Invalid Token Found" );
         assertTextPresent( "Possible CSRF attack detected! Invalid token found in the request." );
     }

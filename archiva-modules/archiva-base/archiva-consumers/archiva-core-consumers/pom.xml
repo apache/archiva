@@ -46,13 +46,13 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-digest</artifactId>
     </dependency>
+
+    <!-- test dependencies -->
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
+      <groupId>org.codehaus.redback</groupId>
       <artifactId>plexus-spring</artifactId>
       <scope>test</scope>
     </dependency>
-
-    <!-- test dependencies -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>

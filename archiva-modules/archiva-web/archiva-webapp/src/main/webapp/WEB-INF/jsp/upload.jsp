@@ -37,7 +37,7 @@
   <s:actionerror/>
   <s:actionmessage/>
 
-  <s:form action="upload!doUpload" method="post" enctype="multipart/form-data" validate="true">    
+  <s:form action="upload_submit" method="post" enctype="multipart/form-data" validate="true">
     <%@ include file="/WEB-INF/jsp/include/uploadForm.jspf" %>
     <s:submit/>
   </s:form>

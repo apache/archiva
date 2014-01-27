@@ -46,7 +46,7 @@
 
 <h2>Database - Unprocessed Artifacts Scanning</h2>
 
-  <s:form method="post" action="database!updateSchedule" 
+  <s:form method="post" action="database_updateSchedule"
              namespace="/admin" validate="false" theme="simple">
     <s:token/>
     <table>
@@ -73,7 +73,7 @@
   <c:otherwise>
     <%-- Display the consumers. --%>
 
-    <s:form method="post" action="database!updateUnprocessedConsumers" 
+    <s:form method="post" action="database_updateUnprocessedConsumers"
              namespace="/admin" validate="false" theme="simple">
     <s:token/>         
     <table class="consumers">
@@ -129,7 +129,7 @@
   <c:otherwise>
     <%-- Display the consumers. --%>
 
-    <s:form method="post" action="database!updateCleanupConsumers" 
+    <s:form method="post" action="database_updateCleanupConsumers"
              namespace="/admin" validate="false" theme="simple">
     <s:token/>
     <table class="consumers">

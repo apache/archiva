@@ -203,9 +203,12 @@ public abstract class AbstractRepositoryTest
 		String[] arrayRemote = remote.split( "," );
 		for ( String arrayremote : arrayRemote )
 			assertTextPresent( arrayremote );
-		String remoteElements = "addRemoteRepository_repository_id,addRemoteRepository_repository_name,addRemoteRepository_repository_url,addRemoteRepository_repository_username,addRemoteRepository_repository_password,addRemoteRepository_repository_timeout,addRemoteRepository_repository_layout";
-		String[] arrayRemoteElements = remoteElements.split( "," );
-		for ( String arrayremotelement : arrayRemoteElements )
+        String[] remoteElements =
+            new String[]{ "addRemoteRepository_commit_repository_id", "addRemoteRepository_commit_repository_name",
+                "addRemoteRepository_commit_repository_url", "addRemoteRepository_commit_repository_username",
+                "addRemoteRepository_commit_repository_password", "addRemoteRepository_commit_repository_timeout",
+                "addRemoteRepository_commit_repository_layout" };
+        for ( String arrayremotelement : remoteElements )
 			assertElementPresent( arrayremotelement );
 	}
 	
@@ -223,13 +226,13 @@ public abstract class AbstractRepositoryTest
 	{
 			//goToRepositoriesPage();
 			assertAddRemoteRepository();
-			setFieldValue( "addRemoteRepository_repository_id" ,  identifier );
-			setFieldValue( "addRemoteRepository_repository_name" , name );
-			setFieldValue( "addRemoteRepository_repository_url" , url );
-			setFieldValue( "addRemoteRepository_repository_username" , username );
-			setFieldValue( "addRemoteRepository_repository_password" , password );
-			setFieldValue( "addRemoteRepository_repository_timeout" , timeout );
-			selectValue( "addRemoteRepository_repository_layout" , type );
+			setFieldValue( "addRemoteRepository_commit_repository_id" ,  identifier );
+			setFieldValue( "addRemoteRepository_commit_repository_name" , name );
+			setFieldValue( "addRemoteRepository_commit_repository_url" , url );
+			setFieldValue( "addRemoteRepository_commit_repository_username" , username );
+			setFieldValue( "addRemoteRepository_commit_repository_password" , password );
+			setFieldValue( "addRemoteRepository_commit_repository_timeout" , timeout );
+			selectValue( "addRemoteRepository_commit_repository_layout" , type );
 			clickButtonWithValue( "Add Repository" );
 	}
 	
@@ -346,7 +349,7 @@ public abstract class AbstractRepositoryTest
 		assertTextPresent( "Administration - Database" );
 		assertTextPresent( "Database - Unprocessed Artifacts Scanning" );
 		assertTextPresent( "Cron:" );
-		assertElementPresent( "database_cron" );
+		assertElementPresent( "database_updateSchedule_cron" );
 		assertButtonWithValuePresent( "Update Cron" );
 		assertButtonWithValuePresent( "Update Database Now" );
 		assertTextPresent( "Database - Unprocessed Artifacts Scanning" );

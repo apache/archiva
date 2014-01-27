@@ -24,18 +24,12 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-/*
- * Bug in TestNG. TESTNG-285: @Test(sequential=true) works incorrectly for classes with inheritance
- * http://code.google.com/p/testng/source/browse/trunk/CHANGES.txt
- * Waiting 5.9 release. It's comming soon.
- */
 /**
  * Based on LoginTest of Emmanuel Venisse test.
  * 
  * @author José Morales Martínez
  * @version $Id$
  */
-
 @Test ( groups = { "login" } )
 public class LoginTest 
 	extends AbstractArchivaTest
@@ -44,7 +38,7 @@ public class LoginTest
     {
         goToLoginPage();
         getSelenium().type( "loginForm_username", "badUsername" );
-        getSelenium().click( "loginForm__login" );
+        getSelenium().click( "loginForm_0" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
         assertTextPresent( "You have entered an incorrect username and/or password" );
     }
@@ -61,7 +55,7 @@ public class LoginTest
     {
         goToLoginPage();
         getSelenium().type( "loginForm_password", "password" );
-        getSelenium().click( "loginForm__login" );
+        getSelenium().click( "loginForm_0" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
         assertTextPresent( "User Name is required" );
     }
@@ -71,7 +65,7 @@ public class LoginTest
     {
         goToLoginPage();
         getSelenium().type( "loginForm_username", getProperty( "ADMIN_USERNAME" ) );
-        getSelenium().click( "loginForm__login" );
+        getSelenium().click( "loginForm_0" );
         getSelenium().waitForPageToLoad( maxWaitTimeInMs );
         assertTextPresent( "You have entered an incorrect username and/or password" );
     }

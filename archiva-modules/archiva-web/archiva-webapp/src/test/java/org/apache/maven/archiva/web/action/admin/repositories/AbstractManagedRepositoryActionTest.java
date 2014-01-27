@@ -19,58 +19,16 @@ package org.apache.maven.archiva.web.action.admin.repositories;
  * under the License.
  */
 
-import com.opensymphony.xwork2.ObjectFactory;
-import com.opensymphony.xwork2.validator.ActionValidatorManager;
-import com.opensymphony.xwork2.validator.ActionValidatorManagerFactory;
 import java.io.File;
+
 import org.apache.maven.archiva.configuration.ManagedRepositoryConfiguration;
 import org.codehaus.plexus.spring.PlexusInSpringTestCase;
 
 public abstract class AbstractManagedRepositoryActionTest extends PlexusInSpringTestCase
 {
-    protected static final String EMPTY_STRING = "";
-
-    // valid inputs; validation testing
-    protected static final String REPOSITORY_ID_VALID_INPUT = "abcXYZ0129._-";
-
-    protected static final String REPOSITORY_LOCATION_VALID_INPUT = "abcXYZ0129._/\\~:?!&=-";
-
-    protected static final String REPOSITORY_INDEX_DIR_VALID_INPUT = "abcXYZ0129._/\\~:?!&=-";
-
-    protected static final String REPOSITORY_NAME_VALID_INPUT = "abcXYZ   0129.)/   _(-";
-
-    protected static final int REPOSITORY_RETENTION_COUNT_VALID_INPUT = 1;
-
-    protected static final int REPOSITORY_DAYS_OLDER_VALID_INPUT = 1;
-
-    // invalid inputs; validation testing
-    protected static final String REPOSITORY_ID_INVALID_INPUT = "<> \\/~+[ ]'\"";
-
-    protected static final String REPOSITORY_LOCATION_INVALID_INPUT = "<> ~+[ ]'\"";
-
-    protected static final String REPOSITORY_INDEX_DIR_INVALID_INPUT = "<> ~+[ ]'\"";
-
-    protected static final String REPOSITORY_NAME_INVALID_INPUT = "<>\\~+[]'\"";
-
-    protected static final int REPOSITORY_RETENTION_COUNT_INVALID_INPUT = 101;
-
-    protected static final int REPOSITORY_DAYS_OLDER_INVALID_INPUT = -1;
-
-    // testing requisite; validation testing
-    protected ActionValidatorManager actionValidatorManager;
-
     protected static final String REPO_ID = "repo-ident";
 
     protected File location;
-
-    @Override
-    protected void setUp() throws Exception
-    {
-        super.setUp();
-
-        ObjectFactory.setObjectFactory(new ObjectFactory());
-        actionValidatorManager = ActionValidatorManagerFactory.getInstance();
-    }
 
     protected void populateRepository( ManagedRepositoryConfiguration repository )
     {
@@ -85,33 +43,5 @@ public abstract class AbstractManagedRepositoryActionTest extends PlexusInSpring
         repository.setSnapshots( true );
         repository.setScanned( false );
         repository.setDeleteReleasedSnapshots( true );
-    }
-
-    protected ManagedRepositoryConfiguration createManagedRepositoryConfiguration(String id, String name, String location, String indexDir, int daysOlder, int retentionCount)
-    {
-        ManagedRepositoryConfiguration managedRepositoryConfiguration = new ManagedRepositoryConfiguration();
-
-        managedRepositoryConfiguration.setId(id);
-        managedRepositoryConfiguration.setName(name);
-        managedRepositoryConfiguration.setLocation(location);
-        managedRepositoryConfiguration.setIndexDir(indexDir);
-        managedRepositoryConfiguration.setDaysOlder(daysOlder);
-        managedRepositoryConfiguration.setRetentionCount(retentionCount);
-
-        return managedRepositoryConfiguration;
-    }
-
-    // over-loaded
-    // for simulating empty/null form purposes; excluding primitive data-typed values
-    protected ManagedRepositoryConfiguration createManagedRepositoryConfiguration(String id, String name, String location, String indexDir)
-    {
-        ManagedRepositoryConfiguration managedRepositoryConfiguration = new ManagedRepositoryConfiguration();
-
-        managedRepositoryConfiguration.setId(id);
-        managedRepositoryConfiguration.setName(name);
-        managedRepositoryConfiguration.setLocation(location);
-        managedRepositoryConfiguration.setIndexDir(indexDir);
-
-        return managedRepositoryConfiguration;
     }
 }

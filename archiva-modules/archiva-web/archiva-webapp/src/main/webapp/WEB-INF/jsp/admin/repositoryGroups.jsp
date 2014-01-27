@@ -75,8 +75,8 @@
       <s:token/>
       <s:url id="deleteRepositoryGroupUrl" action="confirmDeleteRepositoryGroup">
         <s:param name="repoGroupId" value="%{#attr.repositoryGroup.key}" />
-        <s:param name="struts.token.name">struts.token</s:param>
-        <s:param name="struts.token"><s:property value="struts.token"/></s:param>
+        <s:param name="struts.token.name">token</s:param>
+        <s:param name="token"><s:property value="token"/></s:param>
       </s:url>
       <s:a href="%{deleteRepositoryGroupUrl}" cssClass="delete">
         <img src="${iconDeleteUrl}"/>

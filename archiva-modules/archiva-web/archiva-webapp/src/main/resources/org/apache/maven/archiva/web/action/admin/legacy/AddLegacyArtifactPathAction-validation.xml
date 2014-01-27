@@ -18,8 +18,9 @@
   ~ under the License.
   -->
 
-<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
-    "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+<!DOCTYPE validators PUBLIC
+    "-//Apache Struts//XWork Validator 1.0.2//EN"
+    "http://struts.apache.org/dtds/xwork-validator-1.0.2.dtd">
 
 <!-- validate temporarily-trimmed inputs, actual values are then carried over to the action class to be trimmed once more. -->
 <validators>
@@ -29,7 +30,7 @@
     </field-validator>
     <field-validator type="regex">
         <param name="trim">true</param>
-        <param name="expression">^[-a-zA-Z0-9._/\\]+$</param>
+        <param name="regex">^[-a-zA-Z0-9._/\\]+$</param>
         <message>Legacy path must only contain alphanumeric characters, forward-slashes(/), back-slashes(\), underscores(_), dots(.), and dashes(-).</message>
     </field-validator>
   </field>
@@ -39,7 +40,7 @@
     </field-validator>
     <field-validator type="regex">
         <param name="trim">true</param>
-        <param name="expression">^[a-zA-Z0-9._-]+$</param>
+        <param name="regex">^[a-zA-Z0-9._-]+$</param>
         <message>Group id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).</message>
     </field-validator>
   </field>
@@ -49,7 +50,7 @@
     </field-validator>
     <field-validator type="regex">
         <param name="trim">true</param>
-        <param name="expression">^[a-zA-Z0-9._-]+$</param>
+        <param name="regex">^[a-zA-Z0-9._-]+$</param>
         <message>Artifact id must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).</message>
     </field-validator>
   </field>
@@ -59,7 +60,7 @@
     </field-validator>
     <field-validator type="regex">
         <param name="trim">true</param>
-        <param name="expression">^[a-zA-Z0-9._-]+$</param>
+        <param name="regex">^[a-zA-Z0-9._-]+$</param>
         <message>Version must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).</message>
     </field-validator>
   </field>
@@ -67,7 +68,7 @@
     <!-- no requiredstring validation, because there was none before(being consistent). -->
     <field-validator type="regex">
         <param name="trim">true</param>
-        <param name="expression">^[a-zA-Z0-9._-]*$</param>
+        <param name="regex">^[a-zA-Z0-9._-]*$</param>
         <message>Classifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).</message>
     </field-validator>
   </field>
@@ -77,7 +78,7 @@
     </field-validator>
     <field-validator type="regex">
         <param name="trim">true</param>
-        <param name="expression">^[a-zA-Z0-9._-]+$</param>
+        <param name="regex">^[a-zA-Z0-9._-]+$</param>
         <message>Type must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-).</message>
     </field-validator>
   </field>

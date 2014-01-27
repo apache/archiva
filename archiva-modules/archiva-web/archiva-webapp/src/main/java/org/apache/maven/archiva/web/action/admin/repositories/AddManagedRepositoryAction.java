@@ -46,8 +46,8 @@ public class AddManagedRepositoryAction
      * The model for this action.
      */
     private ManagedRepositoryConfiguration repository;
-    
-    private String action = "addRepository";
+
+    private boolean confirm;
 
     public void prepare()
     {
@@ -66,19 +66,17 @@ public class AddManagedRepositoryAction
         return INPUT;
     }
      
-    public String confirmAdd()
-    {
-        return save();
-    }
-    
     public String commit()
     {
-        File location = new File( repository.getLocation() );
-        if( location.exists() )
-        {   
-            return CONFIRM;
+        if ( !confirm )
+        {
+            File location = new File( repository.getLocation() );
+            if ( location.exists() )
+            {
+                return CONFIRM;
+            }
         }
-        
+
         return save();
     }
     
@@ -176,6 +174,11 @@ public class AddManagedRepositoryAction
     
     public String getAction()
     {
-        return action;
+        return "addRepository_commit";
+    }
+
+    public void setConfirm( String confirm )
+    {
+        this.confirm = StringUtils.isNotEmpty( confirm );
     }
 }

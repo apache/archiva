@@ -28,11 +28,11 @@
 
 <s:hidden name="connector.order" />
 
-<s:select name="connector.proxyId" list="proxyIdOptions" label="Network Proxy" required="true"/>
+<s:select name="connector.proxyId" list="proxyIdOptions" label="Network Proxy" requiredLabel="true"/>
 <s:select name="connector.sourceRepoId" list="managedRepoIdList"
-           label="Managed Repository" required="true"/>
+           label="Managed Repository" requiredLabel="true"/>
 <s:select name="connector.targetRepoId" list="remoteRepoIdList"
-           label="Remote Repository" required="true"/>
+           label="Remote Repository" requiredLabel="true"/>
 
 <tr>
   <td valign="top"><label>Policies:</label>
@@ -42,7 +42,7 @@
       <c:forEach items="${policyMap}" var="policy" varStatus="i">
         <tr>
           <td>
-            <s:label for="policy_%{#attr.policy.key}" required="true"
+            <s:label for="policy_%{#attr.policy.key}" requiredLabel="true"
                       theme="simple">${policy.value.name}:
             </s:label>
           </td>

@@ -48,7 +48,7 @@
       </s:iterator>
       </ul>
   </s:if>
-  <s:form method="post" action="editRepository!commit" namespace="/admin" validate="false">
+  <s:form method="post" action="editRepository_commit" namespace="/admin" validate="false">
     <s:hidden name="repository.id"/>
     <s:label label="ID" name="repository.id" />
     <%@ include file="/WEB-INF/jsp/admin/include/repositoryForm.jspf" %>

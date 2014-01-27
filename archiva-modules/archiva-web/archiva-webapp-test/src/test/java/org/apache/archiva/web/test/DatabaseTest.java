@@ -36,7 +36,7 @@ public class DatabaseTest
     public void testUpdateCron_NullValue()
 	{
 		goToDatabasePage();
-		setFieldValue( "database_cron" , "");
+		setFieldValue( "database_updateSchedule_cron" , "");
 		clickButtonWithValue( "Update Cron" );
 		assertTextPresent( "Invalid cron expression value(s)" );
 		assertTextPresent( "You must enter a cron expression." );
@@ -45,7 +45,7 @@ public class DatabaseTest
 	@Test (dependsOnMethods = { "testUpdateCron_NullValue" } )
 	public void testUpdateCron_InvalidValue()
 	{
-		setFieldValue( "database_cron" , "asdf" );
+		setFieldValue( "database_updateSchedule_cron" , "asdf" );
 		clickButtonWithValue( "Update Cron" );
 		assertTextPresent( "Invalid cron expression value(s)" );
 	}
@@ -53,7 +53,7 @@ public class DatabaseTest
 	@Test (dependsOnMethods = { "testUpdateCron_InvalidValue" } )
 	public void testUpdateCron_ValidValue()
 	{
-		setFieldValue( "database_cron" , "0 0 * * * ?" );
+		setFieldValue( "database_updateSchedule_cron" , "0 0 * * * ?" );
 		clickButtonWithValue( "Update Cron" );
 		assertPage( "Apache Archiva \\ Administration - Database" );
 	}
@@ -62,7 +62,7 @@ public class DatabaseTest
 	public void testUpdateConsumersUnprocessedArtifactsScanning_UnsetAll()
 	{
 		getSelenium().uncheck( "enabledUnprocessedConsumers" );
-		clickSubmitWithLocator( "//input[@id='database_0' and @value='Update Consumers']" );
+		clickSubmitWithLocator( "//input[@id='database_updateUnprocessedConsumers_0' and @value='Update Consumers']" );
 		
 		assertPage( "Apache Archiva \\ Administration - Database" );
 	}
@@ -71,7 +71,7 @@ public class DatabaseTest
 	public void testUpdateConsumersUnprocessedArtifactsScanning()
 	{
 		checkField( "enabledUnprocessedConsumers" );
-		clickSubmitWithLocator( "//input[@id='database_0' and @value='Update Consumers']" );
+		clickSubmitWithLocator( "//input[@id='database_updateUnprocessedConsumers_0' and @value='Update Consumers']" );
 		assertPage( "Apache Archiva \\ Administration - Database" );
 	}
 	
@@ -81,7 +81,7 @@ public class DatabaseTest
 		getSelenium().uncheck( "enabledCleanupConsumers" );
 		getSelenium().uncheck( "//input[@name='enabledCleanupConsumers' and @value='not-present-remove-db-project']" );
 		getSelenium().uncheck( "//input[@name='enabledCleanupConsumers' and @value='not-present-remove-indexed']" );
-		clickSubmitWithLocator( "//form[@id='database']/table/tbody/tr[5]/td/input" );
+		clickSubmitWithLocator( "//form[@id='database_updateCleanupConsumers']/table/tbody/tr[5]/td/input" );
 		assertPage( "Apache Archiva \\ Administration - Database" );
 	}
 	
@@ -89,7 +89,7 @@ public class DatabaseTest
 	public void testUpdateConsumersArtifactCleanupScanning()
 	{
 		checkField( "enabledCleanupConsumers" );
-		clickSubmitWithLocator( "//form[@id='database']/table/tbody/tr[5]/td/input" );
+		clickSubmitWithLocator( "//form[@id='database_updateCleanupConsumers']/table/tbody/tr[5]/td/input" );
 		assertPage( "Apache Archiva \\ Administration - Database" );
 	}
 	

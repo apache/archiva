@@ -89,8 +89,8 @@
     <s:token/>
     <s:url id="deleteLegacyArtifactPath" encode="true" action="deleteLegacyArtifactPath">
       <s:param name="path" value="%{#attr.legacyArtifactPath.path}"/>
-      <s:param name="struts.token.name">struts.token</s:param>
-      <s:param name="struts.token"><s:property value="struts.token"/></s:param>
+      <s:param name="struts.token.name">token</s:param>
+      <s:param name="token"><s:property value="token"/></s:param>
     </s:url>
     <s:a href="%{deleteLegacyArtifactPath}">
       <img src="<c:url value="/images/icons/delete.gif" />" alt="" width="16" height="16"/>

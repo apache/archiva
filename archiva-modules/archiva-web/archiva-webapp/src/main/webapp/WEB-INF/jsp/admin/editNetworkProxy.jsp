@@ -70,7 +70,7 @@
 	    <s:hidden name="proxy.id"/>
 	  </c:when>
 	  <c:otherwise>
-	    <s:textfield name="proxy.id" label="Identifier" size="10" required="true"/>
+	    <s:textfield name="proxy.id" label="Identifier" size="10" requiredLabel="true"/>
 	  </c:otherwise>
 	</c:choose>
     

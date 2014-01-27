@@ -65,7 +65,7 @@ public abstract class AbstractSearchTest
         if ( groupId != null )
         {
             selectValue( "filteredSearch_searchField", "Group ID" );
-            clickLinkWithLocator( "//a[@id='filteredSearch_']/img", false );
+            clickLinkWithLocator( "//form[@id='filteredSearch']//a/img", false );
 
             assertElementPresent( "groupId" );
             setFieldValue( "groupId", groupId );
@@ -74,7 +74,7 @@ public abstract class AbstractSearchTest
         if ( artifactId != null )
         {
             selectValue( "filteredSearch_searchField", "Artifact ID" );
-            clickLinkWithLocator( "//a[@id='filteredSearch_']/img", false );
+            clickLinkWithLocator( "//form[@id='filteredSearch']//a/img", false );
 
             assertElementPresent( "artifactId" );
             setFieldValue( "artifactId", artifactId );
@@ -83,7 +83,7 @@ public abstract class AbstractSearchTest
         if ( version != null )
         {
             selectValue( "filteredSearch_searchField", "Version" );
-            clickLinkWithLocator( "//a[@id='filteredSearch_']/img", false );
+            clickLinkWithLocator( "//form[@id='filteredSearch']//a/img", false );
 
             assertElementPresent( "version" );
             setFieldValue( "version", version );
@@ -92,7 +92,7 @@ public abstract class AbstractSearchTest
         if ( className != null )
         {
             selectValue( "filteredSearch_searchField", "Class/Package Name" );
-            clickLinkWithLocator( "//a[@id='filteredSearch_']/img", false );
+            clickLinkWithLocator( "//form[@id='filteredSearch']//a/img", false );
 
             assertElementPresent( "className" );
             setFieldValue( "className", className );
@@ -101,7 +101,7 @@ public abstract class AbstractSearchTest
         if ( rowCount != null )
         {
             selectValue( "filteredSearch_searchField", "Row Count" );
-            clickLinkWithLocator( "//a[@id='filteredSearch_']/img", false );
+            clickLinkWithLocator( "//form[@id='filteredSearch']//a/img", false );
 
             assertElementPresent( "rowCount" );
             setFieldValue( "rowCount", rowCount );

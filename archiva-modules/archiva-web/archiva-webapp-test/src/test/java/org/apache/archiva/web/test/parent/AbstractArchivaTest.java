@@ -519,10 +519,11 @@ public abstract class AbstractArchivaTest
             assertTextPresent( arrayartifact );
         }
 
-        String artifactElements =
-            "upload_groupId,upload_artifactId,upload_version,upload_packaging,upload_classifier,upload_generatePom,upload_artifact,upload_pom,upload_repositoryId,upload_0";
-        String[] arrayArtifactElements = artifactElements.split( "," );
-        for ( String artifactelements : arrayArtifactElements )
+        String[] artifactElements =
+            new String[]{ "upload_submit_groupId", "upload_submit_artifactId", "upload_submit_version",
+                "upload_submit_packaging", "upload_submit_classifier", "upload_submit_generatePom",
+                "upload_submit_artifact", "upload_submit_pom", "upload_submit_repositoryId", "upload_submit_0" };
+        for ( String artifactelements : artifactElements )
         {
             assertElementPresent( artifactelements );
         }
@@ -700,10 +701,11 @@ public abstract class AbstractArchivaTest
         assertTextPresent( "Admin: Add Legacy Artifact Path" );
         assertTextPresent(
             "Enter the legacy path to map to a particular artifact reference, then adjust the fields as necessary." );
-        String element =
-            "addLegacyArtifactPath_legacyArtifactPath_path,addLegacyArtifactPath_groupId,addLegacyArtifactPath_artifactId,addLegacyArtifactPath_version,addLegacyArtifactPath_classifier,addLegacyArtifactPath_type";
-        String[] arrayElement = element.split( "," );
-        for ( String arrayelement : arrayElement )
+        String[] elements = new String[]{ "addLegacyArtifactPath_commit_legacyArtifactPath_path",
+            "addLegacyArtifactPath_commit_groupId", "addLegacyArtifactPath_commit_artifactId",
+            "addLegacyArtifactPath_commit_version", "addLegacyArtifactPath_commit_classifier",
+            "addLegacyArtifactPath_commit_type" };
+        for ( String arrayelement : elements )
         {
             assertElementPresent( arrayelement );
         }

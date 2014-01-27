@@ -41,8 +41,8 @@
 
 <c:url var="iconDeleteUrl" value="/images/icons/delete.gif" /> 
 <c:url var="iconCreateUrl" value="/images/icons/create.png" />
-<s:url id="removeFiletypePatternUrl" action="repositoryScanning" method="removeFiletypePattern"/>
-<s:url id="addFiletypePatternUrl" action="repositoryScanning" method="addFiletypePattern"/>
+<s:url id="removeFiletypePatternUrl" action="repositoryScanning_removeFiletypePattern"/>
+<s:url id="addFiletypePatternUrl" action="repositoryScanning_addFiletypePattern"/>
    
 <script type="text/javascript">
 <!--
@@ -154,7 +154,7 @@
   <c:otherwise>
     <%-- Display the consumers. --%>
 
-    <s:form method="post" action="repositoryScanning!updateKnownConsumers" 
+    <s:form method="post" action="repositoryScanning_updateKnownConsumers"
              namespace="/admin" validate="false" theme="simple">
     <s:token/>
     <table class="consumers">

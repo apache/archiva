@@ -20,6 +20,7 @@ package org.apache.maven.archiva.repository.scanner;
  */
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.Locale;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.archiva.configuration.ArchivaConfiguration;
@@ -384,6 +385,17 @@ public class RepositoryContentConsumersTest
             throw new UnsupportedOperationException("Not supported yet.");
         }
 
+        public Map<String, Object> getBeansWithAnnotation( Class<? extends Annotation> aClass )
+            throws BeansException
+        {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public <A extends Annotation> A findAnnotationOnBean( String s, Class<A> aClass )
+        {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
         public Map getBeansOfType(Class type) throws BeansException {
             if (type == KnownRepositoryContentConsumer.class)
             {
@@ -409,6 +421,12 @@ public class RepositoryContentConsumersTest
         }
 
         public Object getBean(String name) throws BeansException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public <T> T getBean( Class<T> tClass )
+            throws BeansException
+        {
             throw new UnsupportedOperationException("Not supported yet.");
         }
 

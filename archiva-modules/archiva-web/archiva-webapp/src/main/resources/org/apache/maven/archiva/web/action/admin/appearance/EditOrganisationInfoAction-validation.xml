@@ -18,8 +18,9 @@
   ~ under the License.
   -->
 
-<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
-    "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+<!DOCTYPE validators PUBLIC
+    "-//Apache Struts//XWork Validator 1.0.2//EN"
+    "http://struts.apache.org/dtds/xwork-validator-1.0.2.dtd">
 
 <validators>
     <field name="organisationName">
@@ -28,7 +29,7 @@
         </field-validator>
         <field-validator type="regex">
             <param name="trim">true</param>
-            <param name="expression">^([-a-zA-Z0-9._/~:?!&amp;=\\]|\s)+$</param>
+            <param name="regex">^([-a-zA-Z0-9._/~:?!&amp;=\\]|\s)+$</param>
             <message>Organisation name must only contain alphanumeric characters, white-spaces(' '), equals(=), question-marks(?), exclamation-points(!), ampersands(&amp;), forward-slashes(/), back-slashes(\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-).</message>
         </field-validator>
     </field>

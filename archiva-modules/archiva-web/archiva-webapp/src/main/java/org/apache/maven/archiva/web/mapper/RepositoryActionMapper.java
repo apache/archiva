@@ -90,7 +90,7 @@ public class RepositoryActionMapper
             }
             else
             {
-                Map<String, String> params = new HashMap<String, String>();
+                Map<String, Object> params = new HashMap<String, Object>();
 
                 if ( path.charAt( 0 ) == '/' )
                 {
@@ -148,7 +148,7 @@ public class RepositoryActionMapper
     @Override
     public String getUriFromActionMapping( ActionMapping actionMapping )
     {
-        Map<String, String> params = actionMapping.getParams();
+        Map<String, Object> params = actionMapping.getParams();
         if ( ACTION_BROWSE.equals( actionMapping.getName() ) )
         {
             return BROWSE_PREFIX;
@@ -185,7 +185,7 @@ public class RepositoryActionMapper
         return super.getUriFromActionMapping( actionMapping );
     }
 
-    private String toUri( Map<String, String> params, boolean artifactId, boolean version, String method )
+    private String toUri( Map<String, Object> params, boolean artifactId, boolean version, String method )
     {
         StringBuffer buf = new StringBuffer();
 

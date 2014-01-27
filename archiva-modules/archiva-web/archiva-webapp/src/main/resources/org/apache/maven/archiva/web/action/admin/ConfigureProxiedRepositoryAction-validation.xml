@@ -18,8 +18,9 @@
   ~ under the License.
   -->
 
-<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.2//EN"
-    "http://www.opensymphony.com/xwork/xwork-validator-1.0.2.dtd">
+<!DOCTYPE validators PUBLIC
+    "-//Apache Struts//XWork Validator 1.0.2//EN"
+    "http://struts.apache.org/dtds/xwork-validator-1.0.2.dtd">
 
 <validators>
   <field name="id">
@@ -27,7 +28,7 @@
       <message>You must enter the repository identifier.</message>
     </field-validator>
     <!--field-validator type="regex">
-      <param name="expression"><![CDATA[([A-Z][a-z][0-9])]]></param>
+      <param name="regex"><![CDATA[([A-Z][a-z][0-9])]]></param>
       <message>Id must not have special characters.</message>
     </field-validator-->
   </field>
@@ -44,13 +45,13 @@
   </field>
   <field name="snapshotsInterval">
     <field-validator type="regex">
-      <param name="expression"><![CDATA[([0-9])]]></param>
+      <param name="regex"><![CDATA[([0-9])]]></param>
       <message>The value must be numeric</message>
     </field-validator>
   </field>
   <field name="releasesInterval">
     <field-validator type="regex">
-      <param name="expression"><![CDATA[([0-9])]]></param>
+      <param name="regex"><![CDATA[([0-9])]]></param>
       <message>The value must be numeric</message>
     </field-validator>
   </field>
