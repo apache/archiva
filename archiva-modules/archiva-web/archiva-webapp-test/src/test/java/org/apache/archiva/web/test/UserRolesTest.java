@@ -20,11 +20,12 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
+import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 @Test( groups = { "userroles" })
-public class UserRolesTest 
+public class UserRolesTest
 	extends AbstractArchivaTest
 {
     @BeforeTest
@@ -33,23 +34,40 @@ public class UserRolesTest
         loginAsAdmin();
     }
 
+    @AfterSuite
+    public void tearDown()
+    {
+        goToUserManagementPage();
+        String[] usernameProperties =
+            new String[]{ "GUEST_USERNAME", "REGISTERED_USERNAME", "SYSAD_USERNAME", "USERADMIN_USERNAME",
+                "GLOBALREPOMANAGER_USERNAME", "GLOBALREPOOBSERVER_USERNAME", "REPOMANAGER_INTERNAL_USERNAME",
+                "REPOOBSERVER_INTERNAL_USERNAME" };
+        for ( String p : usernameProperties )
+        {
+            String username = getProperty( p );
+
+            if ( isLinkPresent( username ) )
+            {
+                deleteUser( username );
+            }
+        }
+    }
+
     public void testBasicAddDeleteUser()
 	{
 		username = getProperty( "GUEST_USERNAME" );
 		fullname = getProperty( "GUEST_FULLNAME" );
-		
+
 		createUser( username, fullname, getUserEmail(), getUserRolePassword(), true);
-		deleteUser( username, fullname, getUserEmail() );
-        logout();
-        login( getAdminUsername() , getAdminPassword() );
+		deleteUser( username );
 	}
-	
+
 	@Test (dependsOnMethods = { "testBasicAddDeleteUser" } )
 	public void testUserWithGuestRole()
 	{
 		username = getProperty("GUEST_USERNAME");
 		fullname = getProperty("GUEST_FULLNAME");
-		
+
 		createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);
 		clickLinkWithText( username );
 		clickLinkWithText( "Edit Roles" );
@@ -59,26 +77,26 @@ public class UserRolesTest
         logout();
         login(username, getUserRolePassword());
 		changePassword( getUserRolePassword(), getUserRoleNewPassword());
-		
+
 		// this section will be removed if issue from redback after changing password will be fixed.
 		getSelenium().goBack();
         logout();
         //assertTextPresent("You are already logged in.");
-		
+
 		login(username, getUserRoleNewPassword());
 		assertLeftNavMenuWithRole( fullname );
         logout();
         login( getAdminUsername() , getAdminPassword() );
 	}
-	
+
 	@Test (dependsOnMethods = { "testUserWithGuestRole" } )
 	public void testUserWithRegisteredUserRole()
 	{
 		username = getProperty("REGISTERED_USERNAME");
 		fullname = getProperty("REGISTERED_FULLNAME");
-		
+
 		createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);
-		clickLinkWithText( username );	
+		clickLinkWithText( username );
 		clickLinkWithText( "Edit Roles" );
 		checkUserRoleWithValue( fullname );
 		clickButtonWithValue( "Submit" );
@@ -86,24 +104,24 @@ public class UserRolesTest
         logout();
         login(username, getUserRolePassword());
 		changePassword( getUserRolePassword(), getUserRoleNewPassword());
-		
+
 		// this section will be removed if issue from redback after changing password will be fixed.
 		getSelenium().goBack();
         logout();
         //assertTextPresent("You are already logged in.");
-		
+
 		login(username, getUserRoleNewPassword());
 		assertLeftNavMenuWithRole( fullname );
         logout();
         login( getAdminUsername() , getAdminPassword() );
 	}
-	
+
 	@Test (dependsOnMethods = { "testUserWithRegisteredUserRole" } )
 	public void testUserWithSysAdminUserRole()
 	{
 		username = getProperty("SYSAD_USERNAME");
 		fullname = getProperty("SYSAD_FULLNAME");
-		
+
 		createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);
 		clickLinkWithText( username );
 		clickLinkWithText( "Edit Roles" );
@@ -113,24 +131,24 @@ public class UserRolesTest
         logout();
         login(username, getUserRolePassword());
 		changePassword( getUserRolePassword(), getUserRoleNewPassword());
-		
+
 		// this section will be removed if issue from redback after changing password will be fixed.
 		getSelenium().goBack();
         logout();
         //assertTextPresent("You are already logged in.");
-		
+
 		login(username, getUserRoleNewPassword());
 		assertLeftNavMenuWithRole( fullname );
         logout();
         login( getAdminUsername() , getAdminPassword() );
 	}
-	
+
 	@Test (dependsOnMethods = { "testUserWithSysAdminUserRole" } )
 	public void testUserWithUserAdminUserRole()
 	{
 		username = getProperty("USERADMIN_USERNAME");
 		fullname = getProperty("USERADMIN_FULLNAME");
-		
+
 		createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);
 		clickLinkWithText( username );
 		clickLinkWithText( "Edit Roles" );
@@ -140,24 +158,24 @@ public class UserRolesTest
         logout();
         login(username, getUserRolePassword());
 		changePassword( getUserRolePassword(), getUserRoleNewPassword());
-		
+
 		// this section will be removed if issue from redback after changing password will be fixed.
 		getSelenium().goBack();
         logout();
         //assertTextPresent("You are already logged in.");
-		
+
 		login(username, getUserRoleNewPassword());
 		assertLeftNavMenuWithRole( fullname );
         logout();
         login( getAdminUsername() , getAdminPassword() );
 	}
-	
+
 	@Test (dependsOnMethods = { "testUserWithUserAdminUserRole" } )
 	public void testUserWithGlobalRepoManagerRole()
 	{
 		username = getProperty("GLOBALREPOMANAGER_USERNAME");
 		fullname = getProperty("GLOBALREPOMANAGER_FULLNAME");
-		
+
 		createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);
 		clickLinkWithText( username );
 		clickLinkWithText( "Edit Roles" );
@@ -167,12 +185,12 @@ public class UserRolesTest
         logout();
         login(username, getUserRolePassword());
 		changePassword( getUserRolePassword(), getUserRoleNewPassword());
-		
+
 		// this section will be removed if issue from redback after changing password will be fixed.
 		getSelenium().goBack();
         logout();
         //assertTextPresent("You are already logged in.");
-		
+
 		login(username, getUserRoleNewPassword());
 		assertLeftNavMenuWithRole( fullname );
         logout();
@@ -184,7 +202,7 @@ public class UserRolesTest
 	{
 		username = getProperty("GLOBALREPOOBSERVER_USERNAME");
 		fullname = getProperty("GLOBALREPOOBSERVER_FULLNAME");
-		
+
 		createUser(username, fullname, getUserEmail(), getUserRolePassword(), true);
 		clickLinkWithText( username );
 		clickLinkWithText( "Edit Roles" );
@@ -194,18 +212,18 @@ public class UserRolesTest
         logout();
         login(username, getUserRolePassword());
 		changePassword( getUserRolePassword(), getUserRoleNewPassword());
-		
+
 		// this section will be removed if issue from redback after changing password will be fixed.
 		getSelenium().goBack();
         logout();
         //assertTextPresent("You are already logged in.");
-		
+
 		login(username, getUserRoleNewPassword());
 		assertLeftNavMenuWithRole( fullname );
         logout();
         login( getAdminUsername() , getAdminPassword() );
 	}
-	
+
 	@Test (dependsOnMethods = { "testUserWithGlobalRepoObserverRole" } )
 	public void testUserWithRepoManagerInternalRole()
 	{
@@ -217,12 +235,12 @@ public class UserRolesTest
         logout();
         login(username, getUserRolePassword());
 		changePassword( getUserRolePassword(), getUserRoleNewPassword());
-		
+
 		// this section will be removed if issue from redback after changing password will be fixed.
 		getSelenium().goBack();
         logout();
         //assertTextPresent("You are already logged in.");
-		
+
 		login(username, getUserRoleNewPassword());
 		assertLeftNavMenuWithRole( fullname );
         logout();
@@ -255,7 +273,7 @@ public class UserRolesTest
 		clickLinkWithText("Logout");
 		login( getAdminUsername() , getAdminPassword() );
 	}*/
-	
+
 	@Test (dependsOnMethods = { "testUserWithRepoManagerInternalRole" } )
 	public void testUserWithRepoObserverInternalRole()
 	{
@@ -267,12 +285,12 @@ public class UserRolesTest
         logout();
         login(username, getUserRolePassword());
 		changePassword( getUserRolePassword(), getUserRoleNewPassword());
-		
+
 		// this section will be removed if issue from redback after changing password will be fixed.
 		getSelenium().goBack();
         logout();
         //assertTextPresent("You are already logged in.");
-		
+
 		login(username, getUserRoleNewPassword());
 		assertLeftNavMenuWithRole( fullname );
         logout();

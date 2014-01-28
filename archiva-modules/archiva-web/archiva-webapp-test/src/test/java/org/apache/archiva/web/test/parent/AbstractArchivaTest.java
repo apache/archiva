@@ -275,19 +275,12 @@ public abstract class AbstractArchivaTest
         }
     }
 
-    public void deleteUser( String userName, String fullName, String emailAdd )
+    public void deleteUser( String userName )
     {
-        deleteUser( userName, fullName, emailAdd, false, false );
-    }
-
-    public void deleteUser( String userName, String fullName, String emailAd, boolean validated, boolean locked )
-    {
-        String[] columnValues = { userName, fullName, emailAd };
-        //clickLinkWithText( "userlist" );
-        clickLinkWithXPath( "//table[@id='ec_table']/tbody[2]/tr[3]/td[7]/a/img" );
+        clickLinkWithXPath( "//tr[.//a[text()='" + userName + "']]/td/a[@title='delete user']" );
         assertDeleteUserPage( userName );
         submit();
-        assertElementNotPresent( XPathExpressionUtil.getTableRow( columnValues ) );
+        assertLinkNotPresent( userName );
     }
 
     public void login( String username, String password )

@@ -147,8 +147,8 @@ public class AuditLogsReportTest
         assertTextPresent( "Artifact '" + groupId + ":" + artifactId + ":" + version +
                                "' was successfully deployed to repository '" + repo + "'" );
 
-        goToUserManagementPage();
         String username = "testAuditUser";
+        goToUserManagementPage();
         if ( !isLinkPresent( username ) )
         {
             createUserWithRole( username, "Repository Manager - internal", getUserEmail(), getUserRolePassword() );
