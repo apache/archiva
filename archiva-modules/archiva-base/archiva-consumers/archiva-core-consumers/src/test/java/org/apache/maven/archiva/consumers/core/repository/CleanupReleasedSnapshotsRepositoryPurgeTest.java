@@ -137,6 +137,9 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         listenerControl.replay();
 
         File file = new File( repoRoot, INDEX_PATH );
+        // windows fix
+        file.mkdirs();
+        
         file.createNewFile();
         assertTrue( file.exists() );
 
