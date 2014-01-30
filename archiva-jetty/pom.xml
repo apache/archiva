@@ -137,8 +137,8 @@
                       <value>%ARCHIVA_BASE%/conf/jetty.xml</value>
                     </property>
                     <property>
-                      <name>app.base.envvar</name>
-                      <value>ARCHIVA_BASE</value>
+                      <name>set.default.ARCHIVA_BASE</name>
+                      <value>.</value>
                     </property>
                     <property>
                       <name>wrapper.on_exit.default</name>
