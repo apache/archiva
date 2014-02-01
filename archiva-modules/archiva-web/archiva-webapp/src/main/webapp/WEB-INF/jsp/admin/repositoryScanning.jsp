@@ -211,7 +211,7 @@
   <c:otherwise>
     <%-- Display the consumers. --%>
 
-    <s:form method="post" action="repositoryScanning!updateInvalidConsumers" 
+    <s:form method="post" action="repositoryScanning_updateInvalidConsumers"
              namespace="/admin" validate="false" theme="simple">
     <s:token/>         
     <table class="consumers">

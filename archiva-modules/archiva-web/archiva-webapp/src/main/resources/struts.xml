@@ -511,43 +511,13 @@
       <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
     </action>
 
-    <action name="repositoryScanning_addFiletypePattern" class="repositoryScanningAction" method="addFiletypePattern">
+    <action name="repositoryScanning_*" class="repositoryScanningAction" method="{1}">
       <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
       <result name="success" type="redirectAction">
         <param name="actionName">repositoryScanning</param>
       </result>
       <interceptor-ref name="configuredArchivaStack">
-        <param name="tokenSession.includeMethods">addFiletypePattern</param>
-      </interceptor-ref>
-    </action>
-
-    <action name="repositoryScanning_removeFiletypePattern" class="repositoryScanningAction" method="removeFiletypePattern">
-      <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">repositoryScanning</param>
-      </result>
-      <interceptor-ref name="configuredArchivaStack">
-        <param name="tokenSession.includeMethods">removeFiletypePattern</param>
-      </interceptor-ref>
-    </action>
-
-    <action name="repositoryScanning_updateKnownConsumers" class="repositoryScanningAction" method="updateKnownConsumers">
-      <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">repositoryScanning</param>
-      </result>
-      <interceptor-ref name="configuredArchivaStack">
-        <param name="tokenSession.includeMethods">updateKnownConsumers</param>
-      </interceptor-ref>
-    </action>
-
-    <action name="repositoryScanning_updateInvalidConsumers" class="repositoryScanningAction" method="updateInvalidConsumers">
-      <result name="input">/WEB-INF/jsp/admin/repositoryScanning.jsp</result>
-      <result name="success" type="redirectAction">
-        <param name="actionName">repositoryScanning</param>
-      </result>
-      <interceptor-ref name="configuredArchivaStack">
-        <param name="tokenSession.includeMethods">updateInvalidConsumers</param>
+        <param name="tokenSession.includeMethods">{1}</param>
       </interceptor-ref>
     </action>
 
