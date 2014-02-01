@@ -40,7 +40,7 @@
     Are you sure you want to disable proxy connector <code>[ ${source} , ${target} ]</code> ?
   </p>
 
-  <s:form method="post" action="disableProxyConnector!disable" namespace="/admin" validate="true">
+  <s:form method="post" action="disableProxyConnector" namespace="/admin" validate="true">
     <s:hidden name="target"/>
     <s:hidden name="source"/>
     <s:token/>

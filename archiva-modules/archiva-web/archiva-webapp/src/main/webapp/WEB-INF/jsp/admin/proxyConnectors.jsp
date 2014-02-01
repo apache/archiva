@@ -126,17 +126,17 @@
           <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
           <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
         </s:url>
-        <s:url id="deleteProxyConnectorUrl" action="deleteProxyConnector" method="confirmDelete">
+        <s:url id="deleteProxyConnectorUrl" action="deleteProxyConnector_confirm">
           <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
           <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
           <s:param name="struts.token.name">token</s:param>
           <s:param name="token"><s:property value="token"/></s:param>
         </s:url>
-        <s:url id="enableProxyConnectorUrl" action="enableProxyConnector" method="confirmEnable">
+        <s:url id="enableProxyConnectorUrl" action="enableProxyConnector_confirm">
           <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
           <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
         </s:url>
-        <s:url id="disableProxyConnectorUrl" action="disableProxyConnector" method="confirmDisable">
+        <s:url id="disableProxyConnectorUrl" action="disableProxyConnector_confirm">
           <s:param name="source" value="%{#attr.connector.sourceRepoId}"/>
           <s:param name="target" value="%{#attr.connector.targetRepoId}"/>
           <s:param name="struts.token.name">token</s:param>

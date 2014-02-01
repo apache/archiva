@@ -40,7 +40,7 @@
     Are you sure you want to enable proxy connector <code>[ ${source} , ${target} ]</code> ?
   </p>
 
-  <s:form method="post" action="enableProxyConnector!enable" namespace="/admin" validate="true">
+  <s:form method="post" action="enableProxyConnector" namespace="/admin" validate="true">
     <s:hidden name="target"/>
     <s:hidden name="source"/>
     <s:submit value="Enable"/>

@@ -20,12 +20,18 @@ package org.apache.archiva.web.test.parent;
  */
 
 import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.testng.Assert;
 
 public abstract class AbstractRepositoryTest 
 	extends AbstractArchivaTest
 {
-	// Repository Groups
+
+    public static final String DEFAULT_NETWORK_PROXY = "(direct connection)";
+
+    // Repository Groups
 	public void goToRepositoryGroupsPage()
 	{
 	    if( !getTitle().equals( "Apache Archiva \\ Administration - Repository Groups" ) )
@@ -121,7 +127,7 @@ public abstract class AbstractRepositoryTest
 	///////////////////////////////
 	public void goToProxyConnectorsPage()
 	{
-		clickLinkWithText( "Proxy Connectors" );
+        getSelenium().open( "/archiva/admin/proxyConnectors.action" );
 		assertProxyConnectorsPage();
 	}
 	
@@ -139,8 +145,8 @@ public abstract class AbstractRepositoryTest
 	
 	public void assertAddProxyConnectorPage()
 	{
-		assertPage( "Apache Archiva \\ Admin: Add Proxy Connector" );
-		assertTextPresent( "Admin: Add Proxy Connector" );
+        assertAddProxyConnectorPageTitle();
+        assertTextPresent( "Admin: Add Proxy Connector" );
 		String proxy = "Network Proxy*:,Managed Repository*:,Remote Repository*:,Policies:,Return error when:,On remote error:,Releases:,Snapshots:,Checksum:,Cache failures:,Properties:,No properties have been set.,Black List:,No black list patterns have been set.,White List:,No white list patterns have been set.";
 		String[] arrayProxy = proxy.split( "," );
 		for ( String arrayproxy : arrayProxy )
@@ -153,28 +159,198 @@ public abstract class AbstractRepositoryTest
 		assertButtonWithValuePresent( "Add Pattern" );
 		assertButtonWithValuePresent( "Add Proxy Connector" );
 	}
-	
-	// this only fills in the values of required fields in adding Proxy Connectors
-	public void addProxyConnector( String networkProxy, String managedRepo, String remoteRepo )
+
+    private void assertAddProxyConnectorPageTitle()
+    {
+        assertPage( "Apache Archiva \\ Admin: Add Proxy Connector" );
+    }
+
+    public void addProxyConnector( String networkProxy, String managedRepo, String remoteRepo )
 	{
 		goToProxyConnectorsPage();
+        String xpath = getProxyConnectorXPath( managedRepo, remoteRepo );
+        assertElementNotPresent( "xpath=" + xpath );
+
 		clickLinkWithText( "Add" );
 		assertAddProxyConnectorPage();
-		selectValue( "connector.proxyId" , networkProxy );
-		selectValue( "connector.sourceRepoId" , managedRepo );
-		selectValue( "connector.targetRepoId" , remoteRepo );
-	}
-	
-	public void deleteProxyConnector()
+		selectValue( "connector.proxyId", networkProxy );
+		selectValue( "connector.sourceRepoId", managedRepo );
+		selectValue( "connector.targetRepoId", remoteRepo );
+
+        selectValue( "policy_releases", "never" );
+
+        addProxyProperty( "a", "b" );
+        assertAddProxyConnectorPageTitle();
+        addProxyProperty( "x", "y" );
+
+        addPattern( "blackListPattern", "**/bad/**" );
+        assertAddProxyConnectorPageTitle();
+        addPattern( "whiteListPattern", "**/good/**" );
+        assertAddProxyConnectorPageTitle();
+
+        clickButtonWithValue( "Add Proxy Connector" );
+
+        assertProxyConnectorsPage();
+        assertElementPresent( xpath );
+
+        LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
+        properties.put("a", "b");
+        properties.put("x", "y");
+        assertProxySettings( managedRepo, remoteRepo, "never", "**/bad/**", "**/good/**", properties );
+    }
+
+    public void editProxyConnector( String managedRepo, String remoteRepo )
 	{
 		goToProxyConnectorsPage();
-		clickLinkWithXPath( "//div[@id='contentArea']/div[2]/div[1]/div[2]/div[1]/a[3]/img" );
-		assertPage( "Apache Archiva \\ Admin: Delete Proxy Connectors" );
-		clickButtonWithValue( "Delete" );
-		assertPage( "Apache Archiva \\ Administration - Proxy Connectors" );
+        String xpath = getProxyConnectorXPath( managedRepo, remoteRepo );
+
+        clickLinkWithXPath( xpath + "/..//a[@class='edit']" );
+
+        assertEditProxyConnectorPage();
+
+        selectValue( "policy_releases", "always" );
+
+        addProxyProperty( "c", "d" );
+        assertEditProxyConnectorPage();
+        editProxyProperty( "x", "z" );
+        assertEditProxyConnectorPage();
+        removeProxyProperty( "a" );
+        assertEditProxyConnectorPage();
+
+        removePattern( "blackListPattern", "**/bad/**" );
+        assertEditProxyConnectorPage();
+        removePattern( "whiteListPattern", "**/good/**" );
+        addPattern( "blackListPattern", "**/bad2/**" );
+        assertEditProxyConnectorPage();
+        addPattern( "whiteListPattern", "**/good2/**" );
+
+        clickButtonWithValue( "Save Proxy Connector" );
+
+        assertProxyConnectorsPage();
+        assertElementPresent( xpath );
+
+        LinkedHashMap<String, String> properties = new LinkedHashMap<String, String>();
+        properties.put("c", "d");
+        properties.put("x", "z");
+        assertProxySettings( managedRepo, remoteRepo, "always", "**/bad2/**", "**/good2/**", properties );
+    }
+
+    private void assertEditProxyConnectorPage()
+    {
+        assertPage( "Apache Archiva \\ Admin : Edit Proxy Connector" );
+    }
+
+    private void removeProxyProperty( String name )
+    {
+        clickLinkWithXPath( "//a[@title='Remove [" + name + "] Property']" );
+    }
+
+    private void editProxyProperty( String name, String value )
+    {
+        setFieldValue( "property_" + name, value );
+    }
+
+    private void addPattern( String pattern, String value )
+    {
+        setFieldValue( pattern, value );
+        clickLinkWithXPath( "//input[@name='" + pattern + "']/../input[@type='button']" );
+    }
+
+    private void removePattern( String pattern, String value )
+    {
+        setFieldValue( pattern, value );
+        clickLinkWithXPath( "//a[@title='Remove [" + value + "] Pattern']" );
+    }
+
+    private void addProxyProperty( String name, String value )
+    {
+        setFieldValue( "propertyKey", name );
+        setFieldValue( "propertyValue", value );
+        clickButtonWithValue( "Add Property" );
+    }
+
+    private void assertProxySettings( String managedRepoId, String remoteRepoId, String releasesPolicy,
+                                      String blackList, String whiteList, LinkedHashMap<String, String> properties )
+    {
+        String xpath = getProxyConnectorXPath( managedRepoId, remoteRepoId );
+        clickLinkWithXPath( xpath + "/ancestor::div[contains(@class,'connector')]//a[text()='Settings']", false );
+
+        String tableElement = "//table[@class='policies']";
+        int row = 2;
+        Assert.assertEquals( getCellValueFromTable( tableElement, row, 0 ), "releases" );
+        Assert.assertEquals( getCellValueFromTable( tableElement, row, 1 ), releasesPolicy );
+
+        Assert.assertEquals( getSelenium().getText( "//th[contains(text(), 'Black List')]/ancestor::tr/td/p" ),
+                             "\"" + blackList + "\"" );
+        Assert.assertEquals( getSelenium().getText( "//th[contains(text(), 'White List')]/ancestor::tr/td/p" ),
+                             "\"" + whiteList + "\"" );
+
+        tableElement = "//table[@class='props']";
+        row = 0;
+        for ( Map.Entry property : properties.entrySet() )
+        {
+            Assert.assertEquals( getCellValueFromTable( tableElement, row, 0 ), property.getKey() );
+            Assert.assertEquals( getCellValueFromTable( tableElement, row, 1 ), property.getValue() );
+            row = row + 1;
+        }
+    }
+
+    public void addProxyConnector( String managedRepo, String remoteRepo )
+	{
+        addProxyConnector( DEFAULT_NETWORK_PROXY, managedRepo, remoteRepo );
 	}
 	
-	///////////////////////////////
+	public void deleteProxyConnector( String managedRepoId, String remoteRepoId, boolean failIfMissing )
+	{
+		goToProxyConnectorsPage();
+
+        String xpathBase = getProxyConnectorXPath( managedRepoId, remoteRepoId );
+        String xpath = xpathBase + "/..//a[@class='delete']";
+        if ( failIfMissing || isElementPresent( "xpath=" + xpath ))
+        {
+            clickLinkWithXPath( xpath );
+            assertPage( "Apache Archiva \\ Admin: Delete Proxy Connector" );
+		    clickButtonWithValue( "Delete" );
+		    assertPage( "Apache Archiva \\ Administration - Proxy Connectors" );
+
+            assertElementNotPresent( xpathBase );
+        }
+	}
+
+	public void disableProxyConnector( String managedRepoId, String remoteRepoId, boolean failIfMissing )
+	{
+        toggleProxyConnector( managedRepoId, remoteRepoId, failIfMissing, "Disable" );
+    }
+
+	public void enableProxyConnector( String managedRepoId, String remoteRepoId, boolean failIfMissing )
+	{
+        toggleProxyConnector( managedRepoId, remoteRepoId, failIfMissing, "Enable" );
+    }
+
+    private void toggleProxyConnector( String managedRepoId, String remoteRepoId, boolean failIfMissing,
+                                       String operation )
+    {
+        goToProxyConnectorsPage();
+
+        String xpathBase = getProxyConnectorXPath( managedRepoId, remoteRepoId );
+        String xpath = xpathBase + "/..//a[@title='" + operation + " Proxy Connector']";
+        if ( failIfMissing || isElementPresent( "xpath=" + xpath ) )
+        {
+            clickLinkWithXPath( xpath );
+            assertPage( "Apache Archiva \\ Admin: " + operation + " Proxy Connector" );
+            clickButtonWithValue( operation );
+            assertPage( "Apache Archiva \\ Administration - Proxy Connectors" );
+        }
+    }
+
+    private String getProxyConnectorXPath( String managedRepoId, String remoteRepoId )
+    {
+        String managedRepoXpath = "//div[@class='managedRepo' and ./p[text()='" + managedRepoId + "']]";
+        String remoteRepoXpath = "//div[@class='remoteRepo' and ./p[text()='" + remoteRepoId + "']]";
+        return "//div[@id='contentArea']" + managedRepoXpath + "/.." + remoteRepoXpath;
+    }
+
+    ///////////////////////////////
 	// network proxies
 	///////////////////////////////
 	

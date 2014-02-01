@@ -42,29 +42,19 @@ public class EditProxyConnectorAction
      */
     private String target;
 
-    @Override
-    public void prepare()
-    {
-        super.prepare();
-
-        connector = findProxyConnector( source, target );        
-    }
-
     public String input()
     {
+        connector = findProxyConnector( source, target );
         if ( connector == null )
         {
             addActionError( "Unable to edit non existant proxy connector with source [" + source + "] and target ["
                 + target + "]" );
             return ERROR;
         }
-        
-        if( connector != null )
-        {
-         // MRM-1135
-            connector.setBlackListPatterns( escapePatterns( connector.getBlackListPatterns() ) );
-            connector.setWhiteListPatterns( escapePatterns( connector.getWhiteListPatterns() ) );
-        }
+
+        // MRM-1135
+        connector.setBlackListPatterns( escapePatterns( connector.getBlackListPatterns() ) );
+        connector.setWhiteListPatterns( escapePatterns( connector.getWhiteListPatterns() ) );
 
         return INPUT;
     }

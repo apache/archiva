@@ -36,7 +36,7 @@
   <s:actionerror/>
   <s:actionmessage/>
 
-  <s:form name="saveProxyConnector" method="post" action="editProxyConnector!commit" namespace="/admin" validate="true">
+  <s:form name="saveProxyConnector" method="post" action="editProxyConnector_commit" namespace="/admin" validate="true">
     <%@ include file="/WEB-INF/jsp/admin/include/proxyConnectorForm.jspf" %>
     <s:submit value="Save Proxy Connector"/>
   </s:form>

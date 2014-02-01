@@ -44,7 +44,7 @@
     Are you sure you want to delete proxy connector <code>[ ${source} , ${target} ]</code> ?
   </p>
 
-  <s:form method="post" action="deleteProxyConnector!delete" namespace="/admin" validate="true">
+  <s:form method="post" action="deleteProxyConnector" namespace="/admin" validate="true">
     <s:hidden name="target"/>
     <s:hidden name="source"/>
     <s:token/>

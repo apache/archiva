@@ -70,22 +70,18 @@ public class CSRFSecurityTest
         assertTextPresent( "Possible CSRF attack detected! Invalid token found in the request." );
     }
 
-    // TODO: TEMPORARILY DISABLED TO ADDRESS METHOD PARAMETER
-    @Test(enabled = false)
     public void testCSRFDisableProxyConnector()
     {
         getSelenium().open( baseUrl );
-        getSelenium().open( baseUrl + "/admin/disableProxyConnector!disable.action?target=maven2-repository.dev.java.net&source=internal" );
+        getSelenium().open( baseUrl + "/admin/disableProxyConnector.action?target=maven2-repository.dev.java.net&source=internal" );
         assertTextPresent( "Security Alert - Invalid Token Found" );
         assertTextPresent( "Possible CSRF attack detected! Invalid token found in the request." );
     }
 
-    // TODO: TEMPORARILY DISABLED TO ADDRESS METHOD PARAMETER
-    @Test(enabled = false)
     public void testCSRFDeleteProxyConnector()
     {
         getSelenium().open( baseUrl );
-        getSelenium().open( baseUrl + "/admin/deleteProxyConnector!delete.action?target=maven2-repository.dev.java.net&source=snapshots" );
+        getSelenium().open( baseUrl + "/admin/deleteProxyConnector.action?target=maven2-repository.dev.java.net&source=snapshots" );
         assertTextPresent( "Security Alert - Invalid Token Found" );
         assertTextPresent( "Possible CSRF attack detected! Invalid token found in the request." );
     }
