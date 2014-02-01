@@ -34,19 +34,12 @@ import org.apache.maven.archiva.repository.audit.AuditEvent;
  */
 public class DeleteRepositoryGroupAction 
     extends AbstractRepositoriesAdminAction
-    implements Preparable
 {
     private RepositoryGroupConfiguration repositoryGroup;
 
     private String repoGroupId;
-	
-    public void prepare()
-    {
-        if ( StringUtils.isNotBlank( repoGroupId ) )
-        {
-            this.repositoryGroup = archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroupId );
-        }
-    }
+
+    private boolean cancel;
 	
     public String confirmDelete()
     {
@@ -55,12 +48,21 @@ public class DeleteRepositoryGroupAction
             addActionError( "Unable to delete repository group: repository id was blank." );
             return ERROR;
         }
+        else
+        {
+            this.repositoryGroup = archivaConfiguration.getConfiguration().findRepositoryGroupById( repoGroupId );
+        }
 
         return INPUT;
     }
 
     public String delete()
     {
+        if ( cancel )
+        {
+            return SUCCESS;
+        }
+
         Configuration config = archivaConfiguration.getConfiguration();
 
         RepositoryGroupConfiguration group = config.findRepositoryGroupById( repoGroupId );
@@ -93,5 +95,10 @@ public class DeleteRepositoryGroupAction
     public void setRepoGroupId( String repoGroupId )
     {
         this.repoGroupId = repoGroupId;
+    }
+
+    public void setCancel( String cancel )
+    {
+        this.cancel = StringUtils.isNotBlank( cancel );
     }
 }

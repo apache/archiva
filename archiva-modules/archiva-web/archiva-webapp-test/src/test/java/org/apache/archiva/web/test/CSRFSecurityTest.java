@@ -65,7 +65,7 @@ public class CSRFSecurityTest
     public void testCSRFDeleteRepositoryGroup()
     {
         getSelenium().open( baseUrl );
-        getSelenium().open( baseUrl + "/admin/deleteRepositoryGroup.action?repoGroupId=test&method%3Adelete=Confirm" );
+        getSelenium().open( baseUrl + "/admin/deleteRepositoryGroup.action?repoGroupId=test" );
         assertTextPresent( "Security Alert - Invalid Token Found" );
         assertTextPresent( "Possible CSRF attack detected! Invalid token found in the request." );
     }

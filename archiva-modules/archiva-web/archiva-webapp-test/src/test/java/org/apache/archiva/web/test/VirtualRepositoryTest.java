@@ -45,10 +45,15 @@ public class VirtualRepositoryTest
 	{
 		addRepositoryGroup( "testing" );
 		//assertAddedRepositoryLink( "testing" );
-		Assert.assertEquals( getSelenium().getText( "//div[@id='contentArea']/div[2]/div/div[1]/p[1]" ), "testing" );
-	}
-	
-	@Test(dependsOnMethods = { "testAddRepositoryGroupValidValue" } )
+        assertRepositoryGroup( "testing" );
+    }
+
+    private void assertRepositoryGroup( String group )
+    {
+        Assert.assertEquals( getSelenium().getText( "//div[@id='contentArea']/div[2]/div/div[1]/p[1]" ), group );
+    }
+
+    @Test(dependsOnMethods = { "testAddRepositoryGroupValidValue" } )
 	public void testAddRepositoryToRepositoryGroup()
 	{
 		addRepositoryToRepositoryGroup( "testing", "internal" );
@@ -68,13 +73,23 @@ public class VirtualRepositoryTest
 	}
 	
 	@Test(dependsOnMethods = { "testDeleteRepositoryOfRepositoryGroup" } )
-	public void testDeleteRepositoryGroup()
+	public void testCancelDeleteRepositoryGroup()
 	{	    
+	    assertRepositoryGroupsPage();
+        attemptDeleteRepositoryGroup( "testing" );
+        clickButtonWithValue( "Cancel" );
+        assertTextNotPresent( "No Repository Groups Defined." );
+        assertRepositoryGroup( "testing" );
+	}
+	
+	@Test(dependsOnMethods = { "testCancelDeleteRepositoryGroup" } )
+	public void testDeleteRepositoryGroup()
+	{
 	    assertRepositoryGroupsPage();
 		deleteRepositoryGroup( "testing" );
 		assertTextPresent( "No Repository Groups Defined." );
 	}
-	
+
 	/*@Test(dependsOnMethods = { "testAddRepositoryToRepositoryGroup" } )
 	public void testCheckRepositoryGroup()
 	{

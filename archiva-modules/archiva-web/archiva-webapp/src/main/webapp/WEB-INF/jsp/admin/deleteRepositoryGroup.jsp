@@ -57,8 +57,8 @@
     <s:hidden name="repoGroupId"/>
     <div class="buttons">
       <s:token/>
-      <s:submit value="Confirm" method="delete"/>
-      <s:submit value="Cancel" method="execute"/>
+      <s:submit value="Confirm" />
+      <s:submit value="Cancel" name="cancel"/>
     </div>
   </s:form>
 </div>

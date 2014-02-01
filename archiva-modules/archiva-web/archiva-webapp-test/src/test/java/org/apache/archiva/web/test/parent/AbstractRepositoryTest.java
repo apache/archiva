@@ -116,13 +116,18 @@ public abstract class AbstractRepositoryTest
 	
 	public void deleteRepositoryGroup( String repositoryName )
 	{
-		getSelenium().click( "xpath=//div[@id='contentArea']/div[2]/div/div[1]/div/a/img" );
-		waitPage();
-		assertDeleteRepositoryGroupPage( repositoryName );
+        attemptDeleteRepositoryGroup( repositoryName );
 		clickButtonWithValue( "Confirm" );
 	}
-	
-	///////////////////////////////
+
+    protected void attemptDeleteRepositoryGroup( String repositoryName )
+    {
+        getSelenium().click( "xpath=//div[@id='contentArea']/div[2]/div/div[1]/div/a/img" );
+        waitPage();
+        assertDeleteRepositoryGroupPage( repositoryName );
+    }
+
+    ///////////////////////////////
 	// proxy connectors
 	///////////////////////////////
 	public void goToProxyConnectorsPage()
