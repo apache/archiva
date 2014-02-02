@@ -19,8 +19,10 @@ package org.apache.maven.archiva.web.action;
  * under the License.
  */
 
+import java.util.HashMap;
 import java.util.List;
 
+import com.opensymphony.xwork2.ActionContext;
 import org.apache.maven.archiva.model.ArchivaProjectModel;
 import org.apache.maven.archiva.security.UserRepositories;
 import org.apache.maven.archiva.security.UserRepositoriesStub;
@@ -74,6 +76,15 @@ public abstract class AbstractActionTestCase
     protected static final String TEST_SCM_DEV_CONNECTION = "scmDevConnection";
 
     protected static final String TEST_SCM_URL = "scmUrl";
+
+    @Override
+    protected void setUp()
+        throws Exception
+    {
+        super.setUp();
+
+        ActionContext.setContext( new ActionContext( new HashMap<String, Object>() ) );
+    }
 
     protected void setObservableRepos( List<String> repoIds )
     {
