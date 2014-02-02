@@ -36,12 +36,10 @@ public class CSRFSecurityTest
         loginAsAdmin();
     }
 
-    // TODO: TEMPORARILY DISABLED TO ADDRESS METHOD PARAMETER
-    @Test(enabled = false)
     public void testCSRFDeleteRepository()
     {
         getSelenium().open( baseUrl );
-        getSelenium().open( baseUrl + "/admin/deleteRepository.action?repoid=test&method%3AdeleteContents=Delete+Configuration+and+Contents" );
+        getSelenium().open( baseUrl + "/admin/deleteRepository.action?repoid=test&deleteContents=Delete+Configuration+and+Contents" );
         assertTextPresent( "Security Alert - Invalid Token Found" );
         assertTextPresent( "Possible CSRF attack detected! Invalid token found in the request." );
     }

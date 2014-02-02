@@ -405,7 +405,9 @@ public abstract class AbstractRepositoryTest
 	
 	public void addRemoteRepository( String identifier, String name, String url, String username, String password, String timeout, String type )
 	{
-			//goToRepositoriesPage();
+			if (!getSelenium().getLocation().contains( "/archiva/admin/addRemoteRepository.action" )) {
+                getSelenium().open( "/archiva/admin/addRemoteRepository.action" );
+            }
 			assertAddRemoteRepository();
 			setFieldValue( "addRemoteRepository_commit_repository_id" ,  identifier );
 			setFieldValue( "addRemoteRepository_commit_repository_name" , name );
@@ -440,17 +442,21 @@ public abstract class AbstractRepositoryTest
 	public void editManagedRepository( String fieldName, String value )
 	{	    
 		goToRepositoriesPage();
-		clickLinkWithXPath( "//div[@id='contentArea']/div/div[5]/div[1]/a[1]/img" );
-		assertPage( "Apache Archiva \\ Admin: Edit Managed Repository" );
+        clickLinkWithXPath( getRepositoryXpath( "managedrepoedit" ) + "//a[contains(text(),'Edit')]" );
+        assertPage( "Apache Archiva \\ Admin: Edit Managed Repository" );
 		setFieldValue(fieldName, value);
-		//TODO
 		clickButtonWithValue( "Update Repository" );
 	}
 
-        public void editManagedRepository(String name, String directory, String indexDirectory, String type, String cron, String daysOlder, String retentionCount)
+    private String getRepositoryXpath( String repositoryId )
+    {
+        return "//code[text()='" + repositoryId + "']/ancestor::div[contains(@class,'repository')]";
+    }
+
+    public void editManagedRepository(String name, String directory, String indexDirectory, String type, String cron, String daysOlder, String retentionCount)
         {
                 goToRepositoriesPage();
-		clickLinkWithXPath( "//div[@id='contentArea']/div/div[5]/div[1]/a[1]/img" );
+		clickLinkWithXPath( getRepositoryXpath( "managedrepoedit" ) + "//a[contains(text(),'Edit')]");
 		assertPage( "Apache Archiva \\ Admin: Edit Managed Repository" );
                 setFieldValue( "repository.name" , name );
                 setFieldValue( "repository.location" , directory );
@@ -462,14 +468,21 @@ public abstract class AbstractRepositoryTest
                 clickButtonWithValue( "Update Repository" );
         }
 	
-	public void deleteManagedRepository( String id, boolean validate )
+	public void deleteManagedRepository( String id, boolean deleteContents, boolean validate )
 	{
         String xpath = "//div[@id='contentArea']//a[contains(@href,'confirmDeleteRepository.action?repoid=" + id + "')]";
         if ( validate || isElementPresent( "xpath=" + xpath ) )
         {
             clickLinkWithXPath( xpath );
             assertPage( "Apache Archiva \\ Admin: Delete Managed Repository" );
-            clickButtonWithValue( "Delete Configuration Only" );
+            if ( deleteContents )
+            {
+                clickButtonWithValue( "Delete Configuration and Contents" );
+            }
+            else
+            {
+                clickButtonWithValue( "Delete Configuration Only" );
+            }
         }
     }
 	

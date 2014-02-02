@@ -74,9 +74,9 @@
     <s:hidden name="repoid"/>
     <s:token/>
     <div class="buttons">
-      <s:submit value="Delete Configuration Only" method="deleteEntry" />
-      <s:submit value="Delete Configuration and Contents" method="deleteContents" />
-      <s:submit value="Cancel" method="execute"/>
+      <s:submit value="Delete Configuration Only" />
+      <s:submit value="Delete Configuration and Contents" name="deleteContents" />
+      <s:submit value="Cancel" name="cancel"/>
     </div>
   </s:form>
 </div>

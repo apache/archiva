@@ -58,6 +58,10 @@ public class DeleteManagedRepositoryAction
 
     private String repoid;
 
+    private boolean deleteContents;
+
+    private boolean cancel;
+
     /**
      * @plexus.requirement role-hint="jdo"
      */
@@ -82,18 +86,13 @@ public class DeleteManagedRepositoryAction
         return INPUT;
     }
 
-    public String deleteEntry()
+    public String delete()
     {
-        return deleteRepository( false );
-    }
+        if ( cancel )
+        {
+            return SUCCESS;
+        }
 
-    public String deleteContents()
-    {
-        return deleteRepository( true );
-    }
-
-    private String deleteRepository( boolean deleteContents )
-    {   
         ManagedRepositoryConfiguration existingRepository = repository;
         if ( existingRepository == null )
         {
@@ -101,7 +100,7 @@ public class DeleteManagedRepositoryAction
             return ERROR;
         }
 
-        String result = SUCCESS;
+        String result;
 
         try
         {
@@ -242,5 +241,15 @@ public class DeleteManagedRepositoryAction
     public ArchivaDAO getArchivaDAO()
     {
         return archivaDAO;
+    }
+
+    public void setDeleteContents( String deleteContents )
+    {
+        this.deleteContents = StringUtils.isNotBlank( deleteContents );
+    }
+
+    public void setCancel( String cancel )
+    {
+        this.cancel = StringUtils.isNotBlank( cancel );
     }
 }
