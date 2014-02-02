@@ -135,8 +135,6 @@ public class XSSSecurityTest
 
     public void testAddManagedRepositoryImmunityToInputFieldCrossSiteScripting()
     {
-        goToRepositoriesPage();
-        getSelenium().open( "/archiva/admin/addRepository.action" );
 	addManagedRepository( "test\"><script>alert('xss')</script>", "test\"><script>alert('xss')</script>" , "test\"><script>alert('xss')</script>" , "test\"><script>alert('xss')</script>", "Maven 2.x Repository", "", "-1", "101" );
         // xss inputs are blocked by validation.
 	assertTextPresent( "Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );

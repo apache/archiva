@@ -49,6 +49,8 @@ public class AddManagedRepositoryAction
 
     private boolean confirm;
 
+    private boolean cancel;
+
     public void prepare()
     {
         this.repository = new ManagedRepositoryConfiguration();
@@ -68,6 +70,11 @@ public class AddManagedRepositoryAction
      
     public String commit()
     {
+        if ( cancel )
+        {
+            return SUCCESS;
+        }
+
         if ( !confirm )
         {
             File location = new File( repository.getLocation() );
@@ -180,5 +187,10 @@ public class AddManagedRepositoryAction
     public void setConfirm( String confirm )
     {
         this.confirm = StringUtils.isNotEmpty( confirm );
+    }
+
+    public void setCancel( String cancel )
+    {
+        this.cancel = StringUtils.isNotEmpty( cancel );
     }
 }

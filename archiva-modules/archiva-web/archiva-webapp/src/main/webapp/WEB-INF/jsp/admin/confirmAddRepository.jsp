@@ -125,16 +125,8 @@
       <s:hidden name="repository.scanned" value="%{#attr.repository.scanned}"/>
       <s:hidden name="repository.deleteReleasedSnapshots" value="%{#attr.repository.deleteReleasedSnapshots}"/>
       
-      <c:choose>      
-        <c:when test="${action == 'addRepository_commit'}">
-      	  <s:submit value="Save" name="confirm" />
-      	</c:when>
-      	<c:otherwise>
-      	  <s:submit value="Save" method="confirmUpdate"/>
-      	</c:otherwise>
-     </c:choose>
-      
-      <s:submit value="Cancel" method="execute"/>
+      <s:submit value="Save" name="confirm" />
+      <s:submit value="Cancel" name="cancel" />
     </div>
   </s:form>
   

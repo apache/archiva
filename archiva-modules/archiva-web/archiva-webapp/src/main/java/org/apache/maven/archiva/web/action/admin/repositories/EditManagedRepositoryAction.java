@@ -62,6 +62,10 @@ public class EditManagedRepositoryAction
      */
     private ArchivaDAO archivaDAO;
 
+    private boolean confirm;
+
+    private boolean cancel;
+
     public void prepare()
     {
         if ( StringUtils.isNotBlank( repoid ) )
@@ -86,14 +90,19 @@ public class EditManagedRepositoryAction
         return INPUT;
     }
 
-    public String confirmUpdate()
-    {
-    	// location was changed
-        return save( true );
-    }
-    
     public String commit()
     {
+        if ( cancel )
+        {
+            return SUCCESS;
+        }
+
+        if ( confirm )
+        {
+            // location was changed
+            return save( true );
+        }
+
         ManagedRepositoryConfiguration existingConfig =
             archivaConfiguration.getConfiguration().findManagedRepositoryById( repository.getId() );
 
@@ -237,6 +246,16 @@ public class EditManagedRepositoryAction
     public String getAction()
     {
         return "editRepository_commit";
+    }
+
+    public void setConfirm( String confirm )
+    {
+        this.confirm = StringUtils.isNotEmpty( confirm );
+    }
+
+    public void setCancel( String cancel )
+    {
+        this.cancel = StringUtils.isNotEmpty( cancel );
     }
 
     // for testing

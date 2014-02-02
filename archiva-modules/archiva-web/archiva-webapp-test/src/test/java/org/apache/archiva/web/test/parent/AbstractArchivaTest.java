@@ -586,8 +586,10 @@ public abstract class AbstractArchivaTest
     public void addManagedRepository( String identifier, String name, String directory, String indexDirectory,
                                       String type, String cron, String daysOlder, String retentionCount )
     {
-        //goToRepositoriesPage();
-        //clickLinkWithText( "Add" );
+        if (!getSelenium().getLocation().contains( "/archiva/admin/addRepository.action" )) {
+            getSelenium().open( "/archiva/admin/addRepository.action" );
+        }
+
         setFieldValue( "repository.id", identifier );
         setFieldValue( "repository.name", name );
         setFieldValue( "repository.location", directory );

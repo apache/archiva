@@ -45,6 +45,7 @@ public class RepositoryTest
     {
         goToRepositoriesPage();
         deleteManagedRepository( "managedrepo1", true, false );
+        deleteManagedRepository( "managedrepo2", true, false );
         deleteManagedRepository( "managedrepoedit", true, false );
         deleteRemoteRepository( "remoterepo", false );
     }
@@ -52,8 +53,6 @@ public class RepositoryTest
     public void testAddManagedRepoValidValues()
         throws IOException
     {
-		goToRepositoriesPage();
-		getSelenium().open( "/archiva/admin/addRepository.action" );
         File dir = new File( getRepositoryDir() + "repository/" );
         if ( dir.exists() )
         {
@@ -67,10 +66,45 @@ public class RepositoryTest
         Assert.assertTrue( dir.exists() && dir.isDirectory() );
     }
 
+    public void testAddManagedRepoDirectoryExists()
+        throws IOException
+    {
+        File dir = new File( getRepositoryDir() + "repository-exists/" );
+        dir.mkdirs();
+        Assert.assertTrue( dir.exists() && dir.isDirectory() );
+
+        addManagedRepository( "managedrepo2", "Managed Repository Sample 2", dir.getAbsolutePath(), "",
+                              "Maven 2.x Repository", "0 0 * * * ?", "", "" );
+        assertTextPresent( "Managed Repository Sample 2" );
+
+        assertTextPresent( "WARNING: Repository location already exists." );
+
+        clickButtonWithValue( "Save" );
+
+		assertRepositoriesPage();
+        assertTextPresent( "Managed Repository Sample 2" );
+    }
+
+    public void testAddManagedRepoDirectoryExistsCancel()
+        throws IOException
+    {
+        File dir = new File( getRepositoryDir() + "repository-exists/" );
+        dir.mkdirs();
+        Assert.assertTrue( dir.exists() && dir.isDirectory() );
+
+        addManagedRepository( "managedrepo3", "Managed Repository Sample 3", dir.getAbsolutePath(), "",
+                              "Maven 2.x Repository", "0 0 * * * ?", "", "" );
+        assertTextPresent( "Managed Repository Sample 3" );
+        assertTextPresent( "WARNING: Repository location already exists." );
+
+        clickButtonWithValue( "Cancel" );
+
+        assertRepositoriesPage();
+        assertTextNotPresent( "Managed Repository Sample 3" );
+    }
+
         public void testAddManagedRepoInvalidValues()
         {
-                goToRepositoriesPage();
-		getSelenium().open( "/archiva/admin/addRepository.action" );
 		addManagedRepository( "<> \\/~+[ ]'\"", "<>\\~+[]'\"" , "<> ~+[ ]'\"" , "<> ~+[ ]'\"", "Maven 2.x Repository", "", "-1", "101" );
 		assertTextPresent( "Identifier must only contain alphanumeric characters, underscores(_), dots(.), and dashes(-)." );
 		assertTextPresent( "Directory must only contain alphanumeric characters, equals(=), question-marks(?), exclamation-points(!), ampersands(&), forward-slashes(/), back-slashes(\\), underscores(_), dots(.), colons(:), tildes(~), and dashes(-)." );
@@ -119,8 +153,6 @@ public class RepositoryTest
 
 	public void testAddManagedRepoBlankValues()
 	{
-		goToRepositoriesPage();
-		getSelenium().open( "/archiva/admin/addRepository.action" );	;
 		addManagedRepository( "", "" , "" , "", "Maven 2.x Repository", "", "", "" );
 		assertTextPresent( "You must enter a repository identifier." );
 		assertTextPresent( "You must enter a repository name." );
@@ -155,8 +187,6 @@ public class RepositoryTest
     public void testEditManagedRepo()
         throws IOException
     {
-        goToRepositoriesPage();
-        clickLinkWithText( "Add" );
         String directory = getRepositoryDir() + "local-repo/";
         File dir = new File( directory );
         if ( dir.exists() )
@@ -167,8 +197,67 @@ public class RepositoryTest
                               "Maven 2.x Repository", "0 0 * * * ?", "", "" );
 
         editManagedRepository( "repository.name" , "New Managed Repo Name" );
+        assertRepositoriesPage();
         assertTextNotPresent( "Managed Repository for Editing" );
         assertTextPresent( "New Managed Repo Name" );
+    }
+
+    @Test(dependsOnMethods = "testEditManagedRepo")
+    public void testEditManagedRepoDirectoryChangedToNonExistant()
+        throws IOException
+    {
+        goToRepositoriesPage();
+        String directory = getRepositoryDir() + "new-repo-dir/";
+        File dir = new File( directory );
+        if ( dir.exists() )
+        {
+            FileUtils.deleteDirectory( dir );
+        }
+
+        editManagedRepository( "repository.location", dir.getAbsolutePath() );
+        assertRepositoriesPage();
+        assertTextPresent( "new-repo-dir" );
+        Assert.assertTrue( dir.exists() );
+    }
+
+    @Test(dependsOnMethods = "testEditManagedRepo")
+    public void testEditManagedRepoDirectoryChangedToExisting()
+        throws IOException
+    {
+        goToRepositoriesPage();
+        String directory = getRepositoryDir() + "new-repo-dir/";
+        File dir = new File( directory );
+        dir.mkdirs();
+        Assert.assertTrue( dir.exists() && dir.isDirectory() );
+
+        editManagedRepository( "repository.location", dir.getAbsolutePath() );
+
+        assertTextPresent( "WARNING: Repository location already exists." );
+        clickButtonWithValue( "Save" );
+
+        assertRepositoriesPage();
+        assertTextPresent( "new-repo-dir" );
+        Assert.assertTrue( dir.exists() );
+    }
+
+    @Test(dependsOnMethods = "testEditManagedRepo")
+    public void testEditManagedRepoDirectoryChangedToExistingCancel()
+        throws IOException
+    {
+        goToRepositoriesPage();
+        String directory = getRepositoryDir() + "existing-dir/";
+        File dir = new File( directory );
+        dir.mkdirs();
+        Assert.assertTrue( dir.exists() && dir.isDirectory() );
+
+        editManagedRepository( "repository.location", dir.getAbsolutePath() );
+
+        assertTextPresent( "WARNING: Repository location already exists." );
+        clickButtonWithValue( "Cancel" );
+
+        assertRepositoriesPage();
+        assertTextNotPresent( "existing-dir" );
+        Assert.assertTrue( dir.exists() );
     }
 
     public void testEditManagedRepoInvalidValues()
@@ -221,8 +310,6 @@ public class RepositoryTest
 	public void testDeleteManagedRepo()
         throws IOException
     {
-        goToRepositoriesPage();
-        clickLinkWithText( "Add" );
         File dir = new File( getRepositoryDir() + "managedrepodelete/" );
         if ( dir.exists() )
         {
@@ -243,8 +330,6 @@ public class RepositoryTest
 	public void testDeleteManagedRepoWithContents()
         throws IOException
     {
-        goToRepositoriesPage();
-        clickLinkWithText( "Add" );
         File dir = new File( getRepositoryDir() + "managedrepodeletecontents/" );
         if ( dir.exists() )
         {
