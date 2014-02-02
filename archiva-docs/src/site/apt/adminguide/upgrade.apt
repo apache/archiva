@@ -73,6 +73,6 @@ Upgrading Archiva
   inside the Archiva application base directory (alongside <<<conf>>>, <<<data>>>
   and <<<logs>>>).
 
-  The default webapp context is now / (see {{{./adminguide/standalone.html} Standalone Distribution}})
+  The default webapp context is now / (see {{{./standalone.html} Standalone Distribution}})
 
    
