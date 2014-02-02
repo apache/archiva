@@ -540,7 +540,7 @@
         <param name="actionName">repositoryScanning</param>
       </result>
       <interceptor-ref name="configuredArchivaStack">
-        <param name="tokenSession.includeMethods">{1}</param>
+        <param name="tokenSession.includeMethods">*</param>
       </interceptor-ref>
     </action>
 
