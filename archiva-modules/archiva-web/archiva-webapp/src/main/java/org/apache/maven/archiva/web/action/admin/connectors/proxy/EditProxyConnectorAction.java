@@ -42,9 +42,16 @@ public class EditProxyConnectorAction
      */
     private String target;
 
+    @Override
+    public void prepare()
+    {
+        super.prepare();
+
+        connector = findProxyConnector( source, target );
+    }
+
     public String input()
     {
-        connector = findProxyConnector( source, target );
         if ( connector == null )
         {
             addActionError( "Unable to edit non existant proxy connector with source [" + source + "] and target ["

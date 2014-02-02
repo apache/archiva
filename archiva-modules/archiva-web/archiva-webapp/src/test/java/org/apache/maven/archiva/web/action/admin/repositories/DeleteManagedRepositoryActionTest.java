@@ -147,7 +147,7 @@ public class DeleteManagedRepositoryActionTest
         auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
         auditLogsDaoControl.replay();
         
-        String status = action.deleteEntry();        
+        String status = action.delete();
                 
         auditLogsDaoControl.verify();
         
@@ -167,8 +167,9 @@ public class DeleteManagedRepositoryActionTest
         
         auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
         auditLogsDaoControl.replay();
-        
-        String status = action.deleteContents();
+
+        action.setDeleteContents( Boolean.TRUE.toString() );
+        String status = action.delete();
         
         auditLogsDaoControl.verify();
                
@@ -193,8 +194,9 @@ public class DeleteManagedRepositoryActionTest
         
         auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
         auditLogsDaoControl.replay();
-        
-        String status = action.deleteContents();
+
+        action.setDeleteContents( Boolean.TRUE.toString() );
+        String status = action.delete();
         
         auditLogsDaoControl.verify();
         assertEquals( Action.SUCCESS, status );
@@ -235,8 +237,9 @@ public class DeleteManagedRepositoryActionTest
         
         auditLogsDaoControl.expectAndReturn( auditLogsDao.saveAuditLogs( new ArchivaAuditLogs() ), null );
         auditLogsDaoControl.replay();
-        
-        String status = action.deleteContents();
+
+        action.setDeleteContents( Boolean.TRUE.toString() );
+        String status = action.delete();
         assertEquals( Action.SUCCESS, status );
         auditLogsDaoControl.verify();
 

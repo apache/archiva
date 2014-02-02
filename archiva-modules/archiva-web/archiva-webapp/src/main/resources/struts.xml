@@ -429,9 +429,7 @@
     <action name="editProxyConnector" class="editProxyConnectorAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/editProxyConnector.jsp</result>
       <result name="success" type="redirectAction">proxyConnectors</result>
-      <interceptor-ref name="configuredArchivaStack">
-        <param name="params.acceptParamNames">\w+((\.\w+)|(\[\d+\])|(\(\d+\))|(\['[-\w]+'\])|(\('\w+'\)))*</param>
-      </interceptor-ref>
+      <interceptor-ref name="configuredPrepareParamsStack" />
     </action>
 
     <action name="editProxyConnector_*" class="editProxyConnectorAction" method="{1}">

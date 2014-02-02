@@ -33,8 +33,6 @@ import com.opensymphony.xwork2.Action;
 
 /**
  * DeleteRepositoryGroupActionTest
- * 
- * @version
  */
 public class DeleteRepositoryGroupActionTest 
     extends PlexusInSpringTestCase
