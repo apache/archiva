@@ -22,7 +22,6 @@ package org.apache.archiva.web.test;
 import junit.framework.Assert;
 import org.apache.archiva.web.test.parent.AbstractRepositoryTest;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -34,6 +33,9 @@ import java.io.IOException;
 public class RepositoryTest
 	extends AbstractRepositoryTest
 {
+
+    public static final String DELETE_CONFIGURATION_AND_CONTENTS = "Delete Configuration and Contents";
+
     @BeforeTest
     public void setUp()
     {
@@ -44,10 +46,11 @@ public class RepositoryTest
     public void tearDown()
     {
         goToRepositoriesPage();
-        deleteManagedRepository( "managedrepo1", true, false );
-        deleteManagedRepository( "managedrepo2", true, false );
-        deleteManagedRepository( "managedrepoedit", true, false );
+        deleteManagedRepository( "managedrepo1", false, DELETE_CONFIGURATION_AND_CONTENTS );
+        deleteManagedRepository( "managedrepo2", false, DELETE_CONFIGURATION_AND_CONTENTS );
+        deleteManagedRepository( "managedrepoedit", false, DELETE_CONFIGURATION_AND_CONTENTS );
         deleteRemoteRepository( "remoterepo", false );
+        deleteRemoteRepository( "remoterepoedit", false );
     }
 
     public void testAddManagedRepoValidValues()
@@ -310,19 +313,43 @@ public class RepositoryTest
 	public void testDeleteManagedRepo()
         throws IOException
     {
-        File dir = new File( getRepositoryDir() + "managedrepodelete/" );
+        File dir = new File( getRepositoryDir() + "managedrepodeleteconfig/" );
         if ( dir.exists() )
         {
             FileUtils.deleteDirectory( dir );
         }
-        addManagedRepository( "managedrepodelete", "Managed Repository for Deleting", dir.getAbsolutePath(), "",
+        addManagedRepository( "managedrepodeleteconfig", "Managed Repository for Deleting", dir.getAbsolutePath(), "",
                               "Maven 2.x Repository", "0 0 * * * ?", "", "" );
 
-        deleteManagedRepository( "managedrepodelete", false, true );
+        deleteManagedRepository( "managedrepodeleteconfig", true, "Delete Configuration Only" );
 
         // assert removed, but contents remain
         assertRepositoriesPage();
-        assertTextNotPresent( "managedrepodelete" );
+        assertTextNotPresent( "managedrepodeleteconfig" );
+
+        Assert.assertTrue( dir.exists() && dir.isDirectory() );
+    }
+
+	public void testDeleteManagedRepoCancel()
+        throws IOException
+    {
+        File dir = new File( getRepositoryDir() + "managedrepodeletecancel/" );
+
+        goToRepositoriesPage();
+        if ( !isTextPresent( "managedrepodeletecancel" ) )
+        {
+            if ( dir.exists() )
+            {
+                FileUtils.deleteDirectory( dir );
+            }
+
+            addManagedRepository( "managedrepodeletecancel", "Managed Repository for Deleting", dir.getAbsolutePath(),
+                                  "", "Maven 2.x Repository", "0 0 * * * ?", "", "" );
+        }
+        deleteManagedRepository( "managedrepodeletecancel", true, "Cancel" );
+
+        assertRepositoriesPage();
+        assertTextPresent( "managedrepodeletecancel" );
 
         Assert.assertTrue( dir.exists() && dir.isDirectory() );
     }
@@ -338,9 +365,8 @@ public class RepositoryTest
         addManagedRepository( "managedrepodeletecontents", "Managed Repository for Deleting", dir.getAbsolutePath(), "",
                               "Maven 2.x Repository", "0 0 * * * ?", "", "" );
 
-        deleteManagedRepository( "managedrepodeletecontents", true, true );
+        deleteManagedRepository( "managedrepodeletecontents", true, DELETE_CONFIGURATION_AND_CONTENTS );
 
-        // assert removed, but contents remain
         assertRepositoriesPage();
         assertTextNotPresent( "managedrepodeletecontents" );
 
@@ -357,7 +383,8 @@ public class RepositoryTest
 
 	public void testAddRemoteRepositoryNullIdentifier()
 	{
-		addRemoteRepository( "" , "Remote Repository Sample" , "http://repository.codehaus.org/org/codehaus/mojo/" , "" , "" , "" , "Maven 2.x Repository" );
+		addRemoteRepository( "", "Remote Repository Sample", "http://repository.codehaus.org/org/codehaus/mojo/", "",
+                             "", "", "Maven 2.x Repository" );
 		assertTextPresent( "You must enter a repository identifier." );
 	}
 
@@ -379,6 +406,46 @@ public class RepositoryTest
 		addRemoteRepository( "remoterepo" , "Remote Repository Sample" , "http://repository.codehaus.org/org/codehaus/mojo/" , "" , "" , "" , "Maven 2.x Repository" );
 		assertTextPresent( "Remote Repository Sample" );
 	}
+
+    public void testDeleteRemoteRepo()
+    {
+        addRemoteRepository( "remoterepodeleteconfirm", "Remote Repository for Deleting",
+                             "https://repository.apache.org/", "", "", "", "Maven 2.x Repository" );
+        assertTextPresent( "Remote Repository for Deleting" );
+
+        deleteRemoteRepository( "remoterepodeleteconfirm", true );
+        assertRepositoriesPage();
+        assertTextNotPresent( "remoterepodeleteconfirm" );
+    }
+
+    public void testDeleteRemoteRepoCancel()
+    {
+        goToRepositoriesPage();
+        if ( !isTextPresent( "remoterepodeletecancel" ) )
+        {
+            addRemoteRepository( "remoterepodeletecancel", "Remote Repository for Deleting",
+                                 "https://repository.apache.org/", "", "", "", "Maven 2.x Repository" );
+            assertTextPresent( "Remote Repository for Deleting" );
+        }
+
+        deleteRemoteRepository( "remoterepodeletecancel", true, "Cancel" );
+        assertRepositoriesPage();
+        assertTextPresent( "remoterepodeletecancel" );
+    }
+
+    public void testEditRemoteRepo()
+    {
+        goToRepositoriesPage();
+        addRemoteRepository( "remoterepoedit", "Remote Repository for Editing",
+                             "https://archiva-repository.apache.org/archiva/repository/all", "", "", "",
+                             "Maven 2.x Repository" );
+        assertTextPresent( "Remote Repository for Editing" );
+
+        editRemoteRepository( "repository.name" , "New Remote Repo Name" );
+        assertRepositoriesPage();
+        assertTextNotPresent( "Remote Repository for Editing" );
+        assertTextPresent( "New Remote Repo Name" );
+    }
 
     // *** BUNDLED REPOSITORY TEST ***
 

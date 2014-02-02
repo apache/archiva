@@ -386,6 +386,12 @@
     <action name="editRemoteRepository" class="editRemoteRepositoryAction" method="input">
       <result name="input">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
       <result name="error">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
+      <interceptor-ref name="configuredPrepareParamsStack"/>
+    </action>
+
+    <action name="editRemoteRepository_commit" class="editRemoteRepositoryAction" method="commit">
+      <result name="input">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
+      <result name="error">/WEB-INF/jsp/admin/editRemoteRepository.jsp</result>
       <result name="success" type="redirectAction">repositories</result>
       <interceptor-ref name="configuredPrepareParamsStack"/>
     </action>

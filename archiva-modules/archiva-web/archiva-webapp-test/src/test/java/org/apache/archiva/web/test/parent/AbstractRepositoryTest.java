@@ -420,6 +420,11 @@ public abstract class AbstractRepositoryTest
 	}
 	
 	public void deleteRemoteRepository( String id, boolean validate )
+    {
+        deleteRemoteRepository( id, validate, "Confirm" );
+    }
+
+	public void deleteRemoteRepository( String id, boolean validate, String option )
 	{
 		goToRepositoriesPage();
         String xpath = "//div[@id='contentArea']//a[contains(@href,'confirmDeleteRemoteRepository.action?repoid=" + id + "')]";
@@ -427,14 +432,14 @@ public abstract class AbstractRepositoryTest
         {
             clickLinkWithXPath( xpath );
 		assertDeleteRemoteRepositoryPage();
-		clickButtonWithValue( "Confirm" );
+		clickButtonWithValue( option );
         }
 	}
 	
 	public void editRemoteRepository( String fieldName, String value)
 	{
 		goToRepositoriesPage();
-		clickLinkWithXPath( "//div[@id='contentArea']/div/div[8]/div[1]/a[1]" );
+        clickLinkWithXPath( getRepositoryXpath( "remoterepoedit" ) + "//a[contains(text(),'Edit')]" );
 		setFieldValue( fieldName, value );
 		clickButtonWithValue( "Update Repository" );
 	}
@@ -468,21 +473,14 @@ public abstract class AbstractRepositoryTest
                 clickButtonWithValue( "Update Repository" );
         }
 	
-	public void deleteManagedRepository( String id, boolean deleteContents, boolean validate )
+	public void deleteManagedRepository( String id, boolean validate, String option )
 	{
         String xpath = "//div[@id='contentArea']//a[contains(@href,'confirmDeleteRepository.action?repoid=" + id + "')]";
         if ( validate || isElementPresent( "xpath=" + xpath ) )
         {
             clickLinkWithXPath( xpath );
             assertPage( "Apache Archiva \\ Admin: Delete Managed Repository" );
-            if ( deleteContents )
-            {
-                clickButtonWithValue( "Delete Configuration and Contents" );
-            }
-            else
-            {
-                clickButtonWithValue( "Delete Configuration Only" );
-            }
+            clickButtonWithValue( option );
         }
     }
 	

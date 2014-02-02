@@ -35,7 +35,7 @@
 <div id="contentArea">
 
   <s:actionmessage/>
-  <s:form method="post" action="editRemoteRepository!commit" namespace="/admin" validate="false">
+  <s:form method="post" action="editRemoteRepository_commit" namespace="/admin" validate="false">
     <s:hidden name="repository.id"/>
     <%@ include file="/WEB-INF/jsp/admin/include/remoteRepositoryForm.jspf" %>
     <s:submit value="Update Repository"/>

@@ -44,6 +44,8 @@ public class DeleteRemoteRepositoryAction
 
     private String repoid;
 
+    private boolean cancel;
+
     public void prepare()
     {
         if ( StringUtils.isNotBlank( repoid ) )
@@ -65,7 +67,11 @@ public class DeleteRemoteRepositoryAction
 
     public String delete()
     {
-        String result = SUCCESS;
+        if ( cancel )
+        {
+            return SUCCESS;
+        }
+
         RemoteRepositoryConfiguration existingRepository = repository;
         if ( existingRepository == null )
         {
@@ -76,7 +82,7 @@ public class DeleteRemoteRepositoryAction
         Configuration configuration = archivaConfiguration.getConfiguration();
         removeRepository( repoid, configuration );
         triggerAuditEvent( repoid, null, AuditEvent.DELETE_REMOTE_REPO );
-        result = saveConfiguration( configuration );
+        String result = saveConfiguration( configuration );
         
         cleanupRepositoryData( existingRepository );
 
@@ -115,5 +121,10 @@ public class DeleteRemoteRepositoryAction
     public void setRepoid( String repoid )
     {
         this.repoid = repoid;
+    }
+
+    public void setCancel( String cancel )
+    {
+        this.cancel = StringUtils.isNotEmpty( cancel );
     }
 }

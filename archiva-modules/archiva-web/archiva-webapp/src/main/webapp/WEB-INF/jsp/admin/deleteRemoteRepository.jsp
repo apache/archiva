@@ -64,8 +64,8 @@
   <s:form method="post" action="deleteRemoteRepository" namespace="/admin" validate="true" theme="simple">
     <s:hidden name="repoid"/>
     <div class="buttons">
-      <s:submit value="Confirm" method="delete"/>
-      <s:submit value="Cancel" method="execute"/>
+      <s:submit value="Confirm" />
+      <s:submit value="Cancel" name="cancel" />
     </div>
   </s:form>
 </div>
