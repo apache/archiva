@@ -65,7 +65,7 @@ Upgrading Archiva
 ** Updated Jetty configuration
 
   If you are using the Jetty standalone configuration with a custom
-  <<<jetty.xml>>>, note that it has been upgraded to Jetty 7 as of Archiva 1.4-M2.
+  <<<jetty.xml>>>, note that it has been upgraded to Jetty 8 as of Archiva 1.4-M2.
   You will need to recreate your customisations using the <<<jetty.xml>>> shipped
   with Archiva.
 
@@ -73,10 +73,6 @@ Upgrading Archiva
   inside the Archiva application base directory (alongside <<<conf>>>, <<<data>>>
   and <<<logs>>>).
 
-* Upgrading Archiva to 1.2.2
+  The default webapp context is now / (see {{{./adminguide/standalone.html} Standalone Distribution}})
 
-   Since Archiva 1.2.2, the Jetty version has been upgraded to 6.1.19.
-   If upgrading to Archiva 1.2.2 (or higher versions), there is a need to update the library contents listed in
-   <<<ARCHIVA_BASE/conf/wrapper.conf>>> with the ones included in the new distribution if the <<<ARCHIVA_BASE>>>
-   directory is separate from the installation.
    
