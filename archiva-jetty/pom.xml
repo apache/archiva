@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva</artifactId>
-    <version>2.0.0-RC3-SNAPSHOT</version>
+    <version>2.0.0-RC3</version>
   </parent>
   <artifactId>archiva-jetty</artifactId>
   <packaging>pom</packaging>
@@ -225,9 +225,7 @@
             <phase>prepare-package</phase>
             <configuration>
               <tasks>
-                <replaceregexp
-                  file="target/generated-resources/appassembler/jsw/archiva/conf/wrapper.conf"
-                  match="set.ARCHIVA_BASE" replace="set.default.ARCHIVA_BASE" />
+                <replaceregexp file="target/generated-resources/appassembler/jsw/archiva/conf/wrapper.conf" match="set.ARCHIVA_BASE" replace="set.default.ARCHIVA_BASE" />
               </tasks>
             </configuration>
             <goals>
