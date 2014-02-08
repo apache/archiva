@@ -25,6 +25,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
   UsersViewModel=function() {
     var self = this;
     this.users = ko.observableArray([]);
+
     this.originalUsers=ko.observableArray([]);
 
     this.gridViewModel = new ko.simpleGrid.viewModel({
@@ -49,13 +50,12 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
       ],
       pageSize: 10,
       gridUpdateCallBack: function(){
-       $.log("gridUpdateCallBack users result");
+        $.log("gridUpdateCallBack users result");
         applyAutocompleteOnUsersHeaders(self);
       }
     });
     clearFilters=function(){
       self.users(self.originalUsers());
-
     };
     filterLocked=function(){
       var founds=[];
@@ -282,7 +282,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
 
   applyAutocompleteOnHeaderUsers=function(property,usersViewModel){
     var founds=[];
-    $(usersViewModel.users()).each(function(idx,user){
+    $(usersViewModel.originalUsers()).each(function(idx,user){
       if(user[property] && user[property]()){
         founds.push(user[property]());
       }
@@ -295,7 +295,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
     $("#main-content").find("#users-grid-filter-auto-"+property ).on('typeahead:selected', function(obj, datum) {
       var users=[];
 
-      $(usersViewModel.users()).each(function(idx,user){
+      $(usersViewModel.originalUsers()).each(function(idx,user){
         if(user[property] && user[property]() && user[property]().indexOf(datum.value)>=0){
           users.push(user);
         }
