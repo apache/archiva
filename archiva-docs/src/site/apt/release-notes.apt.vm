@@ -74,6 +74,8 @@ Release Notes for Archiva ${project.version}
 
   * [MRM-1765] - #users > edit -- please sort effective roles
 
+  * [MRM-1798] - upgrade to last Spring 4.0.0
+
 ** New Feature
 
   * [MRM-676] - Provide 302 redirect for latest SNAPSHOT
@@ -121,8 +123,6 @@ Release Notes for Archiva ${project.version}
   * [MRM-1795] - window.archivaRuntimeInfo.version is null in archiva/archiva.js
 
   * [MRM-1796] - Can't download large archive file due to java.lang.NumberFormatException
-
-  * [MRM-1798] - upgrade to last Spring 4.0.0
 
 ** Task
 
