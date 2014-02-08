@@ -196,24 +196,9 @@
               <goal>generate-daemons</goal>
               <goal>create-repository</goal>
             </goals>
+            <phase>prepare-package</phase>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <descriptor>src/main/assembly/bin.xml</descriptor>
-          <finalName>apache-archiva-${project.version}</finalName>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -235,6 +220,20 @@
               <goal>run</goal>
             </goals>
           </execution>
+          <execution>
+            <id>fix-appassembler-bug</id>
+            <phase>prepare-package</phase>
+            <configuration>
+              <tasks>
+                <replaceregexp
+                  file="target/generated-resources/appassembler/jsw/archiva/conf/wrapper.conf"
+                  match="set.ARCHIVA_BASE" replace="set.default.ARCHIVA_BASE" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -243,6 +242,22 @@
           <supplementalModels>
             <supplementalModel>notice-supplements.xml</supplementalModel>
           </supplementalModels>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptor>src/main/assembly/bin.xml</descriptor>
+          <finalName>apache-archiva-${project.version}</finalName>
         </configuration>
       </plugin>
     </plugins>
