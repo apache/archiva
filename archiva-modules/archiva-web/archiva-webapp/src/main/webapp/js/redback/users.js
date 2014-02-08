@@ -287,9 +287,22 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
         founds.push(user[property]());
       }
     });
+    //var filteredHeader = ;
     $("#main-content").find("#users-grid-filter-auto-"+property ).typeahead({
-        local: founds
+        local: founds,
+        name: 'users-'+property+'-'+$.now()
     });
+    $("#main-content").find("#users-grid-filter-auto-"+property ).on('typeahead:selected', function(obj, datum) {
+      var users=[];
+
+      $(usersViewModel.users()).each(function(idx,user){
+        if(user[property] && user[property]() && user[property]().indexOf(datum.value)>=0){
+          users.push(user);
+        }
+      });
+      usersViewModel.users(users);
+    });
+
   }
 
   /**
