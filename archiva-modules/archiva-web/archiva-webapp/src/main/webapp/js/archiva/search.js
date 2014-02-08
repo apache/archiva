@@ -235,7 +235,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
               var browseViewModel = new BrowseViewModel(browseResultEntries,parentBrowseViewModel,groupId,repositoryId,feedsUrl);
               ko.applyBindings(browseViewModel,browseBreadCrumb.get(0));
               ko.applyBindings(browseViewModel,browseResult.get(0));
-              enableAutocompleBrowse(groupId);
+              enableAutocompleBrowse(groupId,browseResultEntries);
             }
          });
         }
@@ -1381,7 +1381,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
                     var browseViewModel = new BrowseViewModel(browseResultEntries,null,null,repositoryId);
                     ko.applyBindings(browseViewModel,mainContent.find("#browse_breadcrumb").get(0));
                     ko.applyBindings(browseViewModel,mainContent.find("#browse_result").get(0));
-                    enableAutocompleBrowse();
+                    enableAutocompleBrowse(null,browseResultEntries);
                   }
               });
 
@@ -1423,7 +1423,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     return "";
   }
 
-  enableAutocompleBrowse=function(groupId){
+  enableAutocompleBrowse=function(groupId,entries){
     $.log("enableAutocompleBrowse with groupId:'"+groupId+"'");
     $("#select_browse_repository").select2({width: "resolve"});
     // browse-autocomplete
@@ -1441,13 +1441,10 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     browseBox.typeahead(
         {
           name: 'browse-result-'+$.now() ,////hack to avoid local storage caching
-          local: [],
+          local: entries? entries : [],
           remote: {
             url: url,
             cache: false,
-            beforeSend: function(jqXhr){
-              $.log("beforeSend browseBox.val():'"+browseBox.val()+"'");
-            },
             filter: function(parsedResponse){
               var request = browseBox.val();
               $.log("filter:"+request);
