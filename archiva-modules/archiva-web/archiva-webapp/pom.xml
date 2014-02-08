@@ -591,6 +591,8 @@
 
 
     <!-- sirona -->
+    <!--
+    FIXME for some reasons doesn't work with the jetty app see MRM-1792
     <dependency>
       <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-core</artifactId>
@@ -612,18 +614,19 @@
       <artifactId>sirona-reporting</artifactId>
       <classifier>classes</classifier>
     </dependency>
-
+    -->
     <!--
     <dependency>
       <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-ehcache-agent</artifactId>
     </dependency>
-    -->
+
 
     <dependency>
       <groupId>org.apache.sirona</groupId>
       <artifactId>sirona-cassandra</artifactId>
     </dependency>
+    -->
 
     <dependency>
       <groupId>cglib</groupId>
