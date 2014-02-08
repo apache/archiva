@@ -23,7 +23,7 @@
   <parent>
     <artifactId>plugins</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>2.0.0</version>
+    <version>2.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>npanday-support</artifactId>
   <packaging>bundle</packaging>
