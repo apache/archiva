@@ -38,6 +38,16 @@ under the License.
       </activation>
       <repositories>
         <repository>
+          <id>archiva-repository.apache.org.stage</id>
+          <url>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        <repository>
           <id>local-central</id>
           <url>@localRepositoryUrl@</url>
           <releases>
