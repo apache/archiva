@@ -1865,7 +1865,7 @@
               <exclude>.repository/**</exclude>
               <exclude>*.patch</exclude>
               <exclude>**/target/**</exclude>
-              <exclude>.java-version</exclude>
+              <exclude>**/.java-version</exclude>
               <exclude>patch.diff</exclude>
             </excludes>
           </configuration>
