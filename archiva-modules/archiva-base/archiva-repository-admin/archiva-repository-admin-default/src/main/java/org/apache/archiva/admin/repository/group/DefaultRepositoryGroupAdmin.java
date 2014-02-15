@@ -81,7 +81,14 @@ public class DefaultRepositoryGroupAdmin
         {
             for ( RepositoryGroup repositoryGroup : getRepositoriesGroups() )
             {
-                mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ) );
+                mergedRemoteIndexesScheduler.schedule( repositoryGroup,
+                                                       getMergedIndexDirectory( repositoryGroup.getId() ) );
+                // create the directory for each group if not exists
+                File groupPath = new File( groupsDirectory, repositoryGroup.getId() );
+                if ( !groupPath.exists() )
+                {
+                    groupPath.mkdirs();
+                }
             }
         }
         catch ( RepositoryAdminException e )
@@ -244,7 +251,8 @@ public class DefaultRepositoryGroupAdmin
         {
             throw new RepositoryAdminException(
                 "repositoryGroup with id " + repositoryGroupId + " doesn't not contains repository with id"
-                    + repositoryId );
+                    + repositoryId
+            );
         }
 
         repositoryGroup.removeRepository( repositoryId );
