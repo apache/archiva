@@ -86,7 +86,7 @@ public class IndexWriter
         writer.println( "ul{list-style:none;}" ); 
         
         StringBuilder relative = new StringBuilder("../../");
-        if ( logicalResource.length() > 0 ) 
+        if ( logicalResource != null && logicalResource.length() > 0 )
         {
             String tmpRelative = StringUtils.replace( logicalResource, "\\", "/" );
             for (int i=0;i<tmpRelative.split("/").length;i++) 
@@ -109,7 +109,7 @@ public class IndexWriter
         writer.println( "<h3>Collection: /" + logicalResource + "</h3>" );
 
         //Check if not root
-        if ( logicalResource.length() > 0 )
+        if ( logicalResource != null && logicalResource.length() > 0 )
         {
             File file = new File( logicalResource );
             String parentName = file.getParent() == null ? "/" : file.getParent();

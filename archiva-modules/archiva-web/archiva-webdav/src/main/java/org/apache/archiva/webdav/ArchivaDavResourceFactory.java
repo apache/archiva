@@ -107,6 +107,7 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -117,7 +118,7 @@ import java.util.Set;
 /**
  *
  */
-@Service("davResourceFactory#archiva")
+@Service( "davResourceFactory#archiva" )
 public class ArchivaDavResourceFactory
     implements DavResourceFactory, Auditable
 {
@@ -136,7 +137,7 @@ public class ArchivaDavResourceFactory
     private RepositoryRequest repositoryRequest;
 
     @Inject
-    @Named(value = "repositoryProxyConnectors#default")
+    @Named( value = "repositoryProxyConnectors#default" )
     private RepositoryProxyConnectors connectors;
 
     @Inject
@@ -151,7 +152,7 @@ public class ArchivaDavResourceFactory
     private ServletAuthenticator servletAuth;
 
     @Inject
-    @Named(value = "httpAuthenticator#basic")
+    @Named( value = "httpAuthenticator#basic" )
     private HttpAuthenticator httpAuth;
 
     @Inject
@@ -178,11 +179,11 @@ public class ArchivaDavResourceFactory
     private Digester digestMd5;
 
     @Inject
-    @Named(value = "archivaTaskScheduler#repository")
+    @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler scheduler;
 
     @Inject
-    @Named(value = "fileLockManager#default")
+    @Named( value = "fileLockManager#default" )
     private FileLockManager fileLockManager;
 
     private ApplicationContext applicationContext;
@@ -239,8 +240,14 @@ public class ArchivaDavResourceFactory
             {
                 try
                 {
-                    return getResourceFromGroup( request, repoGroupConfig.getRepositories(), archivaLocator,
-                                                 repoGroupConfig );
+                    DavResource davResource =
+                        getResourceFromGroup( request, repoGroupConfig.getRepositories(), archivaLocator,
+                                              repoGroupConfig );
+
+                    setHeaders( response, locator, davResource );
+
+                    return davResource;
+
                 }
                 catch ( RepositoryAdminException e )
                 {
@@ -309,7 +316,8 @@ public class ArchivaDavResourceFactory
             {
                 resource = processRepository( request, archivaLocator, activePrincipal, managedRepositoryContent,
                                               managedRepositoryAdmin.getManagedRepository(
-                                                  archivaLocator.getRepositoryId() ) );
+                                                  archivaLocator.getRepositoryId() )
+                );
 
                 String logicalResource = getLogicalResource( archivaLocator, null, false );
                 resourcesInAbsolutePath.add(
@@ -408,8 +416,8 @@ public class ArchivaDavResourceFactory
                         catch ( DigesterException de )
                         {
                             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                                    "Error occurred while generating checksum files."
-                                                        + de.getMessage() );
+                                                    "Error occurred while generating checksum files." + de.getMessage()
+                            );
                         }
                     }
                 }
@@ -852,8 +860,8 @@ public class ArchivaDavResourceFactory
     {
         // [MRM-503] - Metadata file need Pragma:no-cache response
         // header.
-        if ( locator.getResourcePath().endsWith( "/maven-metadata.xml" )
-            || ( (ArchivaDavResource) resource ).getLocalResource().isDirectory() )
+        if ( locator.getResourcePath().endsWith( "/maven-metadata.xml" ) || ( resource instanceof ArchivaDavResource
+            && ( ArchivaDavResource.class.cast( resource ).getLocalResource().isDirectory() ) ) )
         {
             response.setHeader( "Pragma", "no-cache" );
             response.setHeader( "Cache-Control", "no-cache" );
@@ -861,10 +869,13 @@ public class ArchivaDavResourceFactory
         }
         // if the resource is a directory don't cache it as new groupId deployed will be available
         // without need of refreshing browser
-        else
+        else if ( locator.getResourcePath().endsWith( "/maven-metadata.xml" ) || (
+            resource instanceof ArchivaVirtualDavResource && ( new File(
+                ArchivaVirtualDavResource.class.cast( resource ).getLogicalResource() ).isDirectory() ) ) )
         {
-            // We need to specify this so connecting wagons can work correctly
-            response.setDateHeader( "Last-Modified", resource.getModificationTime() );
+            response.setHeader( "Pragma", "no-cache" );
+            response.setHeader( "Cache-Control", "no-cache" );
+            response.setDateHeader( "Last-Modified", new Date().getTime() );
         }
         // TODO: [MRM-524] determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
     }
@@ -925,7 +936,8 @@ public class ArchivaDavResourceFactory
             return servletAuth.isAuthenticated( request, result ) && servletAuth.isAuthorized( request, securitySession,
                                                                                                repositoryId,
                                                                                                WebdavMethodUtil.getMethodPermission(
-                                                                                                   request.getMethod() ) );
+                                                                                                   request.getMethod() )
+            );
         }
         catch ( AuthenticationException e )
         {
@@ -972,11 +984,22 @@ public class ArchivaDavResourceFactory
                                               RepositoryGroupConfiguration repositoryGroupConfiguration )
         throws DavException, RepositoryAdminException
     {
+        if ( repositoryGroupConfiguration.getRepositories() == null
+            || repositoryGroupConfiguration.getRepositories().isEmpty() )
+        {
+            File file =
+                new File( System.getProperty( "appserver.base"), "groups/" + repositoryGroupConfiguration.getId() );
+
+            return new ArchivaDavResource( file.getPath(), "groups/" + repositoryGroupConfiguration.getId(),
+                                           null,request.getDavSession(), locator, this,
+                                           mimeTypes, auditListeners,
+                                           scheduler, fileLockManager );
+        }
         List<File> mergedRepositoryContents = new ArrayList<File>();
         // multiple repo types so we guess they are all the same type
         // so use the first one
         // FIXME add a method with group in the repository storage
-        String firstRepoId = repositoryGroupConfiguration.getRepositories().get( 1 );
+        String firstRepoId = repositoryGroupConfiguration.getRepositories().get( 0 );
 
         String path = getLogicalResource( locator, managedRepositoryAdmin.getManagedRepository( firstRepoId ), false );
         if ( path.startsWith( "/" ) )
@@ -1012,7 +1035,8 @@ public class ArchivaDavResourceFactory
                 {
                     File tmpDirectory = new File( SystemUtils.getJavaIoTmpDir(),
                                                   repositoryGroupConfiguration.getId() + "/"
-                                                      + repositoryGroupConfiguration.getMergedIndexPath() );
+                                                      + repositoryGroupConfiguration.getMergedIndexPath()
+                    );
                     if ( !tmpDirectory.exists() )
                     {
                         synchronized ( tmpDirectory.getAbsolutePath() )
@@ -1056,7 +1080,8 @@ public class ArchivaDavResourceFactory
                                 repoIndexDirectory = new File( managedRepository.getRepository().getLocation(),
                                                                StringUtils.isEmpty( repoIndexDirectory )
                                                                    ? ".indexer"
-                                                                   : repoIndexDirectory ).getAbsolutePath();
+                                                                   : repoIndexDirectory
+                                ).getAbsolutePath();
                             }
                         }
                         if ( StringUtils.isEmpty( repoIndexDirectory ) )
@@ -1096,7 +1121,8 @@ public class ArchivaDavResourceFactory
                                 {
                                     if ( servletAuth.isAuthorized( activePrincipal, repository,
                                                                    WebdavMethodUtil.getMethodPermission(
-                                                                       request.getMethod() ) ) )
+                                                                       request.getMethod() )
+                                    ) )
                                     {
                                         mergedRepositoryContents.add( resourceFile );
                                         log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
@@ -1312,13 +1338,14 @@ public class ArchivaDavResourceFactory
             File tempRepoFile = Files.createTempDir();
             tempRepoFile.deleteOnExit();
 
-            IndexMergerRequest indexMergerRequest = new IndexMergerRequest( authzRepos, true, repositoryGroupConfiguration.getId(),
-                                    repositoryGroupConfiguration.getMergedIndexPath(),
-                                    repositoryGroupConfiguration.getMergedIndexTtl() ).mergedIndexDirectory( tempRepoFile )
-                                    .temporary( true );
+            IndexMergerRequest indexMergerRequest =
+                new IndexMergerRequest( authzRepos, true, repositoryGroupConfiguration.getId(),
+                                        repositoryGroupConfiguration.getMergedIndexPath(),
+                                        repositoryGroupConfiguration.getMergedIndexTtl() ).mergedIndexDirectory(
+                    tempRepoFile ).temporary( true );
 
             MergedRemoteIndexesTaskRequest taskRequest =
-                new MergedRemoteIndexesTaskRequest(indexMergerRequest, indexMerger);
+                new MergedRemoteIndexesTaskRequest( indexMergerRequest, indexMerger );
 
             MergedRemoteIndexesTask job = new MergedRemoteIndexesTask( taskRequest );
 

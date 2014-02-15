@@ -343,4 +343,13 @@ public class ArchivaVirtualDavResource
         propsInitialized = true;
     }
 
+    public String getLogicalResource()
+    {
+        return logicalResource;
+    }
+
+    public void setLogicalResource( String logicalResource )
+    {
+        this.logicalResource = logicalResource;
+    }
 }

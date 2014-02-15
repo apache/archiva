@@ -37,7 +37,7 @@
     2.x has 1.7 required
     <cassandraVersion>2.0.2</cassandraVersion>
     -->
-    <astyanax.version>1.56.44</astyanax.version>
+    <astyanax.version>1.56.48</astyanax.version>
   </properties>
 
   <dependencies>
