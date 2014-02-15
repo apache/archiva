@@ -987,7 +987,6 @@ public class ArchivaDavResourceFactory
         if ( repositoryGroupConfiguration.getRepositories() == null
             || repositoryGroupConfiguration.getRepositories().isEmpty() )
         {
-
             File file =
                 new File( System.getProperty( "appserver.base"), "groups/" + repositoryGroupConfiguration.getId() );
 
@@ -995,8 +994,6 @@ public class ArchivaDavResourceFactory
                                            null,request.getDavSession(), locator, this,
                                            mimeTypes, auditListeners,
                                            scheduler, fileLockManager );
-            //return new ArchivaVirtualDavResource( Collections.<File>emptyList(), file.getPath(), mimeTypes, locator,
-            //                                      this );
         }
         List<File> mergedRepositoryContents = new ArrayList<File>();
         // multiple repo types so we guess they are all the same type
