@@ -62,7 +62,7 @@ public class RepositoryServletNoProxyTest
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangSha1 );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangSha1 );
-        assertNotNull( response.getResponseHeaderValue( "last-modified" ) );
+        assertNotNull( response.getResponseHeaderValue( "Last-Modified" ) );
     }
 
     @Test

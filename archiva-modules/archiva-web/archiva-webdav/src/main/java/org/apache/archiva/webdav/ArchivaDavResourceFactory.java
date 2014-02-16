@@ -107,7 +107,6 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -416,8 +415,8 @@ public class ArchivaDavResourceFactory
                         catch ( DigesterException de )
                         {
                             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                                    "Error occurred while generating checksum files." + de.getMessage()
-                            );
+                                                    "Error occurred while generating checksum files."
+                                                        + de.getMessage() );
                         }
                     }
                 }
@@ -877,6 +876,11 @@ public class ArchivaDavResourceFactory
             response.setHeader( "Cache-Control", "no-cache" );
             response.setDateHeader( "Last-Modified", new Date().getTime() );
         }
+        else
+        {
+            // We need to specify this so connecting wagons can work correctly
+            response.setDateHeader( "Last-Modified", resource.getModificationTime() );
+        }
         // TODO: [MRM-524] determine http caching options for other types of files (artifacts, sha1, md5, snapshots)
     }
 
@@ -988,12 +992,11 @@ public class ArchivaDavResourceFactory
             || repositoryGroupConfiguration.getRepositories().isEmpty() )
         {
             File file =
-                new File( System.getProperty( "appserver.base"), "groups/" + repositoryGroupConfiguration.getId() );
+                new File( System.getProperty( "appserver.base" ), "groups/" + repositoryGroupConfiguration.getId() );
 
-            return new ArchivaDavResource( file.getPath(), "groups/" + repositoryGroupConfiguration.getId(),
-                                           null,request.getDavSession(), locator, this,
-                                           mimeTypes, auditListeners,
-                                           scheduler, fileLockManager );
+            return new ArchivaDavResource( file.getPath(), "groups/" + repositoryGroupConfiguration.getId(), null,
+                                           request.getDavSession(), locator, this, mimeTypes, auditListeners, scheduler,
+                                           fileLockManager );
         }
         List<File> mergedRepositoryContents = new ArrayList<File>();
         // multiple repo types so we guess they are all the same type
