@@ -365,7 +365,7 @@
           <webAppConfig>
             <contextPath>/</contextPath>
             <baseResource implementation="org.mortbay.resource.ResourceCollection">
-              <resourcesAsCSV>src/main/webapp,target/archiva,target/redback</resourcesAsCSV>
+              <resourcesAsCSV>${basedir}/src/main/webapp,${basedir}/target/archiva,${basedir}/target/redback</resourcesAsCSV>
             </baseResource>
           </webAppConfig>
           <scanIntervalSeconds>10</scanIntervalSeconds>
