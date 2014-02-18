@@ -1211,8 +1211,8 @@
   <distributionManagement>
     <repository>
       <id>archiva-repository.releases</id>
-      <name>Apache Release Staging Repository</name>
-      <url>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage/</url>
+      <name>Apache Release Staging Repository for 1.3.x</name>
+      <url>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage-1.3/</url>
     </repository>
     <snapshotRepository>
       <id>archiva-repository.snapshots</id>
