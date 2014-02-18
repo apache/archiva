@@ -3,4 +3,5 @@ target
 *.iml
 .DS_Store
 archiva-modules/archiva-web/archiva-webapp/overlays/
+archiva-modules/archiva-web/archiva-webapp/appserver-base/
 .java-version
