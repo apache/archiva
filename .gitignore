@@ -4,4 +4,7 @@ target
 .DS_Store
 archiva-modules/archiva-web/archiva-webapp/overlays/
 archiva-modules/archiva-web/archiva-webapp/appserver-base/
+archiva-modules/archiva-web/archiva-webapp/src/main/webapp/archiva-applet.jar
+archiva-modules/archiva-web/archiva-webapp-test/cargo-installs
 .java-version
+derby.log
