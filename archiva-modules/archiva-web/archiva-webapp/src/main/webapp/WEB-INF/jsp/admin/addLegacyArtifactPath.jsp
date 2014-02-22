@@ -42,13 +42,13 @@
       var group = path.indexOf( "/" );
       if ( group > 0 )
       {
-          document.getElementById( "addLegacyArtifactPath_groupId" ).value
+          document.getElementById( "addLegacyArtifactPath_commit_groupId" ).value
               = path.substring( 0, group );
           group += 1;
           var type = path.indexOf( "/", group );
           if ( type > 0 )
           {
-              document.getElementById( "addLegacyArtifactPath_type" ).value
+              document.getElementById( "addLegacyArtifactPath_commit_type" ).value
                   = path.substring( group, type - 1 );
           }
           type += 1;
@@ -56,9 +56,9 @@
           var ext = path.lastIndexOf( "." );
           if ( version > 0 )
           {
-              document.getElementById( "addLegacyArtifactPath_artifactId" ).value
+              document.getElementById( "addLegacyArtifactPath_commit_artifactId" ).value
                   = path.substring( type, version );
-              document.getElementById( "addLegacyArtifactPath_version" ).value
+              document.getElementById( "addLegacyArtifactPath_commit_version" ).value
                   = path.substring( version + 1, ext );
           }
 
@@ -91,23 +91,6 @@
     <s:textfield name="type" label="Type" size="20" requiredLabel="true"/>
     <s:submit value="Add Legacy Artifact Path"/>
   </s:form>
-
-  <script type="text/javascript">
-    var ref = document.getElementById("addLegacyArtifactPath_legacyArtifactPath_artifact").value;
-    var i = ref.indexOf( ":" );
-    document.getElementById("addLegacyArtifactPath_groupId").value = ref.substring( 0, i );
-    var j = i + 1;
-    var i = ref.indexOf( ":", j );
-    document.getElementById("addLegacyArtifactPath_artifactId").value = ref.substring( j, i );
-    var j = i + 1;
-    var i = ref.indexOf( ":", j );
-    document.getElementById("addLegacyArtifactPath_version").value = ref.substring( j, i );
-    var j = i + 1;
-    var i = ref.indexOf( ":", j );
-    document.getElementById("addLegacyArtifactPath_classifier").value = ref.substring( j, i );
-
-    document.getElementById("addLegacyArtifactPath_legacyArtifactPath_path").focus();
-  </script>
 
 </div>
 
