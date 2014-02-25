@@ -192,15 +192,21 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                     "redbackRuntimeConfiguration with empty userManagerImpls so force at least jdo implementation !" );
                 redbackRuntimeConfiguration.getUserManagerImpls().add( "jdo" );
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
+            } else
+            {
+                log.info( "using userManagerImpls: {}", redbackRuntimeConfiguration.getUserManagerImpls() );
             }
 
-            // we ensure authorizerImpls is not empty if so put
+            // we ensure rbacManagerImpls is not empty if so put at least cached
             if ( redbackRuntimeConfiguration.getRbacManagerImpls().isEmpty() )
             {
                 log.info(
                     "redbackRuntimeConfiguration with empty rbacManagerImpls so force at least cached implementation !" );
                 redbackRuntimeConfiguration.getRbacManagerImpls().add( "cached" );
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
+            } else
+            {
+                log.info( "using rbacManagerImpls: {}",  redbackRuntimeConfiguration.getRbacManagerImpls());
             }
 
             boolean save = false;
