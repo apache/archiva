@@ -44,7 +44,7 @@ import java.util.Set;
  * ManagedLegacyRepositoryContent
  *
  *
- * @todo no need to be a component when filetypes, legacy path parser is not
+ * TODO no need to be a component when filetypes, legacy path parser is not
  */
 @Service( "managedRepositoryContent#legacy" )
 @Scope( "prototype" )

@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Information about the available mailing lists for communicating with the project.
  *
- * @todo considering moving this to a facet - avoid referring to it externally
+ * TODO considering moving this to a facet - avoid referring to it externally
  */
 @XmlRootElement(name = "mailingList")
 public class MailingList

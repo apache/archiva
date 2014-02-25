@@ -43,11 +43,9 @@ public interface RepositoryScanner
      * <p>
      * Typical Ignorable Content patterns.
      * </p>
-     * <p/>
      * <p><strong>
      * NOTE: Do not use for normal webapp or task driven repository scanning.
-     * </strong></p>
-     * <p/>
+     * </strong></p>     
      * <p>
      * These patterns are only valid for archiva-cli and archiva-converter use.
      * </p>
@@ -59,7 +57,7 @@ public interface RepositoryScanner
 
     /**
      * Scan the repository for content changes.
-     * <p/>
+     * <p>
      * Internally, this will use the as-configured known and invalid consumer lists.
      *
      * @param repository   the repository to change.
@@ -74,7 +72,7 @@ public interface RepositoryScanner
 
     /**
      * Scan the repository for content changes.
-     * <p/>
+     * <p>
      * Internally, this will use the as-configured known and invalid consumer lists.
      *
      * @param repository              the repository to change.

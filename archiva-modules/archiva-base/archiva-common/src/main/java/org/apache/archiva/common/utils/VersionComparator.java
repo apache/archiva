@@ -29,24 +29,26 @@ import java.util.List;
 
 /**
  * VersionComparator - compare the parts of two version strings.
- * <p/>
+ * <p>
  * Technique.
- * <p/>
+ * </p>
+ * <p>
  * * Split the version strings into parts by splitting on <code>"-._"</code> first, then breaking apart words from numbers.
- * <p/>
+ * </p>
  * <code>
  * "1.0"         = "1", "0"
  * "1.0-alpha-1" = "1", "0", "alpha", "1"
  * "2.0-rc2"     = "2", "0", "rc", "2"
  * "1.3-m2"      = "1", "3", "m", "3"
  * </code>
- * <p/>
+ * <p>
  * compare each part individually, and when they do not match, perform the following test.
- * <p/>
+ * </p>
+ * <p>
  * Numbers are calculated per normal comparison rules.
  * Words that are part of the "special word list" will be treated as their index within that heirarchy.
  * Words that cannot be identified as special, are treated using normal case-insensitive comparison rules.
- *
+ * </p>
  *
  */
 public class VersionComparator

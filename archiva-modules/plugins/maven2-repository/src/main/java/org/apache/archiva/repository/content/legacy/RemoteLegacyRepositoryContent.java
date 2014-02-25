@@ -32,7 +32,7 @@ import org.springframework.stereotype.Service;
  * RemoteLegacyRepositoryContent
  *
  *
- * @todo no need to be a component once legacy path parser is not
+ * TODO no need to be a component once legacy path parser is not
  */
 @Service( "remoteRepositoryContent#legacy" )
 @Scope( "prototype" )

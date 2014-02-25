@@ -86,18 +86,16 @@ public class FileTypes
     }
 
     /**
-     * <p>
      * Get the list of patterns for a specified filetype.
-     * </p>
-     * <p/>
+     *
      * <p>
      * You will always get a list.  In this order.
      * <ul>
      * <li>The Configured List</li>
      * <li>The Default List</li>
-     * <li>A single item list of <code>"**<span>/</span>*"</code></li>
+     * <li>A single item list of <code>&quot;**&#47;*&quot;</code></li>
      * </ul>
-     * </p>
+     * 
      *
      * @param id the id to lookup.
      * @return the list of patterns.

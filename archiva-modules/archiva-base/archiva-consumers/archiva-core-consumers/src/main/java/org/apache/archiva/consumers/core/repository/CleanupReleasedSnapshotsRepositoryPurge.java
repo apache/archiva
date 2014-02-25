@@ -50,7 +50,6 @@ import java.util.List;
  * This will look in a single managed repository, and purge any snapshots that are present
  * that have a corresponding released version on the same repository.
  * </p>
- * <p/>
  * <p>
  * So, if you have the following (presented in the m2/default layout form) ...
  * <pre>
@@ -65,9 +64,6 @@ import java.util.List;
  * then the current highest ranked released (non-snapshot) version is 2.0, which means
  * the snapshots from 1.0-SNAPSHOT, 1.1-SNAPSHOT, 1.2.1-SNAPSHOT, and 2.0-SNAPSHOT can
  * be purged.  Leaving 2.1-SNAPSHOT in alone.
- * </p>
- *
- *
  */
 public class CleanupReleasedSnapshotsRepositoryPurge
     extends AbstractRepositoryPurge

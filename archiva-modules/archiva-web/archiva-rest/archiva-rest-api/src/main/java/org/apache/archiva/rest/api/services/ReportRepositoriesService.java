@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * ReportRepositoriesService
  *
- * @author Adrien Lecharpentier <adrien.lecharpentier@zenika.com>
+ * @author Adrien Lecharpentier &lt;adrien.lecharpentier@zenika.com&gt;
  * @since 1.4-M3
  */
 @Path( "/reportServices/" )

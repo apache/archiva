@@ -55,7 +55,7 @@ import java.util.List;
 
 /**
  * Search the artifact repository of known SHA1 Checksums for potential duplicate artifacts.
- * <p/>
+ * <p>
  * TODO: no need for this to be a scanner - we can just query the database / content repository to get a full list
  */
 @Service ( "knownRepositoryContentConsumer#duplicate-artifacts" )

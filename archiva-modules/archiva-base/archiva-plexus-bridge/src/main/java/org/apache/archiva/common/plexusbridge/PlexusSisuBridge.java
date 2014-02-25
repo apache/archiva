@@ -39,7 +39,7 @@ import java.util.Map;
 
 /**
  * Simple component which will initiate the plexus shim component
- * to see plexus components inside a guice container.<br/>
+ * to see plexus components inside a guice container.<br>
  * So move all of this here to be able to change quickly if needed.
  *
  * @author Olivier Lamy

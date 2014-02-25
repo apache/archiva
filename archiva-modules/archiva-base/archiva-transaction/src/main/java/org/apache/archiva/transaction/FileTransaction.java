@@ -77,7 +77,7 @@ public class FileTransaction
     /**
      * @param source
      * @param destination
-     * @param digesters   {@link List}&lt;{@link org.codehaus.plexus.digest.Digester}> digesters to use for checksumming
+     * @param digesters   {@link List}&lt;{@link org.codehaus.plexus.digest.Digester}&gt; digesters to use for checksumming
      */
     public void copyFile( File source, File destination, List<? extends Digester> digesters )
     {
@@ -87,7 +87,7 @@ public class FileTransaction
     /**
      * @param content
      * @param destination
-     * @param digesters   {@link List}&lt;{@link org.codehaus.plexus.digest.Digester}> digesters to use for checksumming
+     * @param digesters   {@link List}&lt;{@link org.codehaus.plexus.digest.Digester}&gt; digesters to use for checksumming
      */
     public void createFile( String content, File destination, List<? extends Digester> digesters )
     {

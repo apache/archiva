@@ -102,10 +102,10 @@ import java.util.Map;
  * Maven 2 repository format storage implementation. This class currently takes parameters to indicate the repository to
  * deal with rather than being instantiated per-repository.
  * FIXME: instantiate one per repository and allocate permanently from a factory (which can be obtained within the session).
- * <p/>
+ * <p>
  * The session is passed in as an argument to obtain any necessary resources, rather than the class being instantiated
  * within the session in the context of a single managed repository's resolution needs.
- * <p/>
+ * <p>
  */
 @Service( "repositoryStorage#maven2" )
 public class Maven2RepositoryStorage
@@ -643,7 +643,7 @@ public class Maven2RepositoryStorage
      * A relocation capable client will request the POM prior to the artifact, and will then read meta-data and do
      * client side relocation. A simplier client (like maven 1) will only request the artifact and not use the
      * metadatas.
-     * <p/>
+     * <p>
      * For such clients, archiva does server-side relocation by reading itself the &lt;relocation&gt; element in
      * metadatas and serving the expected artifact.
      */

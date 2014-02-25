@@ -29,14 +29,14 @@ public interface Auditable
     /**
      * Add an AuditListener.
      * 
-     * @param the listener to add.
+     * @param auditListener the listener to add.
      */
     void addAuditListener( AuditListener auditListener );
 
     /**
      * Remove an AuditListener.
      * 
-     * @param the listener to remove.
+     * @param auditListener the listener to remove.
      */
     void removeAuditListener( AuditListener auditListener );
 

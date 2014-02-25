@@ -32,7 +32,7 @@ import javax.inject.Named;
 /**
  * Default implementation of a scheduling component for archiva.
  *
- * @todo TODO - consider just folding in, not really scheduled
+ * TODO - consider just folding in, not really scheduled
  */
 @Service("archivaTaskScheduler#indexing")
 public class IndexingArchivaTaskScheduler

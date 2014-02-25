@@ -69,8 +69,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @todo below: revise storage format for project version metadata
- * @todo revise reference storage
+ * TODO below: revise storage format for project version metadata
+ * TODO revise reference storage
  */
 public class JcrMetadataRepository
     implements MetadataRepository

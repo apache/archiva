@@ -1044,7 +1044,7 @@ public class DefaultBrowseService
 
     /**
      * @param path
-     * @return org/apache -> org , org -> org
+     * @return org/apache -&gt; org , org -&gt; org
      */
     private String getRootPath( String path )
     {

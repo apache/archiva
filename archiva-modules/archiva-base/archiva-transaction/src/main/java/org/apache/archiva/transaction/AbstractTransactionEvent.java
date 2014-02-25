@@ -47,7 +47,7 @@ public abstract class AbstractTransactionEvent
     private List<File> createdFiles = new ArrayList<File>();
 
     /**
-     * {@link List}&lt;{@link Digester}>
+     * {@link List}&lt;{@link Digester}&gt;
      */
     private List<? extends Digester> digesters;
 

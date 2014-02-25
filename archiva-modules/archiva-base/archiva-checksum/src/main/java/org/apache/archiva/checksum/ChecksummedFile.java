@@ -35,9 +35,9 @@ import java.util.regex.Pattern;
 
 /**
  * ChecksummedFile
- * <p/>
+ *
+ * <p>Terminology:</p>
  * <dl>
- * <lh>Terminology:</lh>
  * <dt>Checksum File</dt>
  * <dd>The file that contains the previously calculated checksum value for the reference file.
  * This is a text file with the extension ".sha1" or ".md5", and contains a single entry
@@ -120,12 +120,12 @@ public class ChecksummedFile
      * <p>
      * Given a checksum file, check to see if the file it represents is valid according to the checksum.
      * </p>
-     * <p/>
+     *
      * <p>
      * NOTE: Only supports single file checksums of type MD5 or SHA1.
      * </p>
      *
-     * @param checksumFile the algorithms to check for.
+     * @param algorithm the algorithms to check for.
      * @return true if the checksum is valid for the file it represents. or if the checksum file does not exist.
      * @throws IOException if the reading of the checksumFile or the file it refers to fails.
      */
@@ -304,10 +304,10 @@ public class ChecksummedFile
 
     /**
      * Parse a checksum string.
-     * <p/>
+     * <p>
      * Validate the expected path, and expected checksum algorithm, then return
      * the trimmed checksum hex string.
-     *
+     * </p>
      * @param rawChecksumString
      * @param expectedHash
      * @param expectedPath

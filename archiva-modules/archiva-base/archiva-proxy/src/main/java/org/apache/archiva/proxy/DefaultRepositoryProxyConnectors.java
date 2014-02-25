@@ -101,7 +101,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * DefaultRepositoryProxyConnectors
  *
- * @todo exception handling needs work - "not modified" is not really an exceptional case, and it has more layers than
+ * TODO exception handling needs work - "not modified" is not really an exceptional case, and it has more layers than
  * your average brown onion
  */
 @Service("repositoryProxyConnectors#default")
@@ -922,9 +922,7 @@ public class DefaultRepositoryProxyConnectors
      * @param remotePath       the remote path to attempt to get
      * @param repository       the managed repository that will hold the file
      * @param origFile         the local file to save to
-     * @return The local file that was transfered.
      * @throws ProxyException if there was a problem moving the downloaded file into place.
-     * @throws WagonException if there was a problem tranfering the file.
      */
     private void transferSimpleFile( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
                                      ManagedRepositoryContent repository, File origFile, File destFile )
@@ -992,6 +990,7 @@ public class DefaultRepositoryProxyConnectors
      * @param request   the request properties (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, File)}
      *                  )
      * @param localFile the local file (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, File)})
+     * @throws PolicyViolationException
      */
     private void validatePolicies( Map<String, ? extends DownloadPolicy> policies, Map<String, String> settings,
                                    Properties request, File localFile )
@@ -1078,7 +1077,6 @@ public class DefaultRepositoryProxyConnectors
      *
      * @param repository
      * @return file location of working directory
-     * @throws IOException
      */
     private File createWorkingDirectory( ManagedRepositoryContent repository )
     {

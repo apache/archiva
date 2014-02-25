@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * @author Adrien Lecharpentier <alecharp@apache.org>
+ * @author Adrien Lecharpentier &lt;alecharp@apache.org&gt;
  * @since 1.4-M4
  */
 @XmlRootElement( name = "metadataAddRequest" )

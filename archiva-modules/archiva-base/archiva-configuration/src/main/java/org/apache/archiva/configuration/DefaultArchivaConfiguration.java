@@ -583,7 +583,7 @@ public class DefaultArchivaConfiguration
 
     /**
      * Attempts to write the contents to a file, if an IOException occurs, return false.
-     * <p/>
+     * <p>
      * The file will be created if the directory to the file exists, otherwise this will return false.
      *
      * @param filetype the filetype (freeform text) to use in logging messages when failure to write.

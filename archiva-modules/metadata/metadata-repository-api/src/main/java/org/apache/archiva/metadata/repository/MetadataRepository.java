@@ -205,7 +205,7 @@ public interface MetadataRepository
      * @param namespace
      * @param projectId
      * @param projectVersion
-     * @throws MetadataResolutionException
+     * @throws MetadataRepositoryException
      * @since 1.4-M4
      */
     void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )

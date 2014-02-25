@@ -79,7 +79,6 @@ public class RepositoryContentConsumers
      * Get the list of Ids associated with those {@link KnownRepositoryContentConsumer} that have
      * been selected in the configuration to execute.
      * </p>
-     * <p/>
      * <p>
      * NOTE: This list can be larger and contain entries that might not exist or be available
      * in the classpath, or as a component.
@@ -98,7 +97,6 @@ public class RepositoryContentConsumers
      * Get the list of Ids associated with those {@link InvalidRepositoryContentConsumer} that have
      * been selected in the configuration to execute.
      * </p>
-     * <p/>
      * <p>
      * NOTE: This list can be larger and contain entries that might not exist or be available
      * in the classpath, or as a component.
