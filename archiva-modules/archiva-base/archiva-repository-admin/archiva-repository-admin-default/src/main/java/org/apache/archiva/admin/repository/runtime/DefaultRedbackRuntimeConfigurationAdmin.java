@@ -131,13 +131,16 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
                 ldapConfiguration.setBaseGroupsDn(
                     userConfiguration.getConcatenatedList( UserConfigurationKeys.LDAP_GROUPS_BASEDN,
-                                                           ldapConfiguration.getBaseDn() ) );
+                                                           ldapConfiguration.getBaseDn() )
+                );
 
                 ldapConfiguration.setContextFactory(
                     userConfiguration.getString( UserConfigurationKeys.LDAP_CONTEX_FACTORY,
                                                  isSunContextFactoryAvailable()
                                                      ? "com.sun.jndi.ldap.LdapCtxFactory"
-                                                     : "" ) );
+                                                     : ""
+                    )
+                );
                 ldapConfiguration.setBindDn(
                     userConfiguration.getConcatenatedList( UserConfigurationKeys.LDAP_BINDDN, null ) );
                 ldapConfiguration.setPassword(
@@ -192,7 +195,8 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                     "redbackRuntimeConfiguration with empty userManagerImpls so force at least jdo implementation !" );
                 redbackRuntimeConfiguration.getUserManagerImpls().add( "jdo" );
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
-            } else
+            }
+            else
             {
                 log.info( "using userManagerImpls: {}", redbackRuntimeConfiguration.getUserManagerImpls() );
             }
@@ -204,9 +208,10 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                     "redbackRuntimeConfiguration with empty rbacManagerImpls so force at least cached implementation !" );
                 redbackRuntimeConfiguration.getRbacManagerImpls().add( "cached" );
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
-            } else
+            }
+            else
             {
-                log.info( "using rbacManagerImpls: {}",  redbackRuntimeConfiguration.getRbacManagerImpls());
+                log.info( "using rbacManagerImpls: {}", redbackRuntimeConfiguration.getRbacManagerImpls() );
             }
 
             boolean save = false;
