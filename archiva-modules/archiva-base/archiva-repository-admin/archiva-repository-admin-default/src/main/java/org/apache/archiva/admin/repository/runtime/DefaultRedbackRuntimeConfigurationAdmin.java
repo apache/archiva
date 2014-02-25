@@ -68,8 +68,8 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
     @Inject
     public DefaultRedbackRuntimeConfigurationAdmin( ArchivaConfiguration archivaConfiguration,//
-                                                    @Named(
-                                                        value = "userConfiguration#redback" ) UserConfiguration userConfiguration,
+                                                    @Named( value = "userConfiguration#redback" ) //
+                                                        UserConfiguration userConfiguration,
                                                     @Named( value = "cache#users" ) Cache usersCache )
     {
         this.archivaConfiguration = archivaConfiguration;
