@@ -142,4 +142,14 @@
     </ui>
   </webapp>
 
+  <redbackRuntimeConfiguration>
+    <userManagerImpls>
+      <userManagerImpl>jdo</userManagerImpl>
+    </userManagerImpls>
+    <rbacManagerImpls>
+      <rbacManagerImpl>cached</rbacManagerImpl>
+    </rbacManagerImpls>
+  </redbackRuntimeConfiguration>
+
+
 </configuration>
