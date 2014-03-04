@@ -54,9 +54,9 @@ import java.util.List;
 public class VersionComparator
     implements Comparator<String>
 {
-    private static Comparator<String> INSTANCE = new VersionComparator();
+    private static final Comparator<String> INSTANCE = new VersionComparator();
 
-    private List<String> specialWords;
+    private final List<String> specialWords;
 
     public VersionComparator()
     {
@@ -97,6 +97,7 @@ public class VersionComparator
         return INSTANCE;
     }
 
+    @Override
     public int compare( String o1, String o2 )
     {
         if ( o1 == null && o2 == null )

@@ -177,12 +177,7 @@ public class VersionUtil
     public static boolean isUniqueSnapshot( String version )
     {
         Matcher m = UNIQUE_SNAPSHOT_PATTERN.matcher( version );
-        if ( m.matches() )
-        {
-            return true;
-        }
-
-        return false;
+        return m.matches();
     }
 
     public static boolean isGenericSnapshot( String version )

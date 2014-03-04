@@ -46,7 +46,7 @@ public class PathUtil
     {
         try
         {
-            return file.toURL().toExternalForm();
+            return file.toURI().toURL().toExternalForm();
         }
         catch ( MalformedURLException e )
         {
