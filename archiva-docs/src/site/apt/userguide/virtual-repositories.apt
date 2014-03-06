@@ -38,7 +38,7 @@ Virtual Repositories
       <repositories>
         <repository>
           <id>internal.releases</id>
-          <url>http://localhost:8080/archiva/repository/internal.releases/</url>
+          <url>http://localhost:8080/repository/internal.releases/</url>
           <releases>
             <enabled>true</enabled>
           </releases>
@@ -48,7 +48,7 @@ Virtual Repositories
         </repository>
         <repository>
           <id>third.party.repo</id>
-          <url>http://localhost:8080/archiva/repository/third.party.repo/</url>
+          <url>http://localhost:8080/repository/third.party.repo/</url>
           <releases>
             <enabled>true</enabled>
           </releases>
@@ -58,7 +58,7 @@ Virtual Repositories
         </repository>
         <repository>
           <id>snapshots</id>
-          <url>http://localhost:8080/archiva/repository/snapshots/</url>
+          <url>http://localhost:8080/repository/snapshots/</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -88,7 +88,7 @@ Virtual Repositories
       <repositories>
         <repository>
           <id>internal.releases</id>
-          <url>http://localhost:8080/archiva/repository/[repository_group_id]/</url>
+          <url>http://localhost:8080/repository/[repository_group_id]/</url>
         </repository>
       </repositories>
     </profile>
@@ -121,7 +121,7 @@ Virtual Repositories
 
 [../images/repository-groups.png]
 
-  [[3]] Now add the virtual repository URL <<<http://[host]:[port]/archiva/repository/[repository_group_id]/>>>
+  [[3]] Now add the virtual repository URL <<<http://[host]:[port]/repository/[repository_group_id]/>>>
   into your settings.xml the same way you configure regular repositories -- as a <mirror> or as an additional <repository>.
 
   [[4]] If the repositories under the group are secured, you must set your Archiva login credentials in your settings.xml as
