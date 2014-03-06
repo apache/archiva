@@ -841,6 +841,11 @@
       <artifactId>jsoup</artifactId>
     </dependency>
 
+    <!-- we need to force xalan version for IBM servers.. MRM-1803 ->
+    <dependency>
+      <groupId>xalan</groupId>
+      <artifactId>xalan</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.archiva</groupId>

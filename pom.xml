@@ -110,6 +110,11 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>xalan</artifactId>
+        <version>2.7.1</version>
+      </dependency>
+      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.11</version>
@@ -626,10 +631,6 @@
           <exclusion>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>xalan</groupId>
-            <artifactId>xalan</artifactId>
           </exclusion>
           <exclusion>
             <groupId>xml-apis</groupId>
