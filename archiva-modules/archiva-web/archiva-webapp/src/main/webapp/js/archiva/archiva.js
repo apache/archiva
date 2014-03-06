@@ -58,11 +58,11 @@ $.ajax({
                 },
           paths: {
               "i18n":"jquery.i18n.properties-1.0.9",
-              "jquery": "jquery-1.10.2.min",
+              "jquery": "jquery-1.11.0.min",
               "jquery.tmpl": "jquery.tmpl",
               "utils": "archiva/utils",
               "startup": "archiva/startup",
-              "jquery.ui": "jquery-ui.1.10.3.min",
+              "jquery.ui": "jquery-ui-1.10.4.min",
               "jquery.ui.widget": "jquery.ui.widget-1.9.2",
               "jquery.cookie": "jquery.cookie.1.0.0",
               "bootstrap": "bootstrap.2.2.2",
