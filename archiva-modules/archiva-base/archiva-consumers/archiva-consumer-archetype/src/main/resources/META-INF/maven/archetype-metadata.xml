@@ -33,4 +33,30 @@
       <directory>src/test/resources</directory>
     </fileSet>
   </fileSets>
+  <requiredProperties>
+    <requiredProperty key="wagonVersion">
+      <defaultValue>${wagon.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="archivaVersion">
+      <defaultValue>${archivaVersion}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="log4jVersion">
+      <defaultValue>${log4j.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="slf4jVersion">
+      <defaultValue>${slf4j.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="springVersion">
+      <defaultValue>${spring.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="jackrabbitVersion">
+      <defaultValue>${jackrabbit.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="redbackVersion">
+      <defaultValue>${redback.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="derbyVersion">
+      <defaultValue>${derbyVersion}</defaultValue>
+    </requiredProperty>
+  </requiredProperties>
 </archetype-descriptor>

@@ -77,7 +77,17 @@
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
       </resource>
-    </resources>
+      <resource>
+        <directory>src/main/resourcesstatic</directory>
+        <filtering>false</filtering>
+      </resource>
+    </resources> 
+    <testResources>
+      <testResource>
+          <directory>src/test/resources</directory>
+          <filtering>true</filtering>
+      </testResource>  
+    </testResources>
     <extensions>
       <extension>
         <groupId>org.apache.maven.archetype</groupId>
