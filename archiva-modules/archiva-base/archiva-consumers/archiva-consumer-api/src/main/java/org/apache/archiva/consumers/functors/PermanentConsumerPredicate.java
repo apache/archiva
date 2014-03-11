@@ -31,6 +31,7 @@ public class PermanentConsumerPredicate
     implements Predicate
 {
 
+    @Override
     public boolean evaluate( Object object )
     {
         boolean satisfies = false;

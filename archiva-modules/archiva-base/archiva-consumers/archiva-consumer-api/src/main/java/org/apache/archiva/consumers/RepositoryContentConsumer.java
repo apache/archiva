@@ -95,9 +95,9 @@ public interface RepositoryContentConsumer
         throws ConsumerException;
 
     /**
-     * @param path
-     * @param executeOnEntireRepo
-     * @throws Exception
+     * @param path the relative file path (in the repository) to process.
+     * @param executeOnEntireRepo flags whether the consumer will be executed on an entire repository or just on a specific resource
+     * @throws Exception if there was a problem processing this file.
      */
     void processFile( String path, boolean executeOnEntireRepo )
         throws Exception;
@@ -114,7 +114,7 @@ public interface RepositoryContentConsumer
     void completeScan();
 
     /**
-     * @param executeOnEntireRepo
+     * @param executeOnEntireRepo flags whether the consumer will be executed on an entire repository or just on a specific resource
      */
     void completeScan( boolean executeOnEntireRepo );
 
