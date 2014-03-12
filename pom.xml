@@ -30,7 +30,7 @@
 
   <groupId>org.apache.archiva</groupId>
   <artifactId>archiva-parent</artifactId>
-  <version>12-SNAPSHOT</version>
+  <version>12</version>
   <packaging>pom</packaging>
 
   <name>Archiva Common Parent Project</name>
@@ -92,9 +92,9 @@
 
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/parent</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/parent</developerConnection>
-    <url>http://svn.apache.org/viewvc/archiva/parent/</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/tags/archiva-parent-12</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/tags/archiva-parent-12</developerConnection>
+    <url>http://svn.apache.org/viewvc/archiva/tags/archiva-parent-12</url>
   </scm>
 
   <issueManagement>
