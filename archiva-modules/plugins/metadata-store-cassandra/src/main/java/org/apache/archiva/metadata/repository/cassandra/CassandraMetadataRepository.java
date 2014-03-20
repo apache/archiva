@@ -163,16 +163,19 @@ public class CassandraMetadataRepository
 
             Keyspace keyspace = cassandraArchivaManager.getKeyspace();
 
+            String key =
+                new Namespace.KeyBuilder().withNamespace( namespaceId ).withRepositoryId( repositoryId ).build();
+
             Namespace namespace = getNamespace( repositoryId, namespaceId );
             if ( namespace == null )
             {
                 namespace = new Namespace( namespaceId, repository );
                 HFactory.createMutator( keyspace, StringSerializer.get() )
                     //  values
-                    .addInsertion( namespace.getId(), //
+                    .addInsertion( key, //
                                    cassandraArchivaManager.getNamespaceFamilyName(), //
                                    CassandraUtils.column( "name", namespace.getName() ) ) //
-                    .addInsertion( namespace.getId(), //
+                    .addInsertion( key, //
                                    cassandraArchivaManager.getNamespaceFamilyName(), //
                                    CassandraUtils.column( "repositoryId", repository.getId() ) ) //
                     .execute();

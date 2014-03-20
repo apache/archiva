@@ -33,8 +33,6 @@ public class Namespace
     implements Serializable
 {
 
-    private String id;
-
     private String name;
 
     private String repositoryId;
@@ -49,21 +47,11 @@ public class Namespace
 
     public Namespace( String id, Repository repository )
     {
-        this.id = new KeyBuilder().withNamespace( id ).withRepositoryId( repository.getId() ).build();
         this.name = id;
         this.repositoryId = repository.getId();
         this.repositoryName = repository.getName();
     }
 
-    public String getId()
-    {
-        return id;
-    }
-
-    public void setId( String id )
-    {
-        this.id = id;
-    }
 
     public String getName()
     {
@@ -100,7 +88,7 @@ public class Namespace
 
         Namespace namespace = (Namespace) o;
 
-        if ( !id.equals( namespace.id ) )
+        if ( !name.equals( namespace.name ) )
         {
             return false;
         }
@@ -115,7 +103,7 @@ public class Namespace
     @Override
     public int hashCode()
     {
-        int result = id.hashCode();
+        int result = name.hashCode();
         result = 31 * result + repositoryId.hashCode();
         return result;
     }
@@ -124,7 +112,6 @@ public class Namespace
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "Namespace{" );
-        sb.append( "id='" ).append( id ).append( '\'' );
         sb.append( ", name='" ).append( name ).append( '\'' );
         sb.append( ", repository='" ).append( repositoryId ).append( '\'' );
         sb.append( '}' );
