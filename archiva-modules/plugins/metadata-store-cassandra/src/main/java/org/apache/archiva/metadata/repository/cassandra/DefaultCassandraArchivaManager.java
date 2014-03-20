@@ -73,6 +73,8 @@ public class DefaultCassandraArchivaManager
 
     private String namespaceFamilyName = "namespace";
 
+    private String projectFamilyName = "project";
+
 
     @PostConstruct
     public void initialize()
@@ -107,11 +109,11 @@ public class DefaultCassandraArchivaManager
         // namespace table
         {
 
-            final ColumnFamilyDefinition namespaces =
+            final ColumnFamilyDefinition namespace =
                 HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
                                                        getNamespaceFamilyName(), //
                                                        ComparatorType.UTF8TYPE );
-            cfds.add( namespaces );
+            cfds.add( namespace );
 
             // creating indexes for cql query
 
@@ -120,16 +122,17 @@ public class DefaultCassandraArchivaManager
             nameColumn.setIndexName( "name" );
             nameColumn.setIndexType( ColumnIndexType.KEYS );
             nameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            namespaces.addColumnDefinition( nameColumn );
+            namespace.addColumnDefinition( nameColumn );
 
             BasicColumnDefinition repositoryIdColumn = new BasicColumnDefinition();
             repositoryIdColumn.setName( StringSerializer.get().toByteBuffer( "repositoryId" ) );
             repositoryIdColumn.setIndexName( "repositoryId" );
             repositoryIdColumn.setIndexType( ColumnIndexType.KEYS );
             repositoryIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            namespaces.addColumnDefinition( repositoryIdColumn );
+            namespace.addColumnDefinition( repositoryIdColumn );
         }
 
+        // repository table
         {
             final ColumnFamilyDefinition repository =
                 HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
@@ -144,6 +147,39 @@ public class DefaultCassandraArchivaManager
             nameColumn.setIndexType( ColumnIndexType.KEYS );
             nameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             repository.addColumnDefinition( nameColumn );
+        }
+
+        // project table
+        {
+
+            final ColumnFamilyDefinition project =
+                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
+                                                       getProjectFamilyName(), //
+                                                       ComparatorType.UTF8TYPE );
+            cfds.add( project );
+
+            // creating indexes for cql query
+
+            BasicColumnDefinition projectIdColumn = new BasicColumnDefinition();
+            projectIdColumn.setName( StringSerializer.get().toByteBuffer( "projectId" ) );
+            projectIdColumn.setIndexName( "projectId" );
+            projectIdColumn.setIndexType( ColumnIndexType.KEYS );
+            projectIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            project.addColumnDefinition( projectIdColumn );
+
+            BasicColumnDefinition repositoryIdColumn = new BasicColumnDefinition();
+            repositoryIdColumn.setName( StringSerializer.get().toByteBuffer( "repositoryId" ) );
+            repositoryIdColumn.setIndexName( "repositoryId" );
+            repositoryIdColumn.setIndexType( ColumnIndexType.KEYS );
+            repositoryIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            project.addColumnDefinition( repositoryIdColumn );
+
+            BasicColumnDefinition namespaceIdColumn = new BasicColumnDefinition();
+            namespaceIdColumn.setName( StringSerializer.get().toByteBuffer( "namespaceId" ) );
+            namespaceIdColumn.setIndexName( "namespaceId" );
+            namespaceIdColumn.setIndexType( ColumnIndexType.KEYS );
+            namespaceIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            project.addColumnDefinition( namespaceIdColumn );
         }
 
         { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
@@ -196,5 +232,10 @@ public class DefaultCassandraArchivaManager
     public String getNamespaceFamilyName()
     {
         return namespaceFamilyName;
+    }
+
+    public String getProjectFamilyName()
+    {
+        return projectFamilyName;
     }
 }

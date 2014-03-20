@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
 import org.apache.archiva.metadata.repository.cassandra.model.Repository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -107,6 +108,15 @@ public class RepositoriesNamespaceTest
             cmr.removeNamespace( "release", "org.apache" );
             Assertions.assertThat( cmr.getNamespaces( "release" ) ).isNotEmpty().hasSize( 1 );
             Assertions.assertThat( cmr.getNamespaces( "release" ) ).containsExactly( "org" );
+
+            ProjectMetadata projectMetadata = new ProjectMetadata();
+            projectMetadata.setId( "theproject" );
+            projectMetadata.setNamespace( "org" );
+
+            cmr.updateProject( "release", projectMetadata );
+
+            Assertions.assertThat( cmr.getProjects( "release", "org" ) ).isNotEmpty().hasSize( 1 ).containsExactly(
+                "theproject" );
 
             cmr.removeRepository( "release" );
 

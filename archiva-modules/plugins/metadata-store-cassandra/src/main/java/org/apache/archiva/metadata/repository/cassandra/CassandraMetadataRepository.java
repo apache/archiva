@@ -41,6 +41,7 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.cassandra.model.ArtifactMetadataModel;
 import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
+import org.apache.archiva.metadata.repository.cassandra.model.Project;
 import org.apache.archiva.metadata.repository.cassandra.model.Repository;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -497,36 +498,71 @@ public class CassandraMetadataRepository
     public void updateProject( String repositoryId, ProjectMetadata projectMetadata )
         throws MetadataRepositoryException
     {
-/*
-        // project exists ? if yes return
-        String projectKey = new Project.KeyBuilder().withProjectId( projectMetadata.getId() ).withNamespace(
-            new Namespace( projectMetadata.getNamespace(), new Repository( repositoryId ) ) ).build();
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
 
-        Project project = getProjectEntityManager().get( projectKey );
-        if ( project != null )
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
+            .setColumnNames( "projectId" ) //
+            .addEqualsExpression( "repositoryId", repositoryId ) //
+            .addEqualsExpression( "namespaceId", projectMetadata.getNamespace() ) //
+            .addEqualsExpression( "projectId", projectMetadata.getId() ) //
+            .execute();
+
+        // project exists ? if yes return
+        if ( result.get().getCount() > 0 )
         {
             return;
         }
 
-        String namespaceKey = new Namespace.KeyBuilder().withRepositoryId( repositoryId ).withNamespace(
-            projectMetadata.getNamespace() ).build();
-        Namespace namespace = getNamespaceEntityManager().get( namespaceKey );
-        if ( namespace == null )
+        Namespace namespace = updateOrAddNamespace( repositoryId, projectMetadata.getNamespace() );
+
+        String key =
+            new Project.KeyBuilder().withProjectId( projectMetadata.getId() ).withNamespace( namespace ).build();
+
+        HFactory.createMutator( keyspace, StringSerializer.get() )
+            //  values
+            .addInsertion( key, //
+                           cassandraArchivaManager.getProjectFamilyName(), //
+                           CassandraUtils.column( "projectId", projectMetadata.getId() ) ) //
+            .addInsertion( key, //
+                           cassandraArchivaManager.getProjectFamilyName(), //
+                           CassandraUtils.column( "repositoryId", repositoryId ) ) //
+            .addInsertion( key, //
+                           cassandraArchivaManager.getProjectFamilyName(), //
+                           CassandraUtils.column( "namespaceId", projectMetadata.getNamespace() ) )//
+            .execute();
+    }
+
+    @Override
+    public Collection<String> getProjects( final String repoId, final String namespace )
+        throws MetadataResolutionException
+    {
+
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
+            .setColumnNames( "projectId" ) //
+            .addEqualsExpression( "repositoryId", repoId ) //
+            .addEqualsExpression( "namespaceId", namespace ) //
+            .execute();
+
+        final Set<String> projects = new HashSet<String>( result.get().getCount() );
+
+        for ( Row<String, String, String> row : result.get() )
         {
-            namespace = updateOrAddNamespace( repositoryId, projectMetadata.getNamespace() );
+            projects.add( row.getColumnSlice().getColumnByName( "projectId" ).getValue() );
         }
 
-        project = new Project( projectKey, projectMetadata.getId(), namespace );
-
-        try
-        {
-            getProjectEntityManager().put( project );
-        }
-        catch ( PersistenceException e )
-        {
-            throw new MetadataRepositoryException( e.getMessage(), e );
-        }*/
-
+        return projects;
     }
 
     @Override
@@ -1515,34 +1551,6 @@ public class CassandraMetadataRepository
         // FIXME implement this
         return Collections.emptyList();
     }
-
-    @Override
-    public Collection<String> getProjects( final String repoId, final String namespace )
-        throws MetadataResolutionException
-    {
-        final Set<String> projects = new HashSet<String>();
-
-/*        // FIXME use cql query
-        getProjectEntityManager().visitAll( new Function<Project, Boolean>()
-        {
-            @Override
-            public Boolean apply( Project project )
-            {
-                if ( project != null )
-                {
-                    if ( StringUtils.equals( repoId, project.getNamespace().getRepository().getName() )
-                        && StringUtils.startsWith( project.getNamespace().getName(), namespace ) )
-                    {
-                        projects.add( project.getProjectId() );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );*/
-
-        return projects;
-    }
-
 
     @Override
     public void removeProjectVersion( final String repoId, final String namespace, final String projectId,

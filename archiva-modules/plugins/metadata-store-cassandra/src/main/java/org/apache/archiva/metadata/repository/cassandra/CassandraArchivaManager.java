@@ -42,4 +42,6 @@ public interface CassandraArchivaManager
 
     String getNamespaceFamilyName();
 
+    String getProjectFamilyName();
+
 }
