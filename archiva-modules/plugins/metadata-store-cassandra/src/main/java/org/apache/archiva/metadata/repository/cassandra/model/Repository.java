@@ -30,7 +30,6 @@ public class Repository
     implements Serializable
 {
 
-    private String id;
 
     private String name;
 
@@ -39,20 +38,9 @@ public class Repository
         // no op
     }
 
-    public Repository( String id )
+    public Repository( String name )
     {
-        this.id = id;
-        this.name = id;
-    }
-
-    public String getId()
-    {
-        return id;
-    }
-
-    public void setId( String id )
-    {
-        this.id = id;
+        this.name = name;
     }
 
     public String getName()
@@ -79,7 +67,7 @@ public class Repository
 
         Repository that = (Repository) o;
 
-        if ( !id.equals( that.id ) )
+        if ( !name.equals( that.name ) )
         {
             return false;
         }
@@ -90,18 +78,14 @@ public class Repository
     @Override
     public int hashCode()
     {
-        return id.hashCode();
+        return name.hashCode();
     }
-
 
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder( "Repository{" );
-        sb.append( "id='" ).append( id ).append( '\'' );
-        sb.append( ", name='" ).append( name ).append( '\'' );
-        //sb.append( ", namespaces=" ).append( namespaces );
-        sb.append( '}' );
-        return sb.toString();
+        return "Repository{" +
+            "name='" + name + '\'' +
+            '}';
     }
 }
