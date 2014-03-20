@@ -46,5 +46,6 @@ Log Files
 
   If you are in a constrained environment, you can change it to Block (or Yield) (<<<-DAsyncLogger.WaitStrategy=Block>>> and/or
 <<<-DAsyncLoggerConfig.WaitStrategy=Block>>>) 
+  This mean per default AsyncLoggerConfig.WaitStrategy option is configured to Sleep.
 
   (See {{{http://logging.apache.org/log4j/2.x/manual/async.html}log4j2 documentation}} )
