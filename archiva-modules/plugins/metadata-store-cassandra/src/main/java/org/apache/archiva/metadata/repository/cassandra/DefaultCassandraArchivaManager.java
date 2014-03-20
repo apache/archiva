@@ -108,7 +108,8 @@ public class DefaultCassandraArchivaManager
         {
 
             final ColumnFamilyDefinition namespaces =
-                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), "namespace",
+                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
+                                                       getNamespaceFamilyName(), //
                                                        ComparatorType.UTF8TYPE );
             cfds.add( namespaces );
 
@@ -131,7 +132,8 @@ public class DefaultCassandraArchivaManager
 
         {
             final ColumnFamilyDefinition repository =
-                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), "repository",
+                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
+                                                       getRepositoryFamilyName(), //
                                                        ComparatorType.UTF8TYPE );
 
             cfds.add( repository );
