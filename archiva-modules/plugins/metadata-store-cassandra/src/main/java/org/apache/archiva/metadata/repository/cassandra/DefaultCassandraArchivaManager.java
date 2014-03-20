@@ -268,18 +268,27 @@ public class DefaultCassandraArchivaManager
             artifactMetadataModel.addColumnDefinition( projectColumn );
 
             BasicColumnDefinition projectVersionColumn = new BasicColumnDefinition();
-            projectVersionColumn.setName( StringSerializer.get().toByteBuffer( "project" ) );
+            projectVersionColumn.setName( StringSerializer.get().toByteBuffer( "projectVersion" ) );
             projectVersionColumn.setIndexName( "projectVersion" );
             projectVersionColumn.setIndexType( ColumnIndexType.KEYS );
             projectVersionColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             artifactMetadataModel.addColumnDefinition( projectVersionColumn );
 
             BasicColumnDefinition versionColumn = new BasicColumnDefinition();
-            versionColumn.setName( StringSerializer.get().toByteBuffer( "project" ) );
+            versionColumn.setName( StringSerializer.get().toByteBuffer( "version" ) );
             versionColumn.setIndexName( "version" );
             versionColumn.setIndexType( ColumnIndexType.KEYS );
             versionColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             artifactMetadataModel.addColumnDefinition( versionColumn );
+
+            BasicColumnDefinition whenGatheredColumn = new BasicColumnDefinition();
+            whenGatheredColumn.setName( StringSerializer.get().toByteBuffer( "whenGathered" ) );
+            whenGatheredColumn.setIndexName( "whenGathered" );
+            whenGatheredColumn.setIndexType( ColumnIndexType.KEYS );
+            whenGatheredColumn.setValidationClass( ComparatorType.LONGTYPE.getClassName() );
+            artifactMetadataModel.addColumnDefinition( whenGatheredColumn );
+
+
 
         }
 
