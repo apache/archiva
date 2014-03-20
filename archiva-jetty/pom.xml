@@ -176,7 +176,7 @@
                   -->
                   <systemProperty>jetty.logs=%ARCHIVA_BASE%/logs</systemProperty>
                   <systemProperty>java.io.tmpdir=%ARCHIVA_BASE%/temp</systemProperty>
-                  <systemProperty>AsyncLogger.WaitStrategy=Sleep</systemProperty>
+                  <systemProperty>AsyncLoggerConfig.WaitStrategy=Sleep</systemProperty>
                 </systemProperties>
                 <extraArguments>
                   <extraArgument>-XX:MaxPermSize=128m</extraArgument>
