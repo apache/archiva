@@ -19,11 +19,9 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  * under the License.
  */
 
-import com.netflix.astyanax.entitystore.Serializer;
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.Id;
 
 /**
@@ -32,32 +30,26 @@ import javax.persistence.Id;
  * @author Olivier Lamy
  * @since 2.0.0
  */
-@Entity
 public class MetadataFacetModel
 {
     // id is repositoryId + namespaceId + projectId + facetId + name + mapKey
     @Id
-    @Column( name = "id" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "id")
     private String id;
 
-    @Column( name = "artifactMetadataModel" )
+    @Column(name = "artifactMetadataModel")
     private ArtifactMetadataModel artifactMetadataModel;
 
-    @Column( name = "facetId" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "facetId")
     private String facetId;
 
-    @Column( name = "key" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "key")
     private String key;
 
-    @Column( name = "name" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "name")
     private String name;
 
-    @Column( name = "value" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "value")
     private String value;
 
     public MetadataFacetModel()
@@ -232,7 +224,8 @@ public class MetadataFacetModel
             String str = CassandraUtils.generateKey( this.artifactMetadataModel == null
                                                          ? this.repositoryId
                                                          : this.artifactMetadataModel.getArtifactMetadataModelId(),
-                                                     this.facetId, this.name, this.key );
+                                                     this.facetId, this.name, this.key
+            );
 
             //return Long.toString( str.hashCode() );
             return str;

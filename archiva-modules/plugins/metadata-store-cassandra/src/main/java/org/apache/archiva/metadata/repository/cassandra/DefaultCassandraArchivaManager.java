@@ -19,26 +19,18 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
-import com.google.common.collect.ImmutableMap;
-import com.netflix.astyanax.AstyanaxContext;
-import com.netflix.astyanax.Keyspace;
-import com.netflix.astyanax.connectionpool.NodeDiscoveryType;
-import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
-import com.netflix.astyanax.connectionpool.exceptions.NotFoundException;
-import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl;
-import com.netflix.astyanax.connectionpool.impl.ConnectionPoolType;
-import com.netflix.astyanax.connectionpool.impl.Slf4jConnectionPoolMonitorImpl;
-import com.netflix.astyanax.ddl.KeyspaceDefinition;
-import com.netflix.astyanax.entitystore.DefaultEntityManager;
-import com.netflix.astyanax.entitystore.EntityManager;
-import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
-import com.netflix.astyanax.thrift.ThriftFamilyFactory;
-import org.apache.archiva.metadata.repository.cassandra.model.ArtifactMetadataModel;
-import org.apache.archiva.metadata.repository.cassandra.model.MetadataFacetModel;
-import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
-import org.apache.archiva.metadata.repository.cassandra.model.Project;
-import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
-import org.apache.archiva.metadata.repository.cassandra.model.Repository;
+import me.prettyprint.cassandra.model.BasicColumnDefinition;
+import me.prettyprint.cassandra.model.ConfigurableConsistencyLevel;
+import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.cassandra.service.CassandraHostConfigurator;
+import me.prettyprint.cassandra.service.ThriftKsDef;
+import me.prettyprint.hector.api.Cluster;
+import me.prettyprint.hector.api.HConsistencyLevel;
+import me.prettyprint.hector.api.Keyspace;
+import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
+import me.prettyprint.hector.api.ddl.ColumnIndexType;
+import me.prettyprint.hector.api.ddl.ComparatorType;
+import me.prettyprint.hector.api.factory.HFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -47,8 +39,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.persistence.PersistenceException;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * FIXME make all configuration not hardcoded :-)
@@ -70,215 +62,104 @@ public class DefaultCassandraArchivaManager
 
     private static final String KEYSPACE_NAME = "ArchivaKeySpace";
 
-    private AstyanaxContext<Keyspace> keyspaceContext;
+    private boolean started;
+
+    private Cluster cluster;
 
     private Keyspace keyspace;
-
-    private boolean started = false;
-
-    private EntityManager<Repository, String> repositoryEntityManager;
-
-    private EntityManager<Namespace, String> namespaceEntityManager;
-
-    private EntityManager<Project, String> projectEntityManager;
-
-    private EntityManager<ArtifactMetadataModel, String> artifactMetadataModelEntityManager;
-
-    private EntityManager<MetadataFacetModel, String> metadataFacetModelEntityManager;
-
-    private EntityManager<ProjectVersionMetadataModel, String> projectVersionMetadataModelEntityManager;
 
 
     @PostConstruct
     public void initialize()
-        throws ConnectionException
     {
+        // FIXME must come from configuration not sys props
         String cassandraHost = System.getProperty( "cassandraHost", "localhost" );
         String cassandraPort = System.getProperty( "cassandraPort" );
-        String cqlVersion = System.getProperty( "cassandra.cqlversion", "3.0.0" );
-        keyspaceContext = new AstyanaxContext.Builder().forCluster( CLUSTER_NAME ).forKeyspace(
-            KEYSPACE_NAME ).withAstyanaxConfiguration(
-            new AstyanaxConfigurationImpl()
-                //.setCqlVersion( cqlVersion )
-                .setDiscoveryType( NodeDiscoveryType.RING_DESCRIBE )
-                .setConnectionPoolType( ConnectionPoolType.TOKEN_AWARE ) )
-            .withConnectionPoolConfiguration(
-                new ConnectionPoolConfigurationImpl( CLUSTER_NAME + "_" + KEYSPACE_NAME )
-                    .setSocketTimeout( 30000 )
-                    .setMaxTimeoutWhenExhausted( 2000 )
-                    .setMaxConnsPerHost( 20 )
-                    .setInitConnsPerHost( 10 )
-                    .setSeeds( cassandraHost + ":" + cassandraPort ) )
-            .withConnectionPoolMonitor( new Slf4jConnectionPoolMonitorImpl() )
-            .buildKeyspace( ThriftFamilyFactory.getInstance() );
+        int maxActive = Integer.getInteger( "cassandra.maxActive", 20 );
+        String readConsistencyLevel =
+            System.getProperty( "cassandra.readConsistencyLevel", HConsistencyLevel.QUORUM.name() );
+        String writeConsistencyLevel =
+            System.getProperty( "cassandra.readConsistencyLevel", HConsistencyLevel.QUORUM.name() );
 
-        this.start();
+        int replicationFactor = Integer.getInteger( "cassandra.replicationFactor", 1 );
 
-        keyspace = keyspaceContext.getClient();
-        //Partitioner partitioner = keyspace.getPartitioner();
+        String keyspaceName = System.getProperty( "cassandra.keyspace.name", KEYSPACE_NAME );
+        String clusterName = System.getProperty( "cassandra.cluster.name", CLUSTER_NAME );
 
-        ImmutableMap<String, Object> options = ImmutableMap.<String, Object>builder().put( "strategy_options",
-                                                                                           ImmutableMap.<String, Object>builder().put(
-                                                                                               "replication_factor",
-                                                                                               "1" ).build() ).put(
-            "strategy_class", "SimpleStrategy" ).build();
+        final CassandraHostConfigurator configurator =
+            new CassandraHostConfigurator( cassandraHost + ":" + cassandraPort );
+        configurator.setMaxActive( maxActive );
 
-        // test if the namespace already exists if exception or null create it
-        boolean keyspaceExists = false;
-        try
+        cluster = HFactory.getOrCreateCluster( clusterName, configurator );
+
+        final ConfigurableConsistencyLevel consistencyLevelPolicy = new ConfigurableConsistencyLevel();
+        consistencyLevelPolicy.setDefaultReadConsistencyLevel( HConsistencyLevel.valueOf( readConsistencyLevel ) );
+        consistencyLevelPolicy.setDefaultWriteConsistencyLevel( HConsistencyLevel.valueOf( writeConsistencyLevel ) );
+        keyspace = HFactory.createKeyspace( keyspaceName, cluster, consistencyLevelPolicy );
+
+        List<ColumnFamilyDefinition> cfds = new ArrayList<ColumnFamilyDefinition>();
+
+        // namespace table
         {
-            KeyspaceDefinition keyspaceDefinition = keyspace.describeKeyspace();
-            if ( keyspaceDefinition != null )
+
+            final ColumnFamilyDefinition namespaces =
+                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), "namespace",
+                                                       ComparatorType.UTF8TYPE );
+            cfds.add( namespaces );
+
+            // creating indexes for cql query
+
+            BasicColumnDefinition nameColumn = new BasicColumnDefinition();
+            nameColumn.setName( StringSerializer.get().toByteBuffer( "name" ) );
+            nameColumn.setIndexName( "name" );
+            nameColumn.setIndexType( ColumnIndexType.KEYS );
+            nameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            namespaces.addColumnDefinition( nameColumn );
+
+            BasicColumnDefinition repositoryIdColumn = new BasicColumnDefinition();
+            repositoryIdColumn.setName( StringSerializer.get().toByteBuffer( "repositoryId" ) );
+            repositoryIdColumn.setIndexName( "repositoryId" );
+            repositoryIdColumn.setIndexType( ColumnIndexType.KEYS );
+            repositoryIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            namespaces.addColumnDefinition( repositoryIdColumn );
+        }
+
+        {
+            final ColumnFamilyDefinition repository =
+                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), "repository",
+                                                       ComparatorType.UTF8TYPE );
+
+            cfds.add( repository );
+
+            BasicColumnDefinition nameColumn = new BasicColumnDefinition();
+            nameColumn.setName( StringSerializer.get().toByteBuffer( "name" ) );
+            nameColumn.setIndexName( "name" );
+            nameColumn.setIndexType( ColumnIndexType.KEYS );
+            nameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            repository.addColumnDefinition( nameColumn );
+        }
+
+        { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
+            if ( cluster.describeKeyspace( keyspaceName ) == null )
             {
-                keyspaceExists = true;
+                logger.info( "Creating Archiva Cassandra '" + keyspaceName + "' keyspace." );
+                cluster.addKeyspace( HFactory.createKeyspaceDefinition( keyspaceName, //
+                                                                        ThriftKsDef.DEF_STRATEGY_CLASS, //
+                                                                        replicationFactor, //
+                                                                        cfds )
+                );
             }
-
-        }
-        catch ( ConnectionException e )
-        {
         }
 
-        if ( !keyspaceExists )
-        {
-            keyspace.createKeyspace( options );
-        }
-
-        try
-        {
-            Properties properties = keyspace.getKeyspaceProperties();
-            logger.info( "keyspace properties: {}", properties );
-        }
-        catch ( ConnectionException e )
-        {
-            // FIXME better logging !
-            logger.warn( e.getMessage(), e );
-        }
-
-        try
-        {
-            repositoryEntityManager =
-                DefaultEntityManager.<Repository, String>builder()
-                    .withEntityType( Repository.class )
-                    .withKeyspace( keyspace )
-                    .withAutoCommit( true )
-                    .withColumnFamily( "repository" )
-                    .build();
-            boolean exists = columnFamilyExists( "repository" );
-            // TODO very basic test we must test model change too
-            if ( !exists )
-            {
-                repositoryEntityManager.createStorage( null );
-            }
-
-            namespaceEntityManager =
-                DefaultEntityManager.<Namespace, String>builder()
-                    .withEntityType( Namespace.class )
-                    .withKeyspace( keyspace )
-                    .withAutoCommit( true )
-                    .withColumnFamily( "namespace" )
-                    .build();
-
-            exists = columnFamilyExists( "namespace" );
-            if ( !exists )
-            {
-                // create secondary index
-
-                options =
-                    ImmutableMap.<String, Object>builder()
-                        .put("repositoryid", ImmutableMap.<String, Object>builder()
-                            .put("validation_class", "UTF8Type")
-                            .put("index_name",       "Indexrepositoryid")
-                            .put("index_type",       "KEYS")
-                            .build()).build();
-
-                namespaceEntityManager.createStorage( options );
-            }
-
-
-
-            projectEntityManager =
-                DefaultEntityManager.<Project, String>builder()
-                    .withEntityType( Project.class )
-                    .withKeyspace( keyspace )
-                    .withAutoCommit( true )
-                    .withColumnFamily( "project" )
-                    .build();
-
-            exists = columnFamilyExists( "project" );
-            if ( !exists )
-            {
-                projectEntityManager.createStorage( null );
-            }
-
-            artifactMetadataModelEntityManager =
-                DefaultEntityManager.<ArtifactMetadataModel, String>builder()
-                    .withEntityType( ArtifactMetadataModel.class )
-                    .withAutoCommit( true )
-                    .withKeyspace( keyspace )
-                    .withColumnFamily( "artifactmetadatamodel" )
-                    .build();
-
-            exists = columnFamilyExists( "artifactmetadatamodel" );
-            if ( !exists )
-            {
-                artifactMetadataModelEntityManager.createStorage( null );
-            }
-
-            metadataFacetModelEntityManager =
-                DefaultEntityManager.<MetadataFacetModel, String>builder()
-                    .withEntityType( MetadataFacetModel.class )
-                    .withAutoCommit( true )
-                    .withKeyspace( keyspace )
-                    .withColumnFamily( "metadatafacetmodel" )
-                    .build();
-
-            exists = columnFamilyExists( "metadatafacetmodel" );
-            if ( !exists )
-            {
-                metadataFacetModelEntityManager.createStorage( null );
-            }
-
-            projectVersionMetadataModelEntityManager =
-                DefaultEntityManager.<ProjectVersionMetadataModel, String>builder()
-                    .withEntityType( ProjectVersionMetadataModel.class )
-                    .withAutoCommit( true )
-                    .withKeyspace( keyspace )
-                    .withColumnFamily( "projectversionmetadatamodel" )
-                    .build();
-
-            exists = columnFamilyExists( "projectversionmetadatamodel" );
-            if ( !exists )
-            {
-                projectVersionMetadataModelEntityManager.createStorage( null );
-            }
-
-        }
-        catch ( PersistenceException e )
-        {
-            // FIXME report exception
-            logger.error( e.getMessage(), e );
-        }
-        catch ( ConnectionException e )
-        {
-            // FIXME report exception
-            logger.error( e.getMessage(), e );
-        }
     }
 
     public void start()
     {
-        keyspaceContext.start();
-        started = true;
     }
 
     @PreDestroy
     public void shutdown()
     {
-        if ( keyspaceContext != null )
-        {
-            keyspaceContext.shutdown();
-            started = false;
-        }
     }
 
 
@@ -288,21 +169,6 @@ public class DefaultCassandraArchivaManager
         return started;
     }
 
-    private boolean columnFamilyExists( String columnFamilyName )
-        throws ConnectionException
-    {
-        try
-        {
-            Properties properties = keyspace.getColumnFamilyProperties( columnFamilyName );
-            logger.debug( "getColumnFamilyProperties for {}: {}", columnFamilyName, properties );
-            return true;
-        }
-        catch ( NotFoundException e )
-        {
-            return false;
-        }
-    }
-
 
     @Override
     public Keyspace getKeyspace()
@@ -310,66 +176,8 @@ public class DefaultCassandraArchivaManager
         return keyspace;
     }
 
-    public EntityManager<Repository, String> getRepositoryEntityManager()
+    public Cluster getCluster()
     {
-        return repositoryEntityManager;
-    }
-
-    public void setRepositoryEntityManager( EntityManager<Repository, String> repositoryEntityManager )
-    {
-        this.repositoryEntityManager = repositoryEntityManager;
-    }
-
-    public EntityManager<Namespace, String> getNamespaceEntityManager()
-    {
-        return namespaceEntityManager;
-    }
-
-    public void setNamespaceEntityManager( EntityManager<Namespace, String> namespaceEntityManager )
-    {
-        this.namespaceEntityManager = namespaceEntityManager;
-    }
-
-    public EntityManager<Project, String> getProjectEntityManager()
-    {
-        return projectEntityManager;
-    }
-
-    public void setProjectEntityManager( EntityManager<Project, String> projectEntityManager )
-    {
-        this.projectEntityManager = projectEntityManager;
-    }
-
-    public EntityManager<ArtifactMetadataModel, String> getArtifactMetadataModelEntityManager()
-    {
-        return artifactMetadataModelEntityManager;
-    }
-
-    public void setArtifactMetadataModelEntityManager(
-        EntityManager<ArtifactMetadataModel, String> artifactMetadataModelEntityManager )
-    {
-        this.artifactMetadataModelEntityManager = artifactMetadataModelEntityManager;
-    }
-
-    public EntityManager<MetadataFacetModel, String> getMetadataFacetModelEntityManager()
-    {
-        return metadataFacetModelEntityManager;
-    }
-
-    public void setMetadataFacetModelEntityManager(
-        EntityManager<MetadataFacetModel, String> metadataFacetModelEntityManager )
-    {
-        this.metadataFacetModelEntityManager = metadataFacetModelEntityManager;
-    }
-
-    public EntityManager<ProjectVersionMetadataModel, String> getProjectVersionMetadataModelEntityManager()
-    {
-        return projectVersionMetadataModelEntityManager;
-    }
-
-    public void setProjectVersionMetadataModelEntityManager(
-        EntityManager<ProjectVersionMetadataModel, String> projectVersionMetadataModelEntityManager )
-    {
-        this.projectVersionMetadataModelEntityManager = projectVersionMetadataModelEntityManager;
+        return cluster;
     }
 }

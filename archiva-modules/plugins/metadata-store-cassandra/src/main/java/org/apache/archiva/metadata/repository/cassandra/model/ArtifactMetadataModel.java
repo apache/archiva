@@ -19,12 +19,9 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  * under the License.
  */
 
-import com.netflix.astyanax.entitystore.Serializer;
-import com.netflix.astyanax.serializers.LongSerializer;
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
@@ -35,58 +32,45 @@ import java.util.Date;
  * @author Olivier Lamy
  * @since 2.0.0
  */
-@Entity
 public class ArtifactMetadataModel
     implements Serializable
 {
 
     // repositoryId + namespaceId + project + projectVersion + id
     @Id
-    @Serializer( DeflateStringSerializer.class )
     private String artifactMetadataModelId;
 
-    @Column( name = "id" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "id")
     private String id;
 
-    @Column( name = "repositoryId" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "repositoryId")
     private String repositoryId;
 
-    @Column( name = "namespace" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "namespace")
     private String namespace;
 
-    @Column( name = "project" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "project")
     private String project;
 
-    @Column( name = "projectVersion" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "projectVersion")
     private String projectVersion;
 
-    @Column( name = "version" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "version")
     private String version;
 
-    @Column( name = "fileLastModified" )
-    @Serializer( LongSerializer.class )
+    @Column(name = "fileLastModified")
     private long fileLastModified;
 
-    @Column( name = "size" )
-    @Serializer( LongSerializer.class )
+    @Column(name = "size")
     private long size;
 
-    @Column( name = "md5" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "md5")
     private String md5;
 
-    @Column( name = "sha1" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "sha1")
     private String sha1;
 
-    @Column( name = "whenGathered" )
-    @Serializer( LongSerializer.class )
+    @Column(name = "whenGathered")
     private long whenGathered;
 
     public ArtifactMetadataModel()

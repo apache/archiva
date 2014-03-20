@@ -37,15 +37,15 @@ import javax.inject.Named;
 /**
  * @author Olivier Lamy
  */
-@RunWith(ArchivaSpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class RepositoriesNamespaceTest
 {
 
     private Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named(value = "archivaEntityManagerFactory#cassandra")
+    @Named( value = "archivaEntityManagerFactory#cassandra" )
     CassandraArchivaManager cassandraArchivaManager;
 
 
@@ -85,24 +85,35 @@ public class RepositoriesNamespaceTest
 
             cmr.updateNamespace( "release", "org" );
 
-            r = cmr.getRepositoryEntityManager().get( "release" );
+            r = cmr.getRepository( "release" );
 
             Assertions.assertThat( r ).isNotNull();
 
             Assertions.assertThat( cmr.getRepositories() ).isNotEmpty().hasSize( 1 );
             Assertions.assertThat( cmr.getNamespaces( "release" ) ).isNotEmpty().hasSize( 1 );
 
-            n = cmr.getNamespaceEntityManager().get( "release" + CassandraUtils.SEPARATOR + "org" );
+            n = cmr.getNamespace( "release", "org" );
 
             Assertions.assertThat( n ).isNotNull();
             Assertions.assertThat( n.getRepository() ).isNotNull();
 
             cmr.updateNamespace( "release", "org.apache" );
 
-            r = cmr.getRepositoryEntityManager().get( "release" );
+            r = cmr.getRepository( "release" );
 
             Assertions.assertThat( r ).isNotNull();
             Assertions.assertThat( cmr.getNamespaces( "release" ) ).isNotEmpty().hasSize( 2 );
+
+            cmr.removeNamespace( "release", "org.apache" );
+            Assertions.assertThat( cmr.getNamespaces( "release" ) ).isNotEmpty().hasSize( 1 );
+            Assertions.assertThat( cmr.getNamespaces( "release" ) ).containsExactly( "org" );
+
+            cmr.removeRepository( "release" );
+
+            r = cmr.getRepository( "release" );
+
+            Assertions.assertThat( r ).isNull();
+
         }
         catch ( Exception e )
         {
@@ -118,22 +129,11 @@ public class RepositoriesNamespaceTest
     protected void clearReposAndNamespace()
         throws Exception
     {
-        /*
-        List<Project> projects = cmr.getProjectEntityManager().getAll();
-        cmr.getProjectEntityManager().remove( projects );
-        */
-        cmr.getProjectEntityManager().truncate();
-
-        /*
-        List<Namespace> namespaces = cmr.getNamespaceEntityManager().getAll();
-        cmr.getNamespaceEntityManager().remove( namespaces );
-        */
-        cmr.getNamespaceEntityManager().truncate();
-
-        /*
-        List<Repository> repositories = cmr.getRepositoryEntityManager().getAll();
-        cmr.getRepositoryEntityManager().remove( repositories );
-        */
-        cmr.getRepositoryEntityManager().truncate();
+        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
+                                                       "project" );
+        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
+                                                       "namespace" );
+        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
+                                                       "repository" );
     }
 }

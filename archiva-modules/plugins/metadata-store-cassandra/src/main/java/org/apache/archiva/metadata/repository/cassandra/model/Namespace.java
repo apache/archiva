@@ -19,12 +19,9 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  * under the License.
  */
 
-import com.netflix.astyanax.entitystore.Serializer;
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.io.Serializable;
 
 
@@ -32,31 +29,17 @@ import java.io.Serializable;
  * @author Olivier Lamy
  * @since 2.0.0
  */
-@Entity
 public class Namespace
     implements Serializable
 {
 
-    @Id
-    @Serializer( DeflateStringSerializer.class )
     private String id;
 
-    @Column( name = "name" )
-    @Serializer( DeflateStringSerializer.class )
     private String name;
 
-    @Column( name = "repositoryid" )
-    @Serializer( DeflateStringSerializer.class )
     private String repositoryId;
 
-    @Column( name = "repositoryname" )
-    @Serializer( DeflateStringSerializer.class )
     private String repositoryName;
-
-    //@ManyToOne(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
-    //@JoinColumn(name = "repository_id")
-    //private transient Repository repository;
-
 
     public Namespace()
     {

@@ -19,10 +19,15 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.netflix.astyanax.entitystore.EntityManager;
+import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.hector.api.Keyspace;
+import me.prettyprint.hector.api.beans.ColumnSlice;
+import me.prettyprint.hector.api.beans.OrderedRows;
+import me.prettyprint.hector.api.beans.Row;
+import me.prettyprint.hector.api.exceptions.HInvalidRequestException;
+import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.mutation.MutationResult;
+import me.prettyprint.hector.api.query.QueryResult;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.FacetedMetadata;
@@ -35,10 +40,7 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.cassandra.model.ArtifactMetadataModel;
-import org.apache.archiva.metadata.repository.cassandra.model.MetadataFacetModel;
 import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
-import org.apache.archiva.metadata.repository.cassandra.model.Project;
-import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
 import org.apache.archiva.metadata.repository.cassandra.model.Repository;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -50,9 +52,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -83,34 +83,65 @@ public class CassandraMetadataRepository
     }
 
 
-    public EntityManager<Repository, String> getRepositoryEntityManager()
+    /**
+     * if the repository doesn't exist it will be created
+     *
+     * @param repositoryId
+     * @return
+     */
+    public Repository getOrCreateRepository( String repositoryId )
+        throws MetadataRepositoryException
     {
-        return this.cassandraArchivaManager.getRepositoryEntityManager();
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, StringSerializer.get(), StringSerializer.get(),
+                                     StringSerializer.get() ) //
+            .setColumnFamily( "repository" ) //
+            .setColumnNames( "id", "name" ) //
+            .addEqualsExpression( "id", repositoryId ) //
+            .execute();
+
+        if ( result.get().getCount() < 1 )
+        {
+            // we need to create the repository
+            Repository repository = new Repository( repositoryId );
+
+            try
+            {
+                MutationResult mutationResult = HFactory.createMutator( keyspace, StringSerializer.get() ) //
+                    //  values
+                    .addInsertion( repositoryId, "repository",
+                                   CassandraUtils.column( "id", repository.getId() ) ) //
+                    .addInsertion( repositoryId, "repository",
+                                   CassandraUtils.column( "name", repository.getName() ) ) //
+                    .execute();
+                logger.debug( "" );
+                return repository;
+            }
+            catch ( HInvalidRequestException e )
+            {
+                logger.error( e.getMessage(), e );
+                throw new MetadataRepositoryException( e.getMessage(), e );
+            }
+
+        }
+
+        return new Repository( result.get().getList().get( 0 ).getColumnSlice().getColumnByName( "id" ).getValue() );
     }
 
-    public EntityManager<Namespace, String> getNamespaceEntityManager()
-    {
-        return this.cassandraArchivaManager.getNamespaceEntityManager();
-    }
 
-    public EntityManager<Project, String> getProjectEntityManager()
+    protected Repository getRepository( String repositoryId )
+        throws MetadataRepositoryException
     {
-        return this.cassandraArchivaManager.getProjectEntityManager();
-    }
-
-    public EntityManager<ArtifactMetadataModel, String> getArtifactMetadataModelEntityManager()
-    {
-        return cassandraArchivaManager.getArtifactMetadataModelEntityManager();
-    }
-
-    public EntityManager<MetadataFacetModel, String> getMetadataFacetModelEntityManager()
-    {
-        return this.cassandraArchivaManager.getMetadataFacetModelEntityManager();
-    }
-
-    public EntityManager<ProjectVersionMetadataModel, String> getProjectVersionMetadataModelEntityManager()
-    {
-        return this.cassandraArchivaManager.getProjectVersionMetadataModelEntityManager();
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, StringSerializer.get(), StringSerializer.get(),
+                                     StringSerializer.get() ) //
+            .setColumnFamily( "repository" ) //
+            .setColumnNames( "id", "name" ) //
+            .addEqualsExpression( "id", repositoryId ) //
+            .execute();
+        return ( result.get().getCount() > 0 ) ? new Repository( repositoryId ) : null;
     }
 
     @Override
@@ -126,32 +157,53 @@ public class CassandraMetadataRepository
     {
         try
         {
-            Repository repository = this.getRepositoryEntityManager().get( repositoryId );
+            Repository repository = getOrCreateRepository( repositoryId );
 
-            if ( repository == null )
-            {
-                repository = new Repository( repositoryId );
+            Keyspace keyspace = cassandraArchivaManager.getKeyspace();
 
-                Namespace namespace = new Namespace( namespaceId, repository );
-                this.getRepositoryEntityManager().put( repository );
-
-                this.getNamespaceEntityManager().put( namespace );
-            }
-            // FIXME add a Namespace id builder
-            Namespace namespace = getNamespaceEntityManager().get(
-                new Namespace.KeyBuilder().withNamespace( namespaceId ).withRepositoryId( repositoryId ).build() );
+            Namespace namespace = getNamespace( repositoryId, namespaceId );
             if ( namespace == null )
             {
                 namespace = new Namespace( namespaceId, repository );
-                getNamespaceEntityManager().put( namespace );
+                HFactory.createMutator( keyspace, StringSerializer.get() )
+                    //  values
+                    .addInsertion( namespace.getId(), "namespace", //
+                                   CassandraUtils.column( "name", namespace.getName() ) ) //
+                    .addInsertion( namespace.getId(), "namespace", //
+                                   CassandraUtils.column( "repositoryId", repository.getId() ) ) //
+                    .execute();
             }
+
             return namespace;
         }
-        catch ( PersistenceException e )
+        catch ( HInvalidRequestException e )
         {
+            logger.error( e.getMessage(), e );
             throw new MetadataRepositoryException( e.getMessage(), e );
         }
+    }
 
+    protected Namespace getNamespace( String repositoryId, String namespaceId )
+    {
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( "namespace" ) //
+            .setColumnNames( "repositoryId", "name" ) //
+            .addEqualsExpression( "repositoryId", repositoryId ) //
+            .addEqualsExpression( "name", namespaceId ) //
+            .execute();
+        if ( result.get().getCount() > 0 )
+        {
+            ColumnSlice<String, String> columnSlice = result.get().getList().get( 0 ).getColumnSlice();
+            return new Namespace( columnSlice.getColumnByName( "name" ).getValue(), //
+                                  new Repository( columnSlice.getColumnByName( "repositoryId" ).getValue() ) );
+
+        }
+        return null;
     }
 
 
@@ -161,15 +213,18 @@ public class CassandraMetadataRepository
     {
         try
         {
-            Namespace namespace = getNamespaceEntityManager().get(
-                new Namespace.KeyBuilder().withNamespace( namespaceId ).withRepositoryId( repositoryId ).build() );
-            if ( namespace != null )
-            {
-                getNamespaceEntityManager().remove( namespace );
-            }
+            String key =
+                new Namespace.KeyBuilder().withNamespace( namespaceId ).withRepositoryId( repositoryId ).build();
+
+            MutationResult result =
+                HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ).addDeletion(
+                    key, "namespace" ).execute();
+
+
         }
-        catch ( PersistenceException e )
+        catch ( HInvalidRequestException e )
         {
+            logger.error( e.getMessage(), e );
             throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
@@ -179,105 +234,132 @@ public class CassandraMetadataRepository
     public void removeRepository( final String repositoryId )
         throws MetadataRepositoryException
     {
-        try
+
+        // FIXME remove all datas attached to the repositoryId
+
+        // retrieve and delete all namespace with this repositoryId
+
+        List<String> namespacesKey = new ArrayList<String>();
+
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( "namespace" ) //
+            .setColumnNames( "repositoryId", "name" ) //
+            .addEqualsExpression( "repositoryId", repositoryId ) //
+            .execute();
+
+        for ( Row<String, String, String> row : result.get().getList() )
         {
-            final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
+            namespacesKey.add( row.getKey() );
+        }
 
-            // remove data related to the repository
-            this.getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
+            .addDeletion( namespacesKey, "namespace" ) //
+            .execute();
+
+        //delete repositoryId
+        HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
+            .addDeletion( repositoryId, "repository" ) //
+            .execute();
+
+/*
+        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
+
+        // remove data related to the repository
+        this.getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        {
+            @Override
+            public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
             {
-                @Override
-                public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
+                if ( artifactMetadataModel != null )
                 {
-                    if ( artifactMetadataModel != null )
+                    if ( StringUtils.equals( artifactMetadataModel.getRepositoryId(), repositoryId ) )
                     {
-                        if ( StringUtils.equals( artifactMetadataModel.getRepositoryId(), repositoryId ) )
-                        {
-                            artifactMetadataModels.add( artifactMetadataModel );
-                        }
+                        artifactMetadataModels.add( artifactMetadataModel );
                     }
-                    return Boolean.TRUE;
                 }
-            } );
-
-            getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );
-
-            final List<Namespace> namespaces = new ArrayList<Namespace>();
-
-            getNamespaceEntityManager().visitAll( new Function<Namespace, Boolean>()
-            {
-                @Override
-                public Boolean apply( Namespace namespace )
-                {
-                    if ( namespace != null )
-                    {
-                        if ( StringUtils.equals( namespace.getRepository().getId(), repositoryId ) )
-                        {
-                            namespaces.add( namespace );
-                        }
-                    }
-                    return Boolean.TRUE;
-                }
-            } );
-
-            getNamespaceEntityManager().remove( namespaces );
-
-            final List<Project> projects = new ArrayList<Project>();
-            getProjectEntityManager().visitAll( new Function<Project, Boolean>()
-            {
-                @Override
-                public Boolean apply( Project project )
-                {
-                    if ( project != null )
-                    {
-                        if ( StringUtils.equals( project.getNamespace().getRepository().getId(), repositoryId ) )
-                        {
-                            projects.add( project );
-                        }
-                    }
-                    return Boolean.TRUE;
-                }
-            } );
-
-            getProjectEntityManager().remove( projects );
-
-            // TODO  cleanup or not
-            //final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>(  );
-            //getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
-
-            final List<ProjectVersionMetadataModel> projectVersionMetadataModels =
-                new ArrayList<ProjectVersionMetadataModel>();
-
-            getProjectVersionMetadataModelEntityManager().visitAll( new Function<ProjectVersionMetadataModel, Boolean>()
-            {
-                @Override
-                public Boolean apply( ProjectVersionMetadataModel projectVersionMetadataModel )
-                {
-                    if ( projectVersionMetadataModel != null )
-                    {
-                        if ( StringUtils.equals( projectVersionMetadataModel.getNamespace().getRepository().getId(),
-                                                 repositoryId ) )
-                        {
-                            projectVersionMetadataModels.add( projectVersionMetadataModel );
-                        }
-                    }
-                    return Boolean.TRUE;
-                }
-            } );
-
-            getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModels );
-
-            Repository repository = getRepositoryEntityManager().get( repositoryId );
-            if ( repository != null )
-            {
-                getRepositoryEntityManager().remove( repository );
+                return Boolean.TRUE;
             }
+        } );
 
-        }
-        catch ( PersistenceException e )
+        getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );
+
+        final List<Namespace> namespaces = new ArrayList<Namespace>();
+
+        getNamespaceEntityManager().visitAll( new Function<Namespace, Boolean>()
         {
-            throw new MetadataRepositoryException( e.getMessage(), e );
+            @Override
+            public Boolean apply( Namespace namespace )
+            {
+                if ( namespace != null )
+                {
+                    if ( StringUtils.equals( namespace.getRepository().getId(), repositoryId ) )
+                    {
+                        namespaces.add( namespace );
+                    }
+                }
+                return Boolean.TRUE;
+            }
+        } );
+
+        getNamespaceEntityManager().remove( namespaces );
+
+        final List<Project> projects = new ArrayList<Project>();
+        getProjectEntityManager().visitAll( new Function<Project, Boolean>()
+        {
+            @Override
+            public Boolean apply( Project project )
+            {
+                if ( project != null )
+                {
+                    if ( StringUtils.equals( project.getNamespace().getRepository().getId(), repositoryId ) )
+                    {
+                        projects.add( project );
+                    }
+                }
+                return Boolean.TRUE;
+            }
+        } );
+
+        getProjectEntityManager().remove( projects );
+
+        // TODO  cleanup or not
+        //final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>(  );
+        //getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
+
+        final List<ProjectVersionMetadataModel> projectVersionMetadataModels =
+            new ArrayList<ProjectVersionMetadataModel>();
+
+        getProjectVersionMetadataModelEntityManager().visitAll( new Function<ProjectVersionMetadataModel, Boolean>()
+        {
+            @Override
+            public Boolean apply( ProjectVersionMetadataModel projectVersionMetadataModel )
+            {
+                if ( projectVersionMetadataModel != null )
+                {
+                    if ( StringUtils.equals( projectVersionMetadataModel.getNamespace().getRepository().getId(),
+                                             repositoryId ) )
+                    {
+                        projectVersionMetadataModels.add( projectVersionMetadataModel );
+                    }
+                }
+                return Boolean.TRUE;
+            }
+        } );
+
+        getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModels );
+
+        Repository repository = getRepositoryEntityManager().get( repositoryId );
+        if ( repository != null )
+        {
+            getRepositoryEntityManager().remove( repository );
         }
+
+    */
     }
 
     @Override
@@ -288,17 +370,23 @@ public class CassandraMetadataRepository
         {
             logger.debug( "getRepositories" );
 
-            List<Repository> repositories = getRepositoryEntityManager().getAll();
-            if ( repositories == null )
+            final QueryResult<OrderedRows<String, String, String>> cResult = //
+                HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), //
+                                                 StringSerializer.get(), //
+                                                 StringSerializer.get(), //
+                                                 StringSerializer.get() ) //
+                    .setColumnFamily( "repository" ) //
+                    .setColumnNames( "name" ) //
+                    .setRange( null, null, false, Integer.MAX_VALUE ) //
+                    .execute();
+
+            List<String> repoIds = new ArrayList<String>( cResult.get().getCount() );
+
+            for ( Row<String, String, String> row : cResult.get() )
             {
-                return Collections.emptyList();
+                repoIds.add( row.getColumnSlice().getColumnByName( "name" ).getValue() );
             }
-            List<String> repoIds = new ArrayList<String>( repositories.size() );
-            for ( Repository repository : repositories )
-            {
-                repoIds.add( repository.getName() );
-            }
-            logger.debug( "getRepositories found: {}", repoIds );
+
             return repoIds;
         }
         catch ( PersistenceException e )
@@ -313,201 +401,91 @@ public class CassandraMetadataRepository
     public Collection<String> getRootNamespaces( final String repoId )
         throws MetadataResolutionException
     {
-        try
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( "namespace" ) //
+            .setColumnNames( "name" ) //
+            .addEqualsExpression( "repositoryId", repoId ) //
+            .execute();
+
+        Set<String> namespaces = new HashSet<String>( result.get().getCount() );
+
+        for ( Row<String, String, String> row : result.get() )
         {
-
-
-            RootNamesSpaceVisitAll rootNamesSpaceVisitAll = new RootNamesSpaceVisitAll( repoId );
-
-            getNamespaceEntityManager().visitAll( rootNamesSpaceVisitAll );
-
-            return rootNamesSpaceVisitAll.namespaces;
-
-
-            // using cql query with index
-            /*
-            List<Namespace> namespacesList = getNamespaceEntityManager().find( "SELECT * from namespace where id <> null AND repositoryid = '" + repoId + "'" );
-
-            Set<String> namespaces = new HashSet<String>();
-
-            for (Namespace namespace : namespacesList)
-            {
-                String name = namespace.getName();
-                if ( StringUtils.isNotEmpty( name ) )
-                {
-                    namespaces.add( StringUtils.substringBefore( name, "." ) );
-                }
-            }
-
-            return namespaces;
-            */
-
+            namespaces.add(
+                StringUtils.substringBefore( row.getColumnSlice().getColumnByName( "name" ).getValue(), "." ) );
         }
-        catch ( Exception e )
-        {
-            throw new MetadataResolutionException( e.getMessage(), e );
-        }
+
+        return namespaces;
     }
 
-    private static class RootNamesSpaceVisitAll
-        implements Function<Namespace, Boolean>
-    {
-        private String repoId;
-
-        Set<String> namespaces = new HashSet<String>();
-
-        private RootNamesSpaceVisitAll( String repoId )
-        {
-            this.repoId = repoId;
-        }
-
-        // @Nullable add dependency ?
-        @Override
-        public Boolean apply( Namespace namespace )
-        {
-            if ( namespace != null && namespace.getRepository() != null && StringUtils.equalsIgnoreCase( repoId,
-                                                                                                         namespace.getRepository().getId() ) )
-            {
-                String name = namespace.getName();
-                if ( StringUtils.isNotEmpty( name ) )
-                {
-                    namespaces.add( StringUtils.substringBefore( name, "." ) );
-                }
-            }
-            return Boolean.TRUE;
-        }
-    }
 
     @Override
     public Collection<String> getNamespaces( final String repoId, final String namespaceId )
         throws MetadataResolutionException
     {
-        try
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( "namespace" ) //
+            .setColumnNames( "name" ) //
+            .addEqualsExpression( "repositoryId", repoId ) //
+            .execute();
+
+        List<String> namespaces = new ArrayList<String>( result.get().getCount() );
+
+        for ( Row<String, String, String> row : result.get() )
         {
-            final FindNamesSpaceVisitAll findNamesSpaceVisitAll  = new FindNamesSpaceVisitAll( repoId, namespaceId );
-
-            getNamespaceEntityManager().visitAll( findNamesSpaceVisitAll );
-
-            return findNamesSpaceVisitAll.namespaces;
-        }
-        catch ( PersistenceException e )
-        {
-            throw new MetadataResolutionException( e.getMessage(), e );
-        }
-
-    }
-
-    private static class FindNamesSpaceVisitAll
-        implements Function<Namespace, Boolean>
-    {
-        private String repoId;
-
-        private String namespaceId;
-
-        Set<String> namespaces = new HashSet<String>();
-
-        private FindNamesSpaceVisitAll( String repoId, String namespaceId )
-        {
-            this.repoId = repoId;
-            this.namespaceId = namespaceId;
-        }
-
-        // @Nullable add dependency ?
-        @Override
-        public Boolean apply( Namespace namespace )
-        {
-            if ( namespace != null && namespace.getRepository() != null && StringUtils.equalsIgnoreCase( repoId,
-                                                                                                         namespace.getRepository().getId() ) )
+            String currentNamespace = row.getColumnSlice().getColumnByName( "name" ).getValue();
+            if ( StringUtils.startsWith( currentNamespace, namespaceId ) && ( StringUtils.length( currentNamespace )
+                > StringUtils.length( namespaceId ) ) )
             {
-                String currentNamespace = namespace.getName();
-                // we only return childs
-                if ( StringUtils.startsWith( currentNamespace, namespaceId ) && (
-                    StringUtils.length( currentNamespace ) > StringUtils.length( namespaceId ) ) )
-                {
-                    // store after namespaceId '.' but before next '.'
-                    // call org namespace org.apache.maven.shared -> stored apache
+                // store after namespaceId '.' but before next '.'
+                // call org namespace org.apache.maven.shared -> stored apache
 
-                    String calledNamespace =
-                        StringUtils.endsWith( namespaceId, "." ) ? namespaceId : namespaceId + ".";
-                    String storedNamespace = StringUtils.substringAfter( currentNamespace, calledNamespace );
+                String calledNamespace = StringUtils.endsWith( namespaceId, "." ) ? namespaceId : namespaceId + ".";
+                String storedNamespace = StringUtils.substringAfter( currentNamespace, calledNamespace );
 
-                    storedNamespace = StringUtils.substringBefore( storedNamespace, "." );
+                storedNamespace = StringUtils.substringBefore( storedNamespace, "." );
 
-                    namespaces.add( storedNamespace );
-                }
+                namespaces.add( storedNamespace );
             }
-            return Boolean.TRUE;
         }
+
+        return namespaces;
+
     }
 
 
     public List<String> getNamespaces( final String repoId )
         throws MetadataResolutionException
     {
-        try
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( "namespace" ) //
+            .setColumnNames( "name" ) //
+            .addEqualsExpression( "repositoryId", repoId ) //
+            .execute();
+
+        List<String> namespaces = new ArrayList<String>( result.get().getCount() );
+
+        for ( Row<String, String, String> row : result.get() )
         {
-            logger.debug( "getNamespaces for repository '{}'", repoId );
-            //TypedQuery<Repository> typedQuery =
-            //    entityManager.createQuery( "select n from Namespace n where n.repository_id=:id", Namespace.class );
-
-            //List<Repository> namespaces = typedQuery.setParameter( "id", repoId ).getResultList();
-
-            Repository repository = getRepositoryEntityManager().get( repoId );
-
-            if ( repository == null )
-            {
-                return Collections.emptyList();
-            }
-
-            // FIXME find correct cql query
-            //String query = "select * from namespace where repository.id = '" + repoId + "';";
-
-            //List<Namespace> namespaces = getNamespaceEntityManager().find( query );
-
-            //final Set<Namespace> namespaces = new HashSet<Namespace>();
-            final Set<String> namespaces = new HashSet<String>();
-
-            getNamespaceEntityManager().visitAll( new Function<Namespace, Boolean>()
-            {
-                // @Nullable add dependency ?
-                @Override
-                public Boolean apply( Namespace namespace )
-                {
-                    if ( namespace != null && namespace.getRepository() != null && StringUtils.equalsIgnoreCase( repoId,
-                                                                                                                 namespace.getRepository().getId() ) )
-                    {
-                        namespaces.add( namespace.getId() );
-                    }
-                    return Boolean.TRUE;
-                }
-            } );
-
-
-            /*
-
-            repository.setNamespaces( new ArrayList<Namespace>( namespaces ) );
-            if ( repository == null || repository.getNamespaces().isEmpty() )
-            {
-                return Collections.emptyList();
-            }
-
-            List<String> namespaceIds = new ArrayList<String>( repository.getNamespaces().size() );
-
-            for ( Namespace n : repository.getNamespaces() )
-            {
-                namespaceIds.add( n.getName() );
-            }
-
-            logger.debug( "getNamespaces for repository '{}' found {}", repoId, namespaceIds.size() );
-
-            return namespaceIds;
-            */
-            return new ArrayList<String>( namespaces );
+            namespaces.add( row.getColumnSlice().getColumnByName( "name" ).getValue() );
         }
-        catch ( PersistenceException e )
-        {
-            throw new MetadataResolutionException( e.getMessage(), e );
-        }
+
+        return namespaces;
     }
 
 
@@ -515,7 +493,7 @@ public class CassandraMetadataRepository
     public void updateProject( String repositoryId, ProjectMetadata projectMetadata )
         throws MetadataRepositoryException
     {
-
+/*
         // project exists ? if yes return
         String projectKey = new Project.KeyBuilder().withProjectId( projectMetadata.getId() ).withNamespace(
             new Namespace( projectMetadata.getNamespace(), new Repository( repositoryId ) ) ).build();
@@ -543,7 +521,7 @@ public class CassandraMetadataRepository
         catch ( PersistenceException e )
         {
             throw new MetadataRepositoryException( e.getMessage(), e );
-        }
+        }*/
 
     }
 
@@ -552,7 +530,7 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
 
-        // cleanup ArtifactMetadataModel
+/*        // cleanup ArtifactMetadataModel
         final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
 
         getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
@@ -614,14 +592,15 @@ public class CassandraMetadataRepository
         }
         logger.debug( "removeProject {}", project );
 
-        getProjectEntityManager().remove( project );
+        getProjectEntityManager().remove( project );*/
     }
 
     @Override
     public Collection<String> getProjectVersions( final String repoId, final String namespace, final String projectId )
         throws MetadataResolutionException
     {
-        final Set<String> versions = new HashSet<String>();
+        return null;
+/*        final Set<String> versions = new HashSet<String>();
         getProjectVersionMetadataModelEntityManager().visitAll( new Function<ProjectVersionMetadataModel, Boolean>()
         {
             @Override
@@ -659,7 +638,7 @@ public class CassandraMetadataRepository
             }
         } );
 
-        return versions;
+        return versions;*/
     }
 
     @Override
@@ -667,7 +646,7 @@ public class CassandraMetadataRepository
                                 ArtifactMetadata artifactMeta )
         throws MetadataRepositoryException
     {
-        String namespaceKey =
+/*        String namespaceKey =
             new Namespace.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespaceId ).build();
         // create the namespace if not exists
         Namespace namespace = getNamespaceEntityManager().get( namespaceKey );
@@ -745,7 +724,7 @@ public class CassandraMetadataRepository
         }
 
         // now facets
-        updateFacets( artifactMeta, artifactMetadataModel );
+        updateFacets( artifactMeta, artifactMetadataModel );*/
 
     }
 
@@ -754,7 +733,7 @@ public class CassandraMetadataRepository
                                                    final String projectVersion )
         throws MetadataResolutionException
     {
-        final Set<String> versions = new HashSet<String>();
+/*        final Set<String> versions = new HashSet<String>();
         // FIXME use cql query
         getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
@@ -775,7 +754,8 @@ public class CassandraMetadataRepository
             }
         } );
 
-        return versions;
+        return versions;*/
+        return null;
     }
 
     /**
@@ -788,7 +768,7 @@ public class CassandraMetadataRepository
                                final ArtifactMetadataModel artifactMetadataModel )
     {
 
-        for ( final String facetId : metadataFacetFactories.keySet() )
+/*        for ( final String facetId : metadataFacetFactories.keySet() )
         {
             MetadataFacet metadataFacet = facetedMetadata.getFacet( facetId );
             if ( metadataFacet == null )
@@ -834,8 +814,7 @@ public class CassandraMetadataRepository
             }
 
             getMetadataFacetModelEntityManager().put( metadataFacetModelsToAdd );
-
-        }
+        }*/
     }
 
     @Override
@@ -843,7 +822,7 @@ public class CassandraMetadataRepository
                                       ProjectVersionMetadata versionMetadata )
         throws MetadataRepositoryException
     {
-        String namespaceKey =
+/*        String namespaceKey =
             new Namespace.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespaceId ).build();
         Namespace namespace = getNamespaceEntityManager().get( namespaceKey );
         if ( namespace == null )
@@ -869,8 +848,7 @@ public class CassandraMetadataRepository
 
         if ( projectVersionMetadataModel == null )
         {
-            projectVersionMetadataModel =
-                getModelMapper().map( versionMetadata, ProjectVersionMetadataModel.class );
+            projectVersionMetadataModel = getModelMapper().map( versionMetadata, ProjectVersionMetadataModel.class );
             projectVersionMetadataModel.setRowId( key );
         }
         projectVersionMetadataModel.setProjectId( projectId );
@@ -892,7 +870,8 @@ public class CassandraMetadataRepository
             artifactMetadataModel.setArtifactMetadataModelId(
                 new ArtifactMetadataModel.KeyBuilder().withId( versionMetadata.getId() ).withRepositoryId(
                     repositoryId ).withNamespace( namespaceId ).withProjectVersion(
-                    versionMetadata.getVersion() ).withProject( projectId ).build() );
+                    versionMetadata.getVersion() ).withProject( projectId ).build()
+            );
             artifactMetadataModel.setRepositoryId( repositoryId );
             artifactMetadataModel.setNamespace( namespaceId );
             artifactMetadataModel.setProject( projectId );
@@ -904,7 +883,7 @@ public class CassandraMetadataRepository
         catch ( PersistenceException e )
         {
             throw new MetadataRepositoryException( e.getMessage(), e );
-        }
+        }*/
     }
 
 
@@ -917,7 +896,7 @@ public class CassandraMetadataRepository
     public List<String> getMetadataFacets( final String repositoryId, final String facetId )
         throws MetadataRepositoryException
     {
-        // FIXME use cql query !!
+/*        // FIXME use cql query !!
         final List<String> facets = new ArrayList<String>();
         this.getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
         {
@@ -937,7 +916,8 @@ public class CassandraMetadataRepository
             }
         } );
 
-        return facets;
+        return facets;*/
+        return null;
 
     }
 
@@ -952,7 +932,7 @@ public class CassandraMetadataRepository
     public MetadataFacet getMetadataFacet( final String repositoryId, final String facetId, final String name )
         throws MetadataRepositoryException
     {
-        // FIXME use cql query !!
+/*        // FIXME use cql query !!
         final List<MetadataFacetModel> facets = new ArrayList<MetadataFacetModel>();
         this.getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
         {
@@ -990,14 +970,15 @@ public class CassandraMetadataRepository
             map.put( metadataFacetModel.getKey(), metadataFacetModel.getValue() );
         }
         metadataFacet.fromProperties( map );
-        return metadataFacet;
+        return metadataFacet;*/
+        return null;
     }
 
     @Override
     public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
-
+/*
         if ( metadataFacet == null )
         {
             return;
@@ -1061,14 +1042,14 @@ public class CassandraMetadataRepository
                 }
 
             }
-        }
+        }*/
     }
 
     @Override
     public void removeMetadataFacets( final String repositoryId, final String facetId )
         throws MetadataRepositoryException
     {
-        logger.debug( "removeMetadataFacets repositoryId: '{}', facetId: '{}'", repositoryId, facetId );
+/*        logger.debug( "removeMetadataFacets repositoryId: '{}', facetId: '{}'", repositoryId, facetId );
         final List<MetadataFacetModel> toRemove = new ArrayList<MetadataFacetModel>();
 
         // FIXME cql query
@@ -1091,14 +1072,14 @@ public class CassandraMetadataRepository
         } );
         logger.debug( "removeMetadataFacets repositoryId: '{}', facetId: '{}', toRemove: {}", repositoryId, facetId,
                       toRemove );
-        getMetadataFacetModelEntityManager().remove( toRemove );
+        getMetadataFacetModelEntityManager().remove( toRemove );*/
     }
 
     @Override
     public void removeMetadataFacet( final String repositoryId, final String facetId, final String name )
         throws MetadataRepositoryException
     {
-        logger.debug( "removeMetadataFacets repositoryId: '{}', facetId: '{}'", repositoryId, facetId );
+/*        logger.debug( "removeMetadataFacets repositoryId: '{}', facetId: '{}'", repositoryId, facetId );
         final List<MetadataFacetModel> toRemove = new ArrayList<MetadataFacetModel>();
 
         // FIXME cql query
@@ -1122,7 +1103,7 @@ public class CassandraMetadataRepository
         } );
         logger.debug( "removeMetadataFacets repositoryId: '{}', facetId: '{}', toRemove: {}", repositoryId, facetId,
                       toRemove );
-        getMetadataFacetModelEntityManager().remove( toRemove );
+        getMetadataFacetModelEntityManager().remove( toRemove );*/
     }
 
     @Override
@@ -1131,7 +1112,7 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
 
-        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
+/*        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
 
         // FIXME cql query
         getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
@@ -1172,12 +1153,13 @@ public class CassandraMetadataRepository
         logger.debug( "getArtifactsByDateRange repositoryId: {}, startTime: {}, endTime: {}, artifactMetadatas: {}",
                       repositoryId, startTime, endTime, artifactMetadatas );
 
-        return artifactMetadatas;
+        return artifactMetadatas;*/
+        return Collections.emptyList();
     }
 
     protected void populateFacets( final ArtifactMetadata artifactMetadata )
     {
-        final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>();
+/*        final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>();
 
         getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
         {
@@ -1228,14 +1210,14 @@ public class CassandraMetadataRepository
                 factory.createMetadataFacet( artifactMetadata.getRepositoryId(), entry.getKey() );
             metadataFacet.fromProperties( entry.getValue() );
             artifactMetadata.addFacet( metadataFacet );
-        }
+        }*/
     }
 
     @Override
     public List<ArtifactMetadata> getArtifactsByChecksum( final String repositoryId, final String checksum )
         throws MetadataRepositoryException
     {
-        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
+/*        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
 
         if ( logger.isDebugEnabled() )
         {
@@ -1277,7 +1259,8 @@ public class CassandraMetadataRepository
         logger.debug( "getArtifactsByChecksum repositoryId: {}, checksum: {}, artifactMetadatas: {}", repositoryId,
                       checksum, artifactMetadatas );
 
-        return artifactMetadatas;
+        return artifactMetadatas;*/
+        return Collections.emptyList();
     }
 
     @Override
@@ -1285,7 +1268,7 @@ public class CassandraMetadataRepository
                                 final String version, final String id )
         throws MetadataRepositoryException
     {
-        logger.debug( "removeArtifact repositoryId: '{}', namespace: '{}', project: '{}', version: '{}', id: '{}'",
+/*        logger.debug( "removeArtifact repositoryId: '{}', namespace: '{}', project: '{}', version: '{}', id: '{}'",
                       repositoryId, namespace, project, version, id );
         String key =
             new ArtifactMetadataModel.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespace ).withId(
@@ -1303,7 +1286,7 @@ public class CassandraMetadataRepository
         ProjectVersionMetadataModel projectVersionMetadataModel = new ProjectVersionMetadataModel();
         projectVersionMetadataModel.setRowId( key );
 
-        getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModel );
+        getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModel );*/
     }
 
     @Override
@@ -1313,7 +1296,7 @@ public class CassandraMetadataRepository
         logger.debug( "removeArtifact repositoryId: '{}', namespace: '{}', project: '{}', version: '{}', id: '{}'",
                       artifactMetadata.getRepositoryId(), artifactMetadata.getNamespace(),
                       artifactMetadata.getProject(), baseVersion, artifactMetadata.getId() );
-        String key =
+/*        String key =
             new ArtifactMetadataModel.KeyBuilder().withRepositoryId( artifactMetadata.getRepositoryId() ).withNamespace(
                 artifactMetadata.getNamespace() ).withId( artifactMetadata.getId() ).withProjectVersion(
                 baseVersion ).withProject( artifactMetadata.getProject() ).build();
@@ -1321,7 +1304,7 @@ public class CassandraMetadataRepository
         ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
         artifactMetadataModel.setArtifactMetadataModelId( key );
 
-        getArtifactMetadataModelEntityManager().remove( artifactMetadataModel );
+        getArtifactMetadataModelEntityManager().remove( artifactMetadataModel );*/
     }
 
     @Override
@@ -1329,7 +1312,7 @@ public class CassandraMetadataRepository
                                 final String version, final MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
-        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
+/*        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
         getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
             @Override
@@ -1348,7 +1331,7 @@ public class CassandraMetadataRepository
                 return Boolean.TRUE;
             }
         } );
-        getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );
+        getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );*/
 
     }
 
@@ -1357,13 +1340,13 @@ public class CassandraMetadataRepository
     public List<ArtifactMetadata> getArtifacts( final String repositoryId )
         throws MetadataRepositoryException
     {
-        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
+/*        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
         // FIXME use cql query !
         getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
             @Override
             public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
-            {
+           {
                 if ( artifactMetadataModel != null )
                 {
                     if ( StringUtils.equals( repositoryId, artifactMetadataModel.getRepositoryId() ) )
@@ -1385,14 +1368,16 @@ public class CassandraMetadataRepository
             artifactMetadatas.add( artifactMetadata );
         }
 
-        return artifactMetadatas;
+        return artifactMetadatas;*/
+        return Collections.emptyList();
     }
 
     @Override
     public ProjectMetadata getProject( final String repoId, final String namespace, final String id )
         throws MetadataResolutionException
     {
-        //basically just checking it exists
+
+/*        //basically just checking it exists
         // FIXME use cql query
 
         final BooleanHolder booleanHolder = new BooleanHolder();
@@ -1427,7 +1412,8 @@ public class CassandraMetadataRepository
         logger.debug( "getProject repoId: {}, namespace: {}, projectId: {} -> {}", repoId, namespace, id,
                       projectMetadata );
 
-        return projectMetadata;
+        return projectMetadata;*/
+        return null;
     }
 
     @Override
@@ -1435,7 +1421,7 @@ public class CassandraMetadataRepository
                                                      final String projectId, final String projectVersion )
         throws MetadataResolutionException
     {
-        String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repoId ).withNamespace(
+/*        String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repoId ).withNamespace(
             namespace ).withProjectId( projectId ).withId( projectVersion ).build();
 
         ProjectVersionMetadataModel projectVersionMetadataModel =
@@ -1512,7 +1498,8 @@ public class CassandraMetadataRepository
             }
         }
 
-        return projectVersionMetadata;
+        return projectVersionMetadata;*/
+        return null;
     }
 
 
@@ -1531,7 +1518,7 @@ public class CassandraMetadataRepository
     {
         final Set<String> projects = new HashSet<String>();
 
-        // FIXME use cql query
+/*        // FIXME use cql query
         getProjectEntityManager().visitAll( new Function<Project, Boolean>()
         {
             @Override
@@ -1547,7 +1534,7 @@ public class CassandraMetadataRepository
                 }
                 return Boolean.TRUE;
             }
-        } );
+        } );*/
 
         return projects;
     }
@@ -1558,7 +1545,7 @@ public class CassandraMetadataRepository
                                       final String projectVersion )
         throws MetadataRepositoryException
     {
-
+        /*
         final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
 
         // FIXME use cql query
@@ -1597,6 +1584,7 @@ public class CassandraMetadataRepository
         projectVersionMetadataModel.setRowId( key );
 
         getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModel );
+        */
     }
 
     @Override
@@ -1605,6 +1593,7 @@ public class CassandraMetadataRepository
         throws MetadataResolutionException
     {
         final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
+        /*
         // FIXME use cql query !
         getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
         {
@@ -1625,9 +1614,9 @@ public class CassandraMetadataRepository
                 return Boolean.TRUE;
             }
         } );
-
+        */
         List<ArtifactMetadata> artifactMetadatas = new ArrayList<ArtifactMetadata>( artifactMetadataModels.size() );
-
+        /*
         for ( ArtifactMetadataModel model : artifactMetadataModels )
         {
             ArtifactMetadata artifactMetadata = getModelMapper().map( model, ArtifactMetadata.class );
@@ -1715,7 +1704,7 @@ public class CassandraMetadataRepository
 
 
         }
-
+        */
         return artifactMetadatas;
     }
 

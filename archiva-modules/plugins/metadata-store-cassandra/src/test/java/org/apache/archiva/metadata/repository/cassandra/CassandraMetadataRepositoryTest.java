@@ -41,7 +41,7 @@ public class CassandraMetadataRepositoryTest
     private Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "archivaEntityManagerFactory#cassandra" )
+    @Named(value = "archivaEntityManagerFactory#cassandra")
     CassandraArchivaManager cassandraArchivaManager;
 
     CassandraMetadataRepository cmr;
@@ -78,45 +78,12 @@ public class CassandraMetadataRepositoryTest
     protected void clearReposAndNamespace()
         throws Exception
     {
-        /*
-        List<Project> projects = cmr.getProjectEntityManager().getAll();
-
-        cmr.getProjectEntityManager().remove( projects );
-        */
-        cmr.getProjectEntityManager().truncate();
-
-        /*
-        List<Namespace> namespaces = cmr.getNamespaceEntityManager().getAll();
-
-        cmr.getNamespaceEntityManager().remove( namespaces );
-        */
-        cmr.getNamespaceEntityManager().truncate();
-
-        /*
-        List<Repository> repositories = cmr.getRepositoryEntityManager().getAll();
-
-        cmr.getRepositoryEntityManager().remove( repositories );
-        */
-        cmr.getRepositoryEntityManager().truncate();
-
-        /*
-        List<ArtifactMetadataModel> artifactMetadataModels = cmr.getArtifactMetadataModelEntityManager().getAll();
-        cmr.getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );
-        */
-        cmr.getArtifactMetadataModelEntityManager().truncate();
-
-        /*
-        List<MetadataFacetModel> metadataFacetModels = cmr.getMetadataFacetModelEntityManager().getAll();
-        cmr.getMetadataFacetModelEntityManager().remove( metadataFacetModels );
-        */
-        cmr.getMetadataFacetModelEntityManager().truncate();
-
-        /*
-        List<ProjectVersionMetadataModel> projectVersionMetadataModels =
-            cmr.getProjectVersionMetadataModelEntityManager().getAll();
-        cmr.getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModels );
-        */
-        cmr.getProjectVersionMetadataModelEntityManager().truncate();
+        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
+                                                       "project" );
+        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
+                                                       "namespace" );
+        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
+                                                       "repository" );
 
     }
 

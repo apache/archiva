@@ -73,13 +73,14 @@
       <artifactId>modelmapper</artifactId>
     </dependency>
 
+
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-jpa_2.0_spec</artifactId>
     </dependency>
 
     <!-- FIXME still need old jackson -->
-
+    <!--
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
@@ -145,7 +146,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-
+    -->
     <dependency>
       <groupId>org.apache.cassandra</groupId>
       <artifactId>cassandra-all</artifactId>

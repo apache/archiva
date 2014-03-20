@@ -19,7 +19,6 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  * under the License.
  */
 
-import com.netflix.astyanax.entitystore.Serializer;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.IssueManagement;
@@ -30,7 +29,6 @@ import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,63 +37,56 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 2.0.0
  */
-@Entity
 public class ProjectVersionMetadataModel
 {
     // repositoryId + namespace + projectId + id (version)
     @Id
-    @Serializer( DeflateStringSerializer.class )
     private String rowId;
 
-    @Column( name = "namespace" )
+    @Column(name = "namespace")
     private Namespace namespace;
 
     /**
      * id is the version
      */
-    @Column( name = "id" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "id")
     private String id;
 
-    @Column( name = "projectId" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "projectId")
     private String projectId;
 
-    @Column( name = "url" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "url")
     private String url;
 
-    @Column( name = "name" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "name")
     private String name;
 
-    @Column( name = "description" )
-    @Serializer( DeflateStringSerializer.class )
+    @Column(name = "description")
     private String description;
 
-    @Column( name = "organization" )
+    @Column(name = "organization")
     private Organization organization;
 
-    @Column( name = "issueManagement" )
+    @Column(name = "issueManagement")
     private IssueManagement issueManagement;
 
-    @Column( name = "scm" )
+    @Column(name = "scm")
     private Scm scm;
 
-    @Column( name = "ciManagement" )
+    @Column(name = "ciManagement")
     private CiManagement ciManagement;
 
     // FIXME store those values in a separate table
-    @Column( name = "licenses" )
+    @Column(name = "licenses")
     private List<License> licenses = new ArrayList<License>();
 
-    @Column( name = "mailingLists" )
+    @Column(name = "mailingLists")
     private List<MailingList> mailingLists = new ArrayList<MailingList>();
 
-    @Column( name = "dependencies" )
+    @Column(name = "dependencies")
     private List<Dependency> dependencies = new ArrayList<Dependency>();
 
-    @Column( name = "incomplete" )
+    @Column(name = "incomplete")
     private boolean incomplete;
 
     public String getProjectId()

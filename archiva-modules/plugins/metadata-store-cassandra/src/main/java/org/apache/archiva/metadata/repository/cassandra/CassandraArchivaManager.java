@@ -19,14 +19,8 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
-import com.netflix.astyanax.Keyspace;
-import com.netflix.astyanax.entitystore.EntityManager;
-import org.apache.archiva.metadata.repository.cassandra.model.ArtifactMetadataModel;
-import org.apache.archiva.metadata.repository.cassandra.model.MetadataFacetModel;
-import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
-import org.apache.archiva.metadata.repository.cassandra.model.Project;
-import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
-import org.apache.archiva.metadata.repository.cassandra.model.Repository;
+import me.prettyprint.hector.api.Cluster;
+import me.prettyprint.hector.api.Keyspace;
 
 /**
  * @author Olivier Lamy
@@ -34,25 +28,14 @@ import org.apache.archiva.metadata.repository.cassandra.model.Repository;
  */
 public interface CassandraArchivaManager
 {
-    Keyspace getKeyspace();
-
     void start();
 
     void shutdown();
 
     boolean started();
 
-    EntityManager<Repository, String> getRepositoryEntityManager();
+    Keyspace getKeyspace();
 
-    EntityManager<Namespace, String> getNamespaceEntityManager();
-
-    EntityManager<Project, String> getProjectEntityManager();
-
-    EntityManager<ArtifactMetadataModel, String> getArtifactMetadataModelEntityManager();
-
-    EntityManager<MetadataFacetModel, String> getMetadataFacetModelEntityManager();
-
-    EntityManager<ProjectVersionMetadataModel, String> getProjectVersionMetadataModelEntityManager();
-
+    Cluster getCluster();
 
 }

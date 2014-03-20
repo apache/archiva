@@ -19,6 +19,11 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
+import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
+import me.prettyprint.hector.api.Serializer;
+import me.prettyprint.hector.api.beans.HColumn;
+import me.prettyprint.hector.api.factory.HFactory;
+
 /**
  * @author Olivier Lamy
  * @since 2.0.0
@@ -55,6 +60,14 @@ public class CassandraUtils
             builder.setLength( builder.length() - SEPARATOR.length() );
         }
         return builder.toString();
+    }
+
+    public static <A, B> HColumn<A, B> column( final A name, final B value )
+    {
+        return HFactory.createColumn( name, //
+                                      value, //
+                                      (Serializer<A>) SerializerTypeInferer.getSerializer( name ), //
+                                      (Serializer<B>) SerializerTypeInferer.getSerializer( value ) );
     }
 
     private CassandraUtils()
