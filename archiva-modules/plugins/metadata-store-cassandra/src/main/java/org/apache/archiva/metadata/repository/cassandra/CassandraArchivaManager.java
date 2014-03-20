@@ -44,4 +44,8 @@ public interface CassandraArchivaManager
 
     String getProjectFamilyName();
 
+    String getProjectVersionMetadataModelFamilyName();
+
+    String getArtifactMetadataModelFamilyName();
+
 }

@@ -20,6 +20,9 @@ package org.apache.archiva.metadata.repository.cassandra;
  */
 
 import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.cassandra.service.template.ColumnFamilyTemplate;
+import me.prettyprint.cassandra.service.template.ColumnFamilyUpdater;
+import me.prettyprint.cassandra.service.template.ThriftColumnFamilyTemplate;
 import me.prettyprint.hector.api.Keyspace;
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.OrderedRows;
@@ -42,6 +45,7 @@ import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.archiva.metadata.repository.cassandra.model.ArtifactMetadataModel;
 import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
 import org.apache.archiva.metadata.repository.cassandra.model.Project;
+import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
 import org.apache.archiva.metadata.repository.cassandra.model.Repository;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -72,7 +76,9 @@ public class CassandraMetadataRepository
 
     private final Map<String, MetadataFacetFactory> metadataFacetFactories;
 
-    private CassandraArchivaManager cassandraArchivaManager;
+    private final CassandraArchivaManager cassandraArchivaManager;
+
+    private final ColumnFamilyTemplate<String, String> projectVersionMetadataModelTemplate;
 
     public CassandraMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories,
                                         ArchivaConfiguration configuration,
@@ -81,6 +87,12 @@ public class CassandraMetadataRepository
         this.metadataFacetFactories = metadataFacetFactories;
         this.configuration = configuration;
         this.cassandraArchivaManager = cassandraArchivaManager;
+
+        this.projectVersionMetadataModelTemplate =
+            new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
+                                                            cassandraArchivaManager.getProjectVersionMetadataModelFamilyName(),
+                                                            StringSerializer.get(), //
+                                                            StringSerializer.get() );
     }
 
 
@@ -650,47 +662,313 @@ public class CassandraMetadataRepository
     public Collection<String> getProjectVersions( final String repoId, final String namespace, final String projectId )
         throws MetadataResolutionException
     {
-        return null;
-/*        final Set<String> versions = new HashSet<String>();
-        getProjectVersionMetadataModelEntityManager().visitAll( new Function<ProjectVersionMetadataModel, Boolean>()
+
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataModelFamilyName() ) //
+            .setColumnNames( "id" ) //
+            .addEqualsExpression( "repositoryName", repoId ) //
+            .addEqualsExpression( "namespaceId", namespace ) //
+            .addEqualsExpression( "projectId", projectId ) //
+            .execute();
+
+        int count = result.get().getCount();
+
+        if ( count < 1 )
         {
-            @Override
-            public Boolean apply( ProjectVersionMetadataModel projectVersionMetadataModel )
-            {
-                if ( projectVersionMetadataModel != null )
-                {
-                    if ( StringUtils.equals( repoId,
-                                             projectVersionMetadataModel.getNamespace().getRepository().getName() )
-                        && StringUtils.startsWith( projectVersionMetadataModel.getNamespace().getName(), namespace )
-                        && StringUtils.equals( projectId, projectVersionMetadataModel.getProjectId() ) )
-                    {
-                        versions.add( projectVersionMetadataModel.getId() );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
+            return Collections.emptyList();
+        }
+
+        Set<String> versions = new HashSet<String>( count );
+
+        for ( Row<String, String, String> orderedRows : result.get() )
+        {
+            versions.add( orderedRows.getColumnSlice().getColumnByName( "id" ).getValue() );
+        }
+
+        return versions;
+
+    }
+
+    @Override
+    public ProjectMetadata getProject( final String repoId, final String namespace, final String id )
+        throws MetadataResolutionException
+    {
+
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
+            .setColumnNames( "projectId" ) //
+            .addEqualsExpression( "repositoryName", repoId ) //
+            .addEqualsExpression( "namespaceId", namespace ) //
+            .addEqualsExpression( "projectId", id ) //
+            .execute();
+
+        int count = result.get().getCount();
+
+        if ( count < 1 )
+        {
+            return null;
+        }
+
+        ProjectMetadata projectMetadata = new ProjectMetadata();
+        projectMetadata.setId( id );
+        projectMetadata.setNamespace( namespace );
+
+        logger.debug( "getProject repoId: {}, namespace: {}, projectId: {} -> {}", repoId, namespace, id,
+                      projectMetadata );
+
+        return projectMetadata;
+
+
+/*        //basically just checking it exists
         // FIXME use cql query
-        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
+
+        final BooleanHolder booleanHolder = new BooleanHolder();
+
+        getProjectEntityManager().visitAll( new Function<Project, Boolean>()
         {
             @Override
-            public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
+            public Boolean apply( Project project )
             {
-                if ( artifactMetadataModel != null )
+                if ( project != null )
                 {
-                    if ( StringUtils.equals( repoId, artifactMetadataModel.getRepositoryId() ) && StringUtils.equals(
-                        namespace, artifactMetadataModel.getNamespace() ) && StringUtils.equals( projectId,
-                                                                                                 artifactMetadataModel.getProject() ) )
+                    if ( StringUtils.equals( repoId, project.getNamespace().getRepository().getName() )
+                        && StringUtils.equals( namespace, project.getNamespace().getName() ) && StringUtils.equals( id,
+                                                                                                                    project.getProjectId() ) )
                     {
-                        versions.add( artifactMetadataModel.getProjectVersion() );
+                        booleanHolder.value = true;
                     }
                 }
                 return Boolean.TRUE;
             }
         } );
 
-        return versions;*/
+        if ( !booleanHolder.value )
+        {
+            return null;
+        }
+
+        ProjectMetadata projectMetadata = new ProjectMetadata();
+        projectMetadata.setId( id );
+        projectMetadata.setNamespace( namespace );
+
+        logger.debug( "getProject repoId: {}, namespace: {}, projectId: {} -> {}", repoId, namespace, id,
+                      projectMetadata );
+
+        return projectMetadata;*/
     }
+
+    protected ProjectVersionMetadataModel map( ColumnSlice<String, String> columnSlice )
+    {
+        ProjectVersionMetadataModel projectVersionMetadataModel = new ProjectVersionMetadataModel();
+        projectVersionMetadataModel.setId( columnSlice.getColumnByName( "id" ).getValue() );
+        projectVersionMetadataModel.setDescription( columnSlice.getColumnByName( "description" ).getValue() );
+        projectVersionMetadataModel.setName( columnSlice.getColumnByName( "name" ).getValue() );
+        projectVersionMetadataModel.setNamespace(
+            new Namespace( columnSlice.getColumnByName( "namespaceId" ).getValue(), //
+                           new Repository( columnSlice.getColumnByName( "repositoryName" ).getValue() ) )
+        );
+        projectVersionMetadataModel.setIncomplete(
+            Boolean.parseBoolean( columnSlice.getColumnByName( "incomplete" ).getValue() ) );
+        projectVersionMetadataModel.setProjectId( columnSlice.getColumnByName( "projectId" ).getValue() );
+        projectVersionMetadataModel.setUrl( columnSlice.getColumnByName( "url" ).getValue() );
+        return projectVersionMetadataModel;
+    }
+
+    @Override
+    public void updateProjectVersion( String repositoryId, String namespaceId, String projectId,
+                                      ProjectVersionMetadata versionMetadata )
+        throws MetadataRepositoryException
+    {
+        try
+        {
+            Namespace namespace = getNamespace( repositoryId, namespaceId );
+
+            if ( namespace == null )
+            {
+                namespace = updateOrAddNamespace( repositoryId, namespaceId );
+            }
+
+            if ( getProject( repositoryId, namespaceId, projectId ) == null )
+            {
+                ProjectMetadata projectMetadata = new ProjectMetadata();
+                projectMetadata.setNamespace( namespaceId );
+                projectMetadata.setId( projectId );
+                updateProject( repositoryId, projectMetadata );
+            }
+
+        }
+        catch ( MetadataResolutionException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataModelFamilyName() ) //
+            .setColumnNames( "id" ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
+            .addEqualsExpression( "namespaceId", namespaceId ) //
+            .addEqualsExpression( "projectId", projectId ) //
+            .addEqualsExpression( "id", versionMetadata.getId() ).execute();
+
+        ProjectVersionMetadataModel projectVersionMetadataModel = null;
+        boolean creation = true;
+        if ( result.get().getCount() > 0 )
+        {
+            projectVersionMetadataModel = map( result.get().getList().get( 0 ).getColumnSlice() );
+            creation = false;
+        }
+        else
+        {
+            projectVersionMetadataModel = getModelMapper().map( versionMetadata, ProjectVersionMetadataModel.class );
+        }
+
+        projectVersionMetadataModel.setProjectId( projectId );
+        projectVersionMetadataModel.setNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) );
+        projectVersionMetadataModel.setCiManagement( versionMetadata.getCiManagement() );
+        projectVersionMetadataModel.setIssueManagement( versionMetadata.getIssueManagement() );
+        projectVersionMetadataModel.setOrganization( versionMetadata.getOrganization() );
+        projectVersionMetadataModel.setScm( versionMetadata.getScm() );
+
+        projectVersionMetadataModel.setMailingLists( versionMetadata.getMailingLists() );
+        projectVersionMetadataModel.setDependencies( versionMetadata.getDependencies() );
+        projectVersionMetadataModel.setLicenses( versionMetadata.getLicenses() );
+
+        // we don't test of repository and namespace really exist !
+        String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repositoryId ).withNamespace(
+            namespaceId ).withProjectId( projectId ).withId( versionMetadata.getId() ).build();
+
+        // FIXME nested objects to store!!!
+        if ( creation )
+        {
+            String cf = cassandraArchivaManager.getProjectFamilyName();
+            projectVersionMetadataModelTemplate.createMutator()
+                //  values
+                .addInsertion( key, //
+                               cf, //
+                               CassandraUtils.column( "projectId", projectId ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               CassandraUtils.column( "repositoryName", repositoryId ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               CassandraUtils.column( "namespaceId", namespaceId ) )//
+                .addInsertion( key, //
+                               cf, //
+                               CassandraUtils.column( "id", versionMetadata.getVersion() ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               CassandraUtils.column( "description", versionMetadata.getDescription() ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               CassandraUtils.column( "name", versionMetadata.getName() ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               CassandraUtils.column( "incomplete",
+                                                      Boolean.toString( versionMetadata.isIncomplete() ) ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               CassandraUtils.column( "url", versionMetadata.getUrl() ) ) //
+                .execute();
+        }
+        else
+        {
+            ColumnFamilyUpdater<String, String> updater = projectVersionMetadataModelTemplate.createUpdater( key );
+            updater.setString( "projectId", projectId );
+            updater.setString( "repositoryName", repositoryId );
+            updater.setString( "namespaceId", namespaceId );
+            updater.setString( "id", versionMetadata.getVersion() );
+            updater.setString( "description", versionMetadata.getDescription() );
+            updater.setString( "name", versionMetadata.getName() );
+            updater.setString( "incomplete", Boolean.toString( versionMetadata.isIncomplete() ) );
+            updater.setString( "url", versionMetadata.getUrl() );
+
+            projectVersionMetadataModelTemplate.update( updater );
+
+        }
+        // FIXME
+        //updateFacets( versionMetadata, artifactMetadataModel );
+
+/*        String namespaceKey =
+            new Namespace.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespaceId ).build();
+        Namespace namespace = getNamespaceEntityManager().get( namespaceKey );
+        if ( namespace == null )
+        {
+            namespace = updateOrAddNamespace( repositoryId, namespaceId );
+        }
+
+        String key = new Project.KeyBuilder().withNamespace( namespace ).withProjectId( projectId ).build();
+
+        Project project = getProjectEntityManager().get( key );
+        if ( project == null )
+        {
+            project = new Project( key, projectId, namespace );
+            getProjectEntityManager().put( project );
+        }
+
+        // we don't test of repository and namespace really exist !
+        key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repositoryId ).withNamespace(
+            namespaceId ).withProjectId( projectId ).withId( versionMetadata.getId() ).build();
+
+        ProjectVersionMetadataModel projectVersionMetadataModel =
+            getProjectVersionMetadataModelEntityManager().get( key );
+
+        if ( projectVersionMetadataModel == null )
+        {
+            projectVersionMetadataModel = getModelMapper().map( versionMetadata, ProjectVersionMetadataModel.class );
+            projectVersionMetadataModel.setRowId( key );
+        }
+        projectVersionMetadataModel.setProjectId( projectId );
+        projectVersionMetadataModel.setNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) );
+        projectVersionMetadataModel.setCiManagement( versionMetadata.getCiManagement() );
+        projectVersionMetadataModel.setIssueManagement( versionMetadata.getIssueManagement() );
+        projectVersionMetadataModel.setOrganization( versionMetadata.getOrganization() );
+        projectVersionMetadataModel.setScm( versionMetadata.getScm() );
+
+        projectVersionMetadataModel.setMailingLists( versionMetadata.getMailingLists() );
+        projectVersionMetadataModel.setDependencies( versionMetadata.getDependencies() );
+        projectVersionMetadataModel.setLicenses( versionMetadata.getLicenses() );
+
+        try
+        {
+            getProjectVersionMetadataModelEntityManager().put( projectVersionMetadataModel );
+
+            ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
+            artifactMetadataModel.setArtifactMetadataModelId(
+                new ArtifactMetadataModel.KeyBuilder().withId( versionMetadata.getId() ).withRepositoryId(
+                    repositoryId ).withNamespace( namespaceId ).withProjectVersion(
+                    versionMetadata.getVersion() ).withProject( projectId ).build()
+            );
+            artifactMetadataModel.setRepositoryId( repositoryId );
+            artifactMetadataModel.setNamespace( namespaceId );
+            artifactMetadataModel.setProject( projectId );
+            artifactMetadataModel.setProjectVersion( versionMetadata.getVersion() );
+            artifactMetadataModel.setVersion( versionMetadata.getVersion() );
+            // facets etc...
+            updateFacets( versionMetadata, artifactMetadataModel );
+        }
+        catch ( PersistenceException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }*/
+    }
+
 
     @Override
     public void updateArtifact( String repositoryId, String namespaceId, String projectId, String projectVersion,
@@ -868,80 +1146,6 @@ public class CassandraMetadataRepository
         }*/
     }
 
-    @Override
-    public void updateProjectVersion( String repositoryId, String namespaceId, String projectId,
-                                      ProjectVersionMetadata versionMetadata )
-        throws MetadataRepositoryException
-    {
-/*        String namespaceKey =
-            new Namespace.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespaceId ).build();
-        Namespace namespace = getNamespaceEntityManager().get( namespaceKey );
-        if ( namespace == null )
-        {
-            namespace = updateOrAddNamespace( repositoryId, namespaceId );
-        }
-
-        String key = new Project.KeyBuilder().withNamespace( namespace ).withProjectId( projectId ).build();
-
-        Project project = getProjectEntityManager().get( key );
-        if ( project == null )
-        {
-            project = new Project( key, projectId, namespace );
-            getProjectEntityManager().put( project );
-        }
-
-        // we don't test of repository and namespace really exist !
-        key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repositoryId ).withNamespace(
-            namespaceId ).withProjectId( projectId ).withId( versionMetadata.getId() ).build();
-
-        ProjectVersionMetadataModel projectVersionMetadataModel =
-            getProjectVersionMetadataModelEntityManager().get( key );
-
-        if ( projectVersionMetadataModel == null )
-        {
-            projectVersionMetadataModel = getModelMapper().map( versionMetadata, ProjectVersionMetadataModel.class );
-            projectVersionMetadataModel.setRowId( key );
-        }
-        projectVersionMetadataModel.setProjectId( projectId );
-        projectVersionMetadataModel.setNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) );
-        projectVersionMetadataModel.setCiManagement( versionMetadata.getCiManagement() );
-        projectVersionMetadataModel.setIssueManagement( versionMetadata.getIssueManagement() );
-        projectVersionMetadataModel.setOrganization( versionMetadata.getOrganization() );
-        projectVersionMetadataModel.setScm( versionMetadata.getScm() );
-
-        projectVersionMetadataModel.setMailingLists( versionMetadata.getMailingLists() );
-        projectVersionMetadataModel.setDependencies( versionMetadata.getDependencies() );
-        projectVersionMetadataModel.setLicenses( versionMetadata.getLicenses() );
-
-        try
-        {
-            getProjectVersionMetadataModelEntityManager().put( projectVersionMetadataModel );
-
-            ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
-            artifactMetadataModel.setArtifactMetadataModelId(
-                new ArtifactMetadataModel.KeyBuilder().withId( versionMetadata.getId() ).withRepositoryId(
-                    repositoryId ).withNamespace( namespaceId ).withProjectVersion(
-                    versionMetadata.getVersion() ).withProject( projectId ).build()
-            );
-            artifactMetadataModel.setRepositoryId( repositoryId );
-            artifactMetadataModel.setNamespace( namespaceId );
-            artifactMetadataModel.setProject( projectId );
-            artifactMetadataModel.setProjectVersion( versionMetadata.getVersion() );
-            artifactMetadataModel.setVersion( versionMetadata.getVersion() );
-            // facets etc...
-            updateFacets( versionMetadata, artifactMetadataModel );
-        }
-        catch ( PersistenceException e )
-        {
-            throw new MetadataRepositoryException( e.getMessage(), e );
-        }*/
-    }
-
-
-    private static class BooleanHolder
-    {
-        private boolean value = false;
-    }
 
     @Override
     public List<String> getMetadataFacets( final String repositoryId, final String facetId )
@@ -1423,49 +1627,6 @@ public class CassandraMetadataRepository
         return Collections.emptyList();
     }
 
-    @Override
-    public ProjectMetadata getProject( final String repoId, final String namespace, final String id )
-        throws MetadataResolutionException
-    {
-
-/*        //basically just checking it exists
-        // FIXME use cql query
-
-        final BooleanHolder booleanHolder = new BooleanHolder();
-
-        getProjectEntityManager().visitAll( new Function<Project, Boolean>()
-        {
-            @Override
-            public Boolean apply( Project project )
-            {
-                if ( project != null )
-                {
-                    if ( StringUtils.equals( repoId, project.getNamespace().getRepository().getName() )
-                        && StringUtils.equals( namespace, project.getNamespace().getName() ) && StringUtils.equals( id,
-                                                                                                                    project.getProjectId() ) )
-                    {
-                        booleanHolder.value = true;
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-
-        if ( !booleanHolder.value )
-        {
-            return null;
-        }
-
-        ProjectMetadata projectMetadata = new ProjectMetadata();
-        projectMetadata.setId( id );
-        projectMetadata.setNamespace( namespace );
-
-        logger.debug( "getProject repoId: {}, namespace: {}, projectId: {} -> {}", repoId, namespace, id,
-                      projectMetadata );
-
-        return projectMetadata;*/
-        return null;
-    }
 
     @Override
     public ProjectVersionMetadata getProjectVersion( final String repoId, final String namespace,

@@ -22,7 +22,6 @@ package org.apache.archiva.metadata.repository.cassandra.model;
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
 import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -36,17 +35,13 @@ public class ArtifactMetadataModel
     implements Serializable
 {
 
-    // repositoryId + namespaceId + project + projectVersion + id
-    @Id
-    private String artifactMetadataModelId;
-
     @Column(name = "id")
     private String id;
 
-    @Column(name = "repositoryId")
+    @Column(name = "repositoryName")
     private String repositoryId;
 
-    @Column(name = "namespace")
+    @Column(name = "namespaceId")
     private String namespace;
 
     @Column(name = "project")
@@ -78,11 +73,10 @@ public class ArtifactMetadataModel
         // no op
     }
 
-    public ArtifactMetadataModel( String artifactMetadataModelId, String id, String repositoryId, String namespace,
-                                  String project, String projectVersion, String version, Date fileLastModified,
-                                  long size, String md5, String sha1, Date whenGathered )
+    public ArtifactMetadataModel( String id, String repositoryId, String namespace, String project,
+                                  String projectVersion, String version, Date fileLastModified, long size, String md5,
+                                  String sha1, Date whenGathered )
     {
-        this.artifactMetadataModelId = artifactMetadataModelId;
         this.id = id;
         this.repositoryId = repositoryId;
         this.namespace = namespace;
@@ -96,15 +90,6 @@ public class ArtifactMetadataModel
         this.whenGathered = whenGathered != null ? whenGathered.getTime() : new Date().getTime();
     }
 
-    public String getArtifactMetadataModelId()
-    {
-        return artifactMetadataModelId;
-    }
-
-    public void setArtifactMetadataModelId( String artifactMetadataModelId )
-    {
-        this.artifactMetadataModelId = artifactMetadataModelId;
-    }
 
     public String getId()
     {
@@ -216,39 +201,11 @@ public class ArtifactMetadataModel
         this.whenGathered = whenGathered;
     }
 
-    @Override
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-
-        ArtifactMetadataModel that = (ArtifactMetadataModel) o;
-
-        if ( !artifactMetadataModelId.equals( that.artifactMetadataModelId ) )
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return artifactMetadataModelId.hashCode();
-    }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "ArtifactMetadataModel{" );
-        sb.append( "artifactMetadataModelId='" ).append( artifactMetadataModelId ).append( '\'' );
         sb.append( ", id='" ).append( id ).append( '\'' );
         sb.append( ", repositoryId='" ).append( repositoryId ).append( '\'' );
         sb.append( ", namespace='" ).append( namespace ).append( '\'' );

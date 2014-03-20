@@ -29,7 +29,6 @@ import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
 import javax.persistence.Column;
-import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,9 +38,7 @@ import java.util.List;
  */
 public class ProjectVersionMetadataModel
 {
-    // repositoryName + namespace + projectId + id (version)
-    @Id
-    private String rowId;
+
 
     @Column(name = "namespace")
     private Namespace namespace;
@@ -97,16 +94,6 @@ public class ProjectVersionMetadataModel
     public void setProjectId( String projectId )
     {
         this.projectId = projectId;
-    }
-
-    public String getRowId()
-    {
-        return rowId;
-    }
-
-    public void setRowId( String rowId )
-    {
-        this.rowId = rowId;
     }
 
     // FIXME must be renamed getVersion !!!
@@ -245,7 +232,6 @@ public class ProjectVersionMetadataModel
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "ProjectVersionMetadataModel{" );
-        sb.append( "rowId='" ).append( rowId ).append( '\'' );
         sb.append( ", namespace=" ).append( namespace );
         sb.append( ", id='" ).append( id ).append( '\'' );
         sb.append( ", projectId='" ).append( projectId ).append( '\'' );
@@ -261,34 +247,7 @@ public class ProjectVersionMetadataModel
         return sb.toString();
     }
 
-    @Override
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
 
-        ProjectVersionMetadataModel that = (ProjectVersionMetadataModel) o;
-
-        if ( !rowId.equals( that.rowId ) )
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-
-    @Override
-    public int hashCode()
-    {
-        return rowId.hashCode();
-    }
 
     public static class KeyBuilder
     {

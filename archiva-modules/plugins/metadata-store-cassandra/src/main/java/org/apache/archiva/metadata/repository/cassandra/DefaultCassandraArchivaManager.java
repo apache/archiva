@@ -75,6 +75,10 @@ public class DefaultCassandraArchivaManager
 
     private String projectFamilyName = "project";
 
+    private String projectVersionMetadataModelFamilyName = "projectversionmetadatamodel";
+
+    private String artifactMetadataModelFamilyName = "artifactmetadatamodel";
+
 
     @PostConstruct
     public void initialize()
@@ -152,10 +156,9 @@ public class DefaultCassandraArchivaManager
         // project table
         {
 
-            final ColumnFamilyDefinition project =
-                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                                                       getProjectFamilyName(), //
-                                                       ComparatorType.UTF8TYPE );
+            final ColumnFamilyDefinition project = HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
+                                                                                          getProjectFamilyName(), //
+                                                                                          ComparatorType.UTF8TYPE );
             cfds.add( project );
 
             // creating indexes for cql query
@@ -180,6 +183,102 @@ public class DefaultCassandraArchivaManager
             namespaceIdColumn.setIndexType( ColumnIndexType.KEYS );
             namespaceIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             project.addColumnDefinition( namespaceIdColumn );
+        }
+
+        //projectversionmetadatamodel
+        {
+
+            final ColumnFamilyDefinition projectVersionMetadataModel =
+                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
+                                                       getProjectVersionMetadataModelFamilyName(), //
+                                                       ComparatorType.UTF8TYPE );
+            cfds.add( projectVersionMetadataModel );
+
+            // creating indexes for cql query
+
+            BasicColumnDefinition namespaceIdColumn = new BasicColumnDefinition();
+            namespaceIdColumn.setName( StringSerializer.get().toByteBuffer( "namespaceId" ) );
+            namespaceIdColumn.setIndexName( "namespaceId" );
+            namespaceIdColumn.setIndexType( ColumnIndexType.KEYS );
+            namespaceIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            projectVersionMetadataModel.addColumnDefinition( namespaceIdColumn );
+
+            BasicColumnDefinition repositoryNameColumn = new BasicColumnDefinition();
+            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( "repositoryName" ) );
+            repositoryNameColumn.setIndexName( "repositoryName" );
+            repositoryNameColumn.setIndexType( ColumnIndexType.KEYS );
+            repositoryNameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            projectVersionMetadataModel.addColumnDefinition( repositoryNameColumn );
+
+            BasicColumnDefinition idColumn = new BasicColumnDefinition();
+            idColumn.setName( StringSerializer.get().toByteBuffer( "id" ) );
+            idColumn.setIndexName( "id" );
+            idColumn.setIndexType( ColumnIndexType.KEYS );
+            idColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            projectVersionMetadataModel.addColumnDefinition( idColumn );
+
+            BasicColumnDefinition projectIdColumn = new BasicColumnDefinition();
+            projectIdColumn.setName( StringSerializer.get().toByteBuffer( "projectId" ) );
+            projectIdColumn.setIndexName( "projectId" );
+            projectIdColumn.setIndexType( ColumnIndexType.KEYS );
+            projectIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            projectVersionMetadataModel.addColumnDefinition( projectIdColumn );
+
+        }
+
+        // artifactmetadatamodel table
+        {
+
+            final ColumnFamilyDefinition artifactMetadataModel =
+                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
+                                                       getArtifactMetadataModelFamilyName(), //
+                                                       ComparatorType.UTF8TYPE );
+            cfds.add( artifactMetadataModel );
+
+            // creating indexes for cql query
+
+            BasicColumnDefinition idColumn = new BasicColumnDefinition();
+            idColumn.setName( StringSerializer.get().toByteBuffer( "id" ) );
+            idColumn.setIndexName( "id" );
+            idColumn.setIndexType( ColumnIndexType.KEYS );
+            idColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            artifactMetadataModel.addColumnDefinition( idColumn );
+
+            BasicColumnDefinition repositoryNameColumn = new BasicColumnDefinition();
+            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( "repositoryName" ) );
+            repositoryNameColumn.setIndexName( "repositoryName" );
+            repositoryNameColumn.setIndexType( ColumnIndexType.KEYS );
+            repositoryNameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            artifactMetadataModel.addColumnDefinition( repositoryNameColumn );
+
+            BasicColumnDefinition namespaceIdColumn = new BasicColumnDefinition();
+            namespaceIdColumn.setName( StringSerializer.get().toByteBuffer( "namespaceId" ) );
+            namespaceIdColumn.setIndexName( "namespaceId" );
+            namespaceIdColumn.setIndexType( ColumnIndexType.KEYS );
+            namespaceIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            artifactMetadataModel.addColumnDefinition( namespaceIdColumn );
+
+            BasicColumnDefinition projectColumn = new BasicColumnDefinition();
+            projectColumn.setName( StringSerializer.get().toByteBuffer( "project" ) );
+            projectColumn.setIndexName( "project" );
+            projectColumn.setIndexType( ColumnIndexType.KEYS );
+            projectColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            artifactMetadataModel.addColumnDefinition( projectColumn );
+
+            BasicColumnDefinition projectVersionColumn = new BasicColumnDefinition();
+            projectVersionColumn.setName( StringSerializer.get().toByteBuffer( "project" ) );
+            projectVersionColumn.setIndexName( "projectVersion" );
+            projectVersionColumn.setIndexType( ColumnIndexType.KEYS );
+            projectVersionColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            artifactMetadataModel.addColumnDefinition( projectVersionColumn );
+
+            BasicColumnDefinition versionColumn = new BasicColumnDefinition();
+            versionColumn.setName( StringSerializer.get().toByteBuffer( "project" ) );
+            versionColumn.setIndexName( "version" );
+            versionColumn.setIndexType( ColumnIndexType.KEYS );
+            versionColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            artifactMetadataModel.addColumnDefinition( versionColumn );
+
         }
 
         { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
@@ -237,5 +336,15 @@ public class DefaultCassandraArchivaManager
     public String getProjectFamilyName()
     {
         return projectFamilyName;
+    }
+
+    public String getProjectVersionMetadataModelFamilyName()
+    {
+        return projectVersionMetadataModelFamilyName;
+    }
+
+    public String getArtifactMetadataModelFamilyName()
+    {
+        return artifactMetadataModelFamilyName;
     }
 }
