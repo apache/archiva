@@ -48,7 +48,7 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 2.0.0
  */
-@Service( "archivaEntityManagerFactory#cassandra" )
+@Service("archivaEntityManagerFactory#cassandra")
 public class DefaultCassandraArchivaManager
     implements CassandraArchivaManager
 {
@@ -67,6 +67,11 @@ public class DefaultCassandraArchivaManager
     private Cluster cluster;
 
     private Keyspace keyspace;
+
+    // configurable???
+    private String repositoryFamilyName = "repository";
+
+    private String namespaceFamilyName = "namespace";
 
 
     @PostConstruct
@@ -179,5 +184,15 @@ public class DefaultCassandraArchivaManager
     public Cluster getCluster()
     {
         return cluster;
+    }
+
+    public String getRepositoryFamilyName()
+    {
+        return repositoryFamilyName;
+    }
+
+    public String getNamespaceFamilyName()
+    {
+        return namespaceFamilyName;
     }
 }

@@ -38,4 +38,8 @@ public interface CassandraArchivaManager
 
     Cluster getCluster();
 
+    String getRepositoryFamilyName();
+
+    String getNamespaceFamilyName();
+
 }

@@ -96,7 +96,7 @@ public class CassandraMetadataRepository
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, StringSerializer.get(), StringSerializer.get(),
                                      StringSerializer.get() ) //
-            .setColumnFamily( "repository" ) //
+            .setColumnFamily( cassandraArchivaManager.getRepositoryFamilyName() ) //
             .setColumnNames( "id", "name" ) //
             .addEqualsExpression( "id", repositoryId ) //
             .execute();
@@ -110,12 +110,13 @@ public class CassandraMetadataRepository
             {
                 MutationResult mutationResult = HFactory.createMutator( keyspace, StringSerializer.get() ) //
                     //  values
-                    .addInsertion( repositoryId, "repository",
+                    .addInsertion( repositoryId, //
+                                   cassandraArchivaManager.getRepositoryFamilyName(), //
                                    CassandraUtils.column( "id", repository.getId() ) ) //
-                    .addInsertion( repositoryId, "repository",
+                    .addInsertion( repositoryId, //
+                                   cassandraArchivaManager.getRepositoryFamilyName(), //
                                    CassandraUtils.column( "name", repository.getName() ) ) //
                     .execute();
-                logger.debug( "" );
                 return repository;
             }
             catch ( HInvalidRequestException e )
@@ -137,7 +138,7 @@ public class CassandraMetadataRepository
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, StringSerializer.get(), StringSerializer.get(),
                                      StringSerializer.get() ) //
-            .setColumnFamily( "repository" ) //
+            .setColumnFamily( cassandraArchivaManager.getRepositoryFamilyName() ) //
             .setColumnNames( "id", "name" ) //
             .addEqualsExpression( "id", repositoryId ) //
             .execute();
@@ -167,9 +168,11 @@ public class CassandraMetadataRepository
                 namespace = new Namespace( namespaceId, repository );
                 HFactory.createMutator( keyspace, StringSerializer.get() )
                     //  values
-                    .addInsertion( namespace.getId(), "namespace", //
+                    .addInsertion( namespace.getId(), //
+                                   cassandraArchivaManager.getNamespaceFamilyName(), //
                                    CassandraUtils.column( "name", namespace.getName() ) ) //
-                    .addInsertion( namespace.getId(), "namespace", //
+                    .addInsertion( namespace.getId(), //
+                                   cassandraArchivaManager.getNamespaceFamilyName(), //
                                    CassandraUtils.column( "repositoryId", repository.getId() ) ) //
                     .execute();
             }
@@ -191,7 +194,7 @@ public class CassandraMetadataRepository
                                      StringSerializer.get(), //
                                      StringSerializer.get(), //
                                      StringSerializer.get() ) //
-            .setColumnFamily( "namespace" ) //
+            .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
             .setColumnNames( "repositoryId", "name" ) //
             .addEqualsExpression( "repositoryId", repositoryId ) //
             .addEqualsExpression( "name", namespaceId ) //
@@ -217,8 +220,9 @@ public class CassandraMetadataRepository
                 new Namespace.KeyBuilder().withNamespace( namespaceId ).withRepositoryId( repositoryId ).build();
 
             MutationResult result =
-                HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ).addDeletion(
-                    key, "namespace" ).execute();
+                HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
+                    .addDeletion( key, cassandraArchivaManager.getNamespaceFamilyName() ) //
+                    .execute();
 
 
         }
@@ -247,7 +251,7 @@ public class CassandraMetadataRepository
                                      StringSerializer.get(), //
                                      StringSerializer.get(), //
                                      StringSerializer.get() ) //
-            .setColumnFamily( "namespace" ) //
+            .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
             .setColumnNames( "repositoryId", "name" ) //
             .addEqualsExpression( "repositoryId", repositoryId ) //
             .execute();
@@ -258,12 +262,12 @@ public class CassandraMetadataRepository
         }
 
         HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
-            .addDeletion( namespacesKey, "namespace" ) //
+            .addDeletion( namespacesKey, cassandraArchivaManager.getNamespaceFamilyName() ) //
             .execute();
 
         //delete repositoryId
         HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
-            .addDeletion( repositoryId, "repository" ) //
+            .addDeletion( repositoryId, cassandraArchivaManager.getRepositoryFamilyName() ) //
             .execute();
 
 /*
@@ -434,7 +438,7 @@ public class CassandraMetadataRepository
                                      StringSerializer.get(), //
                                      StringSerializer.get(), //
                                      StringSerializer.get() ) //
-            .setColumnFamily( "namespace" ) //
+            .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
             .setColumnNames( "name" ) //
             .addEqualsExpression( "repositoryId", repoId ) //
             .execute();
@@ -473,7 +477,7 @@ public class CassandraMetadataRepository
                                      StringSerializer.get(), //
                                      StringSerializer.get(), //
                                      StringSerializer.get() ) //
-            .setColumnFamily( "namespace" ) //
+            .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
             .setColumnNames( "name" ) //
             .addEqualsExpression( "repositoryId", repoId ) //
             .execute();
