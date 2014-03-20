@@ -20,7 +20,6 @@ package org.apache.archiva.metadata.repository.cassandra;
  */
 
 import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
-import org.apache.archiva.metadata.repository.cassandra.model.Project;
 import org.apache.archiva.metadata.repository.cassandra.model.Repository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.fest.assertions.api.Assertions;
@@ -34,7 +33,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.List;
 
 /**
  * @author Olivier Lamy
@@ -48,7 +46,7 @@ public class RepositoriesNamespaceTest
 
     @Inject
     @Named(value = "archivaEntityManagerFactory#cassandra")
-    CassandraEntityManagerFactory cassandraEntityManagerFactory;
+    CassandraArchivaManager cassandraArchivaManager;
 
 
     CassandraMetadataRepository cmr;
@@ -57,10 +55,10 @@ public class RepositoriesNamespaceTest
     public void setup()
         throws Exception
     {
-        cmr = new CassandraMetadataRepository( null, null, cassandraEntityManagerFactory );
-        if ( !cassandraEntityManagerFactory.started() )
+        cmr = new CassandraMetadataRepository( null, null, cassandraArchivaManager );
+        if ( !cassandraArchivaManager.started() )
         {
-            cassandraEntityManagerFactory.start();
+            cassandraArchivaManager.start();
         }
         clearReposAndNamespace();
     }
@@ -70,7 +68,7 @@ public class RepositoriesNamespaceTest
         throws Exception
     {
         clearReposAndNamespace();
-        cassandraEntityManagerFactory.shutdown();
+        cassandraArchivaManager.shutdown();
     }
 
 

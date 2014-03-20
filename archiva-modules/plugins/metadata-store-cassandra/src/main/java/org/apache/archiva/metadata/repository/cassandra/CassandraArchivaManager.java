@@ -32,7 +32,7 @@ import org.apache.archiva.metadata.repository.cassandra.model.Repository;
  * @author Olivier Lamy
  * @since 2.0.0
  */
-public interface CassandraEntityManagerFactory
+public interface CassandraArchivaManager
 {
     Keyspace getKeyspace();
 

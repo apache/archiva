@@ -21,12 +21,6 @@ package org.apache.archiva.metadata.repository.cassandra;
 
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
-import org.apache.archiva.metadata.repository.cassandra.model.ArtifactMetadataModel;
-import org.apache.archiva.metadata.repository.cassandra.model.MetadataFacetModel;
-import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
-import org.apache.archiva.metadata.repository.cassandra.model.Project;
-import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
-import org.apache.archiva.metadata.repository.cassandra.model.Repository;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -49,7 +42,7 @@ public class CassandraMetadataRepositoryTest
 
     @Inject
     @Named( value = "archivaEntityManagerFactory#cassandra" )
-    CassandraEntityManagerFactory cassandraEntityManagerFactory;
+    CassandraArchivaManager cassandraArchivaManager;
 
     CassandraMetadataRepository cmr;
 
@@ -67,7 +60,7 @@ public class CassandraMetadataRepositoryTest
 
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
 
-        this.cmr = new CassandraMetadataRepository( factories, null, cassandraEntityManagerFactory );
+        this.cmr = new CassandraMetadataRepository( factories, null, cassandraArchivaManager );
         this.repository = this.cmr;
 
         clearReposAndNamespace();

@@ -71,46 +71,46 @@ public class CassandraMetadataRepository
 
     private final Map<String, MetadataFacetFactory> metadataFacetFactories;
 
-    private CassandraEntityManagerFactory cassandraEntityManagerFactory;
+    private CassandraArchivaManager cassandraArchivaManager;
 
     public CassandraMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories,
                                         ArchivaConfiguration configuration,
-                                        CassandraEntityManagerFactory cassandraEntityManagerFactory )
+                                        CassandraArchivaManager cassandraArchivaManager )
     {
         this.metadataFacetFactories = metadataFacetFactories;
         this.configuration = configuration;
-        this.cassandraEntityManagerFactory = cassandraEntityManagerFactory;
+        this.cassandraArchivaManager = cassandraArchivaManager;
     }
 
 
     public EntityManager<Repository, String> getRepositoryEntityManager()
     {
-        return this.cassandraEntityManagerFactory.getRepositoryEntityManager();
+        return this.cassandraArchivaManager.getRepositoryEntityManager();
     }
 
     public EntityManager<Namespace, String> getNamespaceEntityManager()
     {
-        return this.cassandraEntityManagerFactory.getNamespaceEntityManager();
+        return this.cassandraArchivaManager.getNamespaceEntityManager();
     }
 
     public EntityManager<Project, String> getProjectEntityManager()
     {
-        return this.cassandraEntityManagerFactory.getProjectEntityManager();
+        return this.cassandraArchivaManager.getProjectEntityManager();
     }
 
     public EntityManager<ArtifactMetadataModel, String> getArtifactMetadataModelEntityManager()
     {
-        return cassandraEntityManagerFactory.getArtifactMetadataModelEntityManager();
+        return cassandraArchivaManager.getArtifactMetadataModelEntityManager();
     }
 
     public EntityManager<MetadataFacetModel, String> getMetadataFacetModelEntityManager()
     {
-        return this.cassandraEntityManagerFactory.getMetadataFacetModelEntityManager();
+        return this.cassandraArchivaManager.getMetadataFacetModelEntityManager();
     }
 
     public EntityManager<ProjectVersionMetadataModel, String> getProjectVersionMetadataModelEntityManager()
     {
-        return this.cassandraEntityManagerFactory.getProjectVersionMetadataModelEntityManager();
+        return this.cassandraArchivaManager.getProjectVersionMetadataModelEntityManager();
     }
 
     @Override

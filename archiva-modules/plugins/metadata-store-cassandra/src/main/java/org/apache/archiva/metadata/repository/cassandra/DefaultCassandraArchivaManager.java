@@ -28,10 +28,7 @@ import com.netflix.astyanax.connectionpool.exceptions.NotFoundException;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl;
 import com.netflix.astyanax.connectionpool.impl.ConnectionPoolType;
 import com.netflix.astyanax.connectionpool.impl.Slf4jConnectionPoolMonitorImpl;
-import com.netflix.astyanax.ddl.ColumnDefinition;
-import com.netflix.astyanax.ddl.ColumnFamilyDefinition;
 import com.netflix.astyanax.ddl.KeyspaceDefinition;
-import com.netflix.astyanax.entitystore.CompositeEntityManager;
 import com.netflix.astyanax.entitystore.DefaultEntityManager;
 import com.netflix.astyanax.entitystore.EntityManager;
 import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
@@ -51,7 +48,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.PersistenceException;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -61,8 +57,8 @@ import java.util.Properties;
  * @since 2.0.0
  */
 @Service( "archivaEntityManagerFactory#cassandra" )
-public class DefaultCassandraEntityManagerFactory
-    implements CassandraEntityManagerFactory
+public class DefaultCassandraArchivaManager
+    implements CassandraArchivaManager
 {
 
     private Logger logger = LoggerFactory.getLogger( getClass() );
