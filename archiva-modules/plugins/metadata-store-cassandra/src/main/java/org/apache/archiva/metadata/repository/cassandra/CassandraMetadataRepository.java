@@ -57,10 +57,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.apache.archiva.metadata.repository.cassandra.CassandraUtils.column;
 
 /**
  * @author Olivier Lamy
@@ -80,6 +83,10 @@ public class CassandraMetadataRepository
 
     private final ColumnFamilyTemplate<String, String> projectVersionMetadataModelTemplate;
 
+    private final ColumnFamilyTemplate<String, String> projectTemplate;
+
+    private final ColumnFamilyTemplate<String, String> artifactMetadataTemplate;
+
     public CassandraMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories,
                                         ArchivaConfiguration configuration,
                                         CassandraArchivaManager cassandraArchivaManager )
@@ -91,6 +98,19 @@ public class CassandraMetadataRepository
         this.projectVersionMetadataModelTemplate =
             new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
                                                             cassandraArchivaManager.getProjectVersionMetadataModelFamilyName(),
+                                                            StringSerializer.get(), //
+                                                            StringSerializer.get() );
+
+        this.projectTemplate = new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
+                                                                               cassandraArchivaManager.getProjectFamilyName(),
+                                                                               //
+                                                                               StringSerializer.get(), //
+                                                                               StringSerializer.get() );
+
+        this.artifactMetadataTemplate =
+            new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
+                                                            cassandraArchivaManager.getArtifactMetadataModelFamilyName(),
+                                                            //
                                                             StringSerializer.get(), //
                                                             StringSerializer.get() );
     }
@@ -524,29 +544,32 @@ public class CassandraMetadataRepository
             .addEqualsExpression( "projectId", projectMetadata.getId() ) //
             .execute();
 
-        // project exists ? if yes return
+        Namespace namespace = updateOrAddNamespace( repositoryId, projectMetadata.getNamespace() );
+
+        // project exists ? if yes return nothing to update here
         if ( result.get().getCount() > 0 )
         {
             return;
         }
+        else
+        {
 
-        Namespace namespace = updateOrAddNamespace( repositoryId, projectMetadata.getNamespace() );
+            String key =
+                new Project.KeyBuilder().withProjectId( projectMetadata.getId() ).withNamespace( namespace ).build();
 
-        String key =
-            new Project.KeyBuilder().withProjectId( projectMetadata.getId() ).withNamespace( namespace ).build();
-
-        HFactory.createMutator( keyspace, StringSerializer.get() )
-            //  values
-            .addInsertion( key, //
-                           cassandraArchivaManager.getProjectFamilyName(), //
-                           CassandraUtils.column( "projectId", projectMetadata.getId() ) ) //
-            .addInsertion( key, //
-                           cassandraArchivaManager.getProjectFamilyName(), //
-                           CassandraUtils.column( "repositoryName", repositoryId ) ) //
-            .addInsertion( key, //
-                           cassandraArchivaManager.getProjectFamilyName(), //
-                           CassandraUtils.column( "namespaceId", projectMetadata.getNamespace() ) )//
-            .execute();
+            projectTemplate.createMutator()
+                //  values
+                .addInsertion( key, //
+                               cassandraArchivaManager.getProjectFamilyName(), //
+                               CassandraUtils.column( "projectId", projectMetadata.getId() ) ) //
+                .addInsertion( key, //
+                               cassandraArchivaManager.getProjectFamilyName(), //
+                               CassandraUtils.column( "repositoryName", repositoryId ) ) //
+                .addInsertion( key, //
+                               cassandraArchivaManager.getProjectFamilyName(), //
+                               CassandraUtils.column( "namespaceId", projectMetadata.getNamespace() ) )//
+                .execute();
+        }
     }
 
     @Override
@@ -729,44 +752,6 @@ public class CassandraMetadataRepository
                       projectMetadata );
 
         return projectMetadata;
-
-
-/*        //basically just checking it exists
-        // FIXME use cql query
-
-        final BooleanHolder booleanHolder = new BooleanHolder();
-
-        getProjectEntityManager().visitAll( new Function<Project, Boolean>()
-        {
-            @Override
-            public Boolean apply( Project project )
-            {
-                if ( project != null )
-                {
-                    if ( StringUtils.equals( repoId, project.getNamespace().getRepository().getName() )
-                        && StringUtils.equals( namespace, project.getNamespace().getName() ) && StringUtils.equals( id,
-                                                                                                                    project.getProjectId() ) )
-                    {
-                        booleanHolder.value = true;
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-
-        if ( !booleanHolder.value )
-        {
-            return null;
-        }
-
-        ProjectMetadata projectMetadata = new ProjectMetadata();
-        projectMetadata.setId( id );
-        projectMetadata.setNamespace( namespace );
-
-        logger.debug( "getProject repoId: {}, namespace: {}, projectId: {} -> {}", repoId, namespace, id,
-                      projectMetadata );
-
-        return projectMetadata;*/
     }
 
     protected ProjectVersionMetadataModel map( ColumnSlice<String, String> columnSlice )
@@ -880,8 +865,8 @@ public class CassandraMetadataRepository
                                CassandraUtils.column( "name", versionMetadata.getName() ) ) //
                 .addInsertion( key, //
                                cf, //
-                               CassandraUtils.column( "incomplete",
-                                                      Boolean.toString( versionMetadata.isIncomplete() ) ) ) //
+                               CassandraUtils.column( "incomplete", Boolean.toString( versionMetadata.isIncomplete() ) )
+                ) //
                 .addInsertion( key, //
                                cf, //
                                CassandraUtils.column( "url", versionMetadata.getUrl() ) ) //
@@ -902,8 +887,20 @@ public class CassandraMetadataRepository
             projectVersionMetadataModelTemplate.update( updater );
 
         }
+
+        ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
         // FIXME
-        //updateFacets( versionMetadata, artifactMetadataModel );
+        /*artifactMetadataModel.setArtifactMetadataModelId(
+            new ArtifactMetadataModel.KeyBuilder().withId( versionMetadata.getId() ).withRepositoryId(
+                repositoryId ).withNamespace( namespaceId ).withProjectVersion(
+                versionMetadata.getVersion() ).withProject( projectId ).build()
+        );*/
+        artifactMetadataModel.setRepositoryId( repositoryId );
+        artifactMetadataModel.setNamespace( namespaceId );
+        artifactMetadataModel.setProject( projectId );
+        artifactMetadataModel.setProjectVersion( versionMetadata.getVersion() );
+        artifactMetadataModel.setVersion( versionMetadata.getVersion() );
+        updateFacets( versionMetadata, artifactMetadataModel );
 
 /*        String namespaceKey =
             new Namespace.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespaceId ).build();
@@ -975,6 +972,116 @@ public class CassandraMetadataRepository
                                 ArtifactMetadata artifactMeta )
         throws MetadataRepositoryException
     {
+
+        Namespace namespace = getNamespace( repositoryId, namespaceId );
+        if ( namespace == null )
+        {
+            updateOrAddNamespace( repositoryId, namespaceId );
+        }
+
+        ProjectMetadata projectMetadata = new ProjectMetadata();
+        projectMetadata.setId( projectId );
+        projectMetadata.setNamespace( namespaceId );
+        updateProject( repositoryId, projectMetadata );
+
+        String key = new ArtifactMetadataModel.KeyBuilder().withNamespace( namespace ).withProject( projectId ).withId(
+            artifactMeta.getId() ).withProjectVersion( projectVersion ).build();
+
+        // exists?
+
+        boolean exists = this.artifactMetadataTemplate.isColumnsExist( key );
+
+        if ( exists )
+        {
+            // updater
+            ColumnFamilyUpdater<String, String> updater = this.artifactMetadataTemplate.createUpdater( key );
+            updater.setLong( "fileLastModified", artifactMeta.getFileLastModified().getTime() );
+            updater.setLong( "whenGathered", artifactMeta.getWhenGathered().getTime() );
+            updater.setLong( "size", artifactMeta.getSize() );
+            updater.setString( "md5", artifactMeta.getMd5() );
+            updater.setString( "sha1", artifactMeta.getSha1() );
+            updater.setString( "version", artifactMeta.getVersion() );
+            this.artifactMetadataTemplate.update( updater );
+        }
+        else
+        {
+            String cf = this.cassandraArchivaManager.getArtifactMetadataModelFamilyName();
+            // create
+            this.artifactMetadataTemplate.createMutator().addInsertion( key, //
+                                                                        cf, //
+                                                                        column( "id", artifactMeta.getId() ) )//
+                .addInsertion( key, //
+                               cf, //
+                               column( "repositoryName", repositoryId ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               column( "namespaceId", namespaceId ) ).addInsertion( key, //
+                                                                                    cf, //
+                                                                                    column( "project",
+                                                                                            artifactMeta.getProject() ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               column( "projectVersion", artifactMeta.getProjectVersion() ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               column( "version", artifactMeta.getVersion() ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               column( "fileLastModified", artifactMeta.getFileLastModified().getTime() ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               column( "size", artifactMeta.getSize() ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               column( "md5", artifactMeta.getMd5() ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               column( "sha1", artifactMeta.getSha1() ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               column( "whenGathered", artifactMeta.getWhenGathered().getTime() ) )//
+                .execute();
+        }
+
+        key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repositoryId ).withNamespace(
+            namespace ).withProjectId( projectId ).withId( projectVersion ).build();
+
+        exists = this.projectVersionMetadataModelTemplate.isColumnsExist( key );
+
+        if ( !exists )
+        {
+            ProjectVersionMetadataModel projectVersionMetadataModel = new ProjectVersionMetadataModel();
+            projectVersionMetadataModel.setProjectId( projectId );
+            projectVersionMetadataModel.setId( projectVersion );
+            projectVersionMetadataModel.setNamespace( namespace );
+
+            String cf = this.cassandraArchivaManager.getProjectVersionMetadataModelFamilyName();
+
+            projectVersionMetadataModelTemplate.createMutator() //
+                .addInsertion( key, cf, column( "namespaceId", namespace.getName() ) ) //
+                .addInsertion( key, cf, column( "repositoryName", repositoryId ) ) //
+                .addInsertion( key, cf, column( "id", artifactMeta.getId() ) ) //
+                .addInsertion( key, cf, column( "projectId", projectId ) ) //
+                .execute();
+
+        }
+
+        ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
+        // FIXME
+        /*artifactMetadataModel.setArtifactMetadataModelId(
+            new ArtifactMetadataModel.KeyBuilder().withId( versionMetadata.getId() ).withRepositoryId(
+                repositoryId ).withNamespace( namespaceId ).withProjectVersion(
+                versionMetadata.getVersion() ).withProject( projectId ).build()
+        );*/
+        artifactMetadataModel.setRepositoryId( repositoryId );
+        artifactMetadataModel.setNamespace( namespaceId );
+        artifactMetadataModel.setProject( projectId );
+        artifactMetadataModel.setProjectVersion( artifactMeta.getVersion() );
+        artifactMetadataModel.setVersion( artifactMeta.getVersion() );
+        // now facets
+        updateFacets( artifactMeta, artifactMetadataModel );
+
+
 /*        String namespaceKey =
             new Namespace.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespaceId ).build();
         // create the namespace if not exists
@@ -1062,6 +1169,29 @@ public class CassandraMetadataRepository
                                                    final String projectVersion )
         throws MetadataResolutionException
     {
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataModelFamilyName() ) //
+            .setColumnNames( "version" ) //
+            .addEqualsExpression( "repositoryName", repoId ) //
+            .addEqualsExpression( "namespaceId", namespace ) //
+            .addEqualsExpression( "projectId", projectId ) //
+            .addEqualsExpression( "projectVersion", projectVersion ).execute();
+
+        final Set<String> versions = new HashSet<String>();
+
+        for ( Row<String, String, String> row : result.get() )
+        {
+            versions.add( row.getColumnSlice().getColumnByName( "version" ).getValue() );
+        }
+
+        return versions;
+
 /*        final Set<String> versions = new HashSet<String>();
         // FIXME use cql query
         getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
@@ -1084,7 +1214,7 @@ public class CassandraMetadataRepository
         } );
 
         return versions;*/
-        return null;
+
     }
 
     /**
@@ -1151,29 +1281,27 @@ public class CassandraMetadataRepository
     public List<String> getMetadataFacets( final String repositoryId, final String facetId )
         throws MetadataRepositoryException
     {
-/*        // FIXME use cql query !!
+
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( cassandraArchivaManager.getMetadataFacetModelFamilyName() ) //
+            .setColumnNames( "name" ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
+            .addEqualsExpression( "facetId", facetId ) //
+            .execute();
+
         final List<String> facets = new ArrayList<String>();
-        this.getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
+
+        for ( Row<String, String, String> row : result.get() )
         {
-            @Override
-            public Boolean apply( MetadataFacetModel metadataFacetModel )
-            {
-                if ( metadataFacetModel != null )
-                {
-                    if ( StringUtils.equals( metadataFacetModel.getArtifactMetadataModel().getRepositoryId(),
-                                             repositoryId ) && StringUtils.equals( metadataFacetModel.getFacetId(),
-                                                                                   facetId ) )
-                    {
-                        facets.add( metadataFacetModel.getName() );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-
-        return facets;*/
-        return null;
-
+            facets.add( row.getColumnSlice().getColumnByName( "name" ).getValue() );
+        }
+        return facets;
     }
 
     @Override
@@ -1187,7 +1315,40 @@ public class CassandraMetadataRepository
     public MetadataFacet getMetadataFacet( final String repositoryId, final String facetId, final String name )
         throws MetadataRepositoryException
     {
-/*        // FIXME use cql query !!
+
+        MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( facetId );
+        if ( metadataFacetFactory == null )
+        {
+            return null;
+        }
+
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( cassandraArchivaManager.getMetadataFacetModelFamilyName() ) //
+            .setColumnNames( "key", "value" ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
+            .addEqualsExpression( "facetId", facetId ) //
+            .addEqualsExpression( "name", name ) //
+            .execute();
+
+        MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
+        Map<String, String> map = new HashMap<String, String>( result.get().getCount() );
+        for ( Row<String, String, String> row : result.get() )
+        {
+            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
+            map.put( columnSlice.getColumnByName( "key" ).getValue(),
+                     columnSlice.getColumnByName( "value" ).getValue() );
+        }
+        metadataFacet.fromProperties( map );
+        return metadataFacet;
+
+
+/*
         final List<MetadataFacetModel> facets = new ArrayList<MetadataFacetModel>();
         this.getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
         {
@@ -1226,7 +1387,6 @@ public class CassandraMetadataRepository
         }
         metadataFacet.fromProperties( map );
         return metadataFacet;*/
-        return null;
     }
 
     @Override

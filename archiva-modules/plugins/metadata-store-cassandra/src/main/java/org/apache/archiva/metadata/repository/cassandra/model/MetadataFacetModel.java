@@ -22,7 +22,6 @@ package org.apache.archiva.metadata.repository.cassandra.model;
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
 import javax.persistence.Column;
-import javax.persistence.Id;
 
 /**
  * Cassandra storage model for {@link org.apache.archiva.metadata.model.MetadataFacet}
@@ -33,9 +32,6 @@ import javax.persistence.Id;
 public class MetadataFacetModel
 {
     // id is repositoryId + namespaceId + projectId + facetId + name + mapKey
-    @Id
-    @Column(name = "id")
-    private String id;
 
     @Column(name = "artifactMetadataModel")
     private ArtifactMetadataModel artifactMetadataModel;
@@ -57,10 +53,9 @@ public class MetadataFacetModel
         // no op
     }
 
-    public MetadataFacetModel( String id, ArtifactMetadataModel artifactMetadataModel, String facetId, String key,
-                               String value, String name )
+    public MetadataFacetModel( ArtifactMetadataModel artifactMetadataModel, String facetId, String key, String value,
+                               String name )
     {
-        this.id = id;
         this.artifactMetadataModel = artifactMetadataModel;
         this.key = key;
         this.value = value;
@@ -76,16 +71,6 @@ public class MetadataFacetModel
     public void setFacetId( String facetId )
     {
         this.facetId = facetId;
-    }
-
-    public String getId()
-    {
-        return id;
-    }
-
-    public void setId( String id )
-    {
-        this.id = id;
     }
 
     public ArtifactMetadataModel getArtifactMetadataModel()
@@ -128,39 +113,11 @@ public class MetadataFacetModel
         this.value = value;
     }
 
-    @Override
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-
-        MetadataFacetModel that = (MetadataFacetModel) o;
-
-        if ( !id.equals( that.id ) )
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return id.hashCode();
-    }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "MetadataFacetModel{" );
-        sb.append( "id='" ).append( id ).append( '\'' );
         sb.append( ", artifactMetadataModel=" ).append( artifactMetadataModel );
         sb.append( ", key='" ).append( key ).append( '\'' );
         sb.append( ", value='" ).append( value ).append( '\'' );
@@ -223,11 +180,20 @@ public class MetadataFacetModel
             // only repositoryId with artifactMetadataModel
             String str = CassandraUtils.generateKey( this.artifactMetadataModel == null
                                                          ? this.repositoryId
-                                                         : this.artifactMetadataModel.getArtifactMetadataModelId(),
-                                                     this.facetId, this.name, this.key
+                                                         : new ArtifactMetadataModel.KeyBuilder().withNamespace(
+                                                             this.artifactMetadataModel.getNamespace() ) //
+                                                             .withProject( this.artifactMetadataModel.getProject() )  //
+                                                             .withProjectVersion(
+                                                                 this.artifactMetadataModel.getProjectVersion() ) //
+                                                             .withRepositoryId(
+                                                                 this.artifactMetadataModel.getRepositoryId() ) //
+                                                             .withId( this.artifactMetadataModel.getId() ) //
+                                                             .build(), //
+                                                     this.facetId, //
+                                                     this.name, //
+                                                     this.key
             );
 
-            //return Long.toString( str.hashCode() );
             return str;
         }
     }

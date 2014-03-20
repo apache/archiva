@@ -79,6 +79,8 @@ public class DefaultCassandraArchivaManager
 
     private String artifactMetadataModelFamilyName = "artifactmetadatamodel";
 
+    private String metadataFacetModelFamilyName = "metadatafacetmodel";
+
 
     @PostConstruct
     public void initialize()
@@ -281,6 +283,48 @@ public class DefaultCassandraArchivaManager
 
         }
 
+        // metadatafacetmodel table
+        {
+            final ColumnFamilyDefinition metadataFacetModel =
+                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
+                                                       getMetadataFacetModelFamilyName(), //
+                                                       ComparatorType.UTF8TYPE );
+            cfds.add( metadataFacetModel );
+
+            // creating indexes for cql query
+
+            BasicColumnDefinition artifactMetadataModelColumn = new BasicColumnDefinition();
+            artifactMetadataModelColumn.setName( StringSerializer.get().toByteBuffer( "artifactMetadataModel" ) );
+            artifactMetadataModelColumn.setIndexName( "artifactMetadataModel" );
+            artifactMetadataModelColumn.setIndexType( ColumnIndexType.KEYS );
+            artifactMetadataModelColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            metadataFacetModel.addColumnDefinition( artifactMetadataModelColumn );
+
+            BasicColumnDefinition facetIdColumn = new BasicColumnDefinition();
+            facetIdColumn.setName( StringSerializer.get().toByteBuffer( "facetId" ) );
+            facetIdColumn.setIndexName( "facetId" );
+            facetIdColumn.setIndexType( ColumnIndexType.KEYS );
+            facetIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            metadataFacetModel.addColumnDefinition( facetIdColumn );
+
+            BasicColumnDefinition repositoryNameColumn = new BasicColumnDefinition();
+            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( "repositoryName" ) );
+            repositoryNameColumn.setIndexName( "repositoryName" );
+            repositoryNameColumn.setIndexType( ColumnIndexType.KEYS );
+            repositoryNameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            metadataFacetModel.addColumnDefinition( repositoryNameColumn );
+
+            BasicColumnDefinition nameColumn = new BasicColumnDefinition();
+            nameColumn.setName( StringSerializer.get().toByteBuffer( "name" ) );
+            nameColumn.setIndexName( "name" );
+            nameColumn.setIndexType( ColumnIndexType.KEYS );
+            nameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            metadataFacetModel.addColumnDefinition( nameColumn );
+
+        }
+
+
+        // TODO take care of update new table!!
         { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
             if ( cluster.describeKeyspace( keyspaceName ) == null )
             {
@@ -346,5 +390,10 @@ public class DefaultCassandraArchivaManager
     public String getArtifactMetadataModelFamilyName()
     {
         return artifactMetadataModelFamilyName;
+    }
+
+    public String getMetadataFacetModelFamilyName()
+    {
+        return metadataFacetModelFamilyName;
     }
 }

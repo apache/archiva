@@ -40,7 +40,7 @@ public class ProjectVersionMetadataModel
 {
 
 
-    @Column(name = "namespace")
+    @Column(name = "namespaceId") // repositoryName
     private Namespace namespace;
 
     /**

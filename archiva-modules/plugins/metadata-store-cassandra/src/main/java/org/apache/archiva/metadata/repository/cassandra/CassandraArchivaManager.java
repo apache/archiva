@@ -48,4 +48,6 @@ public interface CassandraArchivaManager
 
     String getArtifactMetadataModelFamilyName();
 
+    String getMetadataFacetModelFamilyName();
+
 }
