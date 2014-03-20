@@ -118,6 +118,10 @@ public class RepositoriesNamespaceTest
             Assertions.assertThat( cmr.getProjects( "release", "org" ) ).isNotEmpty().hasSize( 1 ).containsExactly(
                 "theproject" );
 
+            cmr.removeProject( "release", "org", "theproject" );
+
+            Assertions.assertThat( cmr.getProjects( "release", "org" ) ).isEmpty();
+
             cmr.removeRepository( "release" );
 
             r = cmr.getRepository( "release" );

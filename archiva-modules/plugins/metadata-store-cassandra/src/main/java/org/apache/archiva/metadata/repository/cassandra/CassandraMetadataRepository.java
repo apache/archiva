@@ -98,7 +98,7 @@ public class CassandraMetadataRepository
             .createRangeSlicesQuery( keyspace, StringSerializer.get(), StringSerializer.get(),
                                      StringSerializer.get() ) //
             .setColumnFamily( cassandraArchivaManager.getRepositoryFamilyName() ) //
-            .setColumnNames(  "repositoryName" ) //
+            .setColumnNames( "repositoryName" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
             .execute();
 
@@ -124,7 +124,8 @@ public class CassandraMetadataRepository
 
         }
 
-        return new Repository( result.get().getList().get( 0 ).getColumnSlice().getColumnByName( "repositoryName" ).getValue() );
+        return new Repository(
+            result.get().getList().get( 0 ).getColumnSlice().getColumnByName( "repositoryName" ).getValue() );
     }
 
 
@@ -568,6 +569,17 @@ public class CassandraMetadataRepository
     public void removeProject( final String repositoryId, final String namespaceId, final String projectId )
         throws MetadataRepositoryException
     {
+
+        String key = new Project.KeyBuilder() //
+            .withProjectId( projectId ) //
+            .withNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) ) //
+            .build();
+
+        HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
+            .addDeletion( key, cassandraArchivaManager.getProjectFamilyName() ) //
+            .execute();
+
+        // TODO finish linked data to delete
 
 /*        // cleanup ArtifactMetadataModel
         final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
