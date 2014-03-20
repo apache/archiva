@@ -21,7 +21,6 @@ package org.apache.archiva.metadata.repository.cassandra.model;
 
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
-import javax.persistence.Entity;
 import java.io.Serializable;
 
 
@@ -35,8 +34,6 @@ public class Namespace
 
     private String name;
 
-    private String repositoryId;
-
     private String repositoryName;
 
     public Namespace()
@@ -48,7 +45,6 @@ public class Namespace
     public Namespace( String id, Repository repository )
     {
         this.name = id;
-        this.repositoryId = repository.getId();
         this.repositoryName = repository.getName();
     }
 
@@ -65,12 +61,11 @@ public class Namespace
 
     public Repository getRepository()
     {
-        return new Repository(this.repositoryId);
+        return new Repository( this.repositoryName );
     }
 
     public void setRepository( Repository repository )
     {
-        this.repositoryId = repository.getId();
         this.repositoryName = repository.getName();
     }
 
@@ -92,7 +87,7 @@ public class Namespace
         {
             return false;
         }
-        if ( !repositoryId.equals( namespace.repositoryId ) )
+        if ( !repositoryName.equals( namespace.repositoryName ) )
         {
             return false;
         }
@@ -104,7 +99,7 @@ public class Namespace
     public int hashCode()
     {
         int result = name.hashCode();
-        result = 31 * result + repositoryId.hashCode();
+        result = 31 * result + repositoryName.hashCode();
         return result;
     }
 
@@ -113,7 +108,7 @@ public class Namespace
     {
         final StringBuilder sb = new StringBuilder( "Namespace{" );
         sb.append( ", name='" ).append( name ).append( '\'' );
-        sb.append( ", repository='" ).append( repositoryId ).append( '\'' );
+        sb.append( ", repository='" ).append( repositoryName ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }
@@ -133,7 +128,7 @@ public class Namespace
         public KeyBuilder withNamespace( Namespace namespace )
         {
             this.namespace = namespace.getName();
-            this.repositoryId = namespace.getRepository().getId();
+            this.repositoryId = namespace.getRepository().getName();
             return this;
         }
 

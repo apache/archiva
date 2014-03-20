@@ -39,7 +39,7 @@ import java.util.List;
  */
 public class ProjectVersionMetadataModel
 {
-    // repositoryId + namespace + projectId + id (version)
+    // repositoryName + namespace + projectId + id (version)
     @Id
     private String rowId;
 
@@ -295,7 +295,7 @@ public class ProjectVersionMetadataModel
 
         private String namespace;
 
-        private String repositoryId;
+        private String repositoryName;
 
         private String projectId;
 
@@ -309,7 +309,7 @@ public class ProjectVersionMetadataModel
         public KeyBuilder withNamespace( Namespace namespace )
         {
             this.namespace = namespace.getName();
-            this.repositoryId = namespace.getRepository().getId();
+            this.repositoryName = namespace.getRepository().getName();
             return this;
         }
 
@@ -321,13 +321,13 @@ public class ProjectVersionMetadataModel
 
         public KeyBuilder withRepository( String repositoryId )
         {
-            this.repositoryId = repositoryId;
+            this.repositoryName = repositoryId;
             return this;
         }
 
         public KeyBuilder withRepository( Repository repository )
         {
-            this.repositoryId = repository.getId();
+            this.repositoryName = repository.getName();
             return this;
         }
 
@@ -346,7 +346,7 @@ public class ProjectVersionMetadataModel
         public String build()
         {
             // FIXME add some controls
-            return CassandraUtils.generateKey( this.repositoryId, this.namespace, this.projectId, this.id );
+            return CassandraUtils.generateKey( this.repositoryName, this.namespace, this.projectId, this.id );
         }
     }
 }

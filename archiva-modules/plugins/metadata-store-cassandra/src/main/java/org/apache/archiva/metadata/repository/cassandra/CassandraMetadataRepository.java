@@ -98,8 +98,8 @@ public class CassandraMetadataRepository
             .createRangeSlicesQuery( keyspace, StringSerializer.get(), StringSerializer.get(),
                                      StringSerializer.get() ) //
             .setColumnFamily( cassandraArchivaManager.getRepositoryFamilyName() ) //
-            .setColumnNames( "id", "name" ) //
-            .addEqualsExpression( "id", repositoryId ) //
+            .setColumnNames(  "repositoryName" ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
             .execute();
 
         if ( result.get().getCount() < 1 )
@@ -110,13 +110,9 @@ public class CassandraMetadataRepository
             try
             {
                 MutationResult mutationResult = HFactory.createMutator( keyspace, StringSerializer.get() ) //
-                    //  values
                     .addInsertion( repositoryId, //
                                    cassandraArchivaManager.getRepositoryFamilyName(), //
-                                   CassandraUtils.column( "id", repository.getId() ) ) //
-                    .addInsertion( repositoryId, //
-                                   cassandraArchivaManager.getRepositoryFamilyName(), //
-                                   CassandraUtils.column( "name", repository.getName() ) ) //
+                                   CassandraUtils.column( "repositoryName", repository.getName() ) ) //
                     .execute();
                 return repository;
             }
@@ -128,7 +124,7 @@ public class CassandraMetadataRepository
 
         }
 
-        return new Repository( result.get().getList().get( 0 ).getColumnSlice().getColumnByName( "id" ).getValue() );
+        return new Repository( result.get().getList().get( 0 ).getColumnSlice().getColumnByName( "repositoryName" ).getValue() );
     }
 
 
@@ -140,8 +136,8 @@ public class CassandraMetadataRepository
             .createRangeSlicesQuery( keyspace, StringSerializer.get(), StringSerializer.get(),
                                      StringSerializer.get() ) //
             .setColumnFamily( cassandraArchivaManager.getRepositoryFamilyName() ) //
-            .setColumnNames( "id", "name" ) //
-            .addEqualsExpression( "id", repositoryId ) //
+            .setColumnNames( "repositoryName" ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
             .execute();
         return ( result.get().getCount() > 0 ) ? new Repository( repositoryId ) : null;
     }
@@ -151,7 +147,6 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
         updateOrAddNamespace( repositoryId, namespaceId );
-
     }
 
     public Namespace updateOrAddNamespace( String repositoryId, String namespaceId )
@@ -177,7 +172,7 @@ public class CassandraMetadataRepository
                                    CassandraUtils.column( "name", namespace.getName() ) ) //
                     .addInsertion( key, //
                                    cassandraArchivaManager.getNamespaceFamilyName(), //
-                                   CassandraUtils.column( "repositoryId", repository.getId() ) ) //
+                                   CassandraUtils.column( "repositoryName", repository.getName() ) ) //
                     .execute();
             }
 
@@ -199,15 +194,15 @@ public class CassandraMetadataRepository
                                      StringSerializer.get(), //
                                      StringSerializer.get() ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
-            .setColumnNames( "repositoryId", "name" ) //
-            .addEqualsExpression( "repositoryId", repositoryId ) //
+            .setColumnNames( "repositoryName", "name" ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
             .addEqualsExpression( "name", namespaceId ) //
             .execute();
         if ( result.get().getCount() > 0 )
         {
             ColumnSlice<String, String> columnSlice = result.get().getList().get( 0 ).getColumnSlice();
             return new Namespace( columnSlice.getColumnByName( "name" ).getValue(), //
-                                  new Repository( columnSlice.getColumnByName( "repositoryId" ).getValue() ) );
+                                  new Repository( columnSlice.getColumnByName( "repositoryName" ).getValue() ) );
 
         }
         return null;
@@ -247,6 +242,7 @@ public class CassandraMetadataRepository
 
         // retrieve and delete all namespace with this repositoryId
 
+        // TODO use cql queries to delete all
         List<String> namespacesKey = new ArrayList<String>();
 
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
@@ -256,8 +252,8 @@ public class CassandraMetadataRepository
                                      StringSerializer.get(), //
                                      StringSerializer.get() ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
-            .setColumnNames( "repositoryId", "name" ) //
-            .addEqualsExpression( "repositoryId", repositoryId ) //
+            .setColumnNames( "repositoryName", "name" ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
             .execute();
 
         for ( Row<String, String, String> row : result.get().getList() )
@@ -383,8 +379,8 @@ public class CassandraMetadataRepository
                                                  StringSerializer.get(), //
                                                  StringSerializer.get(), //
                                                  StringSerializer.get() ) //
-                    .setColumnFamily( "repository" ) //
-                    .setColumnNames( "name" ) //
+                    .setColumnFamily( cassandraArchivaManager.getRepositoryFamilyName() ) //
+                    .setColumnNames( "repositoryName" ) //
                     .setRange( null, null, false, Integer.MAX_VALUE ) //
                     .execute();
 
@@ -392,7 +388,7 @@ public class CassandraMetadataRepository
 
             for ( Row<String, String, String> row : cResult.get() )
             {
-                repoIds.add( row.getColumnSlice().getColumnByName( "name" ).getValue() );
+                repoIds.add( row.getColumnSlice().getColumnByName( "repositoryName" ).getValue() );
             }
 
             return repoIds;
@@ -415,9 +411,9 @@ public class CassandraMetadataRepository
                                      StringSerializer.get(), //
                                      StringSerializer.get(), //
                                      StringSerializer.get() ) //
-            .setColumnFamily( "namespace" ) //
+            .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
             .setColumnNames( "name" ) //
-            .addEqualsExpression( "repositoryId", repoId ) //
+            .addEqualsExpression( "repositoryName", repoId ) //
             .execute();
 
         Set<String> namespaces = new HashSet<String>( result.get().getCount() );
@@ -444,7 +440,7 @@ public class CassandraMetadataRepository
                                      StringSerializer.get() ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
             .setColumnNames( "name" ) //
-            .addEqualsExpression( "repositoryId", repoId ) //
+            .addEqualsExpression( "repositoryName", repoId ) //
             .execute();
 
         List<String> namespaces = new ArrayList<String>( result.get().getCount() );
@@ -483,7 +479,7 @@ public class CassandraMetadataRepository
                                      StringSerializer.get() ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
             .setColumnNames( "name" ) //
-            .addEqualsExpression( "repositoryId", repoId ) //
+            .addEqualsExpression( "repositoryName", repoId ) //
             .execute();
 
         List<String> namespaces = new ArrayList<String>( result.get().getCount() );
@@ -510,7 +506,7 @@ public class CassandraMetadataRepository
                                      StringSerializer.get() ) //
             .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
             .setColumnNames( "projectId" ) //
-            .addEqualsExpression( "repositoryId", repositoryId ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
             .addEqualsExpression( "namespaceId", projectMetadata.getNamespace() ) //
             .addEqualsExpression( "projectId", projectMetadata.getId() ) //
             .execute();
@@ -533,7 +529,7 @@ public class CassandraMetadataRepository
                            CassandraUtils.column( "projectId", projectMetadata.getId() ) ) //
             .addInsertion( key, //
                            cassandraArchivaManager.getProjectFamilyName(), //
-                           CassandraUtils.column( "repositoryId", repositoryId ) ) //
+                           CassandraUtils.column( "repositoryName", repositoryId ) ) //
             .addInsertion( key, //
                            cassandraArchivaManager.getProjectFamilyName(), //
                            CassandraUtils.column( "namespaceId", projectMetadata.getNamespace() ) )//
@@ -554,7 +550,7 @@ public class CassandraMetadataRepository
                                      StringSerializer.get() ) //
             .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
             .setColumnNames( "projectId" ) //
-            .addEqualsExpression( "repositoryId", repoId ) //
+            .addEqualsExpression( "repositoryName", repoId ) //
             .addEqualsExpression( "namespaceId", namespace ) //
             .execute();
 

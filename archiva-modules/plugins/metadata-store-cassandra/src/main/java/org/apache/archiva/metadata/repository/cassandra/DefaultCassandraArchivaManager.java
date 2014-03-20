@@ -125,8 +125,8 @@ public class DefaultCassandraArchivaManager
             namespace.addColumnDefinition( nameColumn );
 
             BasicColumnDefinition repositoryIdColumn = new BasicColumnDefinition();
-            repositoryIdColumn.setName( StringSerializer.get().toByteBuffer( "repositoryId" ) );
-            repositoryIdColumn.setIndexName( "repositoryId" );
+            repositoryIdColumn.setName( StringSerializer.get().toByteBuffer( "repositoryName" ) );
+            repositoryIdColumn.setIndexName( "repositoryName" );
             repositoryIdColumn.setIndexType( ColumnIndexType.KEYS );
             repositoryIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             namespace.addColumnDefinition( repositoryIdColumn );
@@ -142,8 +142,8 @@ public class DefaultCassandraArchivaManager
             cfds.add( repository );
 
             BasicColumnDefinition nameColumn = new BasicColumnDefinition();
-            nameColumn.setName( StringSerializer.get().toByteBuffer( "name" ) );
-            nameColumn.setIndexName( "name" );
+            nameColumn.setName( StringSerializer.get().toByteBuffer( "repositoryName" ) );
+            nameColumn.setIndexName( "repositoryName" );
             nameColumn.setIndexType( ColumnIndexType.KEYS );
             nameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             repository.addColumnDefinition( nameColumn );
@@ -168,8 +168,8 @@ public class DefaultCassandraArchivaManager
             project.addColumnDefinition( projectIdColumn );
 
             BasicColumnDefinition repositoryIdColumn = new BasicColumnDefinition();
-            repositoryIdColumn.setName( StringSerializer.get().toByteBuffer( "repositoryId" ) );
-            repositoryIdColumn.setIndexName( "repositoryId" );
+            repositoryIdColumn.setName( StringSerializer.get().toByteBuffer( "repositoryName" ) );
+            repositoryIdColumn.setIndexName( "repositoryName" );
             repositoryIdColumn.setIndexType( ColumnIndexType.KEYS );
             repositoryIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             project.addColumnDefinition( repositoryIdColumn );

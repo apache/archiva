@@ -292,7 +292,7 @@ public class ArtifactMetadataModel
         public KeyBuilder withNamespace( Namespace namespace )
         {
             this.namespaceId = namespace.getName();
-            this.repositoryId = namespace.getRepository().getId();
+            this.repositoryId = namespace.getRepository().getName();
             return this;
         }
 
