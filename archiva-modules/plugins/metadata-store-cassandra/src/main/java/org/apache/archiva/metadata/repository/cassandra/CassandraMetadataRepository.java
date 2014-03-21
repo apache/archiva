@@ -21,6 +21,7 @@ package org.apache.archiva.metadata.repository.cassandra;
 
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.cassandra.service.template.ColumnFamilyResult;
 import me.prettyprint.cassandra.service.template.ColumnFamilyTemplate;
 import me.prettyprint.cassandra.service.template.ColumnFamilyUpdater;
 import me.prettyprint.cassandra.service.template.ThriftColumnFamilyTemplate;
@@ -58,6 +59,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.PersistenceException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -767,6 +769,7 @@ public class CassandraMetadataRepository
         return projectVersionMetadataModel;
     }
 
+
     @Override
     public void updateProjectVersion( String repositoryId, String namespaceId, String projectId,
                                       ProjectVersionMetadata versionMetadata )
@@ -838,7 +841,7 @@ public class CassandraMetadataRepository
         // FIXME nested objects to store!!!
         if ( creation )
         {
-            String cf = cassandraArchivaManager.getProjectFamilyName();
+            String cf = cassandraArchivaManager.getProjectVersionMetadataModelFamilyName();
             Mutator<String> mutator = projectVersionMetadataModelTemplate.createMutator()
                 //  values
                 .addInsertion( key, //
@@ -868,8 +871,8 @@ public class CassandraMetadataRepository
             }
             mutator = mutator.addInsertion( key, //
                                             cf, //
-                                            column( "incomplete", Boolean.toString( versionMetadata.isIncomplete() ) )
-            );
+                                            column( "incomplete",
+                                                    Boolean.toString( versionMetadata.isIncomplete() ) ) );
             if ( versionMetadata.getUrl() != null )
             {
                 mutator = mutator.addInsertion( key, //
@@ -877,7 +880,7 @@ public class CassandraMetadataRepository
                                                 column( "url", versionMetadata.getUrl() ) );
             }
 
-            mutator.execute();
+            MutationResult mutationResult = mutator.execute();
         }
         else
         {
@@ -971,6 +974,113 @@ public class CassandraMetadataRepository
         {
             throw new MetadataRepositoryException( e.getMessage(), e );
         }*/
+    }
+
+
+    @Override
+    public ProjectVersionMetadata getProjectVersion( final String repoId, final String namespace,
+                                                     final String projectId, final String projectVersion )
+        throws MetadataResolutionException
+    {
+        String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repoId ).withNamespace(
+            namespace ).withProjectId( projectId ).withId( projectVersion ).build();
+
+        ColumnFamilyResult<String, String> columnFamilyResult =
+            this.projectVersionMetadataModelTemplate.queryColumns( key, Arrays.asList( "id", "description", "name",
+                                                                                       "namespaceId", "repositoryName",
+                                                                                       "incomplete", "projectId",
+                                                                                       "url" ) );
+        if ( !columnFamilyResult.hasResults() )
+        {
+            return null;
+        }
+
+        ProjectVersionMetadata projectVersionMetadata = new ProjectVersionMetadata();
+        projectVersionMetadata.setId( columnFamilyResult.getString( "id" ) );
+        projectVersionMetadata.setDescription( columnFamilyResult.getString( "description" ) );
+        projectVersionMetadata.setName( columnFamilyResult.getString( "name" ) );
+
+        projectVersionMetadata.setIncomplete( Boolean.parseBoolean( columnFamilyResult.getString( "incomplete" ) ) );
+
+        projectVersionMetadata.setUrl( columnFamilyResult.getString( "url" ) );
+
+        /*
+
+        ProjectVersionMetadataModel projectVersionMetadataModel =
+            getProjectVersionMetadataModelEntityManager().get( key );
+
+        if ( projectVersionMetadataModel == null )
+        {
+            logger.debug(
+                "getProjectVersion repoId: '{}', namespace: '{}', projectId: '{}', projectVersion: {} -> not found",
+                repoId, namespace, projectId, projectVersion );
+            return null;
+        }
+
+        ProjectVersionMetadata projectVersionMetadata =
+            getModelMapper().map( projectVersionMetadataModel, ProjectVersionMetadata.class );
+
+        logger.debug( "getProjectVersion repoId: '{}', namespace: '{}', projectId: '{}', projectVersion: {} -> {}",
+                      repoId, namespace, projectId, projectVersion, projectVersionMetadata );
+
+        projectVersionMetadata.setCiManagement( projectVersionMetadataModel.getCiManagement() );
+        projectVersionMetadata.setIssueManagement( projectVersionMetadataModel.getIssueManagement() );
+        projectVersionMetadata.setOrganization( projectVersionMetadataModel.getOrganization() );
+        projectVersionMetadata.setScm( projectVersionMetadataModel.getScm() );
+
+        // FIXME complete collections !!
+
+        // facets
+        final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>();
+        // FIXME use cql query
+        getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
+        {
+            @Override
+            public Boolean apply( MetadataFacetModel metadataFacetModel )
+            {
+                if ( metadataFacetModel != null )
+                {
+                    if ( StringUtils.equals( repoId, metadataFacetModel.getArtifactMetadataModel().getRepositoryId() )
+                        && StringUtils.equals( namespace, metadataFacetModel.getArtifactMetadataModel().getNamespace() )
+                        && StringUtils.equals( projectId, metadataFacetModel.getArtifactMetadataModel().getProject() )
+                        && StringUtils.equals( projectVersion,
+                                               metadataFacetModel.getArtifactMetadataModel().getProjectVersion() ) )
+                    {
+                        metadataFacetModels.add( metadataFacetModel );
+                    }
+                }
+                return Boolean.TRUE;
+            }
+        } );
+        Map<String, Map<String, String>> metadataFacetsPerFacetIds = new HashMap<String, Map<String, String>>();
+        for ( MetadataFacetModel metadataFacetModel : metadataFacetModels )
+        {
+
+            Map<String, String> metaValues = metadataFacetsPerFacetIds.get( metadataFacetModel.getFacetId() );
+            if ( metaValues == null )
+            {
+                metaValues = new HashMap<String, String>();
+                metadataFacetsPerFacetIds.put( metadataFacetModel.getFacetId(), metaValues );
+            }
+            metaValues.put( metadataFacetModel.getKey(), metadataFacetModel.getValue() );
+
+        }
+
+        if ( !metadataFacetsPerFacetIds.isEmpty() )
+        {
+            for ( Map.Entry<String, Map<String, String>> entry : metadataFacetsPerFacetIds.entrySet() )
+            {
+                MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( entry.getKey() );
+                if ( metadataFacetFactory != null )
+                {
+                    MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet( repoId, entry.getKey() );
+                    metadataFacet.fromProperties( entry.getValue() );
+                    projectVersionMetadata.addFacet( metadataFacet );
+                }
+            }
+        }
+        */
+        return projectVersionMetadata;
     }
 
 
@@ -1801,135 +1911,6 @@ public class CassandraMetadataRepository
 
         return artifactMetadatas;*/
         return Collections.emptyList();
-    }
-
-
-    @Override
-    public ProjectVersionMetadata getProjectVersion( final String repoId, final String namespace,
-                                                     final String projectId, final String projectVersion )
-        throws MetadataResolutionException
-    {
-        String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repoId ).withNamespace(
-            namespace ).withProjectId( projectId ).withId( projectVersion ).build();
-
-        StringSerializer ss = StringSerializer.get();
-
-        QueryResult<OrderedRows<String, String, String>> result =
-            HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
-                .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataModelFamilyName() ) //
-                .setColumnNames( "id", "description", "name", "namespaceId", "repositoryName", "incomplete",
-                                 "projectId", "url" ) //
-                .addEqualsExpression( "repositoryName", repoId ) //
-                .addEqualsExpression( "namespaceId", namespace ) //
-                .addEqualsExpression( "projectId", projectId ) //
-                .addEqualsExpression( "id", projectVersion ) //
-                .execute();
-        /*
-        ColumnFamilyResult<String, String> columnFamilyResult =
-            this.projectVersionMetadataModelTemplate.queryColumns( key, Arrays.asList( "id", "description", "name",
-                                                                                       "namespaceId", "repositoryName",
-                                                                                       "incomplete", "projectId",
-                                                                                       "url" ) );
-        if (!columnFamilyResult.hasResults())
-        {
-            return null;
-        }*/
-
-        if (result.get().getCount() < 1)
-        {
-            return null;
-        }
-
-        Row<String,String,String> row = result.get().getList().get( 0 );
-
-        ColumnSlice<String,String> columnSlice = row.getColumnSlice();
-
-        ProjectVersionMetadata projectVersionMetadata = new ProjectVersionMetadata();
-        projectVersionMetadata.setId( columnSlice.getColumnByName( "id" ).getValue() );
-        projectVersionMetadata.setDescription( columnSlice.getColumnByName( "description" ).getValue() );
-        projectVersionMetadata.setName( columnSlice.getColumnByName( "name" ).getValue() );
-
-        projectVersionMetadata.setIncomplete( Boolean.parseBoolean( columnSlice.getColumnByName( "incomplete" ).getValue() ) );
-
-        projectVersionMetadata.setUrl( columnSlice.getColumnByName( "url" ).getValue() );
-
-        /*
-
-        ProjectVersionMetadataModel projectVersionMetadataModel =
-            getProjectVersionMetadataModelEntityManager().get( key );
-
-        if ( projectVersionMetadataModel == null )
-        {
-            logger.debug(
-                "getProjectVersion repoId: '{}', namespace: '{}', projectId: '{}', projectVersion: {} -> not found",
-                repoId, namespace, projectId, projectVersion );
-            return null;
-        }
-
-        ProjectVersionMetadata projectVersionMetadata =
-            getModelMapper().map( projectVersionMetadataModel, ProjectVersionMetadata.class );
-
-        logger.debug( "getProjectVersion repoId: '{}', namespace: '{}', projectId: '{}', projectVersion: {} -> {}",
-                      repoId, namespace, projectId, projectVersion, projectVersionMetadata );
-
-        projectVersionMetadata.setCiManagement( projectVersionMetadataModel.getCiManagement() );
-        projectVersionMetadata.setIssueManagement( projectVersionMetadataModel.getIssueManagement() );
-        projectVersionMetadata.setOrganization( projectVersionMetadataModel.getOrganization() );
-        projectVersionMetadata.setScm( projectVersionMetadataModel.getScm() );
-
-        // FIXME complete collections !!
-
-        // facets
-        final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>();
-        // FIXME use cql query
-        getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
-        {
-            @Override
-            public Boolean apply( MetadataFacetModel metadataFacetModel )
-            {
-                if ( metadataFacetModel != null )
-                {
-                    if ( StringUtils.equals( repoId, metadataFacetModel.getArtifactMetadataModel().getRepositoryId() )
-                        && StringUtils.equals( namespace, metadataFacetModel.getArtifactMetadataModel().getNamespace() )
-                        && StringUtils.equals( projectId, metadataFacetModel.getArtifactMetadataModel().getProject() )
-                        && StringUtils.equals( projectVersion,
-                                               metadataFacetModel.getArtifactMetadataModel().getProjectVersion() ) )
-                    {
-                        metadataFacetModels.add( metadataFacetModel );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-        Map<String, Map<String, String>> metadataFacetsPerFacetIds = new HashMap<String, Map<String, String>>();
-        for ( MetadataFacetModel metadataFacetModel : metadataFacetModels )
-        {
-
-            Map<String, String> metaValues = metadataFacetsPerFacetIds.get( metadataFacetModel.getFacetId() );
-            if ( metaValues == null )
-            {
-                metaValues = new HashMap<String, String>();
-                metadataFacetsPerFacetIds.put( metadataFacetModel.getFacetId(), metaValues );
-            }
-            metaValues.put( metadataFacetModel.getKey(), metadataFacetModel.getValue() );
-
-        }
-
-        if ( !metadataFacetsPerFacetIds.isEmpty() )
-        {
-            for ( Map.Entry<String, Map<String, String>> entry : metadataFacetsPerFacetIds.entrySet() )
-            {
-                MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( entry.getKey() );
-                if ( metadataFacetFactory != null )
-                {
-                    MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet( repoId, entry.getKey() );
-                    metadataFacet.fromProperties( entry.getValue() );
-                    projectVersionMetadata.addFacet( metadataFacet );
-                }
-            }
-        }
-        */
-        return projectVersionMetadata;
     }
 
 
