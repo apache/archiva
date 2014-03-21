@@ -21,7 +21,6 @@ package org.apache.archiva.metadata.repository.cassandra;
 
 import me.prettyprint.cassandra.model.CqlQuery;
 import me.prettyprint.cassandra.model.CqlRows;
-import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.cassandra.service.template.ColumnFamilyTemplate;
 import me.prettyprint.cassandra.service.template.ColumnFamilyUpdater;
@@ -138,11 +137,12 @@ public class CassandraMetadataRepository
     public Repository getOrCreateRepository( String repositoryId )
         throws MetadataRepositoryException
     {
+        String cf = cassandraArchivaManager.getRepositoryFamilyName();
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, StringSerializer.get(), StringSerializer.get(),
                                      StringSerializer.get() ) //
-            .setColumnFamily( cassandraArchivaManager.getRepositoryFamilyName() ) //
+            .setColumnFamily( cf ) //
             .setColumnNames( "repositoryName" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
             .execute();
@@ -156,7 +156,7 @@ public class CassandraMetadataRepository
             {
                 MutationResult mutationResult = HFactory.createMutator( keyspace, StringSerializer.get() ) //
                     .addInsertion( repositoryId, //
-                                   cassandraArchivaManager.getRepositoryFamilyName(), //
+                                   cf, //
                                    CassandraUtils.column( "repositoryName", repository.getName() ) ) //
                     .execute();
                 return repository;
@@ -210,14 +210,15 @@ public class CassandraMetadataRepository
             Namespace namespace = getNamespace( repositoryId, namespaceId );
             if ( namespace == null )
             {
+                String cf = cassandraArchivaManager.getNamespaceFamilyName();
                 namespace = new Namespace( namespaceId, repository );
                 HFactory.createMutator( keyspace, StringSerializer.get() )
                     //  values
                     .addInsertion( key, //
-                                   cassandraArchivaManager.getNamespaceFamilyName(), //
+                                   cf, //
                                    CassandraUtils.column( "name", namespace.getName() ) ) //
                     .addInsertion( key, //
-                                   cassandraArchivaManager.getNamespaceFamilyName(), //
+                                   cf, //
                                    CassandraUtils.column( "repositoryName", repository.getName() ) ) //
                     .execute();
             }
@@ -557,8 +558,6 @@ public class CassandraMetadataRepository
             .addEqualsExpression( "projectId", projectMetadata.getId() ) //
             .execute();
 
-
-
         // project exists ? if yes return nothing to update here
         if ( result.get().getCount() > 0 )
         {
@@ -571,16 +570,17 @@ public class CassandraMetadataRepository
             String key =
                 new Project.KeyBuilder().withProjectId( projectMetadata.getId() ).withNamespace( namespace ).build();
 
+            String cf = cassandraArchivaManager.getProjectFamilyName();
             projectTemplate.createMutator()
                 //  values
                 .addInsertion( key, //
-                               cassandraArchivaManager.getProjectFamilyName(), //
+                               cf, //
                                CassandraUtils.column( "projectId", projectMetadata.getId() ) ) //
                 .addInsertion( key, //
-                               cassandraArchivaManager.getProjectFamilyName(), //
+                               cf, //
                                CassandraUtils.column( "repositoryName", repositoryId ) ) //
                 .addInsertion( key, //
-                               cassandraArchivaManager.getProjectFamilyName(), //
+                               cf, //
                                CassandraUtils.column( "namespaceId", projectMetadata.getNamespace() ) )//
                 .execute();
         }
@@ -618,17 +618,39 @@ public class CassandraMetadataRepository
     public void removeProject( final String repositoryId, final String namespaceId, final String projectId )
         throws MetadataRepositoryException
     {
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
 
         String key = new Project.KeyBuilder() //
             .withProjectId( projectId ) //
             .withNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) ) //
             .build();
-
+        /*
         HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
             .addDeletion( key, cassandraArchivaManager.getProjectFamilyName() ) //
             .execute();
+        */
+        this.projectTemplate.deleteRow( key );
 
-        // TODO finish linked data to delete
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataModelFamilyName() ) //
+            .setColumnNames( "id" ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
+            .addEqualsExpression( "namespaceId", namespaceId ) //
+            .addEqualsExpression( "projectId", projectId ) //
+            .execute();
+
+
+
+        for (Row<String,String,String> row : result.get())
+        {
+            this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
+        }
+
+        // TODO finish linked data to delete metadata
 
 /*        // cleanup ArtifactMetadataModel
         final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
@@ -653,46 +675,7 @@ public class CassandraMetadataRepository
 
         getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );
 
-        Namespace namespace = new Namespace( namespaceId, new Repository( repositoryId ) );
-
-        final List<ProjectVersionMetadataModel> projectVersionMetadataModels =
-            new ArrayList<ProjectVersionMetadataModel>();
-
-        getProjectVersionMetadataModelEntityManager().visitAll( new Function<ProjectVersionMetadataModel, Boolean>()
-        {
-            @Override
-            public Boolean apply( ProjectVersionMetadataModel projectVersionMetadataModel )
-            {
-                if ( projectVersionMetadataModel != null )
-                {
-                    if ( StringUtils.equals( repositoryId,
-                                             projectVersionMetadataModel.getNamespace().getRepository().getName() )
-                        && StringUtils.equals( namespaceId, projectVersionMetadataModel.getNamespace().getName() )
-                        && StringUtils.equals( projectId, projectVersionMetadataModel.getProjectId() ) )
-                    {
-                        projectVersionMetadataModels.add( projectVersionMetadataModel );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-
-        if ( !projectVersionMetadataModels.isEmpty() )
-        {
-            getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModels );
-        }
-
-        String key = new Project.KeyBuilder().withNamespace( namespace ).withProjectId( projectId ).build();
-
-        Project project = getProjectEntityManager().get( key );
-        if ( project == null )
-        {
-            logger.debug( "removeProject notfound" );
-            return;
-        }
-        logger.debug( "removeProject {}", project );
-
-        getProjectEntityManager().remove( project );*/
+    */
     }
 
     @Override
@@ -796,7 +779,7 @@ public class CassandraMetadataRepository
 
             if ( namespace == null )
             {
-                namespace = updateOrAddNamespace( repositoryId, namespaceId );
+                updateOrAddNamespace( repositoryId, namespaceId );
             }
 
             if ( getProject( repositoryId, namespaceId, projectId ) == null )
@@ -1021,19 +1004,19 @@ public class CassandraMetadataRepository
         {
             String cf = this.cassandraArchivaManager.getArtifactMetadataModelFamilyName();
             // create
-            this.artifactMetadataTemplate.createMutator().addInsertion( key, //
-                                                                        cf, //
-                                                                        column( "id", artifactMeta.getId() ) )//
+            this.artifactMetadataTemplate.createMutator() //
+                .addInsertion( key, //
+                               cf, //
+                               column( "id", artifactMeta.getId() ) )//
                 .addInsertion( key, //
                                cf, //
                                column( "repositoryName", repositoryId ) ) //
                 .addInsertion( key, //
                                cf, //
-                               column( "namespaceId", namespaceId ) ).addInsertion( key, //
-                                                                                    cf, //
-                                                                                    column( "project",
-                                                                                            artifactMeta.getProject() )
-            ) //
+                               column( "namespaceId", namespaceId ) ) //
+                .addInsertion( key, //
+                               cf, //
+                               column( "project", artifactMeta.getProject() ) ) //
                 .addInsertion( key, //
                                cf, //
                                column( "projectVersion", artifactMeta.getProjectVersion() ) ) //
@@ -1551,15 +1534,15 @@ public class CassandraMetadataRepository
             .execute();
         */
         StringSerializer ss = StringSerializer.get();
-        CqlQuery<String,String,String> cqlQuery = new CqlQuery<String,String,String>(keyspace, ss, ss, ss);
-        cqlQuery.setQuery("select * from " + cassandraArchivaManager.getArtifactMetadataModelFamilyName() //
-                              + " where 'whenGathered' >= " + startTime.getTime() //
-                              + " and 'whenGathered' <= " + endTime.getTime() //
-                              + " and respositoryName = '" + repositoryId + "'");
-        QueryResult<CqlRows<String,String,String>> result = cqlQuery.execute();
+        CqlQuery<String, String, String> cqlQuery = new CqlQuery<String, String, String>( keyspace, ss, ss, ss );
+        cqlQuery.setQuery( "select * from " + cassandraArchivaManager.getArtifactMetadataModelFamilyName() //
+                               + " where 'whenGathered' >= " + startTime.getTime() //
+                               + " and 'whenGathered' <= " + endTime.getTime() //
+                               + " and respositoryName = '" + repositoryId + "'" );
+        QueryResult<CqlRows<String, String, String>> result = cqlQuery.execute();
         List<String> keys = new ArrayList<String>( result.get().getCount() );
 
-        for (Row<String,String,String> row : result.get())
+        for ( Row<String, String, String> row : result.get() )
         {
             keys.add( row.getKey() );
         }
