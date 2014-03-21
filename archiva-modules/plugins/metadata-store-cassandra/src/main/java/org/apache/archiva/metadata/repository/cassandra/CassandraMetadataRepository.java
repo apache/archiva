@@ -21,6 +21,7 @@ package org.apache.archiva.metadata.repository.cassandra;
 
 import me.prettyprint.cassandra.model.CqlQuery;
 import me.prettyprint.cassandra.model.CqlRows;
+import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.cassandra.service.template.ColumnFamilyTemplate;
 import me.prettyprint.cassandra.service.template.ColumnFamilyUpdater;
@@ -643,9 +644,7 @@ public class CassandraMetadataRepository
             .addEqualsExpression( "projectId", projectId ) //
             .execute();
 
-
-
-        for (Row<String,String,String> row : result.get())
+        for ( Row<String, String, String> row : result.get() )
         {
             this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
         }
@@ -1534,64 +1533,47 @@ public class CassandraMetadataRepository
             .execute();
         */
         StringSerializer ss = StringSerializer.get();
-        CqlQuery<String, String, String> cqlQuery = new CqlQuery<String, String, String>( keyspace, ss, ss, ss );
-        cqlQuery.setQuery( "select * from " + cassandraArchivaManager.getArtifactMetadataModelFamilyName() //
-                               + " where 'whenGathered' >= " + startTime.getTime() //
-                               + " and 'whenGathered' <= " + endTime.getTime() //
-                               + " and respositoryName = '" + repositoryId + "'" );
-        QueryResult<CqlRows<String, String, String>> result = cqlQuery.execute();
-        List<String> keys = new ArrayList<String>( result.get().getCount() );
+        StringBuilder cqlQuery =
+            new StringBuilder( "select * from " + cassandraArchivaManager.getArtifactMetadataModelFamilyName() );
+        cqlQuery.append( " where repositoryName = '" + repositoryId + "'" );
+        if ( startTime != null )
+        {
+            cqlQuery.append( " and 'whenGathered' >= " + startTime.getTime() );
+        }
+
+        if ( endTime != null )
+        {
+            cqlQuery.append( " and 'whenGathered' <= " + endTime.getTime() );
+        }
+
+        QueryResult<CqlRows<String, String, String>> result =
+            new CqlQuery<String, String, String>( keyspace, ss, ss, ss ).setQuery( cqlQuery.toString() ).execute();
+
+        List<ArtifactMetadata> artifactMetadatas = new ArrayList<ArtifactMetadata>( result.get().getCount() );
+
+        LongSerializer ls = LongSerializer.get();
 
         for ( Row<String, String, String> row : result.get() )
         {
-            keys.add( row.getKey() );
-        }
-
-
-
-/*        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
-
-        // FIXME cql query
-        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
-        {
-            @Override
-            public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
-            {
-                if ( artifactMetadataModel != null )
-                {
-                    if ( StringUtils.equals( artifactMetadataModel.getRepositoryId(), repositoryId )
-                        && artifactMetadataModel.getNamespace() != null &&
-                        artifactMetadataModel.getProject() != null && artifactMetadataModel.getId() != null )
-                    {
-
-                        Date when = artifactMetadataModel.getWhenGathered();
-                        if ( ( startTime != null ? when.getTime() >= startTime.getTime() : true ) && ( endTime != null ?
-                            when.getTime() <= endTime.getTime() : true ) )
-                        {
-                            logger.debug( "getArtifactsByDateRange visitAll found: {}", artifactMetadataModel );
-                            artifactMetadataModels.add( artifactMetadataModel );
-                        }
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-        List<ArtifactMetadata> artifactMetadatas = new ArrayList<ArtifactMetadata>( artifactMetadataModels.size() );
-
-        for ( ArtifactMetadataModel model : artifactMetadataModels )
-        {
-            ArtifactMetadata artifactMetadata = getModelMapper().map( model, ArtifactMetadata.class );
-            populateFacets( artifactMetadata );
+            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
+            ArtifactMetadata artifactMetadata = new ArtifactMetadata();
+            artifactMetadata.setNamespace( columnSlice.getColumnByName( "namespaceId" ).getValue() );
+            artifactMetadata.setSize( ls.fromByteBuffer( columnSlice.getColumnByName( "size" ).getValueBytes() ) );
+            artifactMetadata.setId( columnSlice.getColumnByName( "id" ).getValue() );
+            artifactMetadata.setFileLastModified(
+                ls.fromByteBuffer( columnSlice.getColumnByName( "fileLastModified" ).getValueBytes() ) );
+            artifactMetadata.setMd5( columnSlice.getColumnByName( "md5" ).getValue() );
+            artifactMetadata.setProject( columnSlice.getColumnByName( "project" ).getValue() );
+            artifactMetadata.setProjectVersion( columnSlice.getColumnByName( "projectVersion" ).getValue() );
+            artifactMetadata.setRepositoryId( columnSlice.getColumnByName( "repositoryName" ).getValue() );
+            artifactMetadata.setSha1( columnSlice.getColumnByName( "sha1" ).getValue() );
+            artifactMetadata.setVersion( columnSlice.getColumnByName( "version" ).getValue() );
+            artifactMetadata.setWhenGathered(
+                new Date( ls.fromByteBuffer( columnSlice.getColumnByName( "whenGathered" ).getValueBytes() ) ) );
             artifactMetadatas.add( artifactMetadata );
         }
 
-        // FIXME facets ?
-
-        logger.debug( "getArtifactsByDateRange repositoryId: {}, startTime: {}, endTime: {}, artifactMetadatas: {}",
-                      repositoryId, startTime, endTime, artifactMetadatas );
-
-        return artifactMetadatas;*/
-        return Collections.emptyList();
+        return artifactMetadatas;
     }
 
     protected void populateFacets( final ArtifactMetadata artifactMetadata )
