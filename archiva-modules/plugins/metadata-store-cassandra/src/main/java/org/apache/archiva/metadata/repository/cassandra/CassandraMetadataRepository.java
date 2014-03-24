@@ -1096,42 +1096,7 @@ public class CassandraMetadataRepository
 
         }
 
-        key = new ArtifactMetadataModel.KeyBuilder().withNamespace( namespace ).withProject( projectId ).withId(
-            artifactMeta.getId() ).withProjectVersion( projectVersion ).build();
         ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
-
-        exists = this.artifactMetadataTemplate.isColumnsExist( key );
-
-        if ( exists )
-        {
-            // updater
-            ColumnFamilyUpdater<String, String> updater = this.artifactMetadataTemplate.createUpdater( key );
-            updater.setLong( "fileLastModified", artifactMeta.getFileLastModified().getTime() );
-            updater.setLong( "whenGathered", artifactMeta.getWhenGathered().getTime() );
-            updater.setLong( "size", artifactMeta.getSize() );
-            updater.setString( "md5", artifactMeta.getMd5() );
-            updater.setString( "sha1", artifactMeta.getSha1() );
-            updater.setString( "version", artifactMeta.getVersion() );
-            this.artifactMetadataTemplate.update( updater );
-        }
-        else
-        {
-            String cf = this.cassandraArchivaManager.getArtifactMetadataModelFamilyName();
-            // create
-            this.artifactMetadataTemplate.createMutator() //
-                .addInsertion( key, cf, column( "id", artifactMeta.getId() ) )//
-                .addInsertion( key, cf, column( "repositoryName", repositoryId ) ) //
-                .addInsertion( key, cf, column( "namespaceId", namespaceId ) ) //
-                .addInsertion( key, cf, column( "project", artifactMeta.getProject() ) ) //
-                .addInsertion( key, cf, column( "projectVersion", artifactMeta.getProjectVersion() ) ) //
-                .addInsertion( key, cf, column( "version", artifactMeta.getVersion() ) ) //
-                .addInsertion( key, cf, column( "fileLastModified", artifactMeta.getFileLastModified().getTime() ) ) //
-                .addInsertion( key, cf, column( "size", artifactMeta.getSize() ) ) //
-                .addInsertion( key, cf, column( "md5", artifactMeta.getMd5() ) ) //
-                .addInsertion( key, cf, column( "sha1", artifactMeta.getSha1() ) ) //
-                .addInsertion( key, cf, column( "whenGathered", artifactMeta.getWhenGathered().getTime() ) )//
-                .execute();
-        }
 
         artifactMetadataModel.setRepositoryId( repositoryId );
         artifactMetadataModel.setNamespace( namespaceId );
