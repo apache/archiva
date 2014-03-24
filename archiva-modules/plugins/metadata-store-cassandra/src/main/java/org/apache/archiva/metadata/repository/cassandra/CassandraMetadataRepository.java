@@ -1690,15 +1690,13 @@ public class CassandraMetadataRepository
         logger.debug( "removeArtifact repositoryId: '{}', namespace: '{}', project: '{}', version: '{}', id: '{}'",
                       artifactMetadata.getRepositoryId(), artifactMetadata.getNamespace(),
                       artifactMetadata.getProject(), baseVersion, artifactMetadata.getId() );
-/*        String key =
+        String key =
             new ArtifactMetadataModel.KeyBuilder().withRepositoryId( artifactMetadata.getRepositoryId() ).withNamespace(
                 artifactMetadata.getNamespace() ).withId( artifactMetadata.getId() ).withProjectVersion(
                 baseVersion ).withProject( artifactMetadata.getProject() ).build();
 
-        ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
-        artifactMetadataModel.setArtifactMetadataModelId( key );
+        this.artifactMetadataTemplate.deleteRow( key );
 
-        getArtifactMetadataModelEntityManager().remove( artifactMetadataModel );*/
     }
 
     @Override
@@ -1798,9 +1796,9 @@ public class CassandraMetadataRepository
             .addEqualsExpression( "project", projectId ) //
             .addEqualsExpression( "projectVersion", projectVersion );
 
-        QueryResult<OrderedRows<String,String,String>> result = query.execute();
+        QueryResult<OrderedRows<String, String, String>> result = query.execute();
 
-        for (Row<String,String,String> row : result.get())
+        for ( Row<String, String, String> row : result.get() )
         {
             this.artifactMetadataTemplate.deleteRow( row.getKey() );
         }
