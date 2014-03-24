@@ -634,11 +634,8 @@ public class CassandraMetadataRepository
             .withProjectId( projectId ) //
             .withNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) ) //
             .build();
-        /*
-        HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
-            .addDeletion( key, cassandraArchivaManager.getProjectFamilyName() ) //
-            .execute();
-        */
+
+
         this.projectTemplate.deleteRow( key );
 
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
@@ -655,32 +652,20 @@ public class CassandraMetadataRepository
             this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
         }
 
-        // TODO finish linked data to delete metadata
 
-/*        // cleanup ArtifactMetadataModel
-        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
+         result = HFactory //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataModelFamilyName() ) //
+            .setColumnNames( "projectId" ) //
+             .addEqualsExpression( "repositoryName", repositoryId ) //
+             .addEqualsExpression( "namespaceId", namespaceId ) //
+             .addEqualsExpression( "projectId", projectId ) //
+            .execute();
 
-        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        for ( Row<String, String, String> row : result.get() )
         {
-            @Override
-            public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
-            {
-                if ( artifactMetadataModel != null )
-                {
-                    if ( StringUtils.equals( artifactMetadataModel.getRepositoryId(), repositoryId )
-                        && StringUtils.equals( artifactMetadataModel.getNamespace(), namespaceId )
-                        && StringUtils.equals( artifactMetadataModel.getProject(), projectId ) )
-                    {
-                        artifactMetadataModels.add( artifactMetadataModel );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-
-        getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );
-
-    */
+            this.artifactMetadataTemplate.deleteRow( row.getKey() );
+        }
     }
 
     @Override
@@ -1223,55 +1208,7 @@ public class CassandraMetadataRepository
                     .addInsertion( key, cf, column( "name", metadataFacet.getName() ) ) //
                     .execute();
             }
-
         }
-/*        for ( final String facetId : metadataFacetFactories.keySet() )
-        {
-            MetadataFacet metadataFacet = facetedMetadata.getFacet( facetId );
-            if ( metadataFacet == null )
-            {
-                continue;
-            }
-            // clean first
-
-            final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>();
-
-            getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
-            {
-                @Override
-                public Boolean apply( MetadataFacetModel metadataFacetModel )
-                {
-                    ArtifactMetadataModel tmp = metadataFacetModel.getArtifactMetadataModel();
-                    if ( StringUtils.equals( metadataFacetModel.getFacetId(), facetId ) && StringUtils.equals(
-                        tmp.getRepositoryId(), artifactMetadataModel.getRepositoryId() ) && StringUtils.equals(
-                        tmp.getNamespace(), artifactMetadataModel.getNamespace() ) && StringUtils.equals(
-                        tmp.getProject(), artifactMetadataModel.getProject() ) )
-                    {
-                        metadataFacetModels.add( metadataFacetModel );
-                    }
-                    return Boolean.TRUE;
-                }
-            } );
-
-            getMetadataFacetModelEntityManager().remove( metadataFacetModels );
-
-            Map<String, String> properties = metadataFacet.toProperties();
-
-            final List<MetadataFacetModel> metadataFacetModelsToAdd =
-                new ArrayList<MetadataFacetModel>( properties.size() );
-
-            for ( Map.Entry<String, String> entry : properties.entrySet() )
-            {
-                String key = new MetadataFacetModel.KeyBuilder().withKey( entry.getKey() ).withArtifactMetadataModel(
-                    artifactMetadataModel ).withFacetId( facetId ).withName( metadataFacet.getName() ).build();
-                MetadataFacetModel metadataFacetModel =
-                    new MetadataFacetModel( key, artifactMetadataModel, facetId, entry.getKey(), entry.getValue(),
-                                            metadataFacet.getName() );
-                metadataFacetModelsToAdd.add( metadataFacetModel );
-            }
-
-            getMetadataFacetModelEntityManager().put( metadataFacetModelsToAdd );
-        }*/
     }
 
 
@@ -1337,47 +1274,6 @@ public class CassandraMetadataRepository
         }
         metadataFacet.fromProperties( map );
         return metadataFacet;
-
-
-/*
-        final List<MetadataFacetModel> facets = new ArrayList<MetadataFacetModel>();
-        this.getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
-        {
-            @Override
-            public Boolean apply( MetadataFacetModel metadataFacetModel )
-            {
-                if ( metadataFacetModel != null )
-                {
-                    if ( StringUtils.equals( metadataFacetModel.getArtifactMetadataModel().getRepositoryId(),
-                                             repositoryId ) && StringUtils.equals( metadataFacetModel.getFacetId(),
-                                                                                   facetId ) && StringUtils.equals(
-                        metadataFacetModel.getName(), name ) )
-                    {
-                        facets.add( metadataFacetModel );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-
-        if ( facets.isEmpty() )
-        {
-            return null;
-        }
-
-        MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( facetId );
-        if ( metadataFacetFactory == null )
-        {
-            return null;
-        }
-        MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
-        Map<String, String> map = new HashMap<String, String>( facets.size() );
-        for ( MetadataFacetModel metadataFacetModel : facets )
-        {
-            map.put( metadataFacetModel.getKey(), metadataFacetModel.getValue() );
-        }
-        metadataFacet.fromProperties( map );
-        return metadataFacet;*/
     }
 
     @Override
@@ -1582,62 +1478,6 @@ public class CassandraMetadataRepository
         return artifactMetadata;
     }
 
-    protected void populateFacets( final ArtifactMetadata artifactMetadata )
-    {
-/*        final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>();
-
-        getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
-        {
-            @Override
-            public Boolean apply( MetadataFacetModel metadataFacetModel )
-            {
-                if ( metadataFacetModel != null )
-                {
-                    ArtifactMetadataModel artifactMetadataModel = metadataFacetModel.getArtifactMetadataModel();
-                    if ( artifactMetadataModel != null )
-                    {
-                        if ( StringUtils.equals( artifactMetadata.getRepositoryId(),
-                                                 artifactMetadataModel.getRepositoryId() ) && StringUtils.equals(
-                            artifactMetadata.getNamespace(), artifactMetadataModel.getNamespace() )
-                            && StringUtils.equals( artifactMetadata.getRepositoryId(),
-                                                   artifactMetadataModel.getRepositoryId() ) && StringUtils.equals(
-                            artifactMetadata.getProject(), artifactMetadataModel.getProject() ) && StringUtils.equals(
-                            artifactMetadata.getId(), artifactMetadataModel.getId() ) )
-                        {
-                            metadataFacetModels.add( metadataFacetModel );
-                        }
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-        Map<String, Map<String, String>> facetValuesPerFacet = new HashMap<String, Map<String, String>>();
-
-        for ( MetadataFacetModel model : metadataFacetModels )
-        {
-            Map<String, String> values = facetValuesPerFacet.get( model.getName() );
-            if ( values == null )
-            {
-                values = new HashMap<String, String>();
-            }
-            values.put( model.getKey(), model.getValue() );
-            facetValuesPerFacet.put( model.getName(), values );
-        }
-
-        for ( Map.Entry<String, Map<String, String>> entry : facetValuesPerFacet.entrySet() )
-        {
-            MetadataFacetFactory factory = metadataFacetFactories.get( entry.getKey() );
-            if ( factory == null )
-            {
-                continue;
-            }
-            MetadataFacet metadataFacet =
-                factory.createMetadataFacet( artifactMetadata.getRepositoryId(), entry.getKey() );
-            metadataFacet.fromProperties( entry.getValue() );
-            artifactMetadata.addFacet( metadataFacet );
-        }*/
-    }
-
     @Override
     public Collection<ArtifactMetadata> getArtifactsByChecksum( final String repositoryId, final String checksum )
         throws MetadataRepositoryException
@@ -1732,28 +1572,27 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
 
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
 
+        StringSerializer ss = StringSerializer.get();
 
-/*        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
-        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        RangeSlicesQuery<String, String, String> query = HFactory //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataModelFamilyName() ) //
+            .setColumnNames( "namespaceId" ); //
+
+        query = query.addEqualsExpression( "repositoryName", repositoryId ) //
+            .addEqualsExpression( "namespaceId", namespace ) //
+            .addEqualsExpression( "project", project ) //
+            .addEqualsExpression( "version", version );
+
+        QueryResult<OrderedRows<String,String,String>> result = query.execute();
+
+        for (Row<String,String,String> row : result.get())
         {
-            @Override
-            public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
-            {
-                if ( artifactMetadataModel != null )
-                {
-                    if ( StringUtils.equals( repositoryId, artifactMetadataModel.getRepositoryId() )
-                        && StringUtils.equals( namespace, artifactMetadataModel.getNamespace() ) && StringUtils.equals(
-                        project, artifactMetadataModel.getProject() ) && StringUtils.equals( project,
-                                                                                             artifactMetadataModel.getVersion() ) )
-                    {
-                        artifactMetadataModels.add( artifactMetadataModel );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-        getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );*/
+            this.artifactMetadataTemplate.deleteRow( row.getKey() );
+        }
+
 
     }
 
