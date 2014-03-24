@@ -72,7 +72,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.apache.archiva.metadata.repository.cassandra.CassandraUtils.column;
+import static org.apache.archiva.metadata.repository.cassandra.CassandraUtils.*;
 
 /**
  * @author Olivier Lamy
@@ -161,8 +161,7 @@ public class CassandraMetadataRepository
             try
             {
                 MutationResult mutationResult = HFactory.createMutator( keyspace, StringSerializer.get() ) //
-                    .addInsertion( repositoryId, //
-                                   cf, //
+                    .addInsertion( repositoryId, cf,
                                    CassandraUtils.column( "repositoryName", repository.getName() ) ) //
                     .execute();
                 return repository;
@@ -220,12 +219,8 @@ public class CassandraMetadataRepository
                 namespace = new Namespace( namespaceId, repository );
                 HFactory.createMutator( keyspace, StringSerializer.get() )
                     //  values
-                    .addInsertion( key, //
-                                   cf, //
-                                   CassandraUtils.column( "name", namespace.getName() ) ) //
-                    .addInsertion( key, //
-                                   cf, //
-                                   CassandraUtils.column( "repositoryName", repository.getName() ) ) //
+                    .addInsertion( key, cf, CassandraUtils.column( "name", namespace.getName() ) ) //
+                    .addInsertion( key, cf, CassandraUtils.column( "repositoryName", repository.getName() ) ) //
                     .execute();
             }
 
@@ -254,8 +249,8 @@ public class CassandraMetadataRepository
         if ( result.get().getCount() > 0 )
         {
             ColumnSlice<String, String> columnSlice = result.get().getList().get( 0 ).getColumnSlice();
-            return new Namespace( columnSlice.getColumnByName( "name" ).getValue(), //
-                                  new Repository( columnSlice.getColumnByName( "repositoryName" ).getValue() ) );
+            return new Namespace( getStringValue( columnSlice, "name" ), //
+                                  new Repository( getStringValue( columnSlice, "repositoryName" ) ) );
 
         }
         return null;
@@ -441,7 +436,7 @@ public class CassandraMetadataRepository
 
             for ( Row<String, String, String> row : cResult.get() )
             {
-                repoIds.add( row.getColumnSlice().getColumnByName( "repositoryName" ).getValue() );
+                repoIds.add( getStringValue( row.getColumnSlice(), "repositoryName" ) );
             }
 
             return repoIds;
@@ -458,12 +453,10 @@ public class CassandraMetadataRepository
     public Collection<String> getRootNamespaces( final String repoId )
         throws MetadataResolutionException
     {
+        StringSerializer ss = StringSerializer.get();
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
             .setColumnNames( "name" ) //
             .addEqualsExpression( "repositoryName", repoId ) //
@@ -473,8 +466,7 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> row : result.get() )
         {
-            namespaces.add(
-                StringUtils.substringBefore( row.getColumnSlice().getColumnByName( "name" ).getValue(), "." ) );
+            namespaces.add( StringUtils.substringBefore( getStringValue( row.getColumnSlice(), "name" ), "." ) );
         }
 
         return namespaces;
@@ -485,12 +477,10 @@ public class CassandraMetadataRepository
     public Collection<String> getNamespaces( final String repoId, final String namespaceId )
         throws MetadataResolutionException
     {
+        StringSerializer ss = StringSerializer.get();
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
             .setColumnNames( "name" ) //
             .addEqualsExpression( "repositoryName", repoId ) //
@@ -500,9 +490,9 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> row : result.get() )
         {
-            String currentNamespace = row.getColumnSlice().getColumnByName( "name" ).getValue();
-            if ( StringUtils.startsWith( currentNamespace, namespaceId ) && ( StringUtils.length( currentNamespace )
-                > StringUtils.length( namespaceId ) ) )
+            String currentNamespace = getStringValue( row.getColumnSlice(), "name" );
+            if ( StringUtils.startsWith( currentNamespace, namespaceId ) //
+                && ( StringUtils.length( currentNamespace ) > StringUtils.length( namespaceId ) ) )
             {
                 // store after namespaceId '.' but before next '.'
                 // call org namespace org.apache.maven.shared -> stored apache
@@ -524,12 +514,10 @@ public class CassandraMetadataRepository
     public List<String> getNamespaces( final String repoId )
         throws MetadataResolutionException
     {
+        StringSerializer ss = StringSerializer.get();
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
             .setColumnNames( "name" ) //
             .addEqualsExpression( "repositoryName", repoId ) //
@@ -539,7 +527,7 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> row : result.get() )
         {
-            namespaces.add( row.getColumnSlice().getColumnByName( "name" ).getValue() );
+            namespaces.add( getStringValue( row.getColumnSlice(), "name" ) );
         }
 
         return namespaces;
@@ -551,12 +539,10 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+        StringSerializer ss = StringSerializer.get();
 
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
             .setColumnNames( "projectId" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -579,15 +565,9 @@ public class CassandraMetadataRepository
             String cf = cassandraArchivaManager.getProjectFamilyName();
             projectTemplate.createMutator()
                 //  values
-                .addInsertion( key, //
-                               cf, //
-                               CassandraUtils.column( "projectId", projectMetadata.getId() ) ) //
-                .addInsertion( key, //
-                               cf, //
-                               CassandraUtils.column( "repositoryName", repositoryId ) ) //
-                .addInsertion( key, //
-                               cf, //
-                               CassandraUtils.column( "namespaceId", projectMetadata.getNamespace() ) )//
+                .addInsertion( key, cf, CassandraUtils.column( "projectId", projectMetadata.getId() ) ) //
+                .addInsertion( key, cf, CassandraUtils.column( "repositoryName", repositoryId ) ) //
+                .addInsertion( key, cf, CassandraUtils.column( "namespaceId", projectMetadata.getNamespace() ) )//
                 .execute();
         }
     }
@@ -598,12 +578,9 @@ public class CassandraMetadataRepository
     {
 
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
+        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
             .setColumnNames( "projectId" ) //
             .addEqualsExpression( "repositoryName", repoId ) //
@@ -614,7 +591,7 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> row : result.get() )
         {
-            projects.add( row.getColumnSlice().getColumnByName( "projectId" ).getValue() );
+            projects.add( getStringValue( row.getColumnSlice(), "projectId" ) );
         }
 
         return projects;
@@ -625,7 +602,7 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
+        StringSerializer ss = StringSerializer.get();
         String key = new Project.KeyBuilder() //
             .withProjectId( projectId ) //
             .withNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) ) //
@@ -638,10 +615,7 @@ public class CassandraMetadataRepository
         this.projectTemplate.deleteRow( key );
 
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataModelFamilyName() ) //
             .setColumnNames( "id" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -688,12 +662,9 @@ public class CassandraMetadataRepository
     {
 
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
+        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataModelFamilyName() ) //
             .setColumnNames( "id" ) //
             .addEqualsExpression( "repositoryName", repoId ) //
@@ -712,7 +683,7 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> orderedRows : result.get() )
         {
-            versions.add( orderedRows.getColumnSlice().getColumnByName( "id" ).getValue() );
+            versions.add( getStringValue( orderedRows.getColumnSlice(), "id" ) );
         }
 
         return versions;
@@ -725,12 +696,9 @@ public class CassandraMetadataRepository
     {
 
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
+        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
             .setColumnNames( "projectId" ) //
             .addEqualsExpression( "repositoryName", repoId ) //
@@ -758,17 +726,18 @@ public class CassandraMetadataRepository
     protected ProjectVersionMetadataModel map( ColumnSlice<String, String> columnSlice )
     {
         ProjectVersionMetadataModel projectVersionMetadataModel = new ProjectVersionMetadataModel();
-        projectVersionMetadataModel.setId( columnSlice.getColumnByName( "id" ).getValue() );
-        projectVersionMetadataModel.setDescription( columnSlice.getColumnByName( "description" ).getValue() );
-        projectVersionMetadataModel.setName( columnSlice.getColumnByName( "name" ).getValue() );
-        projectVersionMetadataModel.setNamespace(
-            new Namespace( columnSlice.getColumnByName( "namespaceId" ).getValue(), //
-                           new Repository( columnSlice.getColumnByName( "repositoryName" ).getValue() ) )
+        projectVersionMetadataModel.setId( getStringValue( columnSlice, "id" ) );
+        projectVersionMetadataModel.setDescription( getStringValue( columnSlice, "description" ) );
+        projectVersionMetadataModel.setName( getStringValue( columnSlice, "name" ) );
+        projectVersionMetadataModel.setNamespace( new Namespace( getStringValue( columnSlice, "namespaceId" ), //
+                                                                 new Repository(
+                                                                     getStringValue( columnSlice, "repositoryName" ) )
+                                                  )
         );
         projectVersionMetadataModel.setIncomplete(
-            Boolean.parseBoolean( columnSlice.getColumnByName( "incomplete" ).getValue() ) );
-        projectVersionMetadataModel.setProjectId( columnSlice.getColumnByName( "projectId" ).getValue() );
-        projectVersionMetadataModel.setUrl( columnSlice.getColumnByName( "url" ).getValue() );
+            Boolean.parseBoolean( getStringValue( columnSlice, "incomplete" ) ) );
+        projectVersionMetadataModel.setProjectId( getStringValue( columnSlice, "projectId" ) );
+        projectVersionMetadataModel.setUrl( getStringValue( columnSlice, "url" ) );
         return projectVersionMetadataModel;
     }
 
@@ -801,12 +770,11 @@ public class CassandraMetadataRepository
             throw new MetadataRepositoryException( e.getMessage(), e );
         }
 
+        StringSerializer ss = StringSerializer.get();
+
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataModelFamilyName() ) //
             .setColumnNames( "id" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -847,40 +815,24 @@ public class CassandraMetadataRepository
             String cf = cassandraArchivaManager.getProjectVersionMetadataModelFamilyName();
             Mutator<String> mutator = projectVersionMetadataModelTemplate.createMutator()
                 //  values
-                .addInsertion( key, //
-                               cf, //
-                               column( "projectId", projectId ) ) //
-                .addInsertion( key, //
-                               cf, //
-                               column( "repositoryName", repositoryId ) ) //
-                .addInsertion( key, //
-                               cf, //
-                               column( "namespaceId", namespaceId ) )//
-                .addInsertion( key, //
-                               cf, //
-                               column( "id", versionMetadata.getVersion() ) ); //
+                .addInsertion( key, cf, column( "projectId", projectId ) ) //
+                .addInsertion( key, cf, column( "repositoryName", repositoryId ) ) //
+                .addInsertion( key, cf, column( "namespaceId", namespaceId ) )//
+                .addInsertion( key, cf, column( "id", versionMetadata.getVersion() ) ); //
             if ( versionMetadata.getDescription() != null )
             {
-                mutator = mutator.addInsertion( key, //
-                                                cf, //
-                                                column( "description", versionMetadata.getDescription() ) );
+                mutator = mutator.addInsertion( key, cf, column( "description", versionMetadata.getDescription() ) );
             }
 
             if ( versionMetadata.getName() != null )
             {
-                mutator = mutator.addInsertion( key, //
-                                                cf, //
-                                                column( "name", versionMetadata.getName() ) );
+                mutator = mutator.addInsertion( key, cf, column( "name", versionMetadata.getName() ) );
             }
-            mutator = mutator.addInsertion( key, //
-                                            cf, //
-                                            column( "incomplete",
-                                                    Boolean.toString( versionMetadata.isIncomplete() ) ) );
+            mutator = mutator.addInsertion( key, cf, column( "incomplete",
+                                                             Boolean.toString( versionMetadata.isIncomplete() ) ) );
             if ( versionMetadata.getUrl() != null )
             {
-                mutator = mutator.addInsertion( key, //
-                                                cf, //
-                                                column( "url", versionMetadata.getUrl() ) );
+                mutator = mutator.addInsertion( key, cf, column( "url", versionMetadata.getUrl() ) );
             }
 
             MutationResult mutationResult = mutator.execute();
@@ -1310,12 +1262,9 @@ public class CassandraMetadataRepository
         throws MetadataResolutionException
     {
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
+        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getArtifactMetadataModelFamilyName() ) //
             .setColumnNames( "version" ) //
             .addEqualsExpression( "repositoryName", repoId ) //
@@ -1327,7 +1276,7 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> row : result.get() )
         {
-            versions.add( row.getColumnSlice().getColumnByName( "version" ).getValue() );
+            versions.add( getStringValue( row.getColumnSlice(), "version" ) );
         }
 
         return versions;
@@ -1471,12 +1420,9 @@ public class CassandraMetadataRepository
     {
 
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
+        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getMetadataFacetModelFamilyName() ) //
             .setColumnNames( "name" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -1487,7 +1433,7 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> row : result.get() )
         {
-            facets.add( row.getColumnSlice().getColumnByName( "name" ).getValue() );
+            facets.add( getStringValue( row.getColumnSlice(), "name" ) );
         }
         return facets;
     }
@@ -1511,12 +1457,9 @@ public class CassandraMetadataRepository
         }
 
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
+        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getMetadataFacetModelFamilyName() ) //
             .setColumnNames( "key", "value" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -1529,8 +1472,7 @@ public class CassandraMetadataRepository
         for ( Row<String, String, String> row : result.get() )
         {
             ColumnSlice<String, String> columnSlice = row.getColumnSlice();
-            map.put( columnSlice.getColumnByName( "key" ).getValue(),
-                     columnSlice.getColumnByName( "value" ).getValue() );
+            map.put( getStringValue( columnSlice, "key" ), getStringValue( columnSlice, "value" ) );
         }
         metadataFacet.fromProperties( map );
         return metadataFacet;
@@ -1658,12 +1600,9 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
+        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getMetadataFacetModelFamilyName() ) //
             .setColumnNames( "key", "value" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -1682,12 +1621,9 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
+        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getMetadataFacetModelFamilyName() ) //
             .setColumnNames( "key", "value" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -1708,12 +1644,10 @@ public class CassandraMetadataRepository
     {
 
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
+        StringSerializer ss = StringSerializer.get();
+        LongSerializer ls = LongSerializer.get();
         RangeSlicesQuery<String, String, Long> query = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     LongSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ls ) //
             .setColumnFamily( cassandraArchivaManager.getArtifactMetadataModelFamilyName() ) //
             .setColumnNames( "namespaceId", "size", "id", "fileLastModified", "md5", "project", "projectVersion",
                              "repositoryName", "version", "whenGathered", "sha1" ); //
@@ -1730,9 +1664,6 @@ public class CassandraMetadataRepository
 
         List<ArtifactMetadata> artifactMetadatas = new ArrayList<ArtifactMetadata>( result.get().getCount() );
 
-        LongSerializer ls = LongSerializer.get();
-        StringSerializer ss = StringSerializer.get();
-
         for ( Row<String, String, Long> row : result.get() )
         {
             ColumnSlice<String, Long> columnSlice = row.getColumnSlice();
@@ -1741,23 +1672,21 @@ public class CassandraMetadataRepository
             if ( StringUtils.equals( repositoryName, repositoryId ) )
             {
                 ArtifactMetadata artifactMetadata = new ArtifactMetadata();
-                artifactMetadata.setNamespace(
-                    ss.fromByteBuffer( columnSlice.getColumnByName( "namespaceId" ).getValueBytes() ) );
-                artifactMetadata.setSize( ls.fromByteBuffer( columnSlice.getColumnByName( "size" ).getValueBytes() ) );
-                artifactMetadata.setId( ss.fromByteBuffer( columnSlice.getColumnByName( "id" ).getValueBytes() ) );
-                artifactMetadata.setFileLastModified(
-                    ls.fromByteBuffer( columnSlice.getColumnByName( "fileLastModified" ).getValueBytes() ) );
-                artifactMetadata.setMd5( ss.fromByteBuffer( columnSlice.getColumnByName( "md5" ).getValueBytes() ) );
-                artifactMetadata.setProject(
-                    ss.fromByteBuffer( columnSlice.getColumnByName( "project" ).getValueBytes() ) );
-                artifactMetadata.setProjectVersion(
-                    ss.fromByteBuffer( columnSlice.getColumnByName( "projectVersion" ).getValueBytes() ) );
+                artifactMetadata.setNamespace( getAsStringValue( columnSlice, "namespaceId" ) );
+                artifactMetadata.setSize( getLongValue( columnSlice, "size" ) );
+                artifactMetadata.setId( getAsStringValue( columnSlice, "id" ) );
+                artifactMetadata.setFileLastModified( getLongValue( columnSlice, "fileLastModified" ) );
+                artifactMetadata.setMd5( getAsStringValue( columnSlice, "md5" ) );
+                artifactMetadata.setProject( getAsStringValue( columnSlice, "project" ) );
+                artifactMetadata.setProjectVersion( getAsStringValue( columnSlice, "projectVersion" ) );
                 artifactMetadata.setRepositoryId( repositoryName );
-                artifactMetadata.setSha1( ss.fromByteBuffer( columnSlice.getColumnByName( "sha1" ).getValueBytes() ) );
-                artifactMetadata.setVersion(
-                    ss.fromByteBuffer( columnSlice.getColumnByName( "version" ).getValueBytes() ) );
-                artifactMetadata.setWhenGathered(
-                    new Date( ls.fromByteBuffer( columnSlice.getColumnByName( "whenGathered" ).getValueBytes() ) ) );
+                artifactMetadata.setSha1( getAsStringValue( columnSlice, "sha1" ) );
+                artifactMetadata.setVersion( getAsStringValue( columnSlice, "version" ) );
+                Long whenGathered = getLongValue( columnSlice, "whenGathered" );
+                if ( whenGathered != null )
+                {
+                    artifactMetadata.setWhenGathered( new Date( whenGathered ) );
+                }
                 artifactMetadatas.add( artifactMetadata );
             }
         }
@@ -2071,23 +2000,21 @@ public class CassandraMetadataRepository
         {
             ColumnSlice<String, String> columnSlice = row.getColumnSlice();
             ArtifactMetadata artifactMetadata = new ArtifactMetadata();
-            artifactMetadata.setNamespace(
-                ss.fromByteBuffer( columnSlice.getColumnByName( "namespaceId" ).getValueBytes() ) );
-            artifactMetadata.setSize( ls.fromByteBuffer( columnSlice.getColumnByName( "size" ).getValueBytes() ) );
-            artifactMetadata.setId( ss.fromByteBuffer( columnSlice.getColumnByName( "id" ).getValueBytes() ) );
-            artifactMetadata.setFileLastModified(
-                ls.fromByteBuffer( columnSlice.getColumnByName( "fileLastModified" ).getValueBytes() ) );
-            artifactMetadata.setMd5( ss.fromByteBuffer( columnSlice.getColumnByName( "md5" ).getValueBytes() ) );
-            artifactMetadata.setProject(
-                ss.fromByteBuffer( columnSlice.getColumnByName( "project" ).getValueBytes() ) );
-            artifactMetadata.setProjectVersion(
-                ss.fromByteBuffer( columnSlice.getColumnByName( "projectVersion" ).getValueBytes() ) );
+            artifactMetadata.setNamespace( getStringValue( columnSlice, "namespaceId" ) );
+            artifactMetadata.setSize( getAsLongValue( columnSlice, "size" ) );
+            artifactMetadata.setId( getStringValue( columnSlice, "id" ) );
+            artifactMetadata.setFileLastModified( getAsLongValue( columnSlice, "fileLastModified" ) );
+            artifactMetadata.setMd5( getStringValue( columnSlice, "md5" ) );
+            artifactMetadata.setProject( getStringValue( columnSlice, "project" ) );
+            artifactMetadata.setProjectVersion( getStringValue( columnSlice, "projectVersion" ) );
             artifactMetadata.setRepositoryId( repoId );
-            artifactMetadata.setSha1( ss.fromByteBuffer( columnSlice.getColumnByName( "sha1" ).getValueBytes() ) );
-            artifactMetadata.setVersion(
-                ss.fromByteBuffer( columnSlice.getColumnByName( "version" ).getValueBytes() ) );
-            artifactMetadata.setWhenGathered(
-                new Date( ls.fromByteBuffer( columnSlice.getColumnByName( "whenGathered" ).getValueBytes() ) ) );
+            artifactMetadata.setSha1( getStringValue( columnSlice, "sha1" ) );
+            artifactMetadata.setVersion( getStringValue( columnSlice, "version" ) );
+            Long whenGathered = getAsLongValue( columnSlice, "whenGathered" );
+            if ( whenGathered != null )
+            {
+                artifactMetadata.setWhenGathered( new Date( whenGathered ) );
+            }
             artifactMetadatas.add( artifactMetadata );
         }
 
@@ -2113,13 +2040,11 @@ public class CassandraMetadataRepository
         {
             ColumnSlice<String, String> columnSlice = row.getColumnSlice();
             MetadataFacetModel metadataFacetModel = new MetadataFacetModel();
-            metadataFacetModel.setFacetId(
-                ss.fromByteBuffer( columnSlice.getColumnByName( "facetId" ).getValueBytes() ) );
-            metadataFacetModel.setName( ss.fromByteBuffer( columnSlice.getColumnByName( "name" ).getValueBytes() ) );
-            metadataFacetModel.setValue( ss.fromByteBuffer( columnSlice.getColumnByName( "value" ).getValueBytes() ) );
-            metadataFacetModel.setKey( ss.fromByteBuffer( columnSlice.getColumnByName( "key" ).getValueBytes() ) );
-            metadataFacetModel.setProjectVersion(
-                ss.fromByteBuffer( columnSlice.getColumnByName( "projectVersion" ).getValueBytes() ) );
+            metadataFacetModel.setFacetId( getStringValue( columnSlice, "facetId" ) );
+            metadataFacetModel.setName( getStringValue( columnSlice, "name" ) );
+            metadataFacetModel.setValue( getStringValue( columnSlice, "value" ) );
+            metadataFacetModel.setKey( getStringValue( columnSlice, "key" ) );
+            metadataFacetModel.setProjectVersion( getStringValue( columnSlice, "projectVersion" ) );
             metadataFacetModels.add( metadataFacetModel );
         }
 

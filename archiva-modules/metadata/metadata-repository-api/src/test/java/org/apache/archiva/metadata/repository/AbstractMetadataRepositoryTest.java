@@ -424,14 +424,16 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
 
         metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
-        assertEquals( Collections.<String>emptyList(), new ArrayList<String>( metadata.getFacetIds() ) );
+
+        Assertions.assertThat( metadata.getFacetIds() ).isNotNull().isEmpty();
 
         metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_PROJECT_VERSION );
         repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
 
         metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
-        assertEquals( Collections.<String>emptyList(), new ArrayList<String>( metadata.getFacetIds() ) );
+        Assertions.assertThat( metadata.getFacetIds() ).isNotNull().isEmpty();
+
     }
 
     @Test

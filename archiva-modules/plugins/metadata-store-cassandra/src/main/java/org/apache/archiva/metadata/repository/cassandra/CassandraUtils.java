@@ -19,10 +19,14 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
+import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
+import me.prettyprint.cassandra.serializers.StringSerializer;
 import me.prettyprint.hector.api.Serializer;
+import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
 import me.prettyprint.hector.api.factory.HFactory;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Olivier Lamy
@@ -68,6 +72,52 @@ public class CassandraUtils
                                       value, //
                                       (Serializer<A>) SerializerTypeInferer.getSerializer( name ), //
                                       (Serializer<B>) SerializerTypeInferer.getSerializer( value ) );
+    }
+
+    public static String getStringValue( ColumnSlice<String, String> columnSlice, String columnName )
+    {
+        if ( StringUtils.isNotEmpty( columnName ) )
+        {
+            return null;
+        }
+
+        HColumn<String, String> hColumn = columnSlice.getColumnByName( columnName );
+        return hColumn == null ? null : hColumn.getValue();
+    }
+
+    public static Long getLongValue( ColumnSlice<String, Long> columnSlice, String columnName )
+    {
+        if ( StringUtils.isNotEmpty( columnName ) )
+        {
+            return null;
+        }
+
+        HColumn<String, Long> hColumn = columnSlice.getColumnByName( columnName );
+        return hColumn == null ? null : hColumn.getValue();
+    }
+
+    public static String getAsStringValue( ColumnSlice<String, Long> columnSlice, String columnName )
+    {
+        StringSerializer ss = StringSerializer.get();
+        if ( StringUtils.isNotEmpty( columnName ) )
+        {
+            return null;
+        }
+
+        HColumn<String, Long> hColumn = columnSlice.getColumnByName( columnName );
+        return hColumn == null ? null : ss.fromByteBuffer( hColumn.getValueBytes() );
+    }
+
+    public static Long getAsLongValue( ColumnSlice<String, String> columnSlice, String columnName )
+    {
+        LongSerializer ls = LongSerializer.get();
+        if ( StringUtils.isNotEmpty( columnName ) )
+        {
+            return null;
+        }
+
+        HColumn<String, String> hColumn = columnSlice.getColumnByName( columnName );
+        return hColumn == null ? null : ls.fromByteBuffer( hColumn.getValueBytes() );
     }
 
     private CassandraUtils()
