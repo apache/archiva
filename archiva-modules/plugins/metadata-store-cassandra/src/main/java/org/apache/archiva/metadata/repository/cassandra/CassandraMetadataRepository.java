@@ -1688,7 +1688,7 @@ public class CassandraMetadataRepository
     }
 
 
-    protected ArtifactMetadata mapArtifactMetadataLongColumnSlice( ColumnSlice<String,Long> columnSlice )
+    protected ArtifactMetadata mapArtifactMetadataLongColumnSlice( ColumnSlice<String, Long> columnSlice )
     {
         ArtifactMetadata artifactMetadata = new ArtifactMetadata();
         artifactMetadata.setNamespace( getAsStringValue( columnSlice, "namespaceId" ) );
@@ -1709,7 +1709,7 @@ public class CassandraMetadataRepository
         return artifactMetadata;
     }
 
-    protected ArtifactMetadata mapArtifactMetadataStringColumnSlice( ColumnSlice<String,String> columnSlice )
+    protected ArtifactMetadata mapArtifactMetadataStringColumnSlice( ColumnSlice<String, String> columnSlice )
     {
         ArtifactMetadata artifactMetadata = new ArtifactMetadata();
         artifactMetadata.setNamespace( getStringValue( columnSlice, "namespaceId" ) );
@@ -1802,19 +1802,16 @@ public class CassandraMetadataRepository
             .setColumnNames( "namespaceId", "size", "id", "fileLastModified", "md5", "project", "projectVersion",
                              "repositoryName", "version", "whenGathered", "sha1" ); //
 
-        query = query.addEqualsExpression( "sha1", checksum );
+        query = query.addEqualsExpression( "sha1", checksum ).addEqualsExpression( "repositoryName", repositoryId );
 
         QueryResult<OrderedRows<String, String, String>> result = query.execute();
 
         for ( Row<String, String, String> row : result.get() )
         {
             ColumnSlice<String, String> columnSlice = row.getColumnSlice();
-            String repositoryName = getStringValue( columnSlice, "repositoryName" );
-            if ( StringUtils.equals( repositoryName, repositoryId ) )
-            {
 
-                artifactMetadataMap.put( row.getKey(), mapArtifactMetadataStringColumnSlice( columnSlice ) );
-            }
+            artifactMetadataMap.put( row.getKey(), mapArtifactMetadataStringColumnSlice( columnSlice ) );
+
         }
 
         query = HFactory //
@@ -1823,19 +1820,16 @@ public class CassandraMetadataRepository
             .setColumnNames( "namespaceId", "size", "id", "fileLastModified", "md5", "project", "projectVersion",
                              "repositoryName", "version", "whenGathered", "sha1" ); //
 
-        query = query.addEqualsExpression( "md5", checksum );
+        query = query.addEqualsExpression( "md5", checksum ).addEqualsExpression( "repositoryName", repositoryId );
 
         result = query.execute();
 
         for ( Row<String, String, String> row : result.get() )
         {
             ColumnSlice<String, String> columnSlice = row.getColumnSlice();
-            String repositoryName = getStringValue( columnSlice, "repositoryName" );
-            if ( StringUtils.equals( repositoryName, repositoryId ) )
-            {
 
-                artifactMetadataMap.put( row.getKey(), mapArtifactMetadataStringColumnSlice( columnSlice ) );
-            }
+            artifactMetadataMap.put( row.getKey(), mapArtifactMetadataStringColumnSlice( columnSlice ) );
+
         }
 
         return artifactMetadataMap.values();
@@ -1922,36 +1916,33 @@ public class CassandraMetadataRepository
     public List<ArtifactMetadata> getArtifacts( final String repositoryId )
         throws MetadataRepositoryException
     {
-/*        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
-        // FIXME use cql query !
-        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+        StringSerializer ss = StringSerializer.get();
+
+        // cql cannot run or in queries so running twice the query
+
+
+        RangeSlicesQuery<String, String, String> query = HFactory //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataModelFamilyName() ) //
+            .setColumnNames( "namespaceId", "size", "id", "fileLastModified", "md5", "project", "projectVersion",
+                             "repositoryName", "version", "whenGathered", "sha1" ); //
+
+        query = query.addEqualsExpression( "repositoryName", repositoryId );
+
+        QueryResult<OrderedRows<String, String, String>> result = query.execute();
+
+        List<ArtifactMetadata> artifactMetadatas = new ArrayList<ArtifactMetadata>( result.get().getCount() );
+
+        for ( Row<String, String, String> row : result.get() )
         {
-            @Override
-            public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
-           {
-                if ( artifactMetadataModel != null )
-                {
-                    if ( StringUtils.equals( repositoryId, artifactMetadataModel.getRepositoryId() ) )
-                    {
-                        artifactMetadataModels.add( artifactMetadataModel );
-                    }
-                }
+            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
 
-                return Boolean.TRUE;
-            }
-        } );
+            artifactMetadatas.add( mapArtifactMetadataStringColumnSlice( columnSlice ) );
 
-        List<ArtifactMetadata> artifactMetadatas = new ArrayList<ArtifactMetadata>( artifactMetadataModels.size() );
-
-        for ( ArtifactMetadataModel model : artifactMetadataModels )
-        {
-            ArtifactMetadata artifactMetadata = getModelMapper().map( model, ArtifactMetadata.class );
-            populateFacets( artifactMetadata );
-            artifactMetadatas.add( artifactMetadata );
         }
 
-        return artifactMetadatas;*/
-        return Collections.emptyList();
+        return artifactMetadatas;
     }
 
 
