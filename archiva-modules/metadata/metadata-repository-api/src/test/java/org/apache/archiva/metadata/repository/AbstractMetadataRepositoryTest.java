@@ -1238,8 +1238,8 @@ public abstract class AbstractMetadataRepositoryTest
 
         Assertions.assertThat( versions ).isNotNull().isNotEmpty().hasSize( 1 ).contains( "2.0" );
 
-        assertTrue(
-            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ).isEmpty() );
+        Assertions.assertThat( repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
+                                                        TEST_PROJECT_VERSION )).isNotNull().isEmpty();
 
         Assertions.assertThat( repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
                                                         TEST_PROJECT_VERSION_2_0 ) ).isNotEmpty().hasSize( 1 );

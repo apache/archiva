@@ -1841,25 +1841,23 @@ public class CassandraMetadataRepository
                                 final String version, final String id )
         throws MetadataRepositoryException
     {
-/*        logger.debug( "removeArtifact repositoryId: '{}', namespace: '{}', project: '{}', version: '{}', id: '{}'",
+        logger.debug( "removeArtifact repositoryId: '{}', namespace: '{}', project: '{}', version: '{}', id: '{}'",
                       repositoryId, namespace, project, version, id );
         String key =
             new ArtifactMetadataModel.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespace ).withId(
                 id ).withProjectVersion( version ).withProject( project ).build();
 
-        ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
-        artifactMetadataModel.setArtifactMetadataModelId( key );
 
-        getArtifactMetadataModelEntityManager().remove( artifactMetadataModel );
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
+        this.artifactMetadataTemplate.deleteRow( key );
 
         key =
             new ProjectVersionMetadataModel.KeyBuilder().withId( version ).withRepository( repositoryId ).withNamespace(
                 namespace ).withProjectId( project ).build();
 
-        ProjectVersionMetadataModel projectVersionMetadataModel = new ProjectVersionMetadataModel();
-        projectVersionMetadataModel.setRowId( key );
+        this.projectVersionMetadataModelTemplate.deleteRow( key );
 
-        getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModel );*/
     }
 
     @Override
@@ -1918,9 +1916,6 @@ public class CassandraMetadataRepository
     {
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
         StringSerializer ss = StringSerializer.get();
-
-        // cql cannot run or in queries so running twice the query
-
 
         RangeSlicesQuery<String, String, String> query = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
