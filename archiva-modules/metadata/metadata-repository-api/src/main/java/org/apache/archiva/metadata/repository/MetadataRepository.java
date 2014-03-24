@@ -98,7 +98,7 @@ public interface MetadataRepository
     Collection<String> getRepositories()
         throws MetadataRepositoryException;
 
-    List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
+    Collection<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
         throws MetadataRepositoryException;
 
     void removeArtifact( String repositoryId, String namespace, String project, String version, String id )

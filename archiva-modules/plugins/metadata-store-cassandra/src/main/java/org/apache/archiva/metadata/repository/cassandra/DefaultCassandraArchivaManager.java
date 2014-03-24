@@ -288,6 +288,19 @@ public class DefaultCassandraArchivaManager
             whenGatheredColumn.setValidationClass( ComparatorType.LONGTYPE.getClassName() );
             artifactMetadataModel.addColumnDefinition( whenGatheredColumn );
 
+            BasicColumnDefinition sha1Column = new BasicColumnDefinition();
+            sha1Column.setName( StringSerializer.get().toByteBuffer( "sha1" ) );
+            sha1Column.setIndexName( "sha1" );
+            sha1Column.setIndexType( ColumnIndexType.KEYS );
+            sha1Column.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            artifactMetadataModel.addColumnDefinition( sha1Column );
+
+            BasicColumnDefinition md5Column = new BasicColumnDefinition();
+            md5Column.setName( StringSerializer.get().toByteBuffer( "md5" ) );
+            md5Column.setIndexName( "md5" );
+            md5Column.setIndexType( ColumnIndexType.KEYS );
+            md5Column.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            artifactMetadataModel.addColumnDefinition( md5Column );
 
 
         }

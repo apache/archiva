@@ -1164,7 +1164,7 @@ public abstract class AbstractMetadataRepositoryTest
         ArtifactMetadata artifact = createArtifact();
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
 
-        List<ArtifactMetadata> artifactsByChecksum = repository.getArtifactsByChecksum( TEST_REPO_ID, "not checksum" );
+        Collection<ArtifactMetadata> artifactsByChecksum = repository.getArtifactsByChecksum( TEST_REPO_ID, "not checksum" );
         assertEquals( Collections.<ArtifactMetadata>emptyList(), artifactsByChecksum );
     }
 
