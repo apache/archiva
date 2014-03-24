@@ -321,7 +321,6 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( 1, metadata.getMailingLists().size() );
         mailingList = metadata.getMailingLists().get( 0 );
         assertEquals( "Foo List", mailingList.getName() );
-        //assertEquals( Collections.singletonList( "other archive" ), mailingList.getOtherArchives() );
         Assertions.assertThat( mailingList.getOtherArchives() ).isNotNull().isNotEmpty().hasSize( 1 ).contains(
             "other archive" );
 

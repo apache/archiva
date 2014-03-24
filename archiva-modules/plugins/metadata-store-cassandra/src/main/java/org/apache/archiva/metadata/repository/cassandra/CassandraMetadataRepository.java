@@ -261,16 +261,79 @@ public class CassandraMetadataRepository
     public void removeNamespace( String repositoryId, String namespaceId )
         throws MetadataRepositoryException
     {
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
         try
         {
             String key =
                 new Namespace.KeyBuilder().withNamespace( namespaceId ).withRepositoryId( repositoryId ).build();
 
-            MutationResult result =
-                HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
-                    .addDeletion( key, cassandraArchivaManager.getNamespaceFamilyName() ) //
-                    .execute();
+            HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
+                .addDeletion( key, cassandraArchivaManager.getNamespaceFamilyName() ) //
+                .execute();
 
+            QueryResult<OrderedRows<String, String, String>> result = HFactory //
+                .createRangeSlicesQuery( keyspace, //
+                                         StringSerializer.get(), //
+                                         StringSerializer.get(), //
+                                         StringSerializer.get() ) //
+                .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
+                .setColumnNames( "repositoryName" ) //
+                .addEqualsExpression( "repositoryName", repositoryId ) //
+                .addEqualsExpression( "namespaceId", namespaceId ) //
+                .execute();
+
+            for ( Row<String, String, String> row : result.get() )
+            {
+                this.projectTemplate.deleteRow( row.getKey() );
+            }
+
+            result = HFactory //
+                .createRangeSlicesQuery( keyspace, //
+                                         StringSerializer.get(), //
+                                         StringSerializer.get(), //
+                                         StringSerializer.get() ) //
+                .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataModelFamilyName() ) //
+                .setColumnNames( "repositoryName" ) //
+                .addEqualsExpression( "repositoryName", repositoryId ) //
+                .addEqualsExpression( "namespaceId", namespaceId ) //
+                .execute();
+
+            for ( Row<String, String, String> row : result.get() )
+            {
+                this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
+            }
+
+            result = HFactory //
+                .createRangeSlicesQuery( keyspace, //
+                                         StringSerializer.get(), //
+                                         StringSerializer.get(), //
+                                         StringSerializer.get() ) //
+                .setColumnFamily( cassandraArchivaManager.getArtifactMetadataModelFamilyName() ) //
+                .setColumnNames( "repositoryName" ) //
+                .addEqualsExpression( "repositoryName", repositoryId ) //
+                .addEqualsExpression( "namespaceId", namespaceId ) //
+                .execute();
+
+            for ( Row<String, String, String> row : result.get() )
+            {
+                this.artifactMetadataTemplate.deleteRow( row.getKey() );
+            }
+
+            result = HFactory //
+                .createRangeSlicesQuery( keyspace, //
+                                         StringSerializer.get(), //
+                                         StringSerializer.get(), //
+                                         StringSerializer.get() ) //
+                .setColumnFamily( cassandraArchivaManager.getMetadataFacetModelFamilyName() ) //
+                .setColumnNames( "repositoryName" ) //
+                .addEqualsExpression( "repositoryName", repositoryId ) //
+                .addEqualsExpression( "namespaceId", namespaceId ) //
+                .execute();
+
+            for ( Row<String, String, String> row : result.get() )
+            {
+                this.metadataFacetTemplate.deleteRow( row.getKey() );
+            }
 
         }
         catch ( HInvalidRequestException e )
@@ -286,21 +349,16 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
 
-        // FIXME remove all datas attached to the repositoryId
-
-        // retrieve and delete all namespace with this repositoryId
+        StringSerializer ss = StringSerializer.get();
 
         // TODO use cql queries to delete all
         List<String> namespacesKey = new ArrayList<String>();
 
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
-            .setColumnNames( "repositoryName", "name" ) //
+            .setColumnNames( "repositoryName"  ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
             .execute();
 
@@ -309,109 +367,78 @@ public class CassandraMetadataRepository
             namespacesKey.add( row.getKey() );
         }
 
-        HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
+        HFactory.createMutator( cassandraArchivaManager.getKeyspace(), ss ) //
             .addDeletion( namespacesKey, cassandraArchivaManager.getNamespaceFamilyName() ) //
             .execute();
 
         //delete repositoryId
-        HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
+        HFactory.createMutator( cassandraArchivaManager.getKeyspace(), ss ) //
             .addDeletion( repositoryId, cassandraArchivaManager.getRepositoryFamilyName() ) //
             .execute();
 
-/*
-        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
 
-        // remove data related to the repository
-        this.getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
+
+        result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
+            .setColumnNames( "repositoryName" ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
+            .execute();
+
+        for ( Row<String, String, String> row : result.get() )
         {
-            @Override
-            public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
-            {
-                if ( artifactMetadataModel != null )
-                {
-                    if ( StringUtils.equals( artifactMetadataModel.getRepositoryId(), repositoryId ) )
-                    {
-                        artifactMetadataModels.add( artifactMetadataModel );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-
-        getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );
-
-        final List<Namespace> namespaces = new ArrayList<Namespace>();
-
-        getNamespaceEntityManager().visitAll( new Function<Namespace, Boolean>()
-        {
-            @Override
-            public Boolean apply( Namespace namespace )
-            {
-                if ( namespace != null )
-                {
-                    if ( StringUtils.equals( namespace.getRepository().getId(), repositoryId ) )
-                    {
-                        namespaces.add( namespace );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-
-        getNamespaceEntityManager().remove( namespaces );
-
-        final List<Project> projects = new ArrayList<Project>();
-        getProjectEntityManager().visitAll( new Function<Project, Boolean>()
-        {
-            @Override
-            public Boolean apply( Project project )
-            {
-                if ( project != null )
-                {
-                    if ( StringUtils.equals( project.getNamespace().getRepository().getId(), repositoryId ) )
-                    {
-                        projects.add( project );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-
-        getProjectEntityManager().remove( projects );
-
-        // TODO  cleanup or not
-        //final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>(  );
-        //getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
-
-        final List<ProjectVersionMetadataModel> projectVersionMetadataModels =
-            new ArrayList<ProjectVersionMetadataModel>();
-
-        getProjectVersionMetadataModelEntityManager().visitAll( new Function<ProjectVersionMetadataModel, Boolean>()
-        {
-            @Override
-            public Boolean apply( ProjectVersionMetadataModel projectVersionMetadataModel )
-            {
-                if ( projectVersionMetadataModel != null )
-                {
-                    if ( StringUtils.equals( projectVersionMetadataModel.getNamespace().getRepository().getId(),
-                                             repositoryId ) )
-                    {
-                        projectVersionMetadataModels.add( projectVersionMetadataModel );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-
-        getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModels );
-
-        Repository repository = getRepositoryEntityManager().get( repositoryId );
-        if ( repository != null )
-        {
-            getRepositoryEntityManager().remove( repository );
+            this.projectTemplate.deleteRow( row.getKey() );
         }
 
-    */
+        result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataModelFamilyName() ) //
+            .setColumnNames( "repositoryName" ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
+            .execute();
+
+        for ( Row<String, String, String> row : result.get() )
+        {
+            this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
+        }
+
+        result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataModelFamilyName() ) //
+            .setColumnNames( "repositoryName" ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
+            .execute();
+
+        for ( Row<String, String, String> row : result.get() )
+        {
+            this.artifactMetadataTemplate.deleteRow( row.getKey() );
+        }
+
+        result = HFactory //
+            .createRangeSlicesQuery( keyspace, //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get(), //
+                                     StringSerializer.get() ) //
+            .setColumnFamily( cassandraArchivaManager.getMetadataFacetModelFamilyName() ) //
+            .setColumnNames( "repositoryName" ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
+            .execute();
+
+        for ( Row<String, String, String> row : result.get() )
+        {
+            this.metadataFacetTemplate.deleteRow( row.getKey() );
+        }
+
+
     }
 
     @Override
