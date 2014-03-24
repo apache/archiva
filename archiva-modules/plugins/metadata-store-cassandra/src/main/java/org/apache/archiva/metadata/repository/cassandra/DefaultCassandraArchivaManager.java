@@ -302,13 +302,6 @@ public class DefaultCassandraArchivaManager
 
             // creating indexes for cql query
 
-            BasicColumnDefinition artifactMetadataModelColumn = new BasicColumnDefinition();
-            artifactMetadataModelColumn.setName( StringSerializer.get().toByteBuffer( "artifactMetadataModel" ) );
-            artifactMetadataModelColumn.setIndexName( "artifactMetadataModel" );
-            artifactMetadataModelColumn.setIndexType( ColumnIndexType.KEYS );
-            artifactMetadataModelColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            metadataFacetModel.addColumnDefinition( artifactMetadataModelColumn );
-
             BasicColumnDefinition facetIdColumn = new BasicColumnDefinition();
             facetIdColumn.setName( StringSerializer.get().toByteBuffer( "facetId" ) );
             facetIdColumn.setIndexName( "facetId" );
@@ -329,6 +322,27 @@ public class DefaultCassandraArchivaManager
             nameColumn.setIndexType( ColumnIndexType.KEYS );
             nameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             metadataFacetModel.addColumnDefinition( nameColumn );
+
+            BasicColumnDefinition namespaceColumn = new BasicColumnDefinition();
+            namespaceColumn.setName( StringSerializer.get().toByteBuffer( "namespaceId" ) );
+            namespaceColumn.setIndexName( "namespaceId" );
+            namespaceColumn.setIndexType( ColumnIndexType.KEYS );
+            namespaceColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            metadataFacetModel.addColumnDefinition( namespaceColumn );
+
+            BasicColumnDefinition projectIdColumn = new BasicColumnDefinition();
+            projectIdColumn.setName( StringSerializer.get().toByteBuffer( "projectId" ) );
+            projectIdColumn.setIndexName( "projectId" );
+            projectIdColumn.setIndexType( ColumnIndexType.KEYS );
+            projectIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            metadataFacetModel.addColumnDefinition( projectIdColumn );
+
+            BasicColumnDefinition projectVersionColumn = new BasicColumnDefinition();
+            projectVersionColumn.setName( StringSerializer.get().toByteBuffer( "projectVersion" ) );
+            projectVersionColumn.setIndexName( "projectVersion" );
+            projectVersionColumn.setIndexType( ColumnIndexType.KEYS );
+            projectVersionColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            metadataFacetModel.addColumnDefinition( projectVersionColumn );
 
         }
 

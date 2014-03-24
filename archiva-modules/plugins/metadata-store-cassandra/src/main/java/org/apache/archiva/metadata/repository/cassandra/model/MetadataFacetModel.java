@@ -33,8 +33,8 @@ public class MetadataFacetModel
 {
     // id is repositoryId + namespaceId + projectId + facetId + name + mapKey
 
-    @Column(name = "artifactMetadataModel")
-    private ArtifactMetadataModel artifactMetadataModel;
+    //@Column(name = "artifactMetadataModel")
+    //private ArtifactMetadataModel artifactMetadataModel;
 
     @Column(name = "facetId")
     private String facetId;
@@ -48,19 +48,20 @@ public class MetadataFacetModel
     @Column(name = "value")
     private String value;
 
+    private String projectVersion;
+
     public MetadataFacetModel()
     {
         // no op
     }
 
-    public MetadataFacetModel( ArtifactMetadataModel artifactMetadataModel, String facetId, String key, String value,
-                               String name )
+    public MetadataFacetModel( String facetId, String key, String value, String name, String projectVersion )
     {
-        this.artifactMetadataModel = artifactMetadataModel;
         this.key = key;
         this.value = value;
         this.name = name;
         this.facetId = facetId;
+        this.projectVersion = projectVersion;
     }
 
     public String getFacetId()
@@ -73,15 +74,6 @@ public class MetadataFacetModel
         this.facetId = facetId;
     }
 
-    public ArtifactMetadataModel getArtifactMetadataModel()
-    {
-        return artifactMetadataModel;
-    }
-
-    public void setArtifactMetadataModel( ArtifactMetadataModel artifactMetadataModel )
-    {
-        this.artifactMetadataModel = artifactMetadataModel;
-    }
 
     public String getName()
     {
@@ -113,12 +105,20 @@ public class MetadataFacetModel
         this.value = value;
     }
 
+    public String getProjectVersion()
+    {
+        return projectVersion;
+    }
+
+    public void setProjectVersion( String projectVersion )
+    {
+        this.projectVersion = projectVersion;
+    }
 
     @Override
     public String toString()
     {
         final StringBuilder sb = new StringBuilder( "MetadataFacetModel{" );
-        sb.append( ", artifactMetadataModel=" ).append( artifactMetadataModel );
         sb.append( ", key='" ).append( key ).append( '\'' );
         sb.append( ", value='" ).append( value ).append( '\'' );
         sb.append( '}' );
