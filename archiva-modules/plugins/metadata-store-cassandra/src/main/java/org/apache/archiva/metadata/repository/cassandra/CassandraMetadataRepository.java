@@ -1093,7 +1093,7 @@ public class CassandraMetadataRepository
                 .addInsertion( key, cf, column( "repositoryName", repositoryId ) ) //
                 .addInsertion( key, cf, column( "namespaceId", namespaceId ) ) //
                 .addInsertion( key, cf, column( "project", artifactMeta.getProject() ) ) //
-                .addInsertion( key, cf, column( "projectVersion", artifactMeta.getProjectVersion() ) ) //
+                .addInsertion( key, cf, column( "projectVersion", projectVersion ) ) //
                 .addInsertion( key, cf, column( "version", artifactMeta.getVersion() ) ) //
                 .addInsertion( key, cf, column( "fileLastModified", artifactMeta.getFileLastModified().getTime() ) ) //
                 .addInsertion( key, cf, column( "size", artifactMeta.getSize() ) ) //
@@ -1120,7 +1120,7 @@ public class CassandraMetadataRepository
             projectVersionMetadataModelTemplate.createMutator() //
                 .addInsertion( key, cf, column( "namespaceId", namespace.getName() ) ) //
                 .addInsertion( key, cf, column( "repositoryName", repositoryId ) ) //
-                .addInsertion( key, cf, column( "id", artifactMeta.getId() ) ) //
+                .addInsertion( key, cf, column( "projectVersion", projectVersion ) ) //
                 .addInsertion( key, cf, column( "projectId", projectId ) ) //
                 .execute();
 
@@ -1163,105 +1163,17 @@ public class CassandraMetadataRepository
                 .execute();
         }
 
-        /*artifactMetadataModel.setArtifactMetadataModelId(
-            new ArtifactMetadataModel.KeyBuilder().withId( versionMetadata.getId() ).withRepositoryId(
-                repositoryId ).withNamespace( namespaceId ).withProjectVersion(
-                versionMetadata.getVersion() ).withProject( projectId ).build()
-        );*/
         artifactMetadataModel.setRepositoryId( repositoryId );
         artifactMetadataModel.setNamespace( namespaceId );
         artifactMetadataModel.setProject( projectId );
-        artifactMetadataModel.setProjectVersion( artifactMeta.getVersion() );
+        artifactMetadataModel.setProjectVersion( projectVersion );
         artifactMetadataModel.setVersion( artifactMeta.getVersion() );
         artifactMetadataModel.setFileLastModified( artifactMeta.getFileLastModified() == null
                                                        ? new Date().getTime()
                                                        : artifactMeta.getFileLastModified().getTime() );
 
-        //
-
         // now facets
         updateFacets( artifactMeta, artifactMetadataModel );
-
-
-/*        String namespaceKey =
-            new Namespace.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespaceId ).build();
-        // create the namespace if not exists
-        Namespace namespace = getNamespaceEntityManager().get( namespaceKey );
-        if ( namespace == null )
-        {
-            namespace = updateOrAddNamespace( repositoryId, namespaceId );
-        }
-
-        // create the project if not exist
-        String projectKey = new Project.KeyBuilder().withNamespace( namespace ).withProjectId( projectId ).build();
-
-        Project project = getProjectEntityManager().get( projectKey );
-        if ( project == null )
-        {
-            project = new Project( projectKey, projectId, namespace );
-            try
-            {
-                getProjectEntityManager().put( project );
-            }
-            catch ( PersistenceException e )
-            {
-                throw new MetadataRepositoryException( e.getMessage(), e );
-            }
-        }
-
-        String key = new ArtifactMetadataModel.KeyBuilder().withNamespace( namespace ).withProject( projectId ).withId(
-            artifactMeta.getId() ).withProjectVersion( projectVersion ).build();
-
-        ArtifactMetadataModel artifactMetadataModel = getArtifactMetadataModelEntityManager().get( key );
-        if ( artifactMetadataModel == null )
-        {
-            artifactMetadataModel = new ArtifactMetadataModel( key, artifactMeta.getId(), repositoryId, namespaceId,
-                                                               artifactMeta.getProject(), projectVersion,
-                                                               artifactMeta.getVersion(),
-                                                               artifactMeta.getFileLastModified(),
-                                                               artifactMeta.getSize(), artifactMeta.getMd5(),
-                                                               artifactMeta.getSha1(), artifactMeta.getWhenGathered() );
-
-        }
-        else
-        {
-            artifactMetadataModel.setFileLastModified( artifactMeta.getFileLastModified().getTime() );
-            artifactMetadataModel.setWhenGathered( artifactMeta.getWhenGathered().getTime() );
-            artifactMetadataModel.setSize( artifactMeta.getSize() );
-            artifactMetadataModel.setMd5( artifactMeta.getMd5() );
-            artifactMetadataModel.setSha1( artifactMeta.getSha1() );
-            artifactMetadataModel.setVersion( artifactMeta.getVersion() );
-        }
-
-        try
-        {
-            getArtifactMetadataModelEntityManager().put( artifactMetadataModel );
-        }
-        catch ( PersistenceException e )
-        {
-            throw new MetadataRepositoryException( e.getMessage(), e );
-        }
-
-        key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repositoryId ).withNamespace(
-            namespace ).withProjectId( projectId ).withId( projectVersion ).build();
-
-        ProjectVersionMetadataModel projectVersionMetadataModel =
-            getProjectVersionMetadataModelEntityManager().get( key );
-
-        if ( projectVersionMetadataModel == null )
-        {
-            projectVersionMetadataModel = new ProjectVersionMetadataModel();
-            projectVersionMetadataModel.setRowId( key );
-            projectVersionMetadataModel.setProjectId( projectId );
-            projectVersionMetadataModel.setId( projectVersion );
-            projectVersionMetadataModel.setNamespace( namespace );
-
-            getProjectVersionMetadataModelEntityManager().put( projectVersionMetadataModel );
-
-        }
-
-        // now facets
-        updateFacets( artifactMeta, artifactMetadataModel );*/
 
     }
 
@@ -1274,18 +1186,19 @@ public class CassandraMetadataRepository
         StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
-            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataModelFamilyName() ) //
-            .setColumnNames( "version" ) //
+            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataModelFamilyName() ) //
+            .setColumnNames( "projectVersion" ) //
             .addEqualsExpression( "repositoryName", repoId ) //
             .addEqualsExpression( "namespaceId", namespace ) //
             .addEqualsExpression( "projectId", projectId ) //
-            .addEqualsExpression( "projectVersion", projectVersion ).execute();
+            .addEqualsExpression( "projectVersion", projectVersion ) //
+            .execute();
 
         final Set<String> versions = new HashSet<String>();
 
         for ( Row<String, String, String> row : result.get() )
         {
-            versions.add( getStringValue( row.getColumnSlice(), "version" ) );
+            versions.add( getStringValue( row.getColumnSlice(), "projectVersion" ) );
         }
 
         return versions;
