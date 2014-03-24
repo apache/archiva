@@ -28,7 +28,7 @@
   </parent>
   <artifactId>metadata-store-cassandra</artifactId>
   <packaging>bundle</packaging>
-  <name>Archiva Core Plugins :: Cassandra JPA Storage for Metadata</name>
+  <name>Archiva Core Plugins :: Cassandra Storage for Metadata</name>
 
   <properties>
 
@@ -37,7 +37,9 @@
     2.x has 1.7 required
     <cassandraVersion>2.0.2</cassandraVersion>
     -->
+    <!--
     <astyanax.version>1.56.48</astyanax.version>
+    -->
   </properties>
 
   <dependencies>
@@ -79,74 +81,6 @@
       <artifactId>geronimo-jpa_2.0_spec</artifactId>
     </dependency>
 
-    <!-- FIXME still need old jackson -->
-    <!--
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.13</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>1.9.13</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.netflix.astyanax</groupId>
-      <artifactId>astyanax-entity-mapper</artifactId>
-      <version>${astyanax.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>stax</groupId>
-          <artifactId>stax-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.cassandra</groupId>
-          <artifactId>cassandra-thrift</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.persistence</groupId>
-          <artifactId>persistence-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.jboss.netty</groupId>
-          <artifactId>netty</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>com.netflix.astyanax</groupId>
-      <artifactId>astyanax-core</artifactId>
-      <version>${astyanax.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.netflix.astyanax</groupId>
-      <artifactId>astyanax-thrift</artifactId>
-      <version>${astyanax.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.cassandra</groupId>
-          <artifactId>cassandra-thrift</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>servlet-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.apache.cassandra</groupId>
       <artifactId>cassandra-all</artifactId>
