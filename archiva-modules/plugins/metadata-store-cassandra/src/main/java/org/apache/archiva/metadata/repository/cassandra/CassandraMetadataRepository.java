@@ -844,11 +844,19 @@ public class CassandraMetadataRepository
             updater.setString( "repositoryName", repositoryId );
             updater.setString( "namespaceId", namespaceId );
             updater.setString( "id", versionMetadata.getVersion() );
-            updater.setString( "description", versionMetadata.getDescription() );
-            updater.setString( "name", versionMetadata.getName() );
+            if ( StringUtils.isNotEmpty( versionMetadata.getDescription() ) )
+            {
+                updater.setString( "description", versionMetadata.getDescription() );
+            }
+            if ( StringUtils.isNotEmpty( versionMetadata.getName() ) )
+            {
+                updater.setString( "name", versionMetadata.getName() );
+            }
             updater.setString( "incomplete", Boolean.toString( versionMetadata.isIncomplete() ) );
-            updater.setString( "url", versionMetadata.getUrl() );
-
+            if ( StringUtils.isNotEmpty( versionMetadata.getUrl() ) )
+            {
+                updater.setString( "url", versionMetadata.getUrl() );
+            }
             projectVersionMetadataModelTemplate.update( updater );
 
         }
