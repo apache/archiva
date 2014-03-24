@@ -1688,7 +1688,7 @@ public class CassandraMetadataRepository
     }
 
 
-    protected ArtifactMetadata mapArtifactMetadataLongColumnSlice( ColumnSlice columnSlice )
+    protected ArtifactMetadata mapArtifactMetadataLongColumnSlice( ColumnSlice<String,Long> columnSlice )
     {
         ArtifactMetadata artifactMetadata = new ArtifactMetadata();
         artifactMetadata.setNamespace( getAsStringValue( columnSlice, "namespaceId" ) );
@@ -1698,10 +1698,31 @@ public class CassandraMetadataRepository
         artifactMetadata.setMd5( getAsStringValue( columnSlice, "md5" ) );
         artifactMetadata.setProject( getAsStringValue( columnSlice, "project" ) );
         artifactMetadata.setProjectVersion( getAsStringValue( columnSlice, "projectVersion" ) );
-        artifactMetadata.setRepositoryId( getStringValue( columnSlice, "repositoryName" ) );
+        artifactMetadata.setRepositoryId( getAsStringValue( columnSlice, "repositoryName" ) );
         artifactMetadata.setSha1( getAsStringValue( columnSlice, "sha1" ) );
         artifactMetadata.setVersion( getAsStringValue( columnSlice, "version" ) );
         Long whenGathered = getLongValue( columnSlice, "whenGathered" );
+        if ( whenGathered != null )
+        {
+            artifactMetadata.setWhenGathered( new Date( whenGathered ) );
+        }
+        return artifactMetadata;
+    }
+
+    protected ArtifactMetadata mapArtifactMetadataStringColumnSlice( ColumnSlice<String,String> columnSlice )
+    {
+        ArtifactMetadata artifactMetadata = new ArtifactMetadata();
+        artifactMetadata.setNamespace( getStringValue( columnSlice, "namespaceId" ) );
+        artifactMetadata.setSize( getAsLongValue( columnSlice, "size" ) );
+        artifactMetadata.setId( getStringValue( columnSlice, "id" ) );
+        artifactMetadata.setFileLastModified( getAsLongValue( columnSlice, "fileLastModified" ) );
+        artifactMetadata.setMd5( getStringValue( columnSlice, "md5" ) );
+        artifactMetadata.setProject( getStringValue( columnSlice, "project" ) );
+        artifactMetadata.setProjectVersion( getStringValue( columnSlice, "projectVersion" ) );
+        artifactMetadata.setRepositoryId( getStringValue( columnSlice, "repositoryName" ) );
+        artifactMetadata.setSha1( getStringValue( columnSlice, "sha1" ) );
+        artifactMetadata.setVersion( getStringValue( columnSlice, "version" ) );
+        Long whenGathered = getAsLongValue( columnSlice, "whenGathered" );
         if ( whenGathered != null )
         {
             artifactMetadata.setWhenGathered( new Date( whenGathered ) );
@@ -1792,7 +1813,7 @@ public class CassandraMetadataRepository
             if ( StringUtils.equals( repositoryName, repositoryId ) )
             {
 
-                artifactMetadataMap.put( row.getKey(), mapArtifactMetadataLongColumnSlice( columnSlice ) );
+                artifactMetadataMap.put( row.getKey(), mapArtifactMetadataStringColumnSlice( columnSlice ) );
             }
         }
 
@@ -1813,7 +1834,7 @@ public class CassandraMetadataRepository
             if ( StringUtils.equals( repositoryName, repositoryId ) )
             {
 
-                artifactMetadataMap.put( row.getKey(), mapArtifactMetadataLongColumnSlice( columnSlice ) );
+                artifactMetadataMap.put( row.getKey(), mapArtifactMetadataStringColumnSlice( columnSlice ) );
             }
         }
 
