@@ -1847,9 +1847,6 @@ public class CassandraMetadataRepository
             new ArtifactMetadataModel.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespace ).withId(
                 id ).withProjectVersion( version ).withProject( project ).build();
 
-
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
         this.artifactMetadataTemplate.deleteRow( key );
 
         key =
@@ -1857,6 +1854,7 @@ public class CassandraMetadataRepository
                 namespace ).withProjectId( project ).build();
 
         this.projectVersionMetadataModelTemplate.deleteRow( key );
+
 
     }
 
@@ -2019,9 +2017,14 @@ public class CassandraMetadataRepository
                 .addEqualsExpression( "projectVersion", projectVersion ) //
                 .execute();
 
+        if (result.get() == null || result.get().getCount() < 1)
+        {
+            return Collections.emptyList();
+        }
+
         List<ArtifactMetadata> artifactMetadatas = new ArrayList<ArtifactMetadata>( result.get().getCount() );
 
-        LongSerializer ls = LongSerializer.get();
+
 
         for ( Row<String, String, String> row : result.get() )
         {
