@@ -76,7 +76,7 @@ public class CassandraUtils
 
     public static String getStringValue( ColumnSlice<String, String> columnSlice, String columnName )
     {
-        if ( StringUtils.isNotEmpty( columnName ) )
+        if ( StringUtils.isEmpty( columnName ) )
         {
             return null;
         }
@@ -87,7 +87,7 @@ public class CassandraUtils
 
     public static Long getLongValue( ColumnSlice<String, Long> columnSlice, String columnName )
     {
-        if ( StringUtils.isNotEmpty( columnName ) )
+        if ( StringUtils.isEmpty( columnName ) )
         {
             return null;
         }
@@ -99,7 +99,7 @@ public class CassandraUtils
     public static String getAsStringValue( ColumnSlice<String, Long> columnSlice, String columnName )
     {
         StringSerializer ss = StringSerializer.get();
-        if ( StringUtils.isNotEmpty( columnName ) )
+        if ( StringUtils.isEmpty( columnName ) )
         {
             return null;
         }
@@ -111,7 +111,7 @@ public class CassandraUtils
     public static Long getAsLongValue( ColumnSlice<String, String> columnSlice, String columnName )
     {
         LongSerializer ls = LongSerializer.get();
-        if ( StringUtils.isNotEmpty( columnName ) )
+        if ( StringUtils.isEmpty( columnName ) )
         {
             return null;
         }
