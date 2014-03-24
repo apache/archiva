@@ -116,6 +116,7 @@ public interface MetadataRepository
         throws MetadataRepositoryException;
 
     /**
+     * FIXME need a unit test!!!
      * Only remove {@link MetadataFacet} for the artifact
      * @param repositoryId
      * @param namespace
