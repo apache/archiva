@@ -1778,46 +1778,33 @@ public class CassandraMetadataRepository
                                       final String projectVersion )
         throws MetadataRepositoryException
     {
-        /*
-        final List<ArtifactMetadataModel> artifactMetadataModels = new ArrayList<ArtifactMetadataModel>();
 
-        // FIXME use cql query
+        String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repoId ).withNamespace(
+            namespace ).withProjectId( projectId ).withId( projectVersion ).build();
 
-        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
+        this.projectVersionMetadataModelTemplate.deleteRow( key );
+
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
+        StringSerializer ss = StringSerializer.get();
+
+        RangeSlicesQuery<String, String, String> query = HFactory //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+            .setColumnFamily( cassandraArchivaManager.getArtifactMetadataModelFamilyName() ) //
+            .setColumnNames( "namespaceId" ); //
+
+        query = query.addEqualsExpression( "repositoryName", repoId ) //
+            .addEqualsExpression( "namespaceId", namespace ) //
+            .addEqualsExpression( "project", projectId ) //
+            .addEqualsExpression( "projectVersion", projectVersion );
+
+        QueryResult<OrderedRows<String,String,String>> result = query.execute();
+
+        for (Row<String,String,String> row : result.get())
         {
-            @Override
-            public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
-            {
-                if ( artifactMetadataModel != null )
-                {
-                    if ( StringUtils.equals( repoId, artifactMetadataModel.getRepositoryId() ) && StringUtils.equals(
-                        namespace, artifactMetadataModel.getNamespace() ) && StringUtils.equals( projectId,
-                                                                                                 artifactMetadataModel.getProject() )
-                        && StringUtils.equals( projectVersion, artifactMetadataModel.getProjectVersion() ) )
-                    {
-                        artifactMetadataModels.add( artifactMetadataModel );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-
-        logger.debug( "removeProjectVersions:{}", artifactMetadataModels );
-        if ( artifactMetadataModels.isEmpty() )
-        {
-            return;
+            this.artifactMetadataTemplate.deleteRow( row.getKey() );
         }
 
-        getArtifactMetadataModelEntityManager().remove( artifactMetadataModels );
-
-        String key = new ProjectVersionMetadataModel.KeyBuilder().withProjectId( projectId ).withId(
-            projectVersion ).withRepository( repoId ).withNamespace( namespace ).build();
-
-        ProjectVersionMetadataModel projectVersionMetadataModel = new ProjectVersionMetadataModel();
-        projectVersionMetadataModel.setRowId( key );
-
-        getProjectVersionMetadataModelEntityManager().remove( projectVersionMetadataModel );
-        */
     }
 
     @Override
