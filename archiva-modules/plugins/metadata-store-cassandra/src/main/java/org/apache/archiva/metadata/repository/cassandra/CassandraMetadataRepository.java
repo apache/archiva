@@ -969,66 +969,35 @@ public class CassandraMetadataRepository
 
         projectVersionMetadata.setUrl( columnFamilyResult.getString( "url" ) );
 
-        /*
-
-        ProjectVersionMetadataModel projectVersionMetadataModel =
-            getProjectVersionMetadataModelEntityManager().get( key );
-
-        if ( projectVersionMetadataModel == null )
-        {
-            logger.debug(
-                "getProjectVersion repoId: '{}', namespace: '{}', projectId: '{}', projectVersion: {} -> not found",
-                repoId, namespace, projectId, projectVersion );
-            return null;
-        }
-
-        ProjectVersionMetadata projectVersionMetadata =
-            getModelMapper().map( projectVersionMetadataModel, ProjectVersionMetadata.class );
-
-        logger.debug( "getProjectVersion repoId: '{}', namespace: '{}', projectId: '{}', projectVersion: {} -> {}",
-                      repoId, namespace, projectId, projectVersion, projectVersionMetadata );
-
-        projectVersionMetadata.setCiManagement( projectVersionMetadataModel.getCiManagement() );
-        projectVersionMetadata.setIssueManagement( projectVersionMetadataModel.getIssueManagement() );
-        projectVersionMetadata.setOrganization( projectVersionMetadataModel.getOrganization() );
-        projectVersionMetadata.setScm( projectVersionMetadataModel.getScm() );
-
         // FIXME complete collections !!
-
         // facets
-        final List<MetadataFacetModel> metadataFacetModels = new ArrayList<MetadataFacetModel>();
-        // FIXME use cql query
-        getMetadataFacetModelEntityManager().visitAll( new Function<MetadataFacetModel, Boolean>()
-        {
-            @Override
-            public Boolean apply( MetadataFacetModel metadataFacetModel )
-            {
-                if ( metadataFacetModel != null )
-                {
-                    if ( StringUtils.equals( repoId, metadataFacetModel.getArtifactMetadataModel().getRepositoryId() )
-                        && StringUtils.equals( namespace, metadataFacetModel.getArtifactMetadataModel().getNamespace() )
-                        && StringUtils.equals( projectId, metadataFacetModel.getArtifactMetadataModel().getProject() )
-                        && StringUtils.equals( projectVersion,
-                                               metadataFacetModel.getArtifactMetadataModel().getProjectVersion() ) )
-                    {
-                        metadataFacetModels.add( metadataFacetModel );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-        Map<String, Map<String, String>> metadataFacetsPerFacetIds = new HashMap<String, Map<String, String>>();
-        for ( MetadataFacetModel metadataFacetModel : metadataFacetModels )
-        {
 
-            Map<String, String> metaValues = metadataFacetsPerFacetIds.get( metadataFacetModel.getFacetId() );
+        StringSerializer ss = StringSerializer.get();
+
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+            .setColumnFamily( cassandraArchivaManager.getMetadataFacetModelFamilyName() ) //
+            .setColumnNames( "facetId", "key", "value", "name" ) //
+            .addEqualsExpression( "repositoryName", repoId ) //
+            .addEqualsExpression( "namespaceId", namespace ) //
+            .addEqualsExpression( "projectId", projectId ) //
+            .addEqualsExpression( "projectVersion", projectVersion ) //
+            .execute();
+
+        Map<String, Map<String, String>> metadataFacetsPerFacetIds = new HashMap<String, Map<String, String>>();
+
+        for ( Row<String, String, String> row : result.get() )
+        {
+            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
+            String facetId = getStringValue( columnSlice, "facetId" );
+            Map<String, String> metaValues = metadataFacetsPerFacetIds.get( facetId );
             if ( metaValues == null )
             {
                 metaValues = new HashMap<String, String>();
-                metadataFacetsPerFacetIds.put( metadataFacetModel.getFacetId(), metaValues );
+                metadataFacetsPerFacetIds.put( facetId, metaValues );
             }
-            metaValues.put( metadataFacetModel.getKey(), metadataFacetModel.getValue() );
-
+            metaValues.put( getStringValue( columnSlice, "key" ), getStringValue( columnSlice, "value" ) );
         }
 
         if ( !metadataFacetsPerFacetIds.isEmpty() )
@@ -1044,7 +1013,7 @@ public class CassandraMetadataRepository
                 }
             }
         }
-        */
+
         return projectVersionMetadata;
     }
 
