@@ -776,11 +776,12 @@ public class CassandraMetadataRepository
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataModelFamilyName() ) //
-            .setColumnNames( "id" ) //
+            .setColumnNames( "projectVersion" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
             .addEqualsExpression( "namespaceId", namespaceId ) //
             .addEqualsExpression( "projectId", projectId ) //
-            .addEqualsExpression( "id", versionMetadata.getId() ).execute();
+            .addEqualsExpression( "projectVersion", versionMetadata.getId() ) //
+            .execute();
 
         ProjectVersionMetadataModel projectVersionMetadataModel = null;
         boolean creation = true;
@@ -819,7 +820,7 @@ public class CassandraMetadataRepository
                 .addInsertion( key, cf, column( "projectId", projectId ) ) //
                 .addInsertion( key, cf, column( "repositoryName", repositoryId ) ) //
                 .addInsertion( key, cf, column( "namespaceId", namespaceId ) )//
-                .addInsertion( key, cf, column( "id", versionMetadata.getVersion() ) ); //
+                .addInsertion( key, cf, column( "projectVersion", versionMetadata.getVersion() ) ); //
             if ( versionMetadata.getDescription() != null )
             {
                 mutator = mutator.addInsertion( key, cf, column( "description", versionMetadata.getDescription() ) );
@@ -844,7 +845,7 @@ public class CassandraMetadataRepository
             updater.setString( "projectId", projectId );
             updater.setString( "repositoryName", repositoryId );
             updater.setString( "namespaceId", namespaceId );
-            updater.setString( "id", versionMetadata.getVersion() );
+            updater.setString( "projectVersion", versionMetadata.getVersion() );
             if ( StringUtils.isNotEmpty( versionMetadata.getDescription() ) )
             {
                 updater.setString( "description", versionMetadata.getDescription() );
@@ -950,17 +951,17 @@ public class CassandraMetadataRepository
             namespace ).withProjectId( projectId ).withId( projectVersion ).build();
 
         ColumnFamilyResult<String, String> columnFamilyResult =
-            this.projectVersionMetadataModelTemplate.queryColumns( key, Arrays.asList( "id", "description", "name",
-                                                                                       "namespaceId", "repositoryName",
-                                                                                       "incomplete", "projectId",
-                                                                                       "url" ) );
+            this.projectVersionMetadataModelTemplate.queryColumns( key, Arrays.asList( "projectVersion", "description",
+                                                                                       "name", "namespaceId",
+                                                                                       "repositoryName", "incomplete",
+                                                                                       "projectId", "url" ) );
         if ( !columnFamilyResult.hasResults() )
         {
             return null;
         }
 
         ProjectVersionMetadata projectVersionMetadata = new ProjectVersionMetadata();
-        projectVersionMetadata.setId( columnFamilyResult.getString( "id" ) );
+        projectVersionMetadata.setId( columnFamilyResult.getString( "projectVersion" ) );
         projectVersionMetadata.setDescription( columnFamilyResult.getString( "description" ) );
         projectVersionMetadata.setName( columnFamilyResult.getString( "name" ) );
 
@@ -1202,29 +1203,6 @@ public class CassandraMetadataRepository
         }
 
         return versions;
-
-/*        final Set<String> versions = new HashSet<String>();
-        // FIXME use cql query
-        getArtifactMetadataModelEntityManager().visitAll( new Function<ArtifactMetadataModel, Boolean>()
-        {
-            @Override
-            public Boolean apply( ArtifactMetadataModel artifactMetadataModel )
-            {
-                if ( artifactMetadataModel != null )
-                {
-                    if ( StringUtils.equals( repoId, artifactMetadataModel.getRepositoryId() ) && StringUtils.equals(
-                        namespace, artifactMetadataModel.getNamespace() ) && StringUtils.equals( projectId,
-                                                                                                 artifactMetadataModel.getProject() )
-                        && StringUtils.equals( projectVersion, artifactMetadataModel.getProjectVersion() ) )
-                    {
-                        versions.add( artifactMetadataModel.getVersion() );
-                    }
-                }
-                return Boolean.TRUE;
-            }
-        } );
-
-        return versions;*/
 
     }
 
@@ -1930,14 +1908,12 @@ public class CassandraMetadataRepository
                 .addEqualsExpression( "projectVersion", projectVersion ) //
                 .execute();
 
-        if (result.get() == null || result.get().getCount() < 1)
+        if ( result.get() == null || result.get().getCount() < 1 )
         {
             return Collections.emptyList();
         }
 
         List<ArtifactMetadata> artifactMetadatas = new ArrayList<ArtifactMetadata>( result.get().getCount() );
-
-
 
         for ( Row<String, String, String> row : result.get() )
         {
