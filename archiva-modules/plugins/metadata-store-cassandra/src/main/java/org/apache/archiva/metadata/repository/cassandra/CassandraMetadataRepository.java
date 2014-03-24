@@ -666,7 +666,7 @@ public class CassandraMetadataRepository
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataModelFamilyName() ) //
-            .setColumnNames( "id" ) //
+            .setColumnNames( "projectVersion" ) //
             .addEqualsExpression( "repositoryName", repoId ) //
             .addEqualsExpression( "namespaceId", namespace ) //
             .addEqualsExpression( "projectId", projectId ) //
@@ -683,7 +683,7 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> orderedRows : result.get() )
         {
-            versions.add( getStringValue( orderedRows.getColumnSlice(), "id" ) );
+            versions.add( getStringValue( orderedRows.getColumnSlice(), "projectVersion" ) );
         }
 
         return versions;
