@@ -44,11 +44,11 @@ public interface CassandraArchivaManager
 
     String getProjectFamilyName();
 
-    String getProjectVersionMetadataModelFamilyName();
+    String getProjectVersionMetadataFamilyName();
 
-    String getArtifactMetadataModelFamilyName();
+    String getArtifactMetadataFamilyName();
 
-    String getMetadataFacetModelFamilyName();
+    String getMetadataFacetFamilyName();
 
     String getMailingListFamilyName();
 

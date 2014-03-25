@@ -75,11 +75,11 @@ public class DefaultCassandraArchivaManager
 
     private String projectFamilyName = "project";
 
-    private String projectVersionMetadataModelFamilyName = "projectversionmetadatamodel";
+    private String projectVersionMetadataFamilyName = "projectversionmetadata";
 
-    private String artifactMetadataModelFamilyName = "artifactmetadatamodel";
+    private String artifactMetadataFamilyName = "artifactmetadatamodel";
 
-    private String metadataFacetModelFamilyName = "metadatafacetmodel";
+    private String metadataFacetFamilyName = "metadatafacetmodel";
 
     private String mailingListFamilyName = "mailinglist";
 
@@ -194,7 +194,7 @@ public class DefaultCassandraArchivaManager
 
             final ColumnFamilyDefinition projectVersionMetadataModel =
                 HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                                                       getProjectVersionMetadataModelFamilyName(), //
+                                                       getProjectVersionMetadataFamilyName(), //
                                                        ComparatorType.UTF8TYPE );
             cfds.add( projectVersionMetadataModel );
 
@@ -235,7 +235,7 @@ public class DefaultCassandraArchivaManager
 
             final ColumnFamilyDefinition artifactMetadataModel =
                 HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                                                       getArtifactMetadataModelFamilyName(), //
+                                                       getArtifactMetadataFamilyName(), //
                                                        ComparatorType.UTF8TYPE );
             cfds.add( artifactMetadataModel );
 
@@ -311,7 +311,7 @@ public class DefaultCassandraArchivaManager
         {
             final ColumnFamilyDefinition metadataFacetModel =
                 HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
-                                                       getMetadataFacetModelFamilyName(), //
+                                                       getMetadataFacetFamilyName(), //
                                                        ComparatorType.UTF8TYPE );
             cfds.add( metadataFacetModel );
 
@@ -439,19 +439,19 @@ public class DefaultCassandraArchivaManager
         return projectFamilyName;
     }
 
-    public String getProjectVersionMetadataModelFamilyName()
+    public String getProjectVersionMetadataFamilyName()
     {
-        return projectVersionMetadataModelFamilyName;
+        return projectVersionMetadataFamilyName;
     }
 
-    public String getArtifactMetadataModelFamilyName()
+    public String getArtifactMetadataFamilyName()
     {
-        return artifactMetadataModelFamilyName;
+        return artifactMetadataFamilyName;
     }
 
-    public String getMetadataFacetModelFamilyName()
+    public String getMetadataFacetFamilyName()
     {
-        return metadataFacetModelFamilyName;
+        return metadataFacetFamilyName;
     }
 
     public String getMailingListFamilyName()
