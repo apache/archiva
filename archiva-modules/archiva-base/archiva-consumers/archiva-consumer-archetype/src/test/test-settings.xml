@@ -44,6 +44,7 @@ under the License.
       </activation>
       <repositories>
         <!--
+        Uncomment if you have some redback librairies staged and want to cut a release
         <repository>
           <id>archiva-repository.apache.org.stage</id>
           <url>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage/</url>
