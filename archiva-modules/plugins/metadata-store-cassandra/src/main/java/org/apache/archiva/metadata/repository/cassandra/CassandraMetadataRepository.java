@@ -65,7 +65,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.PersistenceException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -981,10 +980,7 @@ public class CassandraMetadataRepository
 
             if ( StringUtils.isNotEmpty( ciSystem ) || StringUtils.isNotEmpty( ciUrl ) )
             {
-                CiManagement ci = new CiManagement();
-                ci.setSystem( ciSystem );
-                ci.setUrl( ciUrl );
-                projectVersionMetadata.setCiManagement( ci );
+                projectVersionMetadata.setCiManagement( new CiManagement( ciSystem, ciUrl ) );
             }
         }
         {
@@ -992,10 +988,7 @@ public class CassandraMetadataRepository
             String issueSystem = columnFamilyResult.getString( "issueManagement.system" );
             if ( StringUtils.isNotEmpty( issueSystem ) || StringUtils.isNotEmpty( issueUrl ) )
             {
-                IssueManagement issueManagement = new IssueManagement();
-                issueManagement.setSystem( issueSystem );
-                issueManagement.setUrl( issueUrl );
-                projectVersionMetadata.setIssueManagement( issueManagement );
+                projectVersionMetadata.setIssueManagement( new IssueManagement( issueSystem, issueUrl ) );
             }
         }
         {
@@ -1003,23 +996,16 @@ public class CassandraMetadataRepository
             String organizationName = columnFamilyResult.getString( "organization.name" );
             if ( StringUtils.isNotEmpty( organizationUrl ) || StringUtils.isNotEmpty( organizationName ) )
             {
-                Organization organization = new Organization();
-                organization.setName( organizationName );
-                organization.setUrl( organizationUrl );
-                projectVersionMetadata.setOrganization( organization );
+                projectVersionMetadata.setOrganization( new Organization( organizationName, organizationUrl ) );
             }
         }
         {
             String devConn = columnFamilyResult.getString( "scm.developerConnection" );
             String conn = columnFamilyResult.getString( "scm.connection" );
             String url = columnFamilyResult.getString( "scm.url" );
-            if (StringUtils.isNotEmpty( devConn ) || StringUtils.isNotEmpty( conn ) || StringUtils.isNotEmpty( url ))
+            if ( StringUtils.isNotEmpty( devConn ) || StringUtils.isNotEmpty( conn ) || StringUtils.isNotEmpty( url ) )
             {
-                Scm scm = new Scm();
-                scm.setUrl( url );
-                scm.setConnection( conn );
-                scm.setDeveloperConnection( devConn );
-                projectVersionMetadata.setScm( scm );
+                projectVersionMetadata.setScm( new Scm( conn, devConn, url ) );
             }
         }
         // FIXME complete collections !!

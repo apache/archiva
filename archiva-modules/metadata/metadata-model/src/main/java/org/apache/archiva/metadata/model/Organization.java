@@ -19,7 +19,6 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
@@ -30,6 +29,17 @@ public class Organization
     private String name;
 
     private String url;
+
+    public Organization()
+    {
+        // no op
+    }
+
+    public Organization( String name, String url )
+    {
+        this.name = name;
+        this.url = url;
+    }
 
     public String getUrl()
     {

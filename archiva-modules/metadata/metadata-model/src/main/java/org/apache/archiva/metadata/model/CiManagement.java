@@ -42,6 +42,17 @@ public class CiManagement
      */
     private String url;
 
+    public CiManagement()
+    {
+        // no op
+    }
+
+    public CiManagement( String system, String url )
+    {
+        this.system = system;
+        this.url = url;
+    }
+
     public String getUrl()
     {
         return url;

@@ -19,13 +19,12 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * Information about the issue management system used by the project.
- *
+ * <p/>
  * TODO considering moving this to a facet - avoid referring to it externally
  */
 @XmlRootElement(name = "issueManagement")
@@ -41,6 +40,17 @@ public class IssueManagement
      * The base URL of the issue management system.
      */
     private String url;
+
+    public IssueManagement()
+    {
+        // no op
+    }
+
+    public IssueManagement( String system, String url )
+    {
+        this.system = system;
+        this.url = url;
+    }
 
     public String getUrl()
     {
