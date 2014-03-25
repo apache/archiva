@@ -30,9 +30,6 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -82,26 +79,23 @@ public class CassandraMetadataRepositoryTest
         throws Exception
     {
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       "project" );
+                                                       cassandraArchivaManager.getProjectFamilyName() );
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       "namespace" );
+                                                       cassandraArchivaManager.getNamespaceFamilyName() );
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       "repository" );
+                                                       cassandraArchivaManager.getRepositoryFamilyName() );
 
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       "projectversionmetadatamodel" );
+                                                       cassandraArchivaManager.getProjectVersionMetadataFamilyName() );
 
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       "artifactmetadatamodel" );
+                                                       cassandraArchivaManager.getArtifactMetadataFamilyName() );
 
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       "metadatafacetmodel" );
+                                                       cassandraArchivaManager.getMetadataFacetFamilyName() );
 
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       "metadatafacetmodel" );
-
-        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       "mailinglist" );
+                                                       cassandraArchivaManager.getMailingListFamilyName() );
 
     }
 

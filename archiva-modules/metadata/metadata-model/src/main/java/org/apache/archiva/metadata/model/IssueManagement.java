@@ -72,4 +72,12 @@ public class IssueManagement
         this.system = system;
     }
 
+    @Override
+    public String toString()
+    {
+        return "IssueManagement{" +
+            "system='" + system + '\'' +
+            ", url='" + url + '\'' +
+            '}';
+    }
 }

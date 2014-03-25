@@ -60,4 +60,13 @@ public class Organization
     {
         this.name = name;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Organization{" +
+            "name='" + name + '\'' +
+            ", url='" + url + '\'' +
+            '}';
+    }
 }

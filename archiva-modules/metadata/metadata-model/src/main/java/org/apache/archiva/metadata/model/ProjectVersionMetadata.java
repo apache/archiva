@@ -193,4 +193,23 @@ public class ProjectVersionMetadata
     {
         this.incomplete = incomplete;
     }
+
+    @Override
+    public String toString()
+    {
+        return "ProjectVersionMetadata{" +
+            "id='" + id + '\'' +
+            ", url='" + url + '\'' +
+            ", name='" + name + '\'' +
+            ", description='" + description + '\'' +
+            ", organization=" + organization +
+            ", issueManagement=" + issueManagement +
+            ", scm=" + scm +
+            ", ciManagement=" + ciManagement +
+            ", licenses=" + licenses +
+            ", mailingLists=" + mailingLists +
+            ", dependencies=" + dependencies +
+            ", incomplete=" + incomplete +
+            '}';
+    }
 }

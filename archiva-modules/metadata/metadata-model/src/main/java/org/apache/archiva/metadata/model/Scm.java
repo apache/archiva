@@ -73,4 +73,14 @@ public class Scm
     {
         this.connection = connection;
     }
+
+    @Override
+    public String toString()
+    {
+        return "Scm{" +
+            "connection='" + connection + '\'' +
+            ", developerConnection='" + developerConnection + '\'' +
+            ", url='" + url + '\'' +
+            '}';
+    }
 }

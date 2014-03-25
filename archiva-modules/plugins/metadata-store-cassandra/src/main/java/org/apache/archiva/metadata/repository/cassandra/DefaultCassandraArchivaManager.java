@@ -77,9 +77,9 @@ public class DefaultCassandraArchivaManager
 
     private String projectVersionMetadataFamilyName = "projectversionmetadata";
 
-    private String artifactMetadataFamilyName = "artifactmetadatamodel";
+    private String artifactMetadataFamilyName = "artifactmetadata";
 
-    private String metadataFacetFamilyName = "metadatafacetmodel";
+    private String metadataFacetFamilyName = "metadatafacet";
 
     private String mailingListFamilyName = "mailinglist";
 

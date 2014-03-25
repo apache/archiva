@@ -121,4 +121,17 @@ public class MailingList
     {
         return name;
     }
+
+    @Override
+    public String toString()
+    {
+        return "MailingList{" +
+            "mainArchiveUrl='" + mainArchiveUrl + '\'' +
+            ", otherArchives=" + otherArchives +
+            ", name='" + name + '\'' +
+            ", postAddress='" + postAddress + '\'' +
+            ", subscribeAddress='" + subscribeAddress + '\'' +
+            ", unsubscribeAddress='" + unsubscribeAddress + '\'' +
+            '}';
+    }
 }

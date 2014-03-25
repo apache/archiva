@@ -72,4 +72,13 @@ public class CiManagement
     {
         this.system = system;
     }
+
+    @Override
+    public String toString()
+    {
+        return "CiManagement{" +
+            "system='" + system + '\'' +
+            ", url='" + url + '\'' +
+            '}';
+    }
 }
