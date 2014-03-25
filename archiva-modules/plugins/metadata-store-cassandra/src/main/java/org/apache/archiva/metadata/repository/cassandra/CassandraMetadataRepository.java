@@ -42,6 +42,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.FacetedMetadata;
 import org.apache.archiva.metadata.model.IssueManagement;
+import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.model.Organization;
@@ -74,6 +75,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.apache.archiva.metadata.repository.cassandra.CassandraUtils.*;
 
@@ -100,6 +102,8 @@ public class CassandraMetadataRepository
     private final ColumnFamilyTemplate<String, String> artifactMetadataTemplate;
 
     private final ColumnFamilyTemplate<String, String> metadataFacetTemplate;
+
+    private final ColumnFamilyTemplate<String, String> mailingListTemplate;
 
     public CassandraMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories,
                                         ArchivaConfiguration configuration,
@@ -131,6 +135,13 @@ public class CassandraMetadataRepository
         this.metadataFacetTemplate =
             new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
                                                             cassandraArchivaManager.getMetadataFacetModelFamilyName(),
+                                                            //
+                                                            StringSerializer.get(), //
+                                                            StringSerializer.get() );
+
+        this.mailingListTemplate =
+            new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
+                                                            cassandraArchivaManager.getMailingListFamilyName(),
                                                             //
                                                             StringSerializer.get(), //
                                                             StringSerializer.get() );
@@ -879,6 +890,11 @@ public class CassandraMetadataRepository
                 }
             }
 
+            if ( versionMetadata.getMailingLists() != null )
+            {
+                recordMailingList( key, versionMetadata.getMailingLists() );
+            }
+
             MutationResult mutationResult = mutator.execute();
         }
         else
@@ -934,6 +950,13 @@ public class CassandraMetadataRepository
                     updater.setString( "scm.connection", scm.getConnection() );
                     updater.setString( "scm.developerConnection", scm.getDeveloperConnection() );
                 }
+            }
+
+            if ( versionMetadata.getMailingLists() != null )
+            {
+                // update is a delete record
+                removeMailingList( key );
+                recordMailingList( key, versionMetadata.getMailingLists() );
             }
 
             projectVersionMetadataModelTemplate.update( updater );
@@ -1008,6 +1031,7 @@ public class CassandraMetadataRepository
                 projectVersionMetadata.setScm( new Scm( conn, devConn, url ) );
             }
         }
+        projectVersionMetadata.setMailingLists( getMailingLists( key ) );
         // FIXME complete collections !!
         // facets
 
@@ -1056,6 +1080,96 @@ public class CassandraMetadataRepository
         return projectVersionMetadata;
     }
 
+    protected void recordMailingList( String projectVersionMetadataKey, List<MailingList> mailingLists )
+    {
+        if ( mailingLists == null || mailingLists.isEmpty() )
+        {
+            return;
+        }
+        Mutator<String> mailingMutator = this.mailingListTemplate.createMutator();
+        for ( MailingList mailingList : mailingLists )
+        {
+            // we don't care about the key as the real used one with the projectVersionMetadata
+            String keyMailingList = UUID.randomUUID().toString();
+            String cfMailingList = cassandraArchivaManager.getMailingListFamilyName();
+
+            addInsertion( mailingMutator, keyMailingList, cfMailingList, "projectVersionMetadataModel.key",
+                          projectVersionMetadataKey );
+            addInsertion( mailingMutator, keyMailingList, cfMailingList, "name", mailingList.getName() );
+            addInsertion( mailingMutator, keyMailingList, cfMailingList, "mainArchiveUrl",
+                          mailingList.getMainArchiveUrl() );
+            addInsertion( mailingMutator, keyMailingList, cfMailingList, "postAddress", mailingList.getPostAddress() );
+            addInsertion( mailingMutator, keyMailingList, cfMailingList, "subscribeAddress",
+                          mailingList.getSubscribeAddress() );
+            addInsertion( mailingMutator, keyMailingList, cfMailingList, "unsubscribeAddress",
+                          mailingList.getUnsubscribeAddress() );
+            int idx = 0;
+            for ( String otherArchive : mailingList.getOtherArchives() )
+            {
+                addInsertion( mailingMutator, keyMailingList, cfMailingList, "otherArchive." + idx, otherArchive );
+                idx++;
+            }
+
+        }
+        mailingMutator.execute();
+    }
+
+    protected void removeMailingList( String projectVersionMetadataKey )
+    {
+        StringSerializer ss = StringSerializer.get();
+        QueryResult<OrderedRows<String, String, String>> result =
+            HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
+                .setColumnFamily( cassandraArchivaManager.getMailingListFamilyName() ) //
+                .setColumnNames( "name" ) //
+                .setRowCount( Integer.MAX_VALUE ) //
+                .addEqualsExpression( "projectVersionMetadataModel.key", projectVersionMetadataKey ) //
+                .execute();
+        for ( Row<String, String, String> row : result.get() )
+        {
+            this.mailingListTemplate.deleteRow( row.getKey() );
+        }
+    }
+
+    protected List<MailingList> getMailingLists( String projectVersionMetadataKey )
+    {
+        List<MailingList> mailingLists = new ArrayList<MailingList>();
+
+        StringSerializer ss = StringSerializer.get();
+        QueryResult<OrderedRows<String, String, String>> result =
+            HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
+                .setColumnFamily( cassandraArchivaManager.getMailingListFamilyName() ) //
+                .setColumnNames( "name" ) //
+                .setRowCount( Integer.MAX_VALUE ) //
+                .addEqualsExpression( "projectVersionMetadataModel.key", projectVersionMetadataKey ) //
+                .execute();
+        for ( Row<String, String, String> row : result.get() )
+        {
+            ColumnFamilyResult<String, String> columnFamilyResult =
+                this.mailingListTemplate.queryColumns( row.getKey() );
+
+            MailingList mailingList = new MailingList();
+            mailingList.setName( columnFamilyResult.getString( "name" ) );
+            mailingList.setMainArchiveUrl( columnFamilyResult.getString( "mainArchiveUrl" ) );
+            mailingList.setPostAddress( columnFamilyResult.getString( "postAddress" ) );
+            mailingList.setSubscribeAddress( columnFamilyResult.getString( "subscribeAddress" ) );
+            mailingList.setUnsubscribeAddress( columnFamilyResult.getString( "unsubscribeAddress" ) );
+
+            List<String> otherArchives = new ArrayList<String>();
+
+            for ( String columnName : columnFamilyResult.getColumnNames() )
+            {
+                if (StringUtils.startsWith( columnName, "otherArchive." ))
+                {
+                    otherArchives.add( columnFamilyResult.getString( columnName ) );
+                }
+            }
+
+            mailingList.setOtherArchives( otherArchives );
+            mailingLists.add( mailingList );
+        }
+
+        return mailingLists;
+    }
 
     @Override
     public void updateArtifact( String repositoryId, String namespaceId, String projectId, String projectVersion,

@@ -50,4 +50,6 @@ public interface CassandraArchivaManager
 
     String getMetadataFacetModelFamilyName();
 
+    String getMailingListFamilyName();
+
 }

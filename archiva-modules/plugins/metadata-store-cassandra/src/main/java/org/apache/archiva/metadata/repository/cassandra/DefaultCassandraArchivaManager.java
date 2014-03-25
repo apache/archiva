@@ -81,6 +81,8 @@ public class DefaultCassandraArchivaManager
 
     private String metadataFacetModelFamilyName = "metadatafacetmodel";
 
+    private String mailingListFamilyName = "mailinglist";
+
 
     @PostConstruct
     public void initialize()
@@ -359,6 +361,25 @@ public class DefaultCassandraArchivaManager
 
         }
 
+        // mailinglist table
+        {
+            final ColumnFamilyDefinition mailingListCf =
+                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
+                                                       getMailingListFamilyName(), //
+                                                       ComparatorType.UTF8TYPE );
+            cfds.add( mailingListCf );
+
+            // creating indexes for cql query
+
+            BasicColumnDefinition projectVersionMetadataIdColumn = new BasicColumnDefinition();
+            projectVersionMetadataIdColumn.setName( StringSerializer.get().toByteBuffer( "projectVersionMetadataId" ) );
+            projectVersionMetadataIdColumn.setIndexName( "projectVersionMetadataId" );
+            projectVersionMetadataIdColumn.setIndexType( ColumnIndexType.KEYS );
+            projectVersionMetadataIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            mailingListCf.addColumnDefinition( projectVersionMetadataIdColumn );
+
+
+        }
 
         // TODO take care of update new table!!
         { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
@@ -431,5 +452,10 @@ public class DefaultCassandraArchivaManager
     public String getMetadataFacetModelFamilyName()
     {
         return metadataFacetModelFamilyName;
+    }
+
+    public String getMailingListFamilyName()
+    {
+        return mailingListFamilyName;
     }
 }
