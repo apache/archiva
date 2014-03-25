@@ -29,6 +29,12 @@ under the License.
       <name>local-mirror</name>
       <url>@localRepositoryUrl@</url>
     </mirror>
+    <mirror>
+      <mirrorOf>central</mirrorOf>
+      <id>central-mirror</id>
+      <name>central-mirror</name>
+      <url>@localRepositoryUrl@</url>
+    </mirror>
   </mirrors>
   <profiles>
     <profile>
@@ -37,6 +43,7 @@ under the License.
         <activeByDefault>true</activeByDefault>
       </activation>
       <repositories>
+        <!--
         <repository>
           <id>archiva-repository.apache.org.stage</id>
           <url>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage/</url>
@@ -47,6 +54,7 @@ under the License.
             <enabled>false</enabled>
           </snapshots>
         </repository>
+        -->
         <repository>
           <id>local-central</id>
           <url>@localRepositoryUrl@</url>
