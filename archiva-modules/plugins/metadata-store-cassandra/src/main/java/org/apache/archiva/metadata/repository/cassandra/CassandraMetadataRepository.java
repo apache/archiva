@@ -315,6 +315,7 @@ public class CassandraMetadataRepository
             for ( Row<String, String, String> row : result.get() )
             {
                 this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
+                removeMailingList( row.getKey() );
             }
 
             result = HFactory //
@@ -418,6 +419,7 @@ public class CassandraMetadataRepository
         for ( Row<String, String, String> row : result.get() )
         {
             this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
+            removeMailingList( row.getKey() );
         }
 
         result = HFactory //
@@ -661,6 +663,7 @@ public class CassandraMetadataRepository
         for ( Row<String, String, String> row : result.get() )
         {
             this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
+            removeMailingList( row.getKey() );
         }
 
         result = HFactory //
