@@ -28,7 +28,7 @@ import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.commons.io.FileUtils;
-import org.fest.assertions.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -157,8 +157,7 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = getServletUnitClient().getResponse( request );
 
         assertResponseOK( response );
-        Assertions.assertThat( response.getContentAsString() ).isEqualTo( "first" );
-        //assertEquals( "Expected file contents", "first", response.getContentAsString() );
+        assertThat( response.getContentAsString() ).isEqualTo( "first" );
     }
 
     /*
@@ -179,8 +178,8 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = getServletUnitClient().getResponse( request );
 
         assertResponseOK( response );
-        //assertEquals( "Expected file contents", "last", response.getContentAsString() );
-        Assertions.assertThat( response.getContentAsString() ).isEqualTo( "last" );
+
+        assertThat( response.getContentAsString() ).isEqualTo( "last" );
     }
 
     /*
@@ -268,15 +267,8 @@ public class RepositoryServletRepositoryGroupTest
         ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( returnedMetadata );
 
         assertResponseOK( response );
-        /*
-        assertEquals( "Versions list size", 4, metadata.getAvailableVersions().size() );
-        assertTrue( "Versions list contains version 1.0", metadata.getAvailableVersions().contains( "1.0" ) );
-        assertTrue( "Versions list contains version 1.5", metadata.getAvailableVersions().contains( "1.5" ) );
-        assertTrue( "Versions list contains version 2.0", metadata.getAvailableVersions().contains( "2.0" ) );
-        assertTrue( "Versions list contains version 2.5", metadata.getAvailableVersions().contains( "2.5" ) );
-        */
 
-        Assertions.assertThat( metadata.getAvailableVersions() ).isNotNull()
+        assertThat( metadata.getAvailableVersions() ).isNotNull()
             .hasSize( 4 ).contains( "1.0", "1.5", "2.0", "2.5" );
 
 
@@ -295,10 +287,8 @@ public class RepositoryServletRepositoryGroupTest
         response = getServletUnitClient().getResource( request );
 
         assertResponseOK( response );
-        //assertEquals( "add113b0d7f8c6adb92a5015a7a3701081edf998  maven-metadata-group-with-valid-repos.xml",
-        //              response.getContentAsString() );
 
-        Assertions.assertThat( response.getContentAsString() )
+        assertThat( response.getContentAsString() )
             .isEqualTo( "add113b0d7f8c6adb92a5015a7a3701081edf998  maven-metadata-group-with-valid-repos.xml" );
 
         // request the md5 checksum of the metadata
@@ -307,10 +297,8 @@ public class RepositoryServletRepositoryGroupTest
         response = getServletUnitClient().getResource( request );
 
         assertResponseOK( response );
-        //assertEquals( "5b85ea4aa5f52bb76760041a52f98de8  maven-metadata-group-with-valid-repos.xml",
-        //              response.getContentAsString().trim() );
 
-        Assertions.assertThat( response.getContentAsString() )
+        assertThat( response.getContentAsString() )
             .isEqualTo( "5b85ea4aa5f52bb76760041a52f98de8  maven-metadata-group-with-valid-repos.xml" );
     }
 
@@ -337,7 +325,7 @@ public class RepositoryServletRepositoryGroupTest
 
         assertResponseOK( response );
 
-        Assertions.assertThat( response.getContentAsString() ).contains( "Collection" )
+        assertThat( response.getContentAsString() ).contains( "Collection" )
             .contains( "dummy/dummy-artifact" )
             .contains( "1.0" )
             .contains( "2.0" );
@@ -346,11 +334,10 @@ public class RepositoryServletRepositoryGroupTest
 
     protected void assertResponseMethodNotAllowed( WebResponse response )
     {
-        //assertNotNull( "Should have recieved a response", response );
-        Assertions.assertThat( response ).isNotNull();
-        //assertEquals( "Should have been an 405/Method Not Allowed response code.",
-        //              HttpServletResponse.SC_METHOD_NOT_ALLOWED, response.getResponseCode() );
-        Assertions.assertThat( response.getStatusCode() ).isEqualTo( HttpServletResponse.SC_METHOD_NOT_ALLOWED );
+
+        assertThat( response ).isNotNull();
+
+        assertThat( response.getStatusCode() ).isEqualTo( HttpServletResponse.SC_METHOD_NOT_ALLOWED );
     }
 
     protected RepositoryGroupConfiguration createRepositoryGroup( String id, List<String> repositories )

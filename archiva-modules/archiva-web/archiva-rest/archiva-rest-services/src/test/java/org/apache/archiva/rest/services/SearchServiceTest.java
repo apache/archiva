@@ -22,7 +22,7 @@ import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.SearchService;
-import org.fest.assertions.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -227,7 +227,7 @@ public class SearchServiceTest
 
         List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
 
-        Assertions.assertThat( artifacts ).isNotNull().hasSize( 2 );
+        assertThat( artifacts ).isNotNull().hasSize( 2 );
 
         for ( Artifact artifact : artifacts )
         {

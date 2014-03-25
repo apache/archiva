@@ -28,7 +28,8 @@ import org.apache.archiva.rest.api.model.MetadataAddRequest;
 import org.apache.archiva.rest.api.model.VersionsList;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.fest.assertions.data.MapEntry;
+
+import org.assertj.core.data.MapEntry;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
@@ -37,7 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy

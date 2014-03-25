@@ -21,9 +21,9 @@ package org.apache.archiva.webdav.util;
 
 import junit.framework.TestCase;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.fest.assertions.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  */
@@ -35,10 +35,10 @@ public class RepositoryPathUtilTest
     public void testGetRepositoryId()
     {
         String href = "/path/to/my/resource";
-        Assertions.assertThat( RepositoryPathUtil.getRepositoryName( href ) ).isEqualTo( "to" );
+        assertThat( RepositoryPathUtil.getRepositoryName( href ) ).isEqualTo( "to" );
 
         href = "path/to/my/resource";
-        Assertions.assertThat( RepositoryPathUtil.getRepositoryName( href ) ).isEqualTo( "to" );
+        assertThat( RepositoryPathUtil.getRepositoryName( href ) ).isEqualTo( "to" );
 
     }
 

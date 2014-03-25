@@ -27,7 +27,7 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.fest.assertions.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,10 +100,10 @@ public class DependencyTreeBuilderTestMaven3
             builder.buildDependencyTree( Collections.singletonList( TEST_REPO_ID ), TEST_GROUP_ID, TEST_ARTIFACT_ID,
                                          TEST_VERSION );
 
-        Assertions.assertThat( treeEntries ).isNotNull().isNotEmpty().contains(
+        assertThat( treeEntries ).isNotNull().isNotEmpty().contains(
             new TreeEntry( new Artifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION, "", "" ) ) );
 
-        Assertions.assertThat( treeEntries.get( 0 ).getChilds() ).isNotNull().isNotEmpty().contains(
+        assertThat( treeEntries.get( 0 ).getChilds() ).isNotNull().isNotEmpty().contains(
             new TreeEntry( new Artifact( "commons-lang", "commons-lang", "2.2", "compile", "" ) ) );
     }
 

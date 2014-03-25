@@ -33,7 +33,7 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.fest.util.Sets;
+import org.assertj.core.util.Sets;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import static org.fest.assertions.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(ArchivaSpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
@@ -379,8 +379,9 @@ public abstract class AbstractMetadataRepositoryTest
 
         Collection<String> repositories = repository.getRepositories();
 
-        assertEquals( "repository.getRepositories() -> " + repositories,
-                      Sets.newLinkedHashSet( TEST_REPO_ID, OTHER_REPO_ID ), new LinkedHashSet<String>( repositories ) );
+        assertEquals( "repository.getRepositories() -> " + repositories, //
+                      Sets.newLinkedHashSet( TEST_REPO_ID, OTHER_REPO_ID ), //
+                      new LinkedHashSet<String>( repositories ) ); //
     }
 
     @Test

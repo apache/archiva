@@ -22,7 +22,7 @@ package org.apache.archiva.webdav;
 
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
-import org.fest.assertions.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -119,7 +119,7 @@ public class RepositoryServletBrowseTest
 
     private void assertLinks( List<String> expectedLinks, Elements actualLinks )
     {
-        Assertions.assertThat( actualLinks ).hasSize( expectedLinks.size() );
+        assertThat( actualLinks ).hasSize( expectedLinks.size() );
 
         for ( int i = 0; i < actualLinks.size(); i++ )
         {

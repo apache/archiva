@@ -33,7 +33,7 @@ import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
-import org.fest.assertions.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -196,7 +196,7 @@ public class DownloadMergedIndexNonDefaultPathTest
         request.setGroupId( "org.apache.felix" );
 
         List<Artifact> artifacts = searchService.searchArtifacts( request );
-        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 1 );
+        assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 1 );
 
     }
 }

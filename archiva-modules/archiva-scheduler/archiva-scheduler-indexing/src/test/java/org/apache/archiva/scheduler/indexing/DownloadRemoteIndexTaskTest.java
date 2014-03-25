@@ -35,7 +35,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.fest.assertions.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -139,7 +139,7 @@ public class DownloadRemoteIndexTaskTest
         FlatSearchResponse response = nexusIndexer.searchFlat( rq );
 
         log.info( "returned hit count:{}", response.getReturnedHitsCount() );
-        Assertions.assertThat( response.getReturnedHitsCount() ).isEqualTo( 8 );
+        assertThat( response.getReturnedHitsCount() ).isEqualTo( 8 );
     }
 
 

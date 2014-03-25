@@ -21,7 +21,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.rest.api.services.MergeRepositoriesService;
 import org.apache.commons.io.FileUtils;
-import org.fest.assertions.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,7 +80,7 @@ public class MergeRepositoriesServiceTest
 
             log.info( "conflicts: {}", artifactMetadatas );
 
-            Assertions.assertThat( artifactMetadatas ).isNotNull().isNotEmpty().hasSize( 8 );
+            assertThat( artifactMetadatas ).isNotNull().isNotEmpty().hasSize( 8 );
 
 
         }

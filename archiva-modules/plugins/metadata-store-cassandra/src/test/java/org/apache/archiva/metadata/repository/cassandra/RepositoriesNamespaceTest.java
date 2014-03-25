@@ -23,7 +23,7 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
 import org.apache.archiva.metadata.repository.cassandra.model.Repository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.fest.assertions.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -88,26 +88,26 @@ public class RepositoriesNamespaceTest
 
             r = cmr.getRepository( "release" );
 
-            Assertions.assertThat( r ).isNotNull();
+            assertThat( r ).isNotNull();
 
-            Assertions.assertThat( cmr.getRepositories() ).isNotEmpty().hasSize( 1 );
-            Assertions.assertThat( cmr.getNamespaces( "release" ) ).isNotEmpty().hasSize( 1 );
+            assertThat( cmr.getRepositories() ).isNotEmpty().hasSize( 1 );
+            assertThat( cmr.getNamespaces( "release" ) ).isNotEmpty().hasSize( 1 );
 
             n = cmr.getNamespace( "release", "org" );
 
-            Assertions.assertThat( n ).isNotNull();
-            Assertions.assertThat( n.getRepository() ).isNotNull();
+            assertThat( n ).isNotNull();
+            assertThat( n.getRepository() ).isNotNull();
 
             cmr.updateNamespace( "release", "org.apache" );
 
             r = cmr.getRepository( "release" );
 
-            Assertions.assertThat( r ).isNotNull();
-            Assertions.assertThat( cmr.getNamespaces( "release" ) ).isNotEmpty().hasSize( 2 );
+            assertThat( r ).isNotNull();
+            assertThat( cmr.getNamespaces( "release" ) ).isNotEmpty().hasSize( 2 );
 
             cmr.removeNamespace( "release", "org.apache" );
-            Assertions.assertThat( cmr.getNamespaces( "release" ) ).isNotEmpty().hasSize( 1 );
-            Assertions.assertThat( cmr.getNamespaces( "release" ) ).containsExactly( "org" );
+            assertThat( cmr.getNamespaces( "release" ) ).isNotEmpty().hasSize( 1 );
+            assertThat( cmr.getNamespaces( "release" ) ).containsExactly( "org" );
 
             ProjectMetadata projectMetadata = new ProjectMetadata();
             projectMetadata.setId( "theproject" );
@@ -115,18 +115,18 @@ public class RepositoriesNamespaceTest
 
             cmr.updateProject( "release", projectMetadata );
 
-            Assertions.assertThat( cmr.getProjects( "release", "org" ) ).isNotEmpty().hasSize( 1 ).containsExactly(
+            assertThat( cmr.getProjects( "release", "org" ) ).isNotEmpty().hasSize( 1 ).containsExactly(
                 "theproject" );
 
             cmr.removeProject( "release", "org", "theproject" );
 
-            Assertions.assertThat( cmr.getProjects( "release", "org" ) ).isEmpty();
+            assertThat( cmr.getProjects( "release", "org" ) ).isEmpty();
 
             cmr.removeRepository( "release" );
 
             r = cmr.getRepository( "release" );
 
-            Assertions.assertThat( r ).isNull();
+            assertThat( r ).isNull();
 
         }
         catch ( Exception e )

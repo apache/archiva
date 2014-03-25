@@ -21,27 +21,21 @@ package org.apache.archiva.remotedownload;
 
 import com.google.common.io.Files;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
-import org.apache.archiva.remotedownload.AbstractDownloadTest;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
-import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.FileUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.servlet.DefaultServlet;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.fest.assertions.api.Assertions;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -93,7 +87,7 @@ public class RemoteRepositoryConnectivityCheckTest
 
             service.addRemoteRepository( repo );
 
-            Assertions.assertThat( service.checkRemoteConnectivity( repo.getId() ) ).isTrue();
+            assertThat( service.checkRemoteConnectivity( repo.getId() ) ).isTrue();
         }
         finally
         {
@@ -126,7 +120,7 @@ public class RemoteRepositoryConnectivityCheckTest
 
             service.addRemoteRepository( repo );
 
-            Assertions.assertThat( service.checkRemoteConnectivity( repo.getId() ) ).isTrue();
+            assertThat( service.checkRemoteConnectivity( repo.getId() ) ).isTrue();
         }
         finally
         {
@@ -154,7 +148,7 @@ public class RemoteRepositoryConnectivityCheckTest
 
             service.addRemoteRepository( repo );
 
-            Assertions.assertThat( service.checkRemoteConnectivity( repo.getId() ) ).isFalse();
+            assertThat( service.checkRemoteConnectivity( repo.getId() ) ).isFalse();
         }
         finally
         {

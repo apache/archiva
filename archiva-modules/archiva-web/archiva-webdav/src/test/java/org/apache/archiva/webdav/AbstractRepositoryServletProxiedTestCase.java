@@ -36,7 +36,7 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.fest.assertions.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.Before;
 
@@ -167,7 +167,7 @@ public abstract class AbstractRepositoryServletProxiedTestCase
 
         WebClient client = newClient();
         int status = client.getPage( remoteRepo.url ).getWebResponse().getStatusCode();
-        Assertions.assertThat( status ).isEqualTo( HttpServletResponse.SC_OK );
+        assertThat( status ).isEqualTo( HttpServletResponse.SC_OK );
 
     }
 

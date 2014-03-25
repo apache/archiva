@@ -32,7 +32,7 @@ import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.commons.io.FileUtils;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.apache.archiva.redback.rest.services.FakeCreateAdminService;
-import org.fest.assertions.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -190,7 +190,7 @@ public class DownloadMergedIndexTest
         request.setGroupId( "org.apache.felix" );
 
         List<Artifact> artifacts = searchService.searchArtifacts( request );
-        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 1 );
+        assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 1 );
 
     }
 }

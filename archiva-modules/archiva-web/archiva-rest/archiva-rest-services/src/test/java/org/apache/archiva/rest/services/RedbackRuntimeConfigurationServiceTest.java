@@ -22,7 +22,7 @@ import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.rest.api.model.RBACManagerImplementationInformation;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.rest.api.services.RedbackRuntimeConfigurationService;
-import org.fest.assertions.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -67,7 +67,7 @@ public class RedbackRuntimeConfigurationServiceTest
     {
         RedbackRuntimeConfigurationService service = getRedbackRuntimeConfigurationService();
         List<UserManagerImplementationInformation> infos = service.getUserManagerImplementationInformations();
-        Assertions.assertThat( infos ).isNotNull().isNotEmpty().contains(
+        assertThat( infos ).isNotNull().isNotEmpty().contains(
             new UserManagerImplementationInformation( "jdo", null, false ) );
 
     }
@@ -78,7 +78,7 @@ public class RedbackRuntimeConfigurationServiceTest
     {
         RedbackRuntimeConfigurationService service = getRedbackRuntimeConfigurationService();
         List<RBACManagerImplementationInformation> infos = service.getRbacManagerImplementationInformations();
-        Assertions.assertThat( infos ).isNotNull().isNotEmpty().contains(
+        assertThat( infos ).isNotNull().isNotEmpty().contains(
             new RBACManagerImplementationInformation( "jdo", null, false ) );
 
     }

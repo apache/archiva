@@ -25,11 +25,12 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.fest.assertions.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * RepositoryServletTest
@@ -133,7 +134,7 @@ public class RepositoryServletTest
         WebRequest request = new GetMethodWebRequest( path );
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseNotFound( response );
-        Assertions.assertThat( response.getContentAsString() ).contains(
+        assertThat( response.getContentAsString() ).contains(
             "Invalid path to Artifact: legacy paths should have an expected type ending in [s] in the second part of the path." );
     }
 }
