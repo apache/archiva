@@ -1687,8 +1687,6 @@ public class CassandraMetadataRepository
                 namespace ).withProjectId( project ).build();
 
         this.projectVersionMetadataModelTemplate.deleteRow( key );
-
-
     }
 
     @Override

@@ -100,6 +100,9 @@ public class CassandraMetadataRepositoryTest
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
                                                        "metadatafacetmodel" );
 
+        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
+                                                       "mailinglist" );
+
     }
 
 }
