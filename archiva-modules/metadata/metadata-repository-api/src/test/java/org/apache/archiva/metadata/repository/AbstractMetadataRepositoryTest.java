@@ -267,6 +267,7 @@ public abstract class AbstractMetadataRepositoryTest
 
         metadata.setName( "project name" );
         metadata.setDescription( "project description" );
+        metadata.setUrl( "the url" );
 
         MailingList mailingList = new MailingList();
         mailingList.setName( "Foo List" );
@@ -317,12 +318,7 @@ public abstract class AbstractMetadataRepositoryTest
         assertEquals( TEST_PROJECT_VERSION, metadata.getVersion() );
         assertEquals( "project name", metadata.getName() );
         assertEquals( "project description", metadata.getDescription() );
-
-        assertEquals( 1, metadata.getMailingLists().size() );
-        mailingList = metadata.getMailingLists().get( 0 );
-        assertEquals( "Foo List", mailingList.getName() );
-        Assertions.assertThat( mailingList.getOtherArchives() ).isNotNull().isNotEmpty().hasSize( 1 ).contains(
-            "other archive" );
+        assertEquals( "the url", metadata.getUrl() );
 
         assertEquals( "connection", metadata.getScm().getConnection() );
         assertEquals( "dev conn", metadata.getScm().getDeveloperConnection() );
@@ -336,6 +332,12 @@ public abstract class AbstractMetadataRepositoryTest
 
         assertEquals( "org name", metadata.getOrganization().getName() );
         assertEquals( "url", metadata.getOrganization().getUrl() );
+
+        assertEquals( 1, metadata.getMailingLists().size() );
+        mailingList = metadata.getMailingLists().get( 0 );
+        assertEquals( "Foo List", mailingList.getName() );
+        Assertions.assertThat( mailingList.getOtherArchives() ).isNotNull().isNotEmpty().hasSize( 1 ).contains(
+            "other archive" );
 
         assertEquals( 1, metadata.getLicenses().size() );
         l = metadata.getLicenses().get( 0 );
