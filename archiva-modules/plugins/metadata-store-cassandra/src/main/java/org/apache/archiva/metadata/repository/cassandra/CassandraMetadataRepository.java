@@ -960,14 +960,8 @@ public class CassandraMetadataRepository
         String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repoId ).withNamespace(
             namespace ).withProjectId( projectId ).withId( projectVersion ).build();
 
-        List<String> columns =
-            Arrays.asList( "projectVersion", "description", "name", "namespaceId", "repositoryName", "incomplete",
-                           "projectId", "url", "ciManagement.url", "ciManagement.system", "issueManagement.system",
-                           "issueManagement.url", "organization.name", "organization.url", "scm.developerConnection",
-                           "scm.connection", "scm.url" );
-
         ColumnFamilyResult<String, String> columnFamilyResult =
-            this.projectVersionMetadataModelTemplate.queryColumns( key, columns );
+            this.projectVersionMetadataModelTemplate.queryColumns( key );
         if ( !columnFamilyResult.hasResults() )
         {
             return null;
