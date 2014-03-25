@@ -26,6 +26,7 @@ import me.prettyprint.hector.api.Serializer;
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
 import me.prettyprint.hector.api.factory.HFactory;
+import me.prettyprint.hector.api.mutation.Mutator;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -118,6 +119,15 @@ public class CassandraUtils
 
         HColumn<String, String> hColumn = columnSlice.getColumnByName( columnName );
         return hColumn == null ? null : ls.fromByteBuffer( hColumn.getValueBytes() );
+    }
+
+    public static void addInsertion( Mutator<String> mutator, String key, String columnFamily, String columnName,
+                                     String value )
+    {
+        if ( value != null )
+        {
+            mutator.addInsertion( key, columnFamily, column( columnName, value ) );
+        }
     }
 
     private CassandraUtils()

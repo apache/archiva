@@ -39,12 +39,16 @@ import me.prettyprint.hector.api.query.QueryResult;
 import me.prettyprint.hector.api.query.RangeSlicesQuery;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.FacetedMetadata;
+import org.apache.archiva.metadata.model.IssueManagement;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
@@ -358,7 +362,7 @@ public class CassandraMetadataRepository
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
-            .setColumnNames( "repositoryName"  ) //
+            .setColumnNames( "repositoryName" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
             .execute();
 
@@ -375,8 +379,6 @@ public class CassandraMetadataRepository
         HFactory.createMutator( cassandraArchivaManager.getKeyspace(), ss ) //
             .addDeletion( repositoryId, cassandraArchivaManager.getRepositoryFamilyName() ) //
             .execute();
-
-
 
         result = HFactory //
             .createRangeSlicesQuery( keyspace, //
@@ -635,7 +637,6 @@ public class CassandraMetadataRepository
             .withNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) ) //
             .build();
 
-
         this.projectTemplate.deleteRow( key );
 
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
@@ -652,14 +653,13 @@ public class CassandraMetadataRepository
             this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
         }
 
-
-         result = HFactory //
+        result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getArtifactMetadataModelFamilyName() ) //
             .setColumnNames( "projectId" ) //
-             .addEqualsExpression( "repositoryName", repositoryId ) //
-             .addEqualsExpression( "namespaceId", namespaceId ) //
-             .addEqualsExpression( "projectId", projectId ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
+            .addEqualsExpression( "namespaceId", namespaceId ) //
+            .addEqualsExpression( "projectId", projectId ) //
             .execute();
 
         for ( Row<String, String, String> row : result.get() )
@@ -810,6 +810,7 @@ public class CassandraMetadataRepository
 
         projectVersionMetadataModel.setProjectId( projectId );
         projectVersionMetadataModel.setNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) );
+
         projectVersionMetadataModel.setCiManagement( versionMetadata.getCiManagement() );
         projectVersionMetadataModel.setIssueManagement( versionMetadata.getIssueManagement() );
         projectVersionMetadataModel.setOrganization( versionMetadata.getOrganization() );
@@ -833,20 +834,50 @@ public class CassandraMetadataRepository
                 .addInsertion( key, cf, column( "repositoryName", repositoryId ) ) //
                 .addInsertion( key, cf, column( "namespaceId", namespaceId ) )//
                 .addInsertion( key, cf, column( "projectVersion", versionMetadata.getVersion() ) ); //
-            if ( versionMetadata.getDescription() != null )
+
+            addInsertion( mutator, key, cf, "description", versionMetadata.getDescription() );
+
+            addInsertion( mutator, key, cf, "name", versionMetadata.getName() );
+
+            addInsertion( mutator, key, cf, "incomplete", Boolean.toString( versionMetadata.isIncomplete() ) );
+
+            addInsertion( mutator, key, cf, "url", versionMetadata.getUrl() );
             {
-                mutator = mutator.addInsertion( key, cf, column( "description", versionMetadata.getDescription() ) );
+                CiManagement ci = versionMetadata.getCiManagement();
+                if ( ci != null )
+                {
+                    addInsertion( mutator, key, cf, "ciManagement.system", ci.getSystem() );
+                    addInsertion( mutator, key, cf, "ciManagement.url", ci.getUrl() );
+                }
             }
 
-            if ( versionMetadata.getName() != null )
             {
-                mutator = mutator.addInsertion( key, cf, column( "name", versionMetadata.getName() ) );
+                IssueManagement issueManagement = versionMetadata.getIssueManagement();
+
+                if ( issueManagement != null )
+                {
+                    addInsertion( mutator, key, cf, "issueManagement.system", issueManagement.getSystem() );
+                    addInsertion( mutator, key, cf, "issueManagement.url", issueManagement.getUrl() );
+                }
             }
-            mutator = mutator.addInsertion( key, cf, column( "incomplete",
-                                                             Boolean.toString( versionMetadata.isIncomplete() ) ) );
-            if ( versionMetadata.getUrl() != null )
+
             {
-                mutator = mutator.addInsertion( key, cf, column( "url", versionMetadata.getUrl() ) );
+                Organization organization = versionMetadata.getOrganization();
+                if ( organization != null )
+                {
+                    addInsertion( mutator, key, cf, "organization.name", organization.getName() );
+                    addInsertion( mutator, key, cf, "organization.url", organization.getUrl() );
+                }
+            }
+
+            {
+                Scm scm = versionMetadata.getScm();
+                if ( scm != null )
+                {
+                    addInsertion( mutator, key, cf, "scm.url", scm.getUrl() );
+                    addInsertion( mutator, key, cf, "scm.connection", scm.getConnection() );
+                    addInsertion( mutator, key, cf, "scm.developerConnection", scm.getDeveloperConnection() );
+                }
             }
 
             MutationResult mutationResult = mutator.execute();
@@ -871,17 +902,46 @@ public class CassandraMetadataRepository
             {
                 updater.setString( "url", versionMetadata.getUrl() );
             }
+
+            {
+                CiManagement ci = versionMetadata.getCiManagement();
+                if ( ci != null )
+                {
+                    updater.setString( "ciManagement.system", ci.getSystem() );
+                    updater.setString( "ciManagement.url", ci.getUrl() );
+                }
+            }
+            {
+                IssueManagement issueManagement = versionMetadata.getIssueManagement();
+                if ( issueManagement != null )
+                {
+                    updater.setString( "issueManagement.system", issueManagement.getSystem() );
+                    updater.setString( "issueManagement.url", issueManagement.getUrl() );
+                }
+            }
+            {
+                Organization organization = versionMetadata.getOrganization();
+                if ( organization != null )
+                {
+                    updater.setString( "organization.name", organization.getName() );
+                    updater.setString( "organization.url", organization.getUrl() );
+                }
+            }
+            {
+                Scm scm = versionMetadata.getScm();
+                if ( scm != null )
+                {
+                    updater.setString( "scm.url", scm.getUrl() );
+                    updater.setString( "scm.connection", scm.getConnection() );
+                    updater.setString( "scm.developerConnection", scm.getDeveloperConnection() );
+                }
+            }
+
             projectVersionMetadataModelTemplate.update( updater );
 
         }
 
         ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
-        // FIXME
-        /*artifactMetadataModel.setArtifactMetadataModelId(
-            new ArtifactMetadataModel.KeyBuilder().withId( versionMetadata.getId() ).withRepositoryId(
-                repositoryId ).withNamespace( namespaceId ).withProjectVersion(
-                versionMetadata.getVersion() ).withProject( projectId ).build()
-        );*/
         artifactMetadataModel.setRepositoryId( repositoryId );
         artifactMetadataModel.setNamespace( namespaceId );
         artifactMetadataModel.setProject( projectId );
@@ -889,68 +949,6 @@ public class CassandraMetadataRepository
         artifactMetadataModel.setVersion( versionMetadata.getVersion() );
         updateFacets( versionMetadata, artifactMetadataModel );
 
-/*        String namespaceKey =
-            new Namespace.KeyBuilder().withRepositoryId( repositoryId ).withNamespace( namespaceId ).build();
-        Namespace namespace = getNamespaceEntityManager().get( namespaceKey );
-        if ( namespace == null )
-        {
-            namespace = updateOrAddNamespace( repositoryId, namespaceId );
-        }
-
-        String key = new Project.KeyBuilder().withNamespace( namespace ).withProjectId( projectId ).build();
-
-        Project project = getProjectEntityManager().get( key );
-        if ( project == null )
-        {
-            project = new Project( key, projectId, namespace );
-            getProjectEntityManager().put( project );
-        }
-
-        // we don't test of repository and namespace really exist !
-        key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repositoryId ).withNamespace(
-            namespaceId ).withProjectId( projectId ).withId( versionMetadata.getId() ).build();
-
-        ProjectVersionMetadataModel projectVersionMetadataModel =
-            getProjectVersionMetadataModelEntityManager().get( key );
-
-        if ( projectVersionMetadataModel == null )
-        {
-            projectVersionMetadataModel = getModelMapper().map( versionMetadata, ProjectVersionMetadataModel.class );
-            projectVersionMetadataModel.setRowId( key );
-        }
-        projectVersionMetadataModel.setProjectId( projectId );
-        projectVersionMetadataModel.setNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) );
-        projectVersionMetadataModel.setCiManagement( versionMetadata.getCiManagement() );
-        projectVersionMetadataModel.setIssueManagement( versionMetadata.getIssueManagement() );
-        projectVersionMetadataModel.setOrganization( versionMetadata.getOrganization() );
-        projectVersionMetadataModel.setScm( versionMetadata.getScm() );
-
-        projectVersionMetadataModel.setMailingLists( versionMetadata.getMailingLists() );
-        projectVersionMetadataModel.setDependencies( versionMetadata.getDependencies() );
-        projectVersionMetadataModel.setLicenses( versionMetadata.getLicenses() );
-
-        try
-        {
-            getProjectVersionMetadataModelEntityManager().put( projectVersionMetadataModel );
-
-            ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
-            artifactMetadataModel.setArtifactMetadataModelId(
-                new ArtifactMetadataModel.KeyBuilder().withId( versionMetadata.getId() ).withRepositoryId(
-                    repositoryId ).withNamespace( namespaceId ).withProjectVersion(
-                    versionMetadata.getVersion() ).withProject( projectId ).build()
-            );
-            artifactMetadataModel.setRepositoryId( repositoryId );
-            artifactMetadataModel.setNamespace( namespaceId );
-            artifactMetadataModel.setProject( projectId );
-            artifactMetadataModel.setProjectVersion( versionMetadata.getVersion() );
-            artifactMetadataModel.setVersion( versionMetadata.getVersion() );
-            // facets etc...
-            updateFacets( versionMetadata, artifactMetadataModel );
-        }
-        catch ( PersistenceException e )
-        {
-            throw new MetadataRepositoryException( e.getMessage(), e );
-        }*/
     }
 
 
@@ -962,11 +960,14 @@ public class CassandraMetadataRepository
         String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repoId ).withNamespace(
             namespace ).withProjectId( projectId ).withId( projectVersion ).build();
 
+        List<String> columns =
+            Arrays.asList( "projectVersion", "description", "name", "namespaceId", "repositoryName", "incomplete",
+                           "projectId", "url", "ciManagement.url", "ciManagement.system", "issueManagement.system",
+                           "issueManagement.url", "organization.name", "organization.url", "scm.developerConnection",
+                           "scm.connection", "scm.url" );
+
         ColumnFamilyResult<String, String> columnFamilyResult =
-            this.projectVersionMetadataModelTemplate.queryColumns( key, Arrays.asList( "projectVersion", "description",
-                                                                                       "name", "namespaceId",
-                                                                                       "repositoryName", "incomplete",
-                                                                                       "projectId", "url" ) );
+            this.projectVersionMetadataModelTemplate.queryColumns( key, columns );
         if ( !columnFamilyResult.hasResults() )
         {
             return null;
@@ -980,7 +981,53 @@ public class CassandraMetadataRepository
         projectVersionMetadata.setIncomplete( Boolean.parseBoolean( columnFamilyResult.getString( "incomplete" ) ) );
 
         projectVersionMetadata.setUrl( columnFamilyResult.getString( "url" ) );
+        {
+            String ciUrl = columnFamilyResult.getString( "ciManagement.url" );
+            String ciSystem = columnFamilyResult.getString( "ciManagement.system" );
 
+            if ( StringUtils.isNotEmpty( ciSystem ) || StringUtils.isNotEmpty( ciUrl ) )
+            {
+                CiManagement ci = new CiManagement();
+                ci.setSystem( ciSystem );
+                ci.setUrl( ciUrl );
+                projectVersionMetadata.setCiManagement( ci );
+            }
+        }
+        {
+            String issueUrl = columnFamilyResult.getString( "issueManagement.url" );
+            String issueSystem = columnFamilyResult.getString( "issueManagement.system" );
+            if ( StringUtils.isNotEmpty( issueSystem ) || StringUtils.isNotEmpty( issueUrl ) )
+            {
+                IssueManagement issueManagement = new IssueManagement();
+                issueManagement.setSystem( issueSystem );
+                issueManagement.setUrl( issueUrl );
+                projectVersionMetadata.setIssueManagement( issueManagement );
+            }
+        }
+        {
+            String organizationUrl = columnFamilyResult.getString( "organization.url" );
+            String organizationName = columnFamilyResult.getString( "organization.name" );
+            if ( StringUtils.isNotEmpty( organizationUrl ) || StringUtils.isNotEmpty( organizationName ) )
+            {
+                Organization organization = new Organization();
+                organization.setName( organizationName );
+                organization.setUrl( organizationUrl );
+                projectVersionMetadata.setOrganization( organization );
+            }
+        }
+        {
+            String devConn = columnFamilyResult.getString( "scm.developerConnection" );
+            String conn = columnFamilyResult.getString( "scm.connection" );
+            String url = columnFamilyResult.getString( "scm.url" );
+            if (StringUtils.isNotEmpty( devConn ) || StringUtils.isNotEmpty( conn ) || StringUtils.isNotEmpty( url ))
+            {
+                Scm scm = new Scm();
+                scm.setUrl( url );
+                scm.setConnection( conn );
+                scm.setDeveloperConnection( devConn );
+                projectVersionMetadata.setScm( scm );
+            }
+        }
         // FIXME complete collections !!
         // facets
 
@@ -1586,9 +1633,9 @@ public class CassandraMetadataRepository
             .addEqualsExpression( "project", project ) //
             .addEqualsExpression( "version", version );
 
-        QueryResult<OrderedRows<String,String,String>> result = query.execute();
+        QueryResult<OrderedRows<String, String, String>> result = query.execute();
 
-        for (Row<String,String,String> row : result.get())
+        for ( Row<String, String, String> row : result.get() )
         {
             this.artifactMetadataTemplate.deleteRow( row.getKey() );
         }
