@@ -22,7 +22,7 @@
   <parent>
     <artifactId>plugins</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.0.1</version>
   </parent>
   <artifactId>audit</artifactId>
   <packaging>bundle</packaging>
