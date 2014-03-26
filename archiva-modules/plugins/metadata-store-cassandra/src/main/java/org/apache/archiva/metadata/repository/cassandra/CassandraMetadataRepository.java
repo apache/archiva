@@ -42,6 +42,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.FacetedMetadata;
 import org.apache.archiva.metadata.model.IssueManagement;
+import org.apache.archiva.metadata.model.License;
 import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
@@ -105,6 +106,8 @@ public class CassandraMetadataRepository
 
     private final ColumnFamilyTemplate<String, String> mailingListTemplate;
 
+    private final ColumnFamilyTemplate<String, String> licenseTemplate;
+
     public CassandraMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories,
                                         ArchivaConfiguration configuration,
                                         CassandraArchivaManager cassandraArchivaManager )
@@ -145,6 +148,12 @@ public class CassandraMetadataRepository
                                                             //
                                                             StringSerializer.get(), //
                                                             StringSerializer.get() );
+
+        this.licenseTemplate = new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
+                                                                               cassandraArchivaManager.getLicenseFamilyName(),
+                                                                               //
+                                                                               StringSerializer.get(), //
+                                                                               StringSerializer.get() );
     }
 
 
@@ -898,6 +907,8 @@ public class CassandraMetadataRepository
                 recordMailingList( key, versionMetadata.getMailingLists() );
             }
 
+            recordLicenses( key, versionMetadata.getLicenses() );
+
             MutationResult mutationResult = mutator.execute();
         }
         else
@@ -955,12 +966,12 @@ public class CassandraMetadataRepository
                 }
             }
 
-            if ( versionMetadata.getMailingLists() != null )
-            {
-                // update is a delete record
-                removeMailingList( key );
-                recordMailingList( key, versionMetadata.getMailingLists() );
-            }
+            // update is a delete record
+            removeMailingList( key );
+            recordMailingList( key, versionMetadata.getMailingLists() );
+
+            removeLicenses( key );
+            recordLicenses( key, versionMetadata.getLicenses() );
 
             projectVersionMetadataModelTemplate.update( updater );
 
@@ -1035,6 +1046,7 @@ public class CassandraMetadataRepository
             }
         }
         projectVersionMetadata.setMailingLists( getMailingLists( key ) );
+        projectVersionMetadata.setLicenses( getLicenses( key ) );
         // FIXME complete collections !!
         // facets
 
@@ -1161,7 +1173,7 @@ public class CassandraMetadataRepository
 
             for ( String columnName : columnFamilyResult.getColumnNames() )
             {
-                if (StringUtils.startsWith( columnName, "otherArchive." ))
+                if ( StringUtils.startsWith( columnName, "otherArchive." ) )
                 {
                     otherArchives.add( columnFamilyResult.getString( columnName ) );
                 }
@@ -1172,6 +1184,72 @@ public class CassandraMetadataRepository
         }
 
         return mailingLists;
+    }
+
+    protected void recordLicenses( String projectVersionMetadataKey, List<License> licenses )
+    {
+
+        if ( licenses == null || licenses.isEmpty() )
+        {
+            return;
+        }
+        Mutator<String> licenseMutator = this.licenseTemplate.createMutator();
+
+        for ( License license : licenses )
+        {
+            // we don't care about the key as the real used one with the projectVersionMetadata
+            String keyLicense = UUID.randomUUID().toString();
+            String cfLicense = cassandraArchivaManager.getLicenseFamilyName();
+
+            addInsertion( licenseMutator, keyLicense, cfLicense, "projectVersionMetadataModel.key",
+                          projectVersionMetadataKey );
+
+            addInsertion( licenseMutator, keyLicense, cfLicense, "license.name", license.getName() );
+
+            addInsertion( licenseMutator, keyLicense, cfLicense, "license.url", license.getUrl() );
+
+        }
+        licenseMutator.execute();
+    }
+
+    protected void removeLicenses( String projectVersionMetadataKey )
+    {
+        StringSerializer ss = StringSerializer.get();
+        QueryResult<OrderedRows<String, String, String>> result =
+            HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
+                .setColumnFamily( cassandraArchivaManager.getLicenseFamilyName() ) //
+                .setColumnNames( "name" ) //
+                .setRowCount( Integer.MAX_VALUE ) //
+                .addEqualsExpression( "projectVersionMetadataModel.key", projectVersionMetadataKey ) //
+                .execute();
+        for ( Row<String, String, String> row : result.get() )
+        {
+            this.licenseTemplate.deleteRow( row.getKey() );
+        }
+    }
+
+    protected List<License> getLicenses( String projectVersionMetadataKey )
+    {
+        List<License> licenses = new ArrayList<License>();
+
+        StringSerializer ss = StringSerializer.get();
+        QueryResult<OrderedRows<String, String, String>> result =
+            HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
+                .setColumnFamily( cassandraArchivaManager.getLicenseFamilyName() ) //
+                .setColumnNames( "projectVersionMetadataModel.key" ) //
+                .setRowCount( Integer.MAX_VALUE ) //
+                .addEqualsExpression( "projectVersionMetadataModel.key", projectVersionMetadataKey ) //
+                .execute();
+
+        for ( Row<String, String, String> row : result.get() )
+        {
+            ColumnFamilyResult<String, String> columnFamilyResult = this.licenseTemplate.queryColumns( row.getKey() );
+
+            licenses.add( new License( columnFamilyResult.getString( "license.name" ),
+                                       columnFamilyResult.getString( "license.url" ) ) );
+        }
+
+        return licenses;
     }
 
     @Override

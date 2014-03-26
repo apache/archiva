@@ -52,4 +52,6 @@ public interface CassandraArchivaManager
 
     String getMailingListFamilyName();
 
+    String getLicenseFamilyName();
+
 }

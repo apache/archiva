@@ -97,6 +97,9 @@ public class CassandraMetadataRepositoryTest
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
                                                        cassandraArchivaManager.getMailingListFamilyName() );
 
+        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
+                                                       cassandraArchivaManager.getLicenseFamilyName() );
+
     }
 
 }

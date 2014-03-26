@@ -83,6 +83,8 @@ public class DefaultCassandraArchivaManager
 
     private String mailingListFamilyName = "mailinglist";
 
+    private String licenseFamilyName = "license";
+
 
     @PostConstruct
     public void initialize()
@@ -378,6 +380,24 @@ public class DefaultCassandraArchivaManager
             projectVersionMetadataIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             mailingListCf.addColumnDefinition( projectVersionMetadataIdColumn );
 
+        }
+
+        // license table
+        {
+            final ColumnFamilyDefinition licenseCf =
+                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
+                                                       getLicenseFamilyName(), //
+                                                       ComparatorType.UTF8TYPE );
+            cfds.add( licenseCf );
+
+            // creating indexes for cql query
+
+            BasicColumnDefinition projectVersionMetadataIdColumn = new BasicColumnDefinition();
+            projectVersionMetadataIdColumn.setName( StringSerializer.get().toByteBuffer( "projectVersionMetadataId" ) );
+            projectVersionMetadataIdColumn.setIndexName( "projectVersionMetadataId" );
+            projectVersionMetadataIdColumn.setIndexType( ColumnIndexType.KEYS );
+            projectVersionMetadataIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            licenseCf.addColumnDefinition( projectVersionMetadataIdColumn );
 
         }
 
@@ -457,5 +477,10 @@ public class DefaultCassandraArchivaManager
     public String getMailingListFamilyName()
     {
         return mailingListFamilyName;
+    }
+
+    public String getLicenseFamilyName()
+    {
+        return licenseFamilyName;
     }
 }
