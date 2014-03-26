@@ -1300,7 +1300,8 @@ public class CassandraMetadataRepository
 
             addInsertion( dependencyMutator, keyDependency, cfDependency, "version", dependency.getVersion() );
 
-        } dependencyMutator.execute();
+        }
+        dependencyMutator.execute();
     }
 
     protected void removeDependencies( String projectVersionMetadataKey )
@@ -1334,7 +1335,8 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> row : result.get() )
         {
-            ColumnFamilyResult<String, String> columnFamilyResult = this.dependencyTemplate.queryColumns( row.getKey() );
+            ColumnFamilyResult<String, String> columnFamilyResult =
+                this.dependencyTemplate.queryColumns( row.getKey() );
 
             Dependency dependency = new Dependency();
             dependency.setClassifier( columnFamilyResult.getString( "classifier" ) );
@@ -1595,7 +1597,12 @@ public class CassandraMetadataRepository
             .execute();
 
         MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
-        Map<String, String> map = new HashMap<String, String>( result.get().getCount() );
+        int size = result.get().getCount();
+        if ( size < 1 )
+        {
+            return null;
+        }
+        Map<String, String> map = new HashMap<String, String>( size );
         for ( Row<String, String, String> row : result.get() )
         {
             ColumnSlice<String, String> columnSlice = row.getColumnSlice();

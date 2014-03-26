@@ -743,14 +743,14 @@ public abstract class AbstractMetadataRepositoryTest
         throws Exception
     {
         List<String> facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
-        assertTrue( facets.isEmpty() );
-        assertNull( repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
+        assertThat( facets ).isNotNull().isEmpty();
+        assertThat( repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) ).isNull();
 
         repository.removeMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME );
 
         facets = repository.getMetadataFacets( TEST_REPO_ID, TEST_FACET_ID );
-        assertTrue( facets.isEmpty() );
-        assertNull( repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) );
+        assertThat( facets ).isNotNull().isEmpty();
+        assertThat( repository.getMetadataFacet( TEST_REPO_ID, TEST_FACET_ID, TEST_NAME ) ).isNull();
     }
 
     @Test

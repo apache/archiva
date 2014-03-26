@@ -80,8 +80,10 @@ public class CassandraMetadataRepositoryTest
     {
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
                                                        cassandraArchivaManager.getProjectFamilyName() );
+
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
                                                        cassandraArchivaManager.getNamespaceFamilyName() );
+
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
                                                        cassandraArchivaManager.getRepositoryFamilyName() );
 
