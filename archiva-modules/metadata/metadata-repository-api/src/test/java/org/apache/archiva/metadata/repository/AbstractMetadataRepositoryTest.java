@@ -837,10 +837,10 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact1 );
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact2 );
 
-        List<String> versions = new ArrayList<String>(
-            repository.getArtifactVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) );
-        Collections.sort( versions );
-        assertEquals( Arrays.asList( version1, version2 ), versions );
+        Collection<String> versions =
+            repository.getArtifactVersions( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+
+        assertThat( versions ).isNotNull().isNotEmpty().contains( version1, version2 );
     }
 
     @Test
@@ -1235,8 +1235,8 @@ public abstract class AbstractMetadataRepositoryTest
 
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
 
-        assertEquals( Collections.singletonList( artifact ), new ArrayList<ArtifactMetadata>(
-            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
+        assertThat( repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
+                                             TEST_PROJECT_VERSION ) ).containsExactly( artifact );
 
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION_2_0, artifact );
 

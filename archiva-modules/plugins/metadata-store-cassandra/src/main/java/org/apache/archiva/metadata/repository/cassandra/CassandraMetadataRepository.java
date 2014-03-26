@@ -853,8 +853,13 @@ public class CassandraMetadataRepository
         projectVersionMetadataModel.setLicenses( versionMetadata.getLicenses() );
 
         // we don't test of repository and namespace really exist !
-        String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repositoryId ).withNamespace(
-            namespaceId ).withProjectId( projectId ).withId( versionMetadata.getId() ).build();
+        String key = new ProjectVersionMetadataModel.KeyBuilder() //
+            .withRepository( repositoryId ) //
+            .withNamespace( namespaceId ) //
+            .withProjectId( projectId ) //
+            .withProjectVersion( versionMetadata.getVersion() ) //
+            .withVersion( versionMetadata.getId() ) //
+            .build();
 
         // FIXME nested objects to store!!!
         if ( creation )
@@ -1435,10 +1440,25 @@ public class CassandraMetadataRepository
             .withRepository( repositoryId ) //
             .withNamespace( namespace ) //
             .withProjectId( projectId ) //
-            .withId( artifactMeta.getId() ) //
+            .withProjectVersion( projectVersion ) //
+            .withVersion( artifactMeta.getId() ) //
             .build();
 
-        exists = this.projectVersionMetadataModelTemplate.isColumnsExist( key );
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+        StringSerializer ss = StringSerializer.get();
+
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
+            .setColumnNames( "version" ) //
+            .addEqualsExpression( "repositoryName", repositoryId ) //
+            .addEqualsExpression( "namespaceId", namespaceId ) //
+            .addEqualsExpression( "projectId", projectId ) //
+            .addEqualsExpression( "projectVersion", projectVersion ) //
+            .addEqualsExpression( "version", artifactMeta.getVersion() ) //
+            .execute();
+
+        exists = result.get().getCount() > 0;
 
         if ( !exists )
         {
@@ -1892,9 +1912,13 @@ public class CassandraMetadataRepository
 
         this.artifactMetadataTemplate.deleteRow( key );
 
-        key =
-            new ProjectVersionMetadataModel.KeyBuilder().withId( version ).withRepository( repositoryId ).withNamespace(
-                namespace ).withProjectId( project ).build();
+        key = new ProjectVersionMetadataModel.KeyBuilder() //
+            .withRepository( repositoryId ) //
+            .withNamespace( namespace ) //
+            .withProjectId( project ) //
+            .withProjectVersion( version ) //
+            .withVersion( id ) //
+            .build();
 
         this.projectVersionMetadataModelTemplate.deleteRow( key );
     }

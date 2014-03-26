@@ -248,7 +248,6 @@ public class ProjectVersionMetadataModel
     }
 
 
-
     public static class KeyBuilder
     {
 
@@ -258,11 +257,13 @@ public class ProjectVersionMetadataModel
 
         private String projectId;
 
-        private String id;
+        private String projectVersion;
+
+        private String version;
 
         public KeyBuilder()
         {
-
+            // no op
         }
 
         public KeyBuilder withNamespace( Namespace namespace )
@@ -284,28 +285,29 @@ public class ProjectVersionMetadataModel
             return this;
         }
 
-        public KeyBuilder withRepository( Repository repository )
-        {
-            this.repositoryName = repository.getName();
-            return this;
-        }
-
         public KeyBuilder withProjectId( String projectId )
         {
             this.projectId = projectId;
             return this;
         }
 
-        public KeyBuilder withId( String id )
+        public KeyBuilder withProjectVersion( String projectVersion )
         {
-            this.id = id;
+            this.projectVersion = projectVersion;
+            return this;
+        }
+
+        public KeyBuilder withVersion( String version )
+        {
+            this.version = version;
             return this;
         }
 
         public String build()
         {
             // FIXME add some controls
-            return CassandraUtils.generateKey( this.repositoryName, this.namespace, this.projectId, this.id );
+            return CassandraUtils.generateKey( this.repositoryName, this.namespace, this.projectId, this.projectVersion,
+                                               this.version );
         }
     }
 }
