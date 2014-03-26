@@ -22,6 +22,7 @@ package org.apache.archiva.metadata.repository.cassandra;
 import me.prettyprint.cassandra.serializers.LongSerializer;
 import me.prettyprint.cassandra.serializers.SerializerTypeInferer;
 import me.prettyprint.cassandra.serializers.StringSerializer;
+import me.prettyprint.cassandra.service.template.ColumnFamilyUpdater;
 import me.prettyprint.hector.api.Serializer;
 import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
@@ -69,6 +70,7 @@ public class CassandraUtils
 
     public static <A, B> HColumn<A, B> column( final A name, final B value )
     {
+
         return HFactory.createColumn( name, //
                                       value, //
                                       (Serializer<A>) SerializerTypeInferer.getSerializer( name ), //
@@ -128,6 +130,22 @@ public class CassandraUtils
         {
             mutator.addInsertion( key, columnFamily, column( columnName, value ) );
         }
+    }
+
+    /**
+     * null check on the value to prevent {@link java.lang.IllegalArgumentException}
+     * @param updater
+     * @param columnName
+     * @param value
+     */
+    public static void addUpdateStringValue(ColumnFamilyUpdater<String,String> updater, String columnName, String value )
+    {
+        if (value == null)
+        {
+            return;
+        }
+        updater.setString( columnName, value );
+
     }
 
     private CassandraUtils()

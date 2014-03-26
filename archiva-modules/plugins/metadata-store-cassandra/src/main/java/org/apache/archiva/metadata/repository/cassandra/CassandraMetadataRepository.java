@@ -882,55 +882,48 @@ public class CassandraMetadataRepository
         else
         {
             ColumnFamilyUpdater<String, String> updater = projectVersionMetadataTemplate.createUpdater( key );
-            updater.setString( "projectId", projectId );
-            updater.setString( "repositoryName", repositoryId );
-            updater.setString( "namespaceId", namespaceId );
-            updater.setString( "projectVersion", versionMetadata.getVersion() );
-            if ( StringUtils.isNotEmpty( versionMetadata.getDescription() ) )
-            {
-                updater.setString( "description", versionMetadata.getDescription() );
-            }
-            if ( StringUtils.isNotEmpty( versionMetadata.getName() ) )
-            {
-                updater.setString( "name", versionMetadata.getName() );
-            }
+            addUpdateStringValue( updater, "projectId", projectId );
+            addUpdateStringValue( updater, "repositoryName", repositoryId );
+            addUpdateStringValue( updater, "namespaceId", namespaceId );
+            addUpdateStringValue( updater, "projectVersion", versionMetadata.getVersion() );
+            addUpdateStringValue( updater, "description", versionMetadata.getDescription() );
+
+            addUpdateStringValue( updater, "name", versionMetadata.getName() );
+
             updater.setString( "incomplete", Boolean.toString( versionMetadata.isIncomplete() ) );
-            if ( StringUtils.isNotEmpty( versionMetadata.getUrl() ) )
-            {
-                updater.setString( "url", versionMetadata.getUrl() );
-            }
+            addUpdateStringValue( updater, "url", versionMetadata.getUrl() );
 
             {
                 CiManagement ci = versionMetadata.getCiManagement();
                 if ( ci != null )
                 {
-                    updater.setString( "ciManagement.system", ci.getSystem() );
-                    updater.setString( "ciManagement.url", ci.getUrl() );
+                    addUpdateStringValue( updater, "ciManagement.system", ci.getSystem() );
+                    addUpdateStringValue( updater, "ciManagement.url", ci.getUrl() );
                 }
             }
             {
                 IssueManagement issueManagement = versionMetadata.getIssueManagement();
                 if ( issueManagement != null )
                 {
-                    updater.setString( "issueManagement.system", issueManagement.getSystem() );
-                    updater.setString( "issueManagement.url", issueManagement.getUrl() );
+                    addUpdateStringValue( updater, "issueManagement.system", issueManagement.getSystem() );
+                    addUpdateStringValue( updater, "issueManagement.url", issueManagement.getUrl() );
                 }
             }
             {
                 Organization organization = versionMetadata.getOrganization();
                 if ( organization != null )
                 {
-                    updater.setString( "organization.name", organization.getName() );
-                    updater.setString( "organization.url", organization.getUrl() );
+                    addUpdateStringValue( updater, "organization.name", organization.getName() );
+                    addUpdateStringValue( updater, "organization.url", organization.getUrl() );
                 }
             }
             {
                 Scm scm = versionMetadata.getScm();
                 if ( scm != null )
                 {
-                    updater.setString( "scm.url", scm.getUrl() );
-                    updater.setString( "scm.connection", scm.getConnection() );
-                    updater.setString( "scm.developerConnection", scm.getDeveloperConnection() );
+                    addUpdateStringValue( updater, "scm.url", scm.getUrl() );
+                    addUpdateStringValue( updater, "scm.connection", scm.getConnection() );
+                    addUpdateStringValue( updater, "scm.developerConnection", scm.getDeveloperConnection() );
                 }
             }
 
@@ -1363,9 +1356,9 @@ public class CassandraMetadataRepository
             updater.setLong( "fileLastModified", artifactMeta.getFileLastModified().getTime() );
             updater.setLong( "whenGathered", artifactMeta.getWhenGathered().getTime() );
             updater.setLong( "size", artifactMeta.getSize() );
-            updater.setString( "md5", artifactMeta.getMd5() );
-            updater.setString( "sha1", artifactMeta.getSha1() );
-            updater.setString( "version", artifactMeta.getVersion() );
+            addUpdateStringValue(updater, "md5", artifactMeta.getMd5() );
+            addUpdateStringValue(updater, "sha1", artifactMeta.getSha1() );
+            addUpdateStringValue(updater, "version", artifactMeta.getVersion() );
             this.artifactMetadataTemplate.update( updater );
         }
         else
@@ -1508,16 +1501,21 @@ public class CassandraMetadataRepository
             {
                 String key = new MetadataFacetModel.KeyBuilder().withKey( entry.getKey() ).withArtifactMetadataModel(
                     artifactMetadataModel ).withFacetId( facetId ).withName( metadataFacet.getName() ).build();
-                metadataFacetTemplate.createMutator() //
+                Mutator<String> mutator = metadataFacetTemplate.createMutator() //
                     .addInsertion( key, cf, column( "repositoryName", artifactMetadataModel.getRepositoryId() ) ) //
                     .addInsertion( key, cf, column( "namespaceId", artifactMetadataModel.getNamespace() ) ) //
                     .addInsertion( key, cf, column( "projectId", artifactMetadataModel.getProject() ) ) //
                     .addInsertion( key, cf, column( "projectVersion", artifactMetadataModel.getProjectVersion() ) ) //
                     .addInsertion( key, cf, column( "facetId", facetId ) ) //
                     .addInsertion( key, cf, column( "key", entry.getKey() ) ) //
-                    .addInsertion( key, cf, column( "value", entry.getValue() ) ) //
-                    .addInsertion( key, cf, column( "name", metadataFacet.getName() ) ) //
-                    .execute();
+                    .addInsertion( key, cf, column( "value", entry.getValue() ) );
+
+                if ( metadataFacet.getName() != null )
+                {
+                    mutator.addInsertion( key, cf, column( "name", metadataFacet.getName() ) );
+                }
+
+                mutator.execute();
             }
         }
     }
@@ -1608,8 +1606,8 @@ public class CassandraMetadataRepository
             if ( exists )
             {
                 ColumnFamilyUpdater<String, String> updater = this.metadataFacetTemplate.createUpdater( key );
-                updater.setString( "facetId", metadataFacet.getFacetId() );
-                updater.setString( "name", metadataFacet.getName() );
+                addUpdateStringValue(updater, "facetId", metadataFacet.getFacetId() );
+                addUpdateStringValue(updater, "name", metadataFacet.getName() );
                 this.metadataFacetTemplate.update( updater );
             }
             else
@@ -1645,7 +1643,7 @@ public class CassandraMetadataRepository
                 else
                 {
                     ColumnFamilyUpdater<String, String> updater = this.metadataFacetTemplate.createUpdater( key );
-                    updater.setString( "value", entry.getValue() );
+                    addUpdateStringValue(updater, "value", entry.getValue() );
                     this.metadataFacetTemplate.update( updater );
                 }
             }
