@@ -203,8 +203,9 @@ public abstract class AbstractMetadataRepositoryTest
     public void testGetArtifactOnly()
         throws Exception
     {
-        assertEquals( Collections.<ArtifactMetadata>emptyList(), new ArrayList<ArtifactMetadata>(
-            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ) );
+        assertThat( new ArrayList<ArtifactMetadata>(
+            repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
+                                     TEST_PROJECT_VERSION ) ) ).isNotNull().isEmpty();
         assertThat(
             repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ).isNull();
         assertThat( repository.getProject( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT ) ).isNull();
@@ -217,8 +218,8 @@ public abstract class AbstractMetadataRepositoryTest
 
         Collection<ArtifactMetadata> artifacts =
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
-        assertEquals( Collections.singletonList( metadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
-
+        //assertEquals( Collections.singletonList( metadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
+        assertThat( artifacts ).containsExactly( metadata );
         // test that namespace, project and project version is also constructed
 
         assertThat( repository.getRootNamespaces( TEST_REPO_ID ) ).isNotNull().isNotEmpty().contains(

@@ -1005,11 +1005,29 @@ public class CassandraMetadataRepository
                                                      final String projectId, final String projectVersion )
         throws MetadataResolutionException
     {
-        String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repoId ).withNamespace(
-            namespace ).withProjectId( projectId ).withId( projectVersion ).build();
+
+        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+        StringSerializer ss = StringSerializer.get();
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
+            .setColumnNames( "projectVersion" ) //
+            .addEqualsExpression( "repositoryName", repoId ) //
+            .addEqualsExpression( "namespaceId", namespace ) //
+            .addEqualsExpression( "projectId", projectId ) //
+            .addEqualsExpression( "projectVersion", projectVersion ) //
+            .execute();
+
+        if ( result.get().getCount() < 1 )
+        {
+            return null;
+        }
+
+        String key = result.get().iterator().next().getKey();
 
         ColumnFamilyResult<String, String> columnFamilyResult =
             this.projectVersionMetadataModelTemplate.queryColumns( key );
+
         if ( !columnFamilyResult.hasResults() )
         {
             return null;
@@ -1062,10 +1080,7 @@ public class CassandraMetadataRepository
         projectVersionMetadata.setDependencies( getDependencies( key ) );
         // facets
 
-        StringSerializer ss = StringSerializer.get();
-
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+        result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
             .setColumnNames( "facetId", "key", "value", "name" ) //
@@ -1416,18 +1431,17 @@ public class CassandraMetadataRepository
                 .execute();
         }
 
-        key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repositoryId ).withNamespace(
-            namespace ).withProjectId( projectId ).withId( projectVersion ).build();
+        key = new ProjectVersionMetadataModel.KeyBuilder() //
+            .withRepository( repositoryId ) //
+            .withNamespace( namespace ) //
+            .withProjectId( projectId ) //
+            .withId( artifactMeta.getId() ) //
+            .build();
 
         exists = this.projectVersionMetadataModelTemplate.isColumnsExist( key );
 
         if ( !exists )
         {
-            ProjectVersionMetadataModel projectVersionMetadataModel = new ProjectVersionMetadataModel();
-            projectVersionMetadataModel.setProjectId( projectId );
-            projectVersionMetadataModel.setId( projectVersion );
-            projectVersionMetadataModel.setNamespace( namespace );
-
             String cf = this.cassandraArchivaManager.getProjectVersionMetadataFamilyName();
 
             projectVersionMetadataModelTemplate.createMutator() //
@@ -1435,6 +1449,7 @@ public class CassandraMetadataRepository
                 .addInsertion( key, cf, column( "repositoryName", repositoryId ) ) //
                 .addInsertion( key, cf, column( "projectVersion", projectVersion ) ) //
                 .addInsertion( key, cf, column( "projectId", projectId ) ) //
+                .addInsertion( key, cf, column( "version", artifactMeta.getVersion() ) ) //
                 .execute();
 
         }
@@ -1465,7 +1480,7 @@ public class CassandraMetadataRepository
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
-            .setColumnNames( "projectVersion" ) //
+            .setColumnNames( "version" ) //
             .addEqualsExpression( "repositoryName", repoId ) //
             .addEqualsExpression( "namespaceId", namespace ) //
             .addEqualsExpression( "projectId", projectId ) //
@@ -1476,7 +1491,7 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> row : result.get() )
         {
-            versions.add( getStringValue( row.getColumnSlice(), "projectVersion" ) );
+            versions.add( getStringValue( row.getColumnSlice(), "version" ) );
         }
 
         return versions;
