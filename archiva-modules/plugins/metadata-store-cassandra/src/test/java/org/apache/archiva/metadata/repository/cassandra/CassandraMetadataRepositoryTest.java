@@ -100,6 +100,9 @@ public class CassandraMetadataRepositoryTest
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
                                                        cassandraArchivaManager.getLicenseFamilyName() );
 
+        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
+                                                       cassandraArchivaManager.getDependencyFamilyName() );
+
     }
 
 }

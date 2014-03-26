@@ -54,4 +54,6 @@ public interface CassandraArchivaManager
 
     String getLicenseFamilyName();
 
+    String getDependencyFamilyName();
+
 }

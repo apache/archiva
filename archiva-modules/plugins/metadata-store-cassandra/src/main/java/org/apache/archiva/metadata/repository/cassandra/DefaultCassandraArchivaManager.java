@@ -85,6 +85,8 @@ public class DefaultCassandraArchivaManager
 
     private String licenseFamilyName = "license";
 
+    private String dependencyFamilyName = "dependency";
+
 
     @PostConstruct
     public void initialize()
@@ -401,6 +403,25 @@ public class DefaultCassandraArchivaManager
 
         }
 
+        // dependency table
+        {
+            final ColumnFamilyDefinition dependencyCf =
+                HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
+                                                       getDependencyFamilyName(), //
+                                                       ComparatorType.UTF8TYPE );
+            cfds.add( dependencyCf );
+
+            // creating indexes for cql query
+
+            BasicColumnDefinition projectVersionMetadataIdColumn = new BasicColumnDefinition();
+            projectVersionMetadataIdColumn.setName( StringSerializer.get().toByteBuffer( "projectVersionMetadataId" ) );
+            projectVersionMetadataIdColumn.setIndexName( "projectVersionMetadataId" );
+            projectVersionMetadataIdColumn.setIndexType( ColumnIndexType.KEYS );
+            projectVersionMetadataIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            dependencyCf.addColumnDefinition( projectVersionMetadataIdColumn );
+
+        }
+
         // TODO take care of update new table!!
         { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
             if ( cluster.describeKeyspace( keyspaceName ) == null )
@@ -482,5 +503,10 @@ public class DefaultCassandraArchivaManager
     public String getLicenseFamilyName()
     {
         return licenseFamilyName;
+    }
+
+    public String getDependencyFamilyName()
+    {
+        return dependencyFamilyName;
     }
 }

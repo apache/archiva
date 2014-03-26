@@ -40,6 +40,7 @@ import me.prettyprint.hector.api.query.RangeSlicesQuery;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
+import org.apache.archiva.metadata.model.Dependency;
 import org.apache.archiva.metadata.model.FacetedMetadata;
 import org.apache.archiva.metadata.model.IssueManagement;
 import org.apache.archiva.metadata.model.License;
@@ -108,6 +109,8 @@ public class CassandraMetadataRepository
 
     private final ColumnFamilyTemplate<String, String> licenseTemplate;
 
+    private final ColumnFamilyTemplate<String, String> dependencyTemplate;
+
     public CassandraMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories,
                                         ArchivaConfiguration configuration,
                                         CassandraArchivaManager cassandraArchivaManager )
@@ -154,6 +157,13 @@ public class CassandraMetadataRepository
                                                                                //
                                                                                StringSerializer.get(), //
                                                                                StringSerializer.get() );
+
+        this.dependencyTemplate =
+            new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
+                                                            cassandraArchivaManager.getDependencyFamilyName(),
+                                                            //
+                                                            StringSerializer.get(), //
+                                                            StringSerializer.get() );
     }
 
 
@@ -902,12 +912,11 @@ public class CassandraMetadataRepository
                 }
             }
 
-            if ( versionMetadata.getMailingLists() != null )
-            {
-                recordMailingList( key, versionMetadata.getMailingLists() );
-            }
+            recordMailingList( key, versionMetadata.getMailingLists() );
 
             recordLicenses( key, versionMetadata.getLicenses() );
+
+            recordDependencies( key, versionMetadata.getDependencies() );
 
             MutationResult mutationResult = mutator.execute();
         }
@@ -972,6 +981,9 @@ public class CassandraMetadataRepository
 
             removeLicenses( key );
             recordLicenses( key, versionMetadata.getLicenses() );
+
+            removeDependencies( key );
+            recordDependencies( key, versionMetadata.getDependencies() );
 
             projectVersionMetadataModelTemplate.update( updater );
 
@@ -1047,7 +1059,7 @@ public class CassandraMetadataRepository
         }
         projectVersionMetadata.setMailingLists( getMailingLists( key ) );
         projectVersionMetadata.setLicenses( getLicenses( key ) );
-        // FIXME complete collections !!
+        projectVersionMetadata.setDependencies( getDependencies( key ) );
         // facets
 
         StringSerializer ss = StringSerializer.get();
@@ -1204,9 +1216,9 @@ public class CassandraMetadataRepository
             addInsertion( licenseMutator, keyLicense, cfLicense, "projectVersionMetadataModel.key",
                           projectVersionMetadataKey );
 
-            addInsertion( licenseMutator, keyLicense, cfLicense, "license.name", license.getName() );
+            addInsertion( licenseMutator, keyLicense, cfLicense, "name", license.getName() );
 
-            addInsertion( licenseMutator, keyLicense, cfLicense, "license.url", license.getUrl() );
+            addInsertion( licenseMutator, keyLicense, cfLicense, "url", license.getUrl() );
 
         }
         licenseMutator.execute();
@@ -1245,11 +1257,106 @@ public class CassandraMetadataRepository
         {
             ColumnFamilyResult<String, String> columnFamilyResult = this.licenseTemplate.queryColumns( row.getKey() );
 
-            licenses.add( new License( columnFamilyResult.getString( "license.name" ),
-                                       columnFamilyResult.getString( "license.url" ) ) );
+            licenses.add(
+                new License( columnFamilyResult.getString( "name" ), columnFamilyResult.getString( "url" ) ) );
         }
 
         return licenses;
+    }
+
+
+    protected void recordDependencies( String projectVersionMetadataKey, List<Dependency> dependencies )
+    {
+
+        if ( dependencies == null || dependencies.isEmpty() )
+        {
+            return;
+        }
+        Mutator<String> dependencyMutator = this.dependencyTemplate.createMutator();
+
+        for ( Dependency dependency : dependencies )
+        {
+            // we don't care about the key as the real used one with the projectVersionMetadata
+            String keyDependency = UUID.randomUUID().toString();
+            String cfDependency = cassandraArchivaManager.getDependencyFamilyName();
+
+            addInsertion( dependencyMutator, keyDependency, cfDependency, "projectVersionMetadataModel.key",
+                          projectVersionMetadataKey );
+
+            addInsertion( dependencyMutator, keyDependency, cfDependency, "classifier", dependency.getClassifier() );
+
+            addInsertion( dependencyMutator, keyDependency, cfDependency, "optional",
+                          Boolean.toString( dependency.isOptional() ) );
+
+            addInsertion( dependencyMutator, keyDependency, cfDependency, "scope", dependency.getScope() );
+
+            addInsertion( dependencyMutator, keyDependency, cfDependency, "systemPath", dependency.getSystemPath() );
+
+            addInsertion( dependencyMutator, keyDependency, cfDependency, "type", dependency.getType() );
+
+            addInsertion( dependencyMutator, keyDependency, cfDependency, "artifactId", dependency.getArtifactId() );
+
+            addInsertion( dependencyMutator, keyDependency, cfDependency, "groupId", dependency.getGroupId() );
+
+            addInsertion( dependencyMutator, keyDependency, cfDependency, "version", dependency.getVersion() );
+
+        } dependencyMutator.execute();
+    }
+
+    protected void removeDependencies( String projectVersionMetadataKey )
+    {
+        StringSerializer ss = StringSerializer.get();
+        QueryResult<OrderedRows<String, String, String>> result =
+            HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
+                .setColumnFamily( cassandraArchivaManager.getDependencyFamilyName() ) //
+                .setColumnNames( "groupId" ) //
+                .setRowCount( Integer.MAX_VALUE ) //
+                .addEqualsExpression( "projectVersionMetadataModel.key", projectVersionMetadataKey ) //
+                .execute();
+        for ( Row<String, String, String> row : result.get() )
+        {
+            this.dependencyTemplate.deleteRow( row.getKey() );
+        }
+    }
+
+    protected List<Dependency> getDependencies( String projectVersionMetadataKey )
+    {
+        List<Dependency> dependencies = new ArrayList<Dependency>();
+
+        StringSerializer ss = StringSerializer.get();
+        QueryResult<OrderedRows<String, String, String>> result =
+            HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
+                .setColumnFamily( cassandraArchivaManager.getDependencyFamilyName() ) //
+                .setColumnNames( "projectVersionMetadataModel.key" ) //
+                .setRowCount( Integer.MAX_VALUE ) //
+                .addEqualsExpression( "projectVersionMetadataModel.key", projectVersionMetadataKey ) //
+                .execute();
+
+        for ( Row<String, String, String> row : result.get() )
+        {
+            ColumnFamilyResult<String, String> columnFamilyResult = this.dependencyTemplate.queryColumns( row.getKey() );
+
+            Dependency dependency = new Dependency();
+            dependency.setClassifier( columnFamilyResult.getString( "classifier" ) );
+
+            dependency.setOptional( Boolean.parseBoolean( columnFamilyResult.getString( "optional" ) ) );
+
+            dependency.setScope( columnFamilyResult.getString( "scope" ) );
+
+            dependency.setSystemPath( columnFamilyResult.getString( "systemPath" ) );
+
+            dependency.setType( columnFamilyResult.getString( "type" ) );
+
+            dependency.setArtifactId( columnFamilyResult.getString( "artifactId" ) );
+
+            dependency.setGroupId( columnFamilyResult.getString( "groupId" ) );
+
+            dependency.setVersion( columnFamilyResult.getString( "version" ) );
+
+            dependencies.add( dependency );
+        }
+
+        return dependencies;
     }
 
     @Override
