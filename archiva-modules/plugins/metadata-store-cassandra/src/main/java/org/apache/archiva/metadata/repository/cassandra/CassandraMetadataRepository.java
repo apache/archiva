@@ -1992,14 +1992,24 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
 
-        String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( repoId ).withNamespace(
-            namespace ).withProjectId( projectId ).withId( projectVersion ).build();
-
-        this.projectVersionMetadataModelTemplate.deleteRow( key );
-
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
 
         StringSerializer ss = StringSerializer.get();
+
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
+            .setColumnNames( "version" ) //
+            .addEqualsExpression( "repositoryName", repoId ) //
+            .addEqualsExpression( "namespaceId", namespace ) //
+            .addEqualsExpression( "projectId", projectId ) //
+            .addEqualsExpression( "projectVersion", projectVersion ) //
+            .execute();
+
+        for ( Row<String, String, String> row : result.get().getList() )
+        {
+            this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
+        }
 
         RangeSlicesQuery<String, String, String> query = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
@@ -2011,7 +2021,7 @@ public class CassandraMetadataRepository
             .addEqualsExpression( "project", projectId ) //
             .addEqualsExpression( "projectVersion", projectVersion );
 
-        QueryResult<OrderedRows<String, String, String>> result = query.execute();
+        result = query.execute();
 
         for ( Row<String, String, String> row : result.get() )
         {
