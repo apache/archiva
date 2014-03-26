@@ -30,4 +30,14 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.metadata.repository.cassandra"/>
 
+  <context:property-placeholder location="classpath:default-archiva-cassandra.properties"
+                                system-properties-mode="OVERRIDE"
+                                order="2"/>
+
+  <context:property-placeholder location="file:${archiva.cassandra.configuration.file}"
+                                ignore-resource-not-found="true"
+                                ignore-unresolvable="true"
+                                system-properties-mode="OVERRIDE"
+                                order="1"/>
+
 </beans>

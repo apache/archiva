@@ -33,6 +33,7 @@ import me.prettyprint.hector.api.ddl.ComparatorType;
 import me.prettyprint.hector.api.factory.HFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -87,23 +88,35 @@ public class DefaultCassandraArchivaManager
 
     private String dependencyFamilyName = "dependency";
 
+    @Value("${cassandra.host}")
+    private String cassandraHost;// = System.getProperty( "cassandra.host", "localhost" );
+
+    @Value("${cassandra.port}")
+    private String cassandraPort;// = System.getProperty( "cassandra.port", "9160" );
+
+    @Value("${cassandra.maxActive}")
+    private int maxActive;// = Integer.getInteger( "cassandra.maxActive", 20 );
+
+    @Value("${cassandra.readConsistencyLevel}")
+    private String readConsistencyLevel;// =
+        //System.getProperty( "cassandra.readConsistencyLevel", HConsistencyLevel.QUORUM.name() );
+
+    @Value("${cassandra.writeConsistencyLevel}")
+    private String writeConsistencyLevel;
+    //= System.getProperty( "cassandra.writeConsistencyLevel", HConsistencyLevel.QUORUM.name() );
+
+    @Value("${cassandra.replicationFactor}")
+    private int replicationFactor;// = Integer.getInteger( "cassandra.replicationFactor", 1 );
+
+    @Value("${cassandra.keyspace.name}")
+    private String keyspaceName;// = System.getProperty( "cassandra.keyspace.name", KEYSPACE_NAME );
+
+    @Value("${cassandra.cluster.name}")
+    private String clusterName;// = System.getProperty( "cassandra.cluster.name", CLUSTER_NAME );
 
     @PostConstruct
     public void initialize()
     {
-        // FIXME must come from configuration not sys props
-        String cassandraHost = System.getProperty( "cassandraHost", "localhost" );
-        String cassandraPort = System.getProperty( "cassandraPort" );
-        int maxActive = Integer.getInteger( "cassandra.maxActive", 20 );
-        String readConsistencyLevel =
-            System.getProperty( "cassandra.readConsistencyLevel", HConsistencyLevel.QUORUM.name() );
-        String writeConsistencyLevel =
-            System.getProperty( "cassandra.readConsistencyLevel", HConsistencyLevel.QUORUM.name() );
-
-        int replicationFactor = Integer.getInteger( "cassandra.replicationFactor", 1 );
-
-        String keyspaceName = System.getProperty( "cassandra.keyspace.name", KEYSPACE_NAME );
-        String clusterName = System.getProperty( "cassandra.cluster.name", CLUSTER_NAME );
 
         final CassandraHostConfigurator configurator =
             new CassandraHostConfigurator( cassandraHost + ":" + cassandraPort );
