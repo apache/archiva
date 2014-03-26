@@ -97,7 +97,7 @@ public class CassandraMetadataRepository
 
     private final CassandraArchivaManager cassandraArchivaManager;
 
-    private final ColumnFamilyTemplate<String, String> projectVersionMetadataModelTemplate;
+    private final ColumnFamilyTemplate<String, String> projectVersionMetadataTemplate;
 
     private final ColumnFamilyTemplate<String, String> projectTemplate;
 
@@ -119,7 +119,7 @@ public class CassandraMetadataRepository
         this.configuration = configuration;
         this.cassandraArchivaManager = cassandraArchivaManager;
 
-        this.projectVersionMetadataModelTemplate =
+        this.projectVersionMetadataTemplate =
             new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
                                                             cassandraArchivaManager.getProjectVersionMetadataFamilyName(),
                                                             StringSerializer.get(), //
@@ -333,7 +333,7 @@ public class CassandraMetadataRepository
 
             for ( Row<String, String, String> row : result.get() )
             {
-                this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
+                this.projectVersionMetadataTemplate.deleteRow( row.getKey() );
                 removeMailingList( row.getKey() );
             }
 
@@ -437,7 +437,7 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> row : result.get() )
         {
-            this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
+            this.projectVersionMetadataTemplate.deleteRow( row.getKey() );
             removeMailingList( row.getKey() );
         }
 
@@ -681,7 +681,7 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> row : result.get() )
         {
-            this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
+            this.projectVersionMetadataTemplate.deleteRow( row.getKey() );
             removeMailingList( row.getKey() );
         }
 
@@ -865,7 +865,7 @@ public class CassandraMetadataRepository
         if ( creation )
         {
             String cf = cassandraArchivaManager.getProjectVersionMetadataFamilyName();
-            Mutator<String> mutator = projectVersionMetadataModelTemplate.createMutator()
+            Mutator<String> mutator = projectVersionMetadataTemplate.createMutator()
                 //  values
                 .addInsertion( key, cf, column( "projectId", projectId ) ) //
                 .addInsertion( key, cf, column( "repositoryName", repositoryId ) ) //
@@ -927,7 +927,7 @@ public class CassandraMetadataRepository
         }
         else
         {
-            ColumnFamilyUpdater<String, String> updater = projectVersionMetadataModelTemplate.createUpdater( key );
+            ColumnFamilyUpdater<String, String> updater = projectVersionMetadataTemplate.createUpdater( key );
             updater.setString( "projectId", projectId );
             updater.setString( "repositoryName", repositoryId );
             updater.setString( "namespaceId", namespaceId );
@@ -990,7 +990,7 @@ public class CassandraMetadataRepository
             removeDependencies( key );
             recordDependencies( key, versionMetadata.getDependencies() );
 
-            projectVersionMetadataModelTemplate.update( updater );
+            projectVersionMetadataTemplate.update( updater );
 
         }
 
@@ -1031,7 +1031,7 @@ public class CassandraMetadataRepository
         String key = result.get().iterator().next().getKey();
 
         ColumnFamilyResult<String, String> columnFamilyResult =
-            this.projectVersionMetadataModelTemplate.queryColumns( key );
+            this.projectVersionMetadataTemplate.queryColumns( key );
 
         if ( !columnFamilyResult.hasResults() )
         {
@@ -1464,7 +1464,7 @@ public class CassandraMetadataRepository
         {
             String cf = this.cassandraArchivaManager.getProjectVersionMetadataFamilyName();
 
-            projectVersionMetadataModelTemplate.createMutator() //
+            projectVersionMetadataTemplate.createMutator() //
                 .addInsertion( key, cf, column( "namespaceId", namespace.getName() ) ) //
                 .addInsertion( key, cf, column( "repositoryName", repositoryId ) ) //
                 .addInsertion( key, cf, column( "projectVersion", projectVersion ) ) //
@@ -1920,7 +1920,7 @@ public class CassandraMetadataRepository
             .withId( id ) //
             .build();
 
-        this.projectVersionMetadataModelTemplate.deleteRow( key );
+        this.projectVersionMetadataTemplate.deleteRow( key );
     }
 
     @Override
@@ -2032,7 +2032,7 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> row : result.get().getList() )
         {
-            this.projectVersionMetadataModelTemplate.deleteRow( row.getKey() );
+            this.projectVersionMetadataTemplate.deleteRow( row.getKey() );
         }
 
         RangeSlicesQuery<String, String, String> query = HFactory //
