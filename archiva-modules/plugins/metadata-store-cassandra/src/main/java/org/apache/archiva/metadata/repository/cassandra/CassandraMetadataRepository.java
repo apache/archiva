@@ -111,6 +111,10 @@ public class CassandraMetadataRepository
 
     private final ColumnFamilyTemplate<String, String> dependencyTemplate;
 
+    private final Keyspace keyspace;
+
+    private final StringSerializer ss = StringSerializer.get();
+
     public CassandraMetadataRepository( Map<String, MetadataFacetFactory> metadataFacetFactories,
                                         ArchivaConfiguration configuration,
                                         CassandraArchivaManager cassandraArchivaManager )
@@ -118,6 +122,7 @@ public class CassandraMetadataRepository
         this.metadataFacetFactories = metadataFacetFactories;
         this.configuration = configuration;
         this.cassandraArchivaManager = cassandraArchivaManager;
+        this.keyspace = cassandraArchivaManager.getKeyspace();
 
         this.projectVersionMetadataTemplate =
             new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
@@ -177,7 +182,7 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
         String cf = cassandraArchivaManager.getRepositoryFamilyName();
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, StringSerializer.get(), StringSerializer.get(),
                                      StringSerializer.get() ) //
@@ -215,7 +220,7 @@ public class CassandraMetadataRepository
     protected Repository getRepository( String repositoryId )
         throws MetadataRepositoryException
     {
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, StringSerializer.get(), StringSerializer.get(),
                                      StringSerializer.get() ) //
@@ -239,8 +244,6 @@ public class CassandraMetadataRepository
         try
         {
             Repository repository = getOrCreateRepository( repositoryId );
-
-            Keyspace keyspace = cassandraArchivaManager.getKeyspace();
 
             String key =
                 new Namespace.KeyBuilder().withNamespace( namespaceId ).withRepositoryId( repositoryId ).build();
@@ -268,12 +271,9 @@ public class CassandraMetadataRepository
 
     protected Namespace getNamespace( String repositoryId, String namespaceId )
     {
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
             .setColumnNames( "repositoryName", "name" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -294,7 +294,7 @@ public class CassandraMetadataRepository
     public void removeNamespace( String repositoryId, String namespaceId )
         throws MetadataRepositoryException
     {
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
         try
         {
             String key =
@@ -305,10 +305,7 @@ public class CassandraMetadataRepository
                 .execute();
 
             QueryResult<OrderedRows<String, String, String>> result = HFactory //
-                .createRangeSlicesQuery( keyspace, //
-                                         StringSerializer.get(), //
-                                         StringSerializer.get(), //
-                                         StringSerializer.get() ) //
+                .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
                 .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
                 .setColumnNames( "repositoryName" ) //
                 .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -321,10 +318,7 @@ public class CassandraMetadataRepository
             }
 
             result = HFactory //
-                .createRangeSlicesQuery( keyspace, //
-                                         StringSerializer.get(), //
-                                         StringSerializer.get(), //
-                                         StringSerializer.get() ) //
+                .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
                 .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
                 .setColumnNames( "repositoryName" ) //
                 .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -338,10 +332,7 @@ public class CassandraMetadataRepository
             }
 
             result = HFactory //
-                .createRangeSlicesQuery( keyspace, //
-                                         StringSerializer.get(), //
-                                         StringSerializer.get(), //
-                                         StringSerializer.get() ) //
+                .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
                 .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
                 .setColumnNames( "repositoryName" ) //
                 .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -354,10 +345,7 @@ public class CassandraMetadataRepository
             }
 
             result = HFactory //
-                .createRangeSlicesQuery( keyspace, //
-                                         StringSerializer.get(), //
-                                         StringSerializer.get(), //
-                                         StringSerializer.get() ) //
+                .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
                 .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
                 .setColumnNames( "repositoryName" ) //
                 .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -383,12 +371,9 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
 
-        StringSerializer ss = StringSerializer.get();
-
         // TODO use cql queries to delete all
         List<String> namespacesKey = new ArrayList<String>();
 
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
@@ -411,10 +396,7 @@ public class CassandraMetadataRepository
             .execute();
 
         result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
             .setColumnNames( "repositoryName" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -426,10 +408,7 @@ public class CassandraMetadataRepository
         }
 
         result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
             .setColumnNames( "repositoryName" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -442,10 +421,7 @@ public class CassandraMetadataRepository
         }
 
         result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
             .setColumnNames( "repositoryName" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -457,10 +433,7 @@ public class CassandraMetadataRepository
         }
 
         result = HFactory //
-            .createRangeSlicesQuery( keyspace, //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get(), //
-                                     StringSerializer.get() ) //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
             .setColumnNames( "repositoryName" ) //
             .addEqualsExpression( "repositoryName", repositoryId ) //
@@ -484,9 +457,7 @@ public class CassandraMetadataRepository
 
             final QueryResult<OrderedRows<String, String, String>> cResult = //
                 HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), //
-                                                 StringSerializer.get(), //
-                                                 StringSerializer.get(), //
-                                                 StringSerializer.get() ) //
+                                                 ss, ss, ss ) //
                     .setColumnFamily( cassandraArchivaManager.getRepositoryFamilyName() ) //
                     .setColumnNames( "repositoryName" ) //
                     .setRange( null, null, false, Integer.MAX_VALUE ) //
@@ -513,8 +484,7 @@ public class CassandraMetadataRepository
     public Collection<String> getRootNamespaces( final String repoId )
         throws MetadataResolutionException
     {
-        StringSerializer ss = StringSerializer.get();
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
@@ -537,8 +507,7 @@ public class CassandraMetadataRepository
     public Collection<String> getNamespaces( final String repoId, final String namespaceId )
         throws MetadataResolutionException
     {
-        StringSerializer ss = StringSerializer.get();
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
@@ -574,8 +543,7 @@ public class CassandraMetadataRepository
     public List<String> getNamespaces( final String repoId )
         throws MetadataResolutionException
     {
-        StringSerializer ss = StringSerializer.get();
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
+
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getNamespaceFamilyName() ) //
@@ -598,8 +566,6 @@ public class CassandraMetadataRepository
     public void updateProject( String repositoryId, ProjectMetadata projectMetadata )
         throws MetadataRepositoryException
     {
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
 
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
@@ -637,8 +603,6 @@ public class CassandraMetadataRepository
         throws MetadataResolutionException
     {
 
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
@@ -661,8 +625,7 @@ public class CassandraMetadataRepository
     public void removeProject( final String repositoryId, final String namespaceId, final String projectId )
         throws MetadataRepositoryException
     {
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
+
         String key = new Project.KeyBuilder() //
             .withProjectId( projectId ) //
             .withNamespace( new Namespace( namespaceId, new Repository( repositoryId ) ) ) //
@@ -705,8 +668,6 @@ public class CassandraMetadataRepository
         throws MetadataResolutionException
     {
 
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
@@ -739,8 +700,6 @@ public class CassandraMetadataRepository
         throws MetadataResolutionException
     {
 
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectFamilyName() ) //
@@ -773,11 +732,9 @@ public class CassandraMetadataRepository
         projectVersionMetadataModel.setId( getStringValue( columnSlice, "id" ) );
         projectVersionMetadataModel.setDescription( getStringValue( columnSlice, "description" ) );
         projectVersionMetadataModel.setName( getStringValue( columnSlice, "name" ) );
-        projectVersionMetadataModel.setNamespace( new Namespace( getStringValue( columnSlice, "namespaceId" ), //
-                                                                 new Repository(
-                                                                     getStringValue( columnSlice, "repositoryName" ) )
-                                                  )
-        );
+        Namespace namespace = new Namespace( getStringValue( columnSlice, "namespaceId" ), //
+                                             new Repository( getStringValue( columnSlice, "repositoryName" ) ) );
+        projectVersionMetadataModel.setNamespace( namespace );
         projectVersionMetadataModel.setIncomplete(
             Boolean.parseBoolean( getStringValue( columnSlice, "incomplete" ) ) );
         projectVersionMetadataModel.setProjectId( getStringValue( columnSlice, "projectId" ) );
@@ -814,9 +771,6 @@ public class CassandraMetadataRepository
             throw new MetadataRepositoryException( e.getMessage(), e );
         }
 
-        StringSerializer ss = StringSerializer.get();
-
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
@@ -1011,8 +965,6 @@ public class CassandraMetadataRepository
         throws MetadataResolutionException
     {
 
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
@@ -1162,7 +1114,7 @@ public class CassandraMetadataRepository
 
     protected void removeMailingList( String projectVersionMetadataKey )
     {
-        StringSerializer ss = StringSerializer.get();
+
         QueryResult<OrderedRows<String, String, String>> result =
             HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
                 .setColumnFamily( cassandraArchivaManager.getMailingListFamilyName() ) //
@@ -1180,7 +1132,6 @@ public class CassandraMetadataRepository
     {
         List<MailingList> mailingLists = new ArrayList<MailingList>();
 
-        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result =
             HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
                 .setColumnFamily( cassandraArchivaManager.getMailingListFamilyName() ) //
@@ -1245,7 +1196,7 @@ public class CassandraMetadataRepository
 
     protected void removeLicenses( String projectVersionMetadataKey )
     {
-        StringSerializer ss = StringSerializer.get();
+
         QueryResult<OrderedRows<String, String, String>> result =
             HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
                 .setColumnFamily( cassandraArchivaManager.getLicenseFamilyName() ) //
@@ -1263,7 +1214,6 @@ public class CassandraMetadataRepository
     {
         List<License> licenses = new ArrayList<License>();
 
-        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result =
             HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
                 .setColumnFamily( cassandraArchivaManager.getLicenseFamilyName() ) //
@@ -1325,7 +1275,7 @@ public class CassandraMetadataRepository
 
     protected void removeDependencies( String projectVersionMetadataKey )
     {
-        StringSerializer ss = StringSerializer.get();
+
         QueryResult<OrderedRows<String, String, String>> result =
             HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
                 .setColumnFamily( cassandraArchivaManager.getDependencyFamilyName() ) //
@@ -1343,7 +1293,6 @@ public class CassandraMetadataRepository
     {
         List<Dependency> dependencies = new ArrayList<Dependency>();
 
-        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result =
             HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
                 .setColumnFamily( cassandraArchivaManager.getDependencyFamilyName() ) //
@@ -1443,9 +1392,6 @@ public class CassandraMetadataRepository
             .withId( artifactMeta.getId() ) //
             .build();
 
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
-
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
@@ -1494,8 +1440,7 @@ public class CassandraMetadataRepository
                                                    final String projectVersion )
         throws MetadataResolutionException
     {
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
+
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
@@ -1526,8 +1471,7 @@ public class CassandraMetadataRepository
     private void updateFacets( final FacetedMetadata facetedMetadata,
                                final ArtifactMetadataModel artifactMetadataModel )
     {
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
+
         String cf = cassandraArchivaManager.getMetadataFacetFamilyName();
 
         for ( final String facetId : metadataFacetFactories.keySet() )
@@ -1581,8 +1525,6 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
 
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
@@ -1618,8 +1560,6 @@ public class CassandraMetadataRepository
             return null;
         }
 
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
@@ -1713,8 +1653,7 @@ public class CassandraMetadataRepository
     public void removeMetadataFacets( final String repositoryId, final String facetId )
         throws MetadataRepositoryException
     {
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
+
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
@@ -1734,8 +1673,7 @@ public class CassandraMetadataRepository
     public void removeMetadataFacet( final String repositoryId, final String facetId, final String name )
         throws MetadataRepositoryException
     {
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
+
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
@@ -1757,8 +1695,6 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
 
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
         LongSerializer ls = LongSerializer.get();
         RangeSlicesQuery<String, String, Long> query = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ls ) //
@@ -1839,8 +1775,6 @@ public class CassandraMetadataRepository
     public Collection<ArtifactMetadata> getArtifactsByChecksum( final String repositoryId, final String checksum )
         throws MetadataRepositoryException
     {
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
 
         // cql cannot run or in queries so running twice the query
         Map<String, ArtifactMetadata> artifactMetadataMap = new HashMap<String, ArtifactMetadata>();
@@ -1931,10 +1865,6 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
 
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
-        StringSerializer ss = StringSerializer.get();
-
         RangeSlicesQuery<String, String, String> query = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
@@ -1958,8 +1888,6 @@ public class CassandraMetadataRepository
     public List<ArtifactMetadata> getArtifacts( final String repositoryId )
         throws MetadataRepositoryException
     {
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-        StringSerializer ss = StringSerializer.get();
 
         RangeSlicesQuery<String, String, String> query = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
@@ -2000,10 +1928,6 @@ public class CassandraMetadataRepository
         throws MetadataRepositoryException
     {
 
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
-        StringSerializer ss = StringSerializer.get();
-
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
@@ -2043,10 +1967,6 @@ public class CassandraMetadataRepository
                                                       final String projectId, final String projectVersion )
         throws MetadataResolutionException
     {
-
-        Keyspace keyspace = cassandraArchivaManager.getKeyspace();
-
-        StringSerializer ss = StringSerializer.get();
 
         QueryResult<OrderedRows<String, String, String>> result =
             HFactory.createRangeSlicesQuery( keyspace, ss, ss, ss ) //
