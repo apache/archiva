@@ -21,7 +21,6 @@ package org.apache.archiva.metadata.repository.cassandra.model;
 
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
-import javax.persistence.Column;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -35,37 +34,26 @@ public class ArtifactMetadataModel
     implements Serializable
 {
 
-    @Column(name = "id")
     private String id;
 
-    @Column(name = "repositoryName")
     private String repositoryId;
 
-    @Column(name = "namespaceId")
     private String namespace;
 
-    @Column(name = "project")
     private String project;
 
-    @Column(name = "projectVersion")
     private String projectVersion;
 
-    @Column(name = "version")
     private String version;
 
-    @Column(name = "fileLastModified")
     private long fileLastModified;
 
-    @Column(name = "size")
     private long size;
 
-    @Column(name = "md5")
     private String md5;
 
-    @Column(name = "sha1")
     private String sha1;
 
-    @Column(name = "whenGathered")
     private long whenGathered;
 
     public ArtifactMetadataModel()

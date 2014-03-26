@@ -1148,8 +1148,8 @@ public class JcrMetadataRepository
 
             for ( Node node : JcrUtils.getChildNodes( nodeAtPath ) )
             {
-                if ( node.isNodeType( PROJECT_VERSION_NODE_TYPE ) && StringUtils.equals( node.getName(),
-                                                                                         projectVersion ) )
+                if ( node.isNodeType( PROJECT_VERSION_NODE_TYPE ) //
+                    && StringUtils.equals( node.getName(), projectVersion ) )
                 {
                     node.remove();
                 }

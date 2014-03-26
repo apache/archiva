@@ -28,7 +28,6 @@ import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
-import javax.persistence.Column;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,52 +37,32 @@ import java.util.List;
  */
 public class ProjectVersionMetadataModel
 {
-
-
-    @Column(name = "namespaceId") // repositoryName
     private Namespace namespace;
 
-    /**
-     * id is the id
-     */
-    @Column(name = "id")
     private String id;
 
-    @Column(name = "projectId")
     private String projectId;
 
-    @Column(name = "url")
     private String url;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "description")
     private String description;
 
-    @Column(name = "organization")
     private Organization organization;
 
-    @Column(name = "issueManagement")
     private IssueManagement issueManagement;
 
-    @Column(name = "scm")
     private Scm scm;
 
-    @Column(name = "ciManagement")
     private CiManagement ciManagement;
 
-    // FIXME store those values in a separate table
-    @Column(name = "licenses")
     private List<License> licenses = new ArrayList<License>();
 
-    @Column(name = "mailingLists")
     private List<MailingList> mailingLists = new ArrayList<MailingList>();
 
-    @Column(name = "dependencies")
     private List<Dependency> dependencies = new ArrayList<Dependency>();
 
-    @Column(name = "incomplete")
     private boolean incomplete;
 
     public String getProjectId()

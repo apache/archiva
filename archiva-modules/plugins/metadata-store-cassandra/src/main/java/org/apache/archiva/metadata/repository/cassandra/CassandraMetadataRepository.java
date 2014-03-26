@@ -1030,8 +1030,7 @@ public class CassandraMetadataRepository
 
         String key = result.get().iterator().next().getKey();
 
-        ColumnFamilyResult<String, String> columnFamilyResult =
-            this.projectVersionMetadataTemplate.queryColumns( key );
+        ColumnFamilyResult<String, String> columnFamilyResult = this.projectVersionMetadataTemplate.queryColumns( key );
 
         if ( !columnFamilyResult.hasResults() )
         {
@@ -1547,9 +1546,8 @@ public class CassandraMetadataRepository
                     .addEqualsExpression( "repositoryName", artifactMetadataModel.getRepositoryId() ) //
                     .addEqualsExpression( "namespaceId", artifactMetadataModel.getNamespace() ) //
                     .addEqualsExpression( "projectId", artifactMetadataModel.getProject() ) //
-                    .addEqualsExpression( "projectVersion",
-                                          artifactMetadataModel.getProjectVersion() ).addEqualsExpression( "facetId",
-                                                                                                           facetId ) //
+                    .addEqualsExpression( "projectVersion", artifactMetadataModel.getProjectVersion() ) //
+                    .addEqualsExpression( "facetId", facetId ) //
                     .execute();
 
             for ( Row<String, String, String> row : result.get().getList() )
@@ -1686,23 +1684,12 @@ public class CassandraMetadataRepository
         {
             for ( Map.Entry<String, String> entry : metadataFacet.toProperties().entrySet() )
             {
-
                 String key = new MetadataFacetModel.KeyBuilder().withRepositoryId( repositoryId ).withFacetId(
                     metadataFacet.getFacetId() ).withName( metadataFacet.getName() ).withKey( entry.getKey() ).build();
 
                 boolean exists = this.metadataFacetTemplate.isColumnsExist( key );
                 if ( !exists )
                 {
-                    //metadataFacetModel = new MetadataFacetModel();
-                    // we need to store the repositoryId
-                    //ArtifactMetadataModel artifactMetadataModel = new ArtifactMetadataModel();
-                    //artifactMetadataModel.setRepositoryId( repositoryId );
-                    //metadataFacetModel.setArtifactMetadataModel( artifactMetadataModel );
-                    //metadataFacetModel.setId( key );
-                    //metadataFacetModel.setKey( entry.getKey() );
-                    //metadataFacetModel.setFacetId( metadataFacet.getFacetId() );
-                    //metadataFacetModel.setName( metadataFacet.getName() );
-
                     String cf = this.cassandraArchivaManager.getMetadataFacetFamilyName();
                     this.metadataFacetTemplate.createMutator() //
                         .addInsertion( key, cf, column( "repositoryName", repositoryId ) ) //
@@ -1711,7 +1698,6 @@ public class CassandraMetadataRepository
                         .addInsertion( key, cf, column( "key", entry.getKey() ) ) //
                         .addInsertion( key, cf, column( "value", entry.getValue() ) ) //
                         .execute();
-
                 }
                 else
                 {
@@ -1965,8 +1951,6 @@ public class CassandraMetadataRepository
         {
             this.artifactMetadataTemplate.deleteRow( row.getKey() );
         }
-
-
     }
 
 

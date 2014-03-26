@@ -50,6 +50,7 @@ public interface MetadataRepository
 
     /**
      * create the namespace in the repository. (if not exist)
+     *
      * @param repositoryId
      * @param namespace
      * @throws MetadataRepositoryException
@@ -61,12 +62,11 @@ public interface MetadataRepository
         throws MetadataRepositoryException;
 
     /**
-     *
      * @param repositoryId
      * @param facetId
      * @return true if the repository datas for this facetId
-     * @since 1.4-M4
      * @throws MetadataRepositoryException
+     * @since 1.4-M4
      */
     boolean hasMetadataFacet( String repositoryId, String facetId )
         throws MetadataRepositoryException;
@@ -85,9 +85,10 @@ public interface MetadataRepository
 
     /**
      * if startTime or endTime are <code>null</code> they are not used for search
+     *
      * @param repositoryId
-     * @param startTime can be <code>null</code>
-     * @param endTime can be <code>null</code>
+     * @param startTime    can be <code>null</code>
+     * @param endTime      can be <code>null</code>
      * @return
      * @throws MetadataRepositoryException
      */
@@ -118,6 +119,7 @@ public interface MetadataRepository
     /**
      * FIXME need a unit test!!!
      * Only remove {@link MetadataFacet} for the artifact
+     *
      * @param repositoryId
      * @param namespace
      * @param project
@@ -152,6 +154,7 @@ public interface MetadataRepository
 
     /**
      * basically just checking it exists not complete data returned
+     *
      * @param repoId
      * @param namespace
      * @param projectId
@@ -186,7 +189,6 @@ public interface MetadataRepository
         throws MetadataResolutionException;
 
     /**
-     *
      * @param repoId
      * @param namespace
      * @return {@link Collection} of child namespaces of the namespace argument
@@ -195,9 +197,22 @@ public interface MetadataRepository
     Collection<String> getNamespaces( String repoId, String namespace )
         throws MetadataResolutionException;
 
+    /**
+     * @param repoId
+     * @param namespace
+     * @return
+     * @throws MetadataResolutionException
+     */
     Collection<String> getProjects( String repoId, String namespace )
         throws MetadataResolutionException;
 
+    /**
+     * @param repoId
+     * @param namespace
+     * @param projectId
+     * @return
+     * @throws MetadataResolutionException
+     */
     Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
         throws MetadataResolutionException;
 
@@ -212,12 +227,21 @@ public interface MetadataRepository
     void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
         throws MetadataRepositoryException;
 
+    /**
+     * @param repoId
+     * @param namespace
+     * @param projectId
+     * @param projectVersion
+     * @return
+     * @throws MetadataResolutionException
+     */
     Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                String projectVersion )
         throws MetadataResolutionException;
 
     /**
      * remove a project
+     *
      * @param repositoryId
      * @param namespace
      * @param projectId
@@ -244,6 +268,6 @@ public interface MetadataRepository
 
     boolean canObtainAccess( Class<?> aClass );
 
-    <T>T obtainAccess( Class<T> aClass )
+    <T> T obtainAccess( Class<T> aClass )
         throws MetadataRepositoryException;
 }

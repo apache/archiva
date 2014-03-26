@@ -21,8 +21,6 @@ package org.apache.archiva.metadata.repository.cassandra.model;
 
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
-import javax.persistence.Column;
-
 /**
  * Cassandra storage model for {@link org.apache.archiva.metadata.model.MetadataFacet}
  *
@@ -31,21 +29,12 @@ import javax.persistence.Column;
  */
 public class MetadataFacetModel
 {
-    // id is repositoryId + namespaceId + projectId + facetId + name + mapKey
-
-    //@Column(name = "artifactMetadataModel")
-    //private ArtifactMetadataModel artifactMetadataModel;
-
-    @Column(name = "facetId")
     private String facetId;
 
-    @Column(name = "key")
     private String key;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "value")
     private String value;
 
     private String projectVersion;

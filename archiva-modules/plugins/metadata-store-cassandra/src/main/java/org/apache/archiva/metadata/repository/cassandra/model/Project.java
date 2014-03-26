@@ -21,8 +21,6 @@ package org.apache.archiva.metadata.repository.cassandra.model;
 
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 
 /**
@@ -32,103 +30,6 @@ import java.io.Serializable;
 public class Project
     implements Serializable
 {
-    @Id
-    @Column(name = "projectKey")
-    private String projectKey;
-
-    @Column(name = "projectId")
-    private String projectId;
-
-
-    @Column(name = "repository")
-    private Namespace namespace;
-
-    public Project()
-    {
-        // no op
-    }
-
-    public Project( String projectKey, String projectId, Namespace namespace )
-    {
-        this.projectId = projectId;
-        this.projectKey = projectKey;
-        this.namespace = namespace;
-    }
-
-    public String getProjectKey()
-    {
-        return projectKey;
-    }
-
-    public void setProjectKey( String projectKey )
-    {
-        this.projectKey = projectKey;
-    }
-
-    public Namespace getNamespace()
-    {
-        return namespace;
-    }
-
-    public void setNamespace( Namespace namespace )
-    {
-        this.namespace = namespace;
-    }
-
-    public String getProjectId()
-    {
-        return projectId;
-    }
-
-    public void setProjectId( String projectId )
-    {
-        this.projectId = projectId;
-    }
-
-    @Override
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
-            return true;
-        }
-        if ( o == null || getClass() != o.getClass() )
-        {
-            return false;
-        }
-
-        Project project = (Project) o;
-
-        if ( !projectKey.equals( project.projectKey ) )
-        {
-            return false;
-        }
-        if ( !namespace.equals( project.namespace ) )
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int result = projectKey.hashCode();
-        result = 31 * result + namespace.hashCode();
-        return result;
-    }
-
-    @Override
-    public String toString()
-    {
-        final StringBuilder sb = new StringBuilder( "Project{" );
-        sb.append( "projectKey='" ).append( projectKey ).append( '\'' );
-        sb.append( ", projectId='" ).append( projectId ).append( '\'' );
-        sb.append( ", namespace=" ).append( namespace );
-        sb.append( '}' );
-        return sb.toString();
-    }
 
     public static class KeyBuilder
     {
