@@ -987,6 +987,7 @@ public class JcrMetadataRepository
                                                                      String projectId, String projectVersion )
         throws MetadataResolutionException
     {
+
         List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
 
         // TODO: bind variables instead

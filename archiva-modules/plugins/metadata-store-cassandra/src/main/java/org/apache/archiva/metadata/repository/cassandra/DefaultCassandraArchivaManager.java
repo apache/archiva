@@ -375,13 +375,6 @@ public class DefaultCassandraArchivaManager
 
             // creating indexes for cql query
 
-            BasicColumnDefinition projectVersionMetadataIdColumn = new BasicColumnDefinition();
-            projectVersionMetadataIdColumn.setName( StringSerializer.get().toByteBuffer( "projectVersionMetadataId" ) );
-            projectVersionMetadataIdColumn.setIndexName( "projectVersionMetadataId" );
-            projectVersionMetadataIdColumn.setIndexType( ColumnIndexType.KEYS );
-            projectVersionMetadataIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            mailingListCf.addColumnDefinition( projectVersionMetadataIdColumn );
-
         }
 
         // license table
@@ -393,13 +386,6 @@ public class DefaultCassandraArchivaManager
             cfds.add( licenseCf );
 
             // creating indexes for cql query
-
-            BasicColumnDefinition projectVersionMetadataIdColumn = new BasicColumnDefinition();
-            projectVersionMetadataIdColumn.setName( StringSerializer.get().toByteBuffer( "projectVersionMetadataId" ) );
-            projectVersionMetadataIdColumn.setIndexName( "projectVersionMetadataId" );
-            projectVersionMetadataIdColumn.setIndexType( ColumnIndexType.KEYS );
-            projectVersionMetadataIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            licenseCf.addColumnDefinition( projectVersionMetadataIdColumn );
 
         }
 
@@ -413,12 +399,12 @@ public class DefaultCassandraArchivaManager
 
             // creating indexes for cql query
 
-            BasicColumnDefinition projectVersionMetadataIdColumn = new BasicColumnDefinition();
-            projectVersionMetadataIdColumn.setName( StringSerializer.get().toByteBuffer( "projectVersionMetadataId" ) );
-            projectVersionMetadataIdColumn.setIndexName( "projectVersionMetadataId" );
-            projectVersionMetadataIdColumn.setIndexType( ColumnIndexType.KEYS );
-            projectVersionMetadataIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
-            dependencyCf.addColumnDefinition( projectVersionMetadataIdColumn );
+            BasicColumnDefinition groupIdColumn = new BasicColumnDefinition();
+            groupIdColumn.setName( StringSerializer.get().toByteBuffer( "groupId" ) );
+            groupIdColumn.setIndexName( "groupIdIdx" );
+            groupIdColumn.setIndexType( ColumnIndexType.KEYS );
+            groupIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            dependencyCf.addColumnDefinition( groupIdColumn );
 
         }
 

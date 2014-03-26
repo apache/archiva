@@ -29,6 +29,20 @@ public class ProjectVersionReference
 
     private String projectVersion;
 
+    public ProjectVersionReference()
+    {
+        // no op
+    }
+
+    public ProjectVersionReference( ReferenceType referenceType, String projectId, String namespace,
+                                    String projectVersion )
+    {
+        this.referenceType = referenceType;
+        this.projectId = projectId;
+        this.namespace = namespace;
+        this.projectVersion = projectVersion;
+    }
+
     public void setReferenceType( ReferenceType referenceType )
     {
         this.referenceType = referenceType;
@@ -73,5 +87,49 @@ public class ProjectVersionReference
     {
         DEPENDENCY,
         PARENT
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        ProjectVersionReference that = (ProjectVersionReference) o;
+
+        if ( !namespace.equals( that.namespace ) )
+        {
+            return false;
+        }
+        if ( !projectId.equals( that.projectId ) )
+        {
+            return false;
+        }
+        if ( !projectVersion.equals( that.projectVersion ) )
+        {
+            return false;
+        }
+        if ( referenceType != that.referenceType )
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = referenceType.hashCode();
+        result = 31 * result + projectId.hashCode();
+        result = 31 * result + namespace.hashCode();
+        result = 31 * result + projectVersion.hashCode();
+        return result;
     }
 }

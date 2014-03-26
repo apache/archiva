@@ -31,6 +31,7 @@ import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.model.Organization;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.assertj.core.util.Sets;
@@ -56,8 +57,8 @@ import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(ArchivaSpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public abstract class AbstractMetadataRepositoryTest
     extends TestCase
 {
@@ -1365,6 +1366,57 @@ public abstract class AbstractMetadataRepositoryTest
         artifactMetadatas = repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, "2.0-SNAPSHOT" );
 
         assertThat( artifactMetadatas ).isNotNull().isEmpty();
+    }
+
+
+    @Test
+    public void testgetProjectReferences()
+        throws Exception
+    {
+        ProjectVersionMetadata metadata = new ProjectVersionMetadata();
+        metadata.setId( TEST_PROJECT_VERSION );
+
+        metadata.setName( "project name" );
+        metadata.setDescription( "project description" );
+        metadata.setUrl( "the url" );
+
+        Dependency d = new Dependency();
+        d.setArtifactId( "artifactId" );
+        d.setClassifier( "classifier" );
+        d.setGroupId( "groupId" );
+        d.setScope( "scope" );
+        d.setSystemPath( "system path" );
+        d.setType( "type" );
+        d.setVersion( "version" );
+        d.setOptional( true );
+        metadata.addDependency( d );
+
+        d = new Dependency();
+        d.setArtifactId( "artifactId1" );
+        d.setClassifier( "classifier" );
+        d.setGroupId( "groupId" );
+        d.setScope( "scope" );
+        d.setSystemPath( "system path" );
+        d.setType( "type" );
+        d.setVersion( "version1" );
+        d.setOptional( true );
+        metadata.addDependency( d );
+
+        repository.updateProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, metadata );
+
+        repository.save();
+
+        metadata = repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+
+        Collection<ProjectVersionReference> references =
+            repository.getProjectReferences( TEST_REPO_ID, d.getGroupId(), d.getArtifactId(), d.getVersion() );
+
+        log.info( "references: {}", references );
+
+        assertThat( references ).isNotNull().hasSize( 1 ).contains(
+            new ProjectVersionReference( ProjectVersionReference.ReferenceType.DEPENDENCY, TEST_PROJECT, TEST_NAMESPACE,
+                                         TEST_PROJECT_VERSION ) );
+
     }
 
 

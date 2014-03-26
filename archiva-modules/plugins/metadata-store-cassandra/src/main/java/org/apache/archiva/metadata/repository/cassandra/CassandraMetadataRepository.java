@@ -875,7 +875,7 @@ public class CassandraMetadataRepository
 
             recordLicenses( key, versionMetadata.getLicenses() );
 
-            recordDependencies( key, versionMetadata.getDependencies() );
+            recordDependencies( key, versionMetadata.getDependencies(), repositoryId );
 
             MutationResult mutationResult = mutator.execute();
         }
@@ -942,7 +942,7 @@ public class CassandraMetadataRepository
             recordLicenses( key, versionMetadata.getLicenses() );
 
             removeDependencies( key );
-            recordDependencies( key, versionMetadata.getDependencies() );
+            recordDependencies( key, versionMetadata.getDependencies(), repositoryId );
 
             projectVersionMetadataTemplate.update( updater );
 
@@ -1234,7 +1234,8 @@ public class CassandraMetadataRepository
     }
 
 
-    protected void recordDependencies( String projectVersionMetadataKey, List<Dependency> dependencies )
+    protected void recordDependencies( String projectVersionMetadataKey, List<Dependency> dependencies,
+                                       String repositoryId )
     {
 
         if ( dependencies == null || dependencies.isEmpty() )
@@ -1251,6 +1252,8 @@ public class CassandraMetadataRepository
 
             addInsertion( dependencyMutator, keyDependency, cfDependency, "projectVersionMetadataModel.key",
                           projectVersionMetadataKey );
+
+            addInsertion( dependencyMutator, keyDependency, cfDependency, "repositoryName", repositoryId );
 
             addInsertion( dependencyMutator, keyDependency, cfDependency, "classifier", dependency.getClassifier() );
 
@@ -1918,8 +1921,36 @@ public class CassandraMetadataRepository
                                                                      String projectVersion )
         throws MetadataResolutionException
     {
-        // FIXME implement this
-        return Collections.emptyList();
+        QueryResult<OrderedRows<String, String, String>> result = HFactory //
+            .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+            .setColumnFamily( cassandraArchivaManager.getDependencyFamilyName() ) //
+            .setColumnNames( "projectVersionMetadataModel.key" ) //
+            .addEqualsExpression( "repositoryName", repoId ) //
+            .addEqualsExpression( "groupId", namespace ) //
+            .addEqualsExpression( "artifactId", projectId ) //
+            .addEqualsExpression( "version", projectVersion ) //
+            .execute();
+
+        List<String> dependenciesIds = new ArrayList<String>( result.get().getCount() );
+
+        for ( Row<String, String, String> row : result.get().getList() )
+        {
+            dependenciesIds.add( getStringValue( row.getColumnSlice(), "projectVersionMetadataModel.key" ) );
+        }
+
+        List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>( result.get().getCount() );
+
+        for ( String key : dependenciesIds )
+        {
+            ColumnFamilyResult<String, String> columnFamilyResult =
+                this.projectVersionMetadataTemplate.queryColumns( key );
+            references.add( new ProjectVersionReference( ProjectVersionReference.ReferenceType.DEPENDENCY, //
+                                                         columnFamilyResult.getString( "projectId" ), //
+                                                         columnFamilyResult.getString( "namespaceId" ), //
+                                                         columnFamilyResult.getString( "projectVersion" ) ) );
+        }
+
+        return references;
     }
 
     @Override
