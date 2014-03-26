@@ -1941,6 +1941,9 @@ public class CassandraMetadataRepository
         for ( Row<String, String, String> row : result.get().getList() )
         {
             this.projectVersionMetadataTemplate.deleteRow( row.getKey() );
+            removeMailingList( row.getKey() );
+            removeLicenses( row.getKey() );
+            removeDependencies( row.getKey() );
         }
 
         RangeSlicesQuery<String, String, String> query = HFactory //
@@ -1958,8 +1961,8 @@ public class CassandraMetadataRepository
         for ( Row<String, String, String> row : result.get() )
         {
             this.artifactMetadataTemplate.deleteRow( row.getKey() );
-        }
 
+        }
     }
 
     @Override

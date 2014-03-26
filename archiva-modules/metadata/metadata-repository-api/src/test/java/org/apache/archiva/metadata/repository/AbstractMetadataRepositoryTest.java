@@ -67,11 +67,11 @@ public abstract class AbstractMetadataRepositoryTest
 
     protected static final String TEST_REPO_ID = "test";
 
-    private static final String TEST_PROJECT = "projectId";
+    protected static final String TEST_PROJECT = "projectId";
 
-    private static final String TEST_NAMESPACE = "namespace";
+    protected static final String TEST_NAMESPACE = "namespace";
 
-    private static final String TEST_PROJECT_VERSION = "1.0";
+    protected static final String TEST_PROJECT_VERSION = "1.0";
 
     private static final String TEST_PROJECT_VERSION_2_0 = "2.0";
 

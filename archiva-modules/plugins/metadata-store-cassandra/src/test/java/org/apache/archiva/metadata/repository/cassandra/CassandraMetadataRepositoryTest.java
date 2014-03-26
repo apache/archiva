@@ -19,18 +19,24 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.MailingList;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
+import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
+import java.util.List;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -64,6 +70,37 @@ public class CassandraMetadataRepositoryTest
         this.repository = this.cmr;
 
         clearReposAndNamespace();
+    }
+
+    /**
+     * ensure all dependant tables are cleaned up (mailinglist, license, dependencies)
+     *
+     * @throws Exception
+     */
+    @Test
+    public void clean_dependant_tables()
+        throws Exception
+    {
+
+        super.testUpdateProjectVersionMetadataWithAllElements();
+
+        String key = new ProjectVersionMetadataModel.KeyBuilder().withRepository( TEST_REPO_ID ) //
+            .withNamespace( TEST_NAMESPACE ) //
+            .withProjectId( TEST_PROJECT ) //
+            .withProjectVersion( TEST_PROJECT_VERSION ) //
+            .withId( TEST_PROJECT_VERSION ) //
+            .build();
+
+        this.cmr.removeProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+
+        assertThat(
+            repository.getProjectVersion( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ).isNull();
+
+        assertThat( cmr.getMailingLists( key ) ).isNotNull().isEmpty();
+
+        assertThat( cmr.getLicenses( key ) ).isNotNull().isEmpty();
+
+        assertThat( cmr.getDependencies( key ) ).isNotNull().isEmpty();
     }
 
 
