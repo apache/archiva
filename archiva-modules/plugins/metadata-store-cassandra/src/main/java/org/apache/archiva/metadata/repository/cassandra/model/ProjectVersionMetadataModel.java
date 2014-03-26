@@ -44,7 +44,7 @@ public class ProjectVersionMetadataModel
     private Namespace namespace;
 
     /**
-     * id is the version
+     * id is the id
      */
     @Column(name = "id")
     private String id;
@@ -259,7 +259,7 @@ public class ProjectVersionMetadataModel
 
         private String projectVersion;
 
-        private String version;
+        private String id;
 
         public KeyBuilder()
         {
@@ -297,9 +297,9 @@ public class ProjectVersionMetadataModel
             return this;
         }
 
-        public KeyBuilder withVersion( String version )
+        public KeyBuilder withId( String id )
         {
-            this.version = version;
+            this.id = id;
             return this;
         }
 
@@ -307,7 +307,7 @@ public class ProjectVersionMetadataModel
         {
             // FIXME add some controls
             return CassandraUtils.generateKey( this.repositoryName, this.namespace, this.projectId, this.projectVersion,
-                                               this.version );
+                                               this.id );
         }
     }
 }

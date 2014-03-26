@@ -858,7 +858,7 @@ public class CassandraMetadataRepository
             .withNamespace( namespaceId ) //
             .withProjectId( projectId ) //
             .withProjectVersion( versionMetadata.getVersion() ) //
-            .withVersion( versionMetadata.getId() ) //
+            .withId( versionMetadata.getId() ) //
             .build();
 
         // FIXME nested objects to store!!!
@@ -1441,7 +1441,7 @@ public class CassandraMetadataRepository
             .withNamespace( namespace ) //
             .withProjectId( projectId ) //
             .withProjectVersion( projectVersion ) //
-            .withVersion( artifactMeta.getId() ) //
+            .withId( artifactMeta.getId() ) //
             .build();
 
         Keyspace keyspace = cassandraArchivaManager.getKeyspace();
@@ -1917,7 +1917,7 @@ public class CassandraMetadataRepository
             .withNamespace( namespace ) //
             .withProjectId( project ) //
             .withProjectVersion( version ) //
-            .withVersion( id ) //
+            .withId( id ) //
             .build();
 
         this.projectVersionMetadataModelTemplate.deleteRow( key );
