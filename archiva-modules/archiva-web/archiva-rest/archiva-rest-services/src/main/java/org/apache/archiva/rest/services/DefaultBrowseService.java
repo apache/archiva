@@ -199,7 +199,8 @@ public class DefaultBrowseService
         }
         for ( String project : projects )
         {
-            browseGroupResultEntries.add( new BrowseResultEntry( groupId + '.' + project, true ).groupId( groupId ).artifactId( project ) );
+            browseGroupResultEntries.add(
+                new BrowseResultEntry( groupId + '.' + project, true ).groupId( groupId ).artifactId( project ) );
         }
         Collections.sort( browseGroupResultEntries );
         return new BrowseResult( browseGroupResultEntries );
@@ -280,9 +281,8 @@ public class DefaultBrowseService
                     }
                     catch ( MetadataResolutionException e )
                     {
-                        log.warn(
-                            "Skipping invalid metadata while compiling shared model for {}:{} in repo {}: {}",
-                            groupId, artifactId, repoId, e.getMessage() );
+                        log.warn( "Skipping invalid metadata while compiling shared model for {}:{} in repo {}: {}",
+                                  groupId, artifactId, repoId, e.getMessage() );
                     }
                 }
             }
@@ -361,50 +361,55 @@ public class DefaultBrowseService
                         (MavenProjectFacet) versionMetadata.getFacet( MavenProjectFacet.FACET_ID );
                     if ( versionMetadataMavenFacet != null )
                     {
-                        if ( mavenFacet.getPackaging() != null && !StringUtils.equalsIgnoreCase(
-                            mavenFacet.getPackaging(), versionMetadataMavenFacet.getPackaging() ) )
+                        if ( mavenFacet.getPackaging() != null //
+                            && !StringUtils.equalsIgnoreCase( mavenFacet.getPackaging(),
+                                                              versionMetadataMavenFacet.getPackaging() ) )
                         {
                             mavenFacet.setPackaging( null );
                         }
                     }
 
-                    if ( StringUtils.isEmpty( sharedModel.getName() ) && !StringUtils.isEmpty(
-                        versionMetadata.getName() ) )
+                    if ( StringUtils.isEmpty( sharedModel.getName() ) //
+                        && !StringUtils.isEmpty( versionMetadata.getName() ) )
                     {
                         sharedModel.setName( versionMetadata.getName() );
                     }
 
-                    if ( sharedModel.getDescription() != null && !StringUtils.equalsIgnoreCase(
-                        sharedModel.getDescription(), versionMetadata.getDescription() ) )
+                    if ( sharedModel.getDescription() != null //
+                        && !StringUtils.equalsIgnoreCase( sharedModel.getDescription(),
+                                                          versionMetadata.getDescription() ) )
                     {
                         sharedModel.setDescription( StringUtils.isNotEmpty( versionMetadata.getDescription() )
                                                         ? versionMetadata.getDescription()
                                                         : "" );
                     }
 
-                    if ( sharedModel.getIssueManagement() != null && versionMetadata.getIssueManagement() != null
+                    if ( sharedModel.getIssueManagement() != null //
+                        && versionMetadata.getIssueManagement() != null //
                         && !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getUrl(),
                                                           versionMetadata.getIssueManagement().getUrl() ) )
                     {
                         sharedModel.setIssueManagement( versionMetadata.getIssueManagement() );
                     }
 
-                    if ( sharedModel.getCiManagement() != null && versionMetadata.getCiManagement() != null
+                    if ( sharedModel.getCiManagement() != null //
+                        && versionMetadata.getCiManagement() != null //
                         && !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getUrl(),
                                                           versionMetadata.getCiManagement().getUrl() ) )
                     {
                         sharedModel.setCiManagement( versionMetadata.getCiManagement() );
                     }
 
-                    if ( sharedModel.getOrganization() != null && versionMetadata.getOrganization() != null
+                    if ( sharedModel.getOrganization() != null //
+                        && versionMetadata.getOrganization() != null //
                         && !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getName(),
                                                           versionMetadata.getOrganization().getName() ) )
                     {
                         sharedModel.setOrganization( versionMetadata.getOrganization() );
                     }
 
-                    if ( sharedModel.getUrl() != null && !StringUtils.equalsIgnoreCase( sharedModel.getUrl(),
-                                                                                        versionMetadata.getUrl() ) )
+                    if ( sharedModel.getUrl() != null //
+                        && !StringUtils.equalsIgnoreCase( sharedModel.getUrl(), versionMetadata.getUrl() ) )
                     {
                         sharedModel.setUrl( versionMetadata.getUrl() );
                     }
@@ -474,8 +479,8 @@ public class DefaultBrowseService
             {
                 // TODO: what about if we want to see this irrespective of version?
                 references.addAll(
-                    metadataResolver.resolveProjectReferences( repositorySession, repoId, groupId, artifactId,
-                                                               version ) );
+                    metadataResolver.resolveProjectReferences( repositorySession, repoId, groupId, artifactId, version )
+                );
             }
         }
         catch ( MetadataResolutionException e )
@@ -801,7 +806,8 @@ public class DefaultBrowseService
                 ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version,
                                                                        StringUtils.isEmpty( classifier )
                                                                            ? ""
-                                                                           : classifier, "jar", repoId );
+                                                                           : classifier, "jar", repoId
+                );
                 File file = managedRepositoryContent.toFile( archivaArtifact );
 
                 if ( file != null && file.exists() )
@@ -822,18 +828,13 @@ public class DefaultBrowseService
                             int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
                             String timeStamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
                             // rebuild file name with timestamped version and build number
-                            String timeStampFileName = new StringBuilder( artifactId ).append( '-' ).append(
-                                StringUtils.remove( version, "-" + VersionUtil.SNAPSHOT ) ).append( '-' ).append(
-                                timeStamp ).append( '-' ).append( Integer.toString( buildNumber ) ).append(
-                                ( StringUtils.isEmpty( classifier ) ? "" : "-" + classifier ) ).append(
-                                ".jar" ).toString();
-                            /*File timeStampFile = new File( file.getParent(),
-                                                           artifactId + "-" + StringUtils.remove( version, "-"
-                                                               + VersionUtil.SNAPSHOT ) + "-" + timeStamp + "-"
-                                                               + Integer.toString( buildNumber )
-                                                               + ( StringUtils.isEmpty( classifier )
-                                                               ? ""
-                                                               : "-" + classifier ) + ".jar" );*/
+                            String timeStampFileName = new StringBuilder( artifactId ).append( '-' ) //
+                                .append( StringUtils.remove( version, "-" + VersionUtil.SNAPSHOT ) ) //
+                                .append( '-' ).append( timeStamp ) //
+                                .append( '-' ).append( Integer.toString( buildNumber ) ) //
+                                .append( ( StringUtils.isEmpty( classifier ) ? "" : "-" + classifier ) ) //
+                                .append( ".jar" ).toString();
+
                             File timeStampFile = new File( file.getParent(), timeStampFileName );
                             log.debug( "try to find timestamped snapshot version file: {}", timeStampFile.getPath() );
                             if ( timeStampFile.exists() )
@@ -954,23 +955,24 @@ public class DefaultBrowseService
             while ( jarEntryEnumeration.hasMoreElements() )
             {
                 JarEntry currentEntry = jarEntryEnumeration.nextElement();
-                String cleanedEntryName =
-                    StringUtils.endsWith( currentEntry.getName(), "/" ) ? StringUtils.substringBeforeLast(
-                        currentEntry.getName(), "/" ) : currentEntry.getName();
+                String cleanedEntryName = StringUtils.endsWith( currentEntry.getName(), "/" ) ? //
+                    StringUtils.substringBeforeLast( currentEntry.getName(), "/" ) : currentEntry.getName();
                 String entryRootPath = getRootPath( cleanedEntryName );
                 int depth = StringUtils.countMatches( cleanedEntryName, "/" );
-                if ( StringUtils.isEmpty( filterPath ) && !artifactContentEntryMap.containsKey( entryRootPath )
+                if ( StringUtils.isEmpty( filterPath ) //
+                    && !artifactContentEntryMap.containsKey( entryRootPath ) //
                     && depth == filterDepth )
                 {
 
                     artifactContentEntryMap.put( entryRootPath,
                                                  new ArtifactContentEntry( entryRootPath, !currentEntry.isDirectory(),
-                                                                           depth, repoId ) );
+                                                                           depth, repoId )
+                    );
                 }
                 else
                 {
-                    if ( StringUtils.startsWith( cleanedEntryName, filterPath ) && ( depth == filterDepth || (
-                        !currentEntry.isDirectory() && depth == filterDepth ) ) )
+                    if ( StringUtils.startsWith( cleanedEntryName, filterPath ) //
+                        && ( depth == filterDepth || ( !currentEntry.isDirectory() && depth == filterDepth ) ) )
                     {
                         artifactContentEntryMap.put( cleanedEntryName, new ArtifactContentEntry( cleanedEntryName,
                                                                                                  !currentEntry.isDirectory(),
