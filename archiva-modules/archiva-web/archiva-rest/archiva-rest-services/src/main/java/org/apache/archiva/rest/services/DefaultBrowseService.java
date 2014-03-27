@@ -41,6 +41,7 @@ import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
@@ -102,6 +103,10 @@ public class DefaultBrowseService
     @Inject
     @Named( value = "repositoryProxyConnectors#default" )
     private RepositoryProxyConnectors connectors;
+
+    @Inject
+    @Named( value = "browse#versionMetadata" )
+    private Cache<String, ProjectVersionMetadata> versionMetadataCache;
 
     public BrowseResult getRootGroups( String repositoryId )
         throws ArchivaRestServiceException
@@ -333,9 +338,35 @@ public class DefaultBrowseService
                     {
                         try
                         {
-                            versionMetadata =
-                                metadataResolver.resolveProjectVersion( repositorySession, repoId, groupId, artifactId,
-                                                                        version );
+                            ProjectVersionMetadata projectVersionMetadataResolved = null;
+                            boolean useCache = !StringUtils.endsWith( version, VersionUtil.SNAPSHOT );
+                            String cacheKey = null;
+                            boolean cacheToUpdate = false;
+                            // FIXME a bit maven centric!!!
+                            // not a snapshot so get it from cache
+                            if ( useCache )
+                            {
+                                cacheKey = repoId + groupId + artifactId + version;
+                                projectVersionMetadataResolved = versionMetadataCache.get( cacheKey );
+                            }
+                            if ( useCache && projectVersionMetadataResolved != null )
+                            {
+                                versionMetadata = projectVersionMetadataResolved;
+                            }
+                            else
+                            {
+                                projectVersionMetadataResolved =
+                                    metadataResolver.resolveProjectVersion( repositorySession, repoId, groupId,
+                                                                            artifactId, version );
+                                versionMetadata = projectVersionMetadataResolved;
+                                cacheToUpdate = true;
+                            }
+
+                            if ( useCache && cacheToUpdate )
+                            {
+                                versionMetadataCache.put( cacheKey, projectVersionMetadataResolved );
+                            }
+
                         }
                         catch ( MetadataResolutionException e )
                         {
@@ -479,8 +510,8 @@ public class DefaultBrowseService
             {
                 // TODO: what about if we want to see this irrespective of version?
                 references.addAll(
-                    metadataResolver.resolveProjectReferences( repositorySession, repoId, groupId, artifactId, version )
-                );
+                    metadataResolver.resolveProjectReferences( repositorySession, repoId, groupId, artifactId,
+                                                               version ) );
             }
         }
         catch ( MetadataResolutionException e )
@@ -1110,5 +1141,15 @@ public class DefaultBrowseService
             return collapseNamespaces( repositorySession, metadataResolver, repoIds,
                                        n + "." + subNamespaces.iterator().next() );
         }
+    }
+
+    public Cache getVersionMetadataCache()
+    {
+        return versionMetadataCache;
+    }
+
+    public void setVersionMetadataCache( Cache versionMetadataCache )
+    {
+        this.versionMetadataCache = versionMetadataCache;
     }
 }

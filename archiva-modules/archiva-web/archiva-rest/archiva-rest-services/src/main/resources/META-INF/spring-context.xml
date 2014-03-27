@@ -85,4 +85,15 @@
     </jaxrs:outFaultInterceptors>
   </jaxrs:server>
 
+  <bean name="browse#versionMetadata" class="org.apache.archiva.redback.components.cache.ehcache.EhcacheCache"
+        init-method="initialize">
+    <property name="diskPersistent" value="false"/>
+    <property name="eternal" value="false"/>
+    <property name="maxElementsInMemory" value="1000"/>
+    <property name="memoryEvictionPolicy" value="LRU"/>
+    <property name="name" value="userPermissions"/>
+    <property name="timeToIdleSeconds" value="300"/>
+    <property name="timeToLiveSeconds" value="600"/>
+  </bean>
+
 </beans>
