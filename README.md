@@ -10,9 +10,8 @@ Running from Source Code
 ========================
 
 As webapp js is in dev and won't probably be released soon, the module is not activated by default and it's included only in a profile
-mvn tomcat7:run -pl :archiva-webapp -am  (to save fingers :-) use sh ./t7.sh )
-or
-mvn tomcat6:run -pl :archiva-webapp -am
+mvn tomcat7:run -pl :archiva-webapp -am  (to save fingers :-) use sh ./t7.sh ) (debug with sh ./t7-debug.sh  port 8000)
+
 
 hit your browser: http://localhost:9091/archiva/index.html
 
@@ -44,6 +43,18 @@ This file must contains:
 
 </Context>
 
-jrebel
-generate files:  mvn org.zeroturnaround:jrebel-maven-plugin:1.1.3:generate -Pjs
+Using with cassandra as metadata storage
+========================
+You can run the application using cassandra as storage.
+sh ./t7.sh -Pcassandra
+
+Default cassandra host is localhost and port 9160
+
+You can override using:
+
+ * -Dcassandra.host=
+ * -Dcassandra.port=
+
+
+
 
