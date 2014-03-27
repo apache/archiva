@@ -1061,7 +1061,7 @@ public class CassandraMetadataRepository
                 MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( entry.getKey() );
                 if ( metadataFacetFactory != null )
                 {
-                    MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet( repoId, entry.getKey() );
+                    MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet( );
                     metadataFacet.fromProperties( entry.getValue() );
                     projectVersionMetadata.addFacet( metadataFacet );
                 }
@@ -2113,8 +2113,7 @@ public class CassandraMetadataRepository
                     List<MetadataFacetModel> facetModels = entry.getValue();
                     if ( !facetModels.isEmpty() )
                     {
-                        MetadataFacet metadataFacet =
-                            metadataFacetFactory.createMetadataFacet( repoId, facetModels.get( 0 ).getName() );
+                        MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet();
                         Map<String, String> props = new HashMap<String, String>( facetModels.size() );
                         for ( MetadataFacetModel metadataFacetModel : facetModels )
                         {
