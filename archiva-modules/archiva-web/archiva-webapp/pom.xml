@@ -43,6 +43,8 @@
     <archiva.groupIndexTtl>30</archiva.groupIndexTtl>
     <archiva.sirona.configuration />
     <archiva.repositorySessionFactory.id>jcr</archiva.repositorySessionFactory.id>
+    <cassandra.host>localhost</cassandra.host>
+    <cassandra.port>9160</cassandra.port>
   </properties>
 
   <dependencies>
@@ -1009,8 +1011,8 @@
             <archiva.devMode>${archiva.devMode}</archiva.devMode>
             <archiva.javascriptLog>${archiva.javascriptLog}</archiva.javascriptLog>
             <archiva.logMissingI18n>${archiva.logMissingI18n}</archiva.logMissingI18n>
-            <cassandra.host>localhost</cassandra.host>
-            <cassandra.port>9160</cassandra.port>
+            <cassandra.host>${cassandra.host}</cassandra.host>
+            <cassandra.port>${cassandra.port}</cassandra.port>
             <archiva.repositorySessionFactory.id>${archiva.repositorySessionFactory.id}</archiva.repositorySessionFactory.id>
             <org.apache.sirona.configuration.sirona.properties>${archiva.sirona.configuration}</org.apache.sirona.configuration.sirona.properties>
           </systemProperties>
