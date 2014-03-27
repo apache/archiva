@@ -42,6 +42,7 @@
     <test.useTomcat>false</test.useTomcat>
     <archiva.groupIndexTtl>30</archiva.groupIndexTtl>
     <archiva.sirona.configuration />
+    <archiva.repositorySessionFactory.id>jcr</archiva.repositorySessionFactory.id>
   </properties>
 
   <dependencies>
@@ -124,12 +125,17 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-store-jcr</artifactId>
     </dependency>
-    <!--
+
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-store-cassandra</artifactId>
     </dependency>
-    -->
+
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-store-file</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-jcr-commons</artifactId>
@@ -1005,6 +1011,7 @@
             <archiva.logMissingI18n>${archiva.logMissingI18n}</archiva.logMissingI18n>
             <cassandra.host>localhost</cassandra.host>
             <cassandra.port>9160</cassandra.port>
+            <archiva.repositorySessionFactory.id>${archiva.repositorySessionFactory.id}</archiva.repositorySessionFactory.id>
             <org.apache.sirona.configuration.sirona.properties>${archiva.sirona.configuration}</org.apache.sirona.configuration.sirona.properties>
           </systemProperties>
           <additionalClasspathDirs>
@@ -1089,5 +1096,14 @@
 
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>cassandra</id>
+      <properties>
+        <archiva.repositorySessionFactory.id>cassandra</archiva.repositorySessionFactory.id>
+      </properties>
+    </profile>
+  </profiles>
 
 </project>
