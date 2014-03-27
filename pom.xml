@@ -1845,7 +1845,7 @@
             <excludes>
               <exclude>.gitignore</exclude>
               <exclude>DEPENDENCIES</exclude>
-              <exclude>README.txt</exclude>
+              <exclude>README.*</exclude>
               <exclude>*.sh</exclude>
               <exclude>.git/**</exclude>
               <exclude>src/test/resources/projects/compile/goal.txt</exclude>
