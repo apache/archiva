@@ -71,8 +71,6 @@ public class CassandraRepositorySessionFactory
         {
             metadataFacetFactories.put( StringUtils.substringAfterLast( entry.getKey(), "#" ), entry.getValue() );
         }
-
-
     }
 
 

@@ -130,11 +130,6 @@
 
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-store-cassandra</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-store-file</artifactId>
     </dependency>
 
@@ -1105,6 +1100,12 @@
       <properties>
         <archiva.repositorySessionFactory.id>cassandra</archiva.repositorySessionFactory.id>
       </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.apache.archiva</groupId>
+          <artifactId>metadata-store-cassandra</artifactId>
+        </dependency>
+      </dependencies>
     </profile>
   </profiles>
 
