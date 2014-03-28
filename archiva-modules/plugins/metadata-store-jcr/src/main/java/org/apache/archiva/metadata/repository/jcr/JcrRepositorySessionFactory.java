@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.RepositorySessionFactoryBean;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
@@ -59,6 +60,9 @@ public class JcrRepositorySessionFactory
     @Inject
     private MetadataResolver metadataResolver;
 
+    @Inject
+    private RepositorySessionFactoryBean repositorySessionFactoryBean;
+
     public RepositorySession createSession()
     {
         try
@@ -83,6 +87,13 @@ public class JcrRepositorySessionFactory
     public void initialize()
         throws Exception
     {
+
+        // skip initialisation if not cassandra
+        if ( !StringUtils.equals( repositorySessionFactoryBean.getId(), "jcr" ) )
+        {
+            return;
+        }
+
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
