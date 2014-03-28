@@ -21,7 +21,7 @@ package org.apache.archiva.metadata.repository;
 
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("repositorySessionFactory#beer")
 public class TestRepositorySessionFactory
     implements RepositorySessionFactory
 {

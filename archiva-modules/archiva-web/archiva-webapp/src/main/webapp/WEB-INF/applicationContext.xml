@@ -37,12 +37,6 @@
   <alias name="authorizer#rbac" alias="authorizer#default"/>
 
   <alias name="repositoryStatisticsManager#default" alias="repositoryStatisticsManager"/>
-  <!-- so can be override with -Darchiva.repositorySessionFactory.id= jcr or cassandra or file -->
-  <bean name="repositorySessionFactory" class="org.apache.archiva.web.startup.RepositorySessionFactoryBean">
-    <constructor-arg>
-      <util:properties location="classpath:archiva-runtime.properties" local-override="true"/>
-    </constructor-arg>
-  </bean>
 
   <alias name="environmentCheck#archiva-locked-admin-check" alias="environmentCheck#locked-admin-check"/>
   <alias name="userManager#archiva" alias="userManager#default"/>

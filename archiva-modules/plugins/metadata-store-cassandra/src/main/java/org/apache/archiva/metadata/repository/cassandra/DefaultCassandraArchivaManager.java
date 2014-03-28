@@ -31,6 +31,8 @@ import me.prettyprint.hector.api.ddl.ColumnFamilyDefinition;
 import me.prettyprint.hector.api.ddl.ColumnIndexType;
 import me.prettyprint.hector.api.ddl.ComparatorType;
 import me.prettyprint.hector.api.factory.HFactory;
+import org.apache.archiva.metadata.repository.RepositorySessionFactoryBean;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,35 +91,40 @@ public class DefaultCassandraArchivaManager
     private String dependencyFamilyName = "dependency";
 
     @Value("${cassandra.host}")
-    private String cassandraHost;// = System.getProperty( "cassandra.host", "localhost" );
+    private String cassandraHost;
 
     @Value("${cassandra.port}")
-    private String cassandraPort;// = System.getProperty( "cassandra.port", "9160" );
+    private String cassandraPort;
 
     @Value("${cassandra.maxActive}")
-    private int maxActive;// = Integer.getInteger( "cassandra.maxActive", 20 );
+    private int maxActive;
 
     @Value("${cassandra.readConsistencyLevel}")
-    private String readConsistencyLevel;// =
-        //System.getProperty( "cassandra.readConsistencyLevel", HConsistencyLevel.QUORUM.name() );
+    private String readConsistencyLevel;
 
     @Value("${cassandra.writeConsistencyLevel}")
     private String writeConsistencyLevel;
-    //= System.getProperty( "cassandra.writeConsistencyLevel", HConsistencyLevel.QUORUM.name() );
 
     @Value("${cassandra.replicationFactor}")
-    private int replicationFactor;// = Integer.getInteger( "cassandra.replicationFactor", 1 );
+    private int replicationFactor;
 
     @Value("${cassandra.keyspace.name}")
-    private String keyspaceName;// = System.getProperty( "cassandra.keyspace.name", KEYSPACE_NAME );
+    private String keyspaceName;
 
     @Value("${cassandra.cluster.name}")
-    private String clusterName;// = System.getProperty( "cassandra.cluster.name", CLUSTER_NAME );
+    private String clusterName;
+
+    @Inject
+    private RepositorySessionFactoryBean repositorySessionFactoryBean;
 
     @PostConstruct
     public void initialize()
     {
-
+        // skip initialisation if not cassandra
+        if ( !StringUtils.equals( repositorySessionFactoryBean.getId(), "cassandra" ) )
+        {
+            return;
+        }
         final CassandraHostConfigurator configurator =
             new CassandraHostConfigurator( cassandraHost + ":" + cassandraPort );
         configurator.setMaxActive( maxActive );

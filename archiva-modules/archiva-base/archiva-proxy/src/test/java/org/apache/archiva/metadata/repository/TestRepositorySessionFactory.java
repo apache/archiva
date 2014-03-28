@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 * specific language governing permissions and limitations
 * under the License.
 */
-@Service("repositorySessionFactory")
+@Service("repositorySessionFactory#test")
 public class TestRepositorySessionFactory
     implements RepositorySessionFactory
 {

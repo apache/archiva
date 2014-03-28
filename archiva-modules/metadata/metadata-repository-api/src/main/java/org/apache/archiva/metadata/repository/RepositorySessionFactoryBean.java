@@ -1,4 +1,4 @@
-package org.apache.archiva.web.startup;
+package org.apache.archiva.metadata.repository;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,7 +19,6 @@ package org.apache.archiva.web.startup;
  * under the License.
  */
 
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
@@ -36,16 +35,22 @@ public class RepositorySessionFactoryBean
 
     private Logger logger = LoggerFactory.getLogger( getClass() );
 
-    //@Value( "repositorySessionFactory#${archiva.repositorySessionFactory.id}" )
-    //private String beanName;
+    private static final String BEAN_ID_SYS_PROPS = "archiva.repositorySessionFactory.id";
 
     private Properties properties;
+
+    private String id;
 
     public RepositorySessionFactoryBean( Properties properties )
     {
         this.properties = properties;
         // we can override with system props
-        this.properties.putAll( System.getProperties() );
+        String value = System.getProperty( BEAN_ID_SYS_PROPS );
+        if ( value != null )
+        {
+            this.properties.put( BEAN_ID_SYS_PROPS, value );
+        }
+        id = properties.getProperty( BEAN_ID_SYS_PROPS );
     }
 
     @Override
@@ -58,11 +63,20 @@ public class RepositorySessionFactoryBean
     protected RepositorySessionFactory createInstance()
         throws Exception
     {
-        String id = properties.getProperty( "archiva.repositorySessionFactory.id" );
         RepositorySessionFactory repositorySessionFactory =
             getBeanFactory().getBean( "repositorySessionFactory#" + id, RepositorySessionFactory.class );
         logger.info( "create RepositorySessionFactory instance of {}", repositorySessionFactory.getClass().getName() );
         return repositorySessionFactory;
+    }
+
+    public String getId()
+    {
+        return id;
+    }
+
+    public void setId( String id )
+    {
+        this.id = id;
     }
 
     public Properties getProperties()

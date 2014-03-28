@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * @author Olivier Lamy
  */
-@Service( "RepositorySessionFactory#mock" )
+@Service( "repositorySessionFactory#mock" )
 public class MockRepositorySessionFactory
     implements RepositorySessionFactory
 {

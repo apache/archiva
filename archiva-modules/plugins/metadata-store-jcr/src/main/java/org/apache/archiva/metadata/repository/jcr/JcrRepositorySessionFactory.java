@@ -51,20 +51,11 @@ public class JcrRepositorySessionFactory
     @Inject
     private ApplicationContext applicationContext;
 
-    /**
-     *
-     */
     private Map<String, MetadataFacetFactory> metadataFacetFactories;
 
-    /**
-     *
-     */
     @Inject
     private Repository repository;
 
-    /**
-     *
-     */
     @Inject
     private MetadataResolver metadataResolver;
 

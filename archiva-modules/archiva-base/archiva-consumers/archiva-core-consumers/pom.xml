@@ -160,6 +160,7 @@
               <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
               <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
               <archiva.user.configFileName>${project.build.directory}/archiva.xml</archiva.user.configFileName>
+              <archiva.repositorySessionFactory.id>test</archiva.repositorySessionFactory.id>
             </systemPropertyVariables>
           </configuration>
         </plugin>

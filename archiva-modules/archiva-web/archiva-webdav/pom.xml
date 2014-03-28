@@ -308,6 +308,7 @@
             <archiva.user.configFileName>${project.build.testOutputDirectory}/repository-archiva.xml</archiva.user.configFileName>
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
+            <archiva.repositorySessionFactory.id>beer</archiva.repositorySessionFactory.id>
           </systemPropertyVariables>
           <forkMode>${webdav.forkMode}</forkMode>
         </configuration>
