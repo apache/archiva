@@ -28,7 +28,7 @@ import java.util.Properties;
 
 /**
  * @author Olivier Lamy
- * @since 2.0.1
+ * @since 2.0.2
  */
 public class RepositorySessionFactoryBean
     extends AbstractFactoryBean<RepositorySessionFactory>
