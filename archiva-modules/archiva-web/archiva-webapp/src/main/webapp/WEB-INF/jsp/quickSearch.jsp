@@ -81,16 +81,16 @@
   </script>
 </head>
 
-<s:if test="%{infoMessage != null}">
-  <p>${infoMessage}</p>
-</s:if>
-
 <body>
 
 <h1>Search</h1>
 
 <div id="contentArea">
 <div id="searchBox">
+
+<s:if test="%{infoMessage != null}">
+  <p><c:out value="${infoMessage}" /></p>
+</s:if>
 
   <c:url var="iconCreateUrl" value="/images/icons/create.png" />
   
