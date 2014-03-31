@@ -21,10 +21,12 @@ package org.apache.archiva.webtest.memory;
 
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.stereotype.Service;
 
 @Service("repositorySessionFactory#test")
 public class TestRepositorySessionFactory
+    extends AbstractFactoryBean<RepositorySessionFactory>
     implements RepositorySessionFactory
 {
     private RepositorySession repositorySession;
@@ -38,5 +40,18 @@ public class TestRepositorySessionFactory
     {
         return repositorySession != null ? repositorySession : new RepositorySession( new TestMetadataRepository(),
                                                                                       new TestMetadataResolver() );
+    }
+
+    @Override
+    public Class<RepositorySessionFactory> getObjectType()
+    {
+        return RepositorySessionFactory.class;
+    }
+
+    @Override
+    protected RepositorySessionFactory createInstance()
+        throws Exception
+    {
+        return this;
     }
 }

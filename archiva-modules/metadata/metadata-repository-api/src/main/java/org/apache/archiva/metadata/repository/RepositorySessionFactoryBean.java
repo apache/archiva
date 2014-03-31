@@ -22,6 +22,7 @@ package org.apache.archiva.metadata.repository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
+import org.springframework.stereotype.Service;
 
 import java.util.Properties;
 
@@ -29,6 +30,7 @@ import java.util.Properties;
  * @author Olivier Lamy
  * @since 2.0.2
  */
+//@Service("repositorySessionFactoryBean#default")
 public class RepositorySessionFactoryBean
     extends AbstractFactoryBean<RepositorySessionFactory>
 {
