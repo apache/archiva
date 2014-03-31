@@ -54,4 +54,10 @@
 
   <alias name="userManager#configurable" alias="userManager#default"/>
 
+  <bean name="TestRepositorySessionFactoryBean" class="org.apache.archiva.TestRepositorySessionFactoryBean">
+    <constructor-arg>
+      <value>jcr</value>
+    </constructor-arg>
+  </bean>
+
 </beans>
