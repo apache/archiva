@@ -22,4 +22,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+  <bean name="repositoryStorage#maven2" class="org.apache.archiva.metadata.repository.cassandra.MockRepositoryStorage"/>
+
+  <bean name="mockrepo#listener" class="org.apache.archiva.metadata.repository.cassandra.MockRepositoryStorage"/>
+
 </beans>

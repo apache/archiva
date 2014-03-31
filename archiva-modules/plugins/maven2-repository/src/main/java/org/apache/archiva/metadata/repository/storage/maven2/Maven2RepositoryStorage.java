@@ -35,7 +35,6 @@ import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RelocationException;
@@ -74,7 +73,6 @@ import org.apache.maven.model.building.ModelBuildingException;
 import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.model.building.ModelProblem;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.maven.wagon.PathUtils;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,6 +109,9 @@ import java.util.Map;
 public class Maven2RepositoryStorage
     implements RepositoryStorage
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
+
     private ModelBuilder builder;
 
     @Inject
@@ -138,8 +139,6 @@ public class Maven2RepositoryStorage
     @Inject
     @Named( value = "pathParser#default" )
     private PathParser pathParser;
-
-    private static final Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
 
     private static final String METADATA_FILENAME_START = "maven-metadata";
 
@@ -173,10 +172,9 @@ public class Maven2RepositoryStorage
             // olamy: in case of browsing via the ui we can mix repos (parent of a SNAPSHOT can come from release repo)
             if ( !readMetadataRequest.isBrowsingRequest() )
             {
-
-                if ( VersionUtil.isSnapshot(
-                    artifactVersion ) ) // skygo trying to improve speed by honoring managed configuration MRM-1658
+                if ( VersionUtil.isSnapshot( artifactVersion ) )
                 {
+                    // skygo trying to improve speed by honoring managed configuration MRM-1658
                     if ( managedRepository.isReleases() && !managedRepository.isSnapshots() )
                     {
                         throw new RepositoryStorageRuntimeException( "lookforsnaponreleaseonly",
@@ -214,8 +212,8 @@ public class Maven2RepositoryStorage
                 }
                 catch ( XMLException e )
                 {
-                    // unable to parse metadata - log it, and continue with the version as the original SNAPSHOT version
-                    log.warn( "Invalid metadata: {} - {}", metadataFile, e.getMessage() );
+                    // unable to parse metadata - LOGGER it, and continue with the version as the original SNAPSHOT version
+                    LOGGER.warn( "Invalid metadata: {} - {}", metadataFile, e.getMessage() );
                 }
             }
 
@@ -301,8 +299,8 @@ public class Maven2RepositoryStorage
                     if ( ( problem.getException() instanceof FileNotFoundException && e.getModelId() != null &&
                         !e.getModelId().equals( problem.getModelId() ) ) )
                     {
-                        log.warn( "The artifact's parent POM file '{}' cannot be resolved. "
-                                      + "Using defaults for project version metadata..", file );
+                        LOGGER.warn( "The artifact's parent POM file '{}' cannot be resolved. "
+                                         + "Using defaults for project version metadata..", file );
 
                         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
                         metadata.setId( readMetadataRequest.getProjectVersion() );
@@ -871,7 +869,7 @@ public class Maven2RepositoryStorage
         }
         catch ( IOException e )
         {
-            log.error( "Unable to checksum file {}: {},MD5", file, e.getMessage() );
+            LOGGER.error( "Unable to checksum file {}: {},MD5", file, e.getMessage() );
         }
         try
         {
@@ -879,7 +877,7 @@ public class Maven2RepositoryStorage
         }
         catch ( IOException e )
         {
-            log.error( "Unable to checksum file {}: {},SHA1", file, e.getMessage() );
+            LOGGER.error( "Unable to checksum file {}: {},SHA1", file, e.getMessage() );
         }
         metadata.setSize( file.length() );
     }
