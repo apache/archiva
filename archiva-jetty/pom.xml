@@ -98,6 +98,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>appassembler-maven-plugin</artifactId>
         <configuration>
+          <configurationDirectory>conf</configurationDirectory>
           <daemons>
             <daemon>
               <id>archiva</id>

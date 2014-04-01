@@ -87,6 +87,7 @@
       <outputDirectory>bin</outputDirectory>
       <includes>   
         <include>wrapper-windows-x86-32.exe</include>
+        <include>wrapper-windows-x86-64.exe</include>
       </includes>
       <fileMode>0755</fileMode>
     </fileSet>
