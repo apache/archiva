@@ -67,6 +67,7 @@
          <include>wrapper-linux-x86-32</include>
          <include>wrapper-linux-x86-64</include>
          <include>wrapper-macosx-universal-32</include>
+         <include>wrapper-macosx-universal-64</include>
          <include>wrapper-solaris-x86-32</include>
          <include>wrapper-solaris-sparc-32</include>
          <include>wrapper-solaris-sparc-64</include>
