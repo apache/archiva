@@ -98,8 +98,9 @@
        <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>appassembler-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.7</version>
         <configuration>
+          <configurationDirectory>conf</configurationDirectory>  
           <daemons>
             <daemon>
               <id>archiva</id>
@@ -163,6 +164,7 @@
                     <include>solaris-sparc-32</include>
                     <include>solaris-sparc-64</include>
                     <include>windows-x86-32</include>
+                    <include>windows-x86-64</include>
                   </includes>
                 </generatorConfiguration>
               </generatorConfigurations>
