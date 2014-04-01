@@ -102,7 +102,7 @@
     <plexus-expression-evaluator.version>2.1</plexus-expression-evaluator.version>
     <plexus-utils.version>3.0.15</plexus-utils.version>
     <asfTomcatMavenPluginVersion>2.2</asfTomcatMavenPluginVersion>
-    <tomcat7Version>7.0.50</tomcat7Version>
+    <tomcat7Version>7.0.53</tomcat7Version>
 
     <release.preparationGoals>clean install</release.preparationGoals>
   </properties>
