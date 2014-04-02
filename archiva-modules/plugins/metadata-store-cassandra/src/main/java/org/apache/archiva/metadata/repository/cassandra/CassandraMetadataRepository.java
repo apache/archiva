@@ -61,11 +61,14 @@ import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
 import org.apache.archiva.metadata.repository.cassandra.model.Project;
 import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
 import org.apache.archiva.metadata.repository.cassandra.model.Repository;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -539,8 +542,8 @@ public class CassandraMetadataRepository
 
     }
 
-    // FIXME this one need peformance improvement maybe a cache?
-    public List<String> getNamespaces( final String repoId )
+    // only use for testing purpose
+    protected List<String> getNamespaces( final String repoId )
         throws MetadataResolutionException
     {
 
@@ -1061,7 +1064,7 @@ public class CassandraMetadataRepository
                 MetadataFacetFactory metadataFacetFactory = metadataFacetFactories.get( entry.getKey() );
                 if ( metadataFacetFactory != null )
                 {
-                    MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet( );
+                    MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet();
                     metadataFacet.fromProperties( entry.getValue() );
                     projectVersionMetadata.addFacet( metadataFacet );
                 }
@@ -1356,9 +1359,9 @@ public class CassandraMetadataRepository
             updater.setLong( "fileLastModified", artifactMeta.getFileLastModified().getTime() );
             updater.setLong( "whenGathered", artifactMeta.getWhenGathered().getTime() );
             updater.setLong( "size", artifactMeta.getSize() );
-            addUpdateStringValue(updater, "md5", artifactMeta.getMd5() );
-            addUpdateStringValue(updater, "sha1", artifactMeta.getSha1() );
-            addUpdateStringValue(updater, "version", artifactMeta.getVersion() );
+            addUpdateStringValue( updater, "md5", artifactMeta.getMd5() );
+            addUpdateStringValue( updater, "sha1", artifactMeta.getSha1() );
+            addUpdateStringValue( updater, "version", artifactMeta.getVersion() );
             this.artifactMetadataTemplate.update( updater );
         }
         else
@@ -1606,8 +1609,8 @@ public class CassandraMetadataRepository
             if ( exists )
             {
                 ColumnFamilyUpdater<String, String> updater = this.metadataFacetTemplate.createUpdater( key );
-                addUpdateStringValue(updater, "facetId", metadataFacet.getFacetId() );
-                addUpdateStringValue(updater, "name", metadataFacet.getName() );
+                addUpdateStringValue( updater, "facetId", metadataFacet.getFacetId() );
+                addUpdateStringValue( updater, "name", metadataFacet.getName() );
                 this.metadataFacetTemplate.update( updater );
             }
             else
@@ -1643,7 +1646,7 @@ public class CassandraMetadataRepository
                 else
                 {
                     ColumnFamilyUpdater<String, String> updater = this.metadataFacetTemplate.createUpdater( key );
-                    addUpdateStringValue(updater, "value", entry.getValue() );
+                    addUpdateStringValue( updater, "value", entry.getValue() );
                     this.metadataFacetTemplate.update( updater );
                 }
             }
