@@ -40,6 +40,8 @@
     <spring.version>${springVersion}</spring.version>
     <redback.version>${redbackVersion}</redback.version>
     <derbyVersion>${derbyVersion}</derbyVersion>
+    <commons-pool.version>${commons-poolVersion}</commons-pool.version>
+    <httpclientCoreVersion>${httpclientCoreVersion}</httpclientCoreVersion>
   </properties>
   <dependencies>
     <dependency>
@@ -217,7 +219,7 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore</artifactId>
-      <version>${httpclient.core.version}</version>
+      <version>${httpclientCoreVersion}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>

@@ -128,6 +128,7 @@ public class DefaultCassandraArchivaManager
         final CassandraHostConfigurator configurator =
             new CassandraHostConfigurator( cassandraHost + ":" + cassandraPort );
         configurator.setMaxActive( maxActive );
+        //configurator.setCassandraThriftSocketTimeout(  );
 
         cluster = HFactory.getOrCreateCluster( clusterName, configurator );
 
