@@ -59,6 +59,7 @@
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
+    <commons-pool.version>1.6</commons-pool.version>
 
     <maven3x.version>3.0.5</maven3x.version>
     <maven.version>2.0.8</maven.version>
@@ -687,7 +688,7 @@
       <dependency>
         <groupId>commons-pool</groupId>
         <artifactId>commons-pool</artifactId>
-        <version>1.6</version>
+        <version>${commons-pool.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
