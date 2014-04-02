@@ -991,6 +991,7 @@ public class DefaultRepositoriesService
             // just invalidate cache entry
             String cacheKey = repositoryId + "-" + groupId;
             namespacesCache.remove( cacheKey );
+            namespacesCache.remove( repositoryId );
 
             metadataRepository.save();
         }
