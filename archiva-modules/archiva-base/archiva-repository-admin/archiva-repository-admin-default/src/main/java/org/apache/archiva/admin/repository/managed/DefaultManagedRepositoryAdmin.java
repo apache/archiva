@@ -36,6 +36,7 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.role.RoleManagerException;
@@ -60,6 +61,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -101,6 +103,10 @@ public class DefaultManagedRepositoryAdmin
 
     @Inject
     protected RoleManager roleManager;
+
+    @Inject
+    @Named( value = "cache#namespaces" )
+    private Cache<String, Collection<String>> namespacesCache;
 
     // fields
     List<? extends IndexCreator> indexCreators;
@@ -382,6 +388,8 @@ public class DefaultManagedRepositoryAdmin
             {
                 MetadataRepository metadataRepository = repositorySession.getRepository();
                 metadataRepository.removeRepository( repository.getId() );
+                //invalidate cache
+                namespacesCache.remove( repository.getId() );
                 log.debug( "call repositoryStatisticsManager.deleteStatistics" );
                 getRepositoryStatisticsManager().deleteStatistics( metadataRepository, repository.getId() );
                 repositorySession.save();
