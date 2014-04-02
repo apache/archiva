@@ -118,12 +118,11 @@ public class DefaultBrowseService
         // TODO: this logic should be optional, particularly remembering we want to keep this code simple
         //       it is located here to avoid the content repository implementation needing to do too much for what
         //       is essentially presentation code
-        Set<String> namespacesToCollapse;
+        Set<String> namespacesToCollapse = new LinkedHashSet<String>();
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
             MetadataResolver metadataResolver = repositorySession.getResolver();
-            namespacesToCollapse = new LinkedHashSet<String>();
 
             for ( String repoId : selectedRepos )
             {

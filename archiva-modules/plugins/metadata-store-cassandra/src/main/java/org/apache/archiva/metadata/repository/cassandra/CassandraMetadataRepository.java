@@ -479,7 +479,7 @@ public class CassandraMetadataRepository
 
     }
 
-
+    // FIXME this one need peformance improvement maybe a cache?
     @Override
     public Collection<String> getRootNamespaces( final String repoId )
         throws MetadataResolutionException
@@ -502,7 +502,7 @@ public class CassandraMetadataRepository
         return namespaces;
     }
 
-
+    // FIXME this one need peformance improvement maybe a cache?
     @Override
     public Collection<String> getNamespaces( final String repoId, final String namespaceId )
         throws MetadataResolutionException
@@ -539,7 +539,7 @@ public class CassandraMetadataRepository
 
     }
 
-
+    // FIXME this one need peformance improvement maybe a cache?
     public List<String> getNamespaces( final String repoId )
         throws MetadataResolutionException
     {
