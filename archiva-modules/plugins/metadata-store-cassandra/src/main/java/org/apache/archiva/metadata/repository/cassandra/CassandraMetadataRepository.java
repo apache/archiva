@@ -61,14 +61,11 @@ import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
 import org.apache.archiva.metadata.repository.cassandra.model.Project;
 import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
 import org.apache.archiva.metadata.repository.cassandra.model.Repository;
-import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -241,7 +238,7 @@ public class CassandraMetadataRepository
         updateOrAddNamespace( repositoryId, namespaceId );
     }
 
-    public Namespace updateOrAddNamespace( String repositoryId, String namespaceId )
+    private Namespace updateOrAddNamespace( String repositoryId, String namespaceId )
         throws MetadataRepositoryException
     {
         try
@@ -300,8 +297,10 @@ public class CassandraMetadataRepository
 
         try
         {
-            String key =
-                new Namespace.KeyBuilder().withNamespace( namespaceId ).withRepositoryId( repositoryId ).build();
+            String key = new Namespace.KeyBuilder() //
+                .withNamespace( namespaceId ) //
+                .withRepositoryId( repositoryId ) //
+                .build();
 
             HFactory.createMutator( cassandraArchivaManager.getKeyspace(), new StringSerializer() ) //
                 .addDeletion( key, cassandraArchivaManager.getNamespaceFamilyName() ) //

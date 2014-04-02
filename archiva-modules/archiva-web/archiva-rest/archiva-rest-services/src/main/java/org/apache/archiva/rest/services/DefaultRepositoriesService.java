@@ -44,6 +44,7 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
@@ -148,6 +149,13 @@ public class DefaultRepositoriesService
 
     @Inject
     private RepositoryScanner repoScanner;
+
+    /**
+     * Cache used for namespaces
+     */
+    @Inject
+    @Named( value = "cache#namespaces" )
+    private Cache<String, Collection<String>> namespacesCache;
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
@@ -979,6 +987,10 @@ public class DefaultRepositoriesService
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
             metadataRepository.removeNamespace( repositoryId, groupId );
+
+            // just invalidate cache entry
+            String cacheKey = repositoryId + "-" + groupId;
+            namespacesCache.remove( cacheKey );
 
             metadataRepository.save();
         }
