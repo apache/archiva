@@ -39,6 +39,7 @@
     <module>stage-repository-merge</module>
     <module>generic-metadata-support</module>
     <module>metadata-store-jcr</module>
+    <module>metadata-store-cassandra</module>
   </modules>
 
 </project>
