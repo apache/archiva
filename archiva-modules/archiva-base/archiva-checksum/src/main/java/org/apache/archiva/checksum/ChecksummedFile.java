@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,17 +76,12 @@ public class ChecksummedFile
     public String calculateChecksum( ChecksumAlgorithm checksumAlgorithm )
         throws IOException
     {
-        FileInputStream fis = null;
-        try
+
+        try (FileInputStream fis = new FileInputStream( referenceFile ))
         {
             Checksum checksum = new Checksum( checksumAlgorithm );
-            fis = new FileInputStream( referenceFile );
             checksum.update( fis );
             return checksum.getChecksum();
-        }
-        finally
-        {
-            IOUtils.closeQuietly( fis );
         }
     }
 
@@ -144,8 +140,8 @@ public class ChecksummedFile
      */
     public boolean isValidChecksums( ChecksumAlgorithm algorithms[] )
     {
-        FileInputStream fis = null;
-        try
+
+        try (FileInputStream fis = new FileInputStream( referenceFile ))
         {
             List<Checksum> checksums = new ArrayList<Checksum>( algorithms.length );
             // Create checksum object for each algorithm.
@@ -170,7 +166,6 @@ public class ChecksummedFile
             // Parse file once, for all checksums.
             try
             {
-                fis = new FileInputStream( referenceFile );
                 Checksum.update( checksums, fis );
             }
             catch ( IOException e )
@@ -205,10 +200,10 @@ public class ChecksummedFile
             }
 
             return valid;
-        }
-        finally
+        } catch ( IOException e )
         {
-            IOUtils.closeQuietly( fis );
+            log.warn( "Unable to read / parse checksum: {}", e.getMessage() );
+            return false;
         }
     }
 
@@ -234,21 +229,16 @@ public class ChecksummedFile
             return true;
         }
 
-        FileInputStream fis = null;
-        try
+
+        try (FileInputStream fis = new FileInputStream( referenceFile ))
         {
             // Parse file once, for all checksums.
-            fis = new FileInputStream( referenceFile );
             Checksum.update( checksums, fis );
         }
         catch ( IOException e )
         {
             log.warn( e.getMessage(), e );
             return false;
-        }
-        finally
-        {
-            IOUtils.closeQuietly( fis );
         }
 
         boolean valid = true;

@@ -75,21 +75,18 @@ public class ArchivaCli
     private static String getVersion()
         throws IOException
     {
-        InputStream pomStream = ArchivaCli.class.getResourceAsStream( POM_PROPERTIES );
-        if ( pomStream == null )
-        {
-            throw new IOException( "Failed to load " + POM_PROPERTIES );
-        }
 
-        try
+
+
+        try (InputStream pomStream = ArchivaCli.class.getResourceAsStream( POM_PROPERTIES ))
         {
+            if ( pomStream == null )
+            {
+                throw new IOException( "Failed to load " + POM_PROPERTIES );
+            }
             Properties properties = new Properties();
             properties.load( pomStream );
             return properties.getProperty( "version" );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( pomStream );
         }
     }
 
@@ -266,15 +263,10 @@ public class ArchivaCli
 
         Properties p = new Properties();
 
-        FileInputStream fis = new FileInputStream( properties );
 
-        try
+        try(FileInputStream fis = new FileInputStream( properties ))
         {
             p.load( fis );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( fis );
         }
 
         File oldRepositoryPath = new File( p.getProperty( SOURCE_REPO_PATH ) );

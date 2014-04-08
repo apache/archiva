@@ -25,7 +25,6 @@ import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.transaction.FileTransaction;
 import org.apache.archiva.transaction.TransactionException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
@@ -68,7 +67,7 @@ import java.util.regex.Matcher;
 /**
  * LegacyToDefaultConverter
  */
-@Service ("artifactConverter#legacy-to-default")
+@Service("artifactConverter#legacy-to-default")
 public class LegacyToDefaultConverter
     implements ArtifactConverter
 {
@@ -185,7 +184,7 @@ public class LegacyToDefaultConverter
         }
     }
 
-    @SuppressWarnings ("unchecked")
+    @SuppressWarnings("unchecked")
     private boolean copyPom( Artifact artifact, ArtifactRepository targetRepository, FileTransaction transaction )
         throws ArtifactConversionException
     {
@@ -243,58 +242,58 @@ public class LegacyToDefaultConverter
             else
             {
                 // v3 POM
-                StringReader stringReader = new StringReader( contents );
-                StringWriter writer = null;
-                try
+                try (StringReader stringReader = new StringReader( contents ))
                 {
-                    org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader v3Reader =
-                        new org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader();
-                    org.apache.maven.model.v3_0_0.Model v3Model = v3Reader.read( stringReader );
 
-                    if ( doRelocation( artifact, v3Model, targetRepository, transaction ) )
+                    try (StringWriter writer = new StringWriter())
                     {
-                        Artifact relocatedPom =
-                            artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
-                                                                   artifact.getVersion() );
-                        targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( relocatedPom ) );
+                        org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader v3Reader =
+                            new org.apache.maven.model.v3_0_0.io.xpp3.MavenXpp3Reader();
+                        org.apache.maven.model.v3_0_0.Model v3Model = v3Reader.read( stringReader );
+
+                        if ( doRelocation( artifact, v3Model, targetRepository, transaction ) )
+                        {
+                            Artifact relocatedPom =
+                                artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
+                                                                       artifact.getVersion() );
+                            targetFile =
+                                new File( targetRepository.getBasedir(), targetRepository.pathOf( relocatedPom ) );
+                        }
+
+                        Model v4Model = translator.translate( v3Model );
+
+                        translator.validateV4Basics( v4Model, v3Model.getGroupId(), v3Model.getArtifactId(),
+                                                     v3Model.getVersion(), v3Model.getPackage() );
+
+                        MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
+                        xpp3Writer.write( writer, v4Model );
+
+                        transaction.createFile( writer.toString(), targetFile, digesters );
+
+                        List<String> warnings = translator.getWarnings();
+
+                        for ( String message : warnings )
+                        {
+                            addWarning( artifact, message );
+                        }
                     }
-
-                    Model v4Model = translator.translate( v3Model );
-
-                    translator.validateV4Basics( v4Model, v3Model.getGroupId(), v3Model.getArtifactId(),
-                                                 v3Model.getVersion(), v3Model.getPackage() );
-
-                    writer = new StringWriter();
-                    MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
-                    xpp3Writer.write( writer, v4Model );
-
-                    transaction.createFile( writer.toString(), targetFile, digesters );
-
-                    List<String> warnings = translator.getWarnings();
-
-                    for ( String message : warnings )
+                    catch ( XmlPullParserException e )
                     {
-                        addWarning( artifact, message );
+                        addWarning( artifact,
+                                    Messages.getString( "invalid.source.pom", e.getMessage() ) ); //$NON-NLS-1$
+                        result = false;
                     }
-                }
-                catch ( XmlPullParserException e )
-                {
-                    addWarning( artifact, Messages.getString( "invalid.source.pom", e.getMessage() ) ); //$NON-NLS-1$
-                    result = false;
-                }
-                catch ( IOException e )
-                {
-                    throw new ArtifactConversionException( Messages.getString( "unable.to.write.converted.pom" ),
-                                                           e ); //$NON-NLS-1$
-                }
-                catch ( PomTranslationException e )
-                {
-                    addWarning( artifact, Messages.getString( "invalid.source.pom", e.getMessage() ) ); //$NON-NLS-1$
-                    result = false;
-                }
-                finally
-                {
-                    IOUtils.closeQuietly( writer );
+                    catch ( IOException e )
+                    {
+                        throw new ArtifactConversionException( Messages.getString( "unable.to.write.converted.pom" ),
+                                                               e ); //$NON-NLS-1$
+                    }
+                    catch ( PomTranslationException e )
+                    {
+                        addWarning( artifact,
+                                    Messages.getString( "invalid.source.pom", e.getMessage() ) ); //$NON-NLS-1$
+                        result = false;
+                    }
                 }
             }
         }
@@ -410,11 +409,10 @@ public class LegacyToDefaultConverter
     {
         Metadata metadata;
         MetadataXpp3Reader reader = new MetadataXpp3Reader();
-        FileReader fileReader = null;
-        try
+
+        try (FileReader fileReader = new FileReader( file ))
         {
-            fileReader = new FileReader( file );
-            metadata = reader.read( fileReader );
+            return reader.read( fileReader );
         }
         catch ( FileNotFoundException e )
         {
@@ -431,11 +429,6 @@ public class LegacyToDefaultConverter
             throw new ArtifactConversionException( Messages.getString( "error.reading.target.metadata" ),
                                                    e ); //$NON-NLS-1$
         }
-        finally
-        {
-            IOUtils.closeQuietly( fileReader );
-        }
-        return metadata;
     }
 
     private boolean validateMetadata( Artifact artifact )
@@ -465,7 +458,7 @@ public class LegacyToDefaultConverter
         return result;
     }
 
-    @SuppressWarnings ("unchecked")
+    @SuppressWarnings("unchecked")
     private boolean validateMetadata( Metadata metadata, RepositoryMetadata repositoryMetadata, Artifact artifact )
     {
         String groupIdKey;
@@ -590,11 +583,9 @@ public class LegacyToDefaultConverter
 
         if ( changed )
         {
-            StringWriter writer = null;
-            try
-            {
-                writer = new StringWriter();
 
+            try (StringWriter writer = new StringWriter())
+            {
                 MetadataXpp3Writer mappingWriter = new MetadataXpp3Writer();
 
                 mappingWriter.write( writer, metadata );
@@ -605,10 +596,6 @@ public class LegacyToDefaultConverter
             {
                 throw new ArtifactConversionException( Messages.getString( "error.writing.target.metadata" ),
                                                        e ); //$NON-NLS-1$
-            }
-            finally
-            {
-                IOUtils.closeQuietly( writer );
             }
         }
     }
