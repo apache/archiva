@@ -1847,6 +1847,7 @@
               <exclude>**/target/**</exclude>
               <exclude>**/.java-version</exclude>
               <exclude>patch.diff</exclude>
+              <exclude>**/overlays/**</exclude>
             </excludes>
           </configuration>
         </plugin>
