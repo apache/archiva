@@ -37,9 +37,9 @@
   <version>1.3.8-SNAPSHOT</version>
   <url>http://archiva.apache.org</url>
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/branches/archiva-1.3.x</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/branches/archiva-1.3.x</developerConnection>
-    <url>http://svn.apache.org/repos/asf/archiva/branches/archiva-1.3.x</url>
+    <connection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva-site.git</connection>
+    <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva-site.git</developerConnection>
+    <url>https://github.com/apache/archiva-site</url>
   </scm>
 
   <build>
@@ -180,7 +180,6 @@
           <artifactId>maven-release-plugin</artifactId>
           <version>2.4.1</version>
           <configuration>
-            <tagBase>https://svn.apache.org/repos/asf/archiva/tags</tagBase>
             <useReleaseProfile>false</useReleaseProfile>
             <autoVersionSubmodules>true</autoVersionSubmodules>
             <goals>deploy</goals>
