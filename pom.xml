@@ -27,7 +27,6 @@
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
     <version>13-SNAPSHOT</version>
-    <relativePath />
   </parent>
 
   <artifactId>archiva</artifactId>
