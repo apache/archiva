@@ -45,9 +45,9 @@
   </modules>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/branches/trunk</developerConnection>
-    <url>http://svn.apache.org/viewvc/archiva/trunk</url>
+    <connection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva.git</connection>
+    <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva.git</developerConnection>
+    <url>https://github.com/apache/archiva</url>
   </scm>
 
   <properties>
