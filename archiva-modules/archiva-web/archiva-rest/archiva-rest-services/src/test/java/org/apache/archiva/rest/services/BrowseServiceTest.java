@@ -49,7 +49,7 @@ public class BrowseServiceTest
 
     Map<String, String> toMap( List<Entry> entries )
     {
-        Map<String, String> map = new HashMap<String, String>( entries.size() );
+        Map<String, String> map = new HashMap<>( entries.size() );
 
         for ( Entry entry : entries )
         {
@@ -487,7 +487,7 @@ public class BrowseServiceTest
 
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
-        Map<String, String> inputMetadata = new HashMap<String, String>( 3 );
+        Map<String, String> inputMetadata = new HashMap<>( 3 );
         inputMetadata.put( "buildNumber", "1" );
         inputMetadata.put( "author", "alecharp" );
         inputMetadata.put( "jenkins_version", "1.486" );

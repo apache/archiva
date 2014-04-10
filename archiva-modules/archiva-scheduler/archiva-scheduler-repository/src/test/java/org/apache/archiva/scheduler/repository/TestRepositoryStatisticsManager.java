@@ -35,7 +35,7 @@ import java.util.Map;
 public class TestRepositoryStatisticsManager
     implements RepositoryStatisticsManager
 {
-    private Map<String, List<RepositoryStatistics>> repoStats = new HashMap<String, List<RepositoryStatistics>>();
+    private Map<String, List<RepositoryStatistics>> repoStats = new HashMap<>();
 
     public boolean hasStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException

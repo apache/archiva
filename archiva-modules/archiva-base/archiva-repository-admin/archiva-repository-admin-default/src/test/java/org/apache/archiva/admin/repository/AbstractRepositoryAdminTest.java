@@ -149,10 +149,10 @@ public abstract class AbstractRepositoryAdminTest
         remoteRepository.setId( id );
         remoteRepository.setRemoteDownloadNetworkProxyId( "foo" );
         remoteRepository.setDescription( "cool apache repo" );
-        Map<String, String> extraParameters = new HashMap<String, String>();
+        Map<String, String> extraParameters = new HashMap<>();
         extraParameters.put( "foo", "bar" );
         remoteRepository.setExtraParameters( extraParameters );
-        Map<String, String> extraHeaders = new HashMap<String, String>();
+        Map<String, String> extraHeaders = new HashMap<>();
         extraHeaders.put( "beer", "wine" );
         remoteRepository.setExtraHeaders( extraHeaders );
         return remoteRepository;

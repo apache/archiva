@@ -134,7 +134,7 @@ public class DefaultRepositoryProxyConnectors
     @Inject
     private UrlFailureCache urlFailureCache;
 
-    private Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<String, List<ProxyConnector>>();
+    private Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<>();
 
     private Map<String, ProxyInfo> networkProxyMap = new ConcurrentHashMap<String, ProxyInfo>();
 

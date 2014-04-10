@@ -182,7 +182,7 @@ public abstract class AbstractRestService
         // as per convention we named spring bean role#hint remove role# if exists
         Map<String, T> springBeans = applicationContext.getBeansOfType( clazz );
 
-        Map<String, T> beans = new HashMap<String, T>( springBeans.size() );
+        Map<String, T> beans = new HashMap<>( springBeans.size() );
 
         for ( Map.Entry<String, T> entry : springBeans.entrySet() )
         {

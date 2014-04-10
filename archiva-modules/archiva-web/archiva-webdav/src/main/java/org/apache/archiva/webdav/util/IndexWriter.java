@@ -151,7 +151,7 @@ public class IndexWriter
         else
         {
             // virtual repository - filter unique directories
-            Map<String, List<String>> uniqueChildFiles = new HashMap<String, List<String>>();
+            Map<String, List<String>> uniqueChildFiles = new HashMap<>();
             List<String> sortedList = new ArrayList<>();
             for ( File resource : localResources )
             {

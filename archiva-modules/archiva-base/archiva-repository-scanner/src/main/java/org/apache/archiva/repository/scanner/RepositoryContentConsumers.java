@@ -48,7 +48,7 @@ import java.util.Map;
 /**
  * RepositoryContentConsumerUtil
  */
-@Service ("repositoryContentConsumers")
+@Service( "repositoryContentConsumers" )
 public class RepositoryContentConsumers
     implements ApplicationContextAware
 {
@@ -119,7 +119,7 @@ public class RepositoryContentConsumers
     public Map<String, KnownRepositoryContentConsumer> getSelectedKnownConsumersMap()
         throws RepositoryAdminException
     {
-        Map<String, KnownRepositoryContentConsumer> consumerMap = new HashMap<String, KnownRepositoryContentConsumer>();
+        Map<String, KnownRepositoryContentConsumer> consumerMap = new HashMap<>();
 
         for ( KnownRepositoryContentConsumer consumer : getSelectedKnownConsumers() )
         {
@@ -138,8 +138,7 @@ public class RepositoryContentConsumers
     public Map<String, InvalidRepositoryContentConsumer> getSelectedInvalidConsumersMap()
         throws RepositoryAdminException
     {
-        Map<String, InvalidRepositoryContentConsumer> consumerMap =
-            new HashMap<String, InvalidRepositoryContentConsumer>();
+        Map<String, InvalidRepositoryContentConsumer> consumerMap = new HashMap<>();
 
         for ( InvalidRepositoryContentConsumer consumer : getSelectedInvalidConsumers() )
         {
@@ -154,7 +153,7 @@ public class RepositoryContentConsumers
      * selected according to the active configuration.
      *
      * @return the list of {@link KnownRepositoryContentConsumer} that have been selected
-     *         by the active configuration.
+     * by the active configuration.
      */
     public synchronized List<KnownRepositoryContentConsumer> getSelectedKnownConsumers()
         throws RepositoryAdminException
@@ -183,7 +182,7 @@ public class RepositoryContentConsumers
      * selected according to the active configuration.
      *
      * @return the list of {@link InvalidRepositoryContentConsumer} that have been selected
-     *         by the active configuration.
+     * by the active configuration.
      */
     public synchronized List<InvalidRepositoryContentConsumer> getSelectedInvalidConsumers()
         throws RepositoryAdminException
@@ -215,12 +214,11 @@ public class RepositoryContentConsumers
      * available and present in the classpath and as components in the IoC.
      *
      * @return the list of all available {@link KnownRepositoryContentConsumer} present in the classpath
-     *         and as a component in the IoC.
+     * and as a component in the IoC.
      */
     public List<KnownRepositoryContentConsumer> getAvailableKnownConsumers()
     {
-        return new ArrayList<>(
-            applicationContext.getBeansOfType( KnownRepositoryContentConsumer.class ).values() );
+        return new ArrayList<>( applicationContext.getBeansOfType( KnownRepositoryContentConsumer.class ).values() );
     }
 
     /**
@@ -228,12 +226,11 @@ public class RepositoryContentConsumers
      * available and present in the classpath and as components in the IoC.
      *
      * @return the list of all available {@link InvalidRepositoryContentConsumer} present in the classpath
-     *         and as a component in the IoC.
+     * and as a component in the IoC.
      */
     public List<InvalidRepositoryContentConsumer> getAvailableInvalidConsumers()
     {
-        return new ArrayList<>(
-            applicationContext.getBeansOfType( InvalidRepositoryContentConsumer.class ).values() );
+        return new ArrayList<>( applicationContext.getBeansOfType( InvalidRepositoryContentConsumer.class ).values() );
     }
 
     /**

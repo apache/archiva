@@ -50,7 +50,7 @@ public class MimeTypes
 
     private String resource = "org/apache/archiva/webdav/util/mime.types";
 
-    private Map<String, String> mimeMap = new HashMap<String, String>();
+    private Map<String, String> mimeMap = new HashMap<>();
 
     private Logger log = LoggerFactory.getLogger( MimeTypes.class );
 

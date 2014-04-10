@@ -50,7 +50,7 @@ import java.util.Map;
 public class SecuritySystemStub
     implements SecuritySystem
 {
-    Map<String, String> users = new HashMap<String, String>();
+    Map<String, String> users = new HashMap<>();
 
     List<String> repoIds = new ArrayList<>();
 

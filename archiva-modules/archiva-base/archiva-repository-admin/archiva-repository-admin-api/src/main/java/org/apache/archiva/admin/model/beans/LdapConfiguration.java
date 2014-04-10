@@ -93,7 +93,7 @@ public class LdapConfiguration
     /**
      * Field extraProperties.
      */
-    private Map<String, String> extraProperties = new HashMap<String, String>();
+    private Map<String, String> extraProperties = new HashMap<>();
 
     /**
      * field to ease json mapping wrapper on <code>extraProperties</code> field

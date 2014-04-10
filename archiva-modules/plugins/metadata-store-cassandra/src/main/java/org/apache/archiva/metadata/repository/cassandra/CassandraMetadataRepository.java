@@ -1041,7 +1041,7 @@ public class CassandraMetadataRepository
             .addEqualsExpression( "projectVersion", projectVersion ) //
             .execute();
 
-        Map<String, Map<String, String>> metadataFacetsPerFacetIds = new HashMap<String, Map<String, String>>();
+        Map<String, Map<String, String>> metadataFacetsPerFacetIds = new HashMap<>();
 
         for ( Row<String, String, String> row : result.get() )
         {
@@ -1050,7 +1050,7 @@ public class CassandraMetadataRepository
             Map<String, String> metaValues = metadataFacetsPerFacetIds.get( facetId );
             if ( metaValues == null )
             {
-                metaValues = new HashMap<String, String>();
+                metaValues = new HashMap<>();
                 metadataFacetsPerFacetIds.put( facetId, metaValues );
             }
             metaValues.put( getStringValue( columnSlice, "key" ), getStringValue( columnSlice, "value" ) );
@@ -1578,7 +1578,7 @@ public class CassandraMetadataRepository
         {
             return null;
         }
-        Map<String, String> map = new HashMap<String, String>( size );
+        Map<String, String> map = new HashMap<>( size );
         for ( Row<String, String, String> row : result.get() )
         {
             ColumnSlice<String, String> columnSlice = row.getColumnSlice();
@@ -1780,7 +1780,7 @@ public class CassandraMetadataRepository
     {
 
         // cql cannot run or in queries so running twice the query
-        Map<String, ArtifactMetadata> artifactMetadataMap = new HashMap<String, ArtifactMetadata>();
+        Map<String, ArtifactMetadata> artifactMetadataMap = new HashMap<>();
 
         RangeSlicesQuery<String, String, String> query = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
@@ -2116,7 +2116,7 @@ public class CassandraMetadataRepository
                     if ( !facetModels.isEmpty() )
                     {
                         MetadataFacet metadataFacet = metadataFacetFactory.createMetadataFacet();
-                        Map<String, String> props = new HashMap<String, String>( facetModels.size() );
+                        Map<String, String> props = new HashMap<>( facetModels.size() );
                         for ( MetadataFacetModel metadataFacetModel : facetModels )
                         {
                             props.put( metadataFacetModel.getKey(), metadataFacetModel.getValue() );

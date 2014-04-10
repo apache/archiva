@@ -41,7 +41,7 @@ public class Lock
 
     private AtomicBoolean write;
 
-    private final Map<Thread, AtomicInteger> fileClients = new HashMap<Thread, AtomicInteger>();
+    private final Map<Thread, AtomicInteger> fileClients = new HashMap<>();
 
     private FileLock fileLock;
 

@@ -55,7 +55,7 @@ public class RepositoryProblemFacet
 
     public Map<String, String> toProperties()
     {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         map.put( "repositoryId", repositoryId );
         map.put( "namespace", namespace );
         map.put( "project", project );

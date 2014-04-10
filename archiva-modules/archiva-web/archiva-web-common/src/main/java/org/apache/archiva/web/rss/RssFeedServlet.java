@@ -131,7 +131,7 @@ public class RssFeedServlet
 
         try
         {
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<>();
             SyndFeed feed = null;
 
             if ( isAllowed( req, repoId, groupId, artifactId ) )

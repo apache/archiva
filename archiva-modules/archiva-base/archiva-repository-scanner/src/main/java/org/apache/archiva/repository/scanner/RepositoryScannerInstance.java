@@ -43,8 +43,6 @@ import java.util.Map;
 
 /**
  * RepositoryScannerInstance
- *
- *
  */
 public class RepositoryScannerInstance
     implements DirectoryWalkListener
@@ -83,8 +81,8 @@ public class RepositoryScannerInstance
         this.knownConsumers = knownConsumerList;
         this.invalidConsumers = invalidConsumerList;
 
-        consumerTimings = new HashMap<String, Long>();
-        consumerCounts = new HashMap<String, Long>();
+        consumerTimings = new HashMap<>();
+        consumerCounts = new HashMap<>();
 
         this.consumerProcessFile = new ConsumerProcessFileClosure();
         consumerProcessFile.setExecuteOnEntireRepo( true );

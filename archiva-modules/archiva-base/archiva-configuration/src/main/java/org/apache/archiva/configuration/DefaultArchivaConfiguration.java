@@ -279,7 +279,7 @@ public class DefaultArchivaConfiguration
                 // Fix policies
                 boolean connectorValid = true;
 
-                Map<String, String> policies = new HashMap<String, String>();
+                Map<String, String> policies = new HashMap<>();
                 // Make copy of policies
                 policies.putAll( connector.getPolicies() );
                 // Clear out policies

@@ -101,7 +101,7 @@ public class JcrRepositorySessionFactory
         // olamy with spring the "id" is now "metadataFacetFactory#hint"
         // whereas was only hint with plexus so let remove  metadataFacetFactory#
         Map<String, MetadataFacetFactory> cleanedMetadataFacetFactories =
-            new HashMap<String, MetadataFacetFactory>( metadataFacetFactories.size() );
+            new HashMap<>( metadataFacetFactories.size() );
 
         for ( Map.Entry<String, MetadataFacetFactory> entry : metadataFacetFactories.entrySet() )
         {

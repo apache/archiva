@@ -259,7 +259,7 @@ public class AuditEvent
 
     public Map<String, String> toProperties()
     {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put( "action", this.action );
         if ( this.userId != null )
         {

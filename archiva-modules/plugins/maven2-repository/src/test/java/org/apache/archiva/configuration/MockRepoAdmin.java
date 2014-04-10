@@ -216,13 +216,13 @@ public class MockRepoAdmin
     public Boolean updateProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
         throws RepositoryAdminException
     {
-        Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<String, List<ProxyConnector>>();
+        Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<>();
 
         Iterator<ProxyConnector> it = getProxyConnectors().iterator();
         while ( it.hasNext() )

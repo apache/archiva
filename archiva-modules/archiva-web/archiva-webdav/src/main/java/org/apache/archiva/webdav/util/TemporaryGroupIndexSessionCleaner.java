@@ -53,7 +53,7 @@ public class TemporaryGroupIndexSessionCleaner
         if ( httpSessionEvent.getSession().getAttribute( TEMPORARY_INDEX_SESSION_KEY ) == null )
         {
             httpSessionEvent.getSession().setAttribute( TEMPORARY_INDEX_SESSION_KEY,
-                                                        new HashMap<String, TemporaryGroupIndex>() );
+                                                        new HashMap<>() );
         }
 
         if ( indexMerger == null )

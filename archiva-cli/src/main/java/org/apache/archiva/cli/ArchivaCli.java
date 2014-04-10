@@ -53,8 +53,8 @@ import java.util.Properties;
 
 /**
  * ArchivaCli
- *
- *
+ * <p/>
+ * <p/>
  * TODO add back reading of archiva.xml from a given location
  */
 public class ArchivaCli
@@ -74,8 +74,6 @@ public class ArchivaCli
     private static String getVersion()
         throws IOException
     {
-
-
 
         try (InputStream pomStream = ArchivaCli.class.getResourceAsStream( POM_PROPERTIES ))
         {
@@ -190,7 +188,7 @@ public class ArchivaCli
         }
     }
 
-    private <T>T lookup( Class<T> clazz )
+    private <T> T lookup( Class<T> clazz )
         throws PlexusSisuBridgeException
     {
         PlexusSisuBridge plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
@@ -244,8 +242,7 @@ public class ArchivaCli
         // we use a naming conventions knownRepositoryContentConsumer#hint
         // with plexus we used only hint so remove before#
 
-        Map<String, KnownRepositoryContentConsumer> smallNames =
-            new HashMap<String, KnownRepositoryContentConsumer>( beans.size() );
+        Map<String, KnownRepositoryContentConsumer> smallNames = new HashMap<>( beans.size() );
 
         for ( Map.Entry<String, KnownRepositoryContentConsumer> entry : beans.entrySet() )
         {
@@ -262,8 +259,7 @@ public class ArchivaCli
 
         Properties p = new Properties();
 
-
-        try(FileInputStream fis = new FileInputStream( properties ))
+        try (FileInputStream fis = new FileInputStream( properties ))
         {
             p.load( fis );
         }

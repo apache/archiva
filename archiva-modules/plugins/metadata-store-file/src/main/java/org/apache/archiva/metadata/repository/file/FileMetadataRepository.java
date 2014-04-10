@@ -357,7 +357,7 @@ public class FileMetadataRepository
         if ( metadataFacetFactory != null )
         {
             metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<>();
             for ( Object key : new ArrayList( properties.keySet() ) )
             {
                 String property = (String) key;
@@ -447,7 +447,7 @@ public class FileMetadataRepository
     public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                       String projectVersion )
     {
-        Map<String, ArtifactMetadata> artifacts = new HashMap<String, ArtifactMetadata>();
+        Map<String, ArtifactMetadata> artifacts = new HashMap<>();
 
         File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
 
@@ -516,7 +516,7 @@ public class FileMetadataRepository
                             {
                                 MetadataFacet facet = factory.createMetadataFacet();
                                 String prefix = propertyPrefix + facet.getFacetId();
-                                Map<String, String> map = new HashMap<String, String>();
+                                Map<String, String> map = new HashMap<>();
                                 for ( Object key : new ArrayList( properties.keySet() ) )
                                 {
                                     String property = (String) key;
@@ -1029,7 +1029,7 @@ public class FileMetadataRepository
                     else
                     {
                         MetadataFacet facet = factory.createMetadataFacet();
-                        Map<String, String> map = new HashMap<String, String>();
+                        Map<String, String> map = new HashMap<>();
                         for ( Object key : new ArrayList( properties.keySet() ) )
                         {
                             String property = (String) key;

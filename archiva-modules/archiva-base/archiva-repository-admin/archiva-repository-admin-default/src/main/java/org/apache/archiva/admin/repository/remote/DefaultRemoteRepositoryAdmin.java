@@ -65,9 +65,9 @@ public class DefaultRemoteRepositoryAdmin
     private MavenIndexerUtils mavenIndexerUtils;
 
     // fields
-    List<? extends IndexCreator> indexCreators;
+    private List<? extends IndexCreator> indexCreators;
 
-    NexusIndexer indexer;
+    private NexusIndexer indexer;
 
     @PostConstruct
     private void initialize()
@@ -245,7 +245,7 @@ public class DefaultRemoteRepositoryAdmin
     public Map<String, RemoteRepository> getRemoteRepositoriesAsMap()
         throws RepositoryAdminException
     {
-        java.util.Map<String, RemoteRepository> map = new HashMap<String, RemoteRepository>();
+        java.util.Map<String, RemoteRepository> map = new HashMap<>();
 
         for ( RemoteRepository repo : getRemoteRepositories() )
         {

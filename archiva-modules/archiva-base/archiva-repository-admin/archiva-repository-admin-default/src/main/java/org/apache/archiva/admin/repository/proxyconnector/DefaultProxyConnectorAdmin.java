@@ -166,7 +166,7 @@ public class DefaultProxyConnectorAdmin
     public Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
         throws RepositoryAdminException
     {
-        Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<String, java.util.List<ProxyConnector>>();
+        Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<>();
 
         Iterator<ProxyConnector> it = getProxyConnectors().iterator();
         while ( it.hasNext() )

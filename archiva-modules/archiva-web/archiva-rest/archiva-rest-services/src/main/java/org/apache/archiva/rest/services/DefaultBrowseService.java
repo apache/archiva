@@ -195,8 +195,7 @@ public class DefaultBrowseService
         {
             repositorySession.close();
         }
-        List<BrowseResultEntry> browseGroupResultEntries =
-            new ArrayList<>( namespaces.size() + projects.size() );
+        List<BrowseResultEntry> browseGroupResultEntries = new ArrayList<>( namespaces.size() + projects.size() );
         for ( String namespace : namespaces )
         {
             browseGroupResultEntries.add( new BrowseResultEntry( namespace, false ).groupId( namespace ) );
@@ -571,7 +570,7 @@ public class DefaultBrowseService
             return Boolean.FALSE;
         }
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
 
         MetadataFacet metadataFacet = projectVersionMetadata.getFacet( GenericMetadataFacet.FACET_ID );
 
@@ -972,7 +971,7 @@ public class DefaultBrowseService
     protected List<ArtifactContentEntry> readFileEntries( File file, String filterPath, String repoId )
         throws IOException
     {
-        Map<String, ArtifactContentEntry> artifactContentEntryMap = new HashMap<String, ArtifactContentEntry>();
+        Map<String, ArtifactContentEntry> artifactContentEntryMap = new HashMap<>();
         int filterDepth = StringUtils.countMatches( filterPath, "/" );
         /*if ( filterDepth == 0 )
         {
@@ -1013,8 +1012,7 @@ public class DefaultBrowseService
 
             if ( StringUtils.isNotEmpty( filterPath ) )
             {
-                Map<String, ArtifactContentEntry> filteredArtifactContentEntryMap =
-                    new HashMap<String, ArtifactContentEntry>();
+                Map<String, ArtifactContentEntry> filteredArtifactContentEntryMap = new HashMap<>();
 
                 for ( Map.Entry<String, ArtifactContentEntry> entry : artifactContentEntryMap.entrySet() )
                 {
@@ -1045,7 +1043,7 @@ public class DefaultBrowseService
     private List<ArtifactContentEntry> getSmallerDepthEntries( Map<String, ArtifactContentEntry> entries )
     {
         int smallestDepth = Integer.MAX_VALUE;
-        Map<Integer, List<ArtifactContentEntry>> perDepthList = new HashMap<Integer, List<ArtifactContentEntry>>();
+        Map<Integer, List<ArtifactContentEntry>> perDepthList = new HashMap<>();
         for ( Map.Entry<String, ArtifactContentEntry> entry : entries.entrySet() )
         {
 

@@ -1291,7 +1291,7 @@ public class ArchivaDavResourceFactory
                     TemporaryGroupIndexSessionCleaner.TEMPORARY_INDEX_SESSION_KEY );
             if ( temporaryGroupIndexMap == null )
             {
-                temporaryGroupIndexMap = new HashMap<String, TemporaryGroupIndex>();
+                temporaryGroupIndexMap = new HashMap<>();
             }
 
             TemporaryGroupIndex tmp = temporaryGroupIndexMap.get( repositoryGroupConfiguration.getId() );

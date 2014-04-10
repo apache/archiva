@@ -84,7 +84,7 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
 
         ArtifactMetadata artifact3 = createArtifact( whenGatheredNext, "1.0.3-SNAPSHOT" );
 
-        Map<String, String> reqParams = new HashMap<String, String>();
+        Map<String, String> reqParams = new HashMap<>();
         reqParams.put( RssFeedProcessor.KEY_GROUP_ID, GROUP_ID );
         reqParams.put( RssFeedProcessor.KEY_ARTIFACT_ID, ARTIFACT_ID );
 

@@ -36,18 +36,18 @@ import java.util.Set;
 public class TestMetadataResolver
     implements MetadataResolver
 {
-    private Map<String, ProjectVersionMetadata> projectVersions = new HashMap<String, ProjectVersionMetadata>();
+    private Map<String, ProjectVersionMetadata> projectVersions = new HashMap<>();
 
-    private Map<String, List<ArtifactMetadata>> artifacts = new HashMap<String, List<ArtifactMetadata>>();
+    private Map<String, List<ArtifactMetadata>> artifacts = new HashMap<>();
 
     private Map<String, List<ProjectVersionReference>> references =
         new HashMap<String, List<ProjectVersionReference>>();
 
-    private Map<String, List<String>> namespaces = new HashMap<String, List<String>>();
+    private Map<String, List<String>> namespaces = new HashMap<>();
 
-    private Map<String, Collection<String>> projectsInNamespace = new HashMap<String, Collection<String>>();
+    private Map<String, Collection<String>> projectsInNamespace = new HashMap<>();
 
-    private Map<String, Collection<String>> versionsInProject = new HashMap<String, Collection<String>>();
+    private Map<String, Collection<String>> versionsInProject = new HashMap<>();
 
     public ProjectVersionMetadata resolveProjectVersion( RepositorySession repositorySession, String repoId,
                                                          String namespace, String projectId, String projectVersion )

@@ -33,7 +33,7 @@ public class LatinEntities
 
     static
     {
-        defaultEntityMap = new HashMap<String, String>();
+        defaultEntityMap = new HashMap<>();
 
         defaultEntityMap.put( "nbsp", "\u00a0" );
         defaultEntityMap.put( "iexcl", "\u00a1" );

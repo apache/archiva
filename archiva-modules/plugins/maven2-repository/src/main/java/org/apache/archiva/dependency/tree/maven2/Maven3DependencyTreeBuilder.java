@@ -147,7 +147,7 @@ public class Maven3DependencyTreeBuilder
         }
 
         List<RemoteRepository> remoteRepositories = new ArrayList<>();
-        Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
+        Map<String, NetworkProxy> networkProxies = new HashMap<>();
 
         try
         {

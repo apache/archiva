@@ -92,7 +92,7 @@ public class LegacyToDefaultConverter
 
     private boolean dryrun;
 
-    private Map<Artifact, List<String>> warnings = new HashMap<Artifact, List<String>>();
+    private Map<Artifact, List<String>> warnings = new HashMap<>();
 
     @PostConstruct
     public void initialize()

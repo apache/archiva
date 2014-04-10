@@ -72,7 +72,7 @@ import java.util.Map;
  *
  * @author Olivier Lamy
  */
-@Service( "managedRepositoryAdmin#default" )
+@Service("managedRepositoryAdmin#default")
 public class DefaultManagedRepositoryAdmin
     extends AbstractRepositoryAdmin
     implements ManagedRepositoryAdmin
@@ -83,7 +83,7 @@ public class DefaultManagedRepositoryAdmin
     public static final String STAGE_REPO_ID_END = "-stage";
 
     @Inject
-    @Named( value = "archivaTaskScheduler#repository" )
+    @Named(value = "archivaTaskScheduler#repository")
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     /**
@@ -105,7 +105,7 @@ public class DefaultManagedRepositoryAdmin
     protected RoleManager roleManager;
 
     @Inject
-    @Named( value = "cache#namespaces" )
+    @Named(value = "cache#namespaces")
     private Cache<String, Collection<String>> namespacesCache;
 
     // fields
@@ -191,8 +191,7 @@ public class DefaultManagedRepositoryAdmin
         throws RepositoryAdminException
     {
         List<ManagedRepository> managedRepositories = getManagedRepositories();
-        Map<String, ManagedRepository> repositoriesMap =
-            new HashMap<String, ManagedRepository>( managedRepositories.size() );
+        Map<String, ManagedRepository> repositoriesMap = new HashMap<>( managedRepositories.size() );
         for ( ManagedRepository managedRepository : managedRepositories )
         {
             repositoriesMap.put( managedRepository.getId(), managedRepository );
@@ -417,8 +416,7 @@ public class DefaultManagedRepositoryAdmin
         }
 
         // olamy: copy list for reading as a unit test in webapp fail with ConcurrentModificationException
-        List<ProxyConnectorConfiguration> proxyConnectors =
-            new ArrayList<>( config.getProxyConnectors() );
+        List<ProxyConnectorConfiguration> proxyConnectors = new ArrayList<>( config.getProxyConnectors() );
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
         {
             if ( StringUtils.equals( proxyConnector.getSourceRepoId(), repository.getId() ) )

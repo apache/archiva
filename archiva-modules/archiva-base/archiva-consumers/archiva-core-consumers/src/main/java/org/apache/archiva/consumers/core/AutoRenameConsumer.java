@@ -47,14 +47,8 @@ public class AutoRenameConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer
 {
-    /**
-     * default-value="auto-rename"
-     */
     private String id = "auto-rename";
 
-    /**
-     * default-value="Automatically rename common artifact mistakes."
-     */
     private String description = "Automatically rename common artifact mistakes.";
 
     private static final String RENAME_FAILURE = "rename_failure";
@@ -63,7 +57,7 @@ public class AutoRenameConsumer
 
     private List<String> includes = new ArrayList<>( 3 );
 
-    private Map<String, String> extensionRenameMap = new HashMap<String, String>();
+    private Map<String, String> extensionRenameMap = new HashMap<>();
 
     public AutoRenameConsumer()
     {

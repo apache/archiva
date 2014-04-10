@@ -233,7 +233,7 @@ public class Maven2RepositoryStorage
             // TODO: this is a workaround until we can properly resolve using proxies as well - this doesn't cache
             //       anything locally!
             List<RemoteRepository> remoteRepositories = new ArrayList<>();
-            Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
+            Map<String, NetworkProxy> networkProxies = new HashMap<>();
 
             Map<String, List<ProxyConnector>> proxyConnectorsMap = proxyConnectorAdmin.getProxyConnectorAsMap();
             List<ProxyConnector> proxyConnectors = proxyConnectorsMap.get( readMetadataRequest.getRepositoryId() );

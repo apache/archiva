@@ -94,7 +94,7 @@ public abstract class AbstractMetadataRepositoryTest
 
     protected static Map<String, MetadataFacetFactory> createTestMetadataFacetFactories()
     {
-        Map<String, MetadataFacetFactory> factories = new HashMap<String, MetadataFacetFactory>();
+        Map<String, MetadataFacetFactory> factories = new HashMap<>();
         factories.put( TEST_FACET_ID, new MetadataFacetFactory()
         {
             public MetadataFacet createMetadataFacet()
@@ -461,7 +461,7 @@ public abstract class AbstractMetadataRepositoryTest
         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
         metadata.setId( TEST_PROJECT_VERSION );
 
-        Map<String, String> additionalProps = new HashMap<String, String>();
+        Map<String, String> additionalProps = new HashMap<>();
         additionalProps.put( "deleteKey", "deleteValue" );
 
         MetadataFacet facet = new TestMetadataFacet( TEST_FACET_ID, "baz", additionalProps );
@@ -529,7 +529,7 @@ public abstract class AbstractMetadataRepositoryTest
     {
         ArtifactMetadata metadata = createArtifact();
 
-        Map<String, String> additionalProps = new HashMap<String, String>();
+        Map<String, String> additionalProps = new HashMap<>();
         additionalProps.put( "deleteKey", "deleteValue" );
 
         MetadataFacet facet = new TestMetadataFacet( TEST_FACET_ID, "baz", additionalProps );
@@ -1555,7 +1555,7 @@ public abstract class AbstractMetadataRepositoryTest
                 }
                 else
                 {
-                    Map<String, String> props = new HashMap<String, String>();
+                    Map<String, String> props = new HashMap<>();
                     props.put( "foo", value );
 
                     for ( String key : additionalProps.keySet() )
@@ -1583,7 +1583,7 @@ public abstract class AbstractMetadataRepositoryTest
 
             if ( additionalProps == null )
             {
-                additionalProps = new HashMap<String, String>();
+                additionalProps = new HashMap<>();
             }
 
             for ( String key : properties.keySet() )

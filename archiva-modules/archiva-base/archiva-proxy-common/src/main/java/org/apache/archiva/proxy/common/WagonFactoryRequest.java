@@ -35,7 +35,7 @@ public class WagonFactoryRequest
      */
     private String protocol;
 
-    private Map<String, String> headers = new HashMap<String, String>();
+    private Map<String, String> headers = new HashMap<>();
 
     private String userAgent = "Java-Archiva";
 
@@ -72,7 +72,7 @@ public class WagonFactoryRequest
     {
         if ( this.headers == null )
         {
-            this.headers = new HashMap<String, String>();
+            this.headers = new HashMap<>();
         }
         return headers;
     }

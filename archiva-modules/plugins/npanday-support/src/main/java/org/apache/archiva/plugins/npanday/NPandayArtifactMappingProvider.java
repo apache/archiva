@@ -37,7 +37,7 @@ public class NPandayArtifactMappingProvider
 
     public NPandayArtifactMappingProvider()
     {
-        extensionToTypeMap = new HashMap<String, String>();
+        extensionToTypeMap = new HashMap<>();
 
         // TODO: this could be one of many - we need to look up the artifact metadata from the POM instead
         //       should do this anyway so that plugins don't compete for providing an extension
@@ -46,7 +46,7 @@ public class NPandayArtifactMappingProvider
         extensionToTypeMap.put( "netmodule", "dotnet-module" );
         extensionToTypeMap.put( "exe", "dotnet-executable" );
 
-        typeToExtensionMap = new HashMap<String, String>();
+        typeToExtensionMap = new HashMap<>();
         typeToExtensionMap.put( "dotnet-library", "dll" );
         typeToExtensionMap.put( "dotnet-library-config", "dll.config" );
         typeToExtensionMap.put( "dotnet-executable", "exe" );

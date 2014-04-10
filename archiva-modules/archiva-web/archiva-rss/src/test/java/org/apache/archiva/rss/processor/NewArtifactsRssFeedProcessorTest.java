@@ -86,7 +86,7 @@ public class NewArtifactsRssFeedProcessorTest
 
         metadataRepository.setArtifactsByDateRange( newArtifacts );
 
-        Map<String, String> reqParams = new HashMap<String, String>();
+        Map<String, String> reqParams = new HashMap<>();
         reqParams.put( RssFeedProcessor.KEY_REPO_ID, TEST_REPO );
 
         SyndFeed feed = newArtifactsProcessor.process( reqParams, metadataRepository );

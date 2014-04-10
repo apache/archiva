@@ -157,7 +157,7 @@ public abstract class AbstractRepositoryConnector
     {
         if ( this.policies == null )
         {
-            this.policies = new HashMap<String, String>();
+            this.policies = new HashMap<>();
         }
 
         return this.policies;
@@ -172,7 +172,7 @@ public abstract class AbstractRepositoryConnector
     {
         if ( this.properties == null )
         {
-            this.properties = new HashMap<String, String>();
+            this.properties = new HashMap<>();
         }
 
         return this.properties;

@@ -111,7 +111,7 @@ public class RedbackRuntimeConfiguration
     {
         if ( this.configurationProperties == null )
         {
-            this.configurationProperties = new HashMap<String, String>();
+            this.configurationProperties = new HashMap<>();
         }
         return configurationProperties;
     }
@@ -137,7 +137,7 @@ public class RedbackRuntimeConfiguration
         this.configurationPropertiesEntries = configurationPropertiesEntries;
         if ( configurationPropertiesEntries != null )
         {
-            this.configurationProperties = new HashMap<String, String>( configurationPropertiesEntries.size() );
+            this.configurationProperties = new HashMap<>( configurationPropertiesEntries.size() );
             for ( PropertyEntry propertyEntry : configurationPropertiesEntries )
             {
                 this.configurationProperties.put( propertyEntry.getKey(), propertyEntry.getValue() );

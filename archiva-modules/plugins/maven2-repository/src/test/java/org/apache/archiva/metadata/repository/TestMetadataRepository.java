@@ -37,7 +37,7 @@ import java.util.Map;
 public class TestMetadataRepository
     implements MetadataRepository
 {
-    private Map<String, MetadataFacet> facets = new HashMap<String, MetadataFacet>();
+    private Map<String, MetadataFacet> facets = new HashMap<>();
 
     public void updateProject( String repoId, ProjectMetadata project )
     {

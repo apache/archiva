@@ -36,7 +36,7 @@ public class ArtifactClassifierMapping
     static
     {
         // note additional 's' on type as these are maven 1.x directory components
-        typeToClassifierMap = new HashMap<String, String>();
+        typeToClassifierMap = new HashMap<>( 3 );
         typeToClassifierMap.put( "java-sources", "sources" );
         typeToClassifierMap.put( "javadoc.jars", "javadoc" );
         typeToClassifierMap.put( "javadocs", "javadoc" );

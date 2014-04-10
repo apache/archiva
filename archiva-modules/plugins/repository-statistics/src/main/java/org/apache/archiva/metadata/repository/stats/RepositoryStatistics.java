@@ -170,7 +170,7 @@ public class RepositoryStatistics
 
     public Map<String, String> toProperties()
     {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put( "scanEndTime", String.valueOf( scanEndTime.getTime() ) );
         properties.put( "scanStartTime", String.valueOf( scanStartTime.getTime() ) );
         properties.put( "totalArtifactCount", String.valueOf( totalArtifactCount ) );

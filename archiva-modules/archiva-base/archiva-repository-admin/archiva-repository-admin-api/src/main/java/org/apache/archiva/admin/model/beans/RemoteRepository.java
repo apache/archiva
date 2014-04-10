@@ -232,7 +232,7 @@ public class RemoteRepository
     {
         if ( this.extraParameters == null )
         {
-            this.extraParameters = new HashMap<String, String>();
+            this.extraParameters = new HashMap<>();
         }
         return extraParameters;
     }
@@ -275,7 +275,7 @@ public class RemoteRepository
     {
         if ( this.extraHeaders == null )
         {
-            this.extraHeaders = new HashMap<String, String>();
+            this.extraHeaders = new HashMap<>();
         }
         return extraHeaders;
     }

@@ -265,7 +265,7 @@ public class DefaultRepositoryGroupAdmin
         throws RepositoryAdminException
     {
         List<RepositoryGroup> repositoriesGroups = getRepositoriesGroups();
-        Map<String, RepositoryGroup> map = new HashMap<String, RepositoryGroup>( repositoriesGroups.size() );
+        Map<String, RepositoryGroup> map = new HashMap<>( repositoriesGroups.size() );
         for ( RepositoryGroup repositoryGroup : repositoriesGroups )
         {
             map.put( repositoryGroup.getId(), repositoryGroup );
@@ -277,7 +277,7 @@ public class DefaultRepositoryGroupAdmin
         throws RepositoryAdminException
     {
 
-        java.util.Map<String, java.util.List<String>> map = new java.util.HashMap<String, java.util.List<String>>();
+        Map<String, List<String>> map = new HashMap<>();
 
         for ( ManagedRepository repo : getManagedRepositoryAdmin().getManagedRepositories() )
         {
@@ -286,7 +286,7 @@ public class DefaultRepositoryGroupAdmin
                 if ( !group.getRepositories().contains( repo.getId() ) )
                 {
                     String groupId = group.getId();
-                    java.util.List<String> repos = map.get( groupId );
+                    List<String> repos = map.get( groupId );
                     if ( repos == null )
                     {
                         repos = new ArrayList<>();
@@ -302,13 +302,13 @@ public class DefaultRepositoryGroupAdmin
     public Map<String, List<String>> getRepositoryToGroupMap()
         throws RepositoryAdminException
     {
-        java.util.Map<String, java.util.List<String>> map = new java.util.HashMap<String, java.util.List<String>>();
+        Map<String, List<String>> map = new HashMap<>();
 
         for ( RepositoryGroup group : getRepositoriesGroups() )
         {
             for ( String repositoryId : group.getRepositories() )
             {
-                java.util.List<String> groups = map.get( repositoryId );
+                List<String> groups = map.get( repositoryId );
                 if ( groups == null )
                 {
                     groups = new ArrayList<>();

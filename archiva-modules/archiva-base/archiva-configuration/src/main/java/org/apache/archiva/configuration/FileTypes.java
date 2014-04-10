@@ -45,7 +45,7 @@ import java.util.Map;
 /**
  * FileTypes
  */
-@Service ("fileTypes")
+@Service("fileTypes")
 public class FileTypes
     implements RegistryListener
 {
@@ -57,17 +57,14 @@ public class FileTypes
 
     public static final String IGNORED = "ignored";
 
-    /**
-     *
-     */
     @Inject
-    @Named (value = "archivaConfiguration#default")
+    @Named(value = "archivaConfiguration#default")
     private ArchivaConfiguration archivaConfiguration;
 
     /**
      * Map of default values for the file types.
      */
-    private Map<String, List<String>> defaultTypeMap = new HashMap<String, List<String>>();
+    private Map<String, List<String>> defaultTypeMap = new HashMap<>();
 
     private List<String> artifactPatterns;
 
@@ -87,15 +84,14 @@ public class FileTypes
 
     /**
      * Get the list of patterns for a specified filetype.
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * You will always get a list.  In this order.
      * <ul>
      * <li>The Configured List</li>
      * <li>The Default List</li>
      * <li>A single item list of <code>&quot;**&#47;*&quot;</code></li>
      * </ul>
-     * 
      *
      * @param id the id to lookup.
      * @return the list of patterns.

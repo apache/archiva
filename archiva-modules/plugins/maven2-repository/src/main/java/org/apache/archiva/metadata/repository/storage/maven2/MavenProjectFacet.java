@@ -90,7 +90,7 @@ public class MavenProjectFacet
 
     public Map<String, String> toProperties()
     {
-        HashMap<String, String> properties = new HashMap<String, String>();
+        HashMap<String, String> properties = new HashMap<>();
         properties.put( "groupId", groupId );
         properties.put( "artifactId", artifactId );
         properties.put( "packaging", packaging );

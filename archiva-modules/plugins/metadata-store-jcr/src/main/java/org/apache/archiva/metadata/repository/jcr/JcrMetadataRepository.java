@@ -482,7 +482,7 @@ public class JcrMetadataRepository
             if ( metadataFacetFactory != null )
             {
                 metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
-                Map<String, String> map = new HashMap<String, String>();
+                Map<String, String> map = new HashMap<>();
                 for ( Property property : JcrUtils.getProperties( node ) )
                 {
                     String p = property.getName();
@@ -931,7 +931,7 @@ public class JcrMetadataRepository
                     else
                     {
                         MetadataFacet facet = factory.createMetadataFacet();
-                        Map<String, String> map = new HashMap<String, String>();
+                        Map<String, String> map = new HashMap<>();
                         for ( Property property : JcrUtils.getProperties( n ) )
                         {
                             String p = property.getName();
@@ -1351,7 +1351,7 @@ public class JcrMetadataRepository
                 else
                 {
                     MetadataFacet facet = factory.createMetadataFacet();
-                    Map<String, String> map = new HashMap<String, String>();
+                    Map<String, String> map = new HashMap<>();
                     for ( Property p : JcrUtils.getProperties( n ) )
                     {
                         String property = p.getName();

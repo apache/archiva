@@ -132,7 +132,7 @@ public class ArchivaLdapRoleMapperConfiguration
                 return Collections.emptyMap();
             }
 
-            Map<String, Collection<String>> res = new HashMap<String, Collection<String>>( ldapGroupMappings.size() );
+            Map<String, Collection<String>> res = new HashMap<>( ldapGroupMappings.size() );
 
             for ( LdapGroupMapping ldapGroupMapping : ldapGroupMappings )
             {

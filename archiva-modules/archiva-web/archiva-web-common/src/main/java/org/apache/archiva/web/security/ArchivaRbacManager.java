@@ -225,7 +225,7 @@ public class ArchivaRbacManager
     public List<Role> getAllRoles()
         throws RbacManagerException
     {
-        Map<String, Role> allRoles = new HashMap<String, Role>();
+        Map<String, Role> allRoles = new HashMap<>();
         boolean allFailed = true;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
@@ -357,7 +357,7 @@ public class ArchivaRbacManager
     public List<Permission> getAllPermissions()
         throws RbacManagerException
     {
-        Map<String, Permission> allPermissions = new HashMap<String, Permission>();
+        Map<String, Permission> allPermissions = new HashMap<>();
         boolean allFailed = true;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
@@ -481,7 +481,7 @@ public class ArchivaRbacManager
     public List<Operation> getAllOperations()
         throws RbacManagerException
     {
-        Map<String, Operation> allOperations = new HashMap<String, Operation>();
+        Map<String, Operation> allOperations = new HashMap<>();
         boolean allFailed = true;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
@@ -605,7 +605,7 @@ public class ArchivaRbacManager
     public List<Resource> getAllResources()
         throws RbacManagerException
     {
-        Map<String, Resource> allResources = new HashMap<String, Resource>();
+        Map<String, Resource> allResources = new HashMap<>();
         boolean allFailed = true;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
@@ -788,7 +788,7 @@ public class ArchivaRbacManager
     public List<UserAssignment> getAllUserAssignments()
         throws RbacManagerException
     {
-        Map<String, UserAssignment> allUserAssignments = new HashMap<String, UserAssignment>();
+        Map<String, UserAssignment> allUserAssignments = new HashMap<>();
         boolean allFailed = true;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )

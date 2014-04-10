@@ -196,7 +196,7 @@ public class DefaultRepositoryStatisticsManager
 
             QueryResult queryResult = query.execute();
 
-            Map<String, Integer> totalByType = new HashMap<String, Integer>();
+            Map<String, Integer> totalByType = new HashMap<>();
             long totalSize = 0, totalArtifacts = 0;
             for ( Row row : JcrUtils.getRows( queryResult ) )
             {

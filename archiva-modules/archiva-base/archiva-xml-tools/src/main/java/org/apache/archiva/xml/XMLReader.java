@@ -56,7 +56,7 @@ public class XMLReader
 
     private Document document;
 
-    private Map<String, String> namespaceMap = new HashMap<String, String>();
+    private Map<String, String> namespaceMap = new HashMap<>();
 
     public XMLReader( String type, File file )
         throws XMLException

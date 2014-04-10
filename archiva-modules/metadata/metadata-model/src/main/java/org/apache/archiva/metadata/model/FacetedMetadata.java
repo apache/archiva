@@ -32,7 +32,7 @@ public abstract class FacetedMetadata
     /**
      * The facets to store, keyed by the {@linkplain MetadataFacet#getFacetId() Facet ID} of the metadata.
      */
-    private Map<String, MetadataFacet> facets = new HashMap<String, MetadataFacet>();
+    private Map<String, MetadataFacet> facets = new HashMap<>();
 
     /**
      * Add a new facet to the metadata. If it already exists, it will be replaced.

@@ -44,7 +44,7 @@ public abstract class AbstractLegacyRepositoryContent
 
     static
     {
-        typeToDirectoryMap = new HashMap<String, String>();
+        typeToDirectoryMap = new HashMap<>( 5 );
         typeToDirectoryMap.put( "ejb-client", "ejb" );
         typeToDirectoryMap.put( ArtifactExtensionMapping.MAVEN_ONE_PLUGIN, "plugin" );
         typeToDirectoryMap.put( "distribution-tgz", "distribution" );
