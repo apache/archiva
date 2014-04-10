@@ -109,7 +109,7 @@ public class MetadataUpdaterConsumer
 
     private File repositoryDir;
 
-    private List<String> includes = new ArrayList<String>( 0 );
+    private List<String> includes = new ArrayList<>( 0 );
 
     private long scanStartTimestamp = 0;
 

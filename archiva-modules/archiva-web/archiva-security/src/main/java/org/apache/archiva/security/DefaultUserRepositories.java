@@ -81,7 +81,7 @@ public class DefaultUserRepositories
     {
 
         List<ManagedRepository> managedRepositories = getAccessibleRepositories( principal, operation );
-        List<String> repoIds = new ArrayList<String>( managedRepositories.size() );
+        List<String> repoIds = new ArrayList<>( managedRepositories.size() );
         for ( ManagedRepository managedRepository : managedRepositories )
         {
             repoIds.add( managedRepository.getId() );
@@ -101,7 +101,7 @@ public class DefaultUserRepositories
     {
         SecuritySession securitySession = createSession( principal );
 
-        List<ManagedRepository> managedRepositories = new ArrayList<ManagedRepository>();
+        List<ManagedRepository> managedRepositories = new ArrayList<>();
 
         try
         {

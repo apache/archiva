@@ -40,9 +40,9 @@ public class TestMetadataRepository
 
     private static final String TEST_NAMESPACE = "org.apache.archiva";
 
-    private List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+    private List<ArtifactMetadata> artifacts = new ArrayList<>();
 
-    private List<String> versions = new ArrayList<String>();
+    private List<String> versions = new ArrayList<>();
 
     public TestMetadataRepository()
     {

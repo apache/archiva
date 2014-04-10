@@ -144,9 +144,9 @@ public abstract class AbstractProxyTestCase
         config =
             (MockConfiguration) applicationContext.getBean( "archivaConfiguration#mock", ArchivaConfiguration.class );
 
-        config.getConfiguration().setManagedRepositories( new ArrayList<ManagedRepositoryConfiguration>() );
-        config.getConfiguration().setRemoteRepositories( new ArrayList<RemoteRepositoryConfiguration>() );
-        config.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>() );
+        config.getConfiguration().setManagedRepositories( new ArrayList<>() );
+        config.getConfiguration().setRemoteRepositories( new ArrayList<>() );
+        config.getConfiguration().setProxyConnectors( new ArrayList<>() );
 
         // Setup source repository (using default layout)
         String name = getClass().getSimpleName();

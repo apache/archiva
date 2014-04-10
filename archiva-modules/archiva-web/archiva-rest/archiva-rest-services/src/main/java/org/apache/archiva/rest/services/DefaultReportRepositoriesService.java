@@ -73,7 +73,7 @@ public class DefaultReportRepositoriesService
         try
         {
             MetadataRepository metadataRepository = repositorySession.getRepository();
-            List<RepositoryStatistics> stats = new ArrayList<RepositoryStatistics>();
+            List<RepositoryStatistics> stats = new ArrayList<>();
             for ( String repo : repositoriesId )
             {
                 try
@@ -140,10 +140,10 @@ public class DefaultReportRepositoriesService
 
             if ( !ALL_REPOSITORIES.equals( repository ) )
             {
-                observableRepositories = Collections.<String>singletonList( repository );
+                observableRepositories = Collections.singletonList( repository );
             }
 
-            List<RepositoryProblemFacet> problemArtifacts = new ArrayList<RepositoryProblemFacet>();
+            List<RepositoryProblemFacet> problemArtifacts = new ArrayList<>();
             MetadataRepository metadataRepository = repositorySession.getRepository();
             for ( String repoId : observableRepositories )
             {

@@ -97,7 +97,7 @@ public class RepositoryGroup
     {
         if ( this.repositories == null )
         {
-            this.repositories = new ArrayList<String>( 0 );
+            this.repositories = new ArrayList<>( 0 );
         }
 
         return this.repositories;

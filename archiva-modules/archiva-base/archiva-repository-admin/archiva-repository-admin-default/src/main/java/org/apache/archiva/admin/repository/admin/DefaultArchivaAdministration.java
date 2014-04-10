@@ -75,7 +75,7 @@ public class DefaultArchivaAdministration
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws RepositoryAdminException
     {
-        List<LegacyArtifactPath> legacyArtifactPaths = new ArrayList<LegacyArtifactPath>(
+        List<LegacyArtifactPath> legacyArtifactPaths = new ArrayList<>(
             getArchivaConfiguration().getConfiguration().getLegacyArtifactPaths().size() );
         for ( org.apache.archiva.configuration.LegacyArtifactPath legacyArtifactPath : getArchivaConfiguration().getConfiguration().getLegacyArtifactPaths() )
         {
@@ -268,7 +268,7 @@ public class DefaultArchivaAdministration
         {
             return Collections.emptyList();
         }
-        List<FileType> fileTypes = new ArrayList<FileType>( configFileTypes.size() );
+        List<FileType> fileTypes = new ArrayList<>( configFileTypes.size() );
         for ( org.apache.archiva.configuration.FileType fileType : configFileTypes )
         {
             fileTypes.add( getModelMapper().map( fileType, FileType.class ) );
@@ -279,14 +279,14 @@ public class DefaultArchivaAdministration
     public List<String> getKnownContentConsumers()
         throws RepositoryAdminException
     {
-        return new ArrayList<String>(
+        return new ArrayList<>(
             getArchivaConfiguration().getConfiguration().getRepositoryScanning().getKnownContentConsumers() );
     }
 
     public List<String> getInvalidContentConsumers()
         throws RepositoryAdminException
     {
-        return new ArrayList<String>(
+        return new ArrayList<>(
             getArchivaConfiguration().getConfiguration().getRepositoryScanning().getInvalidContentConsumers() );
     }
 

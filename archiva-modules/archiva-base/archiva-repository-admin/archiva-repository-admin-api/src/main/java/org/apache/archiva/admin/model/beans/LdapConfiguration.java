@@ -212,7 +212,7 @@ public class LdapConfiguration
 
     public List<PropertyEntry> getExtraPropertiesEntries()
     {
-        extraPropertiesEntries = new ArrayList<PropertyEntry>( getExtraProperties().size() );
+        extraPropertiesEntries = new ArrayList<>( getExtraProperties().size() );
         for ( Map.Entry<String, String> entry : getExtraProperties().entrySet() )
         {
             extraPropertiesEntries.add( new PropertyEntry( entry.getKey(), entry.getValue() ) );

@@ -42,9 +42,9 @@ public class DefaultPluginsServices
     implements PluginsService
 {
 
-    private List<String> repositoryType = new ArrayList<String>();
+    private List<String> repositoryType = new ArrayList<>();
 
-    private List<String> adminFeatures = new ArrayList<String>();
+    private List<String> adminFeatures = new ArrayList<>();
 
     private ApplicationContext appCont;
 

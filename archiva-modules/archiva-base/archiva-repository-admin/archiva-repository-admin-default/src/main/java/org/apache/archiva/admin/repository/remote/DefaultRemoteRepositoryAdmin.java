@@ -52,7 +52,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Service ( "remoteRepositoryAdmin#default" )
+@Service("remoteRepositoryAdmin#default")
 public class DefaultRemoteRepositoryAdmin
     extends AbstractRepositoryAdmin
     implements RemoteRepositoryAdmin
@@ -115,8 +115,8 @@ public class DefaultRemoteRepositoryAdmin
     public List<RemoteRepository> getRemoteRepositories()
         throws RepositoryAdminException
     {
-        List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>(
-            getArchivaConfiguration().getConfiguration().getRemoteRepositories().size() );
+        List<RemoteRepository> remoteRepositories =
+            new ArrayList<>( getArchivaConfiguration().getConfiguration().getRemoteRepositories().size() );
         for ( RemoteRepositoryConfiguration repositoryConfiguration : getArchivaConfiguration().getConfiguration().getRemoteRepositories() )
         {
             RemoteRepository remoteRepository =
@@ -199,8 +199,7 @@ public class DefaultRemoteRepositoryAdmin
 
         // TODO use ProxyConnectorAdmin interface ?
         // [MRM-520] Proxy Connectors are not deleted with the deletion of a Repository.
-        List<ProxyConnectorConfiguration> proxyConnectors =
-            new ArrayList<ProxyConnectorConfiguration>( configuration.getProxyConnectors() );
+        List<ProxyConnectorConfiguration> proxyConnectors = new ArrayList<>( configuration.getProxyConnectors() );
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
         {
             if ( StringUtils.equals( proxyConnector.getTargetRepoId(), repositoryId ) )

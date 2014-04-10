@@ -82,29 +82,14 @@ public class LegacyToDefaultConverter
     @Inject
     private DigesterUtils digesterUtils;
 
-    /**
-     *
-     */
     private ModelConverter translator;
 
-    /**
-     *
-     */
     private ArtifactFactory artifactFactory;
 
-    /**
-     *
-     */
     private ArtifactHandlerManager artifactHandlerManager;
 
-    /**
-     * default-value="false"
-     */
     private boolean force;
 
-    /**
-     * default-value="false"
-     */
     private boolean dryrun;
 
     private Map<Artifact, List<String>> warnings = new HashMap<Artifact, List<String>>();
@@ -686,7 +671,7 @@ public class LegacyToDefaultConverter
         List<String> messages = warnings.get( artifact );
         if ( messages == null )
         {
-            messages = new ArrayList<String>( 1 );
+            messages = new ArrayList<>( 1 );
         }
         messages.add( message );
         warnings.put( artifact, messages );

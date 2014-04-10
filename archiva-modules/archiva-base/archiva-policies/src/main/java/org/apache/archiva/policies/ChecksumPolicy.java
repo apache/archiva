@@ -66,7 +66,7 @@ public class ChecksumPolicy
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
-    private List<String> options = new ArrayList<String>( 3 );
+    private List<String> options = new ArrayList<>( 3 );
 
     public ChecksumPolicy()
     {

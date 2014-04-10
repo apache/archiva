@@ -240,7 +240,7 @@ public class RssFeedServlet
         UnauthorizedException
     {
         String auth = req.getHeader( "Authorization" );
-        List<String> repoIds = new ArrayList<String>();
+        List<String> repoIds = new ArrayList<>();
 
         if ( repositoryId != null )
         {

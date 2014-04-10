@@ -62,29 +62,19 @@ public class ArchivaMetadataCreationConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
 {
-    /**
-     * default-value="create-archiva-metadata"
-     */
     private String id = "create-archiva-metadata";
 
-    /**
-     * default-value="Create basic metadata for Archiva to be able to reference the artifact"
-     */
     private String description = "Create basic metadata for Archiva to be able to reference the artifact";
 
-    /**
-     */
     @Inject
     private ArchivaConfiguration configuration;
 
-    /**
-     */
     @Inject
     private FileTypes filetypes;
 
     private Date whenGathered;
 
-    private List<String> includes = new ArrayList<String>( 0 );
+    private List<String> includes = new ArrayList<>( 0 );
 
     /**
      * FIXME: this could be multiple implementations and needs to be configured.

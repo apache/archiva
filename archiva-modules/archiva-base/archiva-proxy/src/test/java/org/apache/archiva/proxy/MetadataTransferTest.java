@@ -186,7 +186,7 @@ public class MetadataTransferTest
         String requestedResource = "org/apache/maven/test/get-default-metadata-nonexistant/maven-metadata.xml";
         setupTestableManagedRepository( requestedResource );
 
-        config.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>( ) );
+        config.getConfiguration().setProxyConnectors( new ArrayList<>( ) );
 
         assertResourceNotFound( requestedResource );
 
@@ -206,7 +206,7 @@ public class MetadataTransferTest
         String requestedResource = "org/apache/maven/test/get-project-metadata/maven-metadata.xml";
         setupTestableManagedRepository( requestedResource );
 
-        config.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>( ) );
+        config.getConfiguration().setProxyConnectors( new ArrayList<>( ) );
 
         assertResourceExists( requestedResource );
 
@@ -333,7 +333,7 @@ public class MetadataTransferTest
         setupTestableManagedRepository( requestedResource );
 
 
-        config.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>( ) );
+        config.getConfiguration().setProxyConnectors( new ArrayList<>( ) );
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );

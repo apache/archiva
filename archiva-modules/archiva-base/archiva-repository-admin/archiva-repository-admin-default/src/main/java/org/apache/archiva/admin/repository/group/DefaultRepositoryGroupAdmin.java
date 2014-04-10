@@ -109,7 +109,7 @@ public class DefaultRepositoryGroupAdmin
         throws RepositoryAdminException
     {
         List<RepositoryGroup> repositoriesGroups =
-            new ArrayList<RepositoryGroup>( getArchivaConfiguration().getConfiguration().getRepositoryGroups().size() );
+            new ArrayList<>( getArchivaConfiguration().getConfiguration().getRepositoryGroups().size() );
 
         for ( RepositoryGroupConfiguration repositoryGroupConfiguration : getArchivaConfiguration().getConfiguration().getRepositoryGroups() )
         {
@@ -289,7 +289,7 @@ public class DefaultRepositoryGroupAdmin
                     java.util.List<String> repos = map.get( groupId );
                     if ( repos == null )
                     {
-                        repos = new ArrayList<String>();
+                        repos = new ArrayList<>();
                         map.put( groupId, repos );
                     }
                     repos.add( repo.getId() );
@@ -311,7 +311,7 @@ public class DefaultRepositoryGroupAdmin
                 java.util.List<String> groups = map.get( repositoryId );
                 if ( groups == null )
                 {
-                    groups = new ArrayList<String>();
+                    groups = new ArrayList<>();
                     map.put( repositoryId, groups );
                 }
                 groups.add( group.getId() );

@@ -61,7 +61,7 @@ public class AutoRenameConsumer
 
     private File repositoryDir;
 
-    private List<String> includes = new ArrayList<String>( 3 );
+    private List<String> includes = new ArrayList<>( 3 );
 
     private Map<String, String> extensionRenameMap = new HashMap<String, String>();
 

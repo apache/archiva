@@ -250,7 +250,7 @@ public class ArchivaRbacManager
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
 
-        return new ArrayList<Role>( allRoles.values() );
+        return new ArrayList<>( allRoles.values() );
     }
 
     public void removeRole( Role role )
@@ -381,7 +381,7 @@ public class ArchivaRbacManager
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
-        return new ArrayList<Permission>( allPermissions.values() );
+        return new ArrayList<>( allPermissions.values() );
     }
 
     public void removePermission( Permission permission )
@@ -505,7 +505,7 @@ public class ArchivaRbacManager
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
-        return new ArrayList<Operation>( allOperations.values() );
+        return new ArrayList<>( allOperations.values() );
     }
 
     public void removeOperation( Operation operation )
@@ -629,7 +629,7 @@ public class ArchivaRbacManager
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
-        return new ArrayList<Resource>( allResources.values() );
+        return new ArrayList<>( allResources.values() );
     }
 
     public void removeResource( Resource resource )
@@ -820,13 +820,13 @@ public class ArchivaRbacManager
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
-        return new ArrayList<UserAssignment>( allUserAssignments.values() );
+        return new ArrayList<>( allUserAssignments.values() );
     }
 
     public List<UserAssignment> getUserAssignmentsForRoles( Collection<String> roleNames )
         throws RbacManagerException
     {
-        List<UserAssignment> allUserAssignments = new ArrayList<UserAssignment>();
+        List<UserAssignment> allUserAssignments = new ArrayList<>();
         boolean allFailed = true;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )

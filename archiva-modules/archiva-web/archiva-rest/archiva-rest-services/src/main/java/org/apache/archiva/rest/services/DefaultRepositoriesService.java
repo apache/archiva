@@ -554,7 +554,7 @@ public class DefaultRepositoriesService
                                         boolean fixChecksums, ArtifactTransferRequest artifactTransferRequest )
         throws RepositoryMetadataException
     {
-        List<String> availableVersions = new ArrayList<String>();
+        List<String> availableVersions = new ArrayList<>();
         String latestVersion = artifactTransferRequest.getVersion();
 
         File projectDir = new File( targetPath ).getParentFile();
@@ -1123,7 +1123,7 @@ public class DefaultRepositoriesService
                                  Artifact artifact )
         throws RepositoryMetadataException
     {
-        List<String> availableVersions = new ArrayList<String>();
+        List<String> availableVersions = new ArrayList<>();
         String latestVersion = "";
 
         if ( metadataFile.exists() )

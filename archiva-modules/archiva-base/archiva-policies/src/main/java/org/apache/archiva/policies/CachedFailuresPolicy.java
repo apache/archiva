@@ -52,13 +52,10 @@ public class CachedFailuresPolicy
      */
     public static final String YES = "yes";
 
-    /**
-     *
-     */
     @Inject
     private UrlFailureCache urlFailureCache;
 
-    private List<String> options = new ArrayList<String>( 2 );
+    private List<String> options = new ArrayList<>( 2 );
 
     public CachedFailuresPolicy()
     {

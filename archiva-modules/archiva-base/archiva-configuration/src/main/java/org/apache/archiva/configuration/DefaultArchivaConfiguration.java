@@ -270,7 +270,7 @@ public class DefaultArchivaConfiguration
 
             // Create a copy of the list to read from (to prevent concurrent modification exceptions)
             List<ProxyConnectorConfiguration> proxyConnectorList =
-                new ArrayList<ProxyConnectorConfiguration>( config.getProxyConnectors() );
+                new ArrayList<>( config.getProxyConnectors() );
             // Remove the old connector list.
             config.getProxyConnectors().clear();
 
@@ -727,7 +727,7 @@ public class DefaultArchivaConfiguration
         {
 
             List<String> knowContentConsumers =
-                new ArrayList<String>( configuration.getRepositoryScanning().getKnownContentConsumers().size() );
+                new ArrayList<>( configuration.getRepositoryScanning().getKnownContentConsumers().size() );
             for ( String knowContentConsumer : configuration.getRepositoryScanning().getKnownContentConsumers() )
             {
                 if ( !dbConsumers.contains( knowContentConsumer ) )
@@ -743,7 +743,7 @@ public class DefaultArchivaConfiguration
         if ( !configuration.getRepositoryScanning().getKnownContentConsumers().contains( "create-archiva-metadata" ) )
         {
             List<String> knowContentConsumers =
-                new ArrayList<String>( configuration.getRepositoryScanning().getKnownContentConsumers() );
+                new ArrayList<>( configuration.getRepositoryScanning().getKnownContentConsumers() );
             knowContentConsumers.add( "create-archiva-metadata" );
             configuration.getRepositoryScanning().setKnownContentConsumers( knowContentConsumers );
         }
@@ -752,7 +752,7 @@ public class DefaultArchivaConfiguration
         if ( !configuration.getRepositoryScanning().getKnownContentConsumers().contains( "duplicate-artifacts" ) )
         {
             List<String> knowContentConsumers =
-                new ArrayList<String>( configuration.getRepositoryScanning().getKnownContentConsumers() );
+                new ArrayList<>( configuration.getRepositoryScanning().getKnownContentConsumers() );
             knowContentConsumers.add( "duplicate-artifacts" );
             configuration.getRepositoryScanning().setKnownContentConsumers( knowContentConsumers );
         }

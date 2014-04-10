@@ -174,8 +174,8 @@ public class ValidateChecksumConsumer
         throws PlexusSisuBridgeException
     {
         checksum = plexusSisuBridge.lookup( ChecksumFile.class );
-        List<Digester> allDigesters = new ArrayList<Digester>( digesterUtils.getAllDigesters() );
-        includes = new ArrayList<String>( allDigesters.size() );
+        List<Digester> allDigesters = new ArrayList<>( digesterUtils.getAllDigesters() );
+        includes = new ArrayList<>( allDigesters.size() );
         for ( Digester digester : allDigesters )
         {
             includes.add( "**/*" + digester.getFilenameExtension() );

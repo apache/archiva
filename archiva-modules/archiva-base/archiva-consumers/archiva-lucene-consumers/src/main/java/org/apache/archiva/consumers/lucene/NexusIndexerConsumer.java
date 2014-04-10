@@ -76,7 +76,7 @@ public class NexusIndexerConsumer
 
     private NexusIndexer nexusIndexer;
 
-    private List<String> includes = new ArrayList<String>( 0 );
+    private List<String> includes = new ArrayList<>( 0 );
 
     private ManagedRepository repository;
 

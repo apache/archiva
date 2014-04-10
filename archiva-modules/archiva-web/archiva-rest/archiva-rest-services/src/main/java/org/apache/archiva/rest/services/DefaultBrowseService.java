@@ -144,7 +144,7 @@ public class DefaultBrowseService
             repositorySession.close();
         }
 
-        List<BrowseResultEntry> browseGroupResultEntries = new ArrayList<BrowseResultEntry>( namespaces.size() );
+        List<BrowseResultEntry> browseGroupResultEntries = new ArrayList<>( namespaces.size() );
         for ( String namespace : namespaces )
         {
             browseGroupResultEntries.add( new BrowseResultEntry( namespace, false ) );
@@ -196,7 +196,7 @@ public class DefaultBrowseService
             repositorySession.close();
         }
         List<BrowseResultEntry> browseGroupResultEntries =
-            new ArrayList<BrowseResultEntry>( namespaces.size() + projects.size() );
+            new ArrayList<>( namespaces.size() + projects.size() );
         for ( String namespace : namespaces )
         {
             browseGroupResultEntries.add( new BrowseResultEntry( namespace, false ).groupId( namespace ) );
@@ -219,7 +219,7 @@ public class DefaultBrowseService
         try
         {
             Collection<String> versions = getVersions( selectedRepos, groupId, artifactId );
-            return new VersionsList( new ArrayList<String>( versions ) );
+            return new VersionsList( new ArrayList<>( versions ) );
         }
         catch ( MetadataResolutionException e )
         {
@@ -247,7 +247,7 @@ public class DefaultBrowseService
                 versions.addAll( projectVersions );
             }
 
-            List<String> sortedVersions = new ArrayList<String>( versions );
+            List<String> sortedVersions = new ArrayList<>( versions );
 
             Collections.sort( sortedVersions, VersionComparator.getInstance() );
 
@@ -499,7 +499,7 @@ public class DefaultBrowseService
     public List<Artifact> getDependees( String groupId, String artifactId, String version, String repositoryId )
         throws ArchivaRestServiceException
     {
-        List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
+        List<ProjectVersionReference> references = new ArrayList<>();
         // TODO: what if we get duplicates across repositories?
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
@@ -523,7 +523,7 @@ public class DefaultBrowseService
             repositorySession.close();
         }
 
-        List<Artifact> artifacts = new ArrayList<Artifact>( references.size() );
+        List<Artifact> artifacts = new ArrayList<>( references.size() );
 
         for ( ProjectVersionReference projectVersionReference : references )
         {
@@ -549,7 +549,7 @@ public class DefaultBrowseService
             return Collections.emptyList();
         }
         Map<String, String> map = metadataFacet.toProperties();
-        List<Entry> entries = new ArrayList<Entry>( map.size() );
+        List<Entry> entries = new ArrayList<>( map.size() );
 
         for ( Map.Entry<String, String> entry : map.entrySet() )
         {
@@ -711,7 +711,7 @@ public class DefaultBrowseService
     {
         List<String> selectedRepos = getSelectedRepos( repositoryId );
 
-        List<Artifact> artifactDownloadInfos = new ArrayList<Artifact>();
+        List<Artifact> artifactDownloadInfos = new ArrayList<>();
 
         RepositorySession session = repositorySessionFactory.createSession();
 
@@ -721,7 +721,7 @@ public class DefaultBrowseService
         {
             for ( String repoId : selectedRepos )
             {
-                List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
+                List<ArtifactMetadata> artifacts = new ArrayList<>(
                     metadataResolver.resolveArtifacts( session, repoId, groupId, artifactId, version ) );
                 Collections.sort( artifacts, ArtifactMetadataVersionComparator.INSTANCE );
                 if ( artifacts != null && !artifacts.isEmpty() )
@@ -1037,7 +1037,7 @@ public class DefaultBrowseService
                 jarFile.close();
             }
         }
-        List<ArtifactContentEntry> sorted = new ArrayList<ArtifactContentEntry>( artifactContentEntryMap.values() );
+        List<ArtifactContentEntry> sorted = new ArrayList<>( artifactContentEntryMap.values() );
         Collections.sort( sorted, ArtifactContentEntryComparator.INSTANCE );
         return sorted;
     }
@@ -1060,7 +1060,7 @@ public class DefaultBrowseService
 
             if ( currentList == null )
             {
-                currentList = new ArrayList<ArtifactContentEntry>();
+                currentList = new ArrayList<>();
                 currentList.add( current );
                 perDepthList.put( current.getDepth(), currentList );
             }

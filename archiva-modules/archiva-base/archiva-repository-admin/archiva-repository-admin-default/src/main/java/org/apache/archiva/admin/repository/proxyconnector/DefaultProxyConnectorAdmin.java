@@ -63,7 +63,7 @@ public class DefaultProxyConnectorAdmin
     {
         List<ProxyConnectorConfiguration> proxyConnectorConfigurations =
             getArchivaConfiguration().getConfiguration().getProxyConnectors();
-        List<ProxyConnector> proxyConnectors = new ArrayList<ProxyConnector>( proxyConnectorConfigurations.size() );
+        List<ProxyConnector> proxyConnectors = new ArrayList<>( proxyConnectorConfigurations.size() );
         for ( ProxyConnectorConfiguration configuration : proxyConnectorConfigurations )
         {
             proxyConnectors.add( getProxyConnector( configuration ) );
@@ -152,7 +152,7 @@ public class DefaultProxyConnectorAdmin
     {
         if ( patterns != null )
         {
-            List<String> rawPatterns = new ArrayList<String>( patterns.size() );
+            List<String> rawPatterns = new ArrayList<>( patterns.size() );
             for ( String pattern : patterns )
             {
                 rawPatterns.add( StringUtils.replace( pattern, "\\\\", "\\" ) );
@@ -177,7 +177,7 @@ public class DefaultProxyConnectorAdmin
             List<ProxyConnector> connectors = proxyConnectorMap.get( key );
             if ( connectors == null )
             {
-                connectors = new ArrayList<ProxyConnector>( 1 );
+                connectors = new ArrayList<>( 1 );
                 proxyConnectorMap.put( key, connectors );
             }
 

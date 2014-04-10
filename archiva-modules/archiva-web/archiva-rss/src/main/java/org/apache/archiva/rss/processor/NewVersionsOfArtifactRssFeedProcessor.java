@@ -81,7 +81,7 @@ public class NewVersionsOfArtifactRssFeedProcessor
                                                    MetadataRepository metadataRepository )
         throws FeedException
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifacts = new ArrayList<>();
         try
         {
             for ( String repoId : metadataRepository.getRepositories() )
@@ -106,7 +106,7 @@ public class NewVersionsOfArtifactRssFeedProcessor
 
         long tmp = 0;
         RssFeedEntry entry = null;
-        List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
+        List<RssFeedEntry> entries = new ArrayList<>();
         String description = "";
         int idx = 0;
         for ( ArtifactMetadata artifact : artifacts )

@@ -32,7 +32,7 @@ import org.codehaus.plexus.digest.Digester;
  */
 public class FileTransaction
 {
-    private List<AbstractTransactionEvent> events = new ArrayList<AbstractTransactionEvent>();
+    private List<AbstractTransactionEvent> events = new ArrayList<>();
 
     public void commit()
         throws TransactionException

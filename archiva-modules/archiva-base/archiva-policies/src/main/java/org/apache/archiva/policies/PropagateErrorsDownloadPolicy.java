@@ -54,7 +54,7 @@ public class PropagateErrorsDownloadPolicy
      */
     public static final String IGNORE = "ignore";
 
-    private List<String> options = new ArrayList<String>( 3 );
+    private List<String> options = new ArrayList<>( 3 );
 
     public PropagateErrorsDownloadPolicy()
     {

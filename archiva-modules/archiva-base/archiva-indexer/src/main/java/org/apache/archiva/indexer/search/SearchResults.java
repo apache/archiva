@@ -59,7 +59,7 @@ public class SearchResults
      */
     public List<SearchResultHit> getHits()
     {
-        return new ArrayList<SearchResultHit>( hits.values() );
+        return new ArrayList<>( hits.values() );
     }
 
     /**

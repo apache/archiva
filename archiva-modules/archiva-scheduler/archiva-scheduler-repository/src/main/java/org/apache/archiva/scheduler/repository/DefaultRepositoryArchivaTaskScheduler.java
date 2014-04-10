@@ -100,9 +100,9 @@ public class DefaultRepositoryArchivaTaskScheduler
 
     public static final String CRON_HOURLY = "0 0 * * * ?";
 
-    private Set<String> jobs = new HashSet<String>();
+    private Set<String> jobs = new HashSet<>();
 
-    private List<String> queuedRepos = new ArrayList<String>();
+    private List<String> queuedRepos = new ArrayList<>();
 
     @PostConstruct
     public void startup()

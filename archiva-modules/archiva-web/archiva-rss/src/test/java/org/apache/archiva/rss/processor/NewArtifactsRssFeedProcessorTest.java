@@ -72,7 +72,7 @@ public class NewArtifactsRssFeedProcessorTest
     public void testProcess()
         throws Exception
     {
-        List<ArtifactMetadata> newArtifacts = new ArrayList<ArtifactMetadata>();
+        List<ArtifactMetadata> newArtifacts = new ArrayList<>();
         Date whenGathered = Calendar.getInstance().getTime();
 
         newArtifacts.add( createArtifact( "artifact-one", "1.0", whenGathered ) );

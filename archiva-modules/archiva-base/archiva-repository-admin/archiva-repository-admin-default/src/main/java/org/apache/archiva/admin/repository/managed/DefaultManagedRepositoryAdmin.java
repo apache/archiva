@@ -418,7 +418,7 @@ public class DefaultManagedRepositoryAdmin
 
         // olamy: copy list for reading as a unit test in webapp fail with ConcurrentModificationException
         List<ProxyConnectorConfiguration> proxyConnectors =
-            new ArrayList<ProxyConnectorConfiguration>( config.getProxyConnectors() );
+            new ArrayList<>( config.getProxyConnectors() );
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
         {
             if ( StringUtils.equals( proxyConnector.getSourceRepoId(), repository.getId() ) )
@@ -438,7 +438,7 @@ public class DefaultManagedRepositoryAdmin
                     // copy to prevent UnsupportedOperationException
                     RepositoryGroupConfiguration repositoryGroupConfiguration =
                         config.findRepositoryGroupById( repoGroup );
-                    List<String> repos = new ArrayList<String>( repositoryGroupConfiguration.getRepositories() );
+                    List<String> repos = new ArrayList<>( repositoryGroupConfiguration.getRepositories() );
                     config.removeRepositoryGroup( repositoryGroupConfiguration );
                     repos.remove( repository.getId() );
                     repositoryGroupConfiguration.setRepositories( repos );

@@ -24,17 +24,16 @@ import com.sampullara.cli.Argument;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.archiva.consumers.ConsumerException;
+import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.converter.RepositoryConversionException;
 import org.apache.archiva.converter.legacy.LegacyRepositoryConverter;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.consumers.ConsumerException;
-import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
-import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.maven.artifact.manager.WagonManager;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -167,13 +166,13 @@ public class ArchivaCli
         repo.setName( "Archiva CLI Provided Repo" );
         repo.setLocation( path );
 
-        List<KnownRepositoryContentConsumer> knownConsumerList = new ArrayList<KnownRepositoryContentConsumer>();
+        List<KnownRepositoryContentConsumer> knownConsumerList = new ArrayList<>();
 
         knownConsumerList.addAll( getConsumerList( consumers ) );
 
         List<InvalidRepositoryContentConsumer> invalidConsumerList = Collections.emptyList();
 
-        List<String> ignoredContent = new ArrayList<String>();
+        List<String> ignoredContent = new ArrayList<>();
         ignoredContent.addAll( Arrays.asList( RepositoryScanner.IGNORABLE_CONTENT ) );
 
         RepositoryScanner scanner = lookup( RepositoryScanner.class );
@@ -201,7 +200,7 @@ public class ArchivaCli
     private List<KnownRepositoryContentConsumer> getConsumerList( String[] consumers )
         throws ConsumerException, PlexusSisuBridgeException
     {
-        List<KnownRepositoryContentConsumer> consumerList = new ArrayList<KnownRepositoryContentConsumer>();
+        List<KnownRepositoryContentConsumer> consumerList = new ArrayList<>();
 
         Map<String, KnownRepositoryContentConsumer> availableConsumers = getConsumers();
 

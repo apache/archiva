@@ -42,7 +42,7 @@ public class KnownScanConsumer
 {
     private int processCount = 0;
 
-    private List<String> includes = new ArrayList<String>();
+    private List<String> includes = new ArrayList<>();
 
     private boolean processUnmodified = false;
 

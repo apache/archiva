@@ -49,7 +49,7 @@ public class DefaultProxyConnectorService
     @Inject
     public DefaultProxyConnectorService( ApplicationContext applicationContext )
     {
-        allPolicies = new ArrayList<Policy>( getBeansOfType( applicationContext, Policy.class ).values() );
+        allPolicies = new ArrayList<>( getBeansOfType( applicationContext, Policy.class ).values() );
     }
 
     public List<ProxyConnector> getProxyConnectors()
@@ -146,7 +146,7 @@ public class DefaultProxyConnectorService
     public List<PolicyInformation> getAllPolicyInformations()
         throws ArchivaRestServiceException
     {
-        List<PolicyInformation> policyInformations = new ArrayList<PolicyInformation>( allPolicies.size() );
+        List<PolicyInformation> policyInformations = new ArrayList<>( allPolicies.size() );
 
         for ( Policy policy : allPolicies )
         {

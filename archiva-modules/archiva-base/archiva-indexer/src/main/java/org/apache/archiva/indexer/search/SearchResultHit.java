@@ -42,7 +42,7 @@ public class SearchResultHit
 
     private String repositoryId = "";
 
-    private List<String> versions = new ArrayList<String>();
+    private List<String> versions = new ArrayList<>();
 
     private String packaging;
 

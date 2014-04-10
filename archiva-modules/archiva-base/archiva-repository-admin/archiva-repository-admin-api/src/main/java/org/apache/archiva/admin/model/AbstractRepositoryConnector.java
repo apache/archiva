@@ -142,7 +142,7 @@ public abstract class AbstractRepositoryConnector
     {
         if ( this.blackListPatterns == null )
         {
-            this.blackListPatterns = new ArrayList<String>( 0 );
+            this.blackListPatterns = new ArrayList<>( 0 );
         }
 
         return this.blackListPatterns;
@@ -217,7 +217,7 @@ public abstract class AbstractRepositoryConnector
     {
         if ( this.whiteListPatterns == null )
         {
-            this.whiteListPatterns = new ArrayList<String>( 0 );
+            this.whiteListPatterns = new ArrayList<>( 0 );
         }
 
         return this.whiteListPatterns;
@@ -365,7 +365,7 @@ public abstract class AbstractRepositoryConnector
 
     public List<PropertyEntry> getPoliciesEntries()
     {
-        policiesEntries = new ArrayList<PropertyEntry>( getPolicies().size() );
+        policiesEntries = new ArrayList<>( getPolicies().size() );
         for ( Map.Entry<String, String> entry : getPolicies().entrySet() )
         {
             policiesEntries.add( new PropertyEntry( entry.getKey(), entry.getValue() ) );
@@ -383,7 +383,7 @@ public abstract class AbstractRepositoryConnector
 
     public List<PropertyEntry> getPropertiesEntries()
     {
-        propertiesEntries = new ArrayList<PropertyEntry>( getProperties().size() );
+        propertiesEntries = new ArrayList<>( getProperties().size() );
         for ( Map.Entry<String, String> entry : getProperties().entrySet() )
         {
             propertiesEntries.add( new PropertyEntry( entry.getKey(), entry.getValue() ) );

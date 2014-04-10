@@ -33,7 +33,7 @@ public class MockAuditListener
     implements AuditListener
 {
 
-    private List<AuditEvent> auditEvents = new ArrayList<AuditEvent>();
+    private List<AuditEvent> auditEvents = new ArrayList<>();
 
     public void auditEvent( AuditEvent event )
     {

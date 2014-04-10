@@ -77,7 +77,7 @@ public abstract class AbstractRestService
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
+    private List<AuditListener> auditListeners = new ArrayList<>();
 
     @Inject
     protected UserRepositories userRepositories;
@@ -272,7 +272,7 @@ public abstract class AbstractRestService
         {
             if ( artifactMetadatas != null && !artifactMetadatas.isEmpty() )
             {
-                List<Artifact> artifacts = new ArrayList<Artifact>( artifactMetadatas.size() );
+                List<Artifact> artifacts = new ArrayList<>( artifactMetadatas.size() );
                 for ( ArtifactMetadata artifact : artifactMetadatas )
                 {
 

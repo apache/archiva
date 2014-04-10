@@ -154,7 +154,7 @@ public class RepositoryConverterTest
     {
         File legacyRepoDir = new File( sourceRepository.getBasedir() );
         File destRepoDir = new File( targetRepository.getLocation() );
-        List<String> excludes = new ArrayList<String>();
+        List<String> excludes = new ArrayList<>();
         repositoryConverter.convertLegacyRepository( legacyRepoDir, destRepoDir, excludes );
     }
 }

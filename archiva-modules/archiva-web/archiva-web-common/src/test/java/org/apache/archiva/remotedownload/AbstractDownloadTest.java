@@ -294,7 +294,7 @@ public abstract class AbstractDownloadTest
     {
         try
         {
-            List<String> entriesNames = new ArrayList<String>();
+            List<String> entriesNames = new ArrayList<>();
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while ( entries.hasMoreElements() )
             {

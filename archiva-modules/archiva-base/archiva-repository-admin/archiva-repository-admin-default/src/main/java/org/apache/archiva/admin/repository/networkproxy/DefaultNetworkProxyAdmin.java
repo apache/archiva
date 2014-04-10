@@ -47,7 +47,7 @@ public class DefaultNetworkProxyAdmin
         throws RepositoryAdminException
     {
         List<NetworkProxy> networkProxies =
-            new ArrayList<NetworkProxy>( getArchivaConfiguration().getConfiguration().getNetworkProxies().size() );
+            new ArrayList<>( getArchivaConfiguration().getConfiguration().getNetworkProxies().size() );
         for ( NetworkProxyConfiguration networkProxyConfiguration : getArchivaConfiguration().getConfiguration().getNetworkProxies() )
         {
             networkProxies.add( getNetworkProxy( networkProxyConfiguration ) );

@@ -71,7 +71,7 @@ public class ChecksumTest
     {
         Checksum checksumSha1 = new Checksum( ChecksumAlgorithm.SHA1 );
         Checksum checksumMd5 = new Checksum( ChecksumAlgorithm.MD5 );
-        List<Checksum> checksums = new ArrayList<Checksum>();
+        List<Checksum> checksums = new ArrayList<>();
         checksums.add( checksumSha1 );
         checksums.add( checksumMd5 );
 

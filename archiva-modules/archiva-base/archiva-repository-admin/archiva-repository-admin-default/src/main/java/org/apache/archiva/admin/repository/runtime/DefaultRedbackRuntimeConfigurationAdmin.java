@@ -52,7 +52,7 @@ import java.util.Set;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service( "redbackRuntimeConfigurationAdmin#default" )
+@Service("redbackRuntimeConfigurationAdmin#default")
 public class DefaultRedbackRuntimeConfigurationAdmin
     extends AbstractRepositoryAdmin
     implements RedbackRuntimeConfigurationAdmin, UserConfiguration
@@ -68,9 +68,9 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
     @Inject
     public DefaultRedbackRuntimeConfigurationAdmin( ArchivaConfiguration archivaConfiguration,//
-                                                    @Named( value = "userConfiguration#redback" ) //
+                                                    @Named(value = "userConfiguration#redback") //
                                                         UserConfiguration userConfiguration,
-                                                    @Named( value = "cache#users" ) Cache usersCache )
+                                                    @Named(value = "cache#users") Cache usersCache )
     {
         this.archivaConfiguration = archivaConfiguration;
         this.userConfiguration = userConfiguration;
@@ -164,7 +164,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
                 Collection<String> keys = userConfiguration.getKeys();
 
-                List<LdapGroupMapping> ldapGroupMappings = new ArrayList<LdapGroupMapping>();
+                List<LdapGroupMapping> ldapGroupMappings = new ArrayList<>();
 
                 for ( String key : keys )
                 {
@@ -344,7 +344,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
         if ( mappings != null && mappings.size() > 0 )
         {
-            List<LdapGroupMapping> ldapGroupMappings = new ArrayList<LdapGroupMapping>( mappings.size() );
+            List<LdapGroupMapping> ldapGroupMappings = new ArrayList<>( mappings.size() );
 
             for ( org.apache.archiva.configuration.LdapGroupMapping mapping : mappings )
             {
@@ -417,7 +417,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         {
 
             List<org.apache.archiva.configuration.LdapGroupMapping> mappings =
-                new ArrayList<org.apache.archiva.configuration.LdapGroupMapping>( ldapGroupMappings.size() );
+                new ArrayList<>( ldapGroupMappings.size() );
 
             for ( LdapGroupMapping ldapGroupMapping : ldapGroupMappings )
             {
@@ -425,7 +425,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 org.apache.archiva.configuration.LdapGroupMapping mapping =
                     new org.apache.archiva.configuration.LdapGroupMapping();
                 mapping.setGroup( ldapGroupMapping.getGroup() );
-                mapping.setRoleNames( new ArrayList<String>( ldapGroupMapping.getRoleNames() ) );
+                mapping.setRoleNames( new ArrayList<>( ldapGroupMapping.getRoleNames() ) );
                 mappings.add( mapping );
 
             }

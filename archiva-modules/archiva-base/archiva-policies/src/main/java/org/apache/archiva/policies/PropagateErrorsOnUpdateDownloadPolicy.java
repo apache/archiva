@@ -45,7 +45,7 @@ public class PropagateErrorsOnUpdateDownloadPolicy
      */
     public static final String NOT_PRESENT = "artifact not already present";
 
-    private List<String> options = new ArrayList<String>( 2 );
+    private List<String> options = new ArrayList<>( 2 );
 
     public PropagateErrorsOnUpdateDownloadPolicy()
     {

@@ -47,8 +47,7 @@ public abstract class AbstractRepositoryAdmin
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
-
+    private List<AuditListener> auditListeners = new ArrayList<>();
 
     @Inject
     private RepositoryCommonValidator repositoryCommonValidator;

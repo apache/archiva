@@ -78,7 +78,7 @@ public class ArchivaUserManagerAuthenticator
             List<String> userManagerImpls =
                 redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getUserManagerImpls();
 
-            userManagers = new ArrayList<UserManager>( userManagerImpls.size() );
+            userManagers = new ArrayList<>( userManagerImpls.size() );
 
             for ( String beanId : userManagerImpls )
             {
@@ -99,7 +99,7 @@ public class ArchivaUserManagerAuthenticator
         String username = null;
         Exception resultException = null;
         PasswordBasedAuthenticationDataSource source = (PasswordBasedAuthenticationDataSource) ds;
-        List<AuthenticationFailureCause> authnResultErrors = new ArrayList<AuthenticationFailureCause>();
+        List<AuthenticationFailureCause> authnResultErrors = new ArrayList<>();
 
         for ( UserManager userManager : userManagers )
         {

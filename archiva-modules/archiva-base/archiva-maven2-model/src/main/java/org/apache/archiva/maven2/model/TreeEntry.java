@@ -34,7 +34,7 @@ public class TreeEntry
     implements Serializable
 {
 
-    private List<TreeEntry> childs = new ArrayList<TreeEntry>();
+    private List<TreeEntry> childs = new ArrayList<>();
 
     private Artifact artifact;
 
