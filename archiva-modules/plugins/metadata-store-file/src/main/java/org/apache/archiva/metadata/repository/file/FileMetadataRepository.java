@@ -132,7 +132,7 @@ public class FileMetadataRepository
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         // remove properties that are not references or artifacts
-        for ( Object key : properties.keySet() )
+        for ( Object key : new ArrayList( properties.keySet() ) )
         {
             String name = (String) key;
             if ( !name.contains( ":" ) && !name.equals( "facetIds" ) )
@@ -243,7 +243,7 @@ public class FileMetadataRepository
         List<Object> propsToRemove = new ArrayList<>();
         for ( MetadataFacet facet : facetList )
         {
-            for ( Object key : properties.keySet() )
+            for ( Object key : new ArrayList( properties.keySet() ) )
             {
                 String keyString = (String) key;
                 if ( keyString.startsWith( prefix + facet.getFacetId() + ":" ) )
@@ -642,7 +642,7 @@ public class FileMetadataRepository
         properties.remove( "artifact:facetIds:" + id );
 
         String prefix = "artifact:facet:" + id + ":";
-        for ( Object key : properties.keySet() )
+        for ( Object key : new ArrayList( properties.keySet() ) )
         {
             String property = (String) key;
             if ( property.startsWith( prefix ) )
@@ -679,7 +679,7 @@ public class FileMetadataRepository
         properties.remove( "artifact:facetIds:" + id );
 
         String prefix = "artifact:facet:" + id + ":";
-        for ( Object key : properties.keySet() )
+        for ( Object key : new ArrayList( properties.keySet() ) )
         {
             String property = (String) key;
             if ( property.startsWith( prefix ) )
