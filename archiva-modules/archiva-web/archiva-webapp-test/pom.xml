@@ -38,6 +38,8 @@
     <seleniumPluginVersion>2.3</seleniumPluginVersion>
     <selenium-server.version>2.40.0</selenium-server.version>
     <fluentlenium.version>0.9.2</fluentlenium.version>
+
+    <browserPath></browserPath>
   </properties>
 
   <dependencies>
