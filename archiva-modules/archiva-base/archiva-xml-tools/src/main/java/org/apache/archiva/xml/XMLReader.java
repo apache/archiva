@@ -298,7 +298,7 @@ public class XMLReader
         }
         else if ( evaluated instanceof Node )
         {
-            List<Element> ret = new ArrayList<Element>();
+            List<Element> ret = new ArrayList<>();
             ret.add( (Element) evaluated );
             return ret;
         }
@@ -319,7 +319,7 @@ public class XMLReader
             return null;
         }
 
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<>();
         for ( Iterator<Element> iter = elemList.iterator(); iter.hasNext(); )
         {
             Element listelem = iter.next();

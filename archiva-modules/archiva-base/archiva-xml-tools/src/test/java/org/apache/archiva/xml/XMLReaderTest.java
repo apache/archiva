@@ -38,7 +38,7 @@ public class XMLReaderTest
     {
         assertEquals( "Element List Size", expectedTexts.length, elementList.size() );
 
-        List<String> texts = new ArrayList<String>();
+        List<String> texts = new ArrayList<>();
         for ( Element element : elementList )
         {
             texts.add( element.getTextTrim() );

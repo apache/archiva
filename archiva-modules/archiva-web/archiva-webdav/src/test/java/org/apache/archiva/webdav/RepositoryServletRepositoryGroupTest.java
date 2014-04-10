@@ -95,7 +95,7 @@ public class RepositoryServletRepositoryGroupTest
         configuration.addManagedRepository(
             createManagedRepository( MANAGED_REPO_LAST, "Last Test Repo", repoRootLast, true ) );
 
-        List<String> managedRepoIds = new ArrayList<String>();
+        List<String> managedRepoIds = new ArrayList<>();
         managedRepoIds.add( MANAGED_REPO_FIRST );
         managedRepoIds.add( MANAGED_REPO_LAST );
 
@@ -112,7 +112,7 @@ public class RepositoryServletRepositoryGroupTest
         configuration.addManagedRepository(
             createManagedRepository( MANAGED_REPO_LAST, "Last Test Repo", repoRootLast, true ) );
 
-        List<String> invalidManagedRepoIds = new ArrayList<String>();
+        List<String> invalidManagedRepoIds = new ArrayList<>();
         invalidManagedRepoIds.add( MANAGED_REPO_FIRST );
         invalidManagedRepoIds.add( MANAGED_REPO_INVALID );
         invalidManagedRepoIds.add( MANAGED_REPO_LAST );

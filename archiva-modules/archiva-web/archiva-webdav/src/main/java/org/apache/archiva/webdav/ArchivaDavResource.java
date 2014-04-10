@@ -361,7 +361,7 @@ public class ArchivaDavResource
 
     public DavResourceIterator getMembers()
     {
-        List<DavResource> list = new ArrayList<DavResource>();
+        List<DavResource> list = new ArrayList<>();
         if ( exists() && isCollection() )
         {
             for ( String item : localResource.list() )

@@ -53,7 +53,7 @@ public class DefaultAuditManager
         throws MetadataRepositoryException
     {
         // TODO: consider a more efficient implementation that directly gets the last ten from the content repository
-        List<AuditRecord> records = new ArrayList<AuditRecord>();
+        List<AuditRecord> records = new ArrayList<>();
         for ( String repositoryId : repositoryIds )
         {
             List<String> names = metadataRepository.getMetadataFacets( repositoryId, AuditEvent.FACET_ID );
@@ -65,7 +65,7 @@ public class DefaultAuditManager
         Collections.sort( records );
         records = records.subList( 0, records.size() < NUM_RECENT_EVENTS ? records.size() : NUM_RECENT_EVENTS );
 
-        List<AuditEvent> events = new ArrayList<AuditEvent>( records.size() );
+        List<AuditEvent> events = new ArrayList<>( records.size() );
         for ( AuditRecord record : records )
         {
             AuditEvent auditEvent = (AuditEvent) metadataRepository.getMetadataFacet( record.repositoryId,
@@ -104,7 +104,7 @@ public class DefaultAuditManager
                                                    Date endTime )
         throws MetadataRepositoryException
     {
-        List<AuditEvent> results = new ArrayList<AuditEvent>();
+        List<AuditEvent> results = new ArrayList<>();
         for ( String repositoryId : repositoryIds )
         {
             List<String> list = metadataRepository.getMetadataFacets( repositoryId, AuditEvent.FACET_ID );

@@ -63,7 +63,7 @@ public class TestMetadataRepository
 
     public List<String> getMetadataFacets( String repoId, String facetId )
     {
-        return new ArrayList<String>( facets.keySet() );
+        return new ArrayList<>( facets.keySet() );
     }
 
     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )

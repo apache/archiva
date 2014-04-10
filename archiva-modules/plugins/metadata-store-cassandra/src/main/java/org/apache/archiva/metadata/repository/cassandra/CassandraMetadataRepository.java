@@ -374,7 +374,7 @@ public class CassandraMetadataRepository
     {
 
         // TODO use cql queries to delete all
-        List<String> namespacesKey = new ArrayList<String>();
+        List<String> namespacesKey = new ArrayList<>();
 
         QueryResult<OrderedRows<String, String, String>> result = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
@@ -465,7 +465,7 @@ public class CassandraMetadataRepository
                     .setRange( null, null, false, Integer.MAX_VALUE ) //
                     .execute();
 
-            List<String> repoIds = new ArrayList<String>( cResult.get().getCount() );
+            List<String> repoIds = new ArrayList<>( cResult.get().getCount() );
 
             for ( Row<String, String, String> row : cResult.get() )
             {
@@ -517,7 +517,7 @@ public class CassandraMetadataRepository
             .addEqualsExpression( "repositoryName", repoId ) //
             .execute();
 
-        List<String> namespaces = new ArrayList<String>( result.get().getCount() );
+        List<String> namespaces = new ArrayList<>( result.get().getCount() );
 
         for ( Row<String, String, String> row : result.get() )
         {
@@ -553,7 +553,7 @@ public class CassandraMetadataRepository
             .addEqualsExpression( "repositoryName", repoId ) //
             .execute();
 
-        List<String> namespaces = new ArrayList<String>( result.get().getCount() );
+        List<String> namespaces = new ArrayList<>( result.get().getCount() );
 
         for ( Row<String, String, String> row : result.get() )
         {
@@ -1125,7 +1125,7 @@ public class CassandraMetadataRepository
 
     protected List<MailingList> getMailingLists( String projectVersionMetadataKey )
     {
-        List<MailingList> mailingLists = new ArrayList<MailingList>();
+        List<MailingList> mailingLists = new ArrayList<>();
 
         QueryResult<OrderedRows<String, String, String>> result =
             HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
@@ -1146,7 +1146,7 @@ public class CassandraMetadataRepository
             mailingList.setSubscribeAddress( columnFamilyResult.getString( "subscribeAddress" ) );
             mailingList.setUnsubscribeAddress( columnFamilyResult.getString( "unsubscribeAddress" ) );
 
-            List<String> otherArchives = new ArrayList<String>();
+            List<String> otherArchives = new ArrayList<>();
 
             for ( String columnName : columnFamilyResult.getColumnNames() )
             {
@@ -1207,7 +1207,7 @@ public class CassandraMetadataRepository
 
     protected List<License> getLicenses( String projectVersionMetadataKey )
     {
-        List<License> licenses = new ArrayList<License>();
+        List<License> licenses = new ArrayList<>();
 
         QueryResult<OrderedRows<String, String, String>> result =
             HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
@@ -1289,7 +1289,7 @@ public class CassandraMetadataRepository
 
     protected List<Dependency> getDependencies( String projectVersionMetadataKey )
     {
-        List<Dependency> dependencies = new ArrayList<Dependency>();
+        List<Dependency> dependencies = new ArrayList<>();
 
         QueryResult<OrderedRows<String, String, String>> result =
             HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), ss, ss, ss ) //
@@ -1536,7 +1536,7 @@ public class CassandraMetadataRepository
             .addEqualsExpression( "facetId", facetId ) //
             .execute();
 
-        final List<String> facets = new ArrayList<String>();
+        final List<String> facets = new ArrayList<>();
 
         for ( Row<String, String, String> row : result.get() )
         {
@@ -1715,7 +1715,7 @@ public class CassandraMetadataRepository
         }
         QueryResult<OrderedRows<String, String, Long>> result = query.execute();
 
-        List<ArtifactMetadata> artifactMetadatas = new ArrayList<ArtifactMetadata>( result.get().getCount() );
+        List<ArtifactMetadata> artifactMetadatas = new ArrayList<>( result.get().getCount() );
 
         for ( Row<String, String, Long> row : result.get() )
         {
@@ -1902,7 +1902,7 @@ public class CassandraMetadataRepository
 
         QueryResult<OrderedRows<String, String, String>> result = query.execute();
 
-        List<ArtifactMetadata> artifactMetadatas = new ArrayList<ArtifactMetadata>( result.get().getCount() );
+        List<ArtifactMetadata> artifactMetadatas = new ArrayList<>( result.get().getCount() );
 
         for ( Row<String, String, String> row : result.get() )
         {
@@ -1931,14 +1931,14 @@ public class CassandraMetadataRepository
             .addEqualsExpression( "version", projectVersion ) //
             .execute();
 
-        List<String> dependenciesIds = new ArrayList<String>( result.get().getCount() );
+        List<String> dependenciesIds = new ArrayList<>( result.get().getCount() );
 
         for ( Row<String, String, String> row : result.get().getList() )
         {
             dependenciesIds.add( getStringValue( row.getColumnSlice(), "projectVersionMetadataModel.key" ) );
         }
 
-        List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>( result.get().getCount() );
+        List<ProjectVersionReference> references = new ArrayList<>( result.get().getCount() );
 
         for ( String key : dependenciesIds )
         {
@@ -2019,7 +2019,7 @@ public class CassandraMetadataRepository
             return Collections.emptyList();
         }
 
-        List<ArtifactMetadata> artifactMetadatas = new ArrayList<ArtifactMetadata>( result.get().getCount() );
+        List<ArtifactMetadata> artifactMetadatas = new ArrayList<>( result.get().getCount() );
 
         for ( Row<String, String, String> row : result.get() )
         {
@@ -2059,7 +2059,7 @@ public class CassandraMetadataRepository
         }
 
         final List<MetadataFacetModel> metadataFacetModels =
-            new ArrayList<MetadataFacetModel>( result.get().getCount() );
+            new ArrayList<>( result.get().getCount() );
 
         for ( Row<String, String, String> row : result.get() )
         {
@@ -2093,14 +2093,14 @@ public class CassandraMetadataRepository
                 } );
             Iterator<MetadataFacetModel> iterator = metadataFacetModelIterable.iterator();
             Map<String, List<MetadataFacetModel>> metadataFacetValuesPerFacetId =
-                new HashMap<String, List<MetadataFacetModel>>();
+                new HashMap<>();
             while ( iterator.hasNext() )
             {
                 MetadataFacetModel metadataFacetModel = iterator.next();
                 List<MetadataFacetModel> values = metadataFacetValuesPerFacetId.get( metadataFacetModel.getName() );
                 if ( values == null )
                 {
-                    values = new ArrayList<MetadataFacetModel>();
+                    values = new ArrayList<>();
                     metadataFacetValuesPerFacetId.put( metadataFacetModel.getFacetId(), values );
                 }
                 values.add( metadataFacetModel );

@@ -369,7 +369,7 @@ public class MetadataToolsTest
         Set<String> testedVersionSet = tools.gatherSnapshotVersions( repoContent, reference );
 
         // Sort the list (for asserts)
-        List<String> testedVersions = new ArrayList<String>();
+        List<String> testedVersions = new ArrayList<>();
         testedVersions.addAll( testedVersionSet );
         Collections.sort( testedVersions, new VersionComparator() );
 

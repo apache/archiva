@@ -146,7 +146,7 @@ public class Maven3DependencyTreeBuilder
             return;
         }
 
-        List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
+        List<RemoteRepository> remoteRepositories = new ArrayList<>();
         Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
 
         try
@@ -197,7 +197,7 @@ public class Maven3DependencyTreeBuilder
         throws DependencyTreeBuilderException
     {
 
-        List<TreeEntry> treeEntries = new ArrayList<TreeEntry>();
+        List<TreeEntry> treeEntries = new ArrayList<>();
         TreeDependencyNodeVisitor treeDependencyNodeVisitor = new TreeDependencyNodeVisitor( treeEntries );
 
         buildDependencyTree( repositoryIds, groupId, artifactId, version, treeDependencyNodeVisitor );

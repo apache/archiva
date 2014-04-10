@@ -83,7 +83,7 @@ public class DuplicateArtifactsConsumer
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
-    private List<String> includes = new ArrayList<String>();
+    private List<String> includes = new ArrayList<>();
 
     private File repositoryDir;
 

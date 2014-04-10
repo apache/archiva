@@ -59,7 +59,7 @@ public class MockRepoAdmin
         throws RepositoryAdminException
     {
         List<RemoteRepository> remoteRepositories =
-            new ArrayList<RemoteRepository>( archivaConfiguration.getConfiguration().getRemoteRepositories().size() );
+            new ArrayList<>( archivaConfiguration.getConfiguration().getRemoteRepositories().size() );
         for ( RemoteRepositoryConfiguration repositoryConfiguration : archivaConfiguration.getConfiguration().getRemoteRepositories() )
         {
             RemoteRepository remoteRepository =
@@ -186,7 +186,7 @@ public class MockRepoAdmin
     {
         List<ProxyConnectorConfiguration> proxyConnectorConfigurations =
             archivaConfiguration.getConfiguration().getProxyConnectors();
-        List<ProxyConnector> proxyConnectors = new ArrayList<ProxyConnector>( proxyConnectorConfigurations.size() );
+        List<ProxyConnector> proxyConnectors = new ArrayList<>( proxyConnectorConfigurations.size() );
         for ( ProxyConnectorConfiguration configuration : proxyConnectorConfigurations )
         {
             proxyConnectors.add( getProxyConnector( configuration ) );
@@ -233,7 +233,7 @@ public class MockRepoAdmin
             List<ProxyConnector> connectors = proxyConnectorMap.get( key );
             if ( connectors == null )
             {
-                connectors = new ArrayList<ProxyConnector>( 1 );
+                connectors = new ArrayList<>( 1 );
                 proxyConnectorMap.put( key, connectors );
             }
 

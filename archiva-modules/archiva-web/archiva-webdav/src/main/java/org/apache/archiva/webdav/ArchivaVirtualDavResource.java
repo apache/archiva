@@ -90,7 +90,7 @@ public class ArchivaVirtualDavResource
         if ( outputContext.hasStream() )
         {
             Collections.sort( localResources );
-            List<File> localResourceFiles = new ArrayList<File>();
+            List<File> localResourceFiles = new ArrayList<>();
 
             for ( File resourceFile : localResources )
             {

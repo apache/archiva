@@ -128,7 +128,7 @@ public class ArchivaDavResourceFactory
     private Logger log = LoggerFactory.getLogger( ArchivaDavResourceFactory.class );
 
     @Inject
-    private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
+    private List<AuditListener> auditListeners = new ArrayList<>();
 
     @Inject
     private RepositoryContentFactory repositoryFactory;
@@ -220,7 +220,7 @@ public class ArchivaDavResourceFactory
 
         String activePrincipal = getActivePrincipal( request );
 
-        List<String> resourcesInAbsolutePath = new ArrayList<String>();
+        List<String> resourcesInAbsolutePath = new ArrayList<>();
 
         boolean readMethod = WebdavMethodUtil.isReadMethod( request.getMethod() );
         DavResource resource;
@@ -258,7 +258,7 @@ public class ArchivaDavResourceFactory
                 // make a copy to avoid potential concurrent modifications (eg. by configuration)
                 // TODO: ultimately, locking might be more efficient than copying in this fashion since updates are
                 //  infrequent
-                List<String> repositories = new ArrayList<String>( repoGroupConfig.getRepositories() );
+                List<String> repositories = new ArrayList<>( repoGroupConfig.getRepositories() );
                 resource = processRepositoryGroup( request, archivaLocator, repositories, activePrincipal,
                                                    resourcesInAbsolutePath, repoGroupConfig );
             }
@@ -441,7 +441,7 @@ public class ArchivaDavResourceFactory
         throws DavException
     {
         DavResource resource = null;
-        List<DavException> storedExceptions = new ArrayList<DavException>();
+        List<DavException> storedExceptions = new ArrayList<>();
 
         String pathInfo = StringUtils.removeEnd( request.getPathInfo(), "/" );
 
@@ -998,7 +998,7 @@ public class ArchivaDavResourceFactory
                                            request.getDavSession(), locator, this, mimeTypes, auditListeners, scheduler,
                                            fileLockManager );
         }
-        List<File> mergedRepositoryContents = new ArrayList<File>();
+        List<File> mergedRepositoryContents = new ArrayList<>();
         // multiple repo types so we guess they are all the same type
         // so use the first one
         // FIXME add a method with group in the repository storage

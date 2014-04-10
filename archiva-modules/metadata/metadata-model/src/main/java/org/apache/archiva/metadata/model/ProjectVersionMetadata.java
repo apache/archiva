@@ -46,11 +46,11 @@ public class ProjectVersionMetadata
 
     private CiManagement ciManagement;
 
-    private List<License> licenses = new ArrayList<License>();
+    private List<License> licenses = new ArrayList<>();
 
-    private List<MailingList> mailingLists = new ArrayList<MailingList>();
+    private List<MailingList> mailingLists = new ArrayList<>();
 
-    private List<Dependency> dependencies = new ArrayList<Dependency>();
+    private List<Dependency> dependencies = new ArrayList<>();
 
     private boolean incomplete;
 

@@ -213,7 +213,7 @@ public class DefaultMetadataResolver
                 }
                 session.markDirty();
 
-                namespaces = new ArrayList<String>( namespaces );
+                namespaces = new ArrayList<>( namespaces );
                 namespaces.addAll( storageNamespaces );
             }
 
@@ -240,7 +240,7 @@ public class DefaultMetadataResolver
                 namespaces = metadataRepository.getNamespaces( repoId, namespace );
                 namespacesCache.put( cacheKey, namespaces );
             }
-            Collection<String> exclusions = new ArrayList<String>( namespaces );
+            Collection<String> exclusions = new ArrayList<>( namespaces );
             exclusions.addAll( metadataRepository.getProjects( repoId, namespace ) );
             Collection<String> storageNamespaces =
                 repositoryStorage.listNamespaces( repoId, namespace, new ExcludesFilter<String>( exclusions ) );
@@ -265,7 +265,7 @@ public class DefaultMetadataResolver
                 }
                 session.markDirty();
 
-                namespaces = new ArrayList<String>( namespaces );
+                namespaces = new ArrayList<>( namespaces );
                 namespaces.addAll( storageNamespaces );
             }
             return namespaces;
@@ -283,7 +283,7 @@ public class DefaultMetadataResolver
         {
             MetadataRepository metadataRepository = session.getRepository();
             Collection<String> projects = metadataRepository.getProjects( repoId, namespace );
-            Collection<String> exclusions = new ArrayList<String>( projects );
+            Collection<String> exclusions = new ArrayList<>( projects );
 
             String cacheKey = repoId + "-" + namespace;
             Collection<String> namespaces = namespacesCache.get( cacheKey );
@@ -319,7 +319,7 @@ public class DefaultMetadataResolver
                 }
                 session.markDirty();
 
-                projects = new ArrayList<String>( projects );
+                projects = new ArrayList<>( projects );
                 projects.addAll( storageProjects );
             }
             return projects;
@@ -387,7 +387,7 @@ public class DefaultMetadataResolver
                 }
                 session.markDirty();
 
-                projectVersions = new ArrayList<String>( projectVersions );
+                projectVersions = new ArrayList<>( projectVersions );
                 projectVersions.addAll( storageProjectVersions );
             }
             return projectVersions;
@@ -433,7 +433,7 @@ public class DefaultMetadataResolver
                 }
                 session.markDirty();
 
-                artifacts = new ArrayList<ArtifactMetadata>( artifacts );
+                artifacts = new ArrayList<>( artifacts );
                 artifacts.addAll( storageArtifacts );
             }
             return artifacts;
@@ -450,7 +450,7 @@ public class DefaultMetadataResolver
 
     private Collection<String> createArtifactIdList( Collection<ArtifactMetadata> artifacts )
     {
-        Collection<String> artifactIds = new ArrayList<String>();
+        Collection<String> artifactIds = new ArrayList<>();
         for ( ArtifactMetadata artifact : artifacts )
         {
             artifactIds.add( artifact.getId() );

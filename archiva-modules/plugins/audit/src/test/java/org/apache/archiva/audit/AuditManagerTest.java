@@ -96,7 +96,7 @@ public class AuditManagerTest
         throws Exception
     {
         int numEvents = 11;
-        List<AuditEvent> expectedEvents = new ArrayList<AuditEvent>( numEvents );
+        List<AuditEvent> expectedEvents = new ArrayList<>( numEvents );
         for ( int i = 0; i < numEvents; i++ )
         {
             AuditEvent event = createEvent( AUDIT_EVENT_BASE + MILLIS_FORMAT.format( i ) );
@@ -134,7 +134,7 @@ public class AuditManagerTest
         throws Exception
     {
         int numEvents = 5;
-        List<AuditEvent> expectedEvents = new ArrayList<AuditEvent>( numEvents );
+        List<AuditEvent> expectedEvents = new ArrayList<>( numEvents );
         for ( int i = 0; i < numEvents; i++ )
         {
             expectedEvents.add( createEvent( AUDIT_EVENT_BASE + MILLIS_FORMAT.format( i ) ) );
@@ -171,7 +171,7 @@ public class AuditManagerTest
     {
         int numEvents = 11;
         Map<String, List<String>> eventNames = new LinkedHashMap<String, List<String>>();
-        List<AuditEvent> events = new ArrayList<AuditEvent>();
+        List<AuditEvent> events = new ArrayList<>();
         eventNames.put( TEST_REPO_ID, new ArrayList<String>() );
         eventNames.put( TEST_REPO_ID_2, new ArrayList<String>() );
         for ( int i = 0; i < numEvents; i++ )
@@ -604,7 +604,7 @@ public class AuditManagerTest
 
     private List<String> getEventNames( List<AuditEvent> events )
     {
-        List<String> names = new ArrayList<String>( events.size() );
+        List<String> names = new ArrayList<>( events.size() );
         for ( AuditEvent event : events )
         {
             names.add( event.getName() );

@@ -98,7 +98,7 @@ public class ManagedLegacyRepositoryContentTest
         Set<String> testedVersionSet = repoContent.getVersions( reference );
 
         // Sort the list (for asserts later)
-        List<String> testedVersions = new ArrayList<String>();
+        List<String> testedVersions = new ArrayList<>();
         testedVersions.addAll( testedVersionSet );
         Collections.sort( testedVersions, new VersionComparator() );
 
@@ -124,7 +124,7 @@ public class ManagedLegacyRepositoryContentTest
         Set<String> testedVersionSet = repoContent.getVersions( reference );
 
         // Sort the list (for asserts later)
-        List<String> testedVersions = new ArrayList<String>();
+        List<String> testedVersions = new ArrayList<>();
         testedVersions.addAll( testedVersionSet );
         Collections.sort( testedVersions, new VersionComparator() );
 

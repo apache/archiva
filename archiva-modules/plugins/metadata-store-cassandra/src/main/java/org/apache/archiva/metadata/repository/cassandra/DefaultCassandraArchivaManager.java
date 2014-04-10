@@ -137,7 +137,7 @@ public class DefaultCassandraArchivaManager
         consistencyLevelPolicy.setDefaultWriteConsistencyLevel( HConsistencyLevel.valueOf( writeConsistencyLevel ) );
         keyspace = HFactory.createKeyspace( keyspaceName, cluster, consistencyLevelPolicy );
 
-        List<ColumnFamilyDefinition> cfds = new ArrayList<ColumnFamilyDefinition>();
+        List<ColumnFamilyDefinition> cfds = new ArrayList<>();
 
         // namespace table
         {

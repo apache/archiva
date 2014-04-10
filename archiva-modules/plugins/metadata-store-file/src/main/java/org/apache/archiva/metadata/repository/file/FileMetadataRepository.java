@@ -132,7 +132,7 @@ public class FileMetadataRepository
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         // remove properties that are not references or artifacts
-        for ( Object key : new ArrayList<Object>( properties.keySet() ) )
+        for ( Object key : properties.keySet() )
         {
             String name = (String) key;
             if ( !name.contains( ":" ) && !name.equals( "facetIds" ) )
@@ -240,7 +240,7 @@ public class FileMetadataRepository
     private static void clearMetadataFacetProperties( Collection<MetadataFacet> facetList, Properties properties,
                                                       String prefix )
     {
-        List<Object> propsToRemove = new ArrayList<Object>();
+        List<Object> propsToRemove = new ArrayList<>();
         for ( MetadataFacet facet : facetList )
         {
             for ( Object key : properties.keySet() )
@@ -303,7 +303,7 @@ public class FileMetadataRepository
     public List<String> getMetadataFacets( String repoId, String facetId )
     {
         File directory = getMetadataDirectory( repoId, facetId );
-        List<String> facets = new ArrayList<String>();
+        List<String> facets = new ArrayList<>();
         recurse( facets, "", directory );
         return facets;
     }
@@ -409,7 +409,7 @@ public class FileMetadataRepository
         // TODO: this is quite slow - if we are to persist with this repository implementation we should build an index
         //  of this information (eg. in Lucene, as before)
 
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifacts = new ArrayList<>();
         for ( String ns : getRootNamespaces( repoId ) )
         {
             getArtifactsByDateRange( artifacts, repoId, ns, startTime, endTime );
@@ -580,7 +580,7 @@ public class FileMetadataRepository
 
     public Collection<String> getRepositories()
     {
-        List<String> repositories = new ArrayList<String>();
+        List<String> repositories = new ArrayList<>();
         for ( ManagedRepositoryConfiguration managedRepositoryConfiguration : configuration.getConfiguration().getManagedRepositories() )
         {
             repositories.add( managedRepositoryConfiguration.getId() );
@@ -595,7 +595,7 @@ public class FileMetadataRepository
         // alternatively, we could build a referential tree in the content repository, however it would need some levels
         // of depth to avoid being too broad to be useful (eg. /repository/checksums/a/ab/abcdef1234567)
 
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifacts = new ArrayList<>();
         for ( String ns : getRootNamespaces( repositoryId ) )
         {
             getArtifactsByChecksum( artifacts, repositoryId, ns, checksum );
@@ -642,7 +642,7 @@ public class FileMetadataRepository
         properties.remove( "artifact:facetIds:" + id );
 
         String prefix = "artifact:facet:" + id + ":";
-        for ( Object key : new ArrayList<Object>( properties.keySet() ) )
+        for ( Object key : properties.keySet() )
         {
             String property = (String) key;
             if ( property.startsWith( prefix ) )
@@ -679,7 +679,7 @@ public class FileMetadataRepository
         properties.remove( "artifact:facetIds:" + id );
 
         String prefix = "artifact:facet:" + id + ":";
-        for ( Object key : new ArrayList<Object>( properties.keySet() ) )
+        for ( Object key : properties.keySet() )
         {
             String property = (String) key;
             if ( property.startsWith( prefix ) )
@@ -1077,7 +1077,7 @@ public class FileMetadataRepository
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
         int numberOfRefs = Integer.parseInt( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
 
-        List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
+        List<ProjectVersionReference> references = new ArrayList<>();
         for ( int i = 0; i < numberOfRefs; i++ )
         {
             ProjectVersionReference reference = new ProjectVersionReference();
@@ -1098,7 +1098,7 @@ public class FileMetadataRepository
 
     public Collection<String> getNamespaces( String repoId, String baseNamespace )
     {
-        List<String> allNamespaces = new ArrayList<String>();
+        List<String> allNamespaces = new ArrayList<>();
         File directory = getDirectory( repoId );
         File[] files = directory.listFiles();
         if ( files != null )
@@ -1112,7 +1112,7 @@ public class FileMetadataRepository
             }
         }
 
-        Set<String> namespaces = new LinkedHashSet<String>();
+        Set<String> namespaces = new LinkedHashSet<>();
         int fromIndex = baseNamespace != null ? baseNamespace.length() + 1 : 0;
         for ( String namespace : allNamespaces )
         {
@@ -1129,12 +1129,12 @@ public class FileMetadataRepository
                 }
             }
         }
-        return new ArrayList<String>( namespaces );
+        return new ArrayList<>( namespaces );
     }
 
     public Collection<String> getProjects( String repoId, String namespace )
     {
-        List<String> projects = new ArrayList<String>();
+        List<String> projects = new ArrayList<>();
         File directory = new File( getDirectory( repoId ), namespace );
         File[] files = directory.listFiles();
         if ( files != null )
@@ -1152,7 +1152,7 @@ public class FileMetadataRepository
 
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
     {
-        List<String> projectVersions = new ArrayList<String>();
+        List<String> projectVersions = new ArrayList<>();
         File directory = new File( getDirectory( repoId ), namespace + "/" + projectId );
         File[] files = directory.listFiles();
         if ( files != null )
@@ -1240,7 +1240,7 @@ public class FileMetadataRepository
 
     public List<ArtifactMetadata> getArtifacts( String repoId )
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifacts = new ArrayList<>();
         for ( String ns : getRootNamespaces( repoId ) )
         {
             getArtifacts( artifacts, repoId, ns );

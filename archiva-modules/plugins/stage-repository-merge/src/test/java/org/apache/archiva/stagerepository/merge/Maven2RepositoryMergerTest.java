@@ -68,7 +68,7 @@ public class Maven2RepositoryMergerTest
 
     private List<ArtifactMetadata> getArtifacts()
     {
-        List<ArtifactMetadata> metadata = new ArrayList<ArtifactMetadata>();
+        List<ArtifactMetadata> metadata = new ArrayList<>();
         ArtifactMetadata artifact1 = new ArtifactMetadata();
         artifact1.setNamespace( "com.example.test" );
         artifact1.setProject( "test-artifact" );
@@ -102,7 +102,7 @@ public class Maven2RepositoryMergerTest
         testRepo.setLocation( "target" + File.separatorChar + "test-repository" );
 
         RepositoryScanningConfiguration repoScanConfig = new RepositoryScanningConfiguration();
-        List<String> knownContentConsumers = new ArrayList<String>();
+        List<String> knownContentConsumers = new ArrayList<>();
         knownContentConsumers.add( "metadata-updater12" );
         repoScanConfig.setKnownContentConsumers( knownContentConsumers );
         c.setRepositoryScanning( repoScanConfig );
@@ -151,7 +151,7 @@ public class Maven2RepositoryMergerTest
         testRepoWithConflicts.setLocation( sourceRepo );
 
         RepositoryScanningConfiguration repoScanConfig = new RepositoryScanningConfiguration();
-        List<String> knownContentConsumers = new ArrayList<String>();
+        List<String> knownContentConsumers = new ArrayList<>();
         knownContentConsumers.add( "metadata-updater" );
         repoScanConfig.setKnownContentConsumers( knownContentConsumers );
         c.setRepositoryScanning( repoScanConfig );

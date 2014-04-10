@@ -232,7 +232,7 @@ public class Maven2RepositoryStorage
 
             // TODO: this is a workaround until we can properly resolve using proxies as well - this doesn't cache
             //       anything locally!
-            List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
+            List<RemoteRepository> remoteRepositories = new ArrayList<>();
             Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
 
             Map<String, List<ProxyConnector>> proxyConnectorsMap = proxyConnectorAdmin.getProxyConnectorAsMap();
@@ -399,7 +399,7 @@ public class Maven2RepositoryStorage
     private List<org.apache.archiva.metadata.model.Dependency> convertDependencies( List<Dependency> dependencies )
     {
         List<org.apache.archiva.metadata.model.Dependency> l =
-            new ArrayList<org.apache.archiva.metadata.model.Dependency>();
+            new ArrayList<>();
         for ( Dependency dependency : dependencies )
         {
             org.apache.archiva.metadata.model.Dependency newDependency =
@@ -444,7 +444,7 @@ public class Maven2RepositoryStorage
 
     private List<org.apache.archiva.metadata.model.License> convertLicenses( List<License> licenses )
     {
-        List<org.apache.archiva.metadata.model.License> l = new ArrayList<org.apache.archiva.metadata.model.License>();
+        List<org.apache.archiva.metadata.model.License> l = new ArrayList<>();
         for ( License license : licenses )
         {
             org.apache.archiva.metadata.model.License newLicense = new org.apache.archiva.metadata.model.License();
@@ -458,7 +458,7 @@ public class Maven2RepositoryStorage
     private List<org.apache.archiva.metadata.model.MailingList> convertMailingLists( List<MailingList> mailingLists )
     {
         List<org.apache.archiva.metadata.model.MailingList> l =
-            new ArrayList<org.apache.archiva.metadata.model.MailingList>();
+            new ArrayList<>();
         for ( MailingList mailingList : mailingLists )
         {
             org.apache.archiva.metadata.model.MailingList newMailingList =
@@ -512,7 +512,7 @@ public class Maven2RepositoryStorage
         String[] files = dir.list( new DirectoryFilter( filter ) );
         if ( files != null )
         {
-            fileNames = new ArrayList<String>( Arrays.asList( files ) );
+            fileNames = new ArrayList<>( Arrays.asList( files ) );
             Collections.sort( fileNames );
         }
         else
@@ -543,7 +543,7 @@ public class Maven2RepositoryStorage
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
         // scan all the directories which are potential namespaces. Any directories known to be projects are excluded
-        List<String> namespaces = new ArrayList<String>();
+        List<String> namespaces = new ArrayList<>();
         File[] files = dir.listFiles( new DirectoryFilter( filter ) );
         if ( files != null )
         {
@@ -565,7 +565,7 @@ public class Maven2RepositoryStorage
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
         // scan all directories in the namespace, and only include those that are known to be projects
-        List<String> projects = new ArrayList<String>();
+        List<String> projects = new ArrayList<>();
         File[] files = dir.listFiles( new DirectoryFilter( filter ) );
         if ( files != null )
         {
@@ -601,7 +601,7 @@ public class Maven2RepositoryStorage
         // all files that are not metadata and not a checksum / signature are considered artifacts
         File[] files = dir.listFiles( new ArtifactDirectoryFilter( readMetadataRequest.getFilter() ) );
 
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifacts = new ArrayList<>();
         if ( files != null )
         {
             for ( File file : files )

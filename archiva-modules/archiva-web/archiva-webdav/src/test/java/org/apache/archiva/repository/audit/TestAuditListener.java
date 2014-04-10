@@ -33,7 +33,7 @@ public class TestAuditListener
         return events;
     }
 
-    private List<AuditEvent> events = new ArrayList<AuditEvent>();
+    private List<AuditEvent> events = new ArrayList<>();
 
     public void auditEvent( AuditEvent event )
     {

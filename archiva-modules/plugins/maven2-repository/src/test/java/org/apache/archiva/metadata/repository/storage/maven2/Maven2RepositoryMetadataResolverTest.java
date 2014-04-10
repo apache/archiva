@@ -217,7 +217,7 @@ public class Maven2RepositoryMetadataResolverTest
     {
         Collection<ArtifactMetadata> springArtifacts = storage.readArtifactsMetadata(
             new ReadMetadataRequest( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", ALL ) );
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( springArtifacts );
+        List<ArtifactMetadata> artifacts = new ArrayList<>( springArtifacts );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
             public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
@@ -259,7 +259,7 @@ public class Maven2RepositoryMetadataResolverTest
     {
         Collection<ArtifactMetadata> testArtifacts = storage.readArtifactsMetadata(
             new ReadMetadataRequest( TEST_REPO_ID, "com.example.test", "test-artifact", "1.0-SNAPSHOT", ALL ) );
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( testArtifacts );
+        List<ArtifactMetadata> artifacts = new ArrayList<>( testArtifacts );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
             public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
@@ -559,7 +559,7 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetArtifacts()
         throws Exception
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata(
+        List<ArtifactMetadata> artifacts = new ArrayList<>( storage.readArtifactsMetadata(
             new ReadMetadataRequest( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", ALL ) ) );
         assertEquals( 3, artifacts.size() );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
@@ -582,7 +582,7 @@ public class Maven2RepositoryMetadataResolverTest
     {
         ExcludesFilter<String> filter =
             new ExcludesFilter<String>( Collections.singletonList( "plexus-spring-1.2.pom" ) );
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata(
+        List<ArtifactMetadata> artifacts = new ArrayList<>( storage.readArtifactsMetadata(
             new ReadMetadataRequest( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", filter ) ) );
         assertEquals( 2, artifacts.size() );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
@@ -646,7 +646,7 @@ public class Maven2RepositoryMetadataResolverTest
     private void assertMailingList( String prefix, MailingList mailingList, String name, boolean allowPost,
                                     String nabbleUrl )
     {
-        List<String> otherArchives = new ArrayList<String>();
+        List<String> otherArchives = new ArrayList<>();
         otherArchives.add( "http://www.mail-archive.com/" + prefix + "@archiva.apache.org" );
         if ( nabbleUrl != null )
         {

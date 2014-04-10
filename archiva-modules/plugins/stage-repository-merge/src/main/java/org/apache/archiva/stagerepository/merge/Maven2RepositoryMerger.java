@@ -285,7 +285,7 @@ public class Maven2RepositoryMerger
                                         Date lastUpdatedTimestamp, String timestamp )
         throws RepositoryMetadataException
     {
-        ArrayList<String> availableVersions = new ArrayList<String>();
+        ArrayList<String> availableVersions = new ArrayList<>();
         String latestVersion = artifactMetadata.getProjectVersion();
 
         ArchivaRepositoryMetadata projectMetadata = getMetadata( projectMetaDataFileIntargetRepo );
@@ -376,7 +376,7 @@ public class Maven2RepositoryMerger
         {
             List<ArtifactMetadata> targetArtifacts = metadataRepository.getArtifacts( targetRepo );
             List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepo );
-            List<ArtifactMetadata> conflictsArtifacts = new ArrayList<ArtifactMetadata>();
+            List<ArtifactMetadata> conflictsArtifacts = new ArrayList<>();
 
             for ( ArtifactMetadata targetArtifact : targetArtifacts )
             {

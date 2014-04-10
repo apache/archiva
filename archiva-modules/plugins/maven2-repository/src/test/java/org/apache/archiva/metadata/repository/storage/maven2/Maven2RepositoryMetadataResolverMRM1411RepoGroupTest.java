@@ -147,7 +147,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         proxyConnectors.setDisabled( false );
         c.addProxyConnector( proxyConnectors );
 
-        List<String> repos = new ArrayList<String>();
+        List<String> repos = new ArrayList<>();
         repos.add( TEST_REPO_ID );
         repos.add( TEST_SNAP_REPO_ID );
 
@@ -210,7 +210,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         assertDependency( dependencies.get( 0 ), "commons-io", "commons-io", "1.4" );
         assertDependency( dependencies.get( 1 ), "junit", "junit", "3.8.1", "test" );
 
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
         paths.add( "target/test-repository/com/example/test/test-artifact-module-a" );
         paths.add( "target/test-repository/com/example/test/test-artifact-parent" );
         paths.add( "target/test-repository/com/example/test/test-artifact-root" );
@@ -244,7 +244,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         assertEquals( "test-artifact-module-a", facet.getArtifactId() );
         assertEquals( "jar", facet.getPackaging() );
 
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
         paths.add( "target/test-repository/com/example/test/test-artifact-module-a" );
         paths.add( "target/test-repository/com/example/test/test-artifact-parent" );
         paths.add( "target/test-repository/com/example/test/test-artifact-root" );
@@ -273,7 +273,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         assertEquals( "missing-parent", facet.getArtifactId() );
         assertEquals( "jar", facet.getPackaging() );
 
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
         paths.add( "target/test-repository/com/example/test/test-artifact-module-a" );
         paths.add( "target/test-repository/com/example/test/test-artifact-parent" );
         paths.add( "target/test-repository/com/example/test/test-artifact-root" );
@@ -320,7 +320,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         assertDependency( dependencies.get( 0 ), "commons-io", "commons-io", "1.4" );
         assertDependency( dependencies.get( 1 ), "junit", "junit", "3.8.1", "test" );
 
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
         paths.add( "target/test-repositorys/com/example/test/test-snapshot-artifact-module-a" );
         paths.add( "target/test-repositorys/com/example/test/test-snapshot-artifact-root" );
         deleteTestArtifactWithParent( paths );
@@ -362,7 +362,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         assertDependency( dependencies.get( 0 ), "commons-io", "commons-io", "1.4" );
         assertDependency( dependencies.get( 1 ), "junit", "junit", "3.8.1", "test" );
 
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
         paths.add( "target/test-repositorys/com/example/test/test-snapshot-artifact-module-a" );
         paths.add( "target/test-repositorys/com/example/test/test-snapshot-artifact-root" );
 
@@ -406,7 +406,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         assertDependency( dependencies.get( 0 ), "commons-io", "commons-io", "1.4" );
         assertDependency( dependencies.get( 1 ), "junit", "junit", "3.8.1", "test" );
 
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
         paths.add( "target/test-repository/com/example/test/test-artifact-module-b" );
         paths.add( "target/test-repository/com/example/test/test-snapshot-artifact-root" );
 
@@ -464,7 +464,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
     private void assertMailingList( String prefix, MailingList mailingList, String name, boolean allowPost,
                                     String nabbleUrl )
     {
-        List<String> otherArchives = new ArrayList<String>();
+        List<String> otherArchives = new ArrayList<>();
         otherArchives.add( "http://www.mail-archive.com/" + prefix + "@archiva.apache.org" );
         if ( nabbleUrl != null )
         {

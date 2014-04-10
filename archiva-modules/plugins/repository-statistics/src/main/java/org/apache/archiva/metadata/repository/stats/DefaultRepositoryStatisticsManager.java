@@ -272,7 +272,7 @@ public class DefaultRepositoryStatisticsManager
                                                             Date startTime, Date endTime )
         throws MetadataRepositoryException
     {
-        List<RepositoryStatistics> results = new ArrayList<RepositoryStatistics>();
+        List<RepositoryStatistics> results = new ArrayList<>();
         List<String> list = metadataRepository.getMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
         Collections.sort( list, Collections.reverseOrder() );
         for ( String name : list )

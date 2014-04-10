@@ -423,7 +423,7 @@ public class JcrMetadataRepository
     public List<String> getMetadataFacets( String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
-        List<String> facets = new ArrayList<String>();
+        List<String> facets = new ArrayList<>();
 
         try
         {
@@ -625,7 +625,7 @@ public class JcrMetadataRepository
             }
             QueryResult result = query.execute();
 
-            artifacts = new ArrayList<ArtifactMetadata>();
+            artifacts = new ArrayList<>();
             for ( Node n : JcrUtils.getNodes( result ) )
             {
                 artifacts.add( getArtifactFromNode( repoId, n ) );
@@ -650,7 +650,7 @@ public class JcrMetadataRepository
             {
                 Node node = root.getNode( "repositories" );
 
-                repositories = new ArrayList<String>();
+                repositories = new ArrayList<>();
                 NodeIterator i = node.getNodes();
                 while ( i.hasNext() )
                 {
@@ -684,7 +684,7 @@ public class JcrMetadataRepository
             query.bindValue( "checksum", valueFactory.createValue( checksum ) );
             QueryResult result = query.execute();
 
-            artifacts = new ArrayList<ArtifactMetadata>();
+            artifacts = new ArrayList<>();
             for ( Node n : JcrUtils.getNodes( result ) )
             {
                 artifacts.add( getArtifactFromNode( repositoryId, n ) );
@@ -728,7 +728,7 @@ public class JcrMetadataRepository
             Query query = getJcrSession().getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
             QueryResult result = query.execute();
 
-            artifacts = new ArrayList<ArtifactMetadata>();
+            artifacts = new ArrayList<>();
             for ( Node n : JcrUtils.getNodes( result ) )
             {
                 if ( n.isNodeType( ARTIFACT_NODE_TYPE ) )
@@ -988,7 +988,7 @@ public class JcrMetadataRepository
         throws MetadataResolutionException
     {
 
-        List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
+        List<ProjectVersionReference> references = new ArrayList<>();
 
         // TODO: bind variables instead
         String q = "SELECT * FROM [archiva:dependency] WHERE ISDESCENDANTNODE([/repositories/" + repositoryId +
@@ -1200,7 +1200,7 @@ public class JcrMetadataRepository
                                                       String projectVersion )
         throws MetadataResolutionException
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifacts = new ArrayList<>();
 
         try
         {
@@ -1377,7 +1377,7 @@ public class JcrMetadataRepository
     private Collection<String> getNodeNames( String path, String nodeType )
         throws MetadataResolutionException
     {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
 
         try
         {

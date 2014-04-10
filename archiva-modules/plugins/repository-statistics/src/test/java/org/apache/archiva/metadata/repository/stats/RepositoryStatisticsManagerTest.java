@@ -255,7 +255,7 @@ public class RepositoryStatisticsManagerTest
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
         addStats( new Date( current.getTime() - 1000 ), current );
 
-        ArrayList<String> keys = new ArrayList<String>( statsCreated.keySet() );
+        ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
 
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
@@ -299,7 +299,7 @@ public class RepositoryStatisticsManagerTest
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
         addStats( new Date( current.getTime() - 1000 ), current );
 
-        List<String> keys = new ArrayList<String>( statsCreated.keySet() );
+        List<String> keys = new ArrayList<>( statsCreated.keySet() );
 
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
@@ -347,7 +347,7 @@ public class RepositoryStatisticsManagerTest
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
         addStats( new Date( current.getTime() - 1000 ), current );
 
-        List<String> keys = new ArrayList<String>( statsCreated.keySet() );
+        List<String> keys = new ArrayList<>( statsCreated.keySet() );
 
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
@@ -395,7 +395,7 @@ public class RepositoryStatisticsManagerTest
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
         addStats( new Date( current.getTime() - 1000 ), current );
 
-        ArrayList<String> keys = new ArrayList<String>( statsCreated.keySet() );
+        ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
 
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
@@ -447,7 +447,7 @@ public class RepositoryStatisticsManagerTest
         addStats( new Date( current.getTime() - 3000 ), new Date( current.getTime() - 2000 ) );
         addStats( new Date( current.getTime() - 1000 ), current );
 
-        ArrayList<String> keys = new ArrayList<String>( statsCreated.keySet() );
+        ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
 
         expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
 

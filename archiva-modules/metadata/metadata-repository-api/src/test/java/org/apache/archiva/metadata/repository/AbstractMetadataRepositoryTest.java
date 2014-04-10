@@ -204,7 +204,7 @@ public abstract class AbstractMetadataRepositoryTest
     public void testGetArtifactOnly()
         throws Exception
     {
-        assertThat( new ArrayList<ArtifactMetadata>(
+        assertThat( new ArrayList<>(
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT,
                                      TEST_PROJECT_VERSION ) ) ).isNotNull().isEmpty();
         assertThat(
@@ -508,19 +508,19 @@ public abstract class AbstractMetadataRepositoryTest
 
         Collection<ArtifactMetadata> artifacts =
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
-        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
+        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<>( artifacts ) );
 
         artifacts = repository.getArtifacts( TEST_REPO_ID );
-        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
+        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<>( artifacts ) );
 
         artifacts = repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 );
-        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
+        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<>( artifacts ) );
 
         artifacts = repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 );
-        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
+        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<>( artifacts ) );
 
         artifacts = repository.getArtifactsByDateRange( TEST_REPO_ID, null, null );
-        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<ArtifactMetadata>( artifacts ) );
+        assertEquals( Collections.singletonList( artifactMetadata ), new ArrayList<>( artifacts ) );
     }
 
     @Test
@@ -812,7 +812,7 @@ public abstract class AbstractMetadataRepositoryTest
 
         Collection<ArtifactMetadata> artifacts =
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
-        ArrayList<ArtifactMetadata> actual = new ArrayList<ArtifactMetadata>( artifacts );
+        ArrayList<ArtifactMetadata> actual = new ArrayList<>( artifacts );
         Collections.sort( actual, new Comparator<ArtifactMetadata>()
         {
             public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
@@ -1028,13 +1028,13 @@ public abstract class AbstractMetadataRepositoryTest
 
         // test it restricts to the appropriate repository
         assertEquals( Collections.singletonList( artifact ),
-                      new ArrayList<ArtifactMetadata>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) ) );
-        assertEquals( Collections.singletonList( secondArtifact ), new ArrayList<ArtifactMetadata>(
+                      new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) ) );
+        assertEquals( Collections.singletonList( secondArtifact ), new ArrayList<>(
             repository.getArtifactsByChecksum( OTHER_REPO_ID, TEST_SHA1 ) ) );
         assertEquals( Collections.singletonList( artifact ),
-                      new ArrayList<ArtifactMetadata>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) ) );
+                      new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) ) );
         assertEquals( Collections.singletonList( secondArtifact ),
-                      new ArrayList<ArtifactMetadata>( repository.getArtifactsByChecksum( OTHER_REPO_ID, TEST_MD5 ) ) );
+                      new ArrayList<>( repository.getArtifactsByChecksum( OTHER_REPO_ID, TEST_MD5 ) ) );
     }
 
     @Test
@@ -1121,7 +1121,7 @@ public abstract class AbstractMetadataRepositoryTest
         repository.save();
 
         assertEquals( Collections.singletonList( artifact ),
-                      new ArrayList<ArtifactMetadata>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) ) );
+                      new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) ) );
     }
 
     @Test
@@ -1133,7 +1133,7 @@ public abstract class AbstractMetadataRepositoryTest
         repository.save();
 
         assertEquals( Collections.singletonList( artifact ),
-                      new ArrayList<ArtifactMetadata>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) ) );
+                      new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) ) );
     }
 
     @Test
@@ -1147,9 +1147,9 @@ public abstract class AbstractMetadataRepositoryTest
         repository.save();
 
         assertEquals( Collections.singletonList( artifact ),
-                      new ArrayList<ArtifactMetadata>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) ) );
+                      new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) ) );
         assertEquals( Collections.singletonList( artifact ),
-                      new ArrayList<ArtifactMetadata>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) ) );
+                      new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) ) );
     }
 
     @Test
@@ -1166,11 +1166,11 @@ public abstract class AbstractMetadataRepositoryTest
         repository.save();
 
         List<ArtifactMetadata> artifacts =
-            new ArrayList<ArtifactMetadata>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) );
+            new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) );
         Collections.sort( artifacts, new ArtifactMetadataComparator() );
         assertEquals( Arrays.asList( artifact2, artifact1 ), artifacts );
 
-        artifacts = new ArrayList<ArtifactMetadata>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) );
+        artifacts = new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) );
         Collections.sort( artifacts, new ArtifactMetadataComparator() );
         assertEquals( Arrays.asList( artifact2, artifact1 ), artifacts );
     }
@@ -1215,7 +1215,7 @@ public abstract class AbstractMetadataRepositoryTest
         Collections.sort( expected, new ArtifactMetadataComparator() );
 
         List<ArtifactMetadata> actual =
-            new ArrayList<ArtifactMetadata>( repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ) );
+            new ArrayList<>( repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ) );
         Collections.sort( actual, new ArtifactMetadataComparator() );
 
         assertEquals( expected, actual );
@@ -1276,7 +1276,7 @@ public abstract class AbstractMetadataRepositoryTest
         Collection<ArtifactMetadata> artifacts =
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
 
-        assertEquals( Collections.singletonList( artifact ), new ArrayList<ArtifactMetadata>( artifacts ) );
+        assertEquals( Collections.singletonList( artifact ), new ArrayList<>( artifacts ) );
 
         repository.removeArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact.getId() );
 

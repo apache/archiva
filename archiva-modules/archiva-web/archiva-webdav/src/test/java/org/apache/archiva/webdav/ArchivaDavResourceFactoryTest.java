@@ -288,7 +288,7 @@ public class ArchivaDavResourceFactoryTest
             + "/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar", LOCAL_REPO_GROUP,
                                                                     new ArchivaDavLocatorFactory() );
 
-        List<RepositoryGroupConfiguration> repoGroups = new ArrayList<RepositoryGroupConfiguration>();
+        List<RepositoryGroupConfiguration> repoGroups = new ArrayList<>();
         RepositoryGroupConfiguration repoGroup = new RepositoryGroupConfiguration();
         repoGroup.setId( LOCAL_REPO_GROUP );
         repoGroup.addRepository( INTERNAL_REPO );
@@ -371,7 +371,7 @@ public class ArchivaDavResourceFactoryTest
             createManagedRepository( LOCAL_MIRROR_REPO, new File( "target/test-classes/local-mirror" ).getPath(),
                                      "default" ), false, null );
 
-        List<RepositoryGroupConfiguration> repoGroups = new ArrayList<RepositoryGroupConfiguration>();
+        List<RepositoryGroupConfiguration> repoGroups = new ArrayList<>();
         RepositoryGroupConfiguration repoGroup = new RepositoryGroupConfiguration();
         repoGroup.setId( LOCAL_REPO_GROUP );
         repoGroup.addRepository( INTERNAL_REPO );
