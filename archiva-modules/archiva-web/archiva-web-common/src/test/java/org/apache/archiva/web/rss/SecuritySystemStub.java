@@ -52,7 +52,7 @@ public class SecuritySystemStub
 {
     Map<String, String> users = new HashMap<String, String>();
 
-    List<String> repoIds = new ArrayList<String>();
+    List<String> repoIds = new ArrayList<>();
 
     public SecuritySystemStub()
     {

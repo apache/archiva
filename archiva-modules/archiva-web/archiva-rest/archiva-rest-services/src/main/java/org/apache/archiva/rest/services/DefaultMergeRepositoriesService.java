@@ -197,7 +197,7 @@ public class DefaultMergeRepositoriesService
                                         String sourceRepoId, String repoid )
         throws RepositoryMergerException
     {
-        List<ArtifactMetadata> artifactsWithOutSnapshots = new ArrayList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifactsWithOutSnapshots = new ArrayList<>();
         for ( ArtifactMetadata metadata : sourceArtifacts )
         {
             if ( VersionUtil.isSnapshot( metadata.getProjectVersion() ) )

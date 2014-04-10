@@ -68,9 +68,6 @@ public class RepositoryPurgeConsumer
      */
     private String description = "Purge repository of old snapshots";
 
-    /**
-     *
-     */
     @Inject
     @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration configuration;
@@ -78,27 +75,18 @@ public class RepositoryPurgeConsumer
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
-    /**
-     *
-     */
     @Inject
     @Named( value = "repositoryContentFactory#default" )
     private RepositoryContentFactory repositoryContentFactory;
 
-    /**
-     *
-     */
     @Inject
     private MetadataTools metadataTools;
 
-    /**
-     *
-     */
     @Inject
     @Named( value = "fileTypes" )
     private FileTypes filetypes;
 
-    private List<String> includes = new ArrayList<String>();
+    private List<String> includes = new ArrayList<>();
 
     private RepositoryPurge repoPurge;
 

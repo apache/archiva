@@ -51,8 +51,6 @@
   </scm>
 
   <properties>
-    <!-- Note: when upgrading to 2.3.1+, template/xhtml can be removed from the
-         webapp resources -->
     <commons-codec.version>1.6</commons-codec.version>
     <commons-collections.version>3.2.1</commons-collections.version>
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
@@ -1805,8 +1803,9 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
+          <version>2.5</version>
           <configuration>
-            <tagBase>https://svn.apache.org/repos/asf/archiva/tags</tagBase>
+            <localCheckout>true</localCheckout>
             <useReleaseProfile>false</useReleaseProfile>
             <autoVersionSubmodules>true</autoVersionSubmodules>
             <goals>deploy</goals>

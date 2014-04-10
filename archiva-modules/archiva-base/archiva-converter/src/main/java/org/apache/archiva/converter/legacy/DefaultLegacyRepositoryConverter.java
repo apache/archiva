@@ -101,7 +101,7 @@ public class DefaultLegacyRepositoryConverter
             legacyConverterConsumer.setExcludes( fileExclusionPatterns );
             legacyConverterConsumer.setDestinationRepository( repository );
 
-            List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>( 1 );
+            List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<>( 1 );
             knownConsumers.add( legacyConverterConsumer );
 
             List<InvalidRepositoryContentConsumer> invalidConsumers = Collections.emptyList();

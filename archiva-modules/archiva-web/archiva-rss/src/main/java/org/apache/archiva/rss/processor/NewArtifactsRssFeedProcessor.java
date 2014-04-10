@@ -102,7 +102,7 @@ public class NewArtifactsRssFeedProcessor
 
         long tmp = 0;
         RssFeedEntry entry = null;
-        List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
+        List<RssFeedEntry> entries = new ArrayList<>();
         String description = "";
         int idx = 0;
         for ( ArtifactMetadata artifact : artifacts )

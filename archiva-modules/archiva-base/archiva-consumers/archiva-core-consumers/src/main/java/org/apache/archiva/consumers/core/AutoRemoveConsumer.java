@@ -73,7 +73,7 @@ public class AutoRemoveConsumer
 
     private File repositoryDir;
 
-    private List<String> includes = new ArrayList<String>( 0 );
+    private List<String> includes = new ArrayList<>( 0 );
 
     public String getId()
     {

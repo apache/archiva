@@ -75,7 +75,7 @@ public class ArchivaLockedAdminEnvironmentCheck
         List<String> userManagerImpls =
             redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getUserManagerImpls();
 
-        userManagers = new ArrayList<UserManager>( userManagerImpls.size() );
+        userManagers = new ArrayList<>( userManagerImpls.size() );
 
         for ( String beanId : userManagerImpls )
         {
@@ -100,7 +100,7 @@ public class ArchivaLockedAdminEnvironmentCheck
                 {
                     continue;
                 }
-                List<String> roles = new ArrayList<String>();
+                List<String> roles = new ArrayList<>();
                 roles.add( RedbackRoleConstants.SYSTEM_ADMINISTRATOR_ROLE );
 
                 List<UserAssignment> systemAdminstrators;

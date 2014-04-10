@@ -46,7 +46,7 @@ public class MavenRepositorySearchTest
     private void createSimpleIndex( boolean scan )
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
@@ -60,7 +60,7 @@ public class MavenRepositorySearchTest
     private void createIndexContainingMoreArtifacts( boolean scan )
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
@@ -82,7 +82,7 @@ public class MavenRepositorySearchTest
     private void createIndexContainingMultipleArtifactsSameVersion( boolean scan )
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
 
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
@@ -188,7 +188,7 @@ public class MavenRepositorySearchTest
     {
         createIndexContainingMultipleArtifactsSameVersion( false );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         // search artifactId
@@ -218,7 +218,7 @@ public class MavenRepositorySearchTest
     {
         createIndexContainingMultipleArtifactsSameVersion( true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         // search artifactId
@@ -255,7 +255,7 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( false );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
@@ -275,7 +275,7 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         // page 1
@@ -324,14 +324,14 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( true );
 
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.1/archiva-search-1.1.jar" ) );
         createIndex( TEST_REPO_2, files, false );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
         selectedRepos.add( TEST_REPO_2 );
 
@@ -369,7 +369,7 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( false );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
@@ -388,7 +388,7 @@ public class MavenRepositorySearchTest
     public void testNoIndexFound()
         throws Exception
     {
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
@@ -406,7 +406,7 @@ public class MavenRepositorySearchTest
     public void testRepositoryNotFound()
         throws Exception
     {
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( "non-existing-repo" );
 
         EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
@@ -426,10 +426,10 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
-        List<String> previousSearchTerms = new ArrayList<String>();
+        List<String> previousSearchTerms = new ArrayList<>();
         previousSearchTerms.add( "archiva-test" );
 
         EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
@@ -455,14 +455,14 @@ public class MavenRepositorySearchTest
     public void testAdvancedSearch()
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.1/archiva-search-1.1.jar" ) );
         createIndex( TEST_REPO_2, files, false );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_2 );
 
         SearchFields searchFields = new SearchFields();
@@ -493,7 +493,7 @@ public class MavenRepositorySearchTest
     {
         createIndexContainingMoreArtifacts( false );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
@@ -541,14 +541,14 @@ public class MavenRepositorySearchTest
     public void testAdvancedSearchArtifactIdHasNumericChar()
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         files.add( new File( FileUtil.getBasedir(),
                              "src/test/" + TEST_REPO_1 + "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
             + "/com/artifactid-numeric123/1.0/artifactid-numeric123-1.0.jar" ) );
         createIndex( TEST_REPO_1, files, true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
@@ -590,7 +590,7 @@ public class MavenRepositorySearchTest
     public void testAdvancedSearchSearchFieldsAreNull()
         throws Exception
     {
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
@@ -618,7 +618,7 @@ public class MavenRepositorySearchTest
     public void testAdvancedSearchSearchFieldsAreBlank()
         throws Exception
     {
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
@@ -654,7 +654,7 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
@@ -689,7 +689,7 @@ public class MavenRepositorySearchTest
     {
         createIndexContainingMoreArtifacts( true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
@@ -714,7 +714,7 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
@@ -768,7 +768,7 @@ public class MavenRepositorySearchTest
     public void testAdvancedSearchNoIndexFound()
         throws Exception
     {
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();

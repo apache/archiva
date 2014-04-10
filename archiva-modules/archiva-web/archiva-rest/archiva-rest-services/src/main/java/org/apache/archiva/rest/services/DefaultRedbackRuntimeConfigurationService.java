@@ -200,8 +200,7 @@ public class DefaultRedbackRuntimeConfigurationService
             return Collections.emptyList();
         }
 
-        List<UserManagerImplementationInformation> informations =
-            new ArrayList<UserManagerImplementationInformation>( beans.size() );
+        List<UserManagerImplementationInformation> informations = new ArrayList<>( beans.size() );
 
         for ( Map.Entry<String, UserManager> entry : beans.entrySet() )
         {
@@ -229,8 +228,7 @@ public class DefaultRedbackRuntimeConfigurationService
             return Collections.emptyList();
         }
 
-        List<RBACManagerImplementationInformation> informations =
-            new ArrayList<RBACManagerImplementationInformation>( beans.size() );
+        List<RBACManagerImplementationInformation> informations = new ArrayList<>( beans.size() );
 
         for ( Map.Entry<String, RBACManager> entry : beans.entrySet() )
         {
@@ -314,12 +312,12 @@ public class DefaultRedbackRuntimeConfigurationService
         }
         catch ( InvalidNameException e )
         {
-            log.warn( "fail to get ldapConnection: {}", e.getMessage(), e);
+            log.warn( "fail to get ldapConnection: {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         catch ( LdapException e )
         {
-            log.warn( "fail to get ldapConnection: {}", e.getMessage(), e);
+            log.warn( "fail to get ldapConnection: {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         finally

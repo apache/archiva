@@ -81,7 +81,7 @@ public abstract class AbstractUpdatePolicy
      */
     public static final String ONCE = "once";
 
-    private List<String> options = new ArrayList<String>( 5 );
+    private List<String> options = new ArrayList<>( 5 );
 
     public AbstractUpdatePolicy()
     {

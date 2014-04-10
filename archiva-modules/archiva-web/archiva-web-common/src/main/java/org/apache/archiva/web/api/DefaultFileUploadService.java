@@ -604,7 +604,7 @@ public class DefaultFileUploadService
                                         String artifactId, String version, String packaging )
         throws RepositoryMetadataException
     {
-        List<String> availableVersions = new ArrayList<String>();
+        List<String> availableVersions = new ArrayList<>();
         String latestVersion = version;
 
         File projectDir = new File( targetPath ).getParentFile();

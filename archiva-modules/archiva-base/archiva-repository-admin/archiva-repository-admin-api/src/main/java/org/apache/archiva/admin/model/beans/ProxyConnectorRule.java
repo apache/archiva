@@ -75,7 +75,7 @@ public class ProxyConnectorRule
     {
         if ( this.proxyConnectors == null )
         {
-            this.proxyConnectors = new ArrayList<ProxyConnector>();
+            this.proxyConnectors = new ArrayList<>();
         }
         return proxyConnectors;
     }

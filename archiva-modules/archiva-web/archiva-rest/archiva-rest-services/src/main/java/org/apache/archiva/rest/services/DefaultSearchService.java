@@ -170,7 +170,7 @@ public class DefaultSearchService
         }
         try
         {
-            return new GroupIdList( new ArrayList<String>( repositorySearch.getAllGroupIds( getPrincipal(), repos ) ) );
+            return new GroupIdList( new ArrayList<>( repositorySearch.getAllGroupIds( getPrincipal(), repos ) ) );
         }
         catch ( RepositorySearchException e )
         {
@@ -209,7 +209,7 @@ public class DefaultSearchService
         {
             return Collections.emptyList();
         }
-        List<Artifact> artifacts = new ArrayList<Artifact>( searchResults.getReturnedHitsCount() );
+        List<Artifact> artifacts = new ArrayList<>( searchResults.getReturnedHitsCount() );
         for ( SearchResultHit hit : searchResults.getHits() )
         {
             // duplicate Artifact one per available version

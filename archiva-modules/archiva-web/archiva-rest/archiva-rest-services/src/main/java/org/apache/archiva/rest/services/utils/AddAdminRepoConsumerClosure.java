@@ -34,7 +34,7 @@ import java.util.List;
 public class AddAdminRepoConsumerClosure
     implements Closure
 {
-    private List<AdminRepositoryConsumer> list = new ArrayList<AdminRepositoryConsumer>();
+    private List<AdminRepositoryConsumer> list = new ArrayList<>();
 
     private List<String> selectedIds;
 

@@ -210,7 +210,7 @@ public class RepositoryMetadataMerge
             return null;
         }
         
-        List<Plugin> result = new ArrayList<Plugin>();
+        List<Plugin> result = new ArrayList<>();
         
         for (Plugin plugin : plugins)
         {

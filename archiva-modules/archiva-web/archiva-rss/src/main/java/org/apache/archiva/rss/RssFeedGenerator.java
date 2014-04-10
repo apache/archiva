@@ -72,7 +72,7 @@ public class RssFeedGenerator
 
     private List<SyndEntry> getEntries( List<RssFeedEntry> dataEntries )
     {
-        List<SyndEntry> entries = new ArrayList<SyndEntry>();
+        List<SyndEntry> entries = new ArrayList<>();
 
         SyndEntry entry;
         SyndContent description;

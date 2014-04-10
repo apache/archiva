@@ -52,7 +52,7 @@ public class SearchFields
     /**
      * repositories
      */
-    private List<String> repositories = new ArrayList<String>();
+    private List<String> repositories = new ArrayList<>();
 
 
     /**

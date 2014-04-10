@@ -181,12 +181,12 @@ public class SecuritySynchronization
         stopWatch.reset();
         stopWatch.start();
 
-        List<String> violations = new ArrayList<String>();
+        List<String> violations = new ArrayList<>();
 
         for ( Entry<String, EnvironmentCheck> entry : checkers.entrySet() )
         {
             EnvironmentCheck check = entry.getValue();
-            List<String> v = new ArrayList<String>();
+            List<String> v = new ArrayList<>();
             check.validateEnvironment( v );
             log.info( "Environment Check: {} -> {} violation(s)", entry.getKey(), v.size() );
             for ( String s : v )

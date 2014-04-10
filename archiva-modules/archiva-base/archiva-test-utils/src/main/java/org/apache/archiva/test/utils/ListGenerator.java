@@ -58,7 +58,7 @@ public class ListGenerator
             return null;
         }
 
-        List<FrameworkMethod> generated = new ArrayList<FrameworkMethod>();
+        List<FrameworkMethod> generated = new ArrayList<>();
 
         testRound = Math.min( MAXROUND, testRound );
 

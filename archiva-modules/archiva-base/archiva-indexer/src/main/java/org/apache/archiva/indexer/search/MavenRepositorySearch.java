@@ -288,7 +288,7 @@ public class MavenRepositorySearch
 
     private List<IndexingContext> getIndexingContexts( List<String> ids )
     {
-        List<IndexingContext> contexts = new ArrayList<IndexingContext>( ids.size() );
+        List<IndexingContext> contexts = new ArrayList<>( ids.size() );
 
         for ( String id : ids )
         {
@@ -363,7 +363,7 @@ public class MavenRepositorySearch
             }
         }
 
-        return new ArrayList<String>( indexingContextIds );
+        return new ArrayList<>( indexingContextIds );
     }
 
 

@@ -99,8 +99,8 @@ public class DefaultRepositoryScanner
 
         // Setup Includes / Excludes.
 
-        List<String> allExcludes = new ArrayList<String>();
-        List<String> allIncludes = new ArrayList<String>();
+        List<String> allExcludes = new ArrayList<>();
+        List<String> allIncludes = new ArrayList<>();
 
         if ( CollectionUtils.isNotEmpty( ignoredContentPatterns ) )
         {
@@ -147,7 +147,7 @@ public class DefaultRepositoryScanner
 
     private List<String> gatherIds( List<? extends RepositoryContentConsumer> consumers )
     {
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         for ( RepositoryContentConsumer consumer : consumers )
         {
             ids.add( consumer.getId() );

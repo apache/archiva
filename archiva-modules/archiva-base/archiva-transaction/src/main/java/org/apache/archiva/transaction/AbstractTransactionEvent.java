@@ -40,11 +40,11 @@ import java.util.Map;
 public abstract class AbstractTransactionEvent
     implements TransactionEvent
 {
-    private Map<File, File> backups = new HashMap<File, File>();
+    private Map<File, File> backups = new HashMap<>();
 
-    private List<File> createdDirs = new ArrayList<File>();
+    private List<File> createdDirs = new ArrayList<>();
 
-    private List<File> createdFiles = new ArrayList<File>();
+    private List<File> createdFiles = new ArrayList<>();
 
     /**
      * {@link List}&lt;{@link Digester}&gt;
@@ -75,7 +75,7 @@ public abstract class AbstractTransactionEvent
     protected void mkDirs( File dir )
         throws IOException
     {
-        List<File> createDirs = new ArrayList<File>();
+        List<File> createDirs = new ArrayList<>();
 
         File parent = dir;
         while ( !parent.exists() || !parent.isDirectory() )
@@ -87,7 +87,7 @@ public abstract class AbstractTransactionEvent
 
         while ( !createDirs.isEmpty() )
         {
-            File directory = (File) createDirs.remove( createDirs.size() - 1 );
+            File directory = createDirs.remove( createDirs.size() - 1 );
 
             if ( directory.mkdir() )
             {

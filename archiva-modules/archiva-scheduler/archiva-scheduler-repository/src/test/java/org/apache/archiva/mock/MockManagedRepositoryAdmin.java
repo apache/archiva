@@ -45,7 +45,7 @@ public class MockManagedRepositoryAdmin
         List<ManagedRepositoryConfiguration> managedRepoConfigs =
             getArchivaConfiguration().getConfiguration().getManagedRepositories();
 
-        List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>( managedRepoConfigs.size() );
+        List<ManagedRepository> managedRepos = new ArrayList<>( managedRepoConfigs.size() );
 
         for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
         {

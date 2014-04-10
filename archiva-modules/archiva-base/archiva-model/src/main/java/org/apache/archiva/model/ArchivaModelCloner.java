@@ -109,7 +109,7 @@ public class ArchivaModelCloner
             return null;
         }
 
-        List<ArtifactReference> ret = new ArrayList<ArtifactReference>( artifactReferenceList.size() );
+        List<ArtifactReference> ret = new ArrayList<>( artifactReferenceList.size() );
 
         for ( ArtifactReference ref : artifactReferenceList )
         {
@@ -126,7 +126,7 @@ public class ArchivaModelCloner
             return null;
         }
 
-        List<String> ret = new ArrayList<String>( simple.size() );
+        List<String> ret = new ArrayList<>( simple.size() );
 
         for ( String txt : simple )
         {

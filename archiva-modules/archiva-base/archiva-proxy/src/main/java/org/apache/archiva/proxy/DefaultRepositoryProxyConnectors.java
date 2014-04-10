@@ -193,7 +193,7 @@ public class DefaultRepositoryProxyConnectors
                 connector.setDisabled( proxyConfig.isDisabled() );
 
                 // Copy any blacklist patterns.
-                List<String> blacklist = new ArrayList<String>( 0 );
+                List<String> blacklist = new ArrayList<>( 0 );
                 if ( CollectionUtils.isNotEmpty( proxyConfig.getBlackListPatterns() ) )
                 {
                     blacklist.addAll( proxyConfig.getBlackListPatterns() );
@@ -201,7 +201,7 @@ public class DefaultRepositoryProxyConnectors
                 connector.setBlacklist( blacklist );
 
                 // Copy any whitelist patterns.
-                List<String> whitelist = new ArrayList<String>( 0 );
+                List<String> whitelist = new ArrayList<>( 0 );
                 if ( CollectionUtils.isNotEmpty( proxyConfig.getWhiteListPatterns() ) )
                 {
                     whitelist.addAll( proxyConfig.getWhiteListPatterns() );
@@ -236,7 +236,7 @@ public class DefaultRepositoryProxyConnectors
                 if ( connectors == null )
                 {
                     // Create if we are the first.
-                    connectors = new ArrayList<ProxyConnector>( 1 );
+                    connectors = new ArrayList<>( 1 );
                 }
 
                 // Add the connector.
@@ -285,7 +285,7 @@ public class DefaultRepositoryProxyConnectors
                                                                            List<ProxyConnectorRuleConfiguration> all )
     {
         List<ProxyConnectorRuleConfiguration> proxyConnectorRuleConfigurations =
-            new ArrayList<ProxyConnectorRuleConfiguration>();
+            new ArrayList<>();
 
         for ( ProxyConnectorRuleConfiguration proxyConnectorRuleConfiguration : all )
         {

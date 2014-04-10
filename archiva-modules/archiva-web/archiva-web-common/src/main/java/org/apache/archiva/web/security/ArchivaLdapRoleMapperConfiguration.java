@@ -155,7 +155,7 @@ public class ArchivaLdapRoleMapperConfiguration
             RedbackRuntimeConfiguration redbackRuntimeConfiguration =
                 redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration();
 
-            List<LdapGroupMapping> ldapGroupMappings = new ArrayList<LdapGroupMapping>( mappings.size() );
+            List<LdapGroupMapping> ldapGroupMappings = new ArrayList<>( mappings.size() );
 
             for ( Map.Entry<String, List<String>> entry : mappings.entrySet() )
             {

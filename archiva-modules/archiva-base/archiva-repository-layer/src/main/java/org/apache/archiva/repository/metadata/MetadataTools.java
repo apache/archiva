@@ -349,8 +349,8 @@ public class MetadataTools
     @PostConstruct
     public void initialize()
     {
-        this.artifactPatterns = new ArrayList<String>();
-        this.proxies = new HashMap<String, Set<String>>();
+        this.artifactPatterns = new ArrayList<>();
+        this.proxies = new HashMap<>();
         initConfigVariables();
 
         configuration.addChangeListener( this );
@@ -504,7 +504,7 @@ public class MetadataTools
     private List<ArchivaRepositoryMetadata> getMetadatasForManagedRepository(
         ManagedRepositoryContent managedRepository, String logicalResource )
     {
-        List<ArchivaRepositoryMetadata> metadatas = new ArrayList<ArchivaRepositoryMetadata>();
+        List<ArchivaRepositoryMetadata> metadatas = new ArrayList<>();
         File file = new File( managedRepository.getRepoRoot(), logicalResource );
         if ( file.exists() )
         {
@@ -622,7 +622,7 @@ public class MetadataTools
         else
         {
             // Add the plugins to the metadata model.
-            metadata.setPlugins( new ArrayList<Plugin>( allPlugins ) );
+            metadata.setPlugins( new ArrayList<>( allPlugins ) );
 
             // artifact ID was actually the last part of the group
             metadata.setGroupId( metadata.getGroupId() + "." + metadata.getArtifactId() );
@@ -643,12 +643,12 @@ public class MetadataTools
     private void updateMetadataVersions( Collection<String> allVersions, ArchivaRepositoryMetadata metadata )
     {
         // Sort the versions
-        List<String> sortedVersions = new ArrayList<String>( allVersions );
+        List<String> sortedVersions = new ArrayList<>( allVersions );
         Collections.sort( sortedVersions, VersionComparator.getInstance() );
 
         // Split the versions into released and snapshots.
-        List<String> releasedVersions = new ArrayList<String>();
-        List<String> snapshotVersions = new ArrayList<String>();
+        List<String> releasedVersions = new ArrayList<>();
+        List<String> snapshotVersions = new ArrayList<>();
 
         for ( String version : sortedVersions )
         {
@@ -795,7 +795,7 @@ public class MetadataTools
             }
 
             // sort the list to determine to aide in determining the Latest version.
-            List<String> sortedVersions = new ArrayList<String>();
+            List<String> sortedVersions = new ArrayList<>();
             sortedVersions.addAll( snapshotVersions );
             Collections.sort( sortedVersions, new VersionComparator() );
 

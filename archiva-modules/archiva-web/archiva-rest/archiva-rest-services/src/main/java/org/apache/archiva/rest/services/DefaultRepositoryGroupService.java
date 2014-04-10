@@ -48,10 +48,10 @@ public class DefaultRepositoryGroupService
         try
         {
             List<RepositoryGroup> repositoriesGroups =
-                new ArrayList<RepositoryGroup>( repositoryGroupAdmin.getRepositoriesGroups().size() );
+                new ArrayList<>( repositoryGroupAdmin.getRepositoriesGroups().size() );
             for ( org.apache.archiva.admin.model.beans.RepositoryGroup repoGroup : repositoryGroupAdmin.getRepositoriesGroups() )
             {
-                repositoriesGroups.add( new RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
+                repositoriesGroups.add( new RepositoryGroup( repoGroup.getId(), new ArrayList<>(
                     repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() ).mergedIndexTtl(
                     repoGroup.getMergedIndexTtl() ).cronExpression( repoGroup.getCronExpression() ) );
             }
@@ -82,7 +82,7 @@ public class DefaultRepositoryGroupService
         try
         {
             return repositoryGroupAdmin.addRepositoryGroup(
-                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
+                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<>(
                     repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() ).mergedIndexTtl(
                     repoGroup.getMergedIndexTtl() ).cronExpression( repoGroup.getCronExpression() ),
                 getAuditInformation() );
@@ -99,7 +99,7 @@ public class DefaultRepositoryGroupService
         try
         {
             return repositoryGroupAdmin.updateRepositoryGroup(
-                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
+                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<>(
                     repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() ).mergedIndexTtl(
                     repoGroup.getMergedIndexTtl() ).cronExpression( repoGroup.getCronExpression() ),
                 getAuditInformation() );

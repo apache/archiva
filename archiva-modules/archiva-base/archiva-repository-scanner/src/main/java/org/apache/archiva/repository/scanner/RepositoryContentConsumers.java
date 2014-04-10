@@ -164,7 +164,7 @@ public class RepositoryContentConsumers
         {
             return selectedKnownConsumers;
         }
-        List<KnownRepositoryContentConsumer> ret = new ArrayList<KnownRepositoryContentConsumer>();
+        List<KnownRepositoryContentConsumer> ret = new ArrayList<>();
 
         List<String> knownSelected = getSelectedKnownConsumerIds();
 
@@ -195,7 +195,7 @@ public class RepositoryContentConsumers
             return selectedInvalidConsumers;
         }
 
-        List<InvalidRepositoryContentConsumer> ret = new ArrayList<InvalidRepositoryContentConsumer>();
+        List<InvalidRepositoryContentConsumer> ret = new ArrayList<>();
 
         List<String> invalidSelected = getSelectedInvalidConsumerIds();
 
@@ -219,7 +219,7 @@ public class RepositoryContentConsumers
      */
     public List<KnownRepositoryContentConsumer> getAvailableKnownConsumers()
     {
-        return new ArrayList<KnownRepositoryContentConsumer>(
+        return new ArrayList<>(
             applicationContext.getBeansOfType( KnownRepositoryContentConsumer.class ).values() );
     }
 
@@ -232,7 +232,7 @@ public class RepositoryContentConsumers
      */
     public List<InvalidRepositoryContentConsumer> getAvailableInvalidConsumers()
     {
-        return new ArrayList<InvalidRepositoryContentConsumer>(
+        return new ArrayList<>(
             applicationContext.getBeansOfType( InvalidRepositoryContentConsumer.class ).values() );
     }
 
@@ -261,7 +261,7 @@ public class RepositoryContentConsumers
             // - do not create missing/fix invalid checksums and update metadata when deploying from webdav since these are uploaded by maven
             if ( !updateRelatedArtifacts )
             {
-                List<KnownRepositoryContentConsumer> clone = new ArrayList<KnownRepositoryContentConsumer>();
+                List<KnownRepositoryContentConsumer> clone = new ArrayList<>();
                 clone.addAll( selectedKnownConsumers );
 
                 for ( KnownRepositoryContentConsumer consumer : clone )

@@ -259,7 +259,7 @@ public class ArchivaConfigurableUsersManager
     public List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )
         throws UserManagerException
     {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
@@ -275,7 +275,7 @@ public class ArchivaConfigurableUsersManager
     public List<User> findUsersByFullNameKey( String fullNameKey, boolean orderAscending )
         throws UserManagerException
     {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
@@ -291,7 +291,7 @@ public class ArchivaConfigurableUsersManager
     public List<User> findUsersByQuery( UserQuery query )
         throws UserManagerException
     {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
@@ -307,7 +307,7 @@ public class ArchivaConfigurableUsersManager
     public List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
         throws UserManagerException
     {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
@@ -328,7 +328,7 @@ public class ArchivaConfigurableUsersManager
     public List<User> getUsers()
         throws UserManagerException
     {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
@@ -344,7 +344,7 @@ public class ArchivaConfigurableUsersManager
     public List<User> getUsers( boolean orderAscending )
         throws UserManagerException
     {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
         {

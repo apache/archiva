@@ -70,7 +70,7 @@ public class ArtifactMissingChecksumsConsumer
 
     private File repositoryDir;
 
-    private List<String> includes = new ArrayList<String>( 0 );
+    private List<String> includes = new ArrayList<>( 0 );
 
     @Inject
     public ArtifactMissingChecksumsConsumer( ArchivaConfiguration configuration, FileTypes filetypes )

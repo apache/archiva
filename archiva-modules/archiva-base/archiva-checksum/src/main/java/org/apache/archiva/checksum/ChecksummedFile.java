@@ -20,14 +20,12 @@ package org.apache.archiva.checksum;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -143,7 +141,7 @@ public class ChecksummedFile
 
         try (FileInputStream fis = new FileInputStream( referenceFile ))
         {
-            List<Checksum> checksums = new ArrayList<Checksum>( algorithms.length );
+            List<Checksum> checksums = new ArrayList<>( algorithms.length );
             // Create checksum object for each algorithm.
             for ( ChecksumAlgorithm checksumAlgorithm : algorithms )
             {
@@ -215,7 +213,7 @@ public class ChecksummedFile
      */
     public boolean fixChecksums( ChecksumAlgorithm[] algorithms )
     {
-        List<Checksum> checksums = new ArrayList<Checksum>( algorithms.length );
+        List<Checksum> checksums = new ArrayList<>( algorithms.length );
         // Create checksum object for each algorithm.
         for ( ChecksumAlgorithm checksumAlgorithm : algorithms )
         {

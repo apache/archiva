@@ -108,7 +108,7 @@ public class MockArchivaAdministration
     public List<String> getKnownContentConsumers()
         throws RepositoryAdminException
     {
-        return new ArrayList<String>(
+        return new ArrayList<>(
             getArchivaConfiguration().getConfiguration().getRepositoryScanning().getKnownContentConsumers() );
     }
 
@@ -133,7 +133,7 @@ public class MockArchivaAdministration
     public List<String> getInvalidContentConsumers()
         throws RepositoryAdminException
     {
-        return new ArrayList<String>(
+        return new ArrayList<>(
             getArchivaConfiguration().getConfiguration().getRepositoryScanning().getInvalidContentConsumers() );
     }
 

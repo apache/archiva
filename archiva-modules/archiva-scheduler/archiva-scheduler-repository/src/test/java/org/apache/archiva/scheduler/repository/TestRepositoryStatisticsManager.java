@@ -82,7 +82,7 @@ public class TestRepositoryStatisticsManager
         List<RepositoryStatistics> stats = repoStats.get( repositoryId );
         if ( stats == null )
         {
-            stats = new ArrayList<RepositoryStatistics>();
+            stats = new ArrayList<>();
             repoStats.put( repositoryId, stats );
         }
         return stats;

@@ -112,7 +112,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             reference.setArtifactId( artifactRef.getArtifactId() );
 
             // Gether the released versions
-            List<String> releasedVersions = new ArrayList<String>();
+            List<String> releasedVersions = new ArrayList<>();
 
             List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
             for ( ManagedRepository repo : repos )

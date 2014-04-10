@@ -52,7 +52,7 @@ public class ArtifactCountConsumer
     public ArtifactCountConsumer()
     {
         // TODO: shouldn't this use filetypes?
-        includes = new ArrayList<String>();
+        includes = new ArrayList<>();
         includes.add( "**/*.pom" );
         includes.add( "**/*.jar" );
         includes.add( "**/*.war" );
