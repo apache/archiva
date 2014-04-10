@@ -20,10 +20,12 @@ Test Registration email
 Redback can send email on registration by default the mail jndi si configured to use localhost.
 You can use your gmail accout for testing purpose
 In your ~/.m2/settings.xml add a property with a path to a tomcat context file:
+```
 <tomcatContextXml>/Users/olamy/dev/tomcat-context-archiva-gmail.xml</tomcatContextXml>
-
+```
 This file must contains:
 
+```
 <Context path="/archiva">
   <Resource name="jdbc/users" auth="Container" type="javax.sql.DataSource"
             username="sa"
@@ -42,6 +44,7 @@ This file must contains:
           mail.smtp.socketFactory.class="javax.net.ssl.SSLSocketFactory"/>
 
 </Context>
+```
 
 Using with cassandra as metadata storage
 ========================
