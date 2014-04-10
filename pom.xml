@@ -42,7 +42,6 @@
     <module>archiva-modules</module>
     <module>archiva-docs</module>
     <module>archiva-jetty</module>
-    <!--module>archiva-tomcat-js</module-->
   </modules>
 
   <scm>
