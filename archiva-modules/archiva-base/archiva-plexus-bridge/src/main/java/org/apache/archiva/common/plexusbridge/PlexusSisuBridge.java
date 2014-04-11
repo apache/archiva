@@ -122,7 +122,7 @@ public class PlexusSisuBridge
             Method method = classLoader.getClass().getMethod( "getURLs", new Class[]{ } );
             if ( method != null )
             {
-                return (URL[]) method.invoke( classLoader, null );
+                return (URL[]) method.invoke( classLoader );
             }
         }
         catch ( Exception e )
