@@ -38,6 +38,7 @@ public class ProxyConnectorOrderComparator
         return INSTANCE;
     }
 
+    @Override
     public int compare( ProxyConnector o1, ProxyConnector o2 )
     {
         if ( o1 == null && o2 == null )

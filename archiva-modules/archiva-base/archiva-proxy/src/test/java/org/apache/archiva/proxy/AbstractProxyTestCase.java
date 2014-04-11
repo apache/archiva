@@ -38,7 +38,6 @@ import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.wagon.Wagon;

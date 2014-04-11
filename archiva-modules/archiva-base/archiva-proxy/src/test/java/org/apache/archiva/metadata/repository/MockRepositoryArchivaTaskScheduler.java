@@ -30,22 +30,26 @@ import org.springframework.stereotype.Service;
 public class MockRepositoryArchivaTaskScheduler
     implements RepositoryArchivaTaskScheduler
 {
+    @Override
     public boolean isProcessingRepositoryTask( String repositoryId )
     {
         return false;
     }
 
+    @Override
     public boolean isProcessingRepositoryTask( RepositoryTask task )
     {
         return false;
     }
 
+    @Override
     public void queueTask( RepositoryTask task )
         throws TaskQueueException
     {
         // no op
     }
 
+    @Override
     public boolean unQueueTask( RepositoryTask task )
         throws TaskQueueException
     {

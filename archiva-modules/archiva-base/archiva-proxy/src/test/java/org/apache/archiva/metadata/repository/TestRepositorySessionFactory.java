@@ -1,7 +1,6 @@
 package org.apache.archiva.metadata.repository;
 
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Configurable;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.Initializable;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Startable;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +28,7 @@ public class TestRepositorySessionFactory
 {
     private MetadataResolver resolver;
 
+    @Override
     public RepositorySession createSession()
     {
         return new RepositorySession( new TestMetadataRepository(), resolver );

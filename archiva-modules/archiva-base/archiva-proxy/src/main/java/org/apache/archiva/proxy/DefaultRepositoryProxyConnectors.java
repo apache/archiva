@@ -87,7 +87,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -136,7 +135,7 @@ public class DefaultRepositoryProxyConnectors
 
     private Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<>();
 
-    private Map<String, ProxyInfo> networkProxyMap = new ConcurrentHashMap<String, ProxyInfo>();
+    private Map<String, ProxyInfo> networkProxyMap = new ConcurrentHashMap<>();
 
     @Inject
     private WagonFactory wagonFactory;
@@ -302,6 +301,7 @@ public class DefaultRepositoryProxyConnectors
         return proxyConnectorRuleConfigurations;
     }
 
+    @Override
     public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
         throws ProxyDownloadException
     {
@@ -313,7 +313,7 @@ public class DefaultRepositoryProxyConnectors
         requestProperties.setProperty( "managedRepositoryId", repository.getId() );
 
         List<ProxyConnector> connectors = getProxyConnectors( repository );
-        Map<String, Exception> previousExceptions = new LinkedHashMap<String, Exception>();
+        Map<String, Exception> previousExceptions = new LinkedHashMap<>();
         for ( ProxyConnector connector : connectors )
         {
             if ( connector.isDisabled() )
@@ -354,12 +354,7 @@ public class DefaultRepositoryProxyConnectors
                 log.debug( "Artifact {} not updated on repository \"{}\".", Keys.toKey( artifact ),
                            targetRepository.getRepository().getId() );
             }
-            catch ( ProxyException e )
-            {
-                validatePolicies( this.downloadErrorPolicies, connector.getPolicies(), requestProperties, artifact,
-                                  targetRepository, localFile, e, previousExceptions );
-            }
-            catch ( RepositoryAdminException e )
+            catch ( ProxyException | RepositoryAdminException e )
             {
                 validatePolicies( this.downloadErrorPolicies, connector.getPolicies(), requestProperties, artifact,
                                   targetRepository, localFile, e, previousExceptions );
@@ -377,6 +372,7 @@ public class DefaultRepositoryProxyConnectors
         return null;
     }
 
+    @Override
     public File fetchFromProxies( ManagedRepositoryContent repository, String path )
     {
         File localFile = new File( repository.getRepoRoot(), path );
@@ -450,6 +446,7 @@ public class DefaultRepositoryProxyConnectors
         return null;
     }
 
+    @Override
     public File fetchMetatadaFromProxies( ManagedRepositoryContent repository, String logicalPath )
     {
         File localFile = new File( repository.getRepoRoot(), logicalPath );
@@ -496,14 +493,7 @@ public class DefaultRepositoryProxyConnectors
                            targetRepository.getRepository().getId(), e );
 
             }
-            catch ( ProxyException e )
-            {
-                log.warn(
-                    "Transfer error from repository {} for versioned Metadata {}, continuing to next repository. Error message: {}",
-                    targetRepository.getRepository().getId(), logicalPath, e.getMessage() );
-                log.debug( "Full stack trace", e );
-            }
-            catch ( RepositoryAdminException e )
+            catch ( ProxyException | RepositoryAdminException e )
             {
                 log.warn(
                     "Transfer error from repository {} for versioned Metadata {}, continuing to next repository. Error message: {}",
@@ -550,6 +540,7 @@ public class DefaultRepositoryProxyConnectors
      * @param repository
      * @throws ProxyException
      * @throws NotModifiedException
+     * @throws org.apache.archiva.admin.model.RepositoryAdminException
      */
     protected void transferResources( ProxyConnector connector, RemoteRepositoryContent remoteRepository, File tmpMd5,
                                       File tmpSha1, File tmpResource, String url, String remotePath, File resource,
@@ -669,6 +660,7 @@ public class DefaultRepositoryProxyConnectors
     /**
      * Test if the provided ManagedRepositoryContent has any proxies configured for it.
      */
+    @Override
     public boolean hasProxies( ManagedRepositoryContent repository )
     {
         synchronized ( this.proxyConnectorMap )
@@ -700,12 +692,7 @@ public class DefaultRepositoryProxyConnectors
             return false;
         }
 
-        if ( !file.isFile() )
-        {
-            return false;
-        }
-
-        return true;
+        return file.isFile();
     }
 
     /**
@@ -1204,12 +1191,7 @@ public class DefaultRepositoryProxyConnectors
             wagon.connect( wagonRepository, authInfo, networkProxy );
             connected = true;
         }
-        catch ( ConnectionException e )
-        {
-            log.warn( "Could not connect to {}: {}", remoteRepository.getRepository().getName(), e.getMessage() );
-            connected = false;
-        }
-        catch ( AuthenticationException e )
+        catch ( ConnectionException | AuthenticationException e )
         {
             log.warn( "Could not connect to {}: {}", remoteRepository.getRepository().getName(), e.getMessage() );
             connected = false;
@@ -1256,6 +1238,7 @@ public class DefaultRepositoryProxyConnectors
     /**
      * TODO: Ensure that list is correctly ordered based on configuration. See MRM-477
      */
+    @Override
     public List<ProxyConnector> getProxyConnectors( ManagedRepositoryContent repository )
     {
         synchronized ( this.proxyConnectorMap )
@@ -1271,6 +1254,7 @@ public class DefaultRepositoryProxyConnectors
         }
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isNetworkProxy( propertyName ) || ConfigurationNames.isManagedRepositories(
@@ -1304,6 +1288,7 @@ public class DefaultRepositoryProxyConnectors
     }
 
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* do nothing */

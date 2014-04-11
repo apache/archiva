@@ -138,6 +138,7 @@ public class HttpProxyTransferTest
 
         Handler handler = new AbstractHandler()
         {
+            @Override
             public void handle( String s, Request request, HttpServletRequest httpServletRequest,
                                 HttpServletResponse response )
                 throws IOException, ServletException
