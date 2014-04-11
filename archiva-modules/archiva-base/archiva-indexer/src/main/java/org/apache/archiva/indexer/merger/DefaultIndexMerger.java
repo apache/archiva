@@ -18,17 +18,10 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
-import com.google.common.io.Files;
-
-import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.RepositoryGroup;
-import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
@@ -64,7 +57,7 @@ public class DefaultIndexMerger
 
     private IndexPacker indexPacker;
 
-    private List<TemporaryGroupIndex> temporaryGroupIndexes = new CopyOnWriteArrayList<TemporaryGroupIndex>();
+    private List<TemporaryGroupIndex> temporaryGroupIndexes = new CopyOnWriteArrayList<>();
 
     private List<String> runningGroups = new CopyOnWriteArrayList<String>();
 
@@ -77,6 +70,7 @@ public class DefaultIndexMerger
         indexPacker = plexusSisuBridge.lookup( IndexPacker.class, "default" );
     }
 
+    @Override
     public IndexingContext buildMergedIndex( IndexMergerRequest indexMergerRequest )
         throws IndexMergerException
     {
@@ -147,6 +141,7 @@ public class DefaultIndexMerger
     }
 
     @Async
+    @Override
     public void cleanTemporaryGroupIndex( TemporaryGroupIndex temporaryGroupIndex )
     {
         if ( temporaryGroupIndex == null )
@@ -174,6 +169,7 @@ public class DefaultIndexMerger
         }
     }
 
+    @Override
     public Collection<TemporaryGroupIndex> getTemporaryGroupIndexes()
     {
         return this.temporaryGroupIndexes;

@@ -78,12 +78,7 @@ public class MergedRemoteIndexesTask
 
         MergedRemoteIndexesTask that = (MergedRemoteIndexesTask) o;
 
-        if ( !mergedRemoteIndexesTaskRequest.equals( that.mergedRemoteIndexesTaskRequest ) )
-        {
-            return false;
-        }
-
-        return true;
+        return mergedRemoteIndexesTaskRequest.equals( that.mergedRemoteIndexesTaskRequest );
     }
 
     @Override

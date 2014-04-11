@@ -20,7 +20,6 @@ package org.apache.archiva.indexer.merger;
  */
 
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
-import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
 import org.apache.archiva.scheduler.MergedRemoteIndexesScheduler;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -55,7 +54,7 @@ public class DefaultMergedRemoteIndexesScheduler
     @Inject
     private IndexMerger indexMerger;
 
-    private Map<String, ScheduledFuture> scheduledFutureMap = new ConcurrentHashMap<String, ScheduledFuture>();
+    private Map<String, ScheduledFuture> scheduledFutureMap = new ConcurrentHashMap<>();
 
     @Override
     public void schedule( RepositoryGroup repositoryGroup, File directory )

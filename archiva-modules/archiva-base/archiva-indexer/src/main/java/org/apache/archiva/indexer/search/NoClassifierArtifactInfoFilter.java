@@ -35,6 +35,7 @@ public class NoClassifierArtifactInfoFilter
 
     public static final List<? extends ArtifactInfoFilter> LIST = Arrays.asList( INSTANCE );
 
+    @Override
     public boolean addArtifactInResult( ArtifactInfo artifact, Map<String, SearchResultHit> currentResult )
     {
         return StringUtils.isBlank( artifact.classifier );

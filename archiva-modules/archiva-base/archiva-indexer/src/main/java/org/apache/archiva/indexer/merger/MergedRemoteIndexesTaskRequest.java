@@ -69,12 +69,7 @@ public class MergedRemoteIndexesTaskRequest
 
         MergedRemoteIndexesTaskRequest that = (MergedRemoteIndexesTaskRequest) o;
 
-        if ( !indexMergerRequest.equals( that.indexMergerRequest ) )
-        {
-            return false;
-        }
-
-        return true;
+        return indexMergerRequest.equals( that.indexMergerRequest );
     }
 
     @Override

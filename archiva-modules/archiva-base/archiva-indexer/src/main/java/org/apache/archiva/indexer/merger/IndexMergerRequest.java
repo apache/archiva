@@ -181,12 +181,7 @@ public class IndexMergerRequest
 
         IndexMergerRequest that = (IndexMergerRequest) o;
 
-        if ( !groupId.equals( that.groupId ) )
-        {
-            return false;
-        }
-
-        return true;
+        return groupId.equals( that.groupId );
     }
 
     @Override

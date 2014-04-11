@@ -87,6 +87,7 @@ public abstract class AbstractMavenRepositorySearch
     NexusIndexer nexusIndexer;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -126,6 +127,7 @@ public abstract class AbstractMavenRepositorySearch
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {
@@ -235,21 +237,25 @@ public abstract class AbstractMavenRepositorySearch
     {
         protected Logger log = LoggerFactory.getLogger( getClass() );
 
+        @Override
         public void scanningStarted( IndexingContext ctx )
         {
 
         }
 
+        @Override
         public void scanningFinished( IndexingContext ctx, ScanningResult result )
         {
 
         }
 
+        @Override
         public void artifactError( ArtifactContext ac, Exception e )
         {
             log.debug( "artifactError {}", ac.getArtifact().getPath(), e );
         }
 
+        @Override
         public void artifactDiscovered( ArtifactContext ac )
         {
             log.debug( "artifactDiscovered {}:{}", ac.getArtifact().getPath(), ac.getArtifactInfo() );

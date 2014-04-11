@@ -91,6 +91,7 @@ public class MavenRepositorySearch
     /**
      * @see RepositorySearch#search(String, List, String, SearchResultLimits, List)
      */
+    @Override
     public SearchResults search( String principal, List<String> selectedRepos, String term, SearchResultLimits limits,
                                  List<String> previousSearchTerms )
         throws RepositorySearchException
@@ -130,6 +131,7 @@ public class MavenRepositorySearch
     /**
      * @see RepositorySearch#search(String, SearchFields, SearchResultLimits)
      */
+    @Override
     public SearchResults search( String principal, SearchFields searchFields, SearchResultLimits limits )
         throws RepositorySearchException
     {
@@ -328,7 +330,7 @@ public class MavenRepositorySearch
      */
     private List<String> addIndexingContexts( List<String> selectedRepos )
     {
-        Set<String> indexingContextIds = new HashSet<String>();
+        Set<String> indexingContextIds = new HashSet<>();
         for ( String repo : selectedRepos )
         {
             try
@@ -367,10 +369,11 @@ public class MavenRepositorySearch
     }
 
 
+    @Override
     public Set<String> getRemoteIndexingContextIds( String managedRepoId )
         throws RepositoryAdminException
     {
-        Set<String> ids = new HashSet<String>();
+        Set<String> ids = new HashSet<>();
 
         List<ProxyConnector> proxyConnectors = proxyConnectorAdmin.getProxyConnectorAsMap().get( managedRepoId );
 
@@ -392,6 +395,7 @@ public class MavenRepositorySearch
         return ids;
     }
 
+    @Override
     public Collection<String> getAllGroupIds( String principal, List<String> selectedRepos )
         throws RepositorySearchException
     {
@@ -404,7 +408,7 @@ public class MavenRepositorySearch
 
         try
         {
-            Set<String> allGroupIds = new HashSet<String>();
+            Set<String> allGroupIds = new HashSet<>();
             for ( IndexingContext indexingContext : indexContexts )
             {
                 allGroupIds.addAll( indexingContext.getAllGroups() );
