@@ -37,9 +37,9 @@
   <version>1.3.8-SNAPSHOT</version>
   <url>http://archiva.apache.org</url>
   <scm>
-    <connection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva-site.git</connection>
-    <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva-site.git</developerConnection>
-    <url>https://github.com/apache/archiva-site</url>
+    <connection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva.git</connection>
+    <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva.git</developerConnection>
+    <url>https://github.com/apache/archiva</url>
   </scm>
 
   <build>
