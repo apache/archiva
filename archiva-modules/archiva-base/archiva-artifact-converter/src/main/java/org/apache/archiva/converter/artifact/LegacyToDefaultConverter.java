@@ -104,6 +104,7 @@ public class LegacyToDefaultConverter
         artifactHandlerManager = plexusSisuBridge.lookup( ArtifactHandlerManager.class );
     }
 
+    @Override
     public void convert( Artifact artifact, ArtifactRepository targetRepository )
         throws ArtifactConversionException
     {
@@ -677,11 +678,13 @@ public class LegacyToDefaultConverter
         warnings.put( artifact, messages );
     }
 
+    @Override
     public void clearWarnings()
     {
         warnings.clear();
     }
 
+    @Override
     public Map<Artifact, List<String>> getWarnings()
     {
         return warnings;

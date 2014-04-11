@@ -86,6 +86,7 @@ public class RepositorySession
      * exception occurs.
      * <b>can throw RuntimeException</b>
      */
+    @Override
     public void close()
     {
         try

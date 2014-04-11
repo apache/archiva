@@ -94,31 +94,37 @@ public class ArchivaMetadataCreationConsumer
 
     private String repoId;
 
+    @Override
     public String getId()
     {
         return this.id;
     }
 
+    @Override
     public String getDescription()
     {
         return this.description;
     }
 
+    @Override
     public boolean isPermanent()
     {
         return true;
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return getDefaultArtifactExclusions();
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return this.includes;
     }
 
+    @Override
     public void beginScan( ManagedRepository repo, Date whenGathered )
         throws ConsumerException
     {
@@ -126,12 +132,14 @@ public class ArchivaMetadataCreationConsumer
         this.whenGathered = whenGathered;
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -213,22 +221,26 @@ public class ArchivaMetadataCreationConsumer
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         processFile( path );
     }
 
+    @Override
     public void completeScan()
     {
         /* do nothing */
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
@@ -237,6 +249,7 @@ public class ArchivaMetadataCreationConsumer
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* do nothing */

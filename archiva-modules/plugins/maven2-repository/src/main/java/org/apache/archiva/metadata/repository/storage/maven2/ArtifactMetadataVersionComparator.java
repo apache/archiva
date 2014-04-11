@@ -32,6 +32,7 @@ public class ArtifactMetadataVersionComparator
 {
     public static ArtifactMetadataVersionComparator INSTANCE = new ArtifactMetadataVersionComparator();
 
+    @Override
     public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
     {
         // sort by version (reverse), then ID

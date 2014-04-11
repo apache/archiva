@@ -29,6 +29,7 @@ import org.apache.archiva.webdav.util.RepositoryPathUtil;
 public class ArchivaDavLocatorFactory
     implements DavLocatorFactory
 {
+    @Override
     public DavResourceLocator createResourceLocator( String prefix, String href )
     {
         // build prefix string and remove all prefixes from the given href.
@@ -56,11 +57,13 @@ public class ArchivaDavLocatorFactory
         return new ArchivaDavResourceLocator( b.toString(), Text.unescape( href ), repository, this );
     }
 
+    @Override
     public DavResourceLocator createResourceLocator( String prefix, String workspacePath, String resourcePath )
     {
         return createResourceLocator( prefix, workspacePath, resourcePath, true );
     }
 
+    @Override
     public DavResourceLocator createResourceLocator( String prefix, String workspacePath, String path,
                                                      boolean isResourcePath )
     {

@@ -59,12 +59,14 @@ public class DefaultRepositoryStatisticsManager
 
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
+    @Override
     public boolean hasStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
         return metadataRepository.hasMetadataFacet( repositoryId, RepositoryStatistics.FACET_ID );
     }
 
+    @Override
     public RepositoryStatistics getLastStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
@@ -131,6 +133,7 @@ public class DefaultRepositoryStatisticsManager
         }
     }
 
+    @Override
     public void addStatisticsAfterScan( MetadataRepository metadataRepository, String repositoryId, Date startTime,
                                         Date endTime, long totalFiles, long newFiles )
         throws MetadataRepositoryException
@@ -262,12 +265,14 @@ public class DefaultRepositoryStatisticsManager
         }
     }
 
+    @Override
     public void deleteStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
         metadataRepository.removeMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
     }
 
+    @Override
     public List<RepositoryStatistics> getStatisticsInRange( MetadataRepository metadataRepository, String repositoryId,
                                                             Date startTime, Date endTime )
         throws MetadataRepositoryException

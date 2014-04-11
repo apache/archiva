@@ -65,6 +65,7 @@ public class DownloadMergedIndexNonDefaultPathTest
         System.setProperty( "appserver.base", previousAppServerBase );
     }
 
+    @Override
     protected String getSpringConfigLocation()
     {
         return "classpath*:META-INF/spring-context.xml classpath*:spring-context-test-common.xml classpath*:spring-context-merge-index-download.xml";

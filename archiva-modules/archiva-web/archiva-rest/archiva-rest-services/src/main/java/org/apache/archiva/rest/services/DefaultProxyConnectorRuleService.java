@@ -41,6 +41,7 @@ public class DefaultProxyConnectorRuleService
     @Inject
     private ProxyConnectorRuleAdmin proxyConnectorRuleAdmin;
 
+    @Override
     public List<ProxyConnectorRule> getProxyConnectorRules()
         throws ArchivaRestServiceException
     {
@@ -85,6 +86,7 @@ public class DefaultProxyConnectorRuleService
         }
     }
 
+    @Override
     public Boolean addProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
         throws ArchivaRestServiceException
     {
@@ -102,6 +104,7 @@ public class DefaultProxyConnectorRuleService
         }
     }
 
+    @Override
     public Boolean deleteProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
         throws ArchivaRestServiceException
     {
@@ -116,6 +119,7 @@ public class DefaultProxyConnectorRuleService
         }
     }
 
+    @Override
     public Boolean updateProxyConnectorRule( ProxyConnectorRule proxyConnectorRule )
         throws ArchivaRestServiceException
     {

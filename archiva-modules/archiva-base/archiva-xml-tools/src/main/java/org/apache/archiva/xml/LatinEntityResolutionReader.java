@@ -55,6 +55,7 @@ public class LatinEntityResolutionReader
      * @return The number of characters read, or -1 if the end of the stream has been reached
      * @throws IOException if an I/O error occurs.
      */
+    @Override
     public int read( char[] destbuf, int offset, int length )
         throws IOException
     {
@@ -182,6 +183,7 @@ public class LatinEntityResolutionReader
         return ret.toString();
     }
 
+    @Override
     public void close()
         throws IOException
     {

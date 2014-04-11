@@ -43,6 +43,7 @@ public class AddAdminRepoConsumerClosure
         this.selectedIds = selectedIds;
     }
 
+    @Override
     public void execute( Object input )
     {
         if ( input instanceof RepositoryContentConsumer )

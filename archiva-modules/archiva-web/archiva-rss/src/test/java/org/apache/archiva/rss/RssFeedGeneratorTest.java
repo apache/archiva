@@ -45,6 +45,7 @@ public class RssFeedGeneratorTest
     private RssFeedGenerator generator;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {

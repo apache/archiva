@@ -144,6 +144,7 @@ public class RepositoryContentFactory
     }
 
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isManagedRepositories( propertyName ) || ConfigurationNames.isRemoteRepositories(
@@ -153,6 +154,7 @@ public class RepositoryContentFactory
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* do nothing */

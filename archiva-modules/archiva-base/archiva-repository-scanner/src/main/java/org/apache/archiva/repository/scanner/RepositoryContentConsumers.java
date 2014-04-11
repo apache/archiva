@@ -68,6 +68,7 @@ public class RepositoryContentConsumers
         this.archivaAdministration = archivaAdministration;
     }
 
+    @Override
     public void setApplicationContext( ApplicationContext applicationContext )
         throws BeansException
     {

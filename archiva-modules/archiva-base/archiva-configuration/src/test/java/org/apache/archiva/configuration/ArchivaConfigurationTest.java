@@ -702,6 +702,7 @@ public class ArchivaConfigurationTest
         // etc. as it's done in other tests
         archivaConfiguration.addListener( new ConfigurationListener()
         {
+            @Override
             public void configurationEvent( ConfigurationEvent event )
             {
                 assertEquals( ConfigurationEvent.SAVED, event.getType() );

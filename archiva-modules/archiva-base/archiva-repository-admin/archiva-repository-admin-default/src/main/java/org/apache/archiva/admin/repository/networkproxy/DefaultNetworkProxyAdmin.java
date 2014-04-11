@@ -43,6 +43,7 @@ public class DefaultNetworkProxyAdmin
     implements NetworkProxyAdmin
 {
 
+    @Override
     public List<NetworkProxy> getNetworkProxies()
         throws RepositoryAdminException
     {
@@ -55,6 +56,7 @@ public class DefaultNetworkProxyAdmin
         return networkProxies;
     }
 
+    @Override
     public NetworkProxy getNetworkProxy( String networkProxyId )
         throws RepositoryAdminException
     {
@@ -69,6 +71,7 @@ public class DefaultNetworkProxyAdmin
         return null;
     }
 
+    @Override
     public void addNetworkProxy( NetworkProxy networkProxy, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -89,6 +92,7 @@ public class DefaultNetworkProxyAdmin
         saveConfiguration( configuration );
     }
 
+    @Override
     public void updateNetworkProxy( NetworkProxy networkProxy, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -111,6 +115,7 @@ public class DefaultNetworkProxyAdmin
         saveConfiguration( configuration );
     }
 
+    @Override
     public void deleteNetworkProxy( String networkProxyId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {

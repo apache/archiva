@@ -35,6 +35,7 @@ public class MockAuditListener
 
     private List<AuditEvent> auditEvents = new ArrayList<>();
 
+    @Override
     public void auditEvent( AuditEvent event )
     {
         auditEvents.add( event );

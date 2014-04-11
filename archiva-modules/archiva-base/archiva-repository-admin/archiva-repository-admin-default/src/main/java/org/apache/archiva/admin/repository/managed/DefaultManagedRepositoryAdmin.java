@@ -157,6 +157,7 @@ public class DefaultManagedRepositoryAdmin
         }
     }
 
+    @Override
     public List<ManagedRepository> getManagedRepositories()
         throws RepositoryAdminException
     {
@@ -187,6 +188,7 @@ public class DefaultManagedRepositoryAdmin
         return managedRepos;
     }
 
+    @Override
     public Map<String, ManagedRepository> getManagedRepositoriesAsMap()
         throws RepositoryAdminException
     {
@@ -199,6 +201,7 @@ public class DefaultManagedRepositoryAdmin
         return repositoriesMap;
     }
 
+    @Override
     public ManagedRepository getManagedRepository( String repositoryId )
         throws RepositoryAdminException
     {
@@ -213,6 +216,7 @@ public class DefaultManagedRepositoryAdmin
         return null;
     }
 
+    @Override
     public Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
                                          AuditInformation auditInformation )
         throws RepositoryAdminException
@@ -317,6 +321,7 @@ public class DefaultManagedRepositoryAdmin
         return repository;
     }
 
+    @Override
     public Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation,
                                             boolean deleteContent )
         throws RepositoryAdminException
@@ -461,6 +466,7 @@ public class DefaultManagedRepositoryAdmin
     }
 
 
+    @Override
     public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
                                             AuditInformation auditInformation, boolean resetStats )
         throws RepositoryAdminException
@@ -590,6 +596,7 @@ public class DefaultManagedRepositoryAdmin
 
     }
 
+    @Override
     public IndexingContext createIndexContext( ManagedRepository repository )
         throws RepositoryAdminException
     {

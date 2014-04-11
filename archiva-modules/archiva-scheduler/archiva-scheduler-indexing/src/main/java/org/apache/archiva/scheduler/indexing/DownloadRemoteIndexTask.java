@@ -95,6 +95,7 @@ public class DownloadRemoteIndexTask
         this.remoteRepositoryAdmin = downloadRemoteIndexTaskRequest.getRemoteRepositoryAdmin();
     }
 
+    @Override
     public void run()
     {
 
@@ -255,6 +256,7 @@ public class DownloadRemoteIndexTask
 
         private int totalLength = 0;
 
+        @Override
         public void transferInitiated( TransferEvent transferEvent )
         {
             startTime = System.currentTimeMillis();
@@ -262,6 +264,7 @@ public class DownloadRemoteIndexTask
             log.debug( "initiate transfer of {}", resourceName );
         }
 
+        @Override
         public void transferStarted( TransferEvent transferEvent )
         {
             this.totalLength = 0;
@@ -269,12 +272,14 @@ public class DownloadRemoteIndexTask
             log.info( "start transfer of {}", transferEvent.getResource().getName() );
         }
 
+        @Override
         public void transferProgress( TransferEvent transferEvent, byte[] buffer, int length )
         {
             log.debug( "transfer of {} : {}/{}", transferEvent.getResource().getName(), buffer.length, length );
             this.totalLength += length;
         }
 
+        @Override
         public void transferCompleted( TransferEvent transferEvent )
         {
             resourceName = transferEvent.getResource().getName();
@@ -283,12 +288,14 @@ public class DownloadRemoteIndexTask
                       this.totalLength / 1024, ( endTime - startTime ) / 1000 );
         }
 
+        @Override
         public void transferError( TransferEvent transferEvent )
         {
             log.info( "error of transfer file {}: {}", transferEvent.getResource().getName(),
                       transferEvent.getException().getMessage(), transferEvent.getException() );
         }
 
+        @Override
         public void debug( String message )
         {
             log.debug( "transfer debug {}", message );
@@ -316,18 +323,21 @@ public class DownloadRemoteIndexTask
             this.remoteRepository = remoteRepository;
         }
 
+        @Override
         public void connect( String id, String url )
             throws IOException
         {
             //no op  
         }
 
+        @Override
         public void disconnect()
             throws IOException
         {
             // no op
         }
 
+        @Override
         public InputStream retrieve( String name )
             throws IOException, FileNotFoundException
         {

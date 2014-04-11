@@ -33,6 +33,7 @@ public class DefaultJavascriptLogger
 {
     private Logger logger = LoggerFactory.getLogger( getClass() );
 
+    @Override
     public Boolean trace( JavascriptLog javascriptLog )
     {
         Logger toUse =
@@ -42,7 +43,8 @@ public class DefaultJavascriptLogger
             return Boolean.TRUE;
         }
         toUse.trace( javascriptLog.getMessage() );
-        return Boolean.TRUE;
+        return Boolean    @Override
+.TRUE;
     }
 
     public Boolean debug( JavascriptLog javascriptLog )
@@ -56,7 +58,8 @@ public class DefaultJavascriptLogger
         }
 
         toUse.debug( javascriptLog.getMessage() );
-        return Boolean.TRUE;
+            @Override
+return Boolean.TRUE;
     }
 
     public Boolean info( JavascriptLog javascriptLog )
@@ -69,7 +72,8 @@ public class DefaultJavascriptLogger
             return Boolean.TRUE;
         }
 
-        toUse.info( javascriptLog.getMessage() );
+        toUse.info( javascriptLog.getMessage    @Override
+() );
         return Boolean.TRUE;
     }
 
@@ -83,7 +87,8 @@ public class DefaultJavascriptLogger
             return Boolean.TRUE;
         }
 
-        toUse.warn( javascriptLog.getMessage() );
+        toUse.warn( javascript    @Override
+Log.getMessage() );
         return Boolean.TRUE;
     }
 

@@ -65,6 +65,7 @@ public class DependencyTreeBuilderTestMaven3
     ArchivaConfiguration config;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {

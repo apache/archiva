@@ -60,6 +60,7 @@ public class BypassSecuritySystem
         bypassUserManager = new MemoryUserManager();
     }
     
+    @Override
     public SecuritySession authenticate( AuthenticationDataSource source )
         throws AuthenticationException, UserNotFoundException, AccountLockedException
     {
@@ -67,48 +68,57 @@ public class BypassSecuritySystem
         return new DefaultSecuritySession( result );
     }
 
+    @Override
     public AuthorizationResult authorize( SecuritySession session, String permission )
         throws AuthorizationException
     {
         return new AuthorizationResult( true, session.getUser(), null );
     }
 
+    @Override
     public AuthorizationResult authorize( SecuritySession session, String permission, String resource )
         throws AuthorizationException
     {
         return new AuthorizationResult( true, session.getUser(), null );
     }
 
+    @Override
     public String getAuthenticatorId()
     {
         return "bypass-authenticator";
     }
 
+    @Override
     public String getAuthorizerId()
     {
         return "bypass-authorizer";
     }
 
+    @Override
     public KeyManager getKeyManager()
     {
         return bypassKeyManager;
     }
 
+    @Override
     public UserSecurityPolicy getPolicy()
     {
         return bypassPolicy;
     }
 
+    @Override
     public String getUserManagementId()
     {
         return "bypass-managementid";
     }
 
+    @Override
     public UserManager getUserManager()
     {
         return bypassUserManager;
     }
 
+    @Override
     public boolean isAuthenticated( AuthenticationDataSource source )
         throws AuthenticationException, UserNotFoundException, AccountLockedException
     {
@@ -116,6 +126,7 @@ public class BypassSecuritySystem
         return true;
     }
 
+    @Override
     public boolean isAuthorized( SecuritySession session, String permission )
         throws AuthorizationException
     {
@@ -123,6 +134,7 @@ public class BypassSecuritySystem
         return true;
     }
 
+    @Override
     public boolean isAuthorized( SecuritySession session, String permission, String resource )
         throws AuthorizationException
     {
@@ -130,6 +142,7 @@ public class BypassSecuritySystem
         return true;
     }
 
+    @Override
     public boolean userManagerReadOnly()
     {
         return true;

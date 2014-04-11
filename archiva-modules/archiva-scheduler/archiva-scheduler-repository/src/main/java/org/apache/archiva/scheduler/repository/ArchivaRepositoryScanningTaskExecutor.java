@@ -85,6 +85,7 @@ public class ArchivaRepositoryScanningTaskExecutor
     }
 
     @SuppressWarnings( "unchecked" )
+    @Override
     public void executeTask( Task task )
         throws TaskExecutionException
     {

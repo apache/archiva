@@ -77,17 +77,20 @@ public class MavenProjectFacet
         this.packaging = packaging;
     }
 
+    @Override
     public String getFacetId()
     {
         return FACET_ID;
     }
 
+    @Override
     public String getName()
     {
         // TODO: not needed, perhaps version metadata facet should be separate interface?
         return null;
     }
 
+    @Override
     public Map<String, String> toProperties()
     {
         HashMap<String, String> properties = new HashMap<>();
@@ -103,6 +106,7 @@ public class MavenProjectFacet
         return properties;
     }
 
+    @Override
     public void fromProperties( Map<String, String> properties )
     {
         groupId = properties.get( "groupId" );

@@ -69,6 +69,7 @@ public class DefaultRemoteRepositoriesService
     @Inject
     private NetworkProxyAdmin networkProxyAdmin;
 
+    @Override
     public List<RemoteRepository> getRemoteRepositories()
         throws ArchivaRestServiceException
     {
@@ -84,6 +85,7 @@ public class DefaultRemoteRepositoriesService
         }
     }
 
+    @Override
     public RemoteRepository getRemoteRepository( String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -99,6 +101,7 @@ public class DefaultRemoteRepositoriesService
         return null;
     }
 
+    @Override
     public Boolean deleteRemoteRepository( String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -113,6 +116,7 @@ public class DefaultRemoteRepositoriesService
         }
     }
 
+    @Override
     public Boolean addRemoteRepository( RemoteRepository remoteRepository )
         throws ArchivaRestServiceException
     {
@@ -127,6 +131,7 @@ public class DefaultRemoteRepositoriesService
         }
     }
 
+    @Override
     public Boolean updateRemoteRepository( RemoteRepository remoteRepository )
         throws ArchivaRestServiceException
     {

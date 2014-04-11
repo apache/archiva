@@ -143,32 +143,38 @@ public class ArchivaDavResource
         this.principal = principal;
     }
 
+    @Override
     public String getComplianceClass()
     {
         return COMPLIANCE_CLASS;
     }
 
+    @Override
     public String getSupportedMethods()
     {
         return METHODS;
     }
 
+    @Override
     public boolean exists()
     {
         return localResource.exists();
     }
 
+    @Override
     public boolean isCollection()
     {
         return localResource.isDirectory();
     }
 
+    @Override
     public String getDisplayName()
     {
         String resPath = getResourcePath();
         return ( resPath != null ) ? Text.getName( resPath ) : resPath;
     }
 
+    @Override
     public DavResourceLocator getLocator()
     {
         return locator;
@@ -179,21 +185,25 @@ public class ArchivaDavResource
         return localResource;
     }
 
+    @Override
     public String getResourcePath()
     {
         return locator.getResourcePath();
     }
 
+    @Override
     public String getHref()
     {
         return locator.getHref( isCollection() );
     }
 
+    @Override
     public long getModificationTime()
     {
         return localResource.lastModified();
     }
 
+    @Override
     public void spool( OutputContext outputContext )
         throws IOException
     {
@@ -237,26 +247,31 @@ public class ArchivaDavResource
         }
     }
 
+    @Override
     public DavPropertyName[] getPropertyNames()
     {
         return getProperties().getPropertyNames();
     }
 
+    @Override
     public DavProperty getProperty( DavPropertyName name )
     {
         return getProperties().get( name );
     }
 
+    @Override
     public DavPropertySet getProperties()
     {
         return initProperties();
     }
 
+    @Override
     public void setProperty( DavProperty property )
         throws DavException
     {
     }
 
+    @Override
     public void removeProperty( DavPropertyName propertyName )
         throws DavException
     {
@@ -269,12 +284,14 @@ public class ArchivaDavResource
     }
 
     @SuppressWarnings ("unchecked")
+    @Override
     public MultiStatusResponse alterProperties( List changeList )
         throws DavException
     {
         return null;
     }
 
+    @Override
     public DavResource getCollection()
     {
         DavResource parent = null;
@@ -299,6 +316,7 @@ public class ArchivaDavResource
         return parent;
     }
 
+    @Override
     public void addMember( DavResource resource, InputContext inputContext )
         throws DavException
     {
@@ -359,6 +377,7 @@ public class ArchivaDavResource
         }
     }
 
+    @Override
     public DavResourceIterator getMembers()
     {
         List<DavResource> list = new ArrayList<>();
@@ -391,6 +410,7 @@ public class ArchivaDavResource
         return new DavResourceIteratorImpl( list );
     }
 
+    @Override
     public void removeMember( DavResource member )
         throws DavException
     {
@@ -449,6 +469,7 @@ public class ArchivaDavResource
         }
     }
 
+    @Override
     public void move( DavResource destination )
         throws DavException
     {
@@ -483,6 +504,7 @@ public class ArchivaDavResource
         }
     }
 
+    @Override
     public void copy( DavResource destination, boolean shallow )
         throws DavException
     {
@@ -522,16 +544,19 @@ public class ArchivaDavResource
         }
     }
 
+    @Override
     public boolean isLockable( Type type, Scope scope )
     {
         return Type.WRITE.equals( type ) && Scope.EXCLUSIVE.equals( scope );
     }
 
+    @Override
     public boolean hasLock( Type type, Scope scope )
     {
         return getLock( type, scope ) != null;
     }
 
+    @Override
     public ActiveLock getLock( Type type, Scope scope )
     {
         ActiveLock lock = null;
@@ -542,12 +567,14 @@ public class ArchivaDavResource
         return lock;
     }
 
+    @Override
     public ActiveLock[] getLocks()
     {
         ActiveLock writeLock = getLock( Type.WRITE, Scope.EXCLUSIVE );
         return ( writeLock != null ) ? new ActiveLock[]{ writeLock } : new ActiveLock[0];
     }
 
+    @Override
     public ActiveLock lock( LockInfo lockInfo )
         throws DavException
     {
@@ -563,6 +590,7 @@ public class ArchivaDavResource
         return lock;
     }
 
+    @Override
     public ActiveLock refreshLock( LockInfo lockInfo, String lockToken )
         throws DavException
     {
@@ -582,6 +610,7 @@ public class ArchivaDavResource
         return lock;
     }
 
+    @Override
     public void unlock( String lockToken )
         throws DavException
     {
@@ -600,16 +629,19 @@ public class ArchivaDavResource
         }
     }
 
+    @Override
     public void addLockManager( LockManager lockManager )
     {
         this.lockManager = lockManager;
     }
 
+    @Override
     public DavResourceFactory getFactory()
     {
         return factory;
     }
 
+    @Override
     public DavSession getSession()
     {
         return session;

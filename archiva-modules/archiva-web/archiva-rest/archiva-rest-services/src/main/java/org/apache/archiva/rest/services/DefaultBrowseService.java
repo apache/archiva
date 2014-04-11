@@ -108,6 +108,7 @@ public class DefaultBrowseService
     @Named( value = "browse#versionMetadata" )
     private Cache<String, ProjectVersionMetadata> versionMetadataCache;
 
+    @Override
     public BrowseResult getRootGroups( String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -154,6 +155,7 @@ public class DefaultBrowseService
         return new BrowseResult( browseGroupResultEntries );
     }
 
+    @Override
     public BrowseResult browseGroupId( String groupId, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -210,6 +212,7 @@ public class DefaultBrowseService
 
     }
 
+    @Override
     public VersionsList getVersionsList( String groupId, String artifactId, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -258,6 +261,7 @@ public class DefaultBrowseService
         }
     }
 
+    @Override
     public ProjectVersionMetadata getProjectMetadata( String groupId, String artifactId, String version,
                                                       String repositoryId )
         throws ArchivaRestServiceException
@@ -302,6 +306,7 @@ public class DefaultBrowseService
 
     }
 
+    @Override
     public ProjectVersionMetadata getProjectVersionMetadata( String groupId, String artifactId, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -462,6 +467,7 @@ public class DefaultBrowseService
         }
     }
 
+    @Override
     public List<TreeEntry> getTreeEntries( String groupId, String artifactId, String version, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -481,6 +487,7 @@ public class DefaultBrowseService
         return Collections.emptyList();
     }
 
+    @Override
     public List<ManagedRepository> getUserRepositories()
         throws ArchivaRestServiceException
     {
@@ -495,6 +502,7 @@ public class DefaultBrowseService
         }
     }
 
+    @Override
     public List<Artifact> getDependees( String groupId, String artifactId, String version, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -532,6 +540,7 @@ public class DefaultBrowseService
         return artifacts;
     }
 
+    @Override
     public List<Entry> getMetadatas( String groupId, String artifactId, String version, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -558,6 +567,7 @@ public class DefaultBrowseService
         return entries;
     }
 
+    @Override
     public Boolean addMetadata( String groupId, String artifactId, String version, String key, String value,
                                 String repositoryId )
         throws ArchivaRestServiceException
@@ -612,6 +622,7 @@ public class DefaultBrowseService
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean deleteMetadata( String groupId, String artifactId, String version, String key, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -660,6 +671,7 @@ public class DefaultBrowseService
         return Boolean.TRUE;
     }
 
+    @Override
     public List<ArtifactContentEntry> getArtifactContentEntries( String groupId, String artifactId, String version,
                                                                  String classifier, String type, String path,
                                                                  String repositoryId )
@@ -704,6 +716,7 @@ public class DefaultBrowseService
         return Collections.emptyList();
     }
 
+    @Override
     public List<Artifact> getArtifactDownloadInfos( String groupId, String artifactId, String version,
                                                     String repositoryId )
         throws ArchivaRestServiceException
@@ -746,6 +759,7 @@ public class DefaultBrowseService
         return artifactDownloadInfos;
     }
 
+    @Override
     public ArtifactContent getArtifactContentText( String groupId, String artifactId, String version, String classifier,
                                                    String type, String path, String repositoryId )
         throws ArchivaRestServiceException
@@ -809,6 +823,7 @@ public class DefaultBrowseService
         return new ArtifactContent();
     }
 
+    @Override
     public Boolean artifactAvailable( String groupId, String artifactId, String version, String classifier,
                                       String repositoryId )
         throws ArchivaRestServiceException
@@ -907,12 +922,14 @@ public class DefaultBrowseService
         return false;
     }
 
+    @Override
     public Boolean artifactAvailable( String groupId, String artifactId, String version, String repositoryId )
         throws ArchivaRestServiceException
     {
         return artifactAvailable( groupId, artifactId, version, null, repositoryId );
     }
 
+    @Override
     public List<Artifact> getArtifacts( String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -932,6 +949,7 @@ public class DefaultBrowseService
         }
     }
 
+    @Override
     public Boolean importMetadata( MetadataAddRequest metadataAddRequest, String repositoryId )
         throws ArchivaRestServiceException
     {

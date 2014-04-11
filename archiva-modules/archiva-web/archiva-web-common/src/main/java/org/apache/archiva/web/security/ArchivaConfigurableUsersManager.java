@@ -64,6 +64,7 @@ public class ArchivaConfigurableUsersManager
     private boolean useUsersCache;
 
     @PostConstruct
+    @Override
     public void initialize()
     {
         try
@@ -92,7 +93,8 @@ public class ArchivaConfigurableUsersManager
 
     protected boolean useUsersCache()
     {
-        return this.useUsersCache;
+        return this.useUsers    @Override
+Cache;
     }
 
     public User addUser( User user )
@@ -105,6 +107,7 @@ public class ArchivaConfigurableUsersManager
             usersCache.put( user.getUsername(), user );
         }
 
+    @Override
         return user;
     }
 
@@ -115,7 +118,8 @@ public class ArchivaConfigurableUsersManager
 
         if ( useUsersCache() )
         {
-            usersCache.put( user.getUsername(), user );
+            usersCache.put( use    @Override
+r.getUsername(), user );
         }
     }
 
@@ -142,14 +146,16 @@ public class ArchivaConfigurableUsersManager
         }
         if ( lastException != null && allFailed )
         {
-            throw new UserManagerException( lastException.getMessage(), lastException );
+            throw new UserManagerException( lastException.getMessage(),    @Override
+ lastException );
         }
         return user;
     }
 
     public UserQuery createUserQuery()
     {
-        return userManagerPerId.values().iterator().next().createUserQuery();
+        return u    @Override
+serManagerPerId.values().iterator().next().createUserQuery();
     }
 
 
@@ -176,7 +182,8 @@ public class ArchivaConfigurableUsersManager
         }
         if ( lastException != null && allFailed )
         {
-            throw new UserManagerException( lastException.getMessage(), lastException );
+            throw new     @Override
+UserManagerException( lastException.getMessage(), lastException );
         }
     }
 
@@ -235,7 +242,8 @@ public class ArchivaConfigurableUsersManager
                 {
                     throw (UserNotFoundException) lastException;
                 }
-                throw new UserManagerException( lastException.getMessage(), lastException );
+                throw new UserManagerException(     @Override
+lastException.getMessage(), lastException );
             }
         }
 
@@ -251,7 +259,8 @@ public class ArchivaConfigurableUsersManager
 
     @Override
     public User getGuestUser()
-        throws UserNotFoundException, UserManagerException
+       @Override
+     throws UserNotFoundException, UserManagerException
     {
         return findUser( GUEST_USERNAME );
     }
@@ -264,7 +273,8 @@ public class ArchivaConfigurableUsersManager
         for ( UserManager userManager : userManagerPerId.values() )
         {
             List<User> found = userManager.findUsersByEmailKey( emailKey, orderAscending );
-            if ( found != null )
+            i    @Override
+f ( found != null )
             {
                 users.addAll( found );
             }
@@ -279,7 +289,8 @@ public class ArchivaConfigurableUsersManager
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-            List<User> found = userManager.findUsersByFullNameKey( fullNameKey, orderAscending );
+            List<User> found = userManager.findUsersByFullNameKey( fullNameKey, orderAscending );    @Override
+
             if ( found != null )
             {
                 users.addAll( found );
@@ -295,7 +306,8 @@ public class ArchivaConfigurableUsersManager
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-            List<User> found = userManager.findUsersByQuery( query );
+            List<User> found = userManager.findUsersByQ    @Override
+uery( query );
             if ( found != null )
             {
                 users.addAll( found );
@@ -311,8 +323,10 @@ public class ArchivaConfigurableUsersManager
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-            List<User> found = userManager.findUsersByUsernameKey( usernameKey, orderAscending );
-            if ( found != null )
+            List<User> found = userManager.findUsersByUsernameKey( us    @Override
+ernameKey, orderAscending );
+            if (     @Override
+found != null )
             {
                 users.addAll( found );
             }
@@ -331,7 +345,8 @@ public class ArchivaConfigurableUsersManager
         List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
-        {
+            @Override
+{
             List<User> found = userManager.getUsers();
             if ( found != null )
             {
@@ -348,6 +363,7 @@ public class ArchivaConfigurableUsersManager
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
+    @Override
             List<User> found = userManager.getUsers( orderAscending );
             if ( found != null )
             {
@@ -357,7 +373,8 @@ public class ArchivaConfigurableUsersManager
         return users;
     }
 
-    public boolean isReadOnly()
+    public boolean isReadOnly(    @Override
+)
     {
         boolean readOnly = false;
 
@@ -372,7 +389,8 @@ public class ArchivaConfigurableUsersManager
         throws UserNotFoundException, UserManagerException
     {
 
-        UserManager userManager = userManagerPerId.get( user.getUserManagerId() );
+        UserManager userManage    @Override
+r = userManagerPerId.get( user.getUserManagerId() );
 
         user = userManager.updateUser( user );
 
@@ -421,7 +439,8 @@ public class ArchivaConfigurableUsersManager
                 }
             }
             catch ( Exception e )
-            {
+             @Override
+   {
                 lastException = e;
             }
         }
@@ -456,7 +475,8 @@ public class ArchivaConfigurableUsersManager
                 lastException = e;
             }
         }
-        if ( lastException != null && allFailed )
+        if ( las    @Override
+tException != null && allFailed )
         {
             throw new UserManagerException( lastException.getMessage(), lastException );
         }

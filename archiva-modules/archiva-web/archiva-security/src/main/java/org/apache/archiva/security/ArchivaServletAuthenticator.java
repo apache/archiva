@@ -54,6 +54,7 @@ public class ArchivaServletAuthenticator
     @Inject
     private SecuritySystem securitySystem;
 
+    @Override
     public boolean isAuthenticated( HttpServletRequest request, AuthenticationResult result )
         throws AuthenticationException, AccountLockedException, MustChangePasswordException
     {
@@ -65,6 +66,7 @@ public class ArchivaServletAuthenticator
         return true;
     }
 
+    @Override
     public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
                                  String permission )
         throws AuthorizationException, UnauthorizedException
@@ -88,6 +90,7 @@ public class ArchivaServletAuthenticator
         return true;
     }
 
+    @Override
     public boolean isAuthorized( String principal, String repoId, String permission )
         throws UnauthorizedException
     {

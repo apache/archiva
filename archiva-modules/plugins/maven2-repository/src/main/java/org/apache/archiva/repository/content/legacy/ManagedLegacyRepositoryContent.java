@@ -60,6 +60,7 @@ public class ManagedLegacyRepositoryContent
 
     private ManagedRepository repository;
 
+    @Override
     public void deleteVersion( VersionedReference reference )
         throws ContentNotFoundException
     {
@@ -129,6 +130,7 @@ public class ManagedLegacyRepositoryContent
         }
     }
 
+    @Override
     public void deleteProject( String namespace, String projectId )
         throws RepositoryException
     {
@@ -152,11 +154,13 @@ public class ManagedLegacyRepositoryContent
         }
     }
 
+    @Override
     public String getId()
     {
         return repository.getId();
     }
 
+    @Override
     public Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
         throws ContentNotFoundException
     {
@@ -199,16 +203,19 @@ public class ManagedLegacyRepositoryContent
         return foundArtifacts;
     }
 
+    @Override
     public String getRepoRoot()
     {
         return repository.getLocation();
     }
 
+    @Override
     public ManagedRepository getRepository()
     {
         return repository;
     }
 
+    @Override
     public Set<String> getVersions( ProjectReference reference )
         throws ContentNotFoundException
     {
@@ -249,6 +256,7 @@ public class ManagedLegacyRepositoryContent
         return foundVersions;
     }
 
+    @Override
     public Set<String> getVersions( VersionedReference reference )
         throws ContentNotFoundException
     {
@@ -289,12 +297,14 @@ public class ManagedLegacyRepositoryContent
         return foundVersions;
     }
 
+    @Override
     public boolean hasContent( ArtifactReference reference )
     {
         File artifactFile = toFile( reference );
         return artifactFile.exists() && artifactFile.isFile();
     }
 
+    @Override
     public boolean hasContent( ProjectReference reference )
     {
         try
@@ -308,6 +318,7 @@ public class ManagedLegacyRepositoryContent
         }
     }
 
+    @Override
     public boolean hasContent( VersionedReference reference )
     {
         try
@@ -321,6 +332,7 @@ public class ManagedLegacyRepositoryContent
         }
     }
 
+    @Override
     public void setRepository( ManagedRepository repository )
     {
         this.repository = repository;
@@ -344,22 +356,26 @@ public class ManagedLegacyRepositoryContent
         return super.toArtifactReference( path );
     }
 
+    @Override
     public File toFile( ArchivaArtifact reference )
     {
         return new File( repository.getLocation(), toPath( reference ) );
     }
 
+    @Override
     public File toFile( ArtifactReference reference )
     {
         return new File( repository.getLocation(), toPath( reference ) );
     }
 
+    @Override
     public String toMetadataPath( ProjectReference reference )
     {
         // No metadata present in legacy repository.
         return null;
     }
 
+    @Override
     public String toMetadataPath( VersionedReference reference )
     {
         // No metadata present in legacy repository.
@@ -466,12 +482,14 @@ public class ManagedLegacyRepositoryContent
         this.filetypes = fileTypes;
     }
 
+    @Override
     public void deleteArtifact( ArtifactReference artifactReference )
         throws ContentNotFoundException
     {
         // TODO implements for legacy ??
     }
 
+    @Override
     public void deleteGroupId( String groupId )
         throws ContentNotFoundException
     {

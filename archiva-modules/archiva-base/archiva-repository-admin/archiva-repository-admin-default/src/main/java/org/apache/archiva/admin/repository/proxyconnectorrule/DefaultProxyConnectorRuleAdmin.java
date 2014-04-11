@@ -48,6 +48,7 @@ public class DefaultProxyConnectorRuleAdmin
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
+    @Override
     public List<ProxyConnectorRule> getProxyConnectorRules()
         throws RepositoryAdminException
     {
@@ -92,6 +93,7 @@ public class DefaultProxyConnectorRuleAdmin
         return null;
     }
 
+    @Override
     public void addProxyConnectorRule( ProxyConnectorRule proxyConnectorRule, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -110,6 +112,7 @@ public class DefaultProxyConnectorRuleAdmin
         saveConfiguration( configuration );
     }
 
+    @Override
     public void deleteProxyConnectorRule( ProxyConnectorRule proxyConnectorRule, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -143,6 +146,7 @@ public class DefaultProxyConnectorRuleAdmin
 
     }
 
+    @Override
     public void updateProxyConnectorRule( ProxyConnectorRule proxyConnectorRule, AuditInformation auditInformation )
         throws RepositoryAdminException
     {

@@ -68,6 +68,7 @@ public class DefaultArtifactMappingProvider
         typeToExtensionMap.put( "aspect", "jar" );
     }
 
+    @Override
     public String mapClassifierAndExtensionToType( String classifier, String ext )
     {
         if ( classifier == null )
@@ -81,6 +82,7 @@ public class DefaultArtifactMappingProvider
         return classifierAndExtensionToTypeMap.get( classifier + ":" + ext );
     }
 
+    @Override
     public String mapTypeToExtension( String type )
     {
         return typeToExtensionMap.get( type );

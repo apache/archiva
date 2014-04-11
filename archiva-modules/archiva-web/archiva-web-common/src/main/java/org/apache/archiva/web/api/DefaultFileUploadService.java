@@ -117,6 +117,7 @@ public class DefaultFileUploadService
         return attachment == null ? "" : IOUtils.toString( attachment.getDataHandler().getInputStream() );
     }
 
+    @Override
     public FileMetadata post( MultipartBody multipartBody )
         throws ArchivaRestServiceException
     {
@@ -175,7 +176,8 @@ public class DefaultFileUploadService
             fileMetadatas = new CopyOnWriteArrayList<FileMetadata>();
             httpServletRequest.getSession().setAttribute( FILES_SESSION_KEY, fileMetadatas );
         }
-        return fileMetadatas;
+        return fileMeta    @Override
+datas;
     }
 
     public Boolean deleteFile( String fileName )
@@ -193,7 +195,8 @@ public class DefaultFileUploadService
         {
             return file.delete();
         }
-        return Boolean.FALSE;
+        r    @Override
+eturn Boolean.FALSE;
     }
 
     public Boolean clearUploadedFiles()
@@ -204,7 +207,8 @@ public class DefaultFileUploadService
         {
             deleteFile( new File( fileMetadata.getServerFileName() ).getPath() );
         }
-        getSessionFileMetadatas().clear();
+        getSessionFileMetadatas().cle    @Override
+ar();
         return Boolean.TRUE;
     }
 
@@ -214,7 +218,8 @@ public class DefaultFileUploadService
         List<FileMetadata> fileMetadatas =
             (List<FileMetadata>) httpServletRequest.getSession().getAttribute( FILES_SESSION_KEY );
 
-        return fileMetadatas == null ? Collections.<FileMetadata>emptyList() : fileMetadatas;
+        return fileMetadatas == null ? Collec    @Override
+tions.<FileMetadata>emptyList() : fileMetadatas;
     }
 
     public Boolean save( String repositoryId, String groupId, String artifactId, String version, String packaging,
@@ -260,7 +265,8 @@ public class DefaultFileUploadService
 
         // get from the session file with groupId/artifactId
 
-        Iterable<FileMetadata> filesToAdd = Iterables.filter( fileMetadatas, new Predicate<FileMetadata>()
+        Iterable<FileMetadata> filesToAdd = Ite            @Override
+rables.filter( fileMetadatas, new Predicate<FileMetadata>()
         {
             public boolean apply( FileMetadata fileMetadata )
             {
@@ -279,7 +285,8 @@ public class DefaultFileUploadService
             deleteFile( fileMetadata.getServerFileName() );
         }
 
-        filesToAdd = Iterables.filter( fileMetadatas, new Predicate<FileMetadata>()
+              @Override
+      filesToAdd = Iterables.filter( fileMetadatas, new Predicate<FileMetadata>()
         {
             public boolean apply( FileMetadata fileMetadata )
             {

@@ -78,41 +78,49 @@ public class ArchivaDavResourceLocator
         this.resourcePath = path;
     }
 
+    @Override
     public String getRepositoryId()
     {
         return repositoryId;
     }
 
+    @Override
     public String getPrefix()
     {
         return prefix;
     }
 
+    @Override
     public String getResourcePath()
     {
         return resourcePath;
     }
 
+    @Override
     public String getWorkspacePath()
     {
         return "";
     }
 
+    @Override
     public String getWorkspaceName()
     {
         return "";
     }
 
+    @Override
     public boolean isSameWorkspace( DavResourceLocator locator )
     {
         return isSameWorkspace( locator.getWorkspaceName() );
     }
 
+    @Override
     public boolean isSameWorkspace( String workspaceName )
     {
         return getWorkspaceName().equals( workspaceName );
     }
 
+    @Override
     public String getHref( boolean isCollection )
     {
         // avoid doubled trailing '/' for the root item
@@ -120,16 +128,19 @@ public class ArchivaDavResourceLocator
         return href + suffix;
     }
 
+    @Override
     public boolean isRootLocation()
     {
         return "/".equals( resourcePath );
     }
 
+    @Override
     public DavLocatorFactory getFactory()
     {
         return davLocatorFactory;
     }
 
+    @Override
     public String getRepositoryPath()
     {
         return getResourcePath();
@@ -140,6 +151,7 @@ public class ArchivaDavResourceLocator
      *
      * @return the hash code
      */
+    @Override
     public int hashCode()
     {
         return href.hashCode();
@@ -152,6 +164,7 @@ public class ArchivaDavResourceLocator
      * @param obj the object to compare to
      * @return <code>true</code> if the 2 objects are equal; <code>false</code> otherwise
      */
+    @Override
     public boolean equals( Object obj )
     {
         if ( obj instanceof DavResourceLocator )

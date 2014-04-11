@@ -332,6 +332,7 @@ public abstract class AbstractRestService
     private static class SearchResultHitMap
         extends PropertyMap<SearchResultHit, Artifact>
     {
+        @Override
         protected void configure()
         {
             skip().setId( null );

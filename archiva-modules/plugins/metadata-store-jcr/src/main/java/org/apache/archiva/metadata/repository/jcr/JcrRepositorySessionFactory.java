@@ -63,6 +63,7 @@ public class JcrRepositorySessionFactory
     @Inject
     private RepositorySessionFactoryBean repositorySessionFactoryBean;
 
+    @Override
     public RepositorySession createSession()
     {
         try

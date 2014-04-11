@@ -113,11 +113,13 @@ public class MetadataUpdaterConsumer
 
     private long scanStartTimestamp = 0;
 
+    @Override
     public String getDescription()
     {
         return description;
     }
 
+    @Override
     public String getId()
     {
         return id;
@@ -128,6 +130,7 @@ public class MetadataUpdaterConsumer
         this.includes = includes;
     }
 
+    @Override
     public void beginScan( ManagedRepository repoConfig, Date whenGathered )
         throws ConsumerException
     {
@@ -147,32 +150,38 @@ public class MetadataUpdaterConsumer
         }
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void completeScan()
     {
         /* do nothing here */
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return getDefaultArtifactExclusions();
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return this.includes;
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -192,6 +201,7 @@ public class MetadataUpdaterConsumer
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {
@@ -291,11 +301,13 @@ public class MetadataUpdaterConsumer
         }
     }
 
+    @Override
     public boolean isPermanent()
     {
         return false;
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
@@ -304,6 +316,7 @@ public class MetadataUpdaterConsumer
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* do nothing here */

@@ -51,6 +51,7 @@ public class ArchivaServletAuthenticatorTest
     private HttpServletRequest request;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {

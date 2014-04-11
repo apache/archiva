@@ -243,6 +243,7 @@ public abstract class AbstractRepositoryServletProxiedMetadataTestCase
 //    }
 
     @Before
+    @Override
     public void tearDown()
         throws Exception
     {

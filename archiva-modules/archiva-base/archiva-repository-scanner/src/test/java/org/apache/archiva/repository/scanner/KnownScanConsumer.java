@@ -46,6 +46,7 @@ public class KnownScanConsumer
 
     private boolean processUnmodified = false;
 
+    @Override
     public List<String> getExcludes()
     {
         return null;
@@ -57,50 +58,59 @@ public class KnownScanConsumer
         this.includes.addAll( Arrays.asList( includesArray ) );
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return includes;
     }
 
+    @Override
     public String getId()
     {
         return "test-scan-consumer";
     }
 
+    @Override
     public String getDescription()
     {
         return "Scan Consumer (for testing)";
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         /* do nothing */
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
         this.processCount++;
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {
         processFile( path );
     }
 
+    @Override
     public void completeScan()
     {
         /* do nothing */
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
        completeScan();
@@ -116,11 +126,13 @@ public class KnownScanConsumer
         this.processCount = processCount;
     }
 
+    @Override
     public boolean isPermanent()
     {
         return false;
     }
 
+    @Override
     public boolean isProcessUnmodified()
     {
         return processUnmodified;

@@ -543,6 +543,7 @@ public class RepositoriesServiceTest
                                       true, false );
     }
 
+    @Override
     protected ManagedRepository getTestManagedRepository()
     {
         return getTestManagedRepository( "TEST", "test-repo" );

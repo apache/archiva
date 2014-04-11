@@ -50,6 +50,7 @@ public class DefaultDataValidatorService
     private RepositoryGroupAdmin repositoryGroupAdmin;
 
 
+    @Override
     public Boolean managedRepositoryIdNotExists( String id )
         throws ArchivaRestServiceException
     {
@@ -60,7 +61,8 @@ public class DefaultDataValidatorService
         catch ( RepositoryAdminException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(), e );
-        }
+       @Override
+     }
     }
 
     public Boolean remoteRepositoryIdNotExists( String id )
@@ -72,7 +74,8 @@ public class DefaultDataValidatorService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessa    @Override
+ge(), e );
         }
     }
 

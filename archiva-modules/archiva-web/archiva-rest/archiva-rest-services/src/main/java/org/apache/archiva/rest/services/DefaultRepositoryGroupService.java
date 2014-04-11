@@ -42,6 +42,7 @@ public class DefaultRepositoryGroupService
     @Inject
     private RepositoryGroupAdmin repositoryGroupAdmin;
 
+    @Override
     public List<RepositoryGroup> getRepositoriesGroups()
         throws ArchivaRestServiceException
     {
@@ -63,6 +64,7 @@ public class DefaultRepositoryGroupService
         }
     }
 
+    @Override
     public RepositoryGroup getRepositoryGroup( String repositoryGroupId )
         throws ArchivaRestServiceException
     {
@@ -76,6 +78,7 @@ public class DefaultRepositoryGroupService
         return null;
     }
 
+    @Override
     public Boolean addRepositoryGroup( RepositoryGroup repoGroup )
         throws ArchivaRestServiceException
     {
@@ -93,6 +96,7 @@ public class DefaultRepositoryGroupService
         }
     }
 
+    @Override
     public Boolean updateRepositoryGroup( RepositoryGroup repoGroup )
         throws ArchivaRestServiceException
     {
@@ -110,6 +114,7 @@ public class DefaultRepositoryGroupService
         }
     }
 
+    @Override
     public Boolean deleteRepositoryGroup( String repositoryGroupId )
         throws ArchivaRestServiceException
     {
@@ -123,6 +128,7 @@ public class DefaultRepositoryGroupService
         }
     }
 
+    @Override
     public Boolean addRepositoryToGroup( String repositoryGroupId, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -136,6 +142,7 @@ public class DefaultRepositoryGroupService
         }
     }
 
+    @Override
     public Boolean deleteRepositoryFromGroup( String repositoryGroupId, String repositoryId )
         throws ArchivaRestServiceException
     {

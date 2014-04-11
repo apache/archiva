@@ -28,6 +28,7 @@ public class TestRepositorySessionFactory
 
     private MetadataResolver resolver = new TestMetadataResolver();
 
+    @Override
     public RepositorySession createSession()
     {
         return new RepositorySession( metadataRepository, resolver );

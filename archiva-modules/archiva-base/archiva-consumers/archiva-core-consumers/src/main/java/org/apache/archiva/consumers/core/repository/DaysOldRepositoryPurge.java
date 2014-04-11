@@ -63,6 +63,7 @@ public class DaysOldRepositoryPurge
         timestampParser.setTimeZone( DateUtils.UTC_TIME_ZONE );
     }
 
+    @Override
     public void process( String path )
         throws RepositoryPurgeException
     {

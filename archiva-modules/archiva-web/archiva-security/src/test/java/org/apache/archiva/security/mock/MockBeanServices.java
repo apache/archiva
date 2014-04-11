@@ -49,11 +49,13 @@ import java.util.Collection;
 public class MockBeanServices
     implements RepositoryStorage, RepositoryListener, RepositoryArchivaTaskScheduler
 {
+    @Override
     public ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId )
     {
         return null;
     }
 
+    @Override
     public ProjectVersionMetadata readProjectVersionMetadata( ReadMetadataRequest readMetadataRequest )
         throws RepositoryStorageMetadataInvalidException, RepositoryStorageMetadataNotFoundException,
         RepositoryStorageRuntimeException
@@ -61,24 +63,28 @@ public class MockBeanServices
         return null;
     }
 
+    @Override
     public Collection<String> listRootNamespaces( String repoId, Filter<String> filter )
         throws RepositoryStorageRuntimeException
     {
         return null;
     }
 
+    @Override
     public Collection<String> listNamespaces( String repoId, String namespace, Filter<String> filter )
         throws RepositoryStorageRuntimeException
     {
         return null;
     }
 
+    @Override
     public Collection<String> listProjects( String repoId, String namespace, Filter<String> filter )
         throws RepositoryStorageRuntimeException
     {
         return null;
     }
 
+    @Override
     public Collection<String> listProjectVersions( String repoId, String namespace, String projectId,
                                                    Filter<String> filter )
         throws RepositoryStorageRuntimeException
@@ -86,18 +92,21 @@ public class MockBeanServices
         return null;
     }
 
+    @Override
     public Collection<ArtifactMetadata> readArtifactsMetadata( ReadMetadataRequest readMetadataRequest )
         throws RepositoryStorageRuntimeException
     {
         return null;
     }
 
+    @Override
     public ArtifactMetadata readArtifactMetadataFromPath( String repoId, String path )
         throws RepositoryStorageRuntimeException
     {
         return null;
     }
 
+    @Override
     public void applyServerSideRelocation( ManagedRepositoryContent managedRepository, ArtifactReference artifact )
         throws ProxyDownloadException
     {
@@ -105,18 +114,21 @@ public class MockBeanServices
     }
 
 
+    @Override
     public void deleteArtifact( MetadataRepository metadataRepository, String repositoryId, String namespace,
                                 String project, String version, String id )
     {
 
     }
 
+    @Override
     public void addArtifact( RepositorySession session, String repoId, String namespace, String projectId,
                              ProjectVersionMetadata metadata )
     {
 
     }
 
+    @Override
     public void addArtifactProblem( RepositorySession session, String repoId, String namespace, String projectId,
                                     String projectVersion, RepositoryStorageMetadataException exception )
     {
@@ -124,22 +136,26 @@ public class MockBeanServices
     }
 
 
+    @Override
     public boolean isProcessingRepositoryTask( String repositoryId )
     {
         return false;
     }
 
+    @Override
     public boolean isProcessingRepositoryTask( RepositoryTask task )
     {
         return false;
     }
 
+    @Override
     public void queueTask( RepositoryTask task )
         throws TaskQueueException
     {
 
     }
 
+    @Override
     public boolean unQueueTask( RepositoryTask task )
         throws TaskQueueException
     {

@@ -39,89 +39,106 @@ public class TestMetadataRepository
 {
     private Map<String, MetadataFacet> facets = new HashMap<>();
 
+    @Override
     public void updateProject( String repoId, ProjectMetadata project )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void updateArtifact( String repoId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifactMeta )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void updateProjectVersion( String repoId, String namespace, String projectId,
                                       ProjectVersionMetadata versionMetadata )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void updateNamespace( String repoId, String namespace )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public List<String> getMetadataFacets( String repoId, String facetId )
     {
         return new ArrayList<>( facets.keySet() );
     }
 
+    @Override
     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
     {
         return facets.get( name );
     }
 
+    @Override
     public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
     {
         facets.put( metadataFacet.getName(), metadataFacet );
     }
 
+    @Override
     public void removeMetadataFacets( String repositoryId, String facetId )
     {
         facets.clear();
     }
 
+    @Override
     public void removeMetadataFacet( String repoId, String facetId, String name )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Collection<String> getRepositories()
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifactsByChecksum( String repoId, String checksum )
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void removeArtifact( String repositoryId, String namespace, String project, String version, String id )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void removeRepository( String repoId )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifacts( String repositoryId )
     {
         return null;
     }
 
+    @Override
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
         throws MetadataResolutionException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
         throws MetadataResolutionException
@@ -129,6 +146,7 @@ public class TestMetadataRepository
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
                                                    String projectVersion )
         throws MetadataResolutionException
@@ -136,6 +154,7 @@ public class TestMetadataRepository
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
                                                                      String projectVersion )
         throws MetadataResolutionException
@@ -143,30 +162,35 @@ public class TestMetadataRepository
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Collection<String> getRootNamespaces( String repoId )
         throws MetadataResolutionException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Collection<String> getNamespaces( String repoId, String namespace )
         throws MetadataResolutionException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Collection<String> getProjects( String repoId, String namespace )
         throws MetadataResolutionException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
         throws MetadataResolutionException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                       String projectVersion )
         throws MetadataResolutionException
@@ -174,31 +198,37 @@ public class TestMetadataRepository
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void save()
     {
         //
     }
 
+    @Override
     public void close()
     {
         //
     }
 
+    @Override
     public void revert()
     {
         //
     }
 
+    @Override
     public boolean canObtainAccess( Class<?> aClass )
     {
         return false;
     }
 
+    @Override
     public <T>T obtainAccess( Class<T> aClass )
     {
         return null;
     }
 
+    @Override
     public void removeArtifact( String repositoryId, String namespace, String project, String version,
                                 MetadataFacet metadataFacet )
         throws MetadataRepositoryException
@@ -206,30 +236,35 @@ public class TestMetadataRepository
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void removeNamespace( String repositoryId, String namespace )
         throws MetadataRepositoryException
     {
 
     }
 
+    @Override
     public void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
         throws MetadataRepositoryException
     {
 
     }
 
+    @Override
     public void removeProject( String repositoryId, String namespace, String projectId )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean hasMetadataFacet( String repositoryId, String facetId )
         throws MetadataRepositoryException
     {

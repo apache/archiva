@@ -53,6 +53,7 @@ public class DefaultSearchService
     @Inject
     private RepositorySearch repositorySearch;
 
+    @Override
     public List<Artifact> quickSearch( String queryString )
         throws ArchivaRestServiceException
     {
@@ -77,6 +78,7 @@ public class DefaultSearchService
         }
     }
 
+    @Override
     public List<Artifact> quickSearchWithRepositories( SearchRequest searchRequest )
         throws ArchivaRestServiceException
     {
@@ -106,6 +108,7 @@ public class DefaultSearchService
         }
     }
 
+    @Override
     public List<Artifact> getArtifactVersions( String groupId, String artifactId, String packaging )
         throws ArchivaRestServiceException
     {
@@ -131,6 +134,7 @@ public class DefaultSearchService
         }
     }
 
+    @Override
     public List<Artifact> searchArtifacts( SearchRequest searchRequest )
         throws ArchivaRestServiceException
     {
@@ -159,6 +163,7 @@ public class DefaultSearchService
         }
     }
 
+    @Override
     public GroupIdList getAllGroupIds( List<String> selectedRepos )
         throws ArchivaRestServiceException
     {
@@ -192,6 +197,7 @@ public class DefaultSearchService
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public StringList getObservablesRepoIds()
         throws ArchivaRestServiceException
     {

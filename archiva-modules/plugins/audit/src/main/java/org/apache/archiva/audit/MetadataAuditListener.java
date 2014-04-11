@@ -50,6 +50,7 @@ public class MetadataAuditListener
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
+    @Override
     public void auditEvent( AuditEvent event )
     {
         // for now we only log upload events, some of the others are quite noisy

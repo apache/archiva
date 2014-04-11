@@ -38,6 +38,7 @@ public class FileMetadataRepositoryTest
 {
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {

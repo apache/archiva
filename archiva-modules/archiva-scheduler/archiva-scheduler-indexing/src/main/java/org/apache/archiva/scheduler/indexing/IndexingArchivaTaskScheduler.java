@@ -47,6 +47,7 @@ public class IndexingArchivaTaskScheduler
     @Named(value = "taskQueue#indexing")
     private TaskQueue indexingQueue;
 
+    @Override
     public void queueTask( ArtifactIndexingTask task )
         throws TaskQueueException
     {

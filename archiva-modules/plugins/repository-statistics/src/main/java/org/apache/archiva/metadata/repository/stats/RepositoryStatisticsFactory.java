@@ -30,11 +30,13 @@ import org.springframework.stereotype.Service;
 public class RepositoryStatisticsFactory
     implements MetadataFacetFactory
 {
+    @Override
     public MetadataFacet createMetadataFacet()
     {
         return new RepositoryStatistics();
     }
 
+    @Override
     public MetadataFacet createMetadataFacet( String repositoryId, String name )
     {
         return new RepositoryStatistics();

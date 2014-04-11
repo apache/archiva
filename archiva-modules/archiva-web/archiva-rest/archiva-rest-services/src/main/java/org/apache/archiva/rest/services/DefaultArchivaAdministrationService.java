@@ -63,6 +63,7 @@ public class DefaultArchivaAdministrationService
     @Inject
     private RepositoryContentConsumers repoConsumerUtil;
 
+    @Override
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws ArchivaRestServiceException
     {
@@ -76,6 +77,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath )
         throws ArchivaRestServiceException
     {
@@ -107,6 +109,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean deleteLegacyArtifactPath( String path )
         throws ArchivaRestServiceException
     {
@@ -122,6 +125,7 @@ public class DefaultArchivaAdministrationService
     }
 
 
+    @Override
     public Boolean addFileTypePattern( String fileTypeId, String pattern )
         throws ArchivaRestServiceException
     {
@@ -136,6 +140,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean removeFileTypePattern( String fileTypeId, String pattern )
         throws ArchivaRestServiceException
     {
@@ -150,6 +155,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public FileType getFileType( String fileTypeId )
         throws ArchivaRestServiceException
     {
@@ -163,6 +169,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public void addFileType( FileType fileType )
         throws ArchivaRestServiceException
     {
@@ -176,6 +183,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean removeFileType( String fileTypeId )
         throws ArchivaRestServiceException
     {
@@ -190,6 +198,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean enabledKnownContentConsumer( String knownContentConsumer )
         throws ArchivaRestServiceException
     {
@@ -204,6 +213,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public void enabledKnownContentConsumers( List<String> knownContentConsumers )
         throws ArchivaRestServiceException
     {
@@ -217,6 +227,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean disabledKnownContentConsumer( String knownContentConsumer )
         throws ArchivaRestServiceException
     {
@@ -231,6 +242,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean enabledInvalidContentConsumer( String invalidContentConsumer )
         throws ArchivaRestServiceException
     {
@@ -245,6 +257,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public void enabledInvalidContentConsumers( List<String> invalidContentConsumers )
         throws ArchivaRestServiceException
     {
@@ -258,6 +271,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean disabledInvalidContentConsumer( String invalidContentConsumer )
         throws ArchivaRestServiceException
     {
@@ -272,6 +286,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public List<FileType> getFileTypes()
         throws ArchivaRestServiceException
     {
@@ -290,6 +305,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public List<String> getKnownContentConsumers()
         throws ArchivaRestServiceException
     {
@@ -303,6 +319,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public List<String> getInvalidContentConsumers()
         throws ArchivaRestServiceException
     {
@@ -316,6 +333,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public OrganisationInformation getOrganisationInformation()
         throws ArchivaRestServiceException
     {
@@ -329,6 +347,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public void setOrganisationInformation( OrganisationInformation organisationInformation )
         throws ArchivaRestServiceException
     {
@@ -342,12 +361,14 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean registrationDisabled()
         throws ArchivaRestServiceException
     {
         return getUiConfiguration().isDisableRegistration();
     }
 
+    @Override
     public UiConfiguration getUiConfiguration()
         throws ArchivaRestServiceException
     {
@@ -361,6 +382,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public void setUiConfiguration( UiConfiguration uiConfiguration )
         throws ArchivaRestServiceException
     {
@@ -378,6 +400,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public String getApplicationUrl()
         throws ArchivaRestServiceException
     {
@@ -391,6 +414,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public NetworkConfiguration getNetworkConfiguration()
         throws ArchivaRestServiceException
     {
@@ -404,6 +428,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public void setNetworkConfiguration( NetworkConfiguration networkConfiguration )
         throws ArchivaRestServiceException
     {
@@ -417,6 +442,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public List<AdminRepositoryConsumer> getKnownContentAdminRepositoryConsumers()
         throws ArchivaRestServiceException
     {
@@ -435,6 +461,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public List<AdminRepositoryConsumer> getInvalidContentAdminRepositoryConsumers()
         throws ArchivaRestServiceException
     {

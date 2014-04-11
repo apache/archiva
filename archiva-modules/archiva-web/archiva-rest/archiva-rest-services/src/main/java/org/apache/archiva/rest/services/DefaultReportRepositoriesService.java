@@ -52,6 +52,7 @@ public class DefaultReportRepositoriesService
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
+    @Override
     public List<RepositoryStatistics> getStatisticsReport( List<String> repositoriesId, int rowCount, Date startDate,
                                                            Date endDate )
         throws ArchivaRestServiceException
@@ -124,6 +125,7 @@ public class DefaultReportRepositoriesService
         }
     }
 
+    @Override
     public List<RepositoryProblemFacet> getHealthReport( String repository, String groupId, int rowCount )
         throws ArchivaRestServiceException
     {

@@ -63,6 +63,7 @@ public class SecuritySystemStub
         repoIds.add( "test-repo" );
     }
 
+    @Override
     public SecuritySession authenticate( AuthenticationDataSource source )
         throws AuthenticationException, UserNotFoundException, AccountLockedException
     {
@@ -87,12 +88,14 @@ public class SecuritySystemStub
         return session;
     }
 
+    @Override
     public AuthorizationResult authorize( SecuritySession arg0, String arg1 )
         throws AuthorizationException
     {
         return null;
     }
 
+    @Override
     public AuthorizationResult authorize( SecuritySession arg0, String arg1, String arg2 )
         throws AuthorizationException
     {
@@ -111,11 +114,13 @@ public class SecuritySystemStub
         return null;
     }
 
+    @Override
     public KeyManager getKeyManager()
     {
         return null;
     }
 
+    @Override
     public UserSecurityPolicy getPolicy()
     {
         return null;
@@ -126,201 +131,241 @@ public class SecuritySystemStub
         return null;
     }
 
+    @Override
     public UserManager getUserManager()
     {
         return new UserManager()
         {
 
+            @Override
             public String getDescriptionKey()
             {
                 return "French wine is better than Australian wine !";
             }
 
+            @Override
             public boolean isFinalImplementation()
             {
                 return false;
             }
 
+            @Override
             public void initialize()
             {
                 // no op
             }
 
+            @Override
             public boolean isReadOnly()
             {
                 return false;
             }
 
+            @Override
             public String getId()
             {
                 return null;
             }
 
+            @Override
             public void addUserManagerListener( UserManagerListener listener )
             {
                 // no op
             }
 
+            @Override
             public void removeUserManagerListener( UserManagerListener listener )
             {
                 // no op
             }
 
+            @Override
             public User createUser( String username, String fullName, String emailAddress )
             {
                 return null;
             }
 
+            @Override
             public User createGuestUser()
             {
                 return new User()
                 {
 
+                    @Override
                     public String getUsername()
                     {
                         return "guest";
                     }
 
+                    @Override
                     public void setUsername( String name )
                     {
 
                     }
 
+                    @Override
                     public String getFullName()
                     {
                         return null;
                     }
 
+                    @Override
                     public void setFullName( String name )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public String getEmail()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setEmail( String address )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public String getPassword()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setPassword( String rawPassword )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public String getEncodedPassword()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setEncodedPassword( String encodedPassword )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public Date getLastPasswordChange()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setLastPasswordChange( Date passwordChangeDate )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public List<String> getPreviousEncodedPasswords()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setPreviousEncodedPasswords( List<String> encodedPasswordList )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void addPreviousEncodedPassword( String encodedPassword )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public boolean isPermanent()
                     {
                         return false;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setPermanent( boolean permanent )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public boolean isLocked()
                     {
                         return false;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setLocked( boolean locked )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public boolean isPasswordChangeRequired()
                     {
                         return false;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setPasswordChangeRequired( boolean changeRequired )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public boolean isValidated()
                     {
                         return false;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setValidated( boolean valid )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public int getCountFailedLoginAttempts()
                     {
                         return 0;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setCountFailedLoginAttempts( int count )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public Date getAccountCreationDate()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setAccountCreationDate( Date date )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public Date getLastLoginDate()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setLastLoginDate( Date date )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public String getUserManagerId()
                     {
                         return "mock";
@@ -328,32 +373,38 @@ public class SecuritySystemStub
                 };
             }
 
+            @Override
             public UserQuery createUserQuery()
             {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
+            @Override
             public List<User> getUsers()
             {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
+            @Override
             public List<User> getUsers( boolean orderAscending )
             {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
+            @Override
             public User addUser( User user )
             {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
+            @Override
             public User updateUser( User user )
                 throws UserNotFoundException
             {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
+            @Override
             public User findUser( String username )
                 throws UserNotFoundException
             {
@@ -367,157 +418,188 @@ public class SecuritySystemStub
                 return null;
             }
 
+            @Override
             public User getGuestUser()
                 throws UserNotFoundException
             {
                 return new User()
                 {
 
+                    @Override
                     public String getUsername()
                     {
                         return "guest";
                     }
 
+                    @Override
                     public void setUsername( String name )
                     {
 
                     }
 
+                    @Override
                     public String getFullName()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setFullName( String name )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public String getEmail()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setEmail( String address )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public String getPassword()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setPassword( String rawPassword )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public String getEncodedPassword()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setEncodedPassword( String encodedPassword )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public Date getLastPasswordChange()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setLastPasswordChange( Date passwordChangeDate )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public List<String> getPreviousEncodedPasswords()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setPreviousEncodedPasswords( List<String> encodedPasswordList )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void addPreviousEncodedPassword( String encodedPassword )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public boolean isPermanent()
                     {
                         return false;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setPermanent( boolean permanent )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public boolean isLocked()
                     {
                         return false;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setLocked( boolean locked )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public boolean isPasswordChangeRequired()
                     {
                         return false;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setPasswordChangeRequired( boolean changeRequired )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public boolean isValidated()
                     {
                         return false;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setValidated( boolean valid )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public int getCountFailedLoginAttempts()
                     {
                         return 0;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setCountFailedLoginAttempts( int count )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public Date getAccountCreationDate()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setAccountCreationDate( Date date )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public Date getLastLoginDate()
                     {
                         return null;  //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public void setLastLoginDate( Date date )
                     {
                         //To change body of implemented methods use File | Settings | File Templates.
                     }
 
+                    @Override
                     public String getUserManagerId()
                     {
                         return "mock";
@@ -525,47 +607,56 @@ public class SecuritySystemStub
                 };
             }
 
+            @Override
             public List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
             {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
+            @Override
             public List<User> findUsersByFullNameKey( String fullNameKey, boolean orderAscending )
             {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
+            @Override
             public List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )
             {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
+            @Override
             public List<User> findUsersByQuery( UserQuery query )
             {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
+            @Override
             public boolean userExists( String principal )
             {
                 return false;  //To change body of implemented methods use File | Settings | File Templates.
             }
 
+            @Override
             public void deleteUser( String username )
                 throws UserNotFoundException
             {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
 
+            @Override
             public void addUserUnchecked( User user )
             {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
 
+            @Override
             public void eraseDatabase()
             {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
 
+            @Override
             public User updateUser( User user, boolean passwordChangeRequired )
                 throws UserNotFoundException
             {
@@ -574,18 +665,21 @@ public class SecuritySystemStub
         };
     }
 
+    @Override
     public boolean isAuthenticated( AuthenticationDataSource arg0 )
         throws AuthenticationException, UserNotFoundException, AccountLockedException
     {
         return false;
     }
 
+    @Override
     public boolean isAuthorized( SecuritySession arg0, String arg1 )
         throws AuthorizationException
     {
         return false;
     }
 
+    @Override
     public boolean isAuthorized( SecuritySession arg0, String arg1, String arg2 )
         throws AuthorizationException
     {
@@ -597,6 +691,7 @@ public class SecuritySystemStub
         return false;
     }
 
+    @Override
     public boolean userManagerReadOnly()
     {
         return true;

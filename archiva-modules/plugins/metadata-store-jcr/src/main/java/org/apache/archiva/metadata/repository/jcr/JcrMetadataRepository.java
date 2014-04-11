@@ -150,6 +150,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void updateProject( String repositoryId, ProjectMetadata project )
         throws MetadataRepositoryException
     {
@@ -171,6 +172,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void updateArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifactMeta )
         throws MetadataRepositoryException
@@ -227,6 +229,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void updateProjectVersion( String repositoryId, String namespace, String projectId,
                                       ProjectVersionMetadata versionMetadata )
         throws MetadataRepositoryException
@@ -357,6 +360,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void updateNamespace( String repositoryId, String namespace )
         throws MetadataRepositoryException
     {
@@ -371,6 +375,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void removeProject( String repositoryId, String namespace, String projectId )
         throws MetadataRepositoryException
     {
@@ -401,6 +406,7 @@ public class JcrMetadataRepository
     }
 
 
+    @Override
     public boolean hasMetadataFacet( String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
@@ -420,6 +426,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public List<String> getMetadataFacets( String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
@@ -464,6 +471,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
         throws MetadataRepositoryException
     {
@@ -505,6 +513,7 @@ public class JcrMetadataRepository
         return metadataFacet;
     }
 
+    @Override
     public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
@@ -529,6 +538,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void removeNamespace( String repositoryId, String projectId )
         throws MetadataRepositoryException
     {
@@ -551,6 +561,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void removeMetadataFacets( String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
@@ -569,6 +580,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void removeMetadataFacet( String repositoryId, String facetId, String name )
         throws MetadataRepositoryException
     {
@@ -595,6 +607,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
         throws MetadataRepositoryException
     {
@@ -638,6 +651,7 @@ public class JcrMetadataRepository
         return artifacts;
     }
 
+    @Override
     public Collection<String> getRepositories()
         throws MetadataRepositoryException
     {
@@ -670,6 +684,7 @@ public class JcrMetadataRepository
         return repositories;
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
         throws MetadataRepositoryException
     {
@@ -698,6 +713,7 @@ public class JcrMetadataRepository
     }
 
 
+    @Override
     public void removeRepository( String repositoryId )
         throws MetadataRepositoryException
     {
@@ -716,6 +732,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifacts( String repositoryId )
         throws MetadataRepositoryException
     {
@@ -750,6 +767,7 @@ public class JcrMetadataRepository
             getRepositoryContentPath( repositoryId ) + "')";
     }
 
+    @Override
     public ProjectMetadata getProject( String repositoryId, String namespace, String projectId )
         throws MetadataResolutionException
     {
@@ -776,6 +794,7 @@ public class JcrMetadataRepository
         return metadata;
     }
 
+    @Override
     public ProjectVersionMetadata getProjectVersion( String repositoryId, String namespace, String projectId,
                                                      String projectVersion )
         throws MetadataResolutionException
@@ -954,6 +973,7 @@ public class JcrMetadataRepository
         return versionMetadata;
     }
 
+    @Override
     public Collection<String> getArtifactVersions( String repositoryId, String namespace, String projectId,
                                                    String projectVersion )
         throws MetadataResolutionException
@@ -983,6 +1003,7 @@ public class JcrMetadataRepository
         return versions;
     }
 
+    @Override
     public Collection<ProjectVersionReference> getProjectReferences( String repositoryId, String namespace,
                                                                      String projectId, String projectVersion )
         throws MetadataResolutionException
@@ -1031,12 +1052,14 @@ public class JcrMetadataRepository
         return references;
     }
 
+    @Override
     public Collection<String> getRootNamespaces( String repositoryId )
         throws MetadataResolutionException
     {
         return getNamespaces( repositoryId, null );
     }
 
+    @Override
     public Collection<String> getNamespaces( String repositoryId, String baseNamespace )
         throws MetadataResolutionException
     {
@@ -1047,18 +1070,21 @@ public class JcrMetadataRepository
         return getNodeNames( path, NAMESPACE_NODE_TYPE );
     }
 
+    @Override
     public Collection<String> getProjects( String repositoryId, String namespace )
         throws MetadataResolutionException
     {
         return getNodeNames( getNamespacePath( repositoryId, namespace ), PROJECT_NODE_TYPE );
     }
 
+    @Override
     public Collection<String> getProjectVersions( String repositoryId, String namespace, String projectId )
         throws MetadataResolutionException
     {
         return getNodeNames( getProjectPath( repositoryId, namespace, projectId ), PROJECT_VERSION_NODE_TYPE );
     }
 
+    @Override
     public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
@@ -1102,6 +1128,7 @@ public class JcrMetadataRepository
     }
 
 
+    @Override
     public void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
         throws MetadataRepositoryException
     {
@@ -1128,6 +1155,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void removeArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
                                 String id )
         throws MetadataRepositoryException
@@ -1162,6 +1190,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void removeArtifact( String repositoryId, String namespace, String project, String projectVersion,
                                 MetadataFacet metadataFacet )
         throws MetadataRepositoryException
@@ -1196,6 +1225,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public Collection<ArtifactMetadata> getArtifacts( String repositoryId, String namespace, String projectId,
                                                       String projectVersion )
         throws MetadataResolutionException
@@ -1228,6 +1258,7 @@ public class JcrMetadataRepository
         return artifacts;
     }
 
+    @Override
     public void save()
     {
         try
@@ -1240,6 +1271,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void revert()
     {
         try
@@ -1252,11 +1284,13 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public boolean canObtainAccess( Class<?> aClass )
     {
         return aClass == Session.class;
     }
 
+    @Override
     public <T>T obtainAccess( Class<T> aClass )
         throws MetadataRepositoryException
     {
@@ -1276,6 +1310,7 @@ public class JcrMetadataRepository
             "Access using " + aClass + " is not supported on the JCR metadata storage" );
     }
 
+    @Override
     public void close()
         throws MetadataRepositoryException
     {

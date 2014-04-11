@@ -47,6 +47,7 @@ public class TreeDependencyNodeVisitor
     }
 
 
+    @Override
     public boolean visitEnter( DependencyNode dependencyNode )
     {
         TreeEntry entry =
@@ -67,6 +68,7 @@ public class TreeDependencyNodeVisitor
         return true;
     }
 
+    @Override
     public boolean visitLeave( DependencyNode dependencyNode )
     {
         currentEntry = currentEntry.getParent();

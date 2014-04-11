@@ -58,16 +58,19 @@ public class MockConfiguration
         registryMock = registryControl.createMock( Registry.class );
     }
 
+    @Override
     public void addChangeListener( RegistryListener listener )
     {
         registryListeners.add( listener );
     }
 
+    @Override
     public Configuration getConfiguration()
     {
         return configuration;
     }
 
+    @Override
     public void save( Configuration configuration )
         throws RegistryException
     {
@@ -89,21 +92,25 @@ public class MockConfiguration
         }
     }
 
+    @Override
     public void addListener( ConfigurationListener listener )
     {
         configListeners.add(listener);
     }
 
+    @Override
     public void removeListener( ConfigurationListener listener )
     {
         configListeners.remove( listener );
     }
     
+    @Override
     public boolean isDefaulted()
     {
         return false;
     }
 
+    @Override
     public void reload()
     {
         // no op

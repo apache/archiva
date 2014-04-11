@@ -76,6 +76,7 @@ public class RepositoryServlet
 
     private final Object reloadLock = new Object();
 
+    @Override
     public void init( ServletConfig servletConfig )
         throws ServletException
     {
@@ -211,6 +212,7 @@ public class RepositoryServlet
         log.info( "initServers done in {} ms", (end - start) );
     }
 
+    @Override
     public void configurationEvent( ConfigurationEvent event )
     {
         if ( event.getType() == ConfigurationEvent.SAVED )
@@ -257,6 +259,7 @@ public class RepositoryServlet
         return configuration;
     }
 
+    @Override
     protected boolean isPreconditionValid( final WebdavRequest request, final DavResource davResource )
     {
         // check for read or write access to the resource when resource-based permission is implemented
@@ -264,36 +267,43 @@ public class RepositoryServlet
         return true;
     }
 
+    @Override
     public DavSessionProvider getDavSessionProvider()
     {
         return sessionProvider;
     }
 
+    @Override
     public void setDavSessionProvider( final DavSessionProvider davSessionProvider )
     {
         this.sessionProvider = davSessionProvider;
     }
 
+    @Override
     public DavLocatorFactory getLocatorFactory()
     {
         return locatorFactory;
     }
 
+    @Override
     public void setLocatorFactory( final DavLocatorFactory davLocatorFactory )
     {
         locatorFactory = davLocatorFactory;
     }
 
+    @Override
     public DavResourceFactory getResourceFactory()
     {
         return resourceFactory;
     }
 
+    @Override
     public void setResourceFactory( final DavResourceFactory davResourceFactory )
     {
         resourceFactory = davResourceFactory;
     }
 
+    @Override
     public String getAuthenticateHeaderValue()
     {
         throw new UnsupportedOperationException();

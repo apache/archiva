@@ -40,6 +40,7 @@ public class RepositoryProblemEventListener
     private Logger log = LoggerFactory.getLogger( RepositoryProblemEventListener.class );
 
     // FIXME: move to session
+    @Override
     public void deleteArtifact( MetadataRepository metadataRepository, String repositoryId, String namespace,
                                 String project, String version, String id )
     {
@@ -55,6 +56,7 @@ public class RepositoryProblemEventListener
         }
     }
 
+    @Override
     public void addArtifact( RepositorySession session, String repoId, String namespace, String projectId,
                              ProjectVersionMetadata metadata )
     {
@@ -74,6 +76,7 @@ public class RepositoryProblemEventListener
         }
     }
 
+    @Override
     public void addArtifactProblem( RepositorySession session, String repoId, String namespace, String projectId,
                                     String projectVersion, RepositoryStorageMetadataException exception )
     {

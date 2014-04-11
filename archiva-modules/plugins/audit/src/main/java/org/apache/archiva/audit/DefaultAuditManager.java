@@ -48,6 +48,7 @@ public class DefaultAuditManager
 
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
+    @Override
     public List<AuditEvent> getMostRecentAuditEvents( MetadataRepository metadataRepository,
                                                       List<String> repositoryIds )
         throws MetadataRepositoryException
@@ -76,6 +77,7 @@ public class DefaultAuditManager
         return events;
     }
 
+    @Override
     public void addAuditEvent( MetadataRepository repository, AuditEvent event )
         throws MetadataRepositoryException
     {
@@ -86,12 +88,14 @@ public class DefaultAuditManager
         }
     }
 
+    @Override
     public void deleteAuditEvents( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
         metadataRepository.removeMetadataFacets( repositoryId, AuditEvent.FACET_ID );
     }
 
+    @Override
     public List<AuditEvent> getAuditEventsInRange( MetadataRepository metadataRepository,
                                                    Collection<String> repositoryIds, Date startTime, Date endTime )
         throws MetadataRepositoryException
@@ -99,6 +103,7 @@ public class DefaultAuditManager
         return getAuditEventsInRange( metadataRepository, repositoryIds, null, startTime, endTime );
     }
 
+    @Override
     public List<AuditEvent> getAuditEventsInRange( MetadataRepository metadataRepository,
                                                    Collection<String> repositoryIds, String resource, Date startTime,
                                                    Date endTime )
@@ -135,6 +140,7 @@ public class DefaultAuditManager
         }
         Collections.sort( results, new Comparator<AuditEvent>()
         {
+            @Override
             public int compare( AuditEvent o1, AuditEvent o2 )
             {
                 return o2.getTimestamp().compareTo( o1.getTimestamp() );
@@ -163,6 +169,7 @@ public class DefaultAuditManager
             this.name = name;
         }
 
+        @Override
         public int compareTo( AuditRecord other )
         {
             // reverse ordering

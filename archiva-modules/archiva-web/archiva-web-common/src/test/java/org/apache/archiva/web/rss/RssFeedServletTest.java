@@ -89,6 +89,7 @@ public class RssFeedServletTest
     }
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -113,6 +114,7 @@ public class RssFeedServletTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

@@ -72,6 +72,7 @@ public class DefaultArchivaAdministration
     }
 
 
+    @Override
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws RepositoryAdminException
     {
@@ -85,6 +86,7 @@ public class DefaultArchivaAdministration
         return legacyArtifactPaths;
     }
 
+    @Override
     public void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -97,6 +99,7 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.ADD_LEGACY_PATH, auditInformation );
     }
 
+    @Override
     public void deleteLegacyArtifactPath( String path, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -112,6 +115,7 @@ public class DefaultArchivaAdministration
     }
 
 
+    @Override
     public void addFileTypePattern( String fileTypeId, String pattern, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -134,6 +138,7 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.ADD_PATTERN, auditInformation );
     }
 
+    @Override
     public void removeFileTypePattern( String fileTypeId, String pattern, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -150,6 +155,7 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.REMOVE_PATTERN, auditInformation );
     }
 
+    @Override
     public FileType getFileType( String fileTypeId )
         throws RepositoryAdminException
     {
@@ -162,6 +168,7 @@ public class DefaultArchivaAdministration
         return getModelMapper().map( fileType, FileType.class );
     }
 
+    @Override
     public void addFileType( FileType fileType, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -177,6 +184,7 @@ public class DefaultArchivaAdministration
         saveConfiguration( configuration );
     }
 
+    @Override
     public void removeFileType( String fileTypeId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -187,6 +195,7 @@ public class DefaultArchivaAdministration
         saveConfiguration( configuration );
     }
 
+    @Override
     public void addKnownContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -201,6 +210,7 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.ENABLE_REPO_CONSUMER, auditInformation );
     }
 
+    @Override
     public void removeKnownContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -210,6 +220,7 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.DISABLE_REPO_CONSUMER, auditInformation );
     }
 
+    @Override
     public void addInvalidContentConsumer( String invalidContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -224,6 +235,7 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.ENABLE_REPO_CONSUMER, auditInformation );
     }
 
+    @Override
     public void removeInvalidContentConsumer( String invalidContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -233,6 +245,7 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.DISABLE_REPO_CONSUMER, auditInformation );
     }
 
+    @Override
     public void setKnownContentConsumers( List<String> knownContentConsumers, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -246,6 +259,7 @@ public class DefaultArchivaAdministration
         }
     }
 
+    @Override
     public void setInvalidContentConsumers( List<String> invalidContentConsumers, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -259,6 +273,7 @@ public class DefaultArchivaAdministration
         }
     }
 
+    @Override
     public List<FileType> getFileTypes()
         throws RepositoryAdminException
     {
@@ -276,6 +291,7 @@ public class DefaultArchivaAdministration
         return fileTypes;
     }
 
+    @Override
     public List<String> getKnownContentConsumers()
         throws RepositoryAdminException
     {
@@ -283,6 +299,7 @@ public class DefaultArchivaAdministration
             getArchivaConfiguration().getConfiguration().getRepositoryScanning().getKnownContentConsumers() );
     }
 
+    @Override
     public List<String> getInvalidContentConsumers()
         throws RepositoryAdminException
     {
@@ -290,6 +307,7 @@ public class DefaultArchivaAdministration
             getArchivaConfiguration().getConfiguration().getRepositoryScanning().getInvalidContentConsumers() );
     }
 
+    @Override
     public OrganisationInformation getOrganisationInformation()
         throws RepositoryAdminException
     {
@@ -302,6 +320,7 @@ public class DefaultArchivaAdministration
         return getModelMapper().map( organisationInformation, OrganisationInformation.class );
     }
 
+    @Override
     public void setOrganisationInformation( OrganisationInformation organisationInformation )
         throws RepositoryAdminException
     {
@@ -320,6 +339,7 @@ public class DefaultArchivaAdministration
         saveConfiguration( configuration );
     }
 
+    @Override
     public UiConfiguration getUiConfiguration()
         throws RepositoryAdminException
     {
@@ -336,6 +356,7 @@ public class DefaultArchivaAdministration
         return getModelMapper().map( userInterfaceOptions, UiConfiguration.class );
     }
 
+    @Override
     public void updateUiConfiguration( UiConfiguration uiConfiguration )
         throws RepositoryAdminException
     {
@@ -355,6 +376,7 @@ public class DefaultArchivaAdministration
 
     }
 
+    @Override
     public NetworkConfiguration getNetworkConfiguration()
         throws RepositoryAdminException
     {
@@ -368,6 +390,7 @@ public class DefaultArchivaAdministration
         return getModelMapper().map( networkConfiguration, NetworkConfiguration.class );
     }
 
+    @Override
     public void setNetworkConfiguration( NetworkConfiguration networkConfiguration )
         throws RepositoryAdminException
     {

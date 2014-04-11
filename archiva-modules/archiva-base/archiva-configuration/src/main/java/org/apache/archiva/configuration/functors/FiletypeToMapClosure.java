@@ -35,6 +35,7 @@ public class FiletypeToMapClosure
 {
     private Map<String, FileType> map = new HashMap<>();
 
+    @Override
     public void execute( Object input )
     {
         if ( input instanceof FileType )

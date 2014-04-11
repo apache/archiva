@@ -61,6 +61,7 @@ public class TriggerBeginScanClosure
         this.executeOnEntireRepo = executeOnEntireRepo;
     }
 
+    @Override
     public void execute( Object input )
     {
         if ( input instanceof RepositoryContentConsumer )

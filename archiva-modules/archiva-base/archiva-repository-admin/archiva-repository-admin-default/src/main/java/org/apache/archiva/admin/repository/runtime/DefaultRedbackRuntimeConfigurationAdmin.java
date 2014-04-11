@@ -78,6 +78,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     }
 
     @PostConstruct
+    @Override
     public void initialize()
         throws UserConfigurationException
     {
@@ -285,11 +286,13 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         }
     }
 
+    @Override
     public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
     {
         return build( archivaConfiguration.getConfiguration().getRedbackRuntimeConfiguration() );
     }
 
+    @Override
     public void updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws RepositoryAdminException
     {
@@ -437,6 +440,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     // wrapper for UserConfiguration to intercept values (and store it not yet migrated)
 
 
+    @Override
     public String getString( String key )
     {
         if ( UserConfigurationKeys.USER_MANAGER_IMPL.equals( key ) )
@@ -484,6 +488,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public String getString( String key, String defaultValue )
     {
         if ( UserConfigurationKeys.LDAP_HOSTNAME.equals( key ) )
@@ -531,6 +536,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public int getInt( String key )
     {
         RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
@@ -556,6 +562,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public int getInt( String key, int defaultValue )
     {
         if ( UserConfigurationKeys.LDAP_PORT.equals( key ) )
@@ -586,6 +593,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public boolean getBoolean( String key )
     {
         RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
@@ -626,6 +634,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public boolean getBoolean( String key, boolean defaultValue )
     {
         if ( UserConfigurationKeys.LDAP_SSL.equals( key ) )
@@ -671,6 +680,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public List<String> getList( String key )
     {
         List<String> value = userConfiguration.getList( key );
@@ -691,6 +701,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public String getConcatenatedList( String key, String defaultValue )
     {
         if ( UserConfigurationKeys.LDAP_BASEDN.equals( key ) )
@@ -708,6 +719,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return userConfiguration.getConcatenatedList( key, defaultValue );
     }
 
+    @Override
     public Collection<String> getKeys()
     {
         Collection<String> keys = userConfiguration.getKeys();

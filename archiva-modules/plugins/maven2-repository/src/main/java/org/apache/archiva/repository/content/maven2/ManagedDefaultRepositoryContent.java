@@ -65,6 +65,7 @@ public class ManagedDefaultRepositoryContent
         this.artifactMappingProviders = Collections.singletonList( new DefaultArtifactMappingProvider() );
     }
 
+    @Override
     public void deleteVersion( VersionedReference reference )
     {
         String path = toMetadataPath( reference );
@@ -77,6 +78,7 @@ public class ManagedDefaultRepositoryContent
         }
     }
 
+    @Override
     public void deleteProject( String namespace, String projectId )
         throws RepositoryException, ContentNotFoundException
     {
@@ -107,6 +109,7 @@ public class ManagedDefaultRepositoryContent
 
     }
 
+    @Override
     public void deleteArtifact( ArtifactReference artifactReference )
     {
         String path = toPath( artifactReference );
@@ -132,6 +135,7 @@ public class ManagedDefaultRepositoryContent
         }
     }
 
+    @Override
     public void deleteGroupId( String groupId )
         throws ContentNotFoundException
     {
@@ -153,11 +157,13 @@ public class ManagedDefaultRepositoryContent
         }
     }
 
+    @Override
     public String getId()
     {
         return repository.getId();
     }
 
+    @Override
     public Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
         throws ContentNotFoundException
     {
@@ -213,11 +219,13 @@ public class ManagedDefaultRepositoryContent
         return foundArtifacts;
     }
 
+    @Override
     public String getRepoRoot()
     {
         return repository.getLocation();
     }
 
+    @Override
     public ManagedRepository getRepository()
     {
         return repository;
@@ -231,6 +239,7 @@ public class ManagedDefaultRepositoryContent
      * @throws org.apache.archiva.repository.layout.LayoutException
      * @throws org.apache.archiva.repository.layout.LayoutException
      */
+    @Override
     public Set<String> getVersions( ProjectReference reference )
         throws ContentNotFoundException, LayoutException
     {
@@ -284,6 +293,7 @@ public class ManagedDefaultRepositoryContent
         return foundVersions;
     }
 
+    @Override
     public Set<String> getVersions( VersionedReference reference )
         throws ContentNotFoundException
     {
@@ -347,12 +357,14 @@ public class ManagedDefaultRepositoryContent
         return foundVersions;
     }
 
+    @Override
     public boolean hasContent( ArtifactReference reference )
     {
         File artifactFile = toFile( reference );
         return artifactFile.exists() && artifactFile.isFile();
     }
 
+    @Override
     public boolean hasContent( ProjectReference reference )
     {
         try
@@ -370,6 +382,7 @@ public class ManagedDefaultRepositoryContent
         }
     }
 
+    @Override
     public boolean hasContent( VersionedReference reference )
     {
         try
@@ -386,6 +399,7 @@ public class ManagedDefaultRepositoryContent
         }
     }
 
+    @Override
     public void setRepository( ManagedRepository repository )
     {
         this.repository = repository;
@@ -409,11 +423,13 @@ public class ManagedDefaultRepositoryContent
         return super.toArtifactReference( path );
     }
 
+    @Override
     public File toFile( ArtifactReference reference )
     {
         return new File( repository.getLocation(), toPath( reference ) );
     }
 
+    @Override
     public File toFile( ArchivaArtifact reference )
     {
         return new File( repository.getLocation(), toPath( reference ) );

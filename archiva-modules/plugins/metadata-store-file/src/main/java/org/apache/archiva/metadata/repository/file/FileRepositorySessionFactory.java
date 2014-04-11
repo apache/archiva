@@ -80,6 +80,7 @@ public class FileRepositorySessionFactory
 
     }
 
+    @Override
     public RepositorySession createSession()
     {
         MetadataRepository metadataRepository = new FileMetadataRepository( metadataFacetFactories, configuration );

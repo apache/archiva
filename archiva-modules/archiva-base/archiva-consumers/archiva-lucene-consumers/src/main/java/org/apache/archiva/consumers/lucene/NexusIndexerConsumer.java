@@ -100,21 +100,25 @@ public class NexusIndexerConsumer
         this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 
+    @Override
     public String getDescription()
     {
         return "Indexes the repository to provide search and IDE integration features";
     }
 
+    @Override
     public String getId()
     {
         return "index-content";
     }
 
+    @Override
     public boolean isPermanent()
     {
         return false;
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
@@ -132,6 +136,7 @@ public class NexusIndexerConsumer
         }
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
@@ -146,6 +151,7 @@ public class NexusIndexerConsumer
         }
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -164,6 +170,7 @@ public class NexusIndexerConsumer
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {
@@ -193,6 +200,7 @@ public class NexusIndexerConsumer
         }
     }
 
+    @Override
     public void completeScan()
     {
         IndexingContext context = this.indexingContext;
@@ -221,6 +229,7 @@ public class NexusIndexerConsumer
         }
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         if ( executeOnEntireRepo )
@@ -231,11 +240,13 @@ public class NexusIndexerConsumer
         // else, do nothing as the context will be closed when indexing task is executed if not a repo scan request!
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return Collections.emptyList();
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
@@ -244,6 +255,7 @@ public class NexusIndexerConsumer
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* do nothing */
@@ -269,6 +281,7 @@ public class NexusIndexerConsumer
         initIncludes();
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return includes;

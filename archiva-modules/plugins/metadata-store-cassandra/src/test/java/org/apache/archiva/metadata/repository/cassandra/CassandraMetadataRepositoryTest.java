@@ -53,6 +53,7 @@ public class CassandraMetadataRepositoryTest
     CassandraMetadataRepository cmr;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {

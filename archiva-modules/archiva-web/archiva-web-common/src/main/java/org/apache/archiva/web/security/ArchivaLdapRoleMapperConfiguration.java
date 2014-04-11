@@ -52,6 +52,7 @@ public class ArchivaLdapRoleMapperConfiguration
     @Named( value = "redbackRuntimeConfigurationAdmin#default" )
     private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
+    @Override
     public void addLdapMapping( String ldapGroup, List<String> roles )
         throws MappingException
     {
@@ -69,7 +70,8 @@ public class ArchivaLdapRoleMapperConfiguration
         catch ( RepositoryAdminException e )
         {
             throw new MappingException( e.getMessage(), e );
-        }
+        @Override
+    }
 
     }
 
@@ -94,7 +96,8 @@ public class ArchivaLdapRoleMapperConfiguration
         }
         catch ( RepositoryAdminException e )
         {
-            throw new MappingException( e.getMessage(), e );
+            throw new MappingException( e.getMessa    @Override
+ge(), e );
         }
     }
 
@@ -112,7 +115,8 @@ public class ArchivaLdapRoleMapperConfiguration
         }
         catch ( RepositoryAdminException e )
         {
-            throw new MappingException( e.getMessage(), e );
+            throw new MappingExceptio    @Override
+n( e.getMessage(), e );
         }
 
     }
@@ -143,7 +147,8 @@ public class ArchivaLdapRoleMapperConfiguration
         }
         catch ( RepositoryAdminException e )
         {
-            throw new MappingException( e.getMessage(), e );
+            throw new     @Override
+MappingException( e.getMessage(), e );
         }
     }
 

@@ -121,6 +121,7 @@ public class MetadataTools
         lastUpdatedFormat.setTimeZone( DateUtils.UTC_TIME_ZONE );
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isProxyConnector( propertyName ) )
@@ -129,6 +130,7 @@ public class MetadataTools
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* nothing to do */

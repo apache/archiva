@@ -65,6 +65,7 @@ public class MavenIndexerCleaner
     }
 
 
+    @Override
     public void contextInitialized( ServletContextEvent servletContextEvent )
     {
         try
@@ -82,6 +83,7 @@ public class MavenIndexerCleaner
         }
     }
 
+    @Override
     public void contextDestroyed( ServletContextEvent servletContextEvent )
     {
         try

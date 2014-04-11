@@ -120,6 +120,7 @@ public class CacheEntry
         this.inMemorySize = inMemorySize;
     }
 
+    @Override
     public int compareTo( Object o )
     {
         return this.key.compareTo( ( (CacheEntry) o ).key );

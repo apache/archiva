@@ -89,6 +89,7 @@ public class ArchivaLockedAdminEnvironmentCheck
      *
      * @param violations
      */
+    @Override
     public void validateEnvironment( List<String> violations )
     {
         if ( !checked )

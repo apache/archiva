@@ -88,6 +88,7 @@ public class LegacyConverterArtifactConsumer
         artifactFactory = plexusSisuBridge.lookup( ArtifactFactory.class );
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
@@ -95,32 +96,38 @@ public class LegacyConverterArtifactConsumer
         this.managedRepository.setRepository( repository );
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void completeScan()
     {
         // no op
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return excludes;
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return includes;
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -142,22 +149,26 @@ public class LegacyConverterArtifactConsumer
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {
         processFile( path );
     }
 
+    @Override
     public String getDescription()
     {
         return "Legacy Artifact to Default Artifact Converter";
     }
 
+    @Override
     public String getId()
     {
         return "artifact-legacy-to-default-converter";
     }
 
+    @Override
     public boolean isPermanent()
     {
         return false;

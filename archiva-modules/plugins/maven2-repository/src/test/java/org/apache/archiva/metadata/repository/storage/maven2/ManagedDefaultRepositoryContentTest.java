@@ -150,6 +150,7 @@ public class ManagedDefaultRepositoryContentTest
     }
 
     @Test
+    @Override
     public void testToPathOnNullArtifactReference()
     {
         try

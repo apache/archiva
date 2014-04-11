@@ -35,6 +35,7 @@ import javax.ws.rs.ext.Provider;
 public class ArchivaRestServiceExceptionMapper
     implements ExceptionMapper<ArchivaRestServiceException>
 {
+    @Override
     public Response toResponse( ArchivaRestServiceException e )
     {
         ArchivaRestError restError = new ArchivaRestError( e );

@@ -112,6 +112,7 @@ public class DefaultRemoteRepositoryAdmin
     }
 
 
+    @Override
     public List<RemoteRepository> getRemoteRepositories()
         throws RepositoryAdminException
     {
@@ -141,6 +142,7 @@ public class DefaultRemoteRepositoryAdmin
         return remoteRepositories;
     }
 
+    @Override
     public RemoteRepository getRemoteRepository( String repositoryId )
         throws RepositoryAdminException
     {
@@ -154,6 +156,7 @@ public class DefaultRemoteRepositoryAdmin
         return null;
     }
 
+    @Override
     public Boolean addRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -179,6 +182,7 @@ public class DefaultRemoteRepositoryAdmin
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean deleteRemoteRepository( String repositoryId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -213,6 +217,7 @@ public class DefaultRemoteRepositoryAdmin
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean updateRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -242,6 +247,7 @@ public class DefaultRemoteRepositoryAdmin
         return Boolean.TRUE;
     }
 
+    @Override
     public Map<String, RemoteRepository> getRemoteRepositoriesAsMap()
         throws RepositoryAdminException
     {
@@ -255,6 +261,7 @@ public class DefaultRemoteRepositoryAdmin
         return map;
     }
 
+    @Override
     public IndexingContext createIndexContext( RemoteRepository remoteRepository )
         throws RepositoryAdminException
     {

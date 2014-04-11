@@ -57,6 +57,7 @@ public class DefaultManagedRepositoriesService
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
+    @Override
     public List<ManagedRepository> getManagedRepositories()
         throws ArchivaRestServiceException
     {
@@ -72,6 +73,7 @@ public class DefaultManagedRepositoriesService
         }
     }
 
+    @Override
     public ManagedRepository getManagedRepository( String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -87,6 +89,7 @@ public class DefaultManagedRepositoriesService
     }
 
 
+    @Override
     public Boolean deleteManagedRepository( String repoId, boolean deleteContent )
         throws ArchivaRestServiceException
     {
@@ -102,6 +105,7 @@ public class DefaultManagedRepositoriesService
         }
     }
 
+    @Override
     public ManagedRepository addManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException
     {
@@ -124,6 +128,7 @@ public class DefaultManagedRepositoriesService
     }
 
 
+    @Override
     public Boolean updateManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException
     {
@@ -141,6 +146,7 @@ public class DefaultManagedRepositoriesService
         }
     }
 
+    @Override
     public Boolean fileLocationExists( String fileLocation )
         throws ArchivaRestServiceException
     {
@@ -148,6 +154,7 @@ public class DefaultManagedRepositoriesService
         return new File( location ).exists();
     }
 
+    @Override
     public ArchivaRepositoryStatistics getManagedRepositoryStatistics( String repositoryId, String lang )
         throws ArchivaRestServiceException
     {
@@ -188,6 +195,7 @@ public class DefaultManagedRepositoriesService
         return null;
     }
 
+    @Override
     public String getPomSnippet( String repositoryId )
         throws ArchivaRestServiceException
     {

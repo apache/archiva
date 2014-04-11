@@ -151,11 +151,13 @@ public class RepositoryStatistics
         this.repositoryId = repositoryId;
     }
 
+    @Override
     public String getFacetId()
     {
         return FACET_ID;
     }
 
+    @Override
     public String getName()
     {
         return createNameFormat().format( scanStartTime );
@@ -168,6 +170,7 @@ public class RepositoryStatistics
         return fmt;
     }
 
+    @Override
     public Map<String, String> toProperties()
     {
         Map<String, String> properties = new HashMap<>();
@@ -187,6 +190,7 @@ public class RepositoryStatistics
         return properties;
     }
 
+    @Override
     public void fromProperties( Map<String, String> properties )
     {
         scanEndTime = new Date( Long.parseLong( properties.get( "scanEndTime" ) ) );

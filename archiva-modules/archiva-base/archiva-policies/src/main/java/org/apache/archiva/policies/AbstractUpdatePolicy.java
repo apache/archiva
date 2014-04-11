@@ -96,11 +96,13 @@ public abstract class AbstractUpdatePolicy
 
     protected abstract String getUpdateMode();
 
+    @Override
     public List<String> getOptions()
     {
         return options;
     }
 
+    @Override
     public void applyPolicy( String policySetting, Properties request, File localFile )
         throws PolicyViolationException, PolicyConfigurationException
     {

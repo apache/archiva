@@ -90,6 +90,7 @@ public class Maven2RepositoryMerger
         this.configuration = configuration;
     }
 
+    @Override
     public void merge( MetadataRepository metadataRepository, String sourceRepoId, String targetRepoId )
         throws RepositoryMergerException
     {
@@ -118,6 +119,7 @@ public class Maven2RepositoryMerger
     }
 
     // TODO when UI needs a subset to merge
+    @Override
     public void merge( MetadataRepository metadataRepository, String sourceRepoId, String targetRepoId,
                        Filter<ArtifactMetadata> filter )
         throws RepositoryMergerException
@@ -368,6 +370,7 @@ public class Maven2RepositoryMerger
         return metadata;
     }
 
+    @Override
     public List<ArtifactMetadata> getConflictingArtifacts( MetadataRepository metadataRepository, String sourceRepo,
                                                            String targetRepo )
         throws RepositoryMergerException

@@ -35,6 +35,7 @@ public class TestAuditListener
 
     private List<AuditEvent> events = new ArrayList<>();
 
+    @Override
     public void auditEvent( AuditEvent event )
     {
         events.add( event );

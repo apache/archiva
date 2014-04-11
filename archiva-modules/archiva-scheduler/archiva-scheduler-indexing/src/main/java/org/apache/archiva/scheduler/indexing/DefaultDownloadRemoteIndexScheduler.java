@@ -149,12 +149,14 @@ public class DefaultDownloadRemoteIndexScheduler
         }
     }
 
+    @Override
     public void configurationEvent( ConfigurationEvent event )
     {
         // TODO remove jobs and add again
     }
 
 
+    @Override
     public void scheduleDownloadRemote( String repositoryId, boolean now, boolean fullDownload )
         throws DownloadRemoteIndexException
     {
@@ -237,6 +239,7 @@ public class DefaultDownloadRemoteIndexScheduler
         this.taskScheduler = taskScheduler;
     }
 
+    @Override
     public List<String> getRunningRemoteDownloadIds()
     {
         return runningRemoteDownloadIds;

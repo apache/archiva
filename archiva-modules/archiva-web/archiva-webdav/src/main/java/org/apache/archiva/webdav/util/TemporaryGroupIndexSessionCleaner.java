@@ -47,6 +47,7 @@ public class TemporaryGroupIndexSessionCleaner
 
     public static final String TEMPORARY_INDEX_SESSION_KEY = TemporaryGroupIndexSessionCleaner.class.getName();
 
+    @Override
     public void sessionCreated( HttpSessionEvent httpSessionEvent )
     {
         // ensure the map is here to avoid NPE
@@ -64,6 +65,7 @@ public class TemporaryGroupIndexSessionCleaner
         }
     }
 
+    @Override
     public void sessionDestroyed( HttpSessionEvent httpSessionEvent )
     {
         Map<String, TemporaryGroupIndex> tempFilesPerKey =

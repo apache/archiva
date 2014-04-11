@@ -48,6 +48,7 @@ public class RepositoryServletProxiedTimestampedSnapshotPolicyTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

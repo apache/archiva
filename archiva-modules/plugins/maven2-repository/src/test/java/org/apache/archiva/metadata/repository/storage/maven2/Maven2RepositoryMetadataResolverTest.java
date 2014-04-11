@@ -220,6 +220,7 @@ public class Maven2RepositoryMetadataResolverTest
         List<ArtifactMetadata> artifacts = new ArrayList<>( springArtifacts );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
+            @Override
             public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
             {
                 return o1.getId().compareTo( o2.getId() );
@@ -262,6 +263,7 @@ public class Maven2RepositoryMetadataResolverTest
         List<ArtifactMetadata> artifacts = new ArrayList<>( testArtifacts );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
+            @Override
             public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
             {
                 return o1.getId().compareTo( o2.getId() );
@@ -564,6 +566,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( 3, artifacts.size() );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
+            @Override
             public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
             {
                 return o1.getId().compareTo( o2.getId() );
@@ -587,6 +590,7 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( 2, artifacts.size() );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
+            @Override
             public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
             {
                 return o1.getId().compareTo( o2.getId() );

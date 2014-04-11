@@ -69,6 +69,7 @@ public class DefaultCommonServices
         getAllI18nResources( "fr" );
     }
 
+    @Override
     public String getI18nResources( String locale )
         throws ArchivaRestServiceException
     {
@@ -144,6 +145,7 @@ public class DefaultCommonServices
         }
     }
 
+    @Override
     public String getAllI18nResources( String locale )
         throws ArchivaRestServiceException
     {
@@ -197,6 +199,7 @@ public class DefaultCommonServices
     }
 
 
+    @Override
     public Boolean validateCronExpression( String cronExpression )
         throws ArchivaRestServiceException
     {

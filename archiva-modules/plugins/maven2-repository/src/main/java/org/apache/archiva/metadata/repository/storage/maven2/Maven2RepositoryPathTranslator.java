@@ -77,16 +77,19 @@ public class Maven2RepositoryPathTranslator
         this.artifactMappingProviders = artifactMappingProviders;
     }
 
+    @Override
     public File toFile( File basedir, String namespace, String projectId, String projectVersion, String filename )
     {
         return new File( basedir, toPath( namespace, projectId, projectVersion, filename ) );
     }
 
+    @Override
     public File toFile( File basedir, String namespace, String projectId, String projectVersion )
     {
         return new File( basedir, toPath( namespace, projectId, projectVersion ) );
     }
 
+    @Override
     public String toPath( String namespace, String projectId, String projectVersion, String filename )
     {
         StringBuilder path = new StringBuilder();
@@ -123,6 +126,7 @@ public class Maven2RepositoryPathTranslator
         return path.toString();
     }
 
+    @Override
     public String toPath( String namespace, String projectId )
     {
         StringBuilder path = new StringBuilder();
@@ -143,11 +147,13 @@ public class Maven2RepositoryPathTranslator
         path.append( formatAsDirectory( namespace ) ).append( PATH_SEPARATOR );
     }
 
+    @Override
     public File toFile( File basedir, String namespace, String projectId )
     {
         return new File( basedir, toPath( namespace, projectId ) );
     }
 
+    @Override
     public File toFile( File basedir, String namespace )
     {
         return new File( basedir, toPath( namespace ) );
@@ -158,6 +164,7 @@ public class Maven2RepositoryPathTranslator
         return directory.replace( GROUP_SEPARATOR, PATH_SEPARATOR );
     }
 
+    @Override
     public ArtifactMetadata getArtifactForPath( String repoId, String relativePath )
     {
         String[] parts = relativePath.replace( '\\', '/' ).split( "/" );
@@ -183,6 +190,7 @@ public class Maven2RepositoryPathTranslator
         return getArtifactFromId( repoId, groupIdBuilder.toString(), artifactId, baseVersion, id );
     }
 
+    @Override
     public ArtifactMetadata getArtifactFromId( String repoId, String namespace, String projectId, String projectVersion,
                                                String id )
     {

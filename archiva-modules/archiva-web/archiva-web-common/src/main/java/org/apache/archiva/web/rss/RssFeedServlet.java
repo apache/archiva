@@ -93,6 +93,7 @@ public class RssFeedServlet
      */
     private RepositorySessionFactory repositorySessionFactory;
 
+    @Override
     public void init( ServletConfig servletConfig )
         throws ServletException
     {
@@ -102,7 +103,8 @@ public class RssFeedServlet
         servletAuth = wac.getBean( ServletAuthenticator.class );
         httpAuth = wac.getBean( "httpAuthenticator#basic", HttpAuthenticator.class );
         // TODO: what if there are other types?
-        repositorySessionFactory = wac.getBean( "repositorySessionFactory", RepositorySessionFactory.class );
+        repositorySessionFactory = wac.getBean( "repositorySessionFactory", RepositorySessionFactory.cl    @Override
+ass );
     }
 
     public void doGet( HttpServletRequest req, HttpServletResponse res )

@@ -46,6 +46,7 @@ public class ArchivaLdapConnectionFactory
     private LdapConnectionConfiguration ldapConnectionConfiguration;
 
     @PostConstruct
+    @Override
     public void initialize()
     {
         try

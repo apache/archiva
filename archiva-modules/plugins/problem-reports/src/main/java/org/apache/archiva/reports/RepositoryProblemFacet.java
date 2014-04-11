@@ -43,16 +43,19 @@ public class RepositoryProblemFacet
 
     private String problem;
 
+    @Override
     public String getFacetId()
     {
         return FACET_ID;
     }
 
+    @Override
     public String getName()
     {
         return createName( namespace, project, version, id );
     }
 
+    @Override
     public Map<String, String> toProperties()
     {
         Map<String, String> map = new HashMap<>();
@@ -69,6 +72,7 @@ public class RepositoryProblemFacet
         return map;
     }
 
+    @Override
     public void fromProperties( Map<String, String> properties )
     {
         repositoryId = properties.get( "repositoryId" );

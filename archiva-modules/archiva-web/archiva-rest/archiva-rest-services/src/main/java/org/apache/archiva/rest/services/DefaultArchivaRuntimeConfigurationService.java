@@ -52,6 +52,7 @@ public class DefaultArchivaRuntimeConfigurationService
     @Named( value = "fileLockManager#default" )
     private FileLockManager fileLockManager;
 
+    @Override
     public ArchivaRuntimeConfiguration getArchivaRuntimeConfiguration()
         throws ArchivaRestServiceException
     {
@@ -65,6 +66,7 @@ public class DefaultArchivaRuntimeConfigurationService
         }
     }
 
+    @Override
     public Boolean updateArchivaRuntimeConfiguration( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
         throws ArchivaRestServiceException
     {

@@ -62,6 +62,7 @@ public class DownloadSnapshotTest
         System.setProperty( "appserver.base", previousAppServerBase );
     }
 
+    @Override
     protected String getSpringConfigLocation()
     {
         return "classpath*:META-INF/spring-context.xml classpath*:spring-context-test-common.xml classpath*:spring-context-artifacts-download.xml";

@@ -162,6 +162,7 @@ public class DefaultArchivaConfiguration
 
     private static final String KEY = "org.apache.archiva";
 
+    @Override
     public Configuration getConfiguration()
     {
         return loadConfiguration();
@@ -441,6 +442,7 @@ public class DefaultArchivaConfiguration
     }
 
     @SuppressWarnings ( "unchecked" )
+    @Override
     public synchronized void save( Configuration configuration )
         throws IndeterminateConfigurationException, RegistryException
     {
@@ -627,6 +629,7 @@ public class DefaultArchivaConfiguration
         }
     }
 
+    @Override
     public void addListener( ConfigurationListener listener )
     {
         if ( listener == null )
@@ -637,6 +640,7 @@ public class DefaultArchivaConfiguration
         listeners.add( listener );
     }
 
+    @Override
     public void removeListener( ConfigurationListener listener )
     {
         if ( listener == null )
@@ -647,6 +651,7 @@ public class DefaultArchivaConfiguration
         listeners.remove( listener );
     }
 
+    @Override
     public void addChangeListener( RegistryListener listener )
     {
         addRegistryChangeListener( listener );
@@ -760,6 +765,7 @@ public class DefaultArchivaConfiguration
         //save( configuration );
     }
 
+    @Override
     public void reload()
     {
         this.configuration = null;
@@ -774,11 +780,13 @@ public class DefaultArchivaConfiguration
         this.initialize();
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         // nothing to do here
     }
 
+    @Override
     public synchronized void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         configuration = null;
@@ -845,6 +853,7 @@ public class DefaultArchivaConfiguration
         return altConfigFilename;
     }
 
+    @Override
     public boolean isDefaulted()
     {
         return this.isConfigurationDefaulted;

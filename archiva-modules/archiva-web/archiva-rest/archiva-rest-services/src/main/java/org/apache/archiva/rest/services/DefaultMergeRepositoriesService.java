@@ -57,6 +57,7 @@ public class DefaultMergeRepositoriesService
     private Maven2RepositoryMerger repositoryMerger;
 
 
+    @Override
     public List<Artifact> getMergeConflictedArtifacts( String sourceRepositoryId, String targetRepositoryId )
         throws ArchivaRestServiceException
     {
@@ -79,6 +80,7 @@ public class DefaultMergeRepositoriesService
         }
     }
 
+    @Override
     public void mergeRepositories( String sourceRepositoryId, String targetRepositoryId, boolean skipConflicts )
         throws ArchivaRestServiceException
     {

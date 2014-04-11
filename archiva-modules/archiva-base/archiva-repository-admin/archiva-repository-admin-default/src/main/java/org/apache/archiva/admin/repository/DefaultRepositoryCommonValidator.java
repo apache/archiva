@@ -58,6 +58,7 @@ public class DefaultRepositoryCommonValidator
      * @param update             in update mode if yes already exists won't be check
      * @throws RepositoryAdminException
      */
+    @Override
     public void basicValidation( AbstractRepository abstractRepository, boolean update )
         throws RepositoryAdminException
     {
@@ -118,6 +119,7 @@ public class DefaultRepositoryCommonValidator
      * @param managedRepository
      * @since 1.4-M2
      */
+    @Override
     public void validateManagedRepository( ManagedRepository managedRepository )
         throws RepositoryAdminException
     {
@@ -155,6 +157,7 @@ public class DefaultRepositoryCommonValidator
      * @param directory
      * @return
      */
+    @Override
     public String removeExpressions( String directory )
     {
         String value = StringUtils.replace( directory, "${appserver.base}",

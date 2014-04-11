@@ -91,6 +91,7 @@ public class DefaultRedbackRuntimeConfigurationService
     private LdapUserMapper ldapUserMapper;
 
 
+    @Override
     public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
         throws ArchivaRestServiceException
     {
@@ -104,6 +105,7 @@ public class DefaultRedbackRuntimeConfigurationService
         }
     }
 
+    @Override
     public Boolean updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws ArchivaRestServiceException
     {
@@ -189,6 +191,7 @@ public class DefaultRedbackRuntimeConfigurationService
         }
     }
 
+    @Override
     public List<UserManagerImplementationInformation> getUserManagerImplementationInformations()
         throws ArchivaRestServiceException
     {
@@ -218,6 +221,7 @@ public class DefaultRedbackRuntimeConfigurationService
         return informations;
     }
 
+    @Override
     public List<RBACManagerImplementationInformation> getRbacManagerImplementationInformations()
         throws ArchivaRestServiceException
     {
@@ -246,6 +250,7 @@ public class DefaultRedbackRuntimeConfigurationService
         return informations;
     }
 
+    @Override
     public RedbackImplementationsInformations getRedbackImplementationsInformations()
         throws ArchivaRestServiceException
     {
@@ -253,6 +258,7 @@ public class DefaultRedbackRuntimeConfigurationService
                                                        getRbacManagerImplementationInformations() );
     }
 
+    @Override
     public Boolean checkLdapConnection()
         throws ArchivaRestServiceException
     {
@@ -278,6 +284,7 @@ public class DefaultRedbackRuntimeConfigurationService
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean checkLdapConnection( LdapConfiguration ldapConfiguration )
         throws ArchivaRestServiceException
     {

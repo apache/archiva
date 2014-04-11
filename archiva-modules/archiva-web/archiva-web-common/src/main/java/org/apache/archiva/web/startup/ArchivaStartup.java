@@ -57,6 +57,7 @@ public class ArchivaStartup
 
     private NexusIndexer nexusIndexer;
 
+    @Override
     public void contextInitialized( ServletContextEvent contextEvent )
     {
         WebApplicationContext wac =
@@ -95,6 +96,7 @@ public class ArchivaStartup
         }
     }
 
+    @Override
     public void contextDestroyed( ServletContextEvent contextEvent )
     {
         WebApplicationContext applicationContext =

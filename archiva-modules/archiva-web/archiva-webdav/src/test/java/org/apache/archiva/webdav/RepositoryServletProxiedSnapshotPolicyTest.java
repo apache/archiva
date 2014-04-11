@@ -41,6 +41,7 @@ public class RepositoryServletProxiedSnapshotPolicyTest
 {
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -50,6 +51,7 @@ public class RepositoryServletProxiedSnapshotPolicyTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

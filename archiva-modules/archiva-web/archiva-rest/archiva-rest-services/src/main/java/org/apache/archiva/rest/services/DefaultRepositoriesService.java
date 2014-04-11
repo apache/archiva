@@ -159,16 +159,19 @@ public class DefaultRepositoriesService
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
+    @Override
     public Boolean scanRepository( String repositoryId, boolean fullScan )
     {
         return doScanRepository( repositoryId, fullScan );
     }
 
+    @Override
     public Boolean alreadyScanning( String repositoryId )
     {
         return repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId );
     }
 
+    @Override
     public Boolean removeScanningTaskFromQueue( String repositoryId )
     {
         RepositoryTask task = new RepositoryTask();
@@ -184,6 +187,7 @@ public class DefaultRepositoriesService
         }
     }
 
+    @Override
     public Boolean scanRepositoryNow( String repositoryId, boolean fullScan )
         throws ArchivaRestServiceException
     {
@@ -210,6 +214,7 @@ public class DefaultRepositoriesService
         }
     }
 
+    @Override
     public Boolean scheduleDownloadRemoteIndex( String repositoryId, boolean now, boolean fullDownload )
         throws ArchivaRestServiceException
     {
@@ -225,6 +230,7 @@ public class DefaultRepositoriesService
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean copyArtifact( ArtifactTransferRequest artifactTransferRequest )
         throws ArchivaRestServiceException
     {
@@ -610,6 +616,7 @@ public class DefaultRepositoriesService
         }
     }
 
+    @Override
     public Boolean removeProjectVersion( String repositoryId, String namespace, String projectId, String version )
         throws ArchivaRestServiceException
     {
@@ -715,6 +722,7 @@ public class DefaultRepositoriesService
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean deleteArtifact( Artifact artifact )
         throws ArchivaRestServiceException
     {
@@ -958,6 +966,7 @@ public class DefaultRepositoriesService
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean deleteGroupId( String groupId, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -1013,6 +1022,7 @@ public class DefaultRepositoriesService
         return true;
     }
 
+    @Override
     public Boolean deleteProject( String groupId, String projectId, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -1077,6 +1087,7 @@ public class DefaultRepositoriesService
 
     }
 
+    @Override
     public Boolean isAuthorizedToDeleteArtifacts( String repoId )
         throws ArchivaRestServiceException
     {
@@ -1094,6 +1105,7 @@ public class DefaultRepositoriesService
         }
     }
 
+    @Override
     public RepositoryScanStatistics scanRepositoryDirectoriesNow( String repositoryId )
         throws ArchivaRestServiceException
     {

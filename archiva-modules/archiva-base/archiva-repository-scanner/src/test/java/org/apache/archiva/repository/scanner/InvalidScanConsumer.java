@@ -45,60 +45,71 @@ public class InvalidScanConsumer
     
     private int processCount = 0;
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         /* do nothing */
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void completeScan()
     {
         /* do nothing */
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return null;
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return null;
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
         processCount++;
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         processFile( path );
     }
 
+    @Override
     public String getDescription()
     {
         return "Bad Content Scan Consumer (for testing)";
     }
 
+    @Override
     public String getId()
     {
         return id;
     }
 
+    @Override
     public boolean isPermanent()
     {
         return false;

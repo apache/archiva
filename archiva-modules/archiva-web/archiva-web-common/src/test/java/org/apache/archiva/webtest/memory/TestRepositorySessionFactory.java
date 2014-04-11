@@ -36,6 +36,7 @@ public class TestRepositorySessionFactory
         this.repositorySession = repositorySession;
     }
 
+    @Override
     public RepositorySession createSession()
     {
         return repositorySession != null ? repositorySession : new RepositorySession( new TestMetadataRepository(),

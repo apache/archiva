@@ -236,11 +236,13 @@ public class AuditEvent
         this.timestamp = timestamp;
     }
 
+    @Override
     public String getFacetId()
     {
         return FACET_ID;
     }
 
+    @Override
     public String getName()
     {
         // use the hashCode here to make it unique if multiple events occur at a certain timestamp. None of the other
@@ -257,6 +259,7 @@ public class AuditEvent
         return fmt;
     }
 
+    @Override
     public Map<String, String> toProperties()
     {
         Map<String, String> properties = new HashMap<>();
@@ -276,6 +279,7 @@ public class AuditEvent
         return properties;
     }
 
+    @Override
     public void fromProperties( Map<String, String> properties )
     {
         this.action = properties.get( "action" );

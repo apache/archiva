@@ -124,6 +124,7 @@ public class Maven3DependencyTreeBuilder
         builder = defaultModelBuilderFactory.newInstance();
     }
 
+    @Override
     public void buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId, String version,
                                      DependencyVisitor dependencyVisitor )
         throws DependencyTreeBuilderException
@@ -192,6 +193,7 @@ public class Maven3DependencyTreeBuilder
     }
 
 
+    @Override
     public List<TreeEntry> buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId,
                                                 String version )
         throws DependencyTreeBuilderException

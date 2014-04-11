@@ -111,6 +111,7 @@ public abstract class AbstractRepositoryServletTestCase
     }
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -569,6 +570,7 @@ public abstract class AbstractRepositoryServletTestCase
     {
         MockHttpServletResponse response = new MockHttpServletResponse()
         {
+            @Override
             public String getContentAsString()
                 throws UnsupportedEncodingException
             {

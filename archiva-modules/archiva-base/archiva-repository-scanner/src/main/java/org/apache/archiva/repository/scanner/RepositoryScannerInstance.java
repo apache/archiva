@@ -133,12 +133,14 @@ public class RepositoryScannerInstance
         return consumerCounts;
     }
 
+    @Override
     public void directoryWalkStarting( File basedir )
     {
         log.info( "Walk Started: [{}] {}", this.repository.getId(), this.repository.getLocation() );
         stats.triggerStart();
     }
 
+    @Override
     public void directoryWalkStep( int percentage, File file )
     {
         log.debug( "Walk Step: {}, {}", percentage, file );
@@ -167,6 +169,7 @@ public class RepositoryScannerInstance
         }
     }
 
+    @Override
     public void directoryWalkFinished()
     {
         TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure( repository, true );
@@ -183,6 +186,7 @@ public class RepositoryScannerInstance
     /**
      * Debug method from DirectoryWalker.
      */
+    @Override
     public void debug( String message )
     {
         log.debug( "Repository Scanner: {}", message );

@@ -75,6 +75,7 @@ public class BrowseResultEntry
         this.project = project;
     }
 
+    @Override
     public int compareTo( BrowseResultEntry browseGroupResultEntry )
     {
         return this.name.compareTo( browseGroupResultEntry.name );

@@ -96,6 +96,7 @@ public class SecuritySynchronization
         return beans;
     }
 
+    @Override
     public void afterConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry,
                                           String propertyName, Object propertyValue )
     {
@@ -105,7 +106,8 @@ public class SecuritySynchronization
             {
                 syncRepoConfiguration( (String) propertyValue );
             }
-        }
+       @Override
+     }
     }
 
     public void beforeConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry,

@@ -97,6 +97,7 @@ public class FileMetadataRepository
         return new File( getBaseDirectory( repoId ), "content" );
     }
 
+    @Override
     public void updateProject( String repoId, ProjectMetadata project )
     {
         updateProject( repoId, project.getNamespace(), project.getId() );
@@ -122,6 +123,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public void updateProjectVersion( String repoId, String namespace, String projectId,
                                       ProjectVersionMetadata versionMetadata )
     {
@@ -283,6 +285,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public void updateNamespace( String repoId, String namespace )
     {
         try
@@ -300,6 +303,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public List<String> getMetadataFacets( String repoId, String facetId )
     {
         File directory = getMetadataDirectory( repoId, facetId );
@@ -308,6 +312,7 @@ public class FileMetadataRepository
         return facets;
     }
 
+    @Override
     public boolean hasMetadataFacet( String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
@@ -334,6 +339,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
     {
         Properties properties;
@@ -368,6 +374,7 @@ public class FileMetadataRepository
         return metadataFacet;
     }
 
+    @Override
     public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
     {
         Properties properties = new Properties();
@@ -386,6 +393,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public void removeMetadataFacets( String repositoryId, String facetId )
     {
         File dir = getMetadataDirectory( repositoryId, facetId );
@@ -395,6 +403,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public void removeMetadataFacet( String repoId, String facetId, String name )
     {
         File dir = new File( getMetadataDirectory( repoId, facetId ), name );
@@ -404,6 +413,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
     {
         // TODO: this is quite slow - if we are to persist with this repository implementation we should build an index
@@ -444,6 +454,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                       String projectVersion )
     {
@@ -539,26 +550,31 @@ public class FileMetadataRepository
         return artifacts.values();
     }
 
+    @Override
     public void save()
     {
         // it's all instantly persisted
     }
 
+    @Override
     public void close()
     {
         // nothing additional to close
     }
 
+    @Override
     public void revert()
     {
         log.warn( "Attempted to revert a session, but the file-based repository storage doesn't support it" );
     }
 
+    @Override
     public boolean canObtainAccess( Class<?> aClass )
     {
         return false;
     }
 
+    @Override
     public <T>T obtainAccess( Class<T> aClass )
     {
         throw new IllegalArgumentException(
@@ -578,6 +594,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public Collection<String> getRepositories()
     {
         List<String> repositories = new ArrayList<>();
@@ -588,6 +605,7 @@ public class FileMetadataRepository
         return repositories;
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
     {
         // TODO: this is quite slow - if we are to persist with this repository implementation we should build an index
@@ -603,6 +621,7 @@ public class FileMetadataRepository
         return artifacts;
     }
 
+    @Override
     public void removeNamespace( String repositoryId, String project )
         throws MetadataRepositoryException
     {
@@ -621,6 +640,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
@@ -663,6 +683,7 @@ public class FileMetadataRepository
 
     }
 
+    @Override
     public void removeArtifact( String repoId, String namespace, String project, String version, String id )
     {
 
@@ -712,6 +733,7 @@ public class FileMetadataRepository
      * @param metadataFacet  will remove artifacts which have this {@link MetadataFacet} using equals
      * @throws MetadataRepositoryException
      */
+    @Override
     public void removeArtifact( String repositoryId, String namespace, String project, String projectVersion,
                                 MetadataFacet metadataFacet )
         throws MetadataRepositoryException
@@ -719,6 +741,7 @@ public class FileMetadataRepository
         throw new UnsupportedOperationException( "not implemented" );
     }
 
+    @Override
     public void removeRepository( String repoId )
     {
         File dir = getDirectory( repoId );
@@ -779,6 +802,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public void updateArtifact( String repoId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifact )
     {
@@ -859,6 +883,7 @@ public class FileMetadataRepository
         return properties;
     }
 
+    @Override
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
     {
         File directory = new File( getDirectory( repoId ), namespace + "/" + projectId );
@@ -878,6 +903,7 @@ public class FileMetadataRepository
         return project;
     }
 
+    @Override
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
     {
@@ -1050,6 +1076,7 @@ public class FileMetadataRepository
         return versionMetadata;
     }
 
+    @Override
     public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
                                                    String projectVersion )
     {
@@ -1069,6 +1096,7 @@ public class FileMetadataRepository
         return versions;
     }
 
+    @Override
     public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
                                                                      String projectVersion )
     {
@@ -1091,11 +1119,13 @@ public class FileMetadataRepository
         return references;
     }
 
+    @Override
     public Collection<String> getRootNamespaces( String repoId )
     {
         return getNamespaces( repoId, null );
     }
 
+    @Override
     public Collection<String> getNamespaces( String repoId, String baseNamespace )
     {
         List<String> allNamespaces = new ArrayList<>();
@@ -1132,6 +1162,7 @@ public class FileMetadataRepository
         return new ArrayList<>( namespaces );
     }
 
+    @Override
     public Collection<String> getProjects( String repoId, String namespace )
     {
         List<String> projects = new ArrayList<>();
@@ -1150,6 +1181,7 @@ public class FileMetadataRepository
         return projects;
     }
 
+    @Override
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
     {
         List<String> projectVersions = new ArrayList<>();
@@ -1168,6 +1200,7 @@ public class FileMetadataRepository
         return projectVersions;
     }
 
+    @Override
     public void removeProject( String repositoryId, String namespace, String projectId )
         throws MetadataRepositoryException
     {
@@ -1185,6 +1218,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
         throws MetadataRepositoryException
     {
@@ -1220,6 +1254,7 @@ public class FileMetadataRepository
     private static class ArtifactComparator
         implements Comparator<ArtifactMetadata>
     {
+        @Override
         public int compare( ArtifactMetadata artifact1, ArtifactMetadata artifact2 )
         {
             if ( artifact1.getWhenGathered() == artifact2.getWhenGathered() )
@@ -1238,6 +1273,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifacts( String repoId )
     {
         List<ArtifactMetadata> artifacts = new ArrayList<>();

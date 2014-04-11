@@ -43,6 +43,7 @@ public class AuditLog
      * Creates a log message in the following format ...
      * "{repository_id} {user_id} {remote_ip} \"{resource}\" \"{action}\""
      */
+    @Override
     public void auditEvent( AuditEvent event )
     {
         StringBuilder msg = new StringBuilder();

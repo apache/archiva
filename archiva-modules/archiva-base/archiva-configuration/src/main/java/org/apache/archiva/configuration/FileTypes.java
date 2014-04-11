@@ -230,6 +230,7 @@ public class FileTypes
         }
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( propertyName.contains( "fileType" ) )
@@ -240,6 +241,7 @@ public class FileTypes
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* nothing to do */

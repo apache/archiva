@@ -29,6 +29,7 @@ import java.util.Comparator;
 public class RepositoryComparator
     implements Comparator<AbstractRepository>
 {
+    @Override
     public int compare( AbstractRepository o1, AbstractRepository o2 )
     {
         if ( o1 == null && o2 == null )

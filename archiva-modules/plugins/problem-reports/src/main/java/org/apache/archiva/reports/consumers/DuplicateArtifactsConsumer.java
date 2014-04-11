@@ -98,31 +98,37 @@ public class DuplicateArtifactsConsumer
 
     private RepositorySession repositorySession;
 
+    @Override
     public String getId()
     {
         return id;
     }
 
+    @Override
     public String getDescription()
     {
         return description;
     }
 
+    @Override
     public boolean isPermanent()
     {
         return false;
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return includes;
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return Collections.emptyList();
     }
 
+    @Override
     public void beginScan( ManagedRepository repo, Date whenGathered )
         throws ConsumerException
     {
@@ -131,12 +137,14 @@ public class DuplicateArtifactsConsumer
         repositorySession = repositorySessionFactory.createSession();
     }
 
+    @Override
     public void beginScan( ManagedRepository repo, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repo, whenGathered );
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -224,22 +232,26 @@ public class DuplicateArtifactsConsumer
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         processFile( path );
     }
 
+    @Override
     public void completeScan()
     {
         repositorySession.close();
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
@@ -248,6 +260,7 @@ public class DuplicateArtifactsConsumer
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* do nothing */

@@ -102,6 +102,7 @@ public class RepositoryModelResolver
         this.targetRepository = targetRepository;
     }
 
+    @Override
     public ModelSource resolveModel( String groupId, String artifactId, String version )
         throws UnresolvableModelException
     {
@@ -199,6 +200,7 @@ public class RepositoryModelResolver
         return null;
     }
 
+    @Override
     public void addRepository( Repository repository )
         throws InvalidRepositoryException
     {
@@ -207,6 +209,7 @@ public class RepositoryModelResolver
         //       ID since they will rarely match
     }
 
+    @Override
     public ModelResolver newCopy()
     {
         return new RepositoryModelResolver( basedir, pathTranslator );

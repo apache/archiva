@@ -42,21 +42,25 @@ public class RemoteLegacyRepositoryContent
 {
     private RemoteRepository repository;
 
+    @Override
     public String getId()
     {
         return repository.getId();
     }
 
+    @Override
     public RemoteRepository getRepository()
     {
         return repository;
     }
 
+    @Override
     public RepositoryURL getURL()
     {
         return new RepositoryURL( repository.getUrl() );
     }
 
+    @Override
     public void setRepository( RemoteRepository repository )
     {
         this.repository = repository;
@@ -80,6 +84,7 @@ public class RemoteLegacyRepositoryContent
         return super.toArtifactReference( path );
     }
 
+    @Override
     public RepositoryURL toURL( ArtifactReference reference )
     {
         String url = repository.getUrl() + toPath( reference );

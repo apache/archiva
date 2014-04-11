@@ -97,11 +97,13 @@ public abstract class AbstractMetadataRepositoryTest
         Map<String, MetadataFacetFactory> factories = new HashMap<>();
         factories.put( TEST_FACET_ID, new MetadataFacetFactory()
         {
+            @Override
             public MetadataFacet createMetadataFacet()
             {
                 return new TestMetadataFacet( TEST_METADATA_VALUE );
             }
 
+            @Override
             public MetadataFacet createMetadataFacet( String repositoryId, String name )
             {
                 return new TestMetadataFacet( TEST_METADATA_VALUE );
@@ -111,11 +113,13 @@ public abstract class AbstractMetadataRepositoryTest
         // add to ensure we don't accidentally create an empty facet ID.
         factories.put( "", new MetadataFacetFactory()
         {
+            @Override
             public MetadataFacet createMetadataFacet()
             {
                 return new TestMetadataFacet( "", TEST_VALUE );
             }
 
+            @Override
             public MetadataFacet createMetadataFacet( String repositoryId, String name )
             {
                 return new TestMetadataFacet( "", TEST_VALUE );
@@ -815,6 +819,7 @@ public abstract class AbstractMetadataRepositoryTest
         ArrayList<ArtifactMetadata> actual = new ArrayList<>( artifacts );
         Collections.sort( actual, new Comparator<ArtifactMetadata>()
         {
+            @Override
             public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
             {
                 return o1.getId().compareTo( o2.getId() );
@@ -1457,6 +1462,7 @@ public abstract class AbstractMetadataRepositoryTest
     private static class ArtifactMetadataComparator
         implements Comparator<ArtifactMetadata>
     {
+        @Override
         public final int compare( ArtifactMetadata a, ArtifactMetadata b )
         {
             return a.getProject().compareTo( b.getProject() );
@@ -1480,6 +1486,7 @@ public abstract class AbstractMetadataRepositoryTest
             this.date = date;
         }
 
+        @Override
         public String getName()
         {
             return createNameFormat().format( date );
@@ -1492,16 +1499,19 @@ public abstract class AbstractMetadataRepositoryTest
             return fmt;
         }
 
+        @Override
         public String getFacetId()
         {
             return KindOfRepositoryStatistics.class.getName();
         }
 
+        @Override
         public Map<String, String> toProperties()
         {
             return Collections.emptyMap();
         }
 
+        @Override
         public void fromProperties( Map<String, String> properties )
         {
             // no op
@@ -1535,16 +1545,19 @@ public abstract class AbstractMetadataRepositoryTest
             this.additionalProps = additionalProps;
         }
 
+        @Override
         public String getFacetId()
         {
             return testFacetId;
         }
 
+        @Override
         public String getName()
         {
             return TEST_NAME;
         }
 
+        @Override
         public Map<String, String> toProperties()
         {
             if ( value != null )
@@ -1571,6 +1584,7 @@ public abstract class AbstractMetadataRepositoryTest
             }
         }
 
+        @Override
         public void fromProperties( Map<String, String> properties )
         {
             String value = properties.get( "foo" );

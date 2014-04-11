@@ -368,62 +368,74 @@ public class RepositoryContentConsumersTest
             this.invalidRepositoryContentConsumers = invalidRepositoryContentConsumers;
         }
 
+        @Override
         public String getApplicationName()
         {
             return "foo";
         }
 
+        @Override
         public AutowireCapableBeanFactory getAutowireCapableBeanFactory( )
             throws IllegalStateException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getDisplayName( )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getId( )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public ApplicationContext getParent( )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public long getStartupDate( )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean containsBeanDefinition( String beanName )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public int getBeanDefinitionCount( )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String[] getBeanDefinitionNames( )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String[] getBeanNamesForType( Class type )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String[] getBeanNamesForType( Class type, boolean includeNonSingletons, boolean allowEagerInit )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Map getBeansOfType( Class type )
             throws BeansException
         {
@@ -438,129 +450,152 @@ public class RepositoryContentConsumersTest
             throw new UnsupportedOperationException( "Should not have been called" );
         }
 
+        @Override
         public Map getBeansOfType( Class type, boolean includeNonSingletons, boolean allowEagerInit )
             throws BeansException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean containsBean( String name )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String[] getAliases( String name )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Object getBean( String name )
             throws BeansException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Object getBean( String name, Class requiredType )
             throws BeansException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Object getBean( String name, Object[] args )
             throws BeansException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Class getType( String name )
             throws NoSuchBeanDefinitionException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean isPrototype( String name )
             throws NoSuchBeanDefinitionException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean isSingleton( String name )
             throws NoSuchBeanDefinitionException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean isTypeMatch( String name, Class targetType )
             throws NoSuchBeanDefinitionException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean containsLocalBean( String name )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public BeanFactory getParentBeanFactory( )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getMessage( String code, Object[] args, String defaultMessage, Locale locale )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getMessage( String code, Object[] args, Locale locale )
             throws NoSuchMessageException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getMessage( MessageSourceResolvable resolvable, Locale locale )
             throws NoSuchMessageException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public void publishEvent( ApplicationEvent event )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Resource[] getResources( String locationPattern )
             throws IOException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public ClassLoader getClassLoader( )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Resource getResource( String location )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public <T> T getBean( Class<T> tClass )
             throws BeansException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Map<String, Object> getBeansWithAnnotation( Class<? extends Annotation> aClass )
             throws BeansException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public <A extends Annotation> A findAnnotationOnBean( String s, Class<A> aClass )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Environment getEnvironment()
         {
             return null;

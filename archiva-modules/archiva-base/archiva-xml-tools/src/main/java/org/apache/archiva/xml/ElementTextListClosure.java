@@ -35,6 +35,7 @@ public class ElementTextListClosure
 {
     private List<String> list = new ArrayList<>();
 
+    @Override
     public void execute( Object input )
     {
         if ( input instanceof Element )

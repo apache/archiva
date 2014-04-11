@@ -58,6 +58,7 @@ public class DefaultProxyConnectorAdmin
     @Inject
     private RemoteRepositoryAdmin remoteRepositoryAdmin;
 
+    @Override
     public List<ProxyConnector> getProxyConnectors()
         throws RepositoryAdminException
     {
@@ -72,6 +73,7 @@ public class DefaultProxyConnectorAdmin
         return proxyConnectors;
     }
 
+    @Override
     public ProxyConnector getProxyConnector( String sourceRepoId, String targetRepoId )
         throws RepositoryAdminException
     {
@@ -86,6 +88,7 @@ public class DefaultProxyConnectorAdmin
         return null;
     }
 
+    @Override
     public Boolean addProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -114,6 +117,7 @@ public class DefaultProxyConnectorAdmin
     }
 
     // FIXME take care of proxyConnectorRules !
+    @Override
     public Boolean deleteProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -134,6 +138,7 @@ public class DefaultProxyConnectorAdmin
     }
 
     // FIXME care take of proxyConnectorRules !
+    @Override
     public Boolean updateProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -163,6 +168,7 @@ public class DefaultProxyConnectorAdmin
         return Collections.emptyList();
     }
 
+    @Override
     public Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
         throws RepositoryAdminException
     {

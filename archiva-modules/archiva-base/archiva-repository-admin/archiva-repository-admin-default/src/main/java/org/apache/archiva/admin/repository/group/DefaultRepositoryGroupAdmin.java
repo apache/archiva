@@ -105,6 +105,7 @@ public class DefaultRepositoryGroupAdmin
         return new File( groupsDirectory, repositoryGroupId );
     }
 
+    @Override
     public List<RepositoryGroup> getRepositoriesGroups()
         throws RepositoryAdminException
     {
@@ -123,6 +124,7 @@ public class DefaultRepositoryGroupAdmin
         return repositoriesGroups;
     }
 
+    @Override
     public RepositoryGroup getRepositoryGroup( String repositoryGroupId )
         throws RepositoryAdminException
     {
@@ -137,6 +139,7 @@ public class DefaultRepositoryGroupAdmin
         return null;
     }
 
+    @Override
     public Boolean addRepositoryGroup( RepositoryGroup repositoryGroup, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -157,6 +160,7 @@ public class DefaultRepositoryGroupAdmin
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean deleteRepositoryGroup( String repositoryGroupId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -176,6 +180,7 @@ public class DefaultRepositoryGroupAdmin
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean updateRepositoryGroup( RepositoryGroup repositoryGroup, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -212,6 +217,7 @@ public class DefaultRepositoryGroupAdmin
     }
 
 
+    @Override
     public Boolean addRepositoryToGroup( String repositoryGroupId, String repositoryId,
                                          AuditInformation auditInformation )
         throws RepositoryAdminException
@@ -236,6 +242,7 @@ public class DefaultRepositoryGroupAdmin
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean deleteRepositoryFromGroup( String repositoryGroupId, String repositoryId,
                                               AuditInformation auditInformation )
         throws RepositoryAdminException
@@ -261,6 +268,7 @@ public class DefaultRepositoryGroupAdmin
         return Boolean.TRUE;
     }
 
+    @Override
     public Map<String, RepositoryGroup> getRepositoryGroupsAsMap()
         throws RepositoryAdminException
     {
@@ -273,6 +281,7 @@ public class DefaultRepositoryGroupAdmin
         return map;
     }
 
+    @Override
     public Map<String, List<String>> getGroupToRepositoryMap()
         throws RepositoryAdminException
     {
@@ -299,6 +308,7 @@ public class DefaultRepositoryGroupAdmin
         return map;
     }
 
+    @Override
     public Map<String, List<String>> getRepositoryToGroupMap()
         throws RepositoryAdminException
     {

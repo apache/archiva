@@ -153,6 +153,7 @@ public abstract class AbstractDownloadTest
 
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

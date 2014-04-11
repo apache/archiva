@@ -94,6 +94,7 @@ public class ArchivaIndexingTaskExecutor
      * @param task
      * @throws TaskExecutionException
      */
+    @Override
     public void executeTask( Task task )
         throws TaskExecutionException
     {

@@ -99,6 +99,7 @@ public class DavResourceTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {
@@ -316,6 +317,7 @@ public class DavResourceTest
     private class RootContextDavResourceFactory
         implements DavResourceFactory
     {
+        @Override
         public DavResource createResource( DavResourceLocator locator, DavServletRequest request,
                                            DavServletResponse response )
             throws DavException
@@ -323,6 +325,7 @@ public class DavResourceTest
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public DavResource createResource( DavResourceLocator locator, DavSession session )
             throws DavException
         {

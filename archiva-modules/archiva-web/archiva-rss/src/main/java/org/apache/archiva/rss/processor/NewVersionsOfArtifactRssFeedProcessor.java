@@ -63,6 +63,7 @@ public class NewVersionsOfArtifactRssFeedProcessor
     /**
      * Process all versions of the artifact which had a rss feed request.
      */
+    @Override
     public SyndFeed process( Map<String, String> reqParams, MetadataRepository metadataRepository )
         throws FeedException
     {
@@ -151,11 +152,13 @@ public class NewVersionsOfArtifactRssFeedProcessor
                                        entries );
     }
 
+    @Override
     public String getTitle()
     {
         return title;
     }
 
+    @Override
     public String getDescription()
     {
         return desc;

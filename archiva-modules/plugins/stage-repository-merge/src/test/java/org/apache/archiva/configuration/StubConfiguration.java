@@ -29,37 +29,44 @@ public class StubConfiguration
 {
     private Configuration configuration;
 
+    @Override
     public Configuration getConfiguration()
     {
         return configuration;
     }
 
+    @Override
     public void save( Configuration configuration )
         throws RegistryException, IndeterminateConfigurationException
     {
         this.configuration = configuration;
     }
 
+    @Override
     public boolean isDefaulted()
     {
         return false;
     }
 
+    @Override
     public void addListener( ConfigurationListener listener )
     {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void removeListener( ConfigurationListener listener )
     {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void addChangeListener( RegistryListener listener )
     {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void reload()
     {
         // no op

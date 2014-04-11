@@ -118,12 +118,14 @@ public class DefaultArchivaRuntimeConfigurationAdmin
 
     }
 
+    @Override
     public ArchivaRuntimeConfiguration getArchivaRuntimeConfiguration()
         throws RepositoryAdminException
     {
         return build( archivaConfiguration.getConfiguration().getArchivaRuntimeConfiguration() );
     }
 
+    @Override
     public void updateArchivaRuntimeConfiguration( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
         throws RepositoryAdminException
     {

@@ -41,11 +41,13 @@ public class DefaultUrlFailureCache
         this.urlCache = urlCache;
     }
 
+    @Override
     public void cacheFailure( String url )
     {
         urlCache.register( url, new Date() );
     }
 
+    @Override
     public boolean hasFailedBefore( String url )
     {
         if ( urlCache.hasKey( url ) )

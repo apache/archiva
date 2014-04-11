@@ -444,11 +444,13 @@ public class DefaultCassandraArchivaManager
 
     }
 
+    @Override
     public void start()
     {
     }
 
     @PreDestroy
+    @Override
     public void shutdown()
     {
     }
@@ -467,51 +469,61 @@ public class DefaultCassandraArchivaManager
         return keyspace;
     }
 
+    @Override
     public Cluster getCluster()
     {
         return cluster;
     }
 
+    @Override
     public String getRepositoryFamilyName()
     {
         return repositoryFamilyName;
     }
 
+    @Override
     public String getNamespaceFamilyName()
     {
         return namespaceFamilyName;
     }
 
+    @Override
     public String getProjectFamilyName()
     {
         return projectFamilyName;
     }
 
+    @Override
     public String getProjectVersionMetadataFamilyName()
     {
         return projectVersionMetadataFamilyName;
     }
 
+    @Override
     public String getArtifactMetadataFamilyName()
     {
         return artifactMetadataFamilyName;
     }
 
+    @Override
     public String getMetadataFacetFamilyName()
     {
         return metadataFacetFamilyName;
     }
 
+    @Override
     public String getMailingListFamilyName()
     {
         return mailingListFamilyName;
     }
 
+    @Override
     public String getLicenseFamilyName()
     {
         return licenseFamilyName;
     }
 
+    @Override
     public String getDependencyFamilyName()
     {
         return dependencyFamilyName;

@@ -30,11 +30,13 @@ import org.springframework.stereotype.Service;
 public class AuditEventFactory
     implements MetadataFacetFactory
 {
+    @Override
     public MetadataFacet createMetadataFacet()
     {
         throw new UnsupportedOperationException( "Must construct an audit event with a name" );
     }
 
+    @Override
     public MetadataFacet createMetadataFacet( String repositoryId, String name )
     {
         return new AuditEvent( name, repositoryId );

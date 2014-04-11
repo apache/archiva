@@ -63,6 +63,7 @@ public class CachedFailuresPolicy
         options.add( YES );
     }
 
+    @Override
     public void applyPolicy( String policySetting, Properties request, File localFile )
         throws PolicyViolationException, PolicyConfigurationException
     {
@@ -95,21 +96,25 @@ public class CachedFailuresPolicy
         log.debug( "OK to fetch, check-failures detected no issues." );
     }
 
+    @Override
     public String getDefaultOption()
     {
         return NO;
     }
 
+    @Override
     public String getId()
     {
         return "cache-failures";
     }
 
+    @Override
     public String getName()
     {
         return "Cache failures";
     }
 
+    @Override
     public List<String> getOptions()
     {
         return options;

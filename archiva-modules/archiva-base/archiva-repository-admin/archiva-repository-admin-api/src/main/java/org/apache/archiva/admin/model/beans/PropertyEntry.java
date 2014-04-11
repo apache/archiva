@@ -77,6 +77,7 @@ public class PropertyEntry
         return sb.toString();
     }
 
+    @Override
     public int compareTo( PropertyEntry o )
     {
         if (o == null || o.getKey() == null)

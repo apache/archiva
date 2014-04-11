@@ -154,12 +154,14 @@ public class Maven2RepositoryStorage
 
     }
 
+    @Override
     public ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId )
     {
         // TODO: could natively implement the "shared model" concept from the browse action to avoid needing it there?
         return null;
     }
 
+    @Override
     public ProjectVersionMetadata readProjectVersionMetadata( ReadMetadataRequest readMetadataRequest )
         throws RepositoryStorageMetadataNotFoundException, RepositoryStorageMetadataInvalidException,
         RepositoryStorageRuntimeException
@@ -498,6 +500,7 @@ public class Maven2RepositoryStorage
         return ci;
     }
 
+    @Override
     public Collection<String> listRootNamespaces( String repoId, Filter<String> filter )
         throws RepositoryStorageRuntimeException
     {
@@ -537,6 +540,7 @@ public class Maven2RepositoryStorage
         }
     }
 
+    @Override
     public Collection<String> listNamespaces( String repoId, String namespace, Filter<String> filter )
         throws RepositoryStorageRuntimeException
     {
@@ -559,6 +563,7 @@ public class Maven2RepositoryStorage
         return namespaces;
     }
 
+    @Override
     public Collection<String> listProjects( String repoId, String namespace, Filter<String> filter )
         throws RepositoryStorageRuntimeException
     {
@@ -581,6 +586,7 @@ public class Maven2RepositoryStorage
         return projects;
     }
 
+    @Override
     public Collection<String> listProjectVersions( String repoId, String namespace, String projectId,
                                                    Filter<String> filter )
         throws RepositoryStorageRuntimeException
@@ -591,6 +597,7 @@ public class Maven2RepositoryStorage
         return getSortedFiles( dir, filter );
     }
 
+    @Override
     public Collection<ArtifactMetadata> readArtifactsMetadata( ReadMetadataRequest readMetadataRequest )
         throws RepositoryStorageRuntimeException
     {
@@ -616,6 +623,7 @@ public class Maven2RepositoryStorage
         return artifacts;
     }
 
+    @Override
     public ArtifactMetadata readArtifactMetadataFromPath( String repoId, String path )
         throws RepositoryStorageRuntimeException
     {
@@ -645,6 +653,7 @@ public class Maven2RepositoryStorage
      * For such clients, archiva does server-side relocation by reading itself the &lt;relocation&gt; element in
      * metadatas and serving the expected artifact.
      */
+    @Override
     public void applyServerSideRelocation( ManagedRepositoryContent managedRepository, ArtifactReference artifact )
         throws ProxyDownloadException
     {
@@ -728,6 +737,7 @@ public class Maven2RepositoryStorage
     }
 
 
+    @Override
     public String getFilePath( String requestPath, ManagedRepository managedRepository )
     {
         // managedRepository can be null
@@ -774,6 +784,7 @@ public class Maven2RepositoryStorage
 
     }
 
+    @Override
     public String getFilePathWithVersion( final String requestPath, ManagedRepositoryContent managedRepositoryContent )
         throws XMLException, RelocationException
     {
@@ -966,6 +977,7 @@ public class Maven2RepositoryStorage
             this.filter = filter;
         }
 
+        @Override
         public boolean accept( File dir, String name )
         {
             if ( !filter.accept( name ) )
@@ -994,6 +1006,7 @@ public class Maven2RepositoryStorage
             this.filter = filter;
         }
 
+        @Override
         public boolean accept( File dir, String name )
         {
             // TODO compare to logic in maven-repository-layer
@@ -1041,6 +1054,7 @@ public class Maven2RepositoryStorage
             this.projectVersion = projectVersion;
         }
 
+        @Override
         public boolean accept( File dir, String name )
         {
             if ( name.startsWith( artifactId + "-" ) && name.endsWith( ".pom" ) )
@@ -1066,6 +1080,7 @@ public class Maven2RepositoryStorage
             this.pomFile = pomFile;
         }
 
+        @Override
         public boolean accept( File dir, String name )
         {
             return pomFile.equals( name );

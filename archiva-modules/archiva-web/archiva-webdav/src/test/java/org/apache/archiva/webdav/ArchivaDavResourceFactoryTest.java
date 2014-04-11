@@ -121,6 +121,7 @@ public class ArchivaDavResourceFactoryTest
 
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -206,6 +207,7 @@ public class ArchivaDavResourceFactoryTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {
@@ -617,6 +619,7 @@ public class ArchivaDavResourceFactoryTest
             super( applicationContext, plexusSisuBridge, archivaConfiguration );
         }
 
+        @Override
         protected boolean isAuthorized( DavServletRequest request, String repositoryId )
             throws DavException
         {
@@ -631,6 +634,7 @@ public class ArchivaDavResourceFactoryTest
             }
         }
 
+        @Override
         protected String getActivePrincipal( DavServletRequest request )
         {
             return "guest";
@@ -640,6 +644,7 @@ public class ArchivaDavResourceFactoryTest
     class OverridingRepositoryProxyConnectors
         extends DefaultRepositoryProxyConnectors
     {
+        @Override
         public File fetchMetatadaFromProxies( ManagedRepositoryContent repository, String logicalPath )
         {
             File target = new File( repository.getRepoRoot(), logicalPath );

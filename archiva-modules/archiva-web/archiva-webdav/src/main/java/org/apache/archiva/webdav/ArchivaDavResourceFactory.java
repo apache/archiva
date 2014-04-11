@@ -209,6 +209,7 @@ public class ArchivaDavResourceFactory
         // no op
     }
 
+    @Override
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
                                        final DavServletResponse response )
         throws DavException
@@ -718,6 +719,7 @@ public class ArchivaDavResourceFactory
         return resource;
     }
 
+    @Override
     public DavResource createResource( final DavResourceLocator locator, final DavSession davSession )
         throws DavException
     {
@@ -840,16 +842,19 @@ public class ArchivaDavResourceFactory
         }
     }
 
+    @Override
     public void addAuditListener( AuditListener listener )
     {
         this.auditListeners.add( listener );
     }
 
+    @Override
     public void clearAuditListeners()
     {
         this.auditListeners.clear();
     }
 
+    @Override
     public void removeAuditListener( AuditListener listener )
     {
         this.auditListeners.remove( listener );

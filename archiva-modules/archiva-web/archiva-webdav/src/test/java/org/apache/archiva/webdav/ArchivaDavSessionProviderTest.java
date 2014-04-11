@@ -105,215 +105,256 @@ public class ArchivaDavSessionProviderTest
         implements HttpServletRequest
     {
 
+        @Override
         public boolean authenticate( HttpServletResponse httpServletResponse )
             throws IOException, ServletException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public void login( String s, String s1 )
             throws ServletException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public void logout()
             throws ServletException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Collection<Part> getParts()
             throws IOException, ServletException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Part getPart( String s )
             throws IOException, ServletException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public ServletContext getServletContext()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public AsyncContext startAsync()
             throws IllegalStateException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public AsyncContext startAsync( ServletRequest servletRequest, ServletResponse servletResponse )
             throws IllegalStateException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean isAsyncStarted()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean isAsyncSupported()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public AsyncContext getAsyncContext()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public DispatcherType getDispatcherType()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Object getAttribute( String arg0 )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Enumeration getAttributeNames()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getCharacterEncoding()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public int getContentLength()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getContentType()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public ServletInputStream getInputStream()
             throws IOException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getLocalAddr()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getLocalName()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public int getLocalPort()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Locale getLocale()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Enumeration getLocales()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getParameter( String arg0 )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Map getParameterMap()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Enumeration getParameterNames()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String[] getParameterValues( String arg0 )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getProtocol()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public BufferedReader getReader()
             throws IOException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getRealPath( String arg0 )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getRemoteAddr()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getRemoteHost()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public int getRemotePort()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public RequestDispatcher getRequestDispatcher( String arg0 )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getScheme()
         {
             return "";
         }
 
+        @Override
         public String getServerName()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public int getServerPort()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean isSecure()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public void removeAttribute( String arg0 )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public void setAttribute( String arg0, Object arg1 )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public void setCharacterEncoding( String arg0 )
             throws UnsupportedEncodingException
         {
@@ -321,126 +362,151 @@ public class ArchivaDavSessionProviderTest
         }
 
 
+        @Override
         public String getAuthType()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getContextPath()
         {
             return "/";
         }
 
+        @Override
         public Cookie[] getCookies()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public long getDateHeader( String arg0 )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getHeader( String arg0 )
         {
             return "";
         }
 
+        @Override
         public Enumeration getHeaderNames()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Enumeration getHeaders( String arg0 )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public int getIntHeader( String arg0 )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getMethod()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getPathInfo()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getPathTranslated()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getQueryString()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getRemoteUser()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getRequestURI()
         {
             return "/";
         }
 
+        @Override
         public StringBuffer getRequestURL()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getRequestedSessionId()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public String getServletPath()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public HttpSession getSession( boolean arg0 )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public HttpSession getSession()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public Principal getUserPrincipal()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean isRequestedSessionIdFromCookie()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean isRequestedSessionIdFromURL()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean isRequestedSessionIdFromUrl()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean isRequestedSessionIdValid()
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public boolean isUserInRole( String arg0 )
         {
             throw new UnsupportedOperationException( "Not supported yet." );
@@ -450,12 +516,14 @@ public class ArchivaDavSessionProviderTest
     private class ServletAuthenticatorMock
         implements ServletAuthenticator
     {
+        @Override
         public boolean isAuthenticated( HttpServletRequest arg0, AuthenticationResult arg1 )
             throws AuthenticationException, AccountLockedException, MustChangePasswordException
         {
             return true;
         }
 
+        @Override
         public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
                                      String permission )
             throws AuthorizationException, UnauthorizedException
@@ -463,6 +531,7 @@ public class ArchivaDavSessionProviderTest
             return true;
         }
 
+        @Override
         public boolean isAuthorized( String principal, String repoId, String permission )
             throws UnauthorizedException
         {

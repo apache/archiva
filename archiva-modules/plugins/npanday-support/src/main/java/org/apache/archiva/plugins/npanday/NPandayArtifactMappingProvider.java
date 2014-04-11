@@ -81,12 +81,14 @@ public class NPandayArtifactMappingProvider
         typeToExtensionMap.put( "exe", "exe" );
     }
 
+    @Override
     public String mapClassifierAndExtensionToType( String classifier, String ext )
     {
         // we don't need classifier
         return extensionToTypeMap.get( ext );
     }
 
+    @Override
     public String mapTypeToExtension( String type )
     {
         return typeToExtensionMap.get( type );

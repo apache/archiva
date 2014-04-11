@@ -53,6 +53,7 @@ public class RepositoryServletProxiedPassthroughTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

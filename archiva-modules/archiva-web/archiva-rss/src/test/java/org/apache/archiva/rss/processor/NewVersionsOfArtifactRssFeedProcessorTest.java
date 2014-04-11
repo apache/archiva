@@ -58,6 +58,7 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
     private MetadataRepository metadataRepository;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {

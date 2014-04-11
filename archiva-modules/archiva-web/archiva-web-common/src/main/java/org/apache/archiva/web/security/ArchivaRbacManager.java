@@ -100,7 +100,7 @@ public class ArchivaRbacManager
 
             log.info( "use rbacManagerIds: '{}'", rbacManagerIds );
 
-            this.rbacManagersPerId = new LinkedHashMap<String, RBACManager>( rbacManagerIds.size() );
+            this.rbacManagersPerId = new LinkedHashMap<>( rbacManagerIds.size() );
 
             for ( String id : rbacManagerIds )
             {
@@ -129,9 +129,11 @@ public class ArchivaRbacManager
         return this.rbacManagersPerId.values().iterator().next();
     }
 
+    @Override
     public Role createRole( String name )
     {
-        return getRbacManagerForWrite().createRole( name );
+        return getRbacManagerForWrite().createRole( n    @Override
+ame );
     }
 
     public Role saveRole( Role role )
@@ -158,6 +160,7 @@ public class ArchivaRbacManager
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
+    @Override
         return role;
     }
 
@@ -183,7 +186,8 @@ public class ArchivaRbacManager
         }
         if ( lastException != null && allFailed )
         {
-            throw new RbacManagerException( lastException.getMessage(), lastException );
+            throw new RbacManagerException( lastException.getMes    @Override
+sage(), lastException );
         }
     }
 
@@ -217,7 +221,8 @@ public class ArchivaRbacManager
         log.debug( "cannot find role for name: ‘{}", roleName );
         if ( lastException != null )
         {
-            throw new RbacManagerException( lastException.getMessage(), lastException );
+            throw new RbacManagerException( lastException.getMessage(),    @Override
+ lastException );
         }
         return null;
     }
@@ -248,7 +253,8 @@ public class ArchivaRbacManager
         if ( lastException != null && allFailed )
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
-        }
+     @Override
+       }
 
         return new ArrayList<>( allRoles.values() );
     }
@@ -274,19 +280,22 @@ public class ArchivaRbacManager
 
         if ( lastException != null && allFailed )
         {
-            throw new RbacManagerException( lastException.getMessage(), lastException );
+            throw new     @Override
+RbacManagerException( lastException.getMessage(), lastException );
         }
     }
 
     public Permission createPermission( String name )
-        throws RbacManagerException
+        throws Rb    @Override
+acManagerException
     {
         return getRbacManagerForWrite().createPermission( name );
     }
 
     public Permission createPermission( String name, String operationName, String resourceIdentifier )
         throws RbacManagerException
-    {
+      @Override
+  {
         return getRbacManagerForWrite().createPermission( name, operationName, resourceIdentifier );
     }
 
@@ -313,7 +322,8 @@ public class ArchivaRbacManager
 
         if ( lastException != null && allFailed )
         {
-            throw new RbacManagerException( lastException.getMessage(), lastException );
+            @Override
+    throw new RbacManagerException( lastException.getMessage(), lastException );
         }
 
         return permission;
@@ -347,7 +357,8 @@ public class ArchivaRbacManager
             }
         }
 
-        if ( lastException != null )
+        if ( lastException != null    @Override
+ )
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
@@ -379,7 +390,8 @@ public class ArchivaRbacManager
 
         if ( lastException != null && allFailed )
         {
-            throw new RbacManagerException( lastException.getMessage(), lastException );
+               @Override
+ throw new RbacManagerException( lastException.getMessage(), lastException );
         }
         return new ArrayList<>( allPermissions.values() );
     }
@@ -401,12 +413,14 @@ public class ArchivaRbacManager
             {
                 lastException = e;
             }
-        }
+        }    @Override
+
 
         if ( lastException != null && allFailed )
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
-        }
+     @Override
+       }
     }
 
     public Operation createOperation( String name )
@@ -434,7 +448,8 @@ public class ArchivaRbacManager
             {
                 lastException = e;
             }
-        }
+           @Override
+ }
 
         if ( lastException != null && allFailed )
         {
@@ -467,7 +482,8 @@ public class ArchivaRbacManager
             }
             catch ( Exception e )
             {
-                lastException = e;
+                lastExce    @Override
+ption = e;
             }
         }
 
@@ -501,6 +517,7 @@ public class ArchivaRbacManager
             }
         }
 
+    @Override
         if ( lastException != null && allFailed )
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
@@ -522,14 +539,16 @@ public class ArchivaRbacManager
                 allFailed = false;
             }
             catch ( Exception e )
-            {
+      @Override
+          {
                 lastException = e;
             }
         }
 
         if ( lastException != null && allFailed )
         {
-            throw new RbacManagerException( lastException.getMessage(), lastException );
+            throw new RbacMan    @Override
+agerException( lastException.getMessage(), lastException );
         }
     }
 
@@ -554,7 +573,8 @@ public class ArchivaRbacManager
                     allFailed = false;
                 }
             }
-            catch ( Exception e )
+            catch ( Exception e )    @Override
+
             {
                 lastException = e;
             }
@@ -589,7 +609,8 @@ public class ArchivaRbacManager
                     return r;
                 }
             }
-            catch ( Exception e )
+      @Override
+          catch ( Exception e )
             {
                 lastException = e;
             }
@@ -620,7 +641,8 @@ public class ArchivaRbacManager
                 allFailed = false;
             }
             catch ( Exception e )
-            {
+       @Override
+         {
                 lastException = e;
             }
         }
@@ -643,7 +665,8 @@ public class ArchivaRbacManager
             {
                 rbacManager.removeResource( resource );
                 resourcesCache.remove( resource.getIdentifier() );
-                allFailed = false;
+                   @Override
+ allFailed = false;
             }
             catch ( Exception e )
             {
@@ -651,7 +674,8 @@ public class ArchivaRbacManager
             }
         }
 
-        if ( lastException != null && allFailed )
+        if ( lastException != null     @Override
+&& allFailed )
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
@@ -676,7 +700,8 @@ public class ArchivaRbacManager
                 {
                     userAssignment = rbacManager.saveUserAssignment( userAssignment );
                     allFailed = false;
-                }
+     @Override
+               }
             }
             catch ( Exception e )
             {
@@ -768,7 +793,8 @@ public class ArchivaRbacManager
     {
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
         {
-            try
+     @Override
+           try
             {
                 boolean exists = rbacManager.userAssignmentExists( assignment );
                 if ( exists )
@@ -808,7 +834,8 @@ public class ArchivaRbacManager
                     }
                     allUserAssignments.put( ua.getPrincipal(), ua );
                 }
-                allFailed = false;
+                allFai    @Override
+led = false;
             }
             catch ( Exception e )
             {
@@ -835,7 +862,8 @@ public class ArchivaRbacManager
             {
                 List<UserAssignment> userAssignments = rbacManager.getUserAssignmentsForRoles( roleNames );
 
-                allUserAssignments.addAll( userAssignments );
+                allUserAssignments.addAll(     @Override
+userAssignments );
 
                 allFailed = false;
             }
@@ -901,19 +929,22 @@ public class ArchivaRbacManager
             }
             catch ( Exception e )
             {
-                lastException = e;
+           @Override
+         lastException = e;
             }
         }
 
         if ( lastException != null && allFailed )
         {
-            throw new RbacManagerException( lastException.getMessage(), lastException );
+            throw new RbacManagerException( lastException.getMe    @Override
+ssage(), lastException );
         }
         return false;
     }
 
     @Override
-    public boolean roleExists( Role role )
+    public b    @Override
+oolean roleExists( Role role )
         throws RbacManagerException
     {
         return roleExists( role.getName() );

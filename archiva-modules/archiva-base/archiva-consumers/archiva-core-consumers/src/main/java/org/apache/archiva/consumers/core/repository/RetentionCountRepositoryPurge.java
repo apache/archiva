@@ -50,6 +50,7 @@ public class RetentionCountRepositoryPurge
         this.retentionCount = retentionCount;
     }
 
+    @Override
     public void process( String path )
         throws RepositoryPurgeException
     {

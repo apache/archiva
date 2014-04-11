@@ -33,6 +33,7 @@ public interface RepositoryArchivaTaskScheduler
 
     boolean isProcessingRepositoryTask( RepositoryTask task );
 
+    @Override
     void queueTask( RepositoryTask task )
         throws TaskQueueException;
 

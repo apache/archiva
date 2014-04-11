@@ -67,26 +67,31 @@ public class ArtifactCountConsumer
         includes.add( "**/*.zip" );
     }
 
+    @Override
     public String getDescription()
     {
         return description;
     }
 
+    @Override
     public String getId()
     {
         return id;
     }
 
+    @Override
     public boolean isPermanent()
     {
         return false;
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return null;
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return includes;

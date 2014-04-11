@@ -45,6 +45,7 @@ public class ConsumerProcessFileClosure
     
     private Map<String,Long> consumerCounts;
 
+    @Override
     public void execute( Object input )
     {
         if ( input instanceof RepositoryContentConsumer )

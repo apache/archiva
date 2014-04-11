@@ -86,6 +86,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
         this.repoContentFactory = repoContentFactory;
     }
 
+    @Override
     public void process( String path )
         throws RepositoryPurgeException
     {

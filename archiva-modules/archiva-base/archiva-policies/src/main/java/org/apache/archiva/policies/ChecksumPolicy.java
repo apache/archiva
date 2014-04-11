@@ -75,6 +75,7 @@ public class ChecksumPolicy
         options.add( IGNORE );
     }
 
+    @Override
     public void applyPolicy( String policySetting, Properties request, File localFile )
         throws PolicyViolationException, PolicyConfigurationException
     {
@@ -148,21 +149,25 @@ public class ChecksumPolicy
             "Unable to process checksum policy of [" + policySetting + "], please file a bug report." );
     }
 
+    @Override
     public String getDefaultOption()
     {
         return FIX;
     }
 
+    @Override
     public String getId()
     {
         return "checksum";
     }
 
+    @Override
     public String getName()
     {
         return "Checksum";
     }
 
+    @Override
     public List<String> getOptions()
     {
         return options;

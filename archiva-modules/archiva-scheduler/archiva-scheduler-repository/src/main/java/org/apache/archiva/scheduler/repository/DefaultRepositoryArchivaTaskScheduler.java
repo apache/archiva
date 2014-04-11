@@ -173,6 +173,7 @@ public class DefaultRepositoryArchivaTaskScheduler
     }
 
     @SuppressWarnings( "unchecked" )
+    @Override
     public boolean isProcessingRepositoryTask( String repositoryId )
     {
         synchronized ( repositoryScanningQueue )
@@ -199,6 +200,7 @@ public class DefaultRepositoryArchivaTaskScheduler
         }
     }
 
+    @Override
     public boolean isProcessingRepositoryTask( RepositoryTask task )
     {
         synchronized ( repositoryScanningQueue )
@@ -225,6 +227,7 @@ public class DefaultRepositoryArchivaTaskScheduler
         }
     }
 
+    @Override
     public void queueTask( RepositoryTask task )
         throws TaskQueueException
     {
@@ -242,6 +245,7 @@ public class DefaultRepositoryArchivaTaskScheduler
         }
     }
 
+    @Override
     public boolean unQueueTask( RepositoryTask task )
         throws TaskQueueException
     {
@@ -259,6 +263,7 @@ public class DefaultRepositoryArchivaTaskScheduler
         }
     }
 
+    @Override
     public void configurationEvent( ConfigurationEvent event )
     {
         if ( event.getType() == ConfigurationEvent.SAVED )

@@ -53,6 +53,7 @@ public class DefaultRepositoryScanner
 
     private Set<RepositoryScannerInstance> inProgressScans = new LinkedHashSet<RepositoryScannerInstance>();
 
+    @Override
     public RepositoryScanStatistics scan( ManagedRepository repository, long changesSince )
         throws RepositoryScannerException
     {
@@ -70,6 +71,7 @@ public class DefaultRepositoryScanner
         }
     }
 
+    @Override
     public RepositoryScanStatistics scan( ManagedRepository repository,
                                           List<KnownRepositoryContentConsumer> knownContentConsumers,
                                           List<InvalidRepositoryContentConsumer> invalidContentConsumers,
@@ -155,6 +157,7 @@ public class DefaultRepositoryScanner
         return ids;
     }
 
+    @Override
     public Set<RepositoryScannerInstance> getInProgressScans()
     {
         return inProgressScans;

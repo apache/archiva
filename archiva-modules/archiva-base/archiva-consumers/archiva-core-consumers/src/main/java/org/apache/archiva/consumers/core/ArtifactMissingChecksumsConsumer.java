@@ -83,53 +83,63 @@ public class ArtifactMissingChecksumsConsumer
         initIncludes();
     }
 
+    @Override
     public String getId()
     {
         return this.id;
     }
 
+    @Override
     public String getDescription()
     {
         return this.description;
     }
 
+    @Override
     public boolean isPermanent()
     {
         return false;
     }
 
+    @Override
     public void beginScan( ManagedRepository repo, Date whenGathered )
         throws ConsumerException
     {
         this.repositoryDir = new File( repo.getLocation() );
     }
 
+    @Override
     public void beginScan( ManagedRepository repo, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repo, whenGathered );
     }
 
+    @Override
     public void completeScan()
     {
         /* do nothing */
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return getDefaultArtifactExclusions();
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return includes;
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -137,6 +147,7 @@ public class ArtifactMissingChecksumsConsumer
         createFixChecksum( path, new ChecksumAlgorithm[]{ ChecksumAlgorithm.MD5 } );
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
@@ -186,6 +197,7 @@ public class ArtifactMissingChecksumsConsumer
         }
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
@@ -194,6 +206,7 @@ public class ArtifactMissingChecksumsConsumer
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* do nothing */

@@ -38,6 +38,7 @@ public class LegacyRepositoryLayout
         return "legacy";
     }
 
+    @Override
     public String pathOf( Artifact artifact )
     {
         ArtifactHandler artifactHandler = artifact.getArtifactHandler();
@@ -61,6 +62,7 @@ public class LegacyRepositoryLayout
         return path.toString();
     }
 
+    @Override
     public String pathOfLocalRepositoryMetadata( ArtifactMetadata metadata, ArtifactRepository repository )
     {
         return pathOfRepositoryMetadata( metadata, metadata.getLocalFilename( repository ) );
@@ -77,6 +79,7 @@ public class LegacyRepositoryLayout
         return path.toString();
     }
 
+    @Override
     public String pathOfRemoteRepositoryMetadata( ArtifactMetadata metadata )
     {
         return pathOfRepositoryMetadata( metadata, metadata.getRemoteFilename() );

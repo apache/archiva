@@ -84,10 +84,12 @@ public class DownloadArtifactsTest
         System.setProperty( "appserver.base", previousAppServerBase );
     }
 
+    @Override
     protected String getSpringConfigLocation()
     {
         return "classpath*:META-INF/spring-context.xml classpath*:spring-context-test-common.xml classpath*:spring-context-artifacts-download.xml";
-    }
+    }    @Override
+
 
     @Before
     public void startServer()
@@ -122,7 +124,8 @@ public class DownloadArtifactsTest
         redirectServer.setHandler( contextRedirect );
         redirectServer.start();
         this.redirectPort = redirectServer.getConnectors()[0].getLocalPort();
-        log.info( "redirect server port {}", redirectPort );
+        log.info( "redirect server port {}", redirec    @Override
+tPort );
 
     }
 

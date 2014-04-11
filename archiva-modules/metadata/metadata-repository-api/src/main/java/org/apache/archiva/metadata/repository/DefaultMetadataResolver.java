@@ -87,6 +87,7 @@ public class DefaultMetadataResolver
     @Named( value = "cache#namespaces" )
     private Cache<String, Collection<String>> namespacesCache;
 
+    @Override
     public ProjectVersionMetadata resolveProjectVersion( RepositorySession session, String repoId, String namespace,
                                                          String projectId, String projectVersion )
         throws MetadataResolutionException
@@ -165,6 +166,7 @@ public class DefaultMetadataResolver
         return metadata;
     }
 
+    @Override
     public Collection<ProjectVersionReference> resolveProjectReferences( RepositorySession session, String repoId,
                                                                          String namespace, String projectId,
                                                                          String projectVersion )
@@ -176,6 +178,7 @@ public class DefaultMetadataResolver
         return metadataRepository.getProjectReferences( repoId, namespace, projectId, projectVersion );
     }
 
+    @Override
     public Collection<String> resolveRootNamespaces( RepositorySession session, String repoId )
         throws MetadataResolutionException
     {
@@ -227,6 +230,7 @@ public class DefaultMetadataResolver
         }
     }
 
+    @Override
     public Collection<String> resolveNamespaces( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
@@ -276,6 +280,7 @@ public class DefaultMetadataResolver
         }
     }
 
+    @Override
     public Collection<String> resolveProjects( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
@@ -330,6 +335,7 @@ public class DefaultMetadataResolver
         }
     }
 
+    @Override
     public Collection<String> resolveProjectVersions( RepositorySession session, String repoId, String namespace,
                                                       String projectId )
         throws MetadataResolutionException
@@ -398,6 +404,7 @@ public class DefaultMetadataResolver
         }
     }
 
+    @Override
     public Collection<ArtifactMetadata> resolveArtifacts( RepositorySession session, String repoId, String namespace,
                                                           String projectId, String projectVersion )
         throws MetadataResolutionException

@@ -52,6 +52,7 @@ public class DefaultProxyConnectorService
         allPolicies = new ArrayList<>( getBeansOfType( applicationContext, Policy.class ).values() );
     }
 
+    @Override
     public List<ProxyConnector> getProxyConnectors()
         throws ArchivaRestServiceException
     {
@@ -66,6 +67,7 @@ public class DefaultProxyConnectorService
         }
     }
 
+    @Override
     public ProxyConnector getProxyConnector( String sourceRepoId, String targetRepoId )
         throws ArchivaRestServiceException
     {
@@ -79,6 +81,7 @@ public class DefaultProxyConnectorService
         }
     }
 
+    @Override
     public Boolean addProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException
     {
@@ -96,6 +99,7 @@ public class DefaultProxyConnectorService
         }
     }
 
+    @Override
     public Boolean deleteProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException
     {
@@ -113,6 +117,7 @@ public class DefaultProxyConnectorService
         }
     }
 
+    @Override
     public Boolean removeProxyConnector( String sourceRepoId, String targetRepoId )
         throws ArchivaRestServiceException
     {
@@ -126,6 +131,7 @@ public class DefaultProxyConnectorService
         return deleteProxyConnector( proxyConnector );
     }
 
+    @Override
     public Boolean updateProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException
     {
@@ -143,6 +149,7 @@ public class DefaultProxyConnectorService
         }
     }
 
+    @Override
     public List<PolicyInformation> getAllPolicyInformations()
         throws ArchivaRestServiceException
     {

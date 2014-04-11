@@ -55,6 +55,7 @@ public class MockRepoAdmin
     @Named (value = "archivaConfiguration#test")
     private ArchivaConfiguration archivaConfiguration;
 
+    @Override
     public List<RemoteRepository> getRemoteRepositories()
         throws RepositoryAdminException
     {
@@ -81,6 +82,7 @@ public class MockRepoAdmin
         return remoteRepositories;
     }
 
+    @Override
     public RemoteRepository getRemoteRepository( String repositoryId )
         throws RepositoryAdminException
     {
@@ -94,48 +96,56 @@ public class MockRepoAdmin
         return null;
     }
 
+    @Override
     public Boolean deleteRemoteRepository( String repositoryId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Boolean addRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Boolean updateRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Map<String, RemoteRepository> getRemoteRepositoriesAsMap()
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public IndexingContext createIndexContext( RemoteRepository repository )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public List<ManagedRepository> getManagedRepositories()
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Map<String, ManagedRepository> getManagedRepositoriesAsMap()
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public ManagedRepository getManagedRepository( String repositoryId )
         throws RepositoryAdminException
     {
@@ -154,6 +164,7 @@ public class MockRepoAdmin
         return null;
     }
 
+    @Override
     public Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation,
                                             boolean deleteContent )
         throws RepositoryAdminException
@@ -161,6 +172,7 @@ public class MockRepoAdmin
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
                                          AuditInformation auditInformation )
         throws RepositoryAdminException
@@ -168,6 +180,7 @@ public class MockRepoAdmin
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
                                             AuditInformation auditInformation, boolean resetStats )
         throws RepositoryAdminException
@@ -175,12 +188,14 @@ public class MockRepoAdmin
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public IndexingContext createIndexContext( ManagedRepository repository )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public List<ProxyConnector> getProxyConnectors()
         throws RepositoryAdminException
     {
@@ -195,30 +210,35 @@ public class MockRepoAdmin
         return proxyConnectors;
     }
 
+    @Override
     public ProxyConnector getProxyConnector( String sourceRepoId, String targetRepoId )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Boolean addProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Boolean deleteProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Boolean updateProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         return null;
     }
 
+    @Override
     public Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
         throws RepositoryAdminException
     {
@@ -245,30 +265,35 @@ public class MockRepoAdmin
         return proxyConnectorMap;
     }
 
+    @Override
     public List<NetworkProxy> getNetworkProxies()
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public NetworkProxy getNetworkProxy( String networkProxyId )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void addNetworkProxy( NetworkProxy networkProxy, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void updateNetworkProxy( NetworkProxy networkProxy, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void deleteNetworkProxy( String networkProxyId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {

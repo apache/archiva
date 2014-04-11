@@ -33,17 +33,20 @@ public class MockitoFactory
         this.type = type;
     }
 
+    @Override
     public Object getObject()
         throws Exception
     {
         return mock( type );
     }
 
+    @Override
     public Class getObjectType()
     {
         return type;
     }
 
+    @Override
     public boolean isSingleton()
     {
         return true;

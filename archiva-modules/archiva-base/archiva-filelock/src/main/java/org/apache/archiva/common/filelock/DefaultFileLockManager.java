@@ -268,6 +268,7 @@ public class DefaultFileLockManager
         }
     }
 
+    @Override
     public void clearLockFiles()
     {
         lockFiles.clear();
@@ -303,21 +304,25 @@ public class DefaultFileLockManager
         return ( parentDir != null && ( mkdirs( parentDir ) || parentDir.exists() ) && canonDir.mkdir() );
     }
 
+    @Override
     public int getTimeout()
     {
         return timeout;
     }
 
+    @Override
     public void setTimeout( int timeout )
     {
         this.timeout = timeout;
     }
 
+    @Override
     public boolean isSkipLocking()
     {
         return skipLocking;
     }
 
+    @Override
     public void setSkipLocking( boolean skipLocking )
     {
         this.skipLocking = skipLocking;

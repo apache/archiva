@@ -107,6 +107,7 @@ public class RepositoryServletSecurityTest
     ApplicationContext applicationContext;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {

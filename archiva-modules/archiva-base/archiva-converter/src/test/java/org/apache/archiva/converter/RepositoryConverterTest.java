@@ -65,6 +65,7 @@ public class RepositoryConverterTest
     PlexusSisuBridge plexusSisuBridge;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -95,6 +96,7 @@ public class RepositoryConverterTest
         //repositoryConverter = (LegacyRepositoryConverter) lookup( LegacyRepositoryConverter.ROLE, "default" );
     }
 
+    @Override
     protected void tearDown()
         throws Exception
     {

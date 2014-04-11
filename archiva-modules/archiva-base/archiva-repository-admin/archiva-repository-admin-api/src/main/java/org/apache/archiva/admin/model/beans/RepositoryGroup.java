@@ -182,6 +182,7 @@ public class RepositoryGroup
         return this;
     }
 
+    @Override
     public boolean equals( Object other )
     {
         if ( this == other )
@@ -200,6 +201,7 @@ public class RepositoryGroup
         return result;
     }
 
+    @Override
     public int hashCode()
     {
         int result = 17;

@@ -80,6 +80,7 @@ public class ArchivaIndexingTaskExecutorTest
     ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -101,6 +102,7 @@ public class ArchivaIndexingTaskExecutorTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {
@@ -279,6 +281,7 @@ public class ArchivaIndexingTaskExecutorTest
 
         indexerDirectory.listFiles( new FilenameFilter()
         {
+            @Override
             public boolean accept( File file, String s )
             {
                 if ( s.startsWith( "nexus-maven-repository-index" ) )
