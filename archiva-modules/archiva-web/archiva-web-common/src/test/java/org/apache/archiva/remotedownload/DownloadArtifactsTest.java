@@ -44,9 +44,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -124,12 +121,12 @@ public class DownloadArtifactsTest
         redirectServer.setHandler( contextRedirect );
         redirectServer.start();
         this.redirectPort = redirectServer.getConnectors()[0].getLocalPort();
-        log.info( "redirect server port {}", redirec    @Override
-tPort );
+        log.info( "redirect server port {}", redirectPort );
 
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

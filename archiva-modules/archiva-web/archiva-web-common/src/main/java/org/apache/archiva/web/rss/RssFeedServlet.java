@@ -103,10 +103,10 @@ public class RssFeedServlet
         servletAuth = wac.getBean( ServletAuthenticator.class );
         httpAuth = wac.getBean( "httpAuthenticator#basic", HttpAuthenticator.class );
         // TODO: what if there are other types?
-        repositorySessionFactory = wac.getBean( "repositorySessionFactory", RepositorySessionFactory.cl    @Override
-ass );
+        repositorySessionFactory = wac.getBean( "repositorySessionFactory", RepositorySessionFactory.class );
     }
 
+    @Override
     public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws ServletException, IOException
     {

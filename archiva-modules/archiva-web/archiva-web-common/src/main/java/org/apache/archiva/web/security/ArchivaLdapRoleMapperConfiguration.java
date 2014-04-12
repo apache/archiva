@@ -70,11 +70,11 @@ public class ArchivaLdapRoleMapperConfiguration
         catch ( RepositoryAdminException e )
         {
             throw new MappingException( e.getMessage(), e );
-        @Override
-    }
+        }
 
     }
 
+    @Override
     public void updateLdapMapping( String ldapGroup, List<String> roles )
         throws MappingException
     {
@@ -96,11 +96,11 @@ public class ArchivaLdapRoleMapperConfiguration
         }
         catch ( RepositoryAdminException e )
         {
-            throw new MappingException( e.getMessa    @Override
-ge(), e );
+            throw new MappingException( e.getMessage(), e );
         }
     }
 
+    @Override
     public void removeLdapMapping( String group )
         throws MappingException
     {
@@ -115,12 +115,12 @@ ge(), e );
         }
         catch ( RepositoryAdminException e )
         {
-            throw new MappingExceptio    @Override
-n( e.getMessage(), e );
+            throw new MappingException( e.getMessage(), e );
         }
 
     }
 
+    @Override
     public Map<String, Collection<String>> getLdapGroupMappings()
         throws MappingException
     {
@@ -147,11 +147,11 @@ n( e.getMessage(), e );
         }
         catch ( RepositoryAdminException e )
         {
-            throw new     @Override
-MappingException( e.getMessage(), e );
+            throw new MappingException( e.getMessage(), e );
         }
     }
 
+    @Override
     public void setLdapGroupMappings( Map<String, List<String>> mappings )
         throws MappingException
     {

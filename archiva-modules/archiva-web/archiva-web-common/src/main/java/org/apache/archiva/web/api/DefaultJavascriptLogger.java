@@ -43,10 +43,10 @@ public class DefaultJavascriptLogger
             return Boolean.TRUE;
         }
         toUse.trace( javascriptLog.getMessage() );
-        return Boolean    @Override
-.TRUE;
+        return Boolean.TRUE;
     }
 
+    @Override
     public Boolean debug( JavascriptLog javascriptLog )
     {
         Logger toUse =
@@ -58,10 +58,10 @@ public class DefaultJavascriptLogger
         }
 
         toUse.debug( javascriptLog.getMessage() );
-            @Override
-return Boolean.TRUE;
+        return Boolean.TRUE;
     }
 
+    @Override
     public Boolean info( JavascriptLog javascriptLog )
     {
         Logger toUse =
@@ -72,11 +72,11 @@ return Boolean.TRUE;
             return Boolean.TRUE;
         }
 
-        toUse.info( javascriptLog.getMessage    @Override
-() );
+        toUse.info( javascriptLog.getMessage() );
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean warn( JavascriptLog javascriptLog )
     {
         Logger toUse =
@@ -87,11 +87,11 @@ return Boolean.TRUE;
             return Boolean.TRUE;
         }
 
-        toUse.warn( javascript    @Override
-Log.getMessage() );
+        toUse.warn( javascriptLog.getMessage() );
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean error( JavascriptLog javascriptLog )
     {
         Logger toUse =

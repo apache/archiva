@@ -132,10 +132,10 @@ public class ArchivaRbacManager
     @Override
     public Role createRole( String name )
     {
-        return getRbacManagerForWrite().createRole( n    @Override
-ame );
+        return getRbacManagerForWrite().createRole( name );
     }
 
+    @Override
     public Role saveRole( Role role )
         throws RbacObjectInvalidException, RbacManagerException
     {
@@ -160,10 +160,10 @@ ame );
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
-    @Override
         return role;
     }
 
+    @Override
     public void saveRoles( Collection<Role> roles )
         throws RbacObjectInvalidException, RbacManagerException
     {
@@ -186,11 +186,11 @@ ame );
         }
         if ( lastException != null && allFailed )
         {
-            throw new RbacManagerException( lastException.getMes    @Override
-sage(), lastException );
+            throw new RbacManagerException( lastException.getMessage(), lastException );
         }
     }
 
+    @Override
     public Role getRole( String roleName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
@@ -221,12 +221,12 @@ sage(), lastException );
         log.debug( "cannot find role for name: ‘{}", roleName );
         if ( lastException != null )
         {
-            throw new RbacManagerException( lastException.getMessage(),    @Override
- lastException );
+            throw new RbacManagerException( lastException.getMessage(), lastException );
         }
         return null;
     }
 
+    @Override
     public List<Role> getAllRoles()
         throws RbacManagerException
     {
@@ -253,12 +253,12 @@ sage(), lastException );
         if ( lastException != null && allFailed )
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
-     @Override
-       }
+        }
 
         return new ArrayList<>( allRoles.values() );
     }
 
+    @Override
     public void removeRole( Role role )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
@@ -280,25 +280,25 @@ sage(), lastException );
 
         if ( lastException != null && allFailed )
         {
-            throw new     @Override
-RbacManagerException( lastException.getMessage(), lastException );
+            throw new RbacManagerException( lastException.getMessage(), lastException );
         }
     }
 
+    @Override
     public Permission createPermission( String name )
-        throws Rb    @Override
-acManagerException
+        throws RbacManagerException
     {
         return getRbacManagerForWrite().createPermission( name );
     }
 
+    @Override
     public Permission createPermission( String name, String operationName, String resourceIdentifier )
         throws RbacManagerException
-      @Override
   {
         return getRbacManagerForWrite().createPermission( name, operationName, resourceIdentifier );
     }
 
+    @Override
     public Permission savePermission( Permission permission )
         throws RbacObjectInvalidException, RbacManagerException
     {
@@ -322,13 +322,13 @@ acManagerException
 
         if ( lastException != null && allFailed )
         {
-            @Override
-    throw new RbacManagerException( lastException.getMessage(), lastException );
+            throw new RbacManagerException( lastException.getMessage(), lastException );
         }
 
         return permission;
     }
 
+    @Override
     public Permission getPermission( String permissionName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
@@ -357,14 +357,14 @@ acManagerException
             }
         }
 
-        if ( lastException != null    @Override
- )
+        if ( lastException != null )
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
         return null;
     }
 
+    @Override
     public List<Permission> getAllPermissions()
         throws RbacManagerException
     {
@@ -390,12 +390,12 @@ acManagerException
 
         if ( lastException != null && allFailed )
         {
-               @Override
- throw new RbacManagerException( lastException.getMessage(), lastException );
+            throw new RbacManagerException( lastException.getMessage(), lastException );
         }
         return new ArrayList<>( allPermissions.values() );
     }
 
+    @Override
     public void removePermission( Permission permission )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
@@ -413,22 +413,22 @@ acManagerException
             {
                 lastException = e;
             }
-        }    @Override
-
+        }
 
         if ( lastException != null && allFailed )
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
-     @Override
        }
     }
 
+    @Override
     public Operation createOperation( String name )
         throws RbacManagerException
     {
         return getRbacManagerForWrite().createOperation( name );
     }
 
+    @Override
     public Operation saveOperation( Operation operation )
         throws RbacObjectInvalidException, RbacManagerException
     {
@@ -448,8 +448,7 @@ acManagerException
             {
                 lastException = e;
             }
-           @Override
- }
+        }
 
         if ( lastException != null && allFailed )
         {
@@ -458,6 +457,7 @@ acManagerException
         return operation;
     }
 
+    @Override
     public Operation getOperation( String operationName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
@@ -482,8 +482,7 @@ acManagerException
             }
             catch ( Exception e )
             {
-                lastExce    @Override
-ption = e;
+                lastException = e;
             }
         }
 
@@ -494,6 +493,7 @@ ption = e;
         return null;
     }
 
+    @Override
     public List<Operation> getAllOperations()
         throws RbacManagerException
     {
@@ -517,7 +517,6 @@ ption = e;
             }
         }
 
-    @Override
         if ( lastException != null && allFailed )
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
@@ -525,6 +524,7 @@ ption = e;
         return new ArrayList<>( allOperations.values() );
     }
 
+    @Override
     public void removeOperation( Operation operation )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
@@ -539,25 +539,25 @@ ption = e;
                 allFailed = false;
             }
             catch ( Exception e )
-      @Override
-          {
+            {
                 lastException = e;
             }
         }
 
         if ( lastException != null && allFailed )
         {
-            throw new RbacMan    @Override
-agerException( lastException.getMessage(), lastException );
+            throw new RbacManagerException( lastException.getMessage(), lastException );
         }
     }
 
+    @Override
     public Resource createResource( String identifier )
         throws RbacManagerException
     {
         return getRbacManagerForWrite().createResource( identifier );
     }
 
+    @Override
     public Resource saveResource( Resource resource )
         throws RbacObjectInvalidException, RbacManagerException
     {
@@ -573,8 +573,7 @@ agerException( lastException.getMessage(), lastException );
                     allFailed = false;
                 }
             }
-            catch ( Exception e )    @Override
-
+            catch ( Exception e )
             {
                 lastException = e;
             }
@@ -587,6 +586,7 @@ agerException( lastException.getMessage(), lastException );
         return resource;
     }
 
+    @Override
     public Resource getResource( String resourceIdentifier )
         throws RbacObjectNotFoundException, RbacManagerException
     {
@@ -609,7 +609,6 @@ agerException( lastException.getMessage(), lastException );
                     return r;
                 }
             }
-      @Override
           catch ( Exception e )
             {
                 lastException = e;
@@ -623,6 +622,7 @@ agerException( lastException.getMessage(), lastException );
         return null;
     }
 
+    @Override
     public List<Resource> getAllResources()
         throws RbacManagerException
     {
@@ -641,8 +641,7 @@ agerException( lastException.getMessage(), lastException );
                 allFailed = false;
             }
             catch ( Exception e )
-       @Override
-         {
+            {
                 lastException = e;
             }
         }
@@ -654,6 +653,7 @@ agerException( lastException.getMessage(), lastException );
         return new ArrayList<>( allResources.values() );
     }
 
+    @Override
     public void removeResource( Resource resource )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
@@ -665,8 +665,7 @@ agerException( lastException.getMessage(), lastException );
             {
                 rbacManager.removeResource( resource );
                 resourcesCache.remove( resource.getIdentifier() );
-                   @Override
- allFailed = false;
+                allFailed = false;
             }
             catch ( Exception e )
             {
@@ -674,19 +673,20 @@ agerException( lastException.getMessage(), lastException );
             }
         }
 
-        if ( lastException != null     @Override
-&& allFailed )
+        if ( lastException != null && allFailed )
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
     }
 
+    @Override
     public UserAssignment createUserAssignment( String principal )
         throws RbacManagerException
     {
         return getRbacManagerForWrite().createUserAssignment( principal );
     }
 
+    @Override
     public UserAssignment saveUserAssignment( UserAssignment userAssignment )
         throws RbacObjectInvalidException, RbacManagerException
     {
@@ -700,7 +700,6 @@ agerException( lastException.getMessage(), lastException );
                 {
                     userAssignment = rbacManager.saveUserAssignment( userAssignment );
                     allFailed = false;
-     @Override
                }
             }
             catch ( Exception e )
@@ -716,6 +715,7 @@ agerException( lastException.getMessage(), lastException );
         return userAssignment;
     }
 
+    @Override
     public UserAssignment getUserAssignment( String principal )
         throws RbacObjectNotFoundException, RbacManagerException
     {
@@ -793,7 +793,6 @@ agerException( lastException.getMessage(), lastException );
     {
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
         {
-     @Override
            try
             {
                 boolean exists = rbacManager.userAssignmentExists( assignment );
@@ -811,6 +810,7 @@ agerException( lastException.getMessage(), lastException );
         return false;
     }
 
+    @Override
     public List<UserAssignment> getAllUserAssignments()
         throws RbacManagerException
     {
@@ -834,8 +834,7 @@ agerException( lastException.getMessage(), lastException );
                     }
                     allUserAssignments.put( ua.getPrincipal(), ua );
                 }
-                allFai    @Override
-led = false;
+                allFailed = false;
             }
             catch ( Exception e )
             {
@@ -850,6 +849,7 @@ led = false;
         return new ArrayList<>( allUserAssignments.values() );
     }
 
+    @Override
     public List<UserAssignment> getUserAssignmentsForRoles( Collection<String> roleNames )
         throws RbacManagerException
     {
@@ -862,8 +862,7 @@ led = false;
             {
                 List<UserAssignment> userAssignments = rbacManager.getUserAssignmentsForRoles( roleNames );
 
-                allUserAssignments.addAll(     @Override
-userAssignments );
+                allUserAssignments.addAll( userAssignments );
 
                 allFailed = false;
             }
@@ -880,6 +879,7 @@ userAssignments );
         return allUserAssignments;
     }
 
+    @Override
     public void removeUserAssignment( UserAssignment userAssignment )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
@@ -929,27 +929,25 @@ userAssignments );
             }
             catch ( Exception e )
             {
-           @Override
-         lastException = e;
+            lastException = e;
             }
         }
 
         if ( lastException != null && allFailed )
         {
-            throw new RbacManagerException( lastException.getMe    @Override
-ssage(), lastException );
+            throw new RbacManagerException( lastException.getMessage(), lastException );
         }
         return false;
     }
 
     @Override
-    public b    @Override
-oolean roleExists( Role role )
+    public boolean roleExists( Role role )
         throws RbacManagerException
     {
         return roleExists( role.getName() );
     }
 
+    @Override
     public void eraseDatabase()
     {
         log.warn( "eraseDatabase not implemented" );
@@ -961,11 +959,13 @@ oolean roleExists( Role role )
         return false;
     }
 
+    @Override
     public String getDescriptionKey()
     {
         return "archiva.redback.rbacmanager.archiva";
     }
 
+    @Override
     public boolean isReadOnly()
     {
         return false;

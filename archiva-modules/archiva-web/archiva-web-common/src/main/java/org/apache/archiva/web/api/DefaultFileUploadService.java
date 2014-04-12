@@ -173,13 +173,13 @@ public class DefaultFileUploadService
             (List<FileMetadata>) httpServletRequest.getSession().getAttribute( FILES_SESSION_KEY );
         if ( fileMetadatas == null )
         {
-            fileMetadatas = new CopyOnWriteArrayList<FileMetadata>();
+            fileMetadatas = new CopyOnWriteArrayList<>();
             httpServletRequest.getSession().setAttribute( FILES_SESSION_KEY, fileMetadatas );
         }
-        return fileMeta    @Override
-datas;
+        return fileMetadatas;
     }
 
+    @Override
     public Boolean deleteFile( String fileName )
         throws ArchivaRestServiceException
     {
@@ -195,10 +195,10 @@ datas;
         {
             return file.delete();
         }
-        r    @Override
-eturn Boolean.FALSE;
+        return Boolean.FALSE;
     }
 
+    @Override
     public Boolean clearUploadedFiles()
         throws ArchivaRestServiceException
     {
@@ -207,21 +207,21 @@ eturn Boolean.FALSE;
         {
             deleteFile( new File( fileMetadata.getServerFileName() ).getPath() );
         }
-        getSessionFileMetadatas().cle    @Override
-ar();
+        getSessionFileMetadatas().clear();
         return Boolean.TRUE;
     }
 
+    @Override
     public List<FileMetadata> getSessionFileMetadatas()
         throws ArchivaRestServiceException
     {
         List<FileMetadata> fileMetadatas =
             (List<FileMetadata>) httpServletRequest.getSession().getAttribute( FILES_SESSION_KEY );
 
-        return fileMetadatas == null ? Collec    @Override
-tions.<FileMetadata>emptyList() : fileMetadatas;
+        return fileMetadatas == null ? Collections.<FileMetadata>emptyList() : fileMetadatas;
     }
 
+    @Override
     public Boolean save( String repositoryId, String groupId, String artifactId, String version, String packaging,
                          boolean generatePom )
         throws ArchivaRestServiceException
@@ -265,8 +265,7 @@ tions.<FileMetadata>emptyList() : fileMetadatas;
 
         // get from the session file with groupId/artifactId
 
-        Iterable<FileMetadata> filesToAdd = Ite            @Override
-rables.filter( fileMetadatas, new Predicate<FileMetadata>()
+        Iterable<FileMetadata> filesToAdd = Iterables.filter( fileMetadatas, new Predicate<FileMetadata>()
         {
             public boolean apply( FileMetadata fileMetadata )
             {
@@ -285,9 +284,9 @@ rables.filter( fileMetadatas, new Predicate<FileMetadata>()
             deleteFile( fileMetadata.getServerFileName() );
         }
 
-              @Override
-      filesToAdd = Iterables.filter( fileMetadatas, new Predicate<FileMetadata>()
+        filesToAdd = Iterables.filter( fileMetadatas, new Predicate<FileMetadata>()
         {
+            @Override
             public boolean apply( FileMetadata fileMetadata )
             {
                 return fileMetadata != null && fileMetadata.isPomFile();

@@ -25,10 +25,8 @@ import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserManagerException;
-import org.apache.archiva.redback.users.UserManagerListener;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.UserQuery;
-import org.apache.archiva.redback.users.configurable.ConfigurableUserManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -73,7 +71,7 @@ public class ArchivaConfigurableUsersManager
                 redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getUserManagerImpls();
             log.info( "use userManagerImpls: '{}'", userManagerImpls );
 
-            userManagerPerId = new LinkedHashMap<String, UserManager>( userManagerImpls.size() );
+            userManagerPerId = new LinkedHashMap<>( userManagerImpls.size() );
             for ( String id : userManagerImpls )
             {
                 UserManager userManagerImpl = applicationContext.getBean( "userManager#" + id, UserManager.class );
@@ -93,10 +91,10 @@ public class ArchivaConfigurableUsersManager
 
     protected boolean useUsersCache()
     {
-        return this.useUsers    @Override
-Cache;
+        return this.useUsersCache;
     }
 
+    @Override
     public User addUser( User user )
         throws UserManagerException
     {
@@ -107,10 +105,10 @@ Cache;
             usersCache.put( user.getUsername(), user );
         }
 
-    @Override
         return user;
     }
 
+    @Override
     public void addUserUnchecked( User user )
         throws UserManagerException
     {
@@ -118,11 +116,11 @@ Cache;
 
         if ( useUsersCache() )
         {
-            usersCache.put( use    @Override
-r.getUsername(), user );
+            usersCache.put( user.getUsername(), user );
         }
     }
 
+    @Override
     public User createUser( String username, String fullName, String emailAddress )
         throws UserManagerException
     {
@@ -146,19 +144,19 @@ r.getUsername(), user );
         }
         if ( lastException != null && allFailed )
         {
-            throw new UserManagerException( lastException.getMessage(),    @Override
- lastException );
+            throw new UserManagerException( lastException.getMessage(), lastException );
         }
         return user;
     }
 
+    @Override
     public UserQuery createUserQuery()
     {
-        return u    @Override
-serManagerPerId.values().iterator().next().createUserQuery();
+        return userManagerPerId.values().iterator().next().createUserQuery();
     }
 
 
+    @Override
     public void deleteUser( String username )
         throws UserNotFoundException, UserManagerException
     {
@@ -182,11 +180,11 @@ serManagerPerId.values().iterator().next().createUserQuery();
         }
         if ( lastException != null && allFailed )
         {
-            throw new     @Override
-UserManagerException( lastException.getMessage(), lastException );
+            throw new UserManagerException( lastException.getMessage(), lastException );
         }
     }
 
+    @Override
     public void eraseDatabase()
     {
         for ( UserManager userManager : userManagerPerId.values() )
@@ -242,14 +240,14 @@ UserManagerException( lastException.getMessage(), lastException );
                 {
                     throw (UserNotFoundException) lastException;
                 }
-                throw new UserManagerException(     @Override
-lastException.getMessage(), lastException );
+                throw new UserManagerException( lastException.getMessage(), lastException );
             }
         }
 
         return user;
     }
 
+    @Override
     public User findUser( String username )
         throws UserManagerException
     {
@@ -259,12 +257,12 @@ lastException.getMessage(), lastException );
 
     @Override
     public User getGuestUser()
-       @Override
      throws UserNotFoundException, UserManagerException
     {
         return findUser( GUEST_USERNAME );
     }
 
+    @Override
     public List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )
         throws UserManagerException
     {
@@ -273,8 +271,7 @@ lastException.getMessage(), lastException );
         for ( UserManager userManager : userManagerPerId.values() )
         {
             List<User> found = userManager.findUsersByEmailKey( emailKey, orderAscending );
-            i    @Override
-f ( found != null )
+            if ( found != null )
             {
                 users.addAll( found );
             }
@@ -282,6 +279,7 @@ f ( found != null )
         return users;
     }
 
+    @Override
     public List<User> findUsersByFullNameKey( String fullNameKey, boolean orderAscending )
         throws UserManagerException
     {
@@ -289,8 +287,7 @@ f ( found != null )
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-            List<User> found = userManager.findUsersByFullNameKey( fullNameKey, orderAscending );    @Override
-
+            List<User> found = userManager.findUsersByFullNameKey( fullNameKey, orderAscending );            
             if ( found != null )
             {
                 users.addAll( found );
@@ -299,6 +296,7 @@ f ( found != null )
         return users;
     }
 
+    @Override
     public List<User> findUsersByQuery( UserQuery query )
         throws UserManagerException
     {
@@ -306,8 +304,7 @@ f ( found != null )
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-            List<User> found = userManager.findUsersByQ    @Override
-uery( query );
+            List<User> found = userManager.findUsersByQuery( query );
             if ( found != null )
             {
                 users.addAll( found );
@@ -316,6 +313,7 @@ uery( query );
         return users;
     }
 
+    @Override
     public List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
         throws UserManagerException
     {
@@ -323,10 +321,8 @@ uery( query );
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-            List<User> found = userManager.findUsersByUsernameKey( us    @Override
-ernameKey, orderAscending );
-            if (     @Override
-found != null )
+            List<User> found = userManager.findUsersByUsernameKey( usernameKey, orderAscending );
+            if ( found != null )
             {
                 users.addAll( found );
             }
@@ -334,19 +330,20 @@ found != null )
         return users;
     }
 
+    @Override
     public String getId()
     {
         return null;
     }
 
+    @Override
     public List<User> getUsers()
         throws UserManagerException
     {
         List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
-            @Override
-{
+        {
             List<User> found = userManager.getUsers();
             if ( found != null )
             {
@@ -356,6 +353,7 @@ found != null )
         return users;
     }
 
+    @Override
     public List<User> getUsers( boolean orderAscending )
         throws UserManagerException
     {
@@ -363,7 +361,6 @@ found != null )
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-    @Override
             List<User> found = userManager.getUsers( orderAscending );
             if ( found != null )
             {
@@ -373,8 +370,8 @@ found != null )
         return users;
     }
 
-    public boolean isReadOnly(    @Override
-)
+    @Override
+    public boolean isReadOnly()
     {
         boolean readOnly = false;
 
@@ -385,12 +382,12 @@ found != null )
         return readOnly;
     }
 
+    @Override
     public User updateUser( User user )
         throws UserNotFoundException, UserManagerException
     {
 
-        UserManager userManage    @Override
-r = userManagerPerId.get( user.getUserManagerId() );
+        UserManager userManager = userManagerPerId.get( user.getUserManagerId() );
 
         user = userManager.updateUser( user );
 
@@ -402,6 +399,7 @@ r = userManagerPerId.get( user.getUserManagerId() );
         return user;
     }
 
+    @Override
     public User updateUser( User user, boolean passwordChangeRequired )
         throws UserNotFoundException, UserManagerException
     {
@@ -439,8 +437,7 @@ r = userManagerPerId.get( user.getUserManagerId() );
                 }
             }
             catch ( Exception e )
-             @Override
-   {
+            {
                 lastException = e;
             }
         }
@@ -452,6 +449,7 @@ r = userManagerPerId.get( user.getUserManagerId() );
     }
 
 
+    @Override
     public boolean userExists( String userName )
         throws UserManagerException
     {
@@ -475,8 +473,7 @@ r = userManagerPerId.get( user.getUserManagerId() );
                 lastException = e;
             }
         }
-        if ( las    @Override
-tException != null && allFailed )
+        if ( lastException != null && allFailed )
         {
             throw new UserManagerException( lastException.getMessage(), lastException );
         }
@@ -490,6 +487,7 @@ tException != null && allFailed )
         return false;
     }
 
+    @Override
     public String getDescriptionKey()
     {
         return "archiva.redback.usermanager.configurable.archiva";

@@ -106,10 +106,10 @@ public class SecuritySynchronization
             {
                 syncRepoConfiguration( (String) propertyValue );
             }
-       @Override
-     }
+        }
     }
 
+    @Override
     public void beforeConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry,
                                            String propertyName, Object propertyValue )
     {

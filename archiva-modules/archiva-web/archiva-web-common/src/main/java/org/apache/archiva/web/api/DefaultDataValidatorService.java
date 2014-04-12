@@ -61,10 +61,10 @@ public class DefaultDataValidatorService
         catch ( RepositoryAdminException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(), e );
-       @Override
-     }
+        }
     }
 
+    @Override
     public Boolean remoteRepositoryIdNotExists( String id )
         throws ArchivaRestServiceException
     {
@@ -74,11 +74,11 @@ public class DefaultDataValidatorService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessa    @Override
-ge(), e );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
 
+    @Override
     public Boolean networkProxyIdNotExists( String id )
         throws ArchivaRestServiceException
     {

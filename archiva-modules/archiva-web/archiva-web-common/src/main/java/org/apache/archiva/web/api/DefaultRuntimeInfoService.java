@@ -102,10 +102,10 @@ public class DefaultRuntimeInfoService
     {
         return req.getScheme() + "://" + req.getServerName() + ( req.getServerPort() == 80
             ? ""
-            : ":" + req.getServerPort() ) + req.getContextP    @Override
-ath();
+            : ":" + req.getServerPort() ) + req.getContextPath();
     }
 
+    @Override
     public Boolean logMissingI18n( String key )
     {
         i18nLogger.info( "missing i18n key : '{}'", key );
