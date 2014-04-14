@@ -26,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
@@ -80,7 +81,7 @@ public class RemoteRepositoryConnectivityCheckTest
         try
         {
 
-            int repoServerPort = repoServer.getConnectors()[0].getLocalPort();
+            int repoServerPort = ServerConnector.class.cast( repoServer.getConnectors()[0] ).getLocalPort();
 
             RemoteRepository repo = getRemoteRepository();
 
@@ -113,7 +114,7 @@ public class RemoteRepositoryConnectivityCheckTest
         try
         {
 
-            int repoServerPort = repoServer.getConnectors()[0].getLocalPort();
+            int repoServerPort = ServerConnector.class.cast( repoServer.getConnectors()[0] ).getLocalPort();
 
             RemoteRepository repo = getRemoteRepository();
 
