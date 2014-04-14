@@ -392,6 +392,14 @@ public class DefaultCassandraArchivaManager
                 HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
                                                        getMailingListFamilyName(), //
                                                        ComparatorType.UTF8TYPE );
+
+            BasicColumnDefinition projectVersionMetadataModel_key = new BasicColumnDefinition();
+            projectVersionMetadataModel_key.setName( StringSerializer.get().toByteBuffer( "projectVersionMetadataModel.key" ) );
+            projectVersionMetadataModel_key.setIndexName( "projectVersionMetadataModel_key" );
+            projectVersionMetadataModel_key.setIndexType( ColumnIndexType.KEYS );
+            projectVersionMetadataModel_key.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            mailingListCf.addColumnDefinition( projectVersionMetadataModel_key );
+
             cfds.add( mailingListCf );
 
             // creating indexes for cql query
@@ -404,6 +412,14 @@ public class DefaultCassandraArchivaManager
                 HFactory.createColumnFamilyDefinition( keyspace.getKeyspaceName(), //
                                                        getLicenseFamilyName(), //
                                                        ComparatorType.UTF8TYPE );
+
+            BasicColumnDefinition projectVersionMetadataModel_key = new BasicColumnDefinition();
+            projectVersionMetadataModel_key.setName( StringSerializer.get().toByteBuffer( "projectVersionMetadataModel.key" ) );
+            projectVersionMetadataModel_key.setIndexName( "projectVersionMetadataModel_key" );
+            projectVersionMetadataModel_key.setIndexType( ColumnIndexType.KEYS );
+            projectVersionMetadataModel_key.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            licenseCf.addColumnDefinition( projectVersionMetadataModel_key );
+
             cfds.add( licenseCf );
 
             // creating indexes for cql query
@@ -426,6 +442,13 @@ public class DefaultCassandraArchivaManager
             groupIdColumn.setIndexType( ColumnIndexType.KEYS );
             groupIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             dependencyCf.addColumnDefinition( groupIdColumn );
+
+            BasicColumnDefinition projectVersionMetadataModel_key = new BasicColumnDefinition();
+            projectVersionMetadataModel_key.setName( StringSerializer.get().toByteBuffer( "projectVersionMetadataModel.key" ) );
+            projectVersionMetadataModel_key.setIndexName( "projectVersionMetadataModel_key" );
+            projectVersionMetadataModel_key.setIndexType( ColumnIndexType.KEYS );
+            projectVersionMetadataModel_key.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
+            dependencyCf.addColumnDefinition( projectVersionMetadataModel_key );
 
         }
 

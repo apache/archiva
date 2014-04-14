@@ -1117,10 +1117,17 @@ public class CassandraMetadataRepository
                 .setRowCount( Integer.MAX_VALUE ) //
                 .addEqualsExpression( "projectVersionMetadataModel.key", projectVersionMetadataKey ) //
                 .execute();
+
+        if ( result.get().getCount() < 1 )
+        {
+            return;
+        }
+
         for ( Row<String, String, String> row : result.get() )
         {
             this.mailingListTemplate.deleteRow( row.getKey() );
         }
+
     }
 
     protected List<MailingList> getMailingLists( String projectVersionMetadataKey )
@@ -2058,8 +2065,7 @@ public class CassandraMetadataRepository
             return artifactMetadatas;
         }
 
-        final List<MetadataFacetModel> metadataFacetModels =
-            new ArrayList<>( result.get().getCount() );
+        final List<MetadataFacetModel> metadataFacetModels = new ArrayList<>( result.get().getCount() );
 
         for ( Row<String, String, String> row : result.get() )
         {
@@ -2092,8 +2098,7 @@ public class CassandraMetadataRepository
                     }
                 } );
             Iterator<MetadataFacetModel> iterator = metadataFacetModelIterable.iterator();
-            Map<String, List<MetadataFacetModel>> metadataFacetValuesPerFacetId =
-                new HashMap<>();
+            Map<String, List<MetadataFacetModel>> metadataFacetValuesPerFacetId = new HashMap<>();
             while ( iterator.hasNext() )
             {
                 MetadataFacetModel metadataFacetModel = iterator.next();
