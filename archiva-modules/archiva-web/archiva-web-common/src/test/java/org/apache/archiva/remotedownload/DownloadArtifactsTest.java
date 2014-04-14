@@ -21,13 +21,11 @@ package org.apache.archiva.remotedownload;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.redback.rest.api.services.RoleManagementService;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.apache.maven.wagon.repository.Repository;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.After;
@@ -49,11 +47,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 
 /**
  * @author Olivier Lamy
  */
-@RunWith(ArchivaBlockJUnit4ClassRunner.class)
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class DownloadArtifactsTest
     extends AbstractDownloadTest
 {
@@ -86,9 +85,8 @@ public class DownloadArtifactsTest
     protected String getSpringConfigLocation()
     {
         return "classpath*:META-INF/spring-context.xml classpath*:spring-context-test-common.xml classpath*:spring-context-artifacts-download.xml";
-    }
+    }    @Override
 
-    @Override
 
     @Before
     public void startServer()
@@ -108,7 +106,7 @@ public class DownloadArtifactsTest
 
         repoServer.setHandler( contextRepo );
         repoServer.start();
-        this.repoServerPort = ServerConnector.class.cast( repoServer.getConnectors()[0] ).getLocalPort();
+        this.repoServerPort = repoServer.getConnectors()[0].getLocalPort();
 
         //redirect handler
 
@@ -122,7 +120,7 @@ public class DownloadArtifactsTest
 
         redirectServer.setHandler( contextRedirect );
         redirectServer.start();
-        this.redirectPort = ServerConnector.class.cast( redirectServer.getConnectors()[0] ).getLocalPort();
+        this.redirectPort = redirectServer.getConnectors()[0].getLocalPort();
         log.info( "redirect server port {}", redirectPort );
 
     }
@@ -182,6 +180,8 @@ public class DownloadArtifactsTest
         zipFile.close();
         file.deleteOnExit();
     }
+
+
 
 
     public static class RedirectServlet

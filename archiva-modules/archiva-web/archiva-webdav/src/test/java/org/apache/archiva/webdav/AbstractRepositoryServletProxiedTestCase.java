@@ -32,7 +32,6 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -153,7 +152,7 @@ public abstract class AbstractRepositoryServletProxiedTestCase
 
         repo.server.start();
 
-        int port = ServerConnector.class.cast( repo.server.getConnectors()[0] ).getLocalPort();
+        int port = repo.server.getConnectors()[0].getLocalPort();
         repo.url = "http://localhost:" + port + repo.context;
         log.info( "Remote HTTP Server started on {}", repo.url );
 

@@ -39,7 +39,6 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.junit.After;
 import org.junit.Before;
@@ -168,7 +167,7 @@ public class HttpProxyTransferTest
         server.setHandler( handler );
         server.start();
 
-        int port = ServerConnector.class.cast( server.getConnectors()[0] ).getLocalPort();
+        int port = server.getConnectors()[0].getLocalPort();
 
         NetworkProxyConfiguration proxyConfig = new NetworkProxyConfiguration();
         proxyConfig.setHost( "localhost" );
