@@ -1099,4 +1099,13 @@
     </plugins>
   </build>
 
+  <profiles>
+    <profile>
+      <id>cassandra</id>
+      <properties>
+        <archiva.repositorySessionFactory.id>cassandra</archiva.repositorySessionFactory.id>
+      </properties>
+    </profile>
+  </profiles>
+
 </project>
