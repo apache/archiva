@@ -37,6 +37,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.concurrent.atomic.AtomicInteger;
 
 //import org.apache.commons.io.IOUtils;
@@ -90,7 +91,8 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                Files.copy( largeJar.toPath(), lock.getFile().toPath() );
+                Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING,
+                            StandardCopyOption.COPY_ATTRIBUTES );
             }
             finally
             {
@@ -108,7 +110,8 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                Files.copy( largeJar.toPath(), lock.getFile().toPath() );
+                Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING,
+                            StandardCopyOption.COPY_ATTRIBUTES );
             }
             finally
             {
@@ -144,7 +147,8 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                Files.copy( largeJar.toPath(), lock.getFile().toPath() );
+                Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING,
+                            StandardCopyOption.COPY_ATTRIBUTES );
             }
             finally
             {
@@ -162,7 +166,8 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                Files.copy( largeJar.toPath(), lock.getFile().toPath() );
+                Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING,
+                            StandardCopyOption.COPY_ATTRIBUTES );
             }
             finally
             {
@@ -179,8 +184,7 @@ public class DefaultFileLockManagerTest
             Lock lock = fileLockManager.readFileLock( this.file );
             try
             {
-                Files.copy( lock.getFile().toPath(),
-                            new FileOutputStream( File.createTempFile( "foo", ".jar" ) ) );
+                Files.copy( lock.getFile().toPath(), new FileOutputStream( File.createTempFile( "foo", ".jar" ) ) );
             }
             finally
             {
@@ -198,7 +202,8 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                Files.copy( largeJar.toPath(), lock.getFile().toPath() );
+                Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING,
+                            StandardCopyOption.COPY_ATTRIBUTES );
             }
             finally
             {
@@ -233,7 +238,8 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                Files.copy( largeJar.toPath(), lock.getFile().toPath() );
+                Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING,
+                            StandardCopyOption.COPY_ATTRIBUTES );
             }
             finally
             {
@@ -250,8 +256,7 @@ public class DefaultFileLockManagerTest
             Lock lock = fileLockManager.readFileLock( this.file );
             try
             {
-                Files.copy( lock.getFile().toPath(),
-                            new FileOutputStream( File.createTempFile( "foo", ".jar" ) ) );
+                Files.copy( lock.getFile().toPath(), new FileOutputStream( File.createTempFile( "foo", ".jar" ) ) );
             }
             finally
             {

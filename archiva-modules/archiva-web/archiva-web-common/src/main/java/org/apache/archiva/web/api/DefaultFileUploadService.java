@@ -70,6 +70,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -577,7 +578,8 @@ public class DefaultFileUploadService
         throws IOException
     {
 
-        Files.copy( sourceFile.toPath(), new File( targetPath, targetFilename ).toPath() );
+        Files.copy( sourceFile.toPath(), new File( targetPath, targetFilename ).toPath(), StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.COPY_ATTRIBUTES );
 
         if ( fixChecksums )
         {

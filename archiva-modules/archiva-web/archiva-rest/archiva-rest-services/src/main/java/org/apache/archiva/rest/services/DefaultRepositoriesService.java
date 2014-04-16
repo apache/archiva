@@ -90,6 +90,7 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -530,7 +531,8 @@ public class DefaultRepositoriesService
     private void copyFile( File sourceFile, File targetPath, String targetFilename, boolean fixChecksums )
         throws IOException
     {
-        Files.copy( sourceFile.toPath(), new File( targetPath, targetFilename ).toPath() );
+        Files.copy( sourceFile.toPath(), new File( targetPath, targetFilename ).toPath(), StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.COPY_ATTRIBUTES );
 
         if ( fixChecksums )
         {
