@@ -1015,6 +1015,8 @@
             <cassandra.port>${cassandra.port}</cassandra.port>
             <archiva.repositorySessionFactory.id>${archiva.repositorySessionFactory.id}</archiva.repositorySessionFactory.id>
             <org.apache.sirona.configuration.sirona.properties>${archiva.sirona.configuration}</org.apache.sirona.configuration.sirona.properties>
+            <AsyncLoggerConfig.WaitStrategy>Block</AsyncLoggerConfig.WaitStrategy>
+            <AsyncLogger.WaitStrategy>Block</AsyncLogger.WaitStrategy>
           </systemProperties>
           <additionalClasspathDirs>
             <additionalClasspathDir>${basedir}/src/test/tomcat</additionalClasspathDir>
