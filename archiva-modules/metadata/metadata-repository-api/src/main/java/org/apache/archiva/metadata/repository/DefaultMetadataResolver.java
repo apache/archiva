@@ -301,7 +301,7 @@ public class DefaultMetadataResolver
             exclusions.addAll( namespaces );
 
             Collection<String> storageProjects =
-                repositoryStorage.listProjects( repoId, namespace, new ExcludesFilter<String>( exclusions ) );
+                repositoryStorage.listProjects( repoId, namespace, new ExcludesFilter<>( exclusions ) );
             if ( storageProjects != null && !storageProjects.isEmpty() )
             {
 
