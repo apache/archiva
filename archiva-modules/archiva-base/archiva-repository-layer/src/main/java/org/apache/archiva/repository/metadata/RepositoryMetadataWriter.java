@@ -25,7 +25,6 @@ import org.apache.archiva.xml.XMLException;
 import org.apache.archiva.xml.XMLWriter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -35,6 +34,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -49,10 +49,8 @@ public class RepositoryMetadataWriter
         throws RepositoryMetadataException
     {
         boolean thrown = false;
-        FileWriter writer = null;
-        try
+        try (FileWriter writer = new FileWriter( outputFile ))
         {
-            writer = new FileWriter( outputFile );
             write( metadata, writer );
             writer.flush();
         }
@@ -64,7 +62,6 @@ public class RepositoryMetadataWriter
         }
         finally
         {
-            IOUtils.closeQuietly( writer );
             if ( thrown )
             {
                 FileUtils.deleteQuietly( outputFile );

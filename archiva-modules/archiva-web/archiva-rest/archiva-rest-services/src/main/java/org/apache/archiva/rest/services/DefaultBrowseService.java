@@ -786,15 +786,13 @@ public class DefaultBrowseService
                     // zip entry of the path -> path must a real file entry of the archive
                     JarFile jarFile = new JarFile( file );
                     ZipEntry zipEntry = jarFile.getEntry( path );
-                    InputStream inputStream = jarFile.getInputStream( zipEntry );
-                    try
+                    try (InputStream inputStream = jarFile.getInputStream( zipEntry ))
                     {
                         return new ArtifactContent( IOUtils.toString( inputStream ), repoId );
                     }
                     finally
                     {
                         closeQuietly( jarFile );
-                        IOUtils.closeQuietly( inputStream );
                     }
                 }
                 return new ArtifactContent( FileUtils.readFileToString( file ), repoId );

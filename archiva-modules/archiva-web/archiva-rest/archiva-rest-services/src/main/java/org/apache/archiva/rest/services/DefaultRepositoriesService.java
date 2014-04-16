@@ -78,7 +78,6 @@ import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.slf4j.Logger;
@@ -89,9 +88,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -107,7 +105,7 @@ import java.util.TimeZone;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Service( "repositoriesService#rest" )
+@Service("repositoriesService#rest")
 public class DefaultRepositoriesService
     extends AbstractRestService
     implements RepositoriesService
@@ -115,7 +113,7 @@ public class DefaultRepositoriesService
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "taskExecutor#indexing" )
+    @Named(value = "taskExecutor#indexing")
     private ArchivaIndexingTaskExecutor archivaIndexingTaskExecutor;
 
     @Inject
@@ -134,14 +132,14 @@ public class DefaultRepositoriesService
     private RepositoryContentFactory repositoryFactory;
 
     @Inject
-    @Named( value = "archivaTaskScheduler#repository" )
+    @Named(value = "archivaTaskScheduler#repository")
     private ArchivaTaskScheduler scheduler;
 
     @Inject
     private DownloadRemoteIndexScheduler downloadRemoteIndexScheduler;
 
     @Inject
-    @Named( value = "repositorySessionFactory" )
+    @Named(value = "repositorySessionFactory")
     protected RepositorySessionFactory repositorySessionFactory;
 
     @Inject
@@ -154,7 +152,7 @@ public class DefaultRepositoriesService
      * Cache used for namespaces
      */
     @Inject
-    @Named( value = "cache#namespaces" )
+    @Named(value = "cache#namespaces")
     private Cache<String, Collection<String>> namespacesCache;
 
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
@@ -423,7 +421,8 @@ public class DefaultRepositoriesService
             {
                 throw new ArchivaRestServiceException(
                     "artifact already exists in target repo: " + artifactTransferRequest.getTargetRepositoryId()
-                        + " and redeployment blocked", null );
+                        + " and redeployment blocked", null
+                );
             }
             else
             {
@@ -531,18 +530,7 @@ public class DefaultRepositoriesService
     private void copyFile( File sourceFile, File targetPath, String targetFilename, boolean fixChecksums )
         throws IOException
     {
-        FileOutputStream out = new FileOutputStream( new File( targetPath, targetFilename ) );
-        FileInputStream input = new FileInputStream( sourceFile );
-
-        try
-        {
-            IOUtils.copy( input, out );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( out );
-            IOUtils.closeQuietly( input );
-        }
+        Files.copy( sourceFile.toPath(), new File( targetPath, targetFilename ).toPath() );
 
         if ( fixChecksums )
         {

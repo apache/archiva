@@ -27,9 +27,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,10 +37,8 @@ import java.util.StringTokenizer;
 
 /**
  * MimeTypes
- *
- *
  */
-@Service( "mimeTpes" )
+@Service("mimeTpes")
 public class MimeTypes
 {
     private static final String DEFAULT_MIME_TYPE = "application/octet-stream";
@@ -88,30 +83,6 @@ public class MimeTypes
         load( resource );
     }
 
-    public void load( File file )
-    {
-        if ( !file.exists() || !file.isFile() || !file.canRead() )
-        {
-            log.error( "Unable to load mime types from file " + file.getAbsolutePath() + " : not a readable file." );
-            return;
-        }
-
-        FileInputStream fis = null;
-
-        try
-        {
-            fis = new FileInputStream( file );
-        }
-        catch ( FileNotFoundException e )
-        {
-            log.error( "Unable to load mime types from file " + file.getAbsolutePath() + " : " + e.getMessage(), e );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( fis );
-        }
-    }
-
     public void load( String resourceName )
     {
         ClassLoader cloader = this.getClass().getClassLoader();
@@ -124,20 +95,13 @@ public class MimeTypes
             throw new IllegalStateException( "Unable to find resource " + resourceName );
         }
 
-        InputStream mimeStream = null;
-
-        try
+        try (InputStream mimeStream = mimeURL.openStream())
         {
-            mimeStream = mimeURL.openStream();
             load( mimeStream );
         }
         catch ( IOException e )
         {
             log.error( "Unable to load mime map " + resourceName + " : " + e.getMessage(), e );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( mimeStream );
         }
     }
 

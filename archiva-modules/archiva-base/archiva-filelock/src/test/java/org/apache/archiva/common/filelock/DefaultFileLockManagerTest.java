@@ -21,8 +21,6 @@ package org.apache.archiva.common.filelock;
 
 import edu.umd.cs.mtc.MultithreadedTestCase;
 import edu.umd.cs.mtc.TestFramework;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,10 +33,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicInteger;
+
+//import org.apache.commons.io.IOUtils;
 
 /**
  * @author Olivier Lamy
@@ -89,7 +90,7 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                FileUtils.copyFile( largeJar, lock.getFile() );
+                Files.copy( largeJar.toPath(), lock.getFile().toPath() );
             }
             finally
             {
@@ -107,7 +108,7 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                FileUtils.copyFile( largeJar, lock.getFile() );
+                Files.copy( largeJar.toPath(), lock.getFile().toPath() );
             }
             finally
             {
@@ -124,8 +125,8 @@ public class DefaultFileLockManagerTest
             Lock lock = fileLockManager.readFileLock( this.file );
             try
             {
-                IOUtils.copy( new FileInputStream( lock.getFile() ),
-                              new FileOutputStream( File.createTempFile( "foo", ".jar" ) ) );
+                Files.copy( Paths.get( lock.getFile().getPath() ),
+                            new FileOutputStream( File.createTempFile( "foo", ".jar" ) ) );
             }
             finally
             {
@@ -143,7 +144,7 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                FileUtils.copyFile( largeJar, lock.getFile() );
+                Files.copy( largeJar.toPath(), lock.getFile().toPath() );
             }
             finally
             {
@@ -161,7 +162,7 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                FileUtils.copyFile( largeJar, lock.getFile() );
+                Files.copy( largeJar.toPath(), lock.getFile().toPath() );
             }
             finally
             {
@@ -178,8 +179,8 @@ public class DefaultFileLockManagerTest
             Lock lock = fileLockManager.readFileLock( this.file );
             try
             {
-                IOUtils.copy( new FileInputStream( lock.getFile() ),
-                              new FileOutputStream( File.createTempFile( "foo", ".jar" ) ) );
+                Files.copy( lock.getFile().toPath(),
+                            new FileOutputStream( File.createTempFile( "foo", ".jar" ) ) );
             }
             finally
             {
@@ -197,7 +198,7 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                FileUtils.copyFile( largeJar, lock.getFile() );
+                Files.copy( largeJar.toPath(), lock.getFile().toPath() );
             }
             finally
             {
@@ -214,8 +215,7 @@ public class DefaultFileLockManagerTest
             Lock lock = fileLockManager.readFileLock( this.file );
             try
             {
-                IOUtils.copy( new FileInputStream( lock.getFile() ),
-                              new FileOutputStream( File.createTempFile( "foo", ".jar" ) ) );
+                Files.copy( lock.getFile().toPath(), new FileOutputStream( File.createTempFile( "foo", ".jar" ) ) );
             }
             finally
             {
@@ -233,7 +233,7 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                FileUtils.copyFile( largeJar, lock.getFile() );
+                Files.copy( largeJar.toPath(), lock.getFile().toPath() );
             }
             finally
             {
@@ -250,8 +250,8 @@ public class DefaultFileLockManagerTest
             Lock lock = fileLockManager.readFileLock( this.file );
             try
             {
-                IOUtils.copy( new FileInputStream( lock.getFile() ),
-                              new FileOutputStream( File.createTempFile( "foo", ".jar" ) ) );
+                Files.copy( lock.getFile().toPath(),
+                            new FileOutputStream( File.createTempFile( "foo", ".jar" ) ) );
             }
             finally
             {

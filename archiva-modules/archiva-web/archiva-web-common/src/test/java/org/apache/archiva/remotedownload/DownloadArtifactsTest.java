@@ -21,7 +21,7 @@ package org.apache.archiva.remotedownload;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.redback.rest.api.services.RoleManagementService;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.apache.maven.wagon.repository.Repository;
@@ -42,12 +42,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 
 /**
  * @author Olivier Lamy
@@ -85,8 +84,9 @@ public class DownloadArtifactsTest
     protected String getSpringConfigLocation()
     {
         return "classpath*:META-INF/spring-context.xml classpath*:spring-context-test-common.xml classpath*:spring-context-artifacts-download.xml";
-    }    @Override
+    }
 
+    @Override
 
     @Before
     public void startServer()
@@ -182,8 +182,6 @@ public class DownloadArtifactsTest
     }
 
 
-
-
     public static class RedirectServlet
         extends HttpServlet
     {
@@ -212,7 +210,7 @@ public class DownloadArtifactsTest
             throws ServletException, IOException
         {
             File jar = new File( System.getProperty( "basedir" ), "src/test/junit-4.9.jar" );
-            IOUtils.copy( new FileInputStream( jar ), resp.getOutputStream() );
+            Files.copy( jar.toPath(), resp.getOutputStream() );
 
         }
     }

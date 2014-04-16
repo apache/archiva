@@ -37,15 +37,15 @@ import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,6 +60,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
+
+//import org.apache.commons.io.IOUtils;
 
 public class FileMetadataRepository
     implements MetadataRepository
@@ -575,7 +577,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public <T>T obtainAccess( Class<T> aClass )
+    public <T> T obtainAccess( Class<T> aClass )
     {
         throw new IllegalArgumentException(
             "Access using " + aClass + " is not supported on the file metadata storage" );
@@ -647,7 +649,8 @@ public class FileMetadataRepository
 
         File directory = new File( getDirectory( artifactMetadata.getRepositoryId() ),
                                    artifactMetadata.getNamespace() + "/" + artifactMetadata.getProject() + "/"
-                                       + baseVersion );
+                                       + baseVersion
+        );
 
         Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
@@ -870,15 +873,10 @@ public class FileMetadataRepository
         throws IOException
     {
         Properties properties = new Properties();
-        FileInputStream in = null;
-        try
+        try (InputStream in = Files.newInputStream( new File( directory, propertiesKey + ".properties" ).toPath() ))
         {
-            in = new FileInputStream( new File( directory, propertiesKey + ".properties" ) );
+
             properties.load( in );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( in );
         }
         return properties;
     }
@@ -1240,14 +1238,9 @@ public class FileMetadataRepository
         throws IOException
     {
         directory.mkdirs();
-        FileOutputStream os = new FileOutputStream( new File( directory, propertiesKey + ".properties" ) );
-        try
+        try (OutputStream os = Files.newOutputStream( new File( directory, propertiesKey + ".properties" ).toPath() ))
         {
             properties.store( os, null );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( os );
         }
     }
 

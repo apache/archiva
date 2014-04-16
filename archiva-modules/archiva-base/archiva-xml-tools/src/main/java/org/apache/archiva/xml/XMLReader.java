@@ -19,7 +19,6 @@ package org.apache.archiva.xml;
  * under the License.
  */
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -44,9 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * XMLReader - a set of common xml utility methods for reading content out of an xml file. 
- *
- *
+ * XMLReader - a set of common xml utility methods for reading content out of an xml file.
  */
 public class XMLReader
 {
@@ -98,12 +95,10 @@ public class XMLReader
         this.documentType = type;
         this.xmlUrl = url;
 
-        InputStream in = null;
         SAXReader reader = new SAXReader();
-        
-        try
+
+        try (InputStream in = url.openStream())
         {
-            in = url.openStream();
             InputStreamReader inReader = new InputStreamReader( in, "UTF-8" );
             LatinEntityResolutionReader latinReader = new LatinEntityResolutionReader( inReader );
             this.document = reader.read( latinReader );
@@ -116,10 +111,6 @@ public class XMLReader
         {
             throw new XMLException( "Unable to open stream to " + url + ": " + e.getMessage(), e );
         }
-        finally
-        {
-            IOUtils.closeQuietly( in );
-        }
 
         Element root = this.document.getRootElement();
         if ( root == null )
@@ -129,8 +120,9 @@ public class XMLReader
 
         if ( !StringUtils.equals( root.getName(), documentType ) )
         {
-            throw new XMLException( "Invalid " + documentType + " xml: Unexpected root element <" + root.getName()
-                + ">, expected <" + documentType + ">" );
+            throw new XMLException(
+                "Invalid " + documentType + " xml: Unexpected root element <" + root.getName() + ">, expected <"
+                    + documentType + ">" );
         }
     }
 
@@ -164,7 +156,7 @@ public class XMLReader
         {
             // Unknown evaluated type.
             throw new XMLException( ".getElement( Expr: " + xpathExpr + " ) resulted in non-Element type -> ("
-                + evaluated.getClass().getName() + ") " + evaluated );
+                                        + evaluated.getClass().getName() + ") " + evaluated );
         }
     }
 
@@ -246,8 +238,8 @@ public class XMLReader
         else
         {
             // Unknown evaluated type.
-            throw new XMLException( ".getElementText( Node, Expr: " + xpathExpr
-                + " ) resulted in non-Element type -> (" + evaluated.getClass().getName() + ") " + evaluated );
+            throw new XMLException( ".getElementText( Node, Expr: " + xpathExpr + " ) resulted in non-Element type -> ("
+                                        + evaluated.getClass().getName() + ") " + evaluated );
         }
     }
 
@@ -271,7 +263,7 @@ public class XMLReader
         {
             // Unknown evaluated type.
             throw new XMLException( ".getElementText( Expr: " + xpathExpr + " ) resulted in non-Element type -> ("
-                + evaluated.getClass().getName() + ") " + evaluated );
+                                        + evaluated.getClass().getName() + ") " + evaluated );
         }
     }
 
@@ -306,7 +298,7 @@ public class XMLReader
         {
             // Unknown evaluated type.
             throw new XMLException( ".getElementList( Expr: " + xpathExpr + " ) resulted in non-List type -> ("
-                + evaluated.getClass().getName() + ") " + evaluated );
+                                        + evaluated.getClass().getName() + ") " + evaluated );
         }
     }
 

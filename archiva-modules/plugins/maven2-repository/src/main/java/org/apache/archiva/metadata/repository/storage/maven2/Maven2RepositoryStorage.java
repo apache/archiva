@@ -573,8 +573,6 @@ public class Maven2RepositoryStorage
         // scan all directories in the namespace, and only include those that are known to be projects
         List<String> projects = new ArrayList<>();
 
-
-
         File[] files = dir.listFiles( new DirectoryFilter( filter ) );
         if ( files != null )
         {

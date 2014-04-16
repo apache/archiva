@@ -60,17 +60,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -540,14 +539,10 @@ public class DefaultFileUploadService
 
         File pomFile = new File( targetPath, filename );
         MavenXpp3Writer writer = new MavenXpp3Writer();
-        FileWriter w = new FileWriter( pomFile );
-        try
+
+        try (FileWriter w = new FileWriter( pomFile ))
         {
             writer.write( w, projectModel );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( w );
         }
 
         return pomFile;
@@ -581,20 +576,8 @@ public class DefaultFileUploadService
     private void copyFile( File sourceFile, File targetPath, String targetFilename, boolean fixChecksums )
         throws IOException
     {
-        FileOutputStream out = null;
-        FileInputStream input = null;
 
-        try
-        {
-            out = new FileOutputStream( new File( targetPath, targetFilename ) );
-            input = new FileInputStream( sourceFile );
-            IOUtils.copy( input, out );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( out );
-            IOUtils.closeQuietly( input );
-        }
+        Files.copy( sourceFile.toPath(), new File( targetPath, targetFilename ).toPath() );
 
         if ( fixChecksums )
         {

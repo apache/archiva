@@ -19,11 +19,6 @@ package org.apache.archiva.common.filelock;
  * under the License.
  */
 
-import edu.umd.cs.mtc.MultithreadedTestCase;
-import edu.umd.cs.mtc.TestFramework;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,10 +30,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 /**
  * @author Olivier Lamy
@@ -64,18 +57,20 @@ public class DefaultFileLockManagerTimeoutTest
         fileLockManager.clearLockFiles();
     }
 
-    @Test( expected = FileLockTimeoutException.class )
+    @Test(expected = FileLockTimeoutException.class)
     public void testTimeout()
         throws Throwable
     {
 
         File file = new File( System.getProperty( "buildDirectory" ), "foo.txt" );
 
+        Files.deleteIfExists( file.toPath() );
+
         File largeJar = new File( System.getProperty( "basedir" ), "src/test/cassandra-all-2.0.3.jar" );
 
         Lock lock = fileLockManager.writeFileLock( file );
 
-        FileUtils.copyFile( largeJar, lock.getFile() );
+        Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING );
 
         lock = fileLockManager.writeFileLock( file );
 

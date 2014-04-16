@@ -65,9 +65,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,7 +135,8 @@ public class ArchivaDavResource
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepository repository,
                                String remoteAddr, String principal, DavSession session,
                                ArchivaDavResourceLocator locator, DavResourceFactory factory, MimeTypes mimeTypes,
-                               List<AuditListener> auditListeners, RepositoryArchivaTaskScheduler scheduler , FileLockManager fileLockManager )
+                               List<AuditListener> auditListeners, RepositoryArchivaTaskScheduler scheduler,
+                               FileLockManager fileLockManager )
     {
         this( localResource, logicalResource, repository, session, locator, factory, mimeTypes, auditListeners,
               scheduler, fileLockManager );
@@ -218,17 +220,9 @@ public class ArchivaDavResource
             if ( !isCollection() && outputContext.hasStream() )
             {
                 Lock lock = fileLockManager.readFileLock( localResource );
-                FileInputStream is = null;
-                try
+                try (InputStream is = Files.newInputStream( lock.getFile().toPath() ))
                 {
-                    // Write content to stream
-                    is = new FileInputStream( lock.getFile() );
                     IOUtils.copy( is, outputContext.getOutputStream() );
-                }
-                finally
-                {
-                    IOUtils.closeQuietly( is );
-                    fileLockManager.release( lock );
                 }
             }
             else if ( outputContext.hasStream() )
@@ -283,7 +277,7 @@ public class ArchivaDavResource
         return null;
     }
 
-    @SuppressWarnings ("unchecked")
+    @SuppressWarnings("unchecked")
     @Override
     public MultiStatusResponse alterProperties( List changeList )
         throws DavException
@@ -325,19 +319,13 @@ public class ArchivaDavResource
 
         if ( isCollection() && inputContext.hasStream() ) // New File
         {
-            FileOutputStream stream = null;
-            try
+            try (OutputStream stream = Files.newOutputStream( localFile.toPath() ))
             {
-                stream = new FileOutputStream( localFile );
                 IOUtils.copy( inputContext.getInputStream(), stream );
             }
             catch ( IOException e )
             {
                 throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
-            }
-            finally
-            {
-                IOUtils.closeQuietly( stream );
             }
 
             // TODO: a bad deployment shouldn't delete an existing file - do we need to write to a temporary location first?
