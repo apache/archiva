@@ -725,12 +725,9 @@ public class DefaultBrowseService
 
         List<Artifact> artifactDownloadInfos = new ArrayList<>();
 
-        RepositorySession session = repositorySessionFactory.createSession();
-
-        MetadataResolver metadataResolver = session.getResolver();
-
-        try
+        try (RepositorySession session = repositorySessionFactory.createSession())
         {
+            MetadataResolver metadataResolver = session.getResolver();
             for ( String repoId : selectedRepos )
             {
                 List<ArtifactMetadata> artifacts = new ArrayList<>(
@@ -747,13 +744,6 @@ public class DefaultBrowseService
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
-        }
-        finally
-        {
-            if ( session != null )
-            {
-                session.closeQuietly();
-            }
         }
 
         return artifactDownloadInfos;

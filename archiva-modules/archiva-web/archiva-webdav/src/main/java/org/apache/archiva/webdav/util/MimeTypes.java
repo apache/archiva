@@ -19,7 +19,6 @@ package org.apache.archiva.webdav.util;
  * under the License.
  */
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +37,7 @@ import java.util.StringTokenizer;
 /**
  * MimeTypes
  */
-@Service("mimeTpes")
+@Service( "mimeTpes" )
 public class MimeTypes
 {
     private static final String DEFAULT_MIME_TYPE = "application/octet-stream";
@@ -109,39 +108,38 @@ public class MimeTypes
     {
         mimeMap.clear();
 
-        InputStreamReader reader = null;
-        BufferedReader buf = null;
-
-        try
+        try (InputStreamReader reader = new InputStreamReader( mimeStream ))
         {
-            reader = new InputStreamReader( mimeStream );
-            buf = new BufferedReader( reader );
-            String line = null;
-
-            while ( ( line = buf.readLine() ) != null )
+            try (BufferedReader buf = new BufferedReader( reader ))
             {
-                line = line.trim();
 
-                if ( line.length() == 0 )
-                {
-                    // empty line. skip it
-                    continue;
-                }
+                String line = null;
 
-                if ( line.startsWith( "#" ) )
+                while ( ( line = buf.readLine() ) != null )
                 {
-                    // Comment. skip it
-                    continue;
-                }
+                    line = line.trim();
 
-                StringTokenizer tokenizer = new StringTokenizer( line );
-                if ( tokenizer.countTokens() > 1 )
-                {
-                    String type = tokenizer.nextToken();
-                    while ( tokenizer.hasMoreTokens() )
+                    if ( line.length() == 0 )
                     {
-                        String extension = tokenizer.nextToken().toLowerCase();
-                        this.mimeMap.put( extension, type );
+                        // empty line. skip it
+                        continue;
+                    }
+
+                    if ( line.startsWith( "#" ) )
+                    {
+                        // Comment. skip it
+                        continue;
+                    }
+
+                    StringTokenizer tokenizer = new StringTokenizer( line );
+                    if ( tokenizer.countTokens() > 1 )
+                    {
+                        String type = tokenizer.nextToken();
+                        while ( tokenizer.hasMoreTokens() )
+                        {
+                            String extension = tokenizer.nextToken().toLowerCase();
+                            this.mimeMap.put( extension, type );
+                        }
                     }
                 }
             }
@@ -149,11 +147,6 @@ public class MimeTypes
         catch ( IOException e )
         {
             log.error( "Unable to read mime types from input stream : " + e.getMessage(), e );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( buf );
-            IOUtils.closeQuietly( reader );
         }
     }
 
