@@ -57,7 +57,23 @@
 
   <filter-mapping>
     <filter-name>encodingFilter</filter-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/js/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>/css/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>/feeds/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>/restServices/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>encodingFilter</filter-name>
+    <url-pattern>*.html</url-pattern>
   </filter-mapping>
 
   <listener>
