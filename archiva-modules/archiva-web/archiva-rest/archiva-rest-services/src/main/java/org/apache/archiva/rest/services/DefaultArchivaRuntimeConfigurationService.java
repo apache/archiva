@@ -86,7 +86,7 @@ public class DefaultArchivaRuntimeConfigurationService
             if ( fileLockConfiguration != null )
             {
                 fileLockManager.setTimeout( fileLockConfiguration.getLockingTimeout() );
-                fileLockConfiguration.setSkipLocking( fileLockConfiguration.isSkipLocking() );
+                fileLockManager.setSkipLocking( fileLockConfiguration.isSkipLocking() );
             }
 
 
