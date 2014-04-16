@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -75,7 +77,7 @@ public class ChecksummedFile
         throws IOException
     {
 
-        try (FileInputStream fis = new FileInputStream( referenceFile ))
+        try (InputStream fis = Files.newInputStream( referenceFile.toPath() ) )
         {
             Checksum checksum = new Checksum( checksumAlgorithm );
             checksum.update( fis );
@@ -139,7 +141,7 @@ public class ChecksummedFile
     public boolean isValidChecksums( ChecksumAlgorithm algorithms[] )
     {
 
-        try (FileInputStream fis = new FileInputStream( referenceFile ))
+        try (InputStream fis = Files.newInputStream( referenceFile.toPath() ))
         {
             List<Checksum> checksums = new ArrayList<>( algorithms.length );
             // Create checksum object for each algorithm.
@@ -228,7 +230,7 @@ public class ChecksummedFile
         }
 
 
-        try (FileInputStream fis = new FileInputStream( referenceFile ))
+        try (InputStream fis = Files.newInputStream( referenceFile.toPath() ))
         {
             // Parse file once, for all checksums.
             Checksum.update( checksums, fis );

@@ -22,6 +22,7 @@ package org.apache.archiva.configuration;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
@@ -48,7 +49,7 @@ public class MavenProxyPropertyLoaderTest
         proxy.setHost( "original-host" );
         configuration.addNetworkProxy( proxy ); // overwritten
 
-        loader.load( new FileInputStream( confFile ), configuration );
+        loader.load( Files.newInputStream(confFile.toPath()), configuration );
 
         Map<String, ManagedRepositoryConfiguration> repositoryIdMap = configuration.getManagedRepositoriesAsMap();
         assertEquals( "Count repositories", 1, repositoryIdMap.size() );

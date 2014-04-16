@@ -56,6 +56,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -135,7 +136,8 @@ public class DownloadRemoteIndexTask
 
             final StreamWagon wagon = (StreamWagon) wagonFactory.getWagon(
                 new WagonFactoryRequest( wagonProtocol, this.remoteRepository.getExtraHeaders() ).networkProxy(
-                    this.networkProxy ) );
+                    this.networkProxy )
+            );
             // FIXME olamy having 2 config values
             wagon.setReadTimeout( remoteRepository.getRemoteDownloadTimeout() * 1000 );
             wagon.setTimeout( remoteRepository.getTimeout() * 1000 );
@@ -345,13 +347,10 @@ public class DownloadRemoteIndexTask
             {
                 log.info( "index update retrieve file, name:{}", name );
                 File file = new File( tempIndexDirectory, name );
-                if ( file.exists() )
-                {
-                    file.delete();
-                }
+                Files.deleteIfExists( file.toPath() );
                 file.deleteOnExit();
                 wagon.get( addParameters( name, this.remoteRepository ), file );
-                return new FileInputStream( file );
+                return Files.newInputStream( file.toPath() );
             }
             catch ( AuthorizationException e )
             {

@@ -43,6 +43,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -259,7 +261,7 @@ public class ArchivaCli
 
         Properties p = new Properties();
 
-        try (FileInputStream fis = new FileInputStream( properties ))
+        try (InputStream fis = Files.newInputStream( Paths.get(properties)))
         {
             p.load( fis );
         }
