@@ -161,7 +161,7 @@ public class DefaultBrowseService
     {
         List<String> selectedRepos = getSelectedRepos( repositoryId );
 
-        Set<String> projects = new LinkedHashSet<String>();
+        Set<String> projects = new LinkedHashSet<>();
 
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         Set<String> namespaces;
@@ -169,7 +169,7 @@ public class DefaultBrowseService
         {
             MetadataResolver metadataResolver = repositorySession.getResolver();
 
-            Set<String> namespacesToCollapse = new LinkedHashSet<String>();
+            Set<String> namespacesToCollapse = new LinkedHashSet<>();
             for ( String repoId : selectedRepos )
             {
                 namespacesToCollapse.addAll( metadataResolver.resolveNamespaces( repositorySession, repoId, groupId ) );
@@ -180,7 +180,7 @@ public class DefaultBrowseService
             // TODO: this logic should be optional, particularly remembering we want to keep this code simple
             // it is located here to avoid the content repository implementation needing to do too much for what
             // is essentially presentation code
-            namespaces = new LinkedHashSet<String>();
+            namespaces = new LinkedHashSet<>();
             for ( String n : namespacesToCollapse )
             {
                 // TODO: check performance of this

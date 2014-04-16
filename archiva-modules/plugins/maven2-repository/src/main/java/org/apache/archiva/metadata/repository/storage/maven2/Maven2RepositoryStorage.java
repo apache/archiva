@@ -87,6 +87,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -571,6 +572,9 @@ public class Maven2RepositoryStorage
 
         // scan all directories in the namespace, and only include those that are known to be projects
         List<String> projects = new ArrayList<>();
+
+
+
         File[] files = dir.listFiles( new DirectoryFilter( filter ) );
         if ( files != null )
         {
