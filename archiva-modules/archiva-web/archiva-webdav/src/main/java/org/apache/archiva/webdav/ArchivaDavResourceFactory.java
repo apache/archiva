@@ -19,7 +19,6 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.google.common.io.Files;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
@@ -106,6 +105,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -1343,7 +1343,7 @@ public class ArchivaDavResourceFactory
             log.info( "generate temporary merged index for repository group '{}' for repositories '{}'",
                       repositoryGroupConfiguration.getId(), authzRepos );
 
-            File tempRepoFile = Files.createTempDir();
+            File tempRepoFile = Files.createTempDirectory("temp").toFile();
             tempRepoFile.deleteOnExit();
 
             IndexMergerRequest indexMergerRequest =
@@ -1374,6 +1374,9 @@ public class ArchivaDavResourceFactory
             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
         }
         catch ( IndexMergerException e )
+        {
+            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
+        } catch ( IOException e )
         {
             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
         }

@@ -19,7 +19,6 @@ package org.apache.archiva.remotedownload;
  * under the License.
  */
 
-import com.google.common.io.Files;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.commons.io.FileUtils;
@@ -34,6 +33,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
+import java.nio.file.Files;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -102,7 +102,7 @@ public class RemoteRepositoryConnectivityCheckTest
         throws Exception
     {
 
-        File tmpDir = Files.createTempDir();
+        File tmpDir = Files.createTempDirectory( "test" ).toFile();
         Server repoServer = buildStaticServer( tmpDir );
         repoServer.start();
 

@@ -19,7 +19,6 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import com.google.common.io.Files;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.ProxyConnectorRuleType;
@@ -87,6 +86,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -99,7 +99,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * DefaultRepositoryProxyConnectors
- *
+ * <p/>
  * TODO exception handling needs work - "not modified" is not really an exceptional case, and it has more layers than
  * your average brown onion
  */
@@ -148,7 +148,7 @@ public class DefaultRepositoryProxyConnectors
     private NetworkProxyAdmin networkProxyAdmin;
 
     @Inject
-    @Named( value = "fileLockManager#default" )
+    @Named(value = "fileLockManager#default")
     private FileLockManager fileLockManager;
 
     @PostConstruct
@@ -283,8 +283,7 @@ public class DefaultRepositoryProxyConnectors
                                                                            String targetRepository,
                                                                            List<ProxyConnectorRuleConfiguration> all )
     {
-        List<ProxyConnectorRuleConfiguration> proxyConnectorRuleConfigurations =
-            new ArrayList<>();
+        List<ProxyConnectorRuleConfiguration> proxyConnectorRuleConfigurations = new ArrayList<>();
 
         for ( ProxyConnectorRuleConfiguration proxyConnectorRuleConfiguration : all )
         {
@@ -430,7 +429,8 @@ public class DefaultRepositoryProxyConnectors
                 log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ),
                            "Transfer error from repository \"" + targetRepository.getRepository().getId()
                                + "\" for resource " + path + ", continuing to next repository. Error message: {}",
-                           e.getMessage(), e );
+                           e.getMessage(), e
+                );
             }
             catch ( RepositoryAdminException e )
             {
@@ -1067,7 +1067,15 @@ public class DefaultRepositoryProxyConnectors
      */
     private File createWorkingDirectory( ManagedRepositoryContent repository )
     {
-        return Files.createTempDir();
+        try
+        {
+            return Files.createTempDirectory( "temp" ).toFile();
+        }
+        catch ( IOException e )
+        {
+            throw new RuntimeException( e.getMessage(), e );
+        }
+
     }
 
     /**
@@ -1120,10 +1128,12 @@ public class DefaultRepositoryProxyConnectors
                     FileUtils.deleteQuietly( temp );
                 }
             }
-        } catch( FileLockException e)
+        }
+        catch ( FileLockException e )
         {
             throw new ProxyException( e.getMessage(), e );
-        } catch (FileLockTimeoutException e)
+        }
+        catch ( FileLockTimeoutException e )
         {
             throw new ProxyException( e.getMessage(), e );
         }

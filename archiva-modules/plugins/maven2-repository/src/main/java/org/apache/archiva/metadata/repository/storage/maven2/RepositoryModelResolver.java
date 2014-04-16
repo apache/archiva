@@ -19,7 +19,6 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import com.google.common.io.Files;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
@@ -53,6 +52,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -177,8 +177,8 @@ public class RepositoryModelResolver
                     int buildNumber = snapshotVersion.getBuildNumber();
                     String snapshotPath =
                         StringUtils.replaceChars( groupId, '.', '/' ) + '/' + artifactId + '/' + version + '/'
-                            + artifactId + '-' + StringUtils.remove( version, "-" + VersionUtil.SNAPSHOT )
-                            + '-' + lastVersion + '-' + buildNumber + ".pom";
+                            + artifactId + '-' + StringUtils.remove( version, "-" + VersionUtil.SNAPSHOT ) + '-'
+                            + lastVersion + '-' + buildNumber + ".pom";
 
                     log.debug( "use snapshot path {} for maven coordinate {}:{}:{}", snapshotPath, groupId, artifactId,
                                version );
@@ -220,7 +220,7 @@ public class RepositoryModelResolver
     private boolean getModelFromProxy( RemoteRepository remoteRepository, String groupId, String artifactId,
                                        String version, String filename )
         throws AuthorizationException, TransferFailedException, ResourceDoesNotExistException, WagonFactoryException,
-        XMLException
+        XMLException, IOException
     {
         boolean success = false;
         File tmpMd5 = null;
@@ -240,7 +240,8 @@ public class RepositoryModelResolver
 
                 wagon = wagonFactory.getWagon(
                     new WagonFactoryRequest( "wagon#" + protocol, remoteRepository.getExtraHeaders() ).networkProxy(
-                        networkProxy ) );
+                        networkProxy )
+                );
 
                 if ( wagon == null )
                 {
@@ -439,8 +440,9 @@ public class RepositoryModelResolver
     }
 
     private File createWorkingDirectory( String targetRepository )
+        throws IOException
     {
-        return Files.createTempDir();
+        return Files.createTempDirectory( "temp" ).toFile();
     }
 
     private void moveFileIfExists( File fileToMove, File directory )

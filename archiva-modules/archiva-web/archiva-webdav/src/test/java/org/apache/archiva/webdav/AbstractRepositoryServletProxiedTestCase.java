@@ -21,9 +21,6 @@ package org.apache.archiva.webdav;
 
 
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.WebResponse;
-import com.google.common.io.Files;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.policies.CachedFailuresPolicy;
@@ -36,17 +33,18 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.Before;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * AbstractRepositoryServletProxiedTestCase
- *
  */
 public abstract class AbstractRepositoryServletProxiedTestCase
     extends AbstractRepositoryServletTestCase
@@ -121,7 +119,8 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         RemoteRepoInfo repo = new RemoteRepoInfo();
         repo.id = id;
         repo.context = "/" + id;
-        repo.root = Files.createTempDir();// new File( System.getProperty( "basedir" ) + "target/remote-repos/" + id + "/" );
+        repo.root = Files.createTempDirectory(
+            "temp" ).toFile();// new File( System.getProperty( "basedir" ) + "target/remote-repos/" + id + "/" );
 
         // Remove exising root contents.
         if ( repo.root.exists() )
@@ -213,12 +212,12 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         throws Exception
     {
         File destFile = new File( remoteRepo.root, path );
-        if (destFile.exists())
+        if ( destFile.exists() )
         {
             destFile.delete();
         }
         destFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( destFile, contents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( destFile, contents, Charset.defaultCharset() );
         return destFile;
     }
 
@@ -259,7 +258,6 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         throws Exception
     {
         remoteSnapshots = createServer( "snapshots" );
-
 
         assertServerSetupCorrectly( remoteSnapshots );
         RemoteRepositoryConfiguration remoteRepositoryConfiguration =
