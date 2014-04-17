@@ -56,7 +56,7 @@ public abstract class AbstractLegacyRepositoryContent
      *
      */
     @Inject
-    @Named( value = "pathParser#legacy" )
+    @Named( "pathParser#legacy" )
     private PathParser legacyPathParser;
 
     public ArtifactReference toArtifactReference( String path )

@@ -84,7 +84,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Reader;
@@ -130,7 +129,7 @@ public class Maven2RepositoryStorage
     private NetworkProxyAdmin networkProxyAdmin;
 
     @Inject
-    @Named( value = "repositoryPathTranslator#maven2" )
+    @Named( "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
     @Inject
@@ -140,7 +139,7 @@ public class Maven2RepositoryStorage
     private ApplicationContext applicationContext;
 
     @Inject
-    @Named( value = "pathParser#default" )
+    @Named( "pathParser#default" )
     private PathParser pathParser;
 
     private static final String METADATA_FILENAME_START = "maven-metadata";
@@ -649,14 +648,6 @@ public class Maven2RepositoryStorage
         return metadata;
     }
 
-    /**
-     * A relocation capable client will request the POM prior to the artifact, and will then read meta-data and do
-     * client side relocation. A simplier client (like maven 1) will only request the artifact and not use the
-     * metadatas.
-     * <p>
-     * For such clients, archiva does server-side relocation by reading itself the &lt;relocation&gt; element in
-     * metadatas and serving the expected artifact.
-     */
     @Override
     public void applyServerSideRelocation( ManagedRepositoryContent managedRepository, ArtifactReference artifact )
         throws ProxyDownloadException

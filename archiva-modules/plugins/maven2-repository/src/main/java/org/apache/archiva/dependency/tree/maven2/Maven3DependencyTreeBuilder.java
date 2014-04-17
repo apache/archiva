@@ -92,7 +92,7 @@ public class Maven3DependencyTreeBuilder
     private PlexusSisuBridge plexusSisuBridge;
 
     @Inject
-    @Named(value = "repositoryPathTranslator#maven2")
+    @Named( "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
     @Inject

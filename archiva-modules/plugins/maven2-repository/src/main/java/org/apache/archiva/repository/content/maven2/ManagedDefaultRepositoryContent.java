@@ -54,7 +54,7 @@ public class ManagedDefaultRepositoryContent
     implements ManagedRepositoryContent
 {
     @Inject
-    @Named (value = "fileTypes")
+    @Named ( "fileTypes" )
     private FileTypes filetypes;
 
     private ManagedRepository repository;
@@ -182,20 +182,17 @@ public class ManagedDefaultRepositoryContent
                 "Unable to get related artifacts using a non-directory: " + repoDir.getAbsolutePath() );
         }
 
-        Set<ArtifactReference> foundArtifacts = new HashSet<ArtifactReference>();
+        Set<ArtifactReference> foundArtifacts = new HashSet<>();
 
         // First gather up the versions found as artifacts in the managed repository.
         File repoFiles[] = repoDir.listFiles();
-        for ( int i = 0; i < repoFiles.length; i++ )
+        for (File repoFile : repoFiles) 
         {
-            if ( repoFiles[i].isDirectory() )
-            {
+            if (repoFile.isDirectory()) {
                 // Skip it. it's a directory.
                 continue;
             }
-
-            String relativePath = PathUtil.getRelative( repository.getLocation(), repoFiles[i] );
-
+            String relativePath = PathUtil.getRelative(repository.getLocation(), repoFile);
             if ( filetypes.matchesArtifactPattern( relativePath ) )
             {
                 try
@@ -204,7 +201,7 @@ public class ManagedDefaultRepositoryContent
 
                     // Test for related, groupId / artifactId / version must match.
                     if ( artifact.getGroupId().equals( reference.getGroupId() ) && artifact.getArtifactId().equals(
-                        reference.getArtifactId() ) && artifact.getVersion().equals( reference.getVersion() ) )
+                            reference.getArtifactId() ) && artifact.getVersion().equals( reference.getVersion() ) )
                     {
                         foundArtifacts.add( artifact );
                     }
@@ -265,24 +262,21 @@ public class ManagedDefaultRepositoryContent
                 "Unable to get Versions on a non-directory: " + repoDir.getAbsolutePath() );
         }
 
-        Set<String> foundVersions = new HashSet<String>();
+        Set<String> foundVersions = new HashSet<>();
         VersionedReference versionRef = new VersionedReference();
         versionRef.setGroupId( reference.getGroupId() );
         versionRef.setArtifactId( reference.getArtifactId() );
 
         File repoFiles[] = repoDir.listFiles();
-        for ( int i = 0; i < repoFiles.length; i++ )
+        for (File repoFile : repoFiles) 
         {
-            if ( !repoFiles[i].isDirectory() )
-            {
+            if (!repoFile.isDirectory()) {
                 // Skip it. not a directory.
                 continue;
             }
-
             // Test if dir has an artifact, which proves to us that it is a valid version directory.
-            String version = repoFiles[i].getName();
+            String version = repoFile.getName();
             versionRef.setVersion( version );
-
             if ( hasArtifact( versionRef ) )
             {
                 // Found an artifact, must be a valid version.
@@ -319,26 +313,22 @@ public class ManagedDefaultRepositoryContent
                 "Unable to get versions on a non-directory: " + repoDir.getAbsolutePath() );
         }
 
-        Set<String> foundVersions = new HashSet<String>();
+        Set<String> foundVersions = new HashSet<>();
 
         // First gather up the versions found as artifacts in the managed repository.
         File repoFiles[] = repoDir.listFiles();
-        for ( int i = 0; i < repoFiles.length; i++ )
+        for (File repoFile : repoFiles) 
         {
-            if ( repoFiles[i].isDirectory() )
-            {
+            if (repoFile.isDirectory()) {
                 // Skip it. it's a directory.
                 continue;
             }
-
-            String relativePath = PathUtil.getRelative( repository.getLocation(), repoFiles[i] );
-
+            String relativePath = PathUtil.getRelative(repository.getLocation(), repoFile);
             if ( filetypes.matchesDefaultExclusions( relativePath ) )
             {
                 // Skip it, it's metadata or similar
                 continue;
             }
-
             if ( filetypes.matchesArtifactPattern( relativePath ) )
             {
                 try
@@ -372,11 +362,7 @@ public class ManagedDefaultRepositoryContent
             Set<String> versions = getVersions( reference );
             return !versions.isEmpty();
         }
-        catch ( ContentNotFoundException e )
-        {
-            return false;
-        }
-        catch ( LayoutException e )
+        catch ( ContentNotFoundException | LayoutException e )
         {
             return false;
         }
@@ -389,11 +375,7 @@ public class ManagedDefaultRepositoryContent
         {
             return ( getFirstArtifact( reference ) != null );
         }
-        catch ( IOException e )
-        {
-            return false;
-        }
-        catch ( LayoutException e )
+        catch ( IOException | LayoutException e )
         {
             return false;
         }
@@ -470,16 +452,13 @@ public class ManagedDefaultRepositoryContent
         }
 
         File repoFiles[] = repoDir.listFiles();
-        for ( int i = 0; i < repoFiles.length; i++ )
+        for (File repoFile : repoFiles) 
         {
-            if ( repoFiles[i].isDirectory() )
-            {
+            if (repoFile.isDirectory()) {
                 // Skip it. it's a directory.
                 continue;
             }
-
-            String relativePath = PathUtil.getRelative( repository.getLocation(), repoFiles[i] );
-
+            String relativePath = PathUtil.getRelative(repository.getLocation(), repoFile);
             if ( filetypes.matchesArtifactPattern( relativePath ) )
             {
                 ArtifactReference artifact = toArtifactReference( relativePath );

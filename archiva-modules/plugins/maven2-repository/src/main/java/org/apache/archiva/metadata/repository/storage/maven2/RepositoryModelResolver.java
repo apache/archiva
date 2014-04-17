@@ -403,12 +403,7 @@ public class RepositoryModelResolver
             }
             connected = true;
         }
-        catch ( ConnectionException e )
-        {
-            log.error( "Could not connect to {}:{} ", remoteRepository.getName(), e.getMessage() );
-            connected = false;
-        }
-        catch ( AuthenticationException e )
+        catch ( ConnectionException | AuthenticationException e )
         {
             log.error( "Could not connect to {}:{} ", remoteRepository.getName(), e.getMessage() );
             connected = false;
