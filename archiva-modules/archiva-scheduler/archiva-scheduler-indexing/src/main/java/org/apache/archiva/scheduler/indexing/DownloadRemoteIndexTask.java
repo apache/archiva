@@ -50,7 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -352,11 +351,7 @@ public class DownloadRemoteIndexTask
                 wagon.get( addParameters( name, this.remoteRepository ), file );
                 return Files.newInputStream( file.toPath() );
             }
-            catch ( AuthorizationException e )
-            {
-                throw new IOException( e.getMessage(), e );
-            }
-            catch ( TransferFailedException e )
+            catch ( AuthorizationException | TransferFailedException e )
             {
                 throw new IOException( e.getMessage(), e );
             }

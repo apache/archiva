@@ -60,24 +60,12 @@ public class ValidateChecksumConsumer
 
     private static final String CHECKSUM_IO_ERROR = "checksum-io-error";
 
-    /**
-     * default-value="validate-checksums"
-     */
     private String id = "validate-checksums";
 
-    /**
-     * default-value="Validate checksums against file."
-     */
     private String description = "Validate checksums against file.";
 
-    /**
-     *
-     */
     private ChecksumFile checksum;
 
-    /**
-     *
-     */
     private List<Digester> allDigesters;
 
     @Inject

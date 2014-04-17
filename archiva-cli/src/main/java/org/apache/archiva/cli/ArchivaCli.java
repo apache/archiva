@@ -38,8 +38,6 @@ import org.apache.maven.artifact.manager.WagonManager;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -255,7 +253,7 @@ public class ArchivaCli
     }
 
     private void doConversion( String properties )
-        throws FileNotFoundException, IOException, RepositoryConversionException, PlexusSisuBridgeException
+        throws IOException, RepositoryConversionException, PlexusSisuBridgeException
     {
         LegacyRepositoryConverter legacyRepositoryConverter = lookup( LegacyRepositoryConverter.class );
 

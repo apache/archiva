@@ -87,6 +87,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -688,18 +690,11 @@ public class Maven2RepositoryStorage
         try
         {
             // MavenXpp3Reader leaves the file open, so we need to close it ourselves.
-            FileReader reader = new FileReader( pom );
+
             Model model = null;
-            try
+            try (Reader reader = Files.newBufferedReader( pom.toPath(), Charset.defaultCharset() ))
             {
                 model = MAVEN_XPP_3_READER.read( reader );
-            }
-            finally
-            {
-                if ( reader != null )
-                {
-                    reader.close();
-                }
             }
 
             DistributionManagement dist = model.getDistributionManagement();
@@ -723,10 +718,6 @@ public class Maven2RepositoryStorage
                     }
                 }
             }
-        }
-        catch ( FileNotFoundException e )
-        {
-            // Artifact has no POM in repo : ignore
         }
         catch ( IOException e )
         {

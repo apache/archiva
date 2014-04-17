@@ -21,6 +21,7 @@ package org.apache.archiva.reports.consumers;
 
 import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -28,26 +29,24 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.reports.RepositoryProblemFacet;
-import org.apache.archiva.consumers.ConsumerException;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.springframework.context.ApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.nio.file.NoSuchFileException;
 import java.util.Arrays;
 import java.util.Date;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.*;
-import org.springframework.test.annotation.DirtiesContext;
 
 @SuppressWarnings( { "ThrowableInstanceNeverThrown" } )
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )

@@ -51,12 +51,12 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -393,24 +393,13 @@ public class LegacyToDefaultConverter
     private Metadata readMetadata( File file )
         throws ArtifactConversionException
     {
-        Metadata metadata;
         MetadataXpp3Reader reader = new MetadataXpp3Reader();
 
-        try (FileReader fileReader = new FileReader( file ))
+        try (Reader fileReader = Files.newBufferedReader( file.toPath(), Charset.defaultCharset() ))
         {
             return reader.read( fileReader );
         }
-        catch ( FileNotFoundException e )
-        {
-            throw new ArtifactConversionException( Messages.getString( "error.reading.target.metadata" ),
-                                                   e ); //$NON-NLS-1$
-        }
-        catch ( IOException e )
-        {
-            throw new ArtifactConversionException( Messages.getString( "error.reading.target.metadata" ),
-                                                   e ); //$NON-NLS-1$
-        }
-        catch ( XmlPullParserException e )
+        catch ( IOException | XmlPullParserException e )
         {
             throw new ArtifactConversionException( Messages.getString( "error.reading.target.metadata" ),
                                                    e ); //$NON-NLS-1$
