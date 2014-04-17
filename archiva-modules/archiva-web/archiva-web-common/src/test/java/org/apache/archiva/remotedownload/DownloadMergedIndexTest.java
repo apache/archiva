@@ -165,6 +165,12 @@ public class DownloadMergedIndexTest
         remoteRepository.setUserName( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME );
         remoteRepository.setPassword( FakeCreateAdminService.ADMIN_TEST_PWD );
 
+
+        if (getRemoteRepositoriesService().getRemoteRepository( remoteRepository.getId() ) != null)
+        {
+            getRemoteRepositoriesService().deleteRemoteRepository( remoteRepository.getId() );
+        }
+
         getRemoteRepositoriesService().addRemoteRepository( remoteRepository );
 
         ProxyConnectorService proxyConnectorService = getProxyConnectorService();
