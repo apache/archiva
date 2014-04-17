@@ -147,12 +147,12 @@ public class DefaultArchivaConfiguration
     /**
      * Configuration Listeners we've registered.
      */
-    private Set<ConfigurationListener> listeners = new HashSet<ConfigurationListener>();
+    private Set<ConfigurationListener> listeners = new HashSet<>();
 
     /**
      * Registry Listeners we've registered.
      */
-    private Set<RegistryListener> registryListeners = new HashSet<RegistryListener>();
+    private Set<RegistryListener> registryListeners = new HashSet<>();
 
     /**
      * Boolean to help determine if the configuration exists as a result of pulling in
@@ -204,9 +204,8 @@ public class DefaultArchivaConfiguration
         config.getRepositoryGroupsAsMap();
         if ( !config.getRepositories().isEmpty() )
         {
-            for ( Iterator<V1RepositoryConfiguration> i = config.getRepositories().iterator(); i.hasNext(); )
+            for ( V1RepositoryConfiguration r : config.getRepositories() ) 
             {
-                V1RepositoryConfiguration r = i.next();
                 r.setScanned( r.isIndexed() );
 
                 if ( StringUtils.startsWith( r.getUrl(), "file://" ) )
@@ -699,11 +698,7 @@ public class DefaultArchivaConfiguration
             loadConfiguration();
             handleUpgradeConfiguration();
         }
-        catch ( IndeterminateConfigurationException e )
-        {
-            throw new RuntimeException( "failed during upgrade from previous version" + e.getMessage(), e );
-        }
-        catch ( RegistryException e )
+        catch ( IndeterminateConfigurationException | RegistryException e )
         {
             throw new RuntimeException( "failed during upgrade from previous version" + e.getMessage(), e );
         }
@@ -814,9 +809,7 @@ public class DefaultArchivaConfiguration
     private Configuration unescapeExpressions( Configuration config )
     {
         // TODO: for commons-configuration 1.3 only
-        for ( Iterator<ManagedRepositoryConfiguration> i = config.getManagedRepositories().iterator(); i.hasNext(); )
-        {
-            ManagedRepositoryConfiguration c = i.next();
+        for ( ManagedRepositoryConfiguration c : config.getManagedRepositories() ) {
             c.setLocation( removeExpressions( c.getLocation() ) );
             c.setRefreshCronExpression( unescapeCronExpression( c.getRefreshCronExpression() ) );
         }
