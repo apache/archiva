@@ -116,7 +116,6 @@ public class JcrMetadataRepository
 //        {
 //            session.getWorkspace().getNamespaceRegistry().registerNamespace( facetId, facetId );
 //        }
-
         Workspace workspace = session.getWorkspace();
         NamespaceRegistry registry = workspace.getNamespaceRegistry();
 
