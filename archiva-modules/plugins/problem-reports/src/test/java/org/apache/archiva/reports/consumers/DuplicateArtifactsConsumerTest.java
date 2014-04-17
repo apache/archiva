@@ -41,6 +41,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.NoSuchFileException;
 import java.util.Arrays;
 import java.util.Date;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -185,7 +186,7 @@ public class DuplicateArtifactsConsumerTest
         }
         catch ( ConsumerException e )
         {
-            assertTrue( e.getCause() instanceof FileNotFoundException );
+            assertTrue( e.getCause() instanceof NoSuchFileException );
         }
         finally
         {
