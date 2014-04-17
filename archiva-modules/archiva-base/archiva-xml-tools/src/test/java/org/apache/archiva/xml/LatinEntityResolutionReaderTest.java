@@ -19,9 +19,9 @@ package org.apache.archiva.xml;
  * under the License.
  */
 
-import junit.framework.Assert;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
+import org.junit.Assert;
 
 import java.io.BufferedReader;
 import java.io.File;
