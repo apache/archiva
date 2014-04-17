@@ -33,7 +33,7 @@ import static org.junit.Assert.*;
  * AbstractLegacyRepositoryContentTestCase
  */
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-no-mock-conf.xml" } )
+@ContextConfiguration ( { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-no-mock-conf.xml" } )
 public abstract class AbstractLegacyRepositoryContentTestCase
     extends AbstractRepositoryLayerTestCase
 {

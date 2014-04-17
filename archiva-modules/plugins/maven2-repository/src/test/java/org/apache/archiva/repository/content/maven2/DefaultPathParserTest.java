@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
  *
  */
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@ContextConfiguration ( { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class DefaultPathParserTest
 {
     private PathParser parser = new DefaultPathParser();

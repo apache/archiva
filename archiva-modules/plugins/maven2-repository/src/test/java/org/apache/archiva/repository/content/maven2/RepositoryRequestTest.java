@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
  */
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration (
-    locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-repo-request-test.xml" } )
+    { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-repo-request-test.xml" } )
 public class RepositoryRequestTest
 {
 
@@ -53,7 +53,7 @@ public class RepositoryRequestTest
     protected ApplicationContext applicationContext;
 
     @Inject
-    @Named ( value = "archivaConfiguration#repo-request-test" )
+    @Named ( "archivaConfiguration#repo-request-test" )
     private ArchivaConfiguration archivaConfiguration;
 
     private RepositoryRequest repoRequest;

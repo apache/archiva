@@ -26,11 +26,8 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -51,7 +48,7 @@ public class ManagedLegacyRepositoryContentTest
     extends AbstractLegacyRepositoryContentTestCase
 {
     @Inject
-    @Named( value = "managedRepositoryContent#legacy" )
+    @Named( "managedRepositoryContent#legacy" )
     private ManagedRepositoryContent repoContent;
 
     @Before

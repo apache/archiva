@@ -52,7 +52,7 @@ public class MockRepoAdmin
     implements RemoteRepositoryAdmin, ManagedRepositoryAdmin, ProxyConnectorAdmin, NetworkProxyAdmin
 {
     @Inject
-    @Named (value = "archivaConfiguration#test")
+    @Named ( "archivaConfiguration#test" )
     private ArchivaConfiguration archivaConfiguration;
 
     @Override

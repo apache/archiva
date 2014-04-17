@@ -40,12 +40,12 @@ import java.util.Collections;
 import java.util.List;
 
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@ContextConfiguration( { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class DependencyTreeBuilderTestMaven3
     extends TestCase
 {
     @Inject
-    @Named( value = "dependencyTreeBuilder#maven3" )
+    @Named( "dependencyTreeBuilder#maven3" )
     private Maven3DependencyTreeBuilder builder;
 
     @Inject
@@ -61,7 +61,7 @@ public class DependencyTreeBuilderTestMaven3
 
 
     @Inject
-    @Named( value = "archivaConfiguration#test" )
+    @Named( "archivaConfiguration#test" )
     ArchivaConfiguration config;
 
     @Before

@@ -86,7 +86,7 @@ public class MockWagon
     }
 
     @Override
-    public List getFileList( String s )
+    public List<String> getFileList( String s )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
         return null;

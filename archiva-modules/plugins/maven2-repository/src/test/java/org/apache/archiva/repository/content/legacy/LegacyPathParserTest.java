@@ -41,13 +41,13 @@ import static org.junit.Assert.*;
  *
  */
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-no-mock-conf.xml" } )
+@ContextConfiguration ( { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-no-mock-conf.xml" } )
 public class LegacyPathParserTest
 {
     private LegacyPathParser parser;
 
     @Inject
-    @Named( value = "archivaConfiguration#default" )
+    @Named( "archivaConfiguration#default" )
     ArchivaConfiguration config;
 
     /**

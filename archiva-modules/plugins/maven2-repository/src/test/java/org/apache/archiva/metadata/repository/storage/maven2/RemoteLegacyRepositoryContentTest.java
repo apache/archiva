@@ -37,7 +37,7 @@ public class RemoteLegacyRepositoryContentTest
     extends AbstractLegacyRepositoryContentTestCase
 {
     @Inject
-    @Named( value = "remoteRepositoryContent#legacy" )
+    @Named( "remoteRepositoryContent#legacy" )
     private RemoteRepositoryContent repoContent;
 
     @Before

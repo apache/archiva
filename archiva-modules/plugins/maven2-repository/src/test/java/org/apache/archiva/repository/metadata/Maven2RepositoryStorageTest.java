@@ -34,11 +34,11 @@ import javax.inject.Named;
  * @author Olivier Lamy
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml" } )
+@ContextConfiguration( { "classpath*:/META-INF/spring-context.xml" } )
 public class Maven2RepositoryStorageTest
 {
     @Inject
-    @Named( value = "repositoryStorage#maven2" )
+    @Named( "repositoryStorage#maven2" )
     RepositoryStorage repositoryStorage;
 
     @Test

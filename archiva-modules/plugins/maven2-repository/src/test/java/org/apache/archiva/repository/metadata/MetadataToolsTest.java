@@ -58,16 +58,16 @@ import static org.junit.Assert.*;
  * MetadataToolsTest
  */
 @ContextConfiguration (
-    locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-metadata-tools-test.xml" } )
+    { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-metadata-tools-test.xml" } )
 public class MetadataToolsTest
     extends AbstractRepositoryLayerTestCase
 {
     @Inject
-    @Named ( value = "metadataTools#test" )
+    @Named ( "metadataTools#test" )
     private MetadataTools tools;
 
     @Inject
-    @Named ( value = "archivaConfiguration#mock" )
+    @Named ( "archivaConfiguration#mock" )
     protected MockConfiguration config;
 
     @Test

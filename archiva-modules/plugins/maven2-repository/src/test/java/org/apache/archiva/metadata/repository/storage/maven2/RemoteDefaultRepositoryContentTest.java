@@ -23,10 +23,7 @@ import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -38,7 +35,7 @@ public class RemoteDefaultRepositoryContentTest
     extends AbstractDefaultRepositoryContentTestCase
 {
     @Inject
-    @Named ( value = "remoteRepositoryContent#default" )
+    @Named ( "remoteRepositoryContent#default" )
     private RemoteRepositoryContent repoContent;
 
     @Before
