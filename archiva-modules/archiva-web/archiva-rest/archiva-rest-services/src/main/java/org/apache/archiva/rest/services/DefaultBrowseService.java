@@ -475,9 +475,7 @@ public class DefaultBrowseService
 
         try
         {
-
             return dependencyTreeBuilder.buildDependencyTree( selectedRepos, groupId, artifactId, version );
-
         }
         catch ( Exception e )
         {

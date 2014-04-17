@@ -52,6 +52,7 @@ public class TreeDependencyNodeVisitor
     {
         TreeEntry entry =
             new TreeEntry( getModelMapper().map( dependencyNode.getDependency().getArtifact(), Artifact.class ) );
+        entry.getArtifact().setFileExtension( dependencyNode.getDependency().getArtifact().getExtension() );
         entry.getArtifact().setScope( dependencyNode.getDependency().getScope() );
         entry.setParent( currentEntry );
         currentEntry = entry;

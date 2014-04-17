@@ -844,6 +844,7 @@
       &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
       <a class="cursor-hand"
          onclick="generalDisplayArtifactVersionDetailViewModel(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'),encodeURIComponent('${crumbEntry.version}'))">${crumbEntry.version}</a>&nbsp;
+      |&nbsp;<b>${$.i18n.prop('browse.artifact.type')}:</b>&nbsp;${crumbEntry.fileExtension}
       {{/if}}
       {{if j < entries.length - 2}}
       &nbsp;/&nbsp;

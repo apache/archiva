@@ -1693,6 +1693,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     this.artifactId=null;
     this.artifact=false;
     this.version=null;
+    this.fileExtension=null;
   }
   mapVersionsList=function(data){
     if (data){
@@ -1963,44 +1964,36 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     this.bundleDescription=bundleDescription;
 
     // contains osgi metadata Bundle-Name if available
-    //private String bundleName;
     this.bundleName=bundleName;
 
     //contains osgi metadata Bundle-License if available
-    //private String bundleLicense;
     this.bundleLicense=bundleLicense;
 
     ///contains osgi metadata Bundle-DocURL if available
-    //private String bundleDocUrl;
     this.bundleDocUrl=bundleDocUrl;
 
     // contains osgi metadata Import-Package if available
-    //private String bundleImportPackage;
     this.bundleImportPackage=bundleImportPackage;
 
     ///contains osgi metadata Require-Bundle if available
-    //private String bundleRequireBundle;
     this.bundleRequireBundle=bundleRequireBundle;
 
-    //private String classifier;
     this.classifier=classifier;
 
-    //private String packaging;
     this.packaging=packaging;
 
     //file extension of the artifact
-    //private String fileExtension;
     this.fileExtension=fileExtension;
 
     this.size=size;
 
     this.crumbEntries=function(){
-      return calculateCrumbEntries(self.groupId,self.artifactId,self.version);
+      return calculateCrumbEntries(self.groupId,self.artifactId,self.version,self.fileExtension);
     }
 
   }
 
-  calculateCrumbEntries=function(groupId,artifactId,version){
+  calculateCrumbEntries=function(groupId,artifactId,version,fileExtension){
     var splitted = groupId.split(".");
     var breadCrumbEntries=[];
     var curGroupId="";
@@ -2012,12 +2005,14 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     var crumbEntryArtifact=new BreadCrumbEntry(groupId,artifactId);
     crumbEntryArtifact.artifactId=artifactId;
     crumbEntryArtifact.artifact=true;
+    crumbEntryArtifact.fileExtension=fileExtension;
     breadCrumbEntries.push(crumbEntryArtifact);
 
     var crumbEntryVersion=new BreadCrumbEntry(groupId,version);
     crumbEntryVersion.artifactId=artifactId;
     crumbEntryVersion.artifact=false;
     crumbEntryVersion.version=version;
+    crumbEntryVersion.fileExtension=fileExtension;
     breadCrumbEntries.push(crumbEntryVersion);
 
     return breadCrumbEntries;
