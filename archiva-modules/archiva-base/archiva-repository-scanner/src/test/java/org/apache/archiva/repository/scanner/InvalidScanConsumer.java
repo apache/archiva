@@ -23,6 +23,8 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +44,8 @@ public class InvalidScanConsumer
      * default-value="unset-id"
      */
     private String id = "unset-id";
+
+    private Logger logger = LoggerFactory.getLogger( getClass() );
     
     private int processCount = 0;
 
@@ -87,6 +91,7 @@ public class InvalidScanConsumer
     public void processFile( String path )
         throws ConsumerException
     {
+        logger.info( "processFile: {}", path );
         processCount++;
     }
 

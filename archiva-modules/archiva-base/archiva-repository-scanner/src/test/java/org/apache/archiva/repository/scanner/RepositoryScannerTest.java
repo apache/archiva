@@ -22,9 +22,10 @@ package org.apache.archiva.repository.scanner;
 import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +34,7 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,15 +42,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * RepositoryScannerTest
- *
- *
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml" } )
+@RunWith(ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml" })
 public class RepositoryScannerTest
     extends TestCase
 {
@@ -79,7 +78,8 @@ public class RepositoryScannerTest
 
     private ManagedRepository createDefaultRepository()
     {
-        File repoDir = new File( "src/test/repositories/default-repository" );
+        File repoDir =
+            Paths.get( System.getProperty( "basedir" ), "src/test/repositories/default-repository" ).toFile();
 
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
@@ -89,9 +89,9 @@ public class RepositoryScannerTest
     private ManagedRepository createSimpleRepository()
         throws IOException, ParseException
     {
-        File srcDir = new File( "src/test/repositories/simple-repository" );
+        File srcDir = Paths.get( System.getProperty( "basedir" ),  "src/test/repositories/simple-repository" ).toFile();
 
-        File repoDir = new File( "target/test-repos/simple-repository" );
+        File repoDir = Paths.get( System.getProperty( "basedir" ),  "target/test-repos/simple-repository" ).toFile();
 
         FileUtils.deleteDirectory( repoDir );
 
@@ -116,7 +116,7 @@ public class RepositoryScannerTest
 
     private ManagedRepository createLegacyRepository()
     {
-        File repoDir = new File( "src/test/repositories/legacy-repository" );
+        File repoDir = Paths.get( System.getProperty( "basedir" ),  "src/test/repositories/legacy-repository" ).toFile();
 
         assertTrue( "Legacy Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
@@ -238,7 +238,8 @@ public class RepositoryScannerTest
         KnownScanConsumer consumer = new KnownScanConsumer();
         consumer.setIncludes(
             new String[]{ "**/*.jar", "**/*.war", "**/*.pom", "**/maven-metadata.xml", "**/*-site.xml", "**/*.zip",
-                "**/*.tar.gz", "**/*.sha1", "**/*.md5" } );
+                "**/*.tar.gz", "**/*.sha1", "**/*.md5" }
+        );
         knownConsumers.add( consumer );
 
         List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<>();
