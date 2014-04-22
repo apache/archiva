@@ -53,6 +53,15 @@ security access management, build artifact storage, delivery, browsing, indexing
         <file-release>http://www.us.apache.org/dist/archiva/1.4-M4/binaries/apache-archiva-1.4-M4.war</file-release>
       </Version>
     </release>
+    <release>
+      <Version>
+        <name>Apache Archiva 2.0.1</name>
+        <created>2014-03-26</created>
+        <revision>2.0.1</revision>
+        <file-release>http://www.us.apache.org/dist/archiva/2.0.1/binaries/apache-archiva-2.0.1-bin.zip</file-release>
+        <file-release>http://www.us.apache.org/dist/archiva/2.0.1/binaries/apache-archiva-2.0.1.war</file-release>
+      </Version>
+    </release>
     <repository>
       <SVNRepository>
         <location rdf:resource="https://svn.apache.org/repos/asf/archiva/"/>
