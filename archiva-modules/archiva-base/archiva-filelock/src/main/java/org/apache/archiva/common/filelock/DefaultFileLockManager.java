@@ -276,32 +276,7 @@ public class DefaultFileLockManager
 
     private boolean mkdirs( File directory )
     {
-        if ( directory == null )
-        {
-            return false;
-        }
-
-        if ( directory.exists() )
-        {
-            return false;
-        }
-        if ( directory.mkdir() )
-        {
-            return true;
-        }
-
-        File canonDir = null;
-        try
-        {
-            canonDir = directory.getCanonicalFile();
-        }
-        catch ( IOException e )
-        {
-            return false;
-        }
-
-        File parentDir = canonDir.getParentFile();
-        return ( parentDir != null && ( mkdirs( parentDir ) || parentDir.exists() ) && canonDir.mkdir() );
+        return directory.mkdirs();
     }
 
     @Override
