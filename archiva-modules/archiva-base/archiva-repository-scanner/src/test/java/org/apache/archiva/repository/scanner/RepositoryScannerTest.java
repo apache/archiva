@@ -253,7 +253,7 @@ public class RepositoryScannerTest
         assertNotNull( "Stats should not be null.", stats );
         assertMinimumHits( "Stats.totalFileCount", 17, stats.getTotalFileCount() );
         assertMinimumHits( "Processed Count", 17, consumer.getProcessCount() );
-        assertEquals( "Processed Count (of invalid items)", 6, badconsumer.getProcessCount() );
+        assertEquals( "Processed Count (of invalid items):" + badconsumer.getPaths(), 6, badconsumer.getProcessCount() );
     }
 
     @Test

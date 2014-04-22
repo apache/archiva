@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -48,6 +49,8 @@ public class InvalidScanConsumer
     private Logger logger = LoggerFactory.getLogger( getClass() );
     
     private int processCount = 0;
+
+    private List<String> paths = new ArrayList<>( );
 
     @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
@@ -92,6 +95,7 @@ public class InvalidScanConsumer
         throws ConsumerException
     {
         logger.info( "processFile: {}", path );
+        paths.add( path );
         processCount++;
     }
 
@@ -133,5 +137,10 @@ public class InvalidScanConsumer
     public void setId( String id )
     {
         this.id = id;
+    }
+
+    public List<String> getPaths()
+    {
+        return paths;
     }
 }
