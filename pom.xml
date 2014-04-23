@@ -1865,8 +1865,26 @@
               <artifactId>maven-assembly-plugin</artifactId>
               <inherited>false</inherited>
               <configuration>
+                <appendAssemblyId>false</appendAssemblyId>
                 <finalName>apache-archiva-${project.version}-src</finalName>
+                <descriptors>
+                  <descriptor>${basedir}/src/main/assembly/src.xml</descriptor>
+                </descriptors>
               </configuration>
+              <executions>
+                <execution>
+                  <inherited>false</inherited>
+                  <id>source-release-assembly</id>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>single</goal>
+                  </goals>
+                  <configuration>
+                    <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
+                    <tarLongFileFormat>gnu</tarLongFileFormat>
+                  </configuration>
+                </execution>
+              </executions>
             </plugin>
           </plugins>
         </pluginManagement>
