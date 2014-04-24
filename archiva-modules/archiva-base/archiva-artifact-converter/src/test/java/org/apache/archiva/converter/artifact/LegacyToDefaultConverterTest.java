@@ -1001,7 +1001,7 @@ public class LegacyToDefaultConverterTest
     private void checkSuccess( ArtifactConverter converter )
     {
         assertNotNull( "Warnings should never be null.", converter.getWarnings() );
-        assertEquals( "Should have no warnings.", 0, countWarningMessages( converter ) );
+        assertEquals( "Should have no warnings. " + converter.getWarnings(), 0, countWarningMessages( converter ) );
     }
 
     private void checkWarnings( ArtifactConverter converter, int count )
