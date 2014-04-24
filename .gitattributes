@@ -8,5 +8,8 @@
 *.js     text
 *.sql    text
 
-*.jar binary
-*.war binary
+*.jar    binary
+*.war    binary
+
+#  pom file are part of tests involving md5/sha1 (try to keep lf as eol) 
+*.pom    eol=lf
