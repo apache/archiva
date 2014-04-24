@@ -29,6 +29,10 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,8 +40,8 @@ import java.util.Collections;
 import java.util.List;
 
 
-@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@RunWith(ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" })
 public class MavenRepositorySearchTest
     extends AbstractMavenRepositorySearch
 {
@@ -47,12 +51,12 @@ public class MavenRepositorySearchTest
         throws Exception
     {
         List<File> files = new ArrayList<>();
-        files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
-            + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
-            + "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
-        files.add( new File( FileUtil.getBasedir(), "/src/test/" + TEST_REPO_1
-            + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
+        files.add( Paths.get( FileUtil.getBasedir(), "src/test", TEST_REPO_1,
+                              "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ).toFile() );
+        files.add( Paths.get( FileUtil.getBasedir(), "src/test", TEST_REPO_1,
+                              "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ).toFile() );
+        files.add( Paths.get( FileUtil.getBasedir(), "src/test", TEST_REPO_1,
+                              "org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ).toFile() );
 
         createIndex( TEST_REPO_1, files, scan );
     }
@@ -286,7 +290,7 @@ public class MavenRepositorySearchTest
 
         archivaConfigControl.replay();
 
-        SearchResults results = search.search( "user", selectedRepos, "org", limits, new ArrayList<String>() );
+        SearchResults results = search.search( "user", selectedRepos, "org", limits, Collections.<String>emptyList() );
 
         archivaConfigControl.verify();
 

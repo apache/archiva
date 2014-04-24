@@ -160,8 +160,8 @@ public class MavenRepositorySearch
         if ( StringUtils.isNotBlank( searchFields.getArtifactId() ) )
         {
             q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID,
-                                           new UserInputSearchExpression( searchFields.getArtifactId() ) ),
-                   Occur.MUST );
+                                           new UserInputSearchExpression( searchFields.getArtifactId() ) ), Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getVersion() ) )
@@ -187,35 +187,40 @@ public class MavenRepositorySearch
         {
             q.add( indexer.constructQuery( OSGI.SYMBOLIC_NAME,
                                            new UserInputSearchExpression( searchFields.getBundleSymbolicName() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleVersion() ) )
         {
             q.add( indexer.constructQuery( OSGI.VERSION,
                                            new UserInputSearchExpression( searchFields.getBundleVersion() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleExportPackage() ) )
         {
             q.add( indexer.constructQuery( OSGI.EXPORT_PACKAGE,
                                            new UserInputSearchExpression( searchFields.getBundleExportPackage() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleExportService() ) )
         {
             q.add( indexer.constructQuery( OSGI.EXPORT_SERVICE,
                                            new UserInputSearchExpression( searchFields.getBundleExportService() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleImportPackage() ) )
         {
             q.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
                                            new UserInputSearchExpression( searchFields.getBundleImportPackage() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleName() ) )
@@ -228,21 +233,23 @@ public class MavenRepositorySearch
         {
             q.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
                                            new UserInputSearchExpression( searchFields.getBundleImportPackage() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleRequireBundle() ) )
         {
             q.add( indexer.constructQuery( OSGI.REQUIRE_BUNDLE,
                                            new UserInputSearchExpression( searchFields.getBundleRequireBundle() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getClassifier() ) )
         {
             q.add( indexer.constructQuery( MAVEN.CLASSIFIER,
-                                           new UserInputSearchExpression( searchFields.getClassifier() ) ),
-                   Occur.MUST );
+                                           new UserInputSearchExpression( searchFields.getClassifier() ) ), Occur.MUST
+            );
         }
 
         if ( q.getClauses() == null || q.getClauses().length <= 0 )
@@ -265,7 +272,13 @@ public class MavenRepositorySearch
             FlatSearchRequest request = new FlatSearchRequest( q );
 
             request.setContexts( getIndexingContexts( indexingContextIds ) );
-            request.setCount(limits.getPageSize()*(Math.max(1, limits.getSelectedPage())));
+            if ( limits != null )
+            {
+                if ( limits.getSelectedPage() < 1 )
+                {
+                    request.setCount( limits.getPageSize() * ( Math.max( 1, limits.getSelectedPage() ) ) );
+                }
+            }
 
             FlatSearchResponse response = indexer.searchFlat( request );
 
@@ -626,6 +639,8 @@ public class MavenRepositorySearch
     {
         SearchResultLimits limits = results.getLimits();
         SearchResults paginated = new SearchResults();
+
+        // ( limits.getPageSize() * ( Math.max( 1, limits.getSelectedPage() ) ) );
 
         int fetchCount = limits.getPageSize();
         int offset = ( limits.getSelectedPage() * limits.getPageSize() );

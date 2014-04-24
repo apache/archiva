@@ -28,9 +28,9 @@ public class SearchUtil
 {
     public static String getHitId( String groupId, String artifactId, String classifier, String packaging )
     {
-        return ( StringUtils.isBlank( groupId ) ? "" : StringUtils.trim( groupId ) ) + ":"
-            + ( StringUtils.isBlank( artifactId ) ? "" : StringUtils.trim( artifactId ) ) + ":"
-            + ( StringUtils.isBlank( classifier ) ? "" : StringUtils.trim( classifier ) ) + ":" + ( StringUtils.isBlank(
-            packaging ) ? "" : StringUtils.trim( packaging ) );
+        return ( StringUtils.isBlank( groupId ) ? "" : StringUtils.trim( groupId ) ) + ":" //
+            + ( StringUtils.isBlank( artifactId ) ? "" : StringUtils.trim( artifactId ) ) + ":" //
+            + ( StringUtils.isBlank( classifier ) ? "" : StringUtils.trim( classifier ) ) + ":" //
+            + ( StringUtils.isBlank( packaging ) ? "" : StringUtils.trim( packaging ) );
     }
 }
