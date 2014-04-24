@@ -274,7 +274,8 @@ public class MavenRepositorySearch
             request.setContexts( getIndexingContexts( indexingContextIds ) );
             if ( limits != null )
             {
-                if ( limits.getSelectedPage() < 1 )
+                // we apply limits only when first page asked
+                if ( limits.getSelectedPage() == 0 )
                 {
                     request.setCount( limits.getPageSize() * ( Math.max( 1, limits.getSelectedPage() ) ) );
                 }

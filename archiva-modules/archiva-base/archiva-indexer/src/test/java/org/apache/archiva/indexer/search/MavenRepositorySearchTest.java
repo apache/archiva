@@ -879,7 +879,7 @@ public class MavenRepositorySearchTest
                                          repo.toURI().toURL().toExternalForm(),
                                          indexDirectory.toURI().toURL().toString(), search.getAllIndexCreators() );
 
-        SearchResultLimits limits = new SearchResultLimits( 0 );
+        SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
         limits.setPageSize( 300 );
 
         EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 5 );
