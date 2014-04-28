@@ -1,5 +1,6 @@
 Apache Archiva
 ==============
+test
 
 To get involved in Archiva development, contact dev@archiva.apache.org.
 
