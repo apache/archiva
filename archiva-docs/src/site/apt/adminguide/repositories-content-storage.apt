@@ -50,7 +50,7 @@ Repositories Metadata Content Storage
 
  A default Jackrabbit configuration is provided :
 
-%{snippet|id=default-repository|ignoreDownloadError=true|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/plugins/metadata-store-jcr/src/main/resources/org/apache/archiva/metadata/repository/jcr/repository.xml}
+%{snippet|id=default-repository|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/plugins/metadata-store-jcr/src/main/resources/org/apache/archiva/metadata/repository/jcr/repository.xml}
 
  You can use your own configuration by adding a file repository.xml in $\{appserver.base}/conf.
 
@@ -58,7 +58,7 @@ Repositories Metadata Content Storage
 
  If you want to change this default location, you must edit the file WEB-INF/applicationContext.xml, uncomment/edit lines and change with your values:
 
-%{snippet|id=jcr-location|ignoreDownloadError=true|url=http://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-webapp/src/main/webapp/WEB-INF/applicationContext.xml}
+%{snippet|id=jcr-location|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-webapp/src/main/webapp/WEB-INF/applicationContext.xml}
 
 * Cassandra
 
