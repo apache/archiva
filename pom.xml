@@ -70,7 +70,7 @@
     <redback.registry.version>2.2</redback.registry.version>
     <redback.spring-utils.version>2.1</redback.spring-utils.version>
     <redback.taskqueue.version>2.1</redback.taskqueue.version>
-    <slf4j.version>1.7.5</slf4j.version>
+    <slf4j.version>1.7.7</slf4j.version>
     <log4j.version>2.0-rc1</log4j.version>
 
     <spring.version>4.0.3.RELEASE</spring.version>
