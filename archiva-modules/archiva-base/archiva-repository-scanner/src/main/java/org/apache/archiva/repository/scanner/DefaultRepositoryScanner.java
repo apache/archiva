@@ -49,7 +49,7 @@ public class DefaultRepositoryScanner
     private FileTypes filetypes;
 
     @Inject
-    private RepositoryContentConsumers consumerUtil;
+    private RepositoryContentConsumers repositoryContentConsumers;
 
     private Set<RepositoryScannerInstance> inProgressScans = new LinkedHashSet<RepositoryScannerInstance>();
 
@@ -59,8 +59,8 @@ public class DefaultRepositoryScanner
     {
         try
         {
-            List<KnownRepositoryContentConsumer> knownContentConsumers = consumerUtil.getSelectedKnownConsumers();
-            List<InvalidRepositoryContentConsumer> invalidContentConsumers = consumerUtil.getSelectedInvalidConsumers();
+            List<KnownRepositoryContentConsumer> knownContentConsumers = repositoryContentConsumers.getSelectedKnownConsumers();
+            List<InvalidRepositoryContentConsumer> invalidContentConsumers = repositoryContentConsumers.getSelectedInvalidConsumers();
             List<String> ignoredPatterns = filetypes.getFileTypePatterns( FileTypes.IGNORED );
 
             return scan( repository, knownContentConsumers, invalidContentConsumers, ignoredPatterns, changesSince );
