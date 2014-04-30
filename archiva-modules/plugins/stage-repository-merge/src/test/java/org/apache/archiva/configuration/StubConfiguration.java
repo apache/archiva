@@ -67,6 +67,12 @@ public class StubConfiguration
     }
 
     @Override
+    public void removeChangeListener( RegistryListener listener )
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void reload()
     {
         // no op

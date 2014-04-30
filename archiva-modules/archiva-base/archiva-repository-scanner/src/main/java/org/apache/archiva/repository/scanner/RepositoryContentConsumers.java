@@ -23,9 +23,11 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.BaseFile;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
+import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerBeginScanClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
@@ -48,7 +50,7 @@ import java.util.Map;
 /**
  * RepositoryContentConsumerUtil
  */
-@Service( "repositoryContentConsumers" )
+@Service("repositoryContentConsumers")
 public class RepositoryContentConsumers
     implements ApplicationContextAware
 {
@@ -61,6 +63,9 @@ public class RepositoryContentConsumers
     private List<KnownRepositoryContentConsumer> selectedKnownConsumers;
 
     private List<InvalidRepositoryContentConsumer> selectedInvalidConsumers;
+
+    @Inject
+    private ArchivaConfiguration archivaConfiguration;
 
     @Inject
     public RepositoryContentConsumers( ArchivaAdministration archivaAdministration )
@@ -156,7 +161,7 @@ public class RepositoryContentConsumers
      * @return the list of {@link KnownRepositoryContentConsumer} that have been selected
      * by the active configuration.
      */
-    public synchronized List<KnownRepositoryContentConsumer> getSelectedKnownConsumers()
+    public List<KnownRepositoryContentConsumer> getSelectedKnownConsumers()
         throws RepositoryAdminException
     {
         // FIXME only for testing
@@ -176,6 +181,22 @@ public class RepositoryContentConsumers
             }
         }
         return ret;
+    }
+
+    public void releaseSelectedKnownConsumers( List<KnownRepositoryContentConsumer> repositoryContentConsumers )
+    {
+        if ( repositoryContentConsumers == null )
+        {
+            return;
+        }
+        for ( KnownRepositoryContentConsumer knownRepositoryContentConsumer : repositoryContentConsumers )
+        {
+            if ( RegistryListener.class.isAssignableFrom( knownRepositoryContentConsumer.getClass() ) )
+            {
+                archivaConfiguration.removeChangeListener(
+                    RegistryListener.class.cast( knownRepositoryContentConsumer ) );
+            }
+        }
     }
 
     /**
@@ -248,12 +269,13 @@ public class RepositoryContentConsumers
     public void executeConsumers( ManagedRepository repository, File localFile, boolean updateRelatedArtifacts )
         throws RepositoryAdminException
     {
+        List<KnownRepositoryContentConsumer> selectedKnownConsumers = null;
         // Run the repository consumers
         try
         {
             Closure triggerBeginScan = new TriggerBeginScanClosure( repository, getStartTime(), false );
 
-            List<KnownRepositoryContentConsumer> selectedKnownConsumers = getSelectedKnownConsumers();
+            selectedKnownConsumers = getSelectedKnownConsumers();
 
             // MRM-1212/MRM-1197 
             // - do not create missing/fix invalid checksums and update metadata when deploying from webdav since these are uploaded by maven
@@ -307,6 +329,7 @@ public class RepositoryContentConsumers
                         CollectionUtils.forAllDo( availableKnownConsumers, triggerCompleteScan );
                         CollectionUtils.forAllDo( availableInvalidConsumers, triggerCompleteScan );
             */
+            releaseSelectedKnownConsumers( selectedKnownConsumers );
         }
     }
 

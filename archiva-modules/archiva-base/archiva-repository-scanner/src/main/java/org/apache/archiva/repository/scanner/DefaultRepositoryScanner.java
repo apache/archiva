@@ -21,6 +21,7 @@ package org.apache.archiva.repository.scanner;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,9 +59,10 @@ public class DefaultRepositoryScanner
     public RepositoryScanStatistics scan( ManagedRepository repository, long changesSince )
         throws RepositoryScannerException
     {
+        List<KnownRepositoryContentConsumer> knownContentConsumers = null;
         try
         {
-            List<KnownRepositoryContentConsumer> knownContentConsumers = repositoryContentConsumers.getSelectedKnownConsumers();
+            knownContentConsumers = repositoryContentConsumers.getSelectedKnownConsumers();
             List<InvalidRepositoryContentConsumer> invalidContentConsumers = repositoryContentConsumers.getSelectedInvalidConsumers();
             List<String> ignoredPatterns = filetypes.getFileTypePatterns( FileTypes.IGNORED );
 
@@ -68,6 +71,9 @@ public class DefaultRepositoryScanner
         catch ( RepositoryAdminException e )
         {
             throw new RepositoryScannerException( e.getMessage(), e );
+        } finally
+        {
+            repositoryContentConsumers.releaseSelectedKnownConsumers( knownContentConsumers );
         }
     }
 

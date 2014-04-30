@@ -67,6 +67,12 @@ public class TestConfiguration
     }
 
     @Override
+    public void removeChangeListener( RegistryListener listener )
+    {
+        // no op
+    }
+
+    @Override
     public void reload()
     {
         // no op

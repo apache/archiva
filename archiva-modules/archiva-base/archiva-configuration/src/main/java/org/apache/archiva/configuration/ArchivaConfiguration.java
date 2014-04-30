@@ -70,12 +70,14 @@ public interface ArchivaConfiguration
     void removeListener( ConfigurationListener listener );
 
     /**
-     * Add a registry listener to notify of events in plexus-registry.
+     * Add a registry listener to notify of events in spring-registry.
      *
      * @param listener the listener
      *                 TODO: Remove in future.
      */
     void addChangeListener( RegistryListener listener );
+
+    void removeChangeListener( RegistryListener listener );
 
     /**
      * reload configuration from file included registry

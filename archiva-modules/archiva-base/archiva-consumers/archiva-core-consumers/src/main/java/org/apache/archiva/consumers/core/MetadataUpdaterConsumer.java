@@ -70,32 +70,17 @@ public class MetadataUpdaterConsumer
      */
     private String id = "metadata-updater";
 
-    /**
-     * default-value="Update / Create maven-metadata.xml files"
-     */
     private String description = "Update / Create maven-metadata.xml files";
 
-    /**
-     *
-     */
     @Inject
     private RepositoryContentFactory repositoryFactory;
 
-    /**
-     *
-     */
     @Inject
     private MetadataTools metadataTools;
 
-    /**
-     *
-     */
     @Inject
     private ArchivaConfiguration configuration;
 
-    /**
-     *
-     */
     @Inject
     private FileTypes filetypes;
 

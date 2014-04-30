@@ -65,6 +65,12 @@ public class MockConfiguration
     }
 
     @Override
+    public void removeChangeListener( RegistryListener listener )
+    {
+        registryListeners.remove( listener );
+    }
+
+    @Override
     public Configuration getConfiguration()
     {
         return configuration;

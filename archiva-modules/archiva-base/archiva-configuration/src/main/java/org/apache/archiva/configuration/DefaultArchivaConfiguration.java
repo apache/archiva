@@ -650,6 +650,8 @@ public class DefaultArchivaConfiguration
         listeners.remove( listener );
     }
 
+
+
     @Override
     public void addChangeListener( RegistryListener listener )
     {
@@ -671,6 +673,13 @@ public class DefaultArchivaConfiguration
         {
             section.addChangeListener( listener );
         }
+    }
+
+    @Override
+    public void removeChangeListener( RegistryListener listener )
+    {
+        boolean removed = registryListeners.remove( listener );
+        log.debug( "RegistryListener: '{}' removed {}", listener, removed );
     }
 
     @PostConstruct
