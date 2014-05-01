@@ -167,7 +167,7 @@ public class AutoRemoveConsumer
 
     private void initIncludes()
     {
-        includes = new ArrayList<String>( filetypes.getFileTypePatterns( FileTypes.AUTO_REMOVE ) );
+        includes = new ArrayList<>( filetypes.getFileTypePatterns( FileTypes.AUTO_REMOVE ) );
     }
 
     @PostConstruct

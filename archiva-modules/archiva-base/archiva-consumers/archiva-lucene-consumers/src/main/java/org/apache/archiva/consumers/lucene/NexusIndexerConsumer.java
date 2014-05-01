@@ -266,7 +266,7 @@ public class NexusIndexerConsumer
         List<String> indexable = filetypes.getFileTypePatterns( FileTypes.INDEXABLE_CONTENT );
         List<String> artifacts = filetypes.getFileTypePatterns( FileTypes.ARTIFACTS );
 
-        includes = new ArrayList<String>( indexable.size() + artifacts.size() );
+        includes = new ArrayList<>( indexable.size() + artifacts.size() );
 
         includes.addAll( indexable );
 

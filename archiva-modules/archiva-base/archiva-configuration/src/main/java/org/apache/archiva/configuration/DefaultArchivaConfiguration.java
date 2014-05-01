@@ -89,7 +89,7 @@ import java.util.Set;
  * before reading it from the registry.
  * </p>
  */
-@Service ( "archivaConfiguration#default" )
+@Service( "archivaConfiguration#default" )
 public class DefaultArchivaConfiguration
     implements ArchivaConfiguration, RegistryListener
 {
@@ -99,7 +99,7 @@ public class DefaultArchivaConfiguration
      * Plexus registry to read the configuration from.
      */
     @Inject
-    @Named ( value = "commons-configuration" )
+    @Named( value = "commons-configuration" )
     private Registry registry;
 
     @Inject
@@ -183,7 +183,7 @@ public class DefaultArchivaConfiguration
         return configuration;
     }
 
-    @SuppressWarnings ( "unchecked" )
+    @SuppressWarnings( "unchecked" )
     private Configuration load()
     {
         // TODO: should this be the same as section? make sure unnamed sections still work (eg, sys properties)
@@ -204,7 +204,7 @@ public class DefaultArchivaConfiguration
         config.getRepositoryGroupsAsMap();
         if ( !config.getRepositories().isEmpty() )
         {
-            for ( V1RepositoryConfiguration r : config.getRepositories() ) 
+            for ( V1RepositoryConfiguration r : config.getRepositories() )
             {
                 r.setScanned( r.isIndexed() );
 
@@ -269,8 +269,7 @@ public class DefaultArchivaConfiguration
             // Fix Proxy Connector Settings.
 
             // Create a copy of the list to read from (to prevent concurrent modification exceptions)
-            List<ProxyConnectorConfiguration> proxyConnectorList =
-                new ArrayList<>( config.getProxyConnectors() );
+            List<ProxyConnectorConfiguration> proxyConnectorList = new ArrayList<>( config.getProxyConnectors() );
             // Remove the old connector list.
             config.getProxyConnectors().clear();
 
@@ -440,7 +439,7 @@ public class DefaultArchivaConfiguration
         return registry.getSubset( KEY );
     }
 
-    @SuppressWarnings ( "unchecked" )
+    @SuppressWarnings( "unchecked" )
     @Override
     public synchronized void save( Configuration configuration )
         throws IndeterminateConfigurationException, RegistryException
@@ -559,7 +558,8 @@ public class DefaultArchivaConfiguration
                 throw new RegistryException(
                     "Unable to create configuration file in either user [" + userConfigFilename + "] or alternative ["
                         + altConfigFilename
-                        + "] locations on disk, usually happens when not allowed to write to those locations." );
+                        + "] locations on disk, usually happens when not allowed to write to those locations."
+                );
             }
         }
 
@@ -584,7 +584,7 @@ public class DefaultArchivaConfiguration
 
     /**
      * Attempts to write the contents to a file, if an IOException occurs, return false.
-     * <p>
+     * <p/>
      * The file will be created if the directory to the file exists, otherwise this will return false.
      *
      * @param filetype the filetype (freeform text) to use in logging messages when failure to write.
@@ -602,7 +602,7 @@ public class DefaultArchivaConfiguration
             if ( file.getParentFile() != null )
             {
                 // Check that directory exists
-                if ( ! file.getParentFile().isDirectory() )
+                if ( !file.getParentFile().isDirectory() )
                 {
                     // Directory to file must exist for file to be created
                     return false;
@@ -651,7 +651,6 @@ public class DefaultArchivaConfiguration
     }
 
 
-
     @Override
     public void addChangeListener( RegistryListener listener )
     {
@@ -680,6 +679,18 @@ public class DefaultArchivaConfiguration
     {
         boolean removed = registryListeners.remove( listener );
         log.debug( "RegistryListener: '{}' removed {}", listener, removed );
+
+        Registry section = registry.getSection( KEY + ".user" );
+        if ( section != null )
+        {
+            section.removeChangeListener( listener );
+        }
+        section = registry.getSection( KEY + ".base" );
+        if ( section != null )
+        {
+            section.removeChangeListener( listener );
+        }
+
     }
 
     @PostConstruct
@@ -714,7 +725,7 @@ public class DefaultArchivaConfiguration
         catch ( EvaluatorException e )
         {
             throw new RuntimeException(
-                "Unable to evaluate expressions found in " + "userConfigFilename or altConfigFilename.", e);
+                "Unable to evaluate expressions found in " + "userConfigFilename or altConfigFilename.", e );
         }
         registry.addChangeListener( this );
     }
@@ -818,7 +829,8 @@ public class DefaultArchivaConfiguration
     private Configuration unescapeExpressions( Configuration config )
     {
         // TODO: for commons-configuration 1.3 only
-        for ( ManagedRepositoryConfiguration c : config.getManagedRepositories() ) {
+        for ( ManagedRepositoryConfiguration c : config.getManagedRepositories() )
+        {
             c.setLocation( removeExpressions( c.getLocation() ) );
             c.setRefreshCronExpression( unescapeCronExpression( c.getRefreshCronExpression() ) );
         }

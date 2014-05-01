@@ -58,15 +58,9 @@ public class LegacyConverterArtifactConsumer
 {
     private Logger log = LoggerFactory.getLogger( LegacyConverterArtifactConsumer.class );
 
-    /**
-     *
-     */
     @Inject
     private ArtifactConverter artifactConverter;
 
-    /**
-     *
-     */
     private ArtifactFactory artifactFactory;
 
     private ManagedRepositoryContent managedRepository;

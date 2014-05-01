@@ -238,7 +238,7 @@ public class RepositoryPurgeConsumer
 
     private void initIncludes()
     {
-        includes = new ArrayList<String>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
+        includes = new ArrayList<>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     @PostConstruct
