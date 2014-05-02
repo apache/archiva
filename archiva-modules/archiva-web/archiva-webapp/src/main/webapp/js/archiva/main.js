@@ -346,6 +346,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
           var classifier= terms.length>3?terms[3]:"";
           var packaging= terms.length>4?terms[4]:"";
           var className= terms.length>5?terms[5]:"";
+          var pageSize= terms.length>6?terms[6]:"";
           $.log("groupId:artifactId:version:classifier:packaging:className="+groupId+':'+artifactId+':'+version+':'+classifier+':'+packaging+':'+className);
           var searchViewModel = new SearchViewModel();
           var searchRequest = new SearchRequest();
@@ -355,6 +356,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
           searchRequest.classifier(classifier);
           searchRequest.packaging(packaging);
           searchRequest.className(className);
+          searchRequest.pageSize(pageSize);
           //searchRequest.repositories=repos;
           //searchRequest.selectedRepoIds=repos;
           searchViewModel.searchRequest(searchRequest);

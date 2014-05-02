@@ -2081,6 +2081,9 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     this.includePomArtifacts=ko.observable(true);
 
     this.classifier=ko.observable();
+
+    // private int pageSize = 30;
+    this.pageSize = ko.observable( 30 );
   }
 
   /**
@@ -2293,9 +2296,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
       location+="/";
       if(self.searchRequest().groupId()){
         location+=self.searchRequest().groupId();
-      }/*else{
-        location+='~';
-      }*/
+      }
       if(self.searchRequest().artifactId()){
         location+='~'+self.searchRequest().artifactId();
       }else{
@@ -2318,6 +2319,11 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
       }
       if(self.searchRequest().className()){
         location+='~'+self.searchRequest().className();
+      }else{
+        location+='~';
+      }
+      if(self.searchRequest().pageSize()){
+        location+='~'+self.searchRequest().pageSize();
       }else{
         location+='~';
       }

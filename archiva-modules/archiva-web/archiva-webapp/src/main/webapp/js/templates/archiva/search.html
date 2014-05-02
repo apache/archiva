@@ -333,6 +333,15 @@
                                data-bind="value: searchRequest().className"/>
                       </div>
                     </div>
+                    <div class="control-group">
+                      <label class="control-label" for="pageSize">${$.i18n.prop('search.artifact.search.form.query.pageSize')}</label>
+
+                      <div class="controls">
+                        <input type="text" class="defaults" id="pageSize" name="pageSize" size="50"
+                               placeholder="my.pageSize"
+                               data-bind="value: searchRequest().pageSize"/>
+                      </div>
+                    </div>
 
                   </fieldset>
                   <button type="submit" id="btn-advanced-search" class="btn btn-primary"

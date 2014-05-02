@@ -144,6 +144,7 @@ public class DefaultSearchService
         }
         SearchFields searchField = getModelMapper().map( searchRequest, SearchFields.class );
         SearchResultLimits limits = new SearchResultLimits( 0 );
+        limits.setPageSize( searchRequest.getPageSize() );
 
         // if no repos set we use ones available for the user
         if ( searchField.getRepositories() == null || searchField.getRepositories().isEmpty() )
