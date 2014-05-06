@@ -50,46 +50,46 @@
     <logger name="org.apache.http.headers" level="debug"/>
     -->
 
-    <asyncLogger name="org.apache.archiva.indexer.search.MavenRepositorySearch" level="info"/>
+    <logger name="org.apache.archiva.indexer.search.MavenRepositorySearch" level="info"/>
 
-    <asyncLogger name="org.apache.archiva.common.plexusbridge.MavenIndexerUtils" level="info"/>
+    <logger name="org.apache.archiva.common.plexusbridge.MavenIndexerUtils" level="info"/>
 
-    <asyncLogger name="JPOX" level="error"/>
+    <logger name="JPOX" level="error"/>
 
-    <asyncLogger name="org.apache.commons.configuration.DefaultConfigurationBuilder" level="error"/>
+    <logger name="org.apache.commons.configuration.DefaultConfigurationBuilder" level="error"/>
 
-    <asyncLogger name="org.apache.archiva.admin.repository.managed" level="info"/>
+    <logger name="org.apache.archiva.admin.repository.managed" level="info"/>
 
-    <asyncLogger name="org.springframework" level="info"/>
+    <logger name="org.springframework" level="info"/>
 
-    <asyncLogger name="org.codehaus.plexus" level="info"/>
+    <logger name="org.codehaus.plexus" level="info"/>
 
-    <asyncLogger name="org.codehaus.redback" level="info"/>
+    <logger name="org.codehaus.redback" level="info"/>
 
-    <asyncLogger name="org.apache.cxf" level="info"/>
+    <logger name="org.apache.cxf" level="info"/>
 
-    <asyncLogger name="org.quartz" level="info"/>
+    <logger name="org.quartz" level="info"/>
 
-    <asyncLogger name="org.apache.archiva.indexer.merger" level="info"/>
+    <logger name="org.apache.archiva.indexer.merger" level="info"/>
 
-    <asyncLogger name="org.apache.archiva.metadata.repository.stats.DefaultRepositoryStatisticsManager" level="debug" />
+    <logger name="org.apache.archiva.metadata.repository.stats.DefaultRepositoryStatisticsManager" level="debug" />
 
-    <asyncLogger name="org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler" level="debug"/>
+    <logger name="org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler" level="debug"/>
 
-    <asyncLogger name="org.apache.archiva.web.security.ArchivaAuthorizer" level="debug"/>
+    <logger name="org.apache.archiva.web.security.ArchivaAuthorizer" level="debug"/>
 
-    <asyncLogger name="org.apache.archiva.redback.rest.services.DefaultRoleManagementService" level="debug"/>
+    <logger name="org.apache.archiva.redback.rest.services.DefaultRoleManagementService" level="debug"/>
 
-    <asyncLogger name="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry" level="debug"/>
+    <logger name="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry" level="debug"/>
 
     <!--
     <logger name="org.apache.archiva.scheduler.indexing" level="debug"/>
     -->
 
-    <asyncRoot level="info" includeLocation="true">
+    <root level="info" includeLocation="true">
       <appender-ref ref="console"/>
       <appender-ref ref="rolling"/>
-    </asyncRoot>
+    </root>
   </loggers>
 </configuration>
 

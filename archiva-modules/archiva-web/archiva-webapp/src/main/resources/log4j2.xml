@@ -63,69 +63,69 @@
   </appenders>
   <loggers>
 
-    <asyncLogger name="org.apache.archiva.redback.struts2.action.AuditEvent" additivity="false" level="info">
+    <logger name="org.apache.archiva.redback.struts2.action.AuditEvent" additivity="false" level="info">
       <appender-ref ref="redbackAuditLog" />
-    </asyncLogger>
+    </logger>
 
-    <asyncLogger name="org.apache.archiva.AuditLog" additivity="false" level="info">
+    <logger name="org.apache.archiva.AuditLog" additivity="false" level="info">
       <appender-ref ref="auditlog" />
-    </asyncLogger>
+    </logger>
 
   <!-- INFO level loggers can use the default
-   <asyncLogger name="org.apache.archiva.consumers" level="info"/>
+   <logger name="org.apache.archiva.consumers" level="info"/>
 
-   <asyncLogger name="org.apache.archiva" level="info"/>
+   <logger name="org.apache.archiva" level="info"/>
 
-   <asyncLogger name="org.quartz" level="info"/>
+   <logger name="org.quartz" level="info"/>
 
-   <asyncLogger name="org.apache.jasper" level="info"/>
+   <logger name="org.apache.jasper" level="info"/>
 
-   <asyncLogger name="com.opensymphony.xwork2" level="info"/>
+   <logger name="com.opensymphony.xwork2" level="info"/>
 
-   <asyncLogger name="org.apache.struts2" level="info"/>
+   <logger name="org.apache.struts2" level="info"/>
 
   -->
 
     <!-- WebDav objects -->
-    <asyncLogger name="org.apache.archiva.webdav.ArchivaDavResource" level="info"/>
+    <logger name="org.apache.archiva.webdav.ArchivaDavResource" level="info"/>
 
-    <asyncLogger name="org.apache.archiva.webdav.ArchivaDavResourceFactory" level="info"/>
+    <logger name="org.apache.archiva.webdav.ArchivaDavResourceFactory" level="info"/>
 
     <!-- squelch noisy objects (for now) -->
-    <asyncLogger name="org.apache.commons" level="warn"/>
+    <logger name="org.apache.commons" level="warn"/>
 
-    <asyncLogger name="net.sf.ehcache" level="warn"/>
+    <logger name="net.sf.ehcache" level="warn"/>
 
     <!-- retained for Redback -->
-    <asyncLogger name="JPOX" level="warn"/>
+    <logger name="JPOX" level="warn"/>
 
-    <asyncLogger name="JPOX.MetaData" level="error"/>
+    <logger name="JPOX.MetaData" level="error"/>
 
-    <asyncLogger name="JPOX.RDBMS.SQL" level="error"/>
+    <logger name="JPOX.RDBMS.SQL" level="error"/>
 
-    <asyncLogger name="SQL" level="error"/>
+    <logger name="SQL" level="error"/>
 
-    <asyncLogger name="org.apache.commons.configuration.DefaultConfigurationBuilder" level="error"/>
+    <logger name="org.apache.commons.configuration.DefaultConfigurationBuilder" level="error"/>
 
     <!-- debug wagon transfer -->
     <!--
-    <asyncLogger name="org.apache.archiva.proxy.common" level="debug"/>
+    <logger name="org.apache.archiva.proxy.common" level="debug"/>
 
     -->
     <!-- apache httpclient debug content transfer verbose -->
     <!--
-    <asyncLogger name="org.apache.http.wire" level="debug"/>
+    <logger name="org.apache.http.wire" level="debug"/>
 
     -->
     <!-- apache httpclient log headers -->
     <!--
-    <asyncLogger name="org.apache.http.headers" level="debug"/>
+    <logger name="org.apache.http.headers" level="debug"/>
 
     -->
 
-    <asyncRoot level="info" includeLocation="true">
+    <root level="info" includeLocation="true">
       <appender-ref ref="rolling"/>
-    </asyncRoot>
+    </root>
   </loggers>
 </configuration>
 
