@@ -182,7 +182,11 @@
   <thead>
     <tr>
       {{each(i, columnDefinition) columns}}
-      <th>${ columnDefinition.headerText }</th>
+      <th>${columnDefinition.headerText}
+        <button id="users-header-${columnDefinition.rowText}" class="btn">
+          ${$.i18n.prop('users.sort.generic')}
+        </button>
+      </th>
       {{/each}}
       <th>${$.i18n.prop('edit')}</th>
       <th>${$.i18n.prop('delete')}</th>
@@ -306,9 +310,6 @@
   </ul>
   <div id="users-view-tabs-content" class="tab-content">
     <div id="users-view" class="tab-pane">
-      <button data-bind='click: sortByName' class="btn">
-        ${$.i18n.prop('users.sort.byname')}
-      </button>
       <a href="#" class="btn btn-warning" data-bind="click: clearFilters" id="remove-filter-id">${$.i18n.prop('users.grid.filter')}</a>
       <table class="table table-striped table-bordered" id="usersTable"
              data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko_usersGrid_grid',pageLinksId:'usersPagination'">

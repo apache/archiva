@@ -52,6 +52,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
       gridUpdateCallBack: function(){
         $.log("gridUpdateCallBack users result");
         applyAutocompleteOnUsersHeaders(self);
+        applySortOnHeadersButtons(self);
       }
     });
     clearFilters=function(){
@@ -149,6 +150,10 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
       });
     };
 
+    sortByProperty = function( property ) {
+      $.log("sortByProperty:" + property.headerText);
+    }
+
     deleteUser=function(user){
       clearUserMessages();
 
@@ -234,7 +239,53 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
 
     }
 
-  }
+  };
+
+  applyAutocompleteOnUsersHeaders=function(usersViewModel){
+    applyAutocompleteOnHeaderUsers("username",usersViewModel);
+    applyAutocompleteOnHeaderUsers("fullName",usersViewModel);
+    applyAutocompleteOnHeaderUsers("email",usersViewModel);
+  };
+
+  applySortOnHeadersButtons=function(usersViewModel){
+    applySortOnHeadersButton("username",usersViewModel);
+    applySortOnHeadersButton("fullName",usersViewModel);
+    applySortOnHeadersButton("email",usersViewModel);
+  };
+
+  applyAutocompleteOnHeaderUsers=function(property,usersViewModel){
+    var founds=[];
+    $(usersViewModel.originalUsers()).each(function(idx,user){
+      if(user[property] && user[property]()){
+        founds.push(user[property]());
+      }
+    });
+    var cell = $("#main-content").find("#users-grid-filter-auto-"+property );
+    cell.typeahead({
+                    local: founds,
+                    name: 'users-'+property+'-'+$.now()
+                  });
+    cell.on('typeahead:selected', function(obj, datum) {
+      var users=[];
+
+      $(usersViewModel.originalUsers()).each(function(idx,user){
+        if(user[property] && user[property]() && user[property]().indexOf(datum.value)>=0){
+          users.push(user);
+        }
+      });
+      usersViewModel.users(users);
+    });
+
+  };
+
+  applySortOnHeadersButton=function(property,usersViewModel){
+    var cell = $("#main-content").find("#users-header-"+property );
+    cell.on("click",function(){
+      usersViewModel.users.sort(function(a, b) {
+        return a[property]().localeCompare(b[property]());
+      });
+    });
+  };
 
   editUserRoles=function(user){
     var viewModel = new UserViewModel(user);
@@ -280,31 +331,6 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
 
   }
 
-  applyAutocompleteOnHeaderUsers=function(property,usersViewModel){
-    var founds=[];
-    $(usersViewModel.originalUsers()).each(function(idx,user){
-      if(user[property] && user[property]()){
-        founds.push(user[property]());
-      }
-    });
-    //var filteredHeader = ;
-    $("#main-content").find("#users-grid-filter-auto-"+property ).typeahead({
-        local: founds,
-        name: 'users-'+property+'-'+$.now()
-    });
-    $("#main-content").find("#users-grid-filter-auto-"+property ).on('typeahead:selected', function(obj, datum) {
-      var users=[];
-
-      $(usersViewModel.originalUsers()).each(function(idx,user){
-        if(user[property] && user[property]() && user[property]().indexOf(datum.value)>=0){
-          users.push(user);
-        }
-      });
-      usersViewModel.users(users);
-    });
-
-  }
-
   /**
    * called from the menu to display tabs with users grid
     */
@@ -345,11 +371,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
 
   }
 
-  applyAutocompleteOnUsersHeaders=function(usersViewModel){
-    applyAutocompleteOnHeaderUsers("username",usersViewModel);
-    applyAutocompleteOnHeaderUsers("fullName",usersViewModel);
-    applyAutocompleteOnHeaderUsers("email",usersViewModel);
-  }
+
 
   activateUsersGridTab=function(){
     var mainContent = $("#main-content");
