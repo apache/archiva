@@ -40,7 +40,9 @@ Log Files
   
   []
 
-  Note since 1.4-M4, the log4j2 asyncLogger feature is configured as the default.
+  Note since 2.1.0, the log4j2 asyncLogger feature is NOT anymore configured as the default.
+
+  If you want to activate it as default add the system property <<-DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector>>
 
   This means the default <<AsyncLogger.WaitStrategy>> and <<AsyncLoggerConfig.WaitStrategy>> option is Sleep.
 
