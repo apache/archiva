@@ -131,21 +131,21 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
     lock = function(user){
       clearUserMessages();
       user.lock();
-    }
+    };
 
     unlock = function(user){
       clearUserMessages();
       user.unlock();
-    }
+    };
 
     passwordChangeRequire = function(user,forceChangedPassword){
       clearUserMessages();
       user.changePasswordChangeRequired(forceChangedPassword);
-    }
+    };
 
     this.sortByName = function() {
       this.users.sort(function(a, b) {
-          return a.username < b.username ? -1 : 1;
+        return a.username().localeCompare(b.username());
       });
     };
 
