@@ -66,7 +66,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
         }
       });
       self.users(founds);
-    }
+    };
     filterNonLocked=function(){
       var founds=[];
       $(self.originalUsers()).each(function(idx,user){
@@ -75,7 +75,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
         }
       });
       self.users(founds);
-    }
+    };
 
     filterPasswordChangeRequired=function(){
       var founds=[];
@@ -85,7 +85,8 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
         }
       });
       self.users(founds);
-    }
+    };
+
     filterPasswordChangeNotRequired=function(){
       var founds=[];
       $(self.originalUsers()).each(function(idx,user){
@@ -94,7 +95,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
         }
       });
       self.users(founds);
-    }
+    };
 
 
     this.addUser=function() {
@@ -143,16 +144,6 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
       clearUserMessages();
       user.changePasswordChangeRequired(forceChangedPassword);
     };
-
-    this.sortByName = function() {
-      this.users.sort(function(a, b) {
-        return a.username().localeCompare(b.username());
-      });
-    };
-
-    sortByProperty = function( property ) {
-      $.log("sortByProperty:" + property.headerText);
-    }
 
     deleteUser=function(user){
       clearUserMessages();
