@@ -50,7 +50,9 @@ import java.util.List;
 @Scope( "prototype" )
 public class ArtifactMissingChecksumsConsumer
     extends AbstractMonitoredConsumer
-    implements KnownRepositoryContentConsumer, RegistryListener
+    implements KnownRepositoryContentConsumer
+    // it's prototype bean so we assume configuration won't change during a run
+    //, RegistryListener
 {
     private String id = "create-missing-checksums";
 
@@ -78,7 +80,7 @@ public class ArtifactMissingChecksumsConsumer
         this.configuration = configuration;
         this.filetypes = filetypes;
 
-        configuration.addChangeListener( this );
+        //configuration.addChangeListener( this );
 
         initIncludes();
     }
@@ -197,6 +199,7 @@ public class ArtifactMissingChecksumsConsumer
         }
     }
 
+    /*
     @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
@@ -206,22 +209,25 @@ public class ArtifactMissingChecksumsConsumer
         }
     }
 
+
     @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        /* do nothing */
+        // do nothing
     }
+
+    */
 
     private void initIncludes()
     {
-        includes = new ArrayList<String>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
+        includes = new ArrayList<>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
 
     }
 
     @PostConstruct
     public void initialize()
     {
-        configuration.addChangeListener( this );
+        //configuration.addChangeListener( this );
 
         initIncludes();
     }
