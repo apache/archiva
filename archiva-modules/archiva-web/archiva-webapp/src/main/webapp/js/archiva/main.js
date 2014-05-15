@@ -22,7 +22,7 @@ define("archiva.main",["jquery","jquery.ui","sammy","jquery.tmpl",'i18n',"jquery
 function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryValidate,jqueryJson,ko,typeahead) {
 
   /**
-   * reccord a cookie for session with the logged user
+   * record a cookie for session with the logged user
    * @param user see user.js
    */
   reccordLoginCookie=function(user) {
@@ -68,6 +68,8 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
     var kUser = new User(user.username, user.password, user.confirmPassword,user.fullName,user.email,user.permanent,user.validated,
                     user.timestampAccountCreation,user.timestampLastLogin,user.timestampLastPasswordChange,user.locked,
                     user.passwordChangeRequired,null,user.readOnly,user.userManagerId)
+
+    $.log("user.rememberme:"+user.rememberme);
 
     kUser.rememberme(user.rememberme);
     return kUser;

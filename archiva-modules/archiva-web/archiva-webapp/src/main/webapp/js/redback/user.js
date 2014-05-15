@@ -429,6 +429,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
       }
 
       // FIXME check validated
+      $.log("window.redbackModel.rememberme:"+window.redbackModel.rememberme);
       user.rememberme(window.redbackModel.rememberme);
       if(user.rememberme()){
         user.password(window.redbackModel.password);
@@ -586,7 +587,8 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
 
     $('#modal-login-footer').append(smallSpinnerImg());
 
-    var rememberme=($("#user-login-form-rememberme" ).attr('checked')=='checked');
+    var rememberme=$('#user-login-form-rememberme').is(':checked');
+    $.log("user.js#login, rememberme:"+rememberme);
     window.redbackModel.rememberme=rememberme;
     window.redbackModel.password=$("#user-login-form-password").val();
 
