@@ -1230,10 +1230,13 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
                     success: function(result){
                       $.log("result:"+result);
                       if(result=="true"){
-                        mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-clear.png" )
+                        mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-clear.png" );
                       } else {
-                        mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-severe-alert-16-16.png" )
+                        mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-severe-alert-16-16.png" );
                       }
+                    },
+                    error: function(result){
+                        mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-severe-alert-16-16.png" );
                     }
                   });
                 });
