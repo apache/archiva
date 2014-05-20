@@ -22,6 +22,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
+import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.audit.AuditEvent;
@@ -244,7 +245,27 @@ public abstract class AbstractRestService
             // we must replace it with a valid managed one available for the user.
             if ( StringUtils.isEmpty( repositoryId ) )
             {
-                sb.append( '/' ).append( artifact.getContext() );
+                List<String> userRepos = userRepositories.getObservableRepositoryIds( getPrincipal() );
+                // is it a good one? if yes nothing to
+                // if not search the repo who is proxy for this remote
+                if ( !userRepos.contains( artifact.getContext() ) )
+                {
+                    for ( Map.Entry<String, List<ProxyConnector>> entry : proxyConnectorAdmin.getProxyConnectorAsMap().entrySet() )
+                    {
+                        for ( ProxyConnector proxyConnector : entry.getValue() )
+                        {
+                            if ( StringUtils.equals( "remote-" + proxyConnector.getTargetRepoId(),
+                                                     artifact.getContext() ) //
+                                && userRepos.contains( entry.getKey() ) )
+                            {
+                                sb.append( '/' ).append( entry.getKey() );
+                            }
+                        }
+                    }
+
+                }
+
+
             }
             else
             {
@@ -279,7 +300,7 @@ public abstract class AbstractRestService
 
             return sb.toString();
         }
-        catch ( RepositoryAdminException e )
+        catch ( Exception e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
@@ -301,7 +322,7 @@ public abstract class AbstractRestService
                         new ArtifactBuilder().forArtifactMetadata( artifact ).withManagedRepositoryContent(
                             repositoryContentFactory.getManagedRepositoryContent( repositoryId ) );
                     Artifact art = builder.build();
-                    art.setUrl( getArtifactUrl( art ) );
+                    art.setUrl( getArtifactUrl( art, repositoryId ) );
                     artifacts.add( art );
                 }
                 return artifacts;

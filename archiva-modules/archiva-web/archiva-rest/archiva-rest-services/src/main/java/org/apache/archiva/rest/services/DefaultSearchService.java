@@ -19,7 +19,6 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.indexer.search.SearchFields;
@@ -44,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -369,40 +367,9 @@ public class DefaultSearchService
                 } ).build();
             }
 
-            String artifactUrl = null;
-
             Artifact artifact = artifacts.get( 0 );
 
-            // we need to configure correctly the repositoryId
-            if ( StringUtils.isEmpty( repositoryId ) )
-            {
-                // is it a good one? if yes nothing to
-                // if not search the repo who is proxy for this remote
-                if ( !userRepos.contains( artifact.getContext() ) )
-                {
-                    for ( Map.Entry<String, List<ProxyConnector>> entry : proxyConnectorAdmin.getProxyConnectorAsMap().entrySet() )
-                    {
-                        for ( ProxyConnector proxyConnector : entry.getValue() )
-                        {
-                            if ( StringUtils.equals( "remote-" + proxyConnector.getTargetRepoId(),
-                                                     artifact.getContext() ) //
-                                && userRepos.contains( entry.getKey() ) )
-                            {
-                                return Response.temporaryRedirect(
-                                    new URI( getArtifactUrl( artifact, entry.getKey() ) ) ).build();
-                            }
-                        }
-                    }
-
-                }
-
-            }
-            else
-            {
-                artifactUrl = getArtifactUrl( artifact, repositoryId );
-            }
-
-            return Response.temporaryRedirect( new URI( artifactUrl ) ).build();
+            return Response.temporaryRedirect( new URI( artifact.getUrl() ) ).build();
         }
         catch ( Exception e )
         {
