@@ -114,6 +114,13 @@ public class SearchFields
 
     private String classifier;
 
+    /**
+     * we use exact String matching search
+     *
+     * @since 2.1.0
+     */
+    private boolean exactSearch = false;
+
     public SearchFields()
     {
         // no op
@@ -279,6 +286,16 @@ public class SearchFields
     public void setBundleRequireBundle( String bundleRequireBundle )
     {
         this.bundleRequireBundle = bundleRequireBundle;
+    }
+
+    public boolean isExactSearch()
+    {
+        return exactSearch;
+    }
+
+    public void setExactSearch( boolean exactSearch )
+    {
+        this.exactSearch = exactSearch;
     }
 
     @Override

@@ -57,6 +57,7 @@ import org.springframework.context.ApplicationContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public abstract class AbstractRestService
      * FIXME: this could be multiple implementations and needs to be configured.
      */
     @Inject
-    @Named( value = "repositorySessionFactory" )
+    @Named(value = "repositorySessionFactory")
     protected RepositorySessionFactory repositorySessionFactory;
 
     @Inject
@@ -100,16 +101,19 @@ public abstract class AbstractRestService
     protected RepositoryContentFactory repositoryContentFactory;
 
     @Inject
-    @Named( value = "archivaTaskScheduler#repository" )
+    @Named(value = "archivaTaskScheduler#repository")
     protected DefaultRepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
 
     @Inject
-    @Named( value = "userConfiguration#default" )
+    @Named(value = "userConfiguration#default")
     protected UserConfiguration config;
 
     @Context
     protected HttpServletRequest httpServletRequest;
+
+    @Context
+    protected HttpServletResponse httpServletResponse;
 
     protected AuditInformation getAuditInformation()
     {
@@ -213,6 +217,13 @@ public abstract class AbstractRestService
     protected String getArtifactUrl( Artifact artifact )
         throws ArchivaRestServiceException
     {
+        return getArtifactUrl( artifact, null );
+    }
+
+
+    protected String getArtifactUrl( Artifact artifact, String repositoryId )
+        throws ArchivaRestServiceException
+    {
         try
         {
 
@@ -225,10 +236,16 @@ public abstract class AbstractRestService
 
             sb.append( "/repository" );
 
-            // FIXME when artifact come from a remote repository when have here the remote repo id
+            // when artifact come from a remote repository when have here the remote repo id
             // we must replace it with a valid managed one available for the user.
-
-            sb.append( '/' ).append( artifact.getContext() );
+            if ( StringUtils.isEmpty( repositoryId ) )
+            {
+                sb.append( '/' ).append( artifact.getContext() );
+            }
+            else
+            {
+                sb.append( '/' ).append( repositoryId );
+            }
 
             sb.append( '/' ).append( StringUtils.replaceChars( artifact.getGroupId(), '.', '/' ) );
             sb.append( '/' ).append( artifact.getArtifactId() );

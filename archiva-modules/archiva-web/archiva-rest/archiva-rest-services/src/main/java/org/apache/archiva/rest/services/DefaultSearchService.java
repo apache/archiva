@@ -37,14 +37,17 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Olivier Lamy
  */
-@Service( "searchService#rest" )
+@Service("searchService#rest")
 public class DefaultSearchService
     extends AbstractRestService
     implements SearchService
@@ -203,6 +206,51 @@ public class DefaultSearchService
         throws ArchivaRestServiceException
     {
         return new StringList( getObservableRepos() );
+    }
+
+    @Override
+    public Response redirectToArtifactFile( String repositoryId, String groupId, String artifactId, String version,
+                                            String packaging, String classifier )
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+
+            SearchFields searchField = new SearchFields();
+            searchField.setGroupId( groupId );
+            searchField.setArtifactId( artifactId );
+            searchField.setPackaging( StringUtils.isBlank( packaging ) ? "jar" : packaging );
+            searchField.setVersion( version );
+            searchField.setClassifier( classifier );
+            searchField.setRepositories( Arrays.asList( repositoryId ) );
+            searchField.setExactSearch( true );
+            SearchResults searchResults = repositorySearch.search( getPrincipal(), searchField, null );
+            List<Artifact> artifacts = getArtifacts( searchResults );
+
+            // TODO improve that with querying lucene with null value for classifier
+            // so simple loop and retain only artifact with null classifier
+            if ( classifier == null )
+            {
+                List<Artifact> filteredArtifacts = new ArrayList<>( artifacts.size() );
+                for ( Artifact artifact : artifacts )
+                {
+                    if ( artifact.getClassifier() == null )
+                    {
+                        filteredArtifacts.add( artifact );
+                    }
+                }
+
+                artifacts = filteredArtifacts;
+            }
+
+            String artifactUrl = getArtifactUrl( artifacts.get( 0 ), repositoryId );
+
+            return Response.temporaryRedirect( new URI( artifactUrl ) ).build();
+        }
+        catch ( Exception e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
     }
 
     //-------------------------------------
