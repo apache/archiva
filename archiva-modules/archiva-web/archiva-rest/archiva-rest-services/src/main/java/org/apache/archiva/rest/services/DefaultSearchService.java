@@ -19,6 +19,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.indexer.search.SearchFields;
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -215,6 +217,79 @@ public class DefaultSearchService
     {
         try
         {
+            // validate query
+
+            if ( StringUtils.isEmpty( groupId ) )
+            {
+                return Response.status( new Response.StatusType()
+                {
+                    @Override
+                    public int getStatusCode()
+                    {
+                        return Response.Status.BAD_REQUEST.getStatusCode();
+                    }
+
+                    @Override
+                    public Response.Status.Family getFamily()
+                    {
+                        return Response.Status.BAD_REQUEST.getFamily();
+                    }
+
+                    @Override
+                    public String getReasonPhrase()
+                    {
+                        return "groupId mandatory";
+                    }
+                } ).build();
+            }
+
+            if ( StringUtils.isEmpty( artifactId ) )
+            {
+                return Response.status( new Response.StatusType()
+                {
+                    @Override
+                    public int getStatusCode()
+                    {
+                        return Response.Status.BAD_REQUEST.getStatusCode();
+                    }
+
+                    @Override
+                    public Response.Status.Family getFamily()
+                    {
+                        return Response.Status.BAD_REQUEST.getFamily();
+                    }
+
+                    @Override
+                    public String getReasonPhrase()
+                    {
+                        return "artifactId mandatory";
+                    }
+                } ).build();
+            }
+
+            if ( StringUtils.isEmpty( version ) )
+            {
+                return Response.status( new Response.StatusType()
+                {
+                    @Override
+                    public int getStatusCode()
+                    {
+                        return Response.Status.BAD_REQUEST.getStatusCode();
+                    }
+
+                    @Override
+                    public Response.Status.Family getFamily()
+                    {
+                        return Response.Status.BAD_REQUEST.getFamily();
+                    }
+
+                    @Override
+                    public String getReasonPhrase()
+                    {
+                        return "version mandatory";
+                    }
+                } ).build();
+            }
 
             SearchFields searchField = new SearchFields();
             searchField.setGroupId( groupId );
@@ -222,10 +297,36 @@ public class DefaultSearchService
             searchField.setPackaging( StringUtils.isBlank( packaging ) ? "jar" : packaging );
             searchField.setVersion( version );
             searchField.setClassifier( classifier );
-            searchField.setRepositories( Arrays.asList( repositoryId ) );
+            List<String> userRepos = getObservablesRepoIds().getStrings();
+            searchField.setRepositories(
+                StringUtils.isEmpty( repositoryId ) ? userRepos : Arrays.asList( repositoryId ) );
             searchField.setExactSearch( true );
             SearchResults searchResults = repositorySearch.search( getPrincipal(), searchField, null );
             List<Artifact> artifacts = getArtifacts( searchResults );
+
+            if ( artifacts.isEmpty() )
+            {
+                return Response.status( new Response.StatusType()
+                {
+                    @Override
+                    public int getStatusCode()
+                    {
+                        return Response.Status.NO_CONTENT.getStatusCode();
+                    }
+
+                    @Override
+                    public Response.Status.Family getFamily()
+                    {
+                        return Response.Status.NO_CONTENT.getFamily();
+                    }
+
+                    @Override
+                    public String getReasonPhrase()
+                    {
+                        return "your query doesn't return any artifact";
+                    }
+                } ).build();
+            }
 
             // TODO improve that with querying lucene with null value for classifier
             // so simple loop and retain only artifact with null classifier
@@ -243,7 +344,63 @@ public class DefaultSearchService
                 artifacts = filteredArtifacts;
             }
 
-            String artifactUrl = getArtifactUrl( artifacts.get( 0 ), repositoryId );
+            // TODO return json result of the query ?
+            if ( artifacts.size() > 1 )
+            {
+                return Response.status( new Response.StatusType()
+                {
+                    @Override
+                    public int getStatusCode()
+                    {
+                        return Response.Status.BAD_REQUEST.getStatusCode();
+                    }
+
+                    @Override
+                    public Response.Status.Family getFamily()
+                    {
+                        return Response.Status.BAD_REQUEST.getFamily();
+                    }
+
+                    @Override
+                    public String getReasonPhrase()
+                    {
+                        return "your query return more than one artifact";
+                    }
+                } ).build();
+            }
+
+            String artifactUrl = null;
+
+            Artifact artifact = artifacts.get( 0 );
+
+            // we need to configure correctly the repositoryId
+            if ( StringUtils.isEmpty( repositoryId ) )
+            {
+                // is it a good one? if yes nothing to
+                // if not search the repo who is proxy for this remote
+                if ( !userRepos.contains( artifact.getContext() ) )
+                {
+                    for ( Map.Entry<String, List<ProxyConnector>> entry : proxyConnectorAdmin.getProxyConnectorAsMap().entrySet() )
+                    {
+                        for ( ProxyConnector proxyConnector : entry.getValue() )
+                        {
+                            if ( StringUtils.equals( "remote-" + proxyConnector.getTargetRepoId(),
+                                                     artifact.getContext() ) //
+                                && userRepos.contains( entry.getKey() ) )
+                            {
+                                return Response.temporaryRedirect(
+                                    new URI( getArtifactUrl( artifact, entry.getKey() ) ) ).build();
+                            }
+                        }
+                    }
+
+                }
+
+            }
+            else
+            {
+                artifactUrl = getArtifactUrl( artifact, repositoryId );
+            }
 
             return Response.temporaryRedirect( new URI( artifactUrl ) ).build();
         }

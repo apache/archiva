@@ -41,8 +41,6 @@ public class DefaultProxyConnectorService
     extends AbstractRestService
     implements ProxyConnectorService
 {
-    @Inject
-    private ProxyConnectorAdmin proxyConnectorAdmin;
 
     private List<Policy> allPolicies;
 
