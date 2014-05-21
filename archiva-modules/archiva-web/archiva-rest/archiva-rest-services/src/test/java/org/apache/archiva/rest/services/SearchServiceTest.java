@@ -22,12 +22,14 @@ import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.SearchService;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -199,7 +201,8 @@ public class SearchServiceTest
         assertNotNull( artifacts );
         assertTrue(
             " not 1 results for Bundle Symbolic Name org.apache.karaf.features.command but " + artifacts.size() + ":"
-                + artifacts, artifacts.size() == 1 );
+                + artifacts, artifacts.size() == 1
+        );
 
         deleteTestRepo( testRepoId );
     }
@@ -233,9 +236,10 @@ public class SearchServiceTest
         {
             log.info( "url: {}", artifact.getUrl() );
             String version = artifact.getVersion();
-            assertEquals( "http://localhost:" + port
-                              + "/repository/test-repo/org/apache/karaf/features/org.apache.karaf.features.core/"
-                              + version + "/org.apache.karaf.features.core-" + version + ".jar", artifact.getUrl() );
+            Assertions.assertThat( artifact.getUrl() ) //
+                .isEqualTo( "http://localhost:" + port
+                                + "/repository/test-repo/org/apache/karaf/features/org.apache.karaf.features.core/"
+                                + version + "/org.apache.karaf.features.core-" + version + ".jar" );
 
 
         }
