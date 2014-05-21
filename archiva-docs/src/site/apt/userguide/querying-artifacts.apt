@@ -47,5 +47,8 @@ Querying Artifacts
 
   * r= the repository (optional, if none all repositories available for reading for the current user are searched)
 
+  []
 
+  <<NOTE>>: the response is a redirect (so you need to follow redirect if you want to download the artifact). No content
+  response is returned if the query doesn't match any artifact.
 
