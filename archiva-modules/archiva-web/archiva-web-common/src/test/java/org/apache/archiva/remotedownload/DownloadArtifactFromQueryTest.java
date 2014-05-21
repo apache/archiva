@@ -174,6 +174,31 @@ public class DownloadArtifactFromQueryTest
             Assert.assertEquals( "http://localhost:" + port + "/repository/" + id
                                      + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar", location
             );
+
+
+        }
+        finally
+        {
+            getManagedRepositoriesService().deleteManagedRepository( id, false );
+        }
+
+    }
+
+    @Test
+    public void download_no_content()
+        throws Exception
+    {
+        String id = createAndScanRepo();
+
+        try
+        {
+            Response response =
+                getSearchService().redirectToArtifactFile( null, "org.apache.archiva.beer", "archiva-wine", "LATEST", null,
+                                                           null );
+
+            Assert.assertEquals( Response.Status.NO_CONTENT.getStatusCode(), response.getStatus() );
+
+
         }
         finally
         {
