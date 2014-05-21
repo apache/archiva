@@ -264,6 +264,10 @@ public abstract class AbstractRestService
                     }
 
                 }
+                else
+                {
+                    sb.append( '/' ).append( artifact.getContext() );
+                }
 
 
             }
