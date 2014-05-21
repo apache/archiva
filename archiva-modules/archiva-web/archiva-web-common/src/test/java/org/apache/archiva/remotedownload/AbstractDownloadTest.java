@@ -70,7 +70,7 @@ public abstract class AbstractDownloadTest
     extends TestCase
 {
 
-    protected Logger log = LoggerFactory.getLogger( getClass() );
+    protected final Logger log = LoggerFactory.getLogger( getClass() );
 
     protected static String previousAppServerBase;
 

@@ -23,16 +23,16 @@ import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
+import org.apache.archiva.redback.rest.services.FakeCreateAdminService;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.ProxyConnectorService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
-import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
-import org.apache.archiva.redback.rest.services.FakeCreateAdminService;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -41,15 +41,18 @@ import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
  */
-@RunWith(ArchivaBlockJUnit4ClassRunner.class)
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class DownloadMergedIndexTest
     extends AbstractDownloadTest
 {
@@ -61,7 +64,8 @@ public class DownloadMergedIndexTest
         previousAppServerBase = System.getProperty( "appserver.base" );
         System.setProperty( "appserver.base",
                             new File( System.getProperty( "java.io.tmpdir" ) ).getCanonicalPath() + "/target/"
-                                + DownloadMergedIndexTest.class.getName() );
+                                + DownloadMergedIndexTest.class.getName()
+        );
     }
 
     @AfterClass
@@ -93,10 +97,10 @@ public class DownloadMergedIndexTest
     public void downloadMergedIndex()
         throws Exception
     {
-        File tmpIndexDir = new File( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex" );
-        if ( tmpIndexDir.exists() )
+        Path tmpIndexDir = Paths.get( System.getProperty( "java.io.tmpdir" ), "tmpIndex" );
+        if ( Files.exists( tmpIndexDir ) )
         {
-            FileUtils.deleteDirectory( tmpIndexDir );
+            FileUtils.deleteDirectory( tmpIndexDir.toFile() );
         }
         String id = Long.toString( System.currentTimeMillis() );
         ManagedRepository managedRepository = new ManagedRepository();
@@ -165,8 +169,7 @@ public class DownloadMergedIndexTest
         remoteRepository.setUserName( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME );
         remoteRepository.setPassword( FakeCreateAdminService.ADMIN_TEST_PWD );
 
-
-        if (getRemoteRepositoriesService().getRemoteRepository( remoteRepository.getId() ) != null)
+        if ( getRemoteRepositoriesService().getRemoteRepository( remoteRepository.getId() ) != null )
         {
             getRemoteRepositoriesService().deleteRemoteRepository( remoteRepository.getId() );
         }
