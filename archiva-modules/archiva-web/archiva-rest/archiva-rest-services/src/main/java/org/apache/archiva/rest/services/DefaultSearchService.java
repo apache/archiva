@@ -19,6 +19,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.indexer.search.SearchFields;
@@ -43,15 +44,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * @author Olivier Lamy
  */
-@Service("searchService#rest")
+@Service( "searchService#rest" )
 public class DefaultSearchService
     extends AbstractRestService
     implements SearchService
 {
+
+    private static final String LATEST_KEYWORD = "LATEST";
 
     @Inject
     private RepositorySearch repositorySearch;
@@ -265,35 +269,14 @@ public class DefaultSearchService
                 } ).build();
             }
 
-            if ( StringUtils.isEmpty( version ) )
-            {
-                return Response.status( new Response.StatusType()
-                {
-                    @Override
-                    public int getStatusCode()
-                    {
-                        return Response.Status.BAD_REQUEST.getStatusCode();
-                    }
-
-                    @Override
-                    public Response.Status.Family getFamily()
-                    {
-                        return Response.Status.BAD_REQUEST.getFamily();
-                    }
-
-                    @Override
-                    public String getReasonPhrase()
-                    {
-                        return "version mandatory";
-                    }
-                } ).build();
-            }
-
             SearchFields searchField = new SearchFields();
             searchField.setGroupId( groupId );
             searchField.setArtifactId( artifactId );
             searchField.setPackaging( StringUtils.isBlank( packaging ) ? "jar" : packaging );
-            searchField.setVersion( version );
+            if ( !StringUtils.equals( version, LATEST_KEYWORD ) )
+            {
+                searchField.setVersion( version );
+            }
             searchField.setClassifier( classifier );
             List<String> userRepos = getObservablesRepoIds().getStrings();
             searchField.setRepositories(
@@ -343,7 +326,7 @@ public class DefaultSearchService
             }
 
             // TODO return json result of the query ?
-            if ( artifacts.size() > 1 )
+            if ( artifacts.size() > 1 && !StringUtils.equals( version, LATEST_KEYWORD ) )
             {
                 return Response.status( new Response.StatusType()
                 {
@@ -365,6 +348,21 @@ public class DefaultSearchService
                         return "your query return more than one artifact";
                     }
                 } ).build();
+            }
+
+            // version is LATEST so we have to find the latest one from the result
+            if ( artifacts.size() > 1 && StringUtils.equals( version, LATEST_KEYWORD ) )
+            {
+                TreeMap<String, Artifact> artifactPerVersion = new TreeMap<>( VersionComparator.getInstance() );
+
+                for ( Artifact artifact : artifacts )
+                {
+                    artifactPerVersion.put( artifact.getVersion(), artifact );
+                }
+
+                return Response.temporaryRedirect(
+                    new URI( artifactPerVersion.lastEntry().getValue().getUrl() ) ).build();
+
             }
 
             Artifact artifact = artifacts.get( 0 );
