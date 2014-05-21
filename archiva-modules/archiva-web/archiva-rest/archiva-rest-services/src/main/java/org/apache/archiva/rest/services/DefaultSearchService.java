@@ -245,6 +245,30 @@ public class DefaultSearchService
                 } ).build();
             }
 
+            if ( StringUtils.isEmpty( version ) )
+            {
+                return Response.status( new Response.StatusType()
+                {
+                    @Override
+                    public int getStatusCode()
+                    {
+                        return Response.Status.BAD_REQUEST.getStatusCode();
+                    }
+
+                    @Override
+                    public Response.Status.Family getFamily()
+                    {
+                        return Response.Status.BAD_REQUEST.getFamily();
+                    }
+
+                    @Override
+                    public String getReasonPhrase()
+                    {
+                        return "version mandatory";
+                    }
+                } ).build();
+            }
+
             if ( StringUtils.isEmpty( artifactId ) )
             {
                 return Response.status( new Response.StatusType()
