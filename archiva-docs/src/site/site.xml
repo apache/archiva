@@ -79,6 +79,7 @@
       <item name="Deploying to repository"   href="/userguide/deploy.html" />
       <item name="Configuring Virtual Repositories"   href="/userguide/virtual-repositories.html" />
       <item name="Rss Feeds in Archiva"      href="/userguide/rss.html"/>
+      <item name="Querying Artifacts"        href="/userguide/querying-artifacts.html"/>
       <!-- not yet in new UI -->
       <!--item name="Audit Log Report"      href="/userguide/auditlog-report.html"/-->
     </menu>
