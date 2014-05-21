@@ -35,7 +35,11 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
     var expires= Number(window.cookieInformation.timeout);
 
-    var userJson=ko.toJSON(user);
+    var kUser = new User(user.username, null, user.confirmPassword,user.fullName,user.email,user.permanent,user.validated,
+                         user.timestampAccountCreation,user.timestampLastLogin,user.timestampLastPasswordChange,user.locked,
+                         user.passwordChangeRequired,null,user.readOnly,user.userManagerId);
+    kUser.rememberme(user.rememberme());
+    var userJson=ko.toJSON(kUser);
 
     $.log("reccordLoginCookie:expires:"+expires+",path:"+path+",domain:"+domain+",secure:"+secure+",user:"+userJson);
 
@@ -55,7 +59,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
       }
     }
 
-    $.cookie('archiva_login', userJson,options);
+    $.cookie('archiva_login',userJson,options);
   };
 
   getUserFromLoginCookie=function(){
@@ -65,9 +69,9 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
     if(!user){
       return null;
     }
-    var kUser = new User(user.username, user.password, user.confirmPassword,user.fullName,user.email,user.permanent,user.validated,
+    var kUser = new User(user.username, null, user.confirmPassword,user.fullName,user.email,user.permanent,user.validated,
                     user.timestampAccountCreation,user.timestampLastLogin,user.timestampLastPasswordChange,user.locked,
-                    user.passwordChangeRequired,null,user.readOnly,user.userManagerId)
+                    user.passwordChangeRequired,null,user.readOnly,user.userManagerId);
 
     $.log("user.rememberme:"+user.rememberme);
 
