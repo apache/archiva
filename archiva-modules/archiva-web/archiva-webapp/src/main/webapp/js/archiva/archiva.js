@@ -64,7 +64,7 @@ $.ajax({
               "startup": "archiva/startup",
               "jquery.ui": "jquery-ui-1.10.4.min",
               "jquery.ui.widget": "jquery.ui.widget-1.9.2",
-              "jquery.cookie": "jquery.cookie.1.0.0",
+              "jquery.cookie": "jquery.cookie.1.4.1",
               "bootstrap": "bootstrap.2.2.2",
               "jquery.validate": "jquery.validate.1.11.1.min",
               "jquery.json": "jquery.json-2.3.min",
