@@ -35,12 +35,12 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
     var expires= Number(window.cookieInformation.timeout);
 
-    var kUser = new User(user.username, null, user.confirmPassword,user.fullName,user.email,user.permanent,user.validated,
+    var kUser = new User(user.username, user.password, user.confirmPassword,user.fullName,user.email,user.permanent,user.validated,
                          user.timestampAccountCreation,user.timestampLastLogin,user.timestampLastPasswordChange,user.locked,
                          user.passwordChangeRequired,null,user.readOnly,user.userManagerId);
     kUser.rememberme(user.rememberme());
     var userJson=ko.toJSON(kUser);
-
+    $.log("reccordLoginCookie:"+userJson);
     $.log("reccordLoginCookie:expires:"+expires+",path:"+path+",domain:"+domain+",secure:"+secure+",user:"+userJson);
 
     var options = null;
@@ -64,12 +64,12 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
   getUserFromLoginCookie=function(){
     var cookieContent=$.cookie('archiva_login');
-    $.log("archiva_login cookie content:"+cookieContent);
+    $.log("archiva_getUserFromLoginCookie cookie content:"+cookieContent);
     var user = $.parseJSON(cookieContent);
     if(!user){
       return null;
     }
-    var kUser = new User(user.username, null, user.confirmPassword,user.fullName,user.email,user.permanent,user.validated,
+    var kUser = new User(user.username, user.password, user.confirmPassword,user.fullName,user.email,user.permanent,user.validated,
                     user.timestampAccountCreation,user.timestampLastLogin,user.timestampLastPasswordChange,user.locked,
                     user.passwordChangeRequired,null,user.readOnly,user.userManagerId);
 
@@ -82,7 +82,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
 
   logout=function(){
-    var user = getUserFromLoginCookie();
+    var user = window.user;//getUserFromLoginCookie();
     if(user){
       user.logged=false;
       reccordLoginCookie(user);
@@ -883,6 +883,97 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
     window.sammyArchivaApplication.run();
 
+
+    var user = getUserFromLoginCookie();
+
+    $.log("found user:"+(user==null?"null":user.username()+":"+user.password()+":"+user.rememberme()));
+
+    // if user has details as username and passowrd and rememberme is on just try to log it
+    if (user!=null&&user.username()!=null&&user.password()!=null&&user.rememberme()==true){
+      window.redbackModel.rememberme=user.rememberme();
+      window.redbackModel.password=user.password();
+      loginCall(user.username(),user.password(),user.rememberme()
+          ,successLoginCallbackFn,errorLoginCallbackFn,completeLoginCallbackFn);
+    }
+
+  };
+
+
+  /**
+   * callback success function on rest login call.
+   * modal close and hide/show some links (login,logout,register...)
+   * @param result
+   */
+   successLoginCallbackFn=function(result){
+
+    var logged = false;
+    if (result == null) {
+      logged = false;
+    } else {
+      if (result.username) {
+        logged = true;
+      }
+    }
+    if (logged == true) {
+      var user = mapUser(result);
+
+      if (user.passwordChangeRequired()==true){
+        changePasswordBox(true,false,user);
+        return;
+      }
+      // not really needed as an exception is returned but "ceintures et bretelles" as we say in French :-)
+      if (user.locked()==true){
+        $.log("user locked");
+        displayErrorMessage($.i18n.prop("account.locked"));
+        return;
+      }
+
+
+      $.log("window.redbackModel.rememberme:"+window.redbackModel.rememberme);
+      user.rememberme(window.redbackModel.rememberme);
+      if(user.rememberme()){
+        user.password(window.redbackModel.password);
+      }
+      $.log("user.rememberme:"+(user.rememberme()));
+      reccordLoginCookie(user);
+      window.user=user;
+      $("#login-link").hide();
+      $("#logout-link").show();
+      $("#register-link").hide();
+      $("#change-password-link").show();
+      if (window.modalLoginWindow){
+        window.modalLoginWindow.modal('hide');
+      }
+      clearForm("#user-login-form");
+      decorateMenuWithKarma(user);
+      $("#login-welcome" ).show();
+      $("#welcome-label" ).html( $.i18n.prop("user.login.welcome",user.username()));
+      return;
+    }
+    var modalLoginErrMsg=$("#modal-login-err-message");
+    modalLoginErrMsg.html($.i18n.prop("incorrect.username.password"));
+    modalLoginErrMsg.show();
+  };
+
+  /**
+   * callback error function on rest login call. display error message
+   * @param result
+   */
+  errorLoginCallbackFn= function(result) {
+    var obj = jQuery.parseJSON(result.responseText);
+    displayRedbackError(obj,"modal-login-err-message");
+    $("#modal-login-err-message").show();
+  };
+
+  /**
+   * callback complate function on rest login call. remove spinner from modal login box
+   * @param result
+   */
+  completeLoginCallbackFn=function(){
+    $("#modal-login-ok").button("reset");
+    $("#small-spinner").remove();
+    // force current screen reload to consider user karma
+    window.sammyArchivaApplication.refresh();
   };
 
   drawQuickSearchAutocomplete=function(selector){

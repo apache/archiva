@@ -46,8 +46,15 @@ function(jquery,utils,jqueryValidate,jqueryJson,ko) {
       success: function(data) {
         $.log("isLogged:"+data);
         var user = data ? mapUser(data):null;
+        var cookieUser = getUserFromLoginCookie();
+
         window.user=user;
         if(user){
+          if (cookieUser!=null){
+            $.log("cookieUser:"+cookieUser.password());
+            user.password(cookieUser.password());
+            user.rememberme(cookieUser.rememberme());
+          }
           reccordLoginCookie(user);
         }
         $.log("userLogged:"+(user!=null));
