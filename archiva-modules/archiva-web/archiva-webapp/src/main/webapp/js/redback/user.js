@@ -604,7 +604,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
       window.modalEditUserBox = $("#modal-user-edit").modal({backdrop:'static',show:false});
       window.modalEditUserBox.bind('hidden', function () {
         $("#modal-user-edit-err-message").hide();
-      })
+      });
       $("#modal-user-edit").find("#modal-user-edit-ok").on( "click keydown keypress", function(e) {
         e.preventDefault();
         $.log("user.js#editUserDetailsBox");
@@ -620,6 +620,10 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
           password:$("#modal-user-edit").find("#userEditFormNewPassword").val(),
           confirmPassword:$("#modal-user-edit").find("#userEditFormNewPasswordConfirm").val()
         };
+        var kuser =getUserFromLoginCookie();
+        user.rememberme=function(){
+          return kuser.rememberme();
+        }
         editUserDetails(user);
       });
     }

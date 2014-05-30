@@ -38,6 +38,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
     var kUser = new User(user.username, user.password, user.confirmPassword,user.fullName,user.email,user.permanent,user.validated,
                          user.timestampAccountCreation,user.timestampLastLogin,user.timestampLastPasswordChange,user.locked,
                          user.passwordChangeRequired,null,user.readOnly,user.userManagerId);
+
     kUser.rememberme(user.rememberme());
     var userJson=ko.toJSON(kUser);
     $.log("reccordLoginCookie:"+userJson);
