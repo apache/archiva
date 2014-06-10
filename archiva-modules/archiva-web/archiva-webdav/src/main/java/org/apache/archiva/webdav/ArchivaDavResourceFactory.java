@@ -588,6 +588,8 @@ public class ArchivaDavResourceFactory
         {
             boolean readMethod = WebdavMethodUtil.isReadMethod( request.getMethod() );
             // Maven Centric part ask evaluation if -SNAPSHOT
+            // MRM-1846 test if read method to prevent issue with maven 2.2.1 and uniqueVersion false
+
             String path = readMethod ?
                 evaluatePathWithVersion( archivaLocator, managedRepositoryContent, request.getContextPath() )
                 : getLogicalResource( archivaLocator, managedRepository, false );
