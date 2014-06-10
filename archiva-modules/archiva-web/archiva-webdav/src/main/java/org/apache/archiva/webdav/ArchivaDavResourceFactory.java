@@ -586,8 +586,11 @@ public class ArchivaDavResourceFactory
         DavResource resource = null;
         if ( isAuthorized( request, managedRepositoryContent.getId() ) )
         {
+            boolean readMethod = WebdavMethodUtil.isReadMethod( request.getMethod() );
             // Maven Centric part ask evaluation if -SNAPSHOT
-            String path = evaluatePathWithVersion( archivaLocator, managedRepositoryContent, request.getContextPath() );
+            String path = readMethod ?
+                evaluatePathWithVersion( archivaLocator, managedRepositoryContent, request.getContextPath() )
+                : getLogicalResource( archivaLocator, managedRepository, false );
             if ( path.startsWith( "/" ) )
             {
                 path = path.substring( 1 );

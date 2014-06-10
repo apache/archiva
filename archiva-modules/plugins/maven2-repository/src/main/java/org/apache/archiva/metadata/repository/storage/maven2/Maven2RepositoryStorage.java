@@ -102,12 +102,12 @@ import java.util.Map;
  * Maven 2 repository format storage implementation. This class currently takes parameters to indicate the repository to
  * deal with rather than being instantiated per-repository.
  * FIXME: instantiate one per repository and allocate permanently from a factory (which can be obtained within the session).
- * <p>
+ * <p/>
  * The session is passed in as an argument to obtain any necessary resources, rather than the class being instantiated
  * within the session in the context of a single managed repository's resolution needs.
- * <p>
+ * <p/>
  */
-@Service( "repositoryStorage#maven2" )
+@Service("repositoryStorage#maven2")
 public class Maven2RepositoryStorage
     implements RepositoryStorage
 {
@@ -129,7 +129,7 @@ public class Maven2RepositoryStorage
     private NetworkProxyAdmin networkProxyAdmin;
 
     @Inject
-    @Named( "repositoryPathTranslator#maven2" )
+    @Named("repositoryPathTranslator#maven2")
     private RepositoryPathTranslator pathTranslator;
 
     @Inject
@@ -139,7 +139,7 @@ public class Maven2RepositoryStorage
     private ApplicationContext applicationContext;
 
     @Inject
-    @Named( "pathParser#default" )
+    @Named("pathParser#default")
     private PathParser pathParser;
 
     private static final String METADATA_FILENAME_START = "maven-metadata";
@@ -402,8 +402,7 @@ public class Maven2RepositoryStorage
 
     private List<org.apache.archiva.metadata.model.Dependency> convertDependencies( List<Dependency> dependencies )
     {
-        List<org.apache.archiva.metadata.model.Dependency> l =
-            new ArrayList<>();
+        List<org.apache.archiva.metadata.model.Dependency> l = new ArrayList<>();
         for ( Dependency dependency : dependencies )
         {
             org.apache.archiva.metadata.model.Dependency newDependency =
@@ -461,8 +460,7 @@ public class Maven2RepositoryStorage
 
     private List<org.apache.archiva.metadata.model.MailingList> convertMailingLists( List<MailingList> mailingLists )
     {
-        List<org.apache.archiva.metadata.model.MailingList> l =
-            new ArrayList<>();
+        List<org.apache.archiva.metadata.model.MailingList> l = new ArrayList<>();
         for ( MailingList mailingList : mailingLists )
         {
             org.apache.archiva.metadata.model.MailingList newMailingList =
@@ -810,11 +808,14 @@ public class Maven2RepositoryStorage
             // org/apache/archiva/archiva-checksum/1.4-M4-SNAPSHOT/archiva-checksum-1.4-M4-SNAPSHOT.jar
             // ->  archiva-checksum-1.4-M4-20130425.081822-1.jar
 
-            filePath =
-                StringUtils.replace( filePath, artifactReference.getArtifactId() + "-" + artifactReference.getVersion(),
-                                     artifactReference.getArtifactId() + "-" + StringUtils.remove(
-                                         artifactReference.getVersion(), "-" + VersionUtil.SNAPSHOT ) + "-" + timestamp
-                                         + "-" + buildNumber );
+            filePath = StringUtils.replace( filePath, //
+                                            artifactReference.getArtifactId() //
+                                                + "-" + artifactReference.getVersion(), //
+                                            artifactReference.getArtifactId() //
+                                                + "-" + StringUtils.remove( artifactReference.getVersion(),
+                                                                            "-" + VersionUtil.SNAPSHOT ) //
+                                                + "-" + timestamp //
+                                                + "-" + buildNumber );
 
             throw new RelocationException( "/repository/" + managedRepositoryContent.getRepository().getId() +
                                                ( StringUtils.startsWith( filePath, "/" ) ? "" : "/" ) + filePath,
