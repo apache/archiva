@@ -232,7 +232,7 @@ public class ArchivaDavResourceFactoryTest
 
             expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 3 );
 
-            expect( request.getMethod() ).andReturn( "GET" ).times( 2 );
+            expect( request.getMethod() ).andReturn( "GET" ).times( 3 );
 
             expect( request.getPathInfo() ).andReturn( "org/apache/archiva" ).times( 0, 2 );
 
@@ -310,7 +310,7 @@ public class ArchivaDavResourceFactoryTest
 
             expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 3 );
 
-            expect( request.getMethod() ).andReturn( "GET" ).times( 2 );
+            expect( request.getMethod() ).andReturn( "GET" ).times( 3 );
 
             expect( request.getPathInfo() ).andReturn( "org/apache/archiva" ).times( 0, 2 );
 
@@ -392,7 +392,7 @@ public class ArchivaDavResourceFactoryTest
 
             expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 3 );
 
-            expect( request.getMethod() ).andReturn( "GET" ).times( 4 );
+            expect( request.getMethod() ).andReturn( "GET" ).times( 5 );
 
             expect( request.getPathInfo() ).andReturn( "org/apache/archiva" ).times( 0, 2 );
 
@@ -470,7 +470,7 @@ public class ArchivaDavResourceFactoryTest
 
             expect( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ) ).andReturn( internalRepo );
 
-            expect( request.getMethod() ).andReturn( "GET" ).times( 3 );
+            expect( request.getMethod() ).andReturn( "GET" ).times( 4 );
 
             expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 3 );
 
@@ -582,7 +582,7 @@ public class ArchivaDavResourceFactoryTest
 
             expect( repoFactory.getManagedRepositoryContent( LEGACY_REPO ) ).andReturn( legacyRepo );
 
-            expect( request.getMethod() ).andReturn( "GET" ).times( 2 );
+            expect( request.getMethod() ).andReturn( "GET" ).times( 3 );
 
             expect( request.getRemoteAddr() ).andReturn( "http://localhost:8080" ).times( 3 );
 
