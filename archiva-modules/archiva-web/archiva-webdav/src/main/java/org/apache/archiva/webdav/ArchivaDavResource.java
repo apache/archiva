@@ -212,8 +212,7 @@ public class ArchivaDavResource
     {
         if ( !isCollection() )
         {
-            //outputContext.setContentLength( localResource.length() );
-            outputContext.setProperty( DavConstants.HEADER_CONTENT_LENGTH, Long.toString( localResource.length() ) );
+            outputContext.setContentLength( localResource.length() );
             outputContext.setContentType( mimeTypes.getMimeType( localResource.getName() ) );
         }
 
@@ -331,8 +330,7 @@ public class ArchivaDavResource
             }
 
             // TODO: a bad deployment shouldn't delete an existing file - do we need to write to a temporary location first?
-            //long expectedContentLength = inputContext.getContentLength();
-            long expectedContentLength = Long.parseLong( inputContext.getProperty( DavConstants.HEADER_CONTENT_LENGTH ) );
+            long expectedContentLength = inputContext.getContentLength();
             long actualContentLength = localFile.length();
             // length of -1 is given for a chunked request or unknown length, in which case we accept what was uploaded
             if ( expectedContentLength >= 0 && expectedContentLength != actualContentLength )
