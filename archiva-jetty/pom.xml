@@ -191,7 +191,7 @@
               <goal>generate-daemons</goal>
               <goal>create-repository</goal>
             </goals>
-            <phase>prepare-package</phase>
+            <phase>generate-resources</phase>
           </execution>
         </executions>
       </plugin>
@@ -232,7 +232,7 @@
           </execution>
           <execution>
             <id>fix-appassembler-bug</id>
-            <phase>prepare-package</phase>
+            <phase>process-resources</phase>
             <configuration>
               <tasks>
                 <replaceregexp file="target/generated-resources/appassembler/jsw/archiva/conf/wrapper.conf" match="set.ARCHIVA_BASE" replace="set.default.ARCHIVA_BASE" />
@@ -251,6 +251,33 @@
             <supplementalModel>notice-supplements.xml</supplementalModel>
           </supplementalModels>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-beanshell</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <rules>
+                <evaluateBeanshell>
+                  <message>wrapper.conf should be correctly set</message>
+                  <condition>
+                    <![CDATA[
+                      java.util.Properties props = new java.util.Properties();
+                      props.load( new java.io.FileInputStream( "${project.build.directory}/generated-resources/appassembler/jsw/archiva/conf/wrapper.conf" ) );
+                      props.getProperty( "set.default.ARCHIVA_BASE" ).equals( "." )
+                    ]]>
+                  </condition>
+                </evaluateBeanshell>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
