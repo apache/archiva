@@ -14,11 +14,6 @@ build
 .extract
 .site-content/
 
-#archiva 1.3.x 
-archiva-modules/archiva-web/archiva-webapp/appserver-base/
-archiva-modules/archiva-web/archiva-webapp/overlays/
-archiva-modules/archiva-web/archiva-webapp/src/main/webapp/archiva-applet.jar
-
 #eclipse files
 .project 
 .classpath
