@@ -66,67 +66,52 @@ Release Notes for Archiva ${project.version}
 
 ** Improvement
 
-  * [MRM-1126] - warning on changing repo location is confusing if it exists
+    * [MRM-1210] - Dependency tree should include the artifact type
 
-  * [MRM-1746] - build merged index for groups with a cron schedule
+    * [MRM-1558] - Please provide some UI element which shows degraded and/or badly connected remote repository
 
-  * [MRM-1764] - #users > edit roles -- please sort repository list for ease of use
+    * [MRM-1802] - Find a cache solution for browsing part (especially root browsing)
 
-  * [MRM-1765] - #users > edit -- please sort effective roles
+    * [MRM-1829] - Change default value of of AysncLogger strategy for log4j async
 
-  * [MRM-1798] - upgrade to last Spring 4.0.0
+    * [MRM-1834] - Add limit to index search query to prevent unnecessary calculations
 
-** New Feature
+    * [MRM-1836] - Make search limit (maxCount) configurable via UI
 
-  * [MRM-676] - Provide 302 redirect for latest SNAPSHOT
-
-  * [MRM-1750] - Add remote repository health check
+    * [MRM-1843] - provide mechanism to obtain the latest version of an artifact
 
 ** Bug
 
-  * [MRM-1702] - Race condition caused by retrieving the same artifact from a Proxy from muliple threads
+    * [MRM-887] - Start script has no valid "uname" option
 
-  * [MRM-1761] - Returned URL in search result does not work for SNAPSHOTS
+    * [MRM-1809] - Users - Manage section sort by name doesn't work as expected
 
-  * [MRM-1762] - Upload Artifact page allows to uploading SNAPSHOT versions to non snapshot repositories
+    * [MRM-1812] - Users - Manage section needs Sort by User Name, Sort by Full Name, and Sort by Email buttons
 
-  * [MRM-1766] - Clicking the ".." when browsing should take you up one level in the group chain and not "Home"
+    * [MRM-1813] - Users - Manage section filters don't seem to work
 
-  * [MRM-1769] - Can't uploads multiple artifacts of different types
+    * [MRM-1823] - java 1.7 as prerequisite
 
-  * [MRM-1773] - log4j2 beta8 cause out of heap space with java-1.7.0_25
+    * [MRM-1824] - metadata storage using Cassandra
 
-  * [MRM-1776] - UI Upload. The generated pom.xml is the artifact!
+    * [MRM-1825] - MD5 hashes are for wrong file name
 
-  * [MRM-1777] - User updating their own password doesn't gets error, but the password has not been changed.
+    * [MRM-1826] - Force Internet Explorer into Standards Mode
 
-  * [MRM-1779] - pom artifacts cannot be searched on Archiva 1.4-M4
+    * [MRM-1830] - Charset applied to binary repository HTTP responses
 
-  * [MRM-1780] - Filtering on Artifact Id
+    * [MRM-1833] - Nullpointer when browsing artifacts which have dependencies with scope "import"
 
-  * [MRM-1781] - Error viewing artifact information
+    * [MRM-1837] - DefaultArchivaConfiguration holds references to classes
 
-  * [MRM-1782] - SNAPSHOTS not getting purged
+    * [MRM-1841] - "Remember me" not working
 
-  * [MRM-1783] - The words "choosen" and "availables" used within the Users Runtime Configuration
+    * [MRM-1842] - Remove per default log4j2 Async Logging
 
-  * [MRM-1784] - Users Runtime Configuration - Unclear distinction between User Manager and Rbac Manager
+    * [MRM-1846] - Regression in 2.0.1 : uniqueVersion false not supported
 
-  * [MRM-1787] - Deletion of a repository, while users have the repository manager role assigned causes errors
+    * [MRM-1849] - Unable to download -SNAPSHOT jars after 2.0.1 Upgrade
 
-  * [MRM-1789] - Register link appears after logging in and back out even "Disable registration Link" is checked
-
-  * [MRM-1791] - ldap group mapping support for active directory
-
-  * [MRM-1793] - trailing spaces not trimmed in upload form
-
-  * [MRM-1795] - window.archivaRuntimeInfo.version is null in archiva/archiva.js
-
-  * [MRM-1796] - Can't download large archive file due to java.lang.NumberFormatException
-
-** Task
-
-  * [MRM-1794] - update quartz to 2.x
 
 * History
 
