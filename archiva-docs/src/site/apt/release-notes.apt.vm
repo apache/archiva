@@ -36,10 +36,9 @@ Release Notes for Archiva ${project.version}
 
 * New in Archiva ${project.version}
 
-  Some new features has been added in ${project.version}:
+  Apache Archiva ${project.version} is a bugs fix release:
 
-  * There is now a new webapp UI based on javascript (legacy webapp is still distributed). <<NOTE>>: most of the UI issues has been fixed
-   in the new UI only.
+  * NOTE: jdk 1.7 is now prerequisite with Apache Archiva 1.7
 
 * Compatibility Changes
 
