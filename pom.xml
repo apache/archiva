@@ -85,7 +85,7 @@
 
     <sirona.version>0.1-incubating</sirona.version>
 
-    <cxfVersion>2.6.14</cxfVersion>
+    <cxfVersion>2.6.15</cxfVersion>
     <derbyVersion>10.10.1.1</derbyVersion>
     <httpclient.version>4.3.1</httpclient.version>
     <httpclient.core.version>4.3</httpclient.core.version>
