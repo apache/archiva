@@ -66,6 +66,9 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
   getUserFromLoginCookie=function(){
     var cookieContent=$.cookie('archiva_login');
     $.log("archiva_getUserFromLoginCookie cookie content:"+cookieContent);
+    if (!cookieContent) {
+      return null;
+    }
     var user = $.parseJSON(cookieContent);
     if(!user){
       return null;
