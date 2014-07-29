@@ -34,9 +34,6 @@
     </fileSet>
   </fileSets>
   <requiredProperties>
-    <requiredProperty key="wagonVersion">
-      <defaultValue>${wagon.version}</defaultValue>
-    </requiredProperty>
     <requiredProperty key="archivaVersion">
       <defaultValue>${archivaVersion}</defaultValue>
     </requiredProperty>
@@ -51,18 +48,6 @@
     </requiredProperty>
     <requiredProperty key="jackrabbitVersion">
       <defaultValue>${jackrabbit.version}</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="redbackVersion">
-      <defaultValue>${redback.version}</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="derbyVersion">
-      <defaultValue>${derbyVersion}</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="httpclientCoreVersion">
-      <defaultValue>${httpclient.core.version}</defaultValue>
-    </requiredProperty>
-    <requiredProperty key="commons-poolVersion">
-      <defaultValue>${commons-pool.version}</defaultValue>
     </requiredProperty>
   </requiredProperties>
 </archetype-descriptor>
