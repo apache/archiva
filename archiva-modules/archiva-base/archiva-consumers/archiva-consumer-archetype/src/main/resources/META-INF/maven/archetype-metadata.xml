@@ -58,5 +58,11 @@
     <requiredProperty key="derbyVersion">
       <defaultValue>${derbyVersion}</defaultValue>
     </requiredProperty>
+    <requiredProperty key="httpclientCoreVersion">
+      <defaultValue>${httpclient.core.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="commons-poolVersion">
+      <defaultValue>${commons-pool.version}</defaultValue>
+    </requiredProperty>
   </requiredProperties>
 </archetype-descriptor>
