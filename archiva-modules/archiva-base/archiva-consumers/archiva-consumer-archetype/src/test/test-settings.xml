@@ -24,15 +24,9 @@ under the License.
   xmlns="http://maven.apache.org/SETTINGS/1.0.0">
   <mirrors>
     <mirror>
-      <mirrorOf>archiva.snapshots</mirrorOf>
+      <mirrorOf>external:*</mirrorOf>
       <id>local-mirror</id>
       <name>local-mirror</name>
-      <url>@localRepositoryUrl@</url>
-    </mirror>
-    <mirror>
-      <mirrorOf>central</mirrorOf>
-      <id>central-mirror</id>
-      <name>central-mirror</name>
       <url>@localRepositoryUrl@</url>
     </mirror>
   </mirrors>
@@ -58,26 +52,6 @@ under the License.
         -->
         <repository>
           <id>local-central</id>
-          <url>@localRepositoryUrl@</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>apache.snapshots</id>
-          <url>@localRepositoryUrl@</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>archiva.snapshots</id>
           <url>@localRepositoryUrl@</url>
           <releases>
             <enabled>true</enabled>

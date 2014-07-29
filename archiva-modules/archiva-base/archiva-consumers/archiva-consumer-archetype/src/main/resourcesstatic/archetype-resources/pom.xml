@@ -31,10 +31,18 @@
   </description>
   <properties>
     <archiva.version>${archivaVersion}</archiva.version>
-    <slf4jVersion>${slf4jVersion}</slf4jVersion>
-    <log4jVersion>${log4jVersion}</log4jVersion>
+    <slf4j.version>${slf4jVersion}</slf4j.version>
+    <log4j.version>${log4jVersion}</log4j.version>
     <jackrabbit.version>${jackrabbitVersion}</jackrabbit.version>
     <spring.version>${springVersion}</spring.version>
+    <guava.version>${guavaVersion}</guava.version>
+    <maven3x.version>${maven3xVersion}</maven3x.version>
+    <redback.registry.version>${redbackRegistryVersion}</redback.registry.version>
+    <redback.quartz.version>${redbackQuartzVersion}</redback.quartz.version>
+    <commons.dbcp.version>${commonsDbcpVersion}</commons.dbcp.version>
+    <commons.pool.version>${commonsPoolVersion}</commons.pool.version>
+    <lucene.version>${luceneVersion}</lucene.version>
+    <derby.version>${derbyVersion}</derby.version>
   </properties>
   <dependencies>
     <dependency>
@@ -55,12 +63,18 @@
     <dependency>
       <groupId>org.apache.archiva.redback.components.registry</groupId>
       <artifactId>spring-registry-api</artifactId>
-      <version>2.3</version>
+      <version>${redback.registry.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>${slf4jVersion}</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.inject</groupId>
@@ -76,6 +90,12 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
       <version>${spring.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -122,28 +142,67 @@
     <dependency>
       <groupId>org.apache.archiva.redback.components</groupId>
       <artifactId>spring-quartz</artifactId>
-      <version>2.1</version>
+      <version>${redback.quartz.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4jVersion}</version>
+      <version>${slf4j.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
-      <version>${log4jVersion}</version>
+      <version>${log4j.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>${log4jVersion}</version>
+      <version>${log4j.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <!-- match up with those used by Archiva -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-model</artifactId>
+        <version>${maven3x.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-dbcp</groupId>
+        <artifactId>commons-dbcp</artifactId>
+        <version>${commons.dbcp.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-pool</groupId>
+        <artifactId>commons-pool</artifactId>
+        <version>${commons.pool.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-core</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <version>${derby.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <build>
     <pluginManagement>
       <plugins>

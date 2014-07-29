@@ -57,6 +57,7 @@
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-pool.version>1.6</commons-pool.version>
+    <commons-dbcp.version>1.4</commons-dbcp.version>
 
     <maven3x.version>3.0.5</maven3x.version>
     <maven.version>2.0.8</maven.version>
@@ -91,6 +92,7 @@
     <httpclient.core.version>4.3</httpclient.core.version>
     <javaxMailVersion>1.4</javaxMailVersion>
     <jettyVersion>8.1.14.v20131031</jettyVersion>
+    <guava.version>16.0.1</guava.version>
 
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
@@ -588,7 +590,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>16.0.1</version>
+        <version>${guava.version}</version>
       </dependency>
       <dependency>
         <groupId>stax</groupId>
@@ -696,7 +698,7 @@
       <dependency>
         <groupId>commons-dbcp</groupId>
         <artifactId>commons-dbcp</artifactId>
-        <version>1.4</version>
+        <version>${commons-dbcp.version}</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -733,6 +735,10 @@
           <exclusion>
             <groupId>xom</groupId>
             <artifactId>xom</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

@@ -49,5 +49,29 @@
     <requiredProperty key="jackrabbitVersion">
       <defaultValue>${jackrabbit.version}</defaultValue>
     </requiredProperty>
+    <requiredProperty key="guavaVersion">
+      <defaultValue>${guava.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="maven3xVersion">
+      <defaultValue>${maven3x.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="redbackRegistryVersion">
+      <defaultValue>${redback.registry.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="redbackQuartzVersion">
+      <defaultValue>${redback.quartz.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="commonsDbcpVersion">
+      <defaultValue>${commons-dbcp.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="commonsPoolVersion">
+      <defaultValue>${commons-pool.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="luceneVersion">
+      <defaultValue>${lucene.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="derbyVersion">
+      <defaultValue>${derbyVersion}</defaultValue>
+    </requiredProperty>
   </requiredProperties>
 </archetype-descriptor>

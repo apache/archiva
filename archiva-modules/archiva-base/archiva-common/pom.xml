@@ -49,7 +49,6 @@
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>dom4j</groupId>
