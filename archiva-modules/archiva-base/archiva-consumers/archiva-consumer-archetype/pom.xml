@@ -156,27 +156,6 @@
           <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>package</id>
-            <phase>package</phase>
-            <configuration>
-              <tasks>
-                <echo>
-                  Just ensure plugin is downloaded in local repo for it test
-                </echo>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
-
 </project>
