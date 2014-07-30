@@ -46,7 +46,6 @@
     <module>archiva-proxy-common</module>
     <module>archiva-proxy</module>
     <module>archiva-transaction</module>
-    <module>archiva-artifact-converter</module>
     <module>archiva-converter</module>
     <module>archiva-repository-scanner</module>
     <module>archiva-repository-admin</module>

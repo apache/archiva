@@ -35,7 +35,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-artifact-converter</artifactId>
+      <artifactId>archiva-transaction</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-model-converter</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>

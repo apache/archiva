@@ -1,6 +1,0 @@
-<project>
-  <pomVersion>3</pomVersion>
-  <artifactId>maven-foo-plugin</artifactId>
-  <groupId>org.apache.maven.plugins</groupId>
-  <currentVersion>1.0</currentVersion>
-</project>
