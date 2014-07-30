@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -59,6 +60,7 @@ public class LegacyConverterArtifactConsumer
     private Logger log = LoggerFactory.getLogger( LegacyConverterArtifactConsumer.class );
 
     @Inject
+    @Named("artifactConverter#legacy-to-default")
     private ArtifactConverter artifactConverter;
 
     private ArtifactFactory artifactFactory;
