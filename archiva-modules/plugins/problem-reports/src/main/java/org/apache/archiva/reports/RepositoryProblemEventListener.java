@@ -20,6 +20,7 @@ package org.apache.archiva.reports;
  */
 
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;

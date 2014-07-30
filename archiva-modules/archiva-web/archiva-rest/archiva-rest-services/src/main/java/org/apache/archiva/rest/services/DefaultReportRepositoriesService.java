@@ -18,12 +18,12 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
-import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ReportRepositoriesService;
 import org.apache.commons.lang.StringUtils;

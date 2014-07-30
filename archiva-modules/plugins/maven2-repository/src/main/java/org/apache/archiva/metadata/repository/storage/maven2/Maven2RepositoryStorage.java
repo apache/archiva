@@ -49,7 +49,7 @@ import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
-import org.apache.archiva.reports.RepositoryProblemFacet;
+import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.repository.layout.LayoutException;

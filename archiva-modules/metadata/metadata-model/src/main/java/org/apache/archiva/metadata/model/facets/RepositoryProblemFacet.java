@@ -1,4 +1,4 @@
-package org.apache.archiva.reports;
+package org.apache.archiva.metadata.model.facets;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

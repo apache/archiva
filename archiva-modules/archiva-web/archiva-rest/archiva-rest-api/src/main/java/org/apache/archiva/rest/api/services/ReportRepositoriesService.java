@@ -18,9 +18,9 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
-import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
 import javax.ws.rs.GET;
