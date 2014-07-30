@@ -26,8 +26,6 @@
            http://www.springframework.org/schema/context 
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="true">
-  <context:annotation-config/>
-  <context:component-scan base-package="$package"/>
 
   <bean id="jcr-config" class="org.apache.archiva.metadata.repository.jcr.ArchivaJcrRepositoryConfig" factory-method="create">
     <constructor-arg value="${appserver.base}/conf/foo.xml"/>
