@@ -74,9 +74,9 @@ public class SimpleArtifactConsumer
     @Inject
     private ArchivaConfiguration configuration;
 
-    private List propertyNameTriggers = new ArrayList();
+    private List<String> propertyNameTriggers = new ArrayList<>();
 
-    private List includes = new ArrayList();
+    private List<String> includes = new ArrayList<>();
 
     /** current repository being scanned */
     private ManagedRepository repository;
@@ -159,7 +159,7 @@ public class SimpleArtifactConsumer
     @PostConstruct
     public void initialize()
     {
-        propertyNameTriggers = new ArrayList();
+        propertyNameTriggers = new ArrayList<>();
         propertyNameTriggers.add( "repositoryScanning" );
         propertyNameTriggers.add( "fileTypes" );
         propertyNameTriggers.add( "fileType" );
@@ -181,12 +181,12 @@ public class SimpleArtifactConsumer
         return this.description;
     }
 
-    public List getExcludes()
+    public List<String> getExcludes()
     {
         return null;
     }
 
-    public List getIncludes()
+    public List<String> getIncludes()
     {
         return this.includes;
     }
