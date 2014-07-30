@@ -61,5 +61,11 @@
     <requiredProperty key="mockitoVersion">
       <defaultValue>${mockito.version}</defaultValue>
     </requiredProperty>
+    <requiredProperty key="httpclientVersion">
+      <defaultValue>${httpclient.version}</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="httpcoreVersion">
+      <defaultValue>${httpclient.core.version}</defaultValue>
+    </requiredProperty>
   </requiredProperties>
 </archetype-descriptor>

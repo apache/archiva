@@ -38,6 +38,8 @@
     <guava.version>${guavaVersion}</guava.version>
     <springockito.version>${springockitoVersion}</springockito.version>
     <mockito.version>${mockitoVersion}</mockito.version>
+    <httpclient.version>${httpclientVersion}</httpclient.version>
+    <httpclient.core.version>${httpcoreVersion}</httpclient.core.version>
   </properties>
   <dependencies>
     <dependency>
@@ -163,6 +165,16 @@
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
         <version>${mockito.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>${httpclient.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpcore</artifactId>
+        <version>${httpclient.core.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
