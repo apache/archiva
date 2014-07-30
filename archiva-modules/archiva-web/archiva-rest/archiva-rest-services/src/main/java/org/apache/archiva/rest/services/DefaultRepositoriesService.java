@@ -82,6 +82,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -144,6 +145,7 @@ public class DefaultRepositoriesService
     protected RepositorySessionFactory repositorySessionFactory;
 
     @Inject
+    @Autowired(required = false)
     protected List<RepositoryListener> listeners = new ArrayList<RepositoryListener>();
 
     @Inject

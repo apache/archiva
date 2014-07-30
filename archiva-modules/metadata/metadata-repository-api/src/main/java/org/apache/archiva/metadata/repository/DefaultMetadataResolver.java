@@ -80,7 +80,7 @@ public class DefaultMetadataResolver
 
     @Inject
     @Autowired(required = false)
-    private List<RepositoryListener> listeners;
+    private List<RepositoryListener> listeners = new ArrayList<>();
 
     /**
      * Cache used for namespaces
