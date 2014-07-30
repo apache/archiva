@@ -45,15 +45,17 @@
       <artifactId>wagon-file</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- currently these are runtime as it's declared in the spring context
+         file, but is it necessary? -->
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http-lightweight</artifactId>
-      <scope>test</scope>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http</artifactId>
-      <scope>test</scope>
+      <scope>runtime</scope>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
