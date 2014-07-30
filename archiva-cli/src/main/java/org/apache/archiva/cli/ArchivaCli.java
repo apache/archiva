@@ -110,7 +110,20 @@ public class ArchivaCli
             return;
         }
 
-        new ArchivaCli().execute( command );
+        ArchivaCli cli = new ArchivaCli();
+        try
+        {
+            cli.execute( command );
+        }
+        finally
+        {
+            cli.destroy();
+        }
+    }
+
+    private void destroy()
+    {
+        applicationContext.destroy();
     }
 
     private void execute( Commands command )
