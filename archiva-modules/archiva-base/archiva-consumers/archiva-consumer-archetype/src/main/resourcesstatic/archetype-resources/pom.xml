@@ -33,16 +33,11 @@
     <archiva.version>${archivaVersion}</archiva.version>
     <slf4j.version>${slf4jVersion}</slf4j.version>
     <log4j.version>${log4jVersion}</log4j.version>
-    <jackrabbit.version>${jackrabbitVersion}</jackrabbit.version>
     <spring.version>${springVersion}</spring.version>
-    <guava.version>${guavaVersion}</guava.version>
-    <maven3x.version>${maven3xVersion}</maven3x.version>
     <redback.registry.version>${redbackRegistryVersion}</redback.registry.version>
-    <redback.quartz.version>${redbackQuartzVersion}</redback.quartz.version>
-    <commons.dbcp.version>${commonsDbcpVersion}</commons.dbcp.version>
-    <commons.pool.version>${commonsPoolVersion}</commons.pool.version>
-    <lucene.version>${luceneVersion}</lucene.version>
-    <derby.version>${derbyVersion}</derby.version>
+    <guava.version>${guavaVersion}</guava.version>
+    <springockito.version>${springockitoVersion}</springockito.version>
+    <mockito.version>${mockitoVersion}</mockito.version>
   </properties>
   <dependencies>
     <dependency>
@@ -58,6 +53,21 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-admin-api</artifactId>
+      <version>${archiva.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-model</artifactId>
+      <version>${archiva.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-layer</artifactId>
+      <version>${archiva.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-repository-api</artifactId>
       <version>${archiva.version}</version>
     </dependency>
     <dependency>
@@ -117,32 +127,14 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-store-jcr</artifactId>
+      <artifactId>maven2-repository</artifactId>
       <version>${archiva.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-core</artifactId>
-      <version>${jackrabbit.version}</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva.redback.components</groupId>
-      <artifactId>spring-quartz</artifactId>
-      <version>${redback.quartz.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
-      <version>${slf4j.version}</version>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>${log4j.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -152,9 +144,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>${log4j.version}</version>
+      <groupId>org.kubek2k</groupId>
+      <artifactId>springockito</artifactId>
+      <version>${springockito.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -168,31 +160,9 @@
         <version>${guava.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-model</artifactId>
-        <version>${maven3x.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-dbcp</groupId>
-        <artifactId>commons-dbcp</artifactId>
-        <version>${commons.dbcp.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>commons-pool</groupId>
-        <artifactId>commons-pool</artifactId>
-        <version>${commons.pool.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-core</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.derby</groupId>
-        <artifactId>derby</artifactId>
-        <version>${derby.version}</version>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>${mockito.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -234,20 +204,6 @@
         <configuration>
           <source>1.7</source>
           <target>1.7</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <systemPropertyVariables>
-            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
-            <archiva.user.configFileName>${project.build.directory}/archiva.xml</archiva.user.configFileName>
-            <test.resources.path>${project.build.testOutputDirectory}</test.resources.path>
-            <redback.jdbc.url>jdbc:derby:memory:users-test;create=true</redback.jdbc.url>
-            <redback.jdbc.driver.name>org.apache.derby.jdbc.EmbeddedDriver</redback.jdbc.driver.name>
-            <java.io.tmpdir>${project.build.directory}/temp</java.io.tmpdir>
-          </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>

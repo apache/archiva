@@ -48,17 +48,33 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-admin-default</artifactId>
+      <artifactId>archiva-repository-admin-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-store-jcr</artifactId>
+      <artifactId>archiva-model</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jcl-over-slf4j</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-layer</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-repository-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>maven2-repository</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.kubek2k</groupId>
+      <artifactId>springockito</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

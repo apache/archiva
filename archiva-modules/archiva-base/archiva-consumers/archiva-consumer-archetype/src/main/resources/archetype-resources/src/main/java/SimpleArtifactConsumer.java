@@ -28,13 +28,23 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryContentFactory;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.layout.LayoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
@@ -81,18 +91,19 @@ public class SimpleArtifactConsumer
     /** current repository being scanned */
     private ManagedRepository repository;
 
-    public void beginScan( ManagedRepository repository )
-        throws ConsumerException
-    {
-        this.repository = repository;
-        log.info( "Beginning scan of repository [" + this.repository.getId() + "]" );
-    }
+    @Inject
+    @Named( value = "repositoryContentFactory#default" )
+    private RepositoryContentFactory repositoryContentFactory;
+
+    @Inject
+    private RepositorySessionFactory repositorySessionFactory;
+
+    private RepositorySession repositorySession;
 
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
-        this.repository = repository;
-        log.info( "Beginning scan of repository [" + this.repository.getId() + "]" );
+        beginScan( repository, whenGathered, true );
     }
 
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
@@ -100,28 +111,45 @@ public class SimpleArtifactConsumer
     {
         this.repository = repository;
         log.info( "Beginning scan of repository [" + this.repository.getId() + "]" );
+
+        repositorySession = repositorySessionFactory.createSession();
     }
 
     public void processFile( String path )
         throws ConsumerException
     {
-        log.info( "Processing entry [" + path + "] from repository [" + this.repository.getId() + "]" );
+        processFile( path, true );
     }
 
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         log.info( "Processing entry [" + path + "] from repository [" + this.repository.getId() + "]" );
+
+        try
+        {
+            ManagedRepositoryContent repositoryContent = repositoryContentFactory.getManagedRepositoryContent( repository.getId() );
+            ArtifactReference artifact = repositoryContent.toArtifactReference( path );
+
+            repositorySession.getRepository().getArtifacts( repository.getId(), artifact.getGroupId(),
+                                                            artifact.getArtifactId(), artifact.getVersion() );
+        }
+        catch ( RepositoryException | LayoutException | MetadataResolutionException e )
+        {
+            throw new ConsumerException( e.getLocalizedMessage(), e );
+        }
     }
 
     public void completeScan()
     {
-        log.info( "Finished scan of repository [" + this.repository.getId() + "]" );
+        completeScan( true );
     }
 
     public void completeScan( boolean executeOnEntireRepo )
     {
         log.info( "Finished scan of repository [" + this.repository.getId() + "]" );
+
+        repositorySession.close();
     }
 
 
@@ -153,7 +181,7 @@ public class SimpleArtifactConsumer
     private void initIncludes()
     {
         includes.clear();
-        includes.addAll( filetypes.getFileTypePatterns( FileTypes.INDEXABLE_CONTENT ) );
+        includes.addAll( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     @PostConstruct
