@@ -37,6 +37,7 @@ import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -98,6 +99,7 @@ public class RepositoryPurgeConsumer
      *
      */
     @Inject
+    @Autowired(required = false)
     private List<RepositoryListener> listeners = Collections.emptyList();
 
     /**

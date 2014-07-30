@@ -33,6 +33,7 @@ import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -78,6 +79,7 @@ public class DefaultMetadataResolver
     private RepositoryStorage repositoryStorage;
 
     @Inject
+    @Autowired(required = false)
     private List<RepositoryListener> listeners;
 
     /**
