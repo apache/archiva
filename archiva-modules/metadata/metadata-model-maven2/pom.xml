@@ -46,10 +46,10 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
           <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.metadata.model</Bundle-SymbolicName>
+            <Bundle-SymbolicName>org.apache.archiva.metadata.model.maven2</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
-              org.apache.archiva.metadata.model;version=${project.version};-split-package:=merge-first
+              org.apache.archiva.metadata.model.maven2;version=${project.version}
             </Export-Package>
             <Import-Package>
               javax.xml.bind.annotation,
