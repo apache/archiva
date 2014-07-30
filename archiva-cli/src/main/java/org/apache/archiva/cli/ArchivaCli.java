@@ -34,7 +34,6 @@ import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.artifact.manager.WagonManager;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
@@ -153,12 +152,6 @@ public class ArchivaCli
     private void doScan( String path, String[] consumers )
         throws ConsumerException, MalformedURLException, PlexusSisuBridgeException
     {
-        // hack around poorly configurable project builder by pointing all repositories back at this location to be self
-        // contained
-
-        WagonManager wagonManager = lookup( WagonManager.class );
-        wagonManager.addMirror( "internal", "*", new File( path ).toURL().toExternalForm() );
-
         ManagedRepository repo = new ManagedRepository();
         repo.setId( "cliRepo" );
         repo.setName( "Archiva CLI Provided Repo" );
