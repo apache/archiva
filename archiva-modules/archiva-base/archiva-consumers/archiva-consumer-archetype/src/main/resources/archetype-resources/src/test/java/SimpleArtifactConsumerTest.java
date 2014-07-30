@@ -23,15 +23,12 @@ import java.io.File;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
-import org.easymock.EasyMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.Test;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import junit.framework.TestCase;
