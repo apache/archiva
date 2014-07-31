@@ -20,10 +20,12 @@
 <configuration>
   <appenders>
     <Console name="console" target="SYSTEM_OUT">
-      <PatternLayout pattern="[%t] %-5p %c %x - %m%n" />
+      <PatternLayout pattern="[%t] %-5p %c %x - %m%n"/>
     </Console>
   </appenders>
   <loggers>
+    <logger name="org.apache.archiva" level="info"/>
+
     <root level="error" includeLocation="true">
       <appender-ref ref="console"/>
     </root>
