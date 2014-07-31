@@ -22,8 +22,10 @@ package org.apache.archiva.rest.services;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.FileUtil;
+import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RedbackRuntimeConfigurationService;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.api.services.CommonServices;
@@ -51,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import org.apache.archiva.rest.api.services.PluginsService;
@@ -417,14 +420,8 @@ public abstract class AbstractArchivaRestTest
 
     }
 
-    protected void createAndIndexRepo( String testRepoId, String repoPath, boolean scan )
-        throws Exception
-    {
-        createAndIndexRepo( testRepoId, repoPath, scan, false );
-    }
-
-    protected void createAndIndexRepo( String testRepoId, String repoPath, boolean scan, boolean stageNeeded )
-        throws Exception
+    protected void createAndIndexRepo( String testRepoId, String repoPath, boolean stageNeeded )
+        throws ArchivaRestServiceException, IOException, RedbackServiceException
     {
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( testRepoId ) != null )
         {
@@ -464,23 +461,30 @@ public abstract class AbstractArchivaRestTest
 
         getRoleManagementService( authorizationHeader ).assignTemplatedRole(
             ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, testRepoId, "guest" );
-        if ( scan )
-        {
-            getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
-        }
+    }
 
+    protected void scanRepo( String testRepoId )
+        throws ArchivaRestServiceException
+    {
+        getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
     }
 
     protected void createAndIndexRepo( String testRepoId, String repoPath )
         throws Exception
     {
-        createAndIndexRepo( testRepoId, repoPath, true, false );
+        createAndIndexRepo( testRepoId, repoPath, false );
+        scanRepo( testRepoId );
     }
 
     protected void createStagedNeededRepo( String testRepoId, String repoPath, boolean scan )
         throws Exception
     {
-        createAndIndexRepo( testRepoId, repoPath, scan, true );
+        createAndIndexRepo( testRepoId, repoPath, true );
+        if ( scan )
+        {
+            scanRepo( testRepoId );
+        }
+
         RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
         repositoriesService.scanRepositoryDirectoriesNow( testRepoId );
         if ( scan )
@@ -494,21 +498,23 @@ public abstract class AbstractArchivaRestTest
     protected void deleteTestRepo( String id )
         throws Exception
     {
-        try
+        if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( id ) != null )
         {
-            if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( id ) != null )
-            {
-                getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( id, false );
-            }
-        }
-        catch ( Exception e )
-        {
-            log.warn( "skip error deleting repo {}", id, e );
+            getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( id, false );
         }
     }
 
     public String getBasedir()
     {
         return System.getProperty( "basedir" );
+    }
+
+    protected void waitForScanToComplete( String repoId )
+        throws ArchivaRestServiceException, InterruptedException
+    {
+        while ( getRepositoriesService( authorizationHeader ).alreadyScanning( repoId ) ) {
+            // Would be better to cancel, if we had that capacity
+            Thread.sleep( 100 );
+        }
     }
 }

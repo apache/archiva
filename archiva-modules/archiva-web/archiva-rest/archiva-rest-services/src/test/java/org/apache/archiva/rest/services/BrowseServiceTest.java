@@ -20,23 +20,27 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
 import org.apache.archiva.rest.api.model.Entry;
 import org.apache.archiva.rest.api.model.MetadataAddRequest;
 import org.apache.archiva.rest.api.model.VersionsList;
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.cxf.jaxrs.client.WebClient;
-
 import org.assertj.core.data.MapEntry;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.core.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,6 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class BrowseServiceTest
     extends AbstractArchivaRestTest
 {
+    private static final String TEST_REPO_ID = "test-repo";
 
     Map<String, String> toMap( List<Entry> entries )
     {
@@ -64,31 +69,20 @@ public class BrowseServiceTest
     public void metadatagetthenadd()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath() );
+        scanRepo( TEST_REPO_ID );
 
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
         Map<String, String> metadatas =
-            toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
+            toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", TEST_REPO_ID ) );
 
         assertThat( metadatas ).isNotNull().isEmpty();
 
-        browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", testRepoId );
+        browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", TEST_REPO_ID );
 
-        metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
+        metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", TEST_REPO_ID ) );
 
         assertThat( metadatas ).isNotNull().isNotEmpty().contains( MapEntry.entry( "wine", "bordeaux" ) );
-
-        deleteTestRepo( testRepoId );
-
     }
 
 
@@ -96,89 +90,52 @@ public class BrowseServiceTest
     public void metadatagetthenaddthendelete()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath() );
+        scanRepo( TEST_REPO_ID );
 
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
         Map<String, String> metadatas =
-            toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
+            toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", TEST_REPO_ID ) );
 
         assertThat( metadatas ).isNotNull().isEmpty();
 
-        browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", testRepoId );
+        browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", TEST_REPO_ID );
 
-        metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
+        metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", TEST_REPO_ID ) );
 
         assertThat( metadatas ).isNotNull().isNotEmpty().contains( MapEntry.entry( "wine", "bordeaux" ) );
 
-        browseService.deleteMetadata( "commons-cli", "commons-cli", "1.0", "wine", testRepoId );
+        browseService.deleteMetadata( "commons-cli", "commons-cli", "1.0", "wine", TEST_REPO_ID );
 
-        metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
+        metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", TEST_REPO_ID ) );
 
         assertThat( metadatas ).isNotNull().isEmpty();
-
-        deleteTestRepo( testRepoId );
-
     }
 
     @Test
     public void browserootGroups()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
-
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
-        BrowseResult browseResult = browseService.getRootGroups( testRepoId );
+        BrowseResult browseResult = browseService.getRootGroups( TEST_REPO_ID );
         assertThat( browseResult ).isNotNull();
         assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isNotEmpty().hasSize( 3 ).contains(
             new BrowseResultEntry( "commons-cli", false ), new BrowseResultEntry( "commons-logging", false ),
             new BrowseResultEntry( "org.apache", false ) );
-
-        deleteTestRepo( testRepoId );
-
     }
 
     @Test
     public void browsegroupId()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
-
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
-        BrowseResult browseResult = browseService.browseGroupId( "org.apache", testRepoId );
+        BrowseResult browseResult = browseService.browseGroupId( "org.apache", TEST_REPO_ID );
         assertThat( browseResult ).isNotNull();
         assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
             new BrowseResultEntry( "org.apache.felix", false ),
             new BrowseResultEntry( "org.apache.karaf.features", false ) );
-
-        deleteTestRepo( testRepoId );
-
     }
 
 
@@ -186,183 +143,96 @@ public class BrowseServiceTest
     public void browsegroupIdWithReleaseStartNumber()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
-
         BrowseService browseService = getBrowseService( authorizationHeader, false );
-        BrowseResult browseResult = browseService.browseGroupId( "commons-logging.commons-logging", testRepoId );
+        BrowseResult browseResult = browseService.browseGroupId( "commons-logging.commons-logging", TEST_REPO_ID );
         log.info( "browseResult: {}", browseResult );
-
-        deleteTestRepo( testRepoId );
-
     }
 
     @Test
     public void versionsList()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
-
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
         VersionsList versions =
-            browseService.getVersionsList( "org.apache.karaf.features", "org.apache.karaf.features.core", testRepoId );
+            browseService.getVersionsList( "org.apache.karaf.features", "org.apache.karaf.features.core", TEST_REPO_ID );
         assertThat( versions ).isNotNull();
         assertThat( versions.getVersions() ).isNotNull().isNotEmpty().hasSize( 2 ).contains( "2.2.1", "2.2.2" );
-
-        deleteTestRepo( testRepoId );
-
     }
 
     @Test
     public void getProjectVersionMetadata()
         throws Exception
     {
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
-
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
-        ProjectVersionMetadata metadata =
-            browseService.getProjectVersionMetadata( "org.apache.karaf.features", "org.apache.karaf.features.core",
-                                                     testRepoId );
+        ProjectVersionMetadata metadata = browseService.getProjectVersionMetadata( "org.apache.karaf.features",
+                                                                                   "org.apache.karaf.features.core",
+                                                                                   TEST_REPO_ID );
 
         assertThat( metadata ).isNotNull();
-
-        deleteTestRepo( testRepoId );
     }
 
     @Test
     public void readArtifactContentEntries()
         throws Exception
     {
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
-
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
         List<ArtifactContentEntry> artifactContentEntries =
             browseService.getArtifactContentEntries( "commons-logging", "commons-logging", "1.1", null, null, null,
-                                                     testRepoId );
+                                                     TEST_REPO_ID );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
-        assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
-            new ArtifactContentEntry( "org", false, 0, testRepoId ),
-            new ArtifactContentEntry( "META-INF", false, 0, testRepoId ) );
-        deleteTestRepo( testRepoId );
+        assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains( new ArtifactContentEntry(
+            "org", false, 0, TEST_REPO_ID ), new ArtifactContentEntry( "META-INF", false, 0, TEST_REPO_ID ) );
     }
 
     @Test
     public void readArtifactContentEntriesRootPath()
         throws Exception
     {
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
-
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
         List<ArtifactContentEntry> artifactContentEntries =
             browseService.getArtifactContentEntries( "commons-logging", "commons-logging", "1.1", null, null, "org/",
-                                                     testRepoId );
+                                                     TEST_REPO_ID );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 1 ).contains(
-            new ArtifactContentEntry( "org/apache", false, 1, testRepoId ) );
-        deleteTestRepo( testRepoId );
+            new ArtifactContentEntry( "org/apache", false, 1, TEST_REPO_ID ) );
     }
 
     @Test
     public void readArtifactContentEntriesFilesAndDirectories()
         throws Exception
     {
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
-
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
         List<ArtifactContentEntry> artifactContentEntries =
             browseService.getArtifactContentEntries( "commons-logging", "commons-logging", "1.1", null, null,
-                                                     "org/apache/commons/logging/", testRepoId );
+                                                     "org/apache/commons/logging/", TEST_REPO_ID );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
         assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 10 ).contains(
-            new ArtifactContentEntry( "org/apache/commons/logging/impl", false, 4, testRepoId ),
-            new ArtifactContentEntry( "org/apache/commons/logging/LogSource.class", true, 4, testRepoId ) );
-        deleteTestRepo( testRepoId );
+            new ArtifactContentEntry( "org/apache/commons/logging/impl", false, 4, TEST_REPO_ID ),
+            new ArtifactContentEntry( "org/apache/commons/logging/LogSource.class", true, 4, TEST_REPO_ID ) );
     }
 
     @Test
     public void getArtifactDownloadInfos()
         throws Exception
     {
-        try
-        {
-            String testRepoId = "test-repo";
-            // force guest user creation if not exists
-            if ( getUserService( authorizationHeader ).getGuestUser() == null )
-            {
-                assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-            }
+        BrowseService browseService = getBrowseService( authorizationHeader, true );
 
-            createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(),
-                                false );
+        List<Artifact> artifactDownloadInfos =
+            browseService.getArtifactDownloadInfos( "commons-logging", "commons-logging", "1.1", TEST_REPO_ID );
 
-            BrowseService browseService = getBrowseService( authorizationHeader, true );
-
-            List<Artifact> artifactDownloadInfos =
-                browseService.getArtifactDownloadInfos( "commons-logging", "commons-logging", "1.1", testRepoId );
-
-            log.info( "artifactDownloadInfos {}", artifactDownloadInfos );
-            assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 3 );
-            deleteTestRepo( testRepoId );
-        }
-        catch ( Exception e )
-        {
-            log.error( e.getMessage(), e );
-            throw e;
-        }
+        log.info( "artifactDownloadInfos {}", artifactDownloadInfos );
+        assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 3 );
     }
 
 
@@ -370,35 +240,18 @@ public class BrowseServiceTest
     public void readArtifactContentText()
         throws Exception
     {
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
-
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
         WebClient.client( browseService ).accept( MediaType.TEXT_PLAIN );
 
-        try
-        {
-            String text =
-                browseService.getArtifactContentText( "commons-logging", "commons-logging", "1.1", "sources", null,
-                                                      "org/apache/commons/logging/LogSource.java",
-                                                      testRepoId ).getContent();
+        String text =
+            browseService.getArtifactContentText( "commons-logging", "commons-logging", "1.1", "sources", null,
+                                                  "org/apache/commons/logging/LogSource.java",
+                                                  TEST_REPO_ID ).getContent();
 
-            log.debug( "text: {}", text );
+        log.debug( "text: {}", text );
 
-            assertThat( text ).contains( "package org.apache.commons.logging;" ).contains( "public class LogSource {" );
-        }
-        catch ( Exception e )
-        {
-            log.error( e.getMessage(), e );
-            throw e;
-        }
+        assertThat( text ).contains( "package org.apache.commons.logging;" ).contains( "public class LogSource {" );
     }
 
 
@@ -406,36 +259,19 @@ public class BrowseServiceTest
     public void readArtifactContentTextPom()
         throws Exception
     {
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
-
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
         WebClient.client( browseService ).accept( MediaType.TEXT_PLAIN );
 
-        try
-        {
-            String text =
-                browseService.getArtifactContentText( "commons-logging", "commons-logging", "1.1", null, "pom", null,
-                                                      testRepoId ).getContent();
+        String text =
+            browseService.getArtifactContentText( "commons-logging", "commons-logging", "1.1", null, "pom", null,
+                                                  TEST_REPO_ID ).getContent();
 
-            log.info( "text: {}", text );
+        log.info( "text: {}", text );
 
-            assertThat( text ).contains(
-                "<url>http://jakarta.apache.org/commons/${pom.artifactId.substring(8)}/</url>" ).contains(
-                "<subscribe>commons-dev-subscribe@jakarta.apache.org</subscribe>" );
-        }
-        catch ( Exception e )
-        {
-            log.error( e.getMessage(), e );
-            throw e;
-        }
+        assertThat( text ).contains(
+            "<url>http://jakarta.apache.org/commons/${pom.artifactId.substring(8)}/</url>" ).contains(
+            "<subscribe>commons-dev-subscribe@jakarta.apache.org</subscribe>" );
     }
 
 
@@ -443,47 +279,22 @@ public class BrowseServiceTest
     public void artifactsNumber()
         throws Exception
     {
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(), false );
-
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
         //WebClient.client( browseService ).accept( MediaType.TEXT_PLAIN );
 
-        try
-        {
-            int number = browseService.getArtifacts( testRepoId ).size();
+        int number = browseService.getArtifacts( TEST_REPO_ID ).size();
 
-            log.info( "getArtifactsNumber: {}", number );
+        log.info( "getArtifactsNumber: {}", number );
 
-            assertTrue( number > 1 );
-        }
-        catch ( Exception e )
-        {
-            log.error( e.getMessage(), e );
-            throw e;
-        }
+        assertTrue( number > 1 );
     }
 
     @Test
     public void metadatainbatchmode()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath() );
+        scanRepo( TEST_REPO_ID );
 
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
@@ -497,15 +308,35 @@ public class BrowseServiceTest
         metadataAddRequest.setArtifactId( "commons-cli" );
         metadataAddRequest.setVersion( "1.0" );
         metadataAddRequest.setMetadatas( inputMetadata );
-        browseService.importMetadata( metadataAddRequest, testRepoId );
+        browseService.importMetadata( metadataAddRequest, TEST_REPO_ID );
 
         Map<String, String> metadatas =
-            toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", testRepoId ) );
+            toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", TEST_REPO_ID ) );
 
         assertThat( metadatas ).isNotNull().isNotEmpty().contains( MapEntry.entry( "buildNumber", "1" ) ).contains(
             MapEntry.entry( "author", "alecharp" ) ).contains( MapEntry.entry( "jenkins_version", "1.486" ) );
-
-        deleteTestRepo( testRepoId );
     }
 
+    @Before
+    public void initialiseTestRepo()
+        throws RedbackServiceException, ArchivaRestServiceException, IOException, InterruptedException
+    {
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( TEST_REPO_ID, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(),
+                            false );
+
+        waitForScanToComplete( TEST_REPO_ID );
+    }
+
+    @After
+    public void deleteTestRepo()
+        throws Exception
+    {
+        deleteTestRepo( TEST_REPO_ID );
+    }
 }

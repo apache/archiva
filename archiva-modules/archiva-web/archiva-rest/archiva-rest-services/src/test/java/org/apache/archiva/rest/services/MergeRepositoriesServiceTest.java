@@ -36,98 +36,66 @@ public class MergeRepositoriesServiceTest
     extends AbstractArchivaRestTest
 {
 
+    private static final String TEST_REPOSITORY = "test-repository";
+
     private File repo = new File( System.getProperty( "builddir" ), "test-repository" );
 
     private File repoStage = new File( System.getProperty( "builddir" ), "test-repository-stage" );
-
-    @Override
-    @Before
-    public void startServer()
-        throws Exception
-    {
-
-        FileUtils.copyDirectory( new File( System.getProperty( "basedir" ), "src/test/repo-with-osgi" ), repo );
-        FileUtils.copyDirectory( new File( System.getProperty( "basedir" ), "src/test/repo-with-osgi-stage" ),
-                                 repoStage );
-        super.startServer();
-
-    }
-
-    @Override
-    @After
-    public void stopServer()
-        throws Exception
-    {
-        // TODO delete repositories
-        super.stopServer();
-        FileUtils.deleteDirectory( repo );
-        FileUtils.deleteDirectory( repoStage );
-    }
 
     @Test
     public void getMergeConflictedArtifacts()
         throws Exception
     {
-        String testRepoId = "test-repository";
-        try
-        {
+        MergeRepositoriesService service = getMergeRepositoriesService( authorizationHeader );
 
-            createStagedNeededRepo( testRepoId, repo.getAbsolutePath(), true );
+        List<Artifact> artifactMetadatas = service.getMergeConflictedArtifacts( TEST_REPOSITORY + "-stage",
+                                                                                TEST_REPOSITORY );
 
-            MergeRepositoriesService service = getMergeRepositoriesService( authorizationHeader );
+        log.info( "conflicts: {}", artifactMetadatas );
 
-            List<Artifact> artifactMetadatas = service.getMergeConflictedArtifacts( testRepoId + "-stage", testRepoId );
-
-            log.info( "conflicts: {}", artifactMetadatas );
-
-            assertThat( artifactMetadatas ).isNotNull().isNotEmpty().hasSize( 8 );
-
-
-        }
-        catch ( Exception e )
-        {
-            log.error( e.getMessage(), e );
-            throw e;
-        }
-        finally
-        {
-            deleteTestRepo( testRepoId );
-        }
+        assertThat( artifactMetadatas ).isNotNull().isNotEmpty().hasSize( 8 );
     }
 
     @Test
     public void merge()
         throws Exception
     {
-        String testRepoId = "test-repository";
-        try
-        {
-            createStagedNeededRepo( testRepoId, repo.getAbsolutePath(), true );
+        String mergedArtifactPath =
+            "org/apache/felix/org.apache.felix.bundlerepository/1.6.4/org.apache.felix.bundlerepository-1.6.4.jar";
+        String mergedArtifactPomPath =
+            "org/apache/felix/org.apache.felix.bundlerepository/1.6.4/org.apache.felix.bundlerepository-1.6.4.pom";
 
-            String mergedArtifactPath =
-                "org/apache/felix/org.apache.felix.bundlerepository/1.6.4/org.apache.felix.bundlerepository-1.6.4.jar";
-            String mergedArtifactPomPath =
-                "org/apache/felix/org.apache.felix.bundlerepository/1.6.4/org.apache.felix.bundlerepository-1.6.4.pom";
+        assertTrue( new File( repoStage, mergedArtifactPath ).exists() );
+        assertTrue( new File( repoStage, mergedArtifactPomPath ).exists() );
 
-            assertTrue( new File( repoStage, mergedArtifactPath ).exists() );
-            assertTrue( new File( repoStage, mergedArtifactPomPath ).exists() );
+        MergeRepositoriesService service = getMergeRepositoriesService( authorizationHeader );
 
-            MergeRepositoriesService service = getMergeRepositoriesService( authorizationHeader );
+        service.mergeRepositories( TEST_REPOSITORY + "-stage", TEST_REPOSITORY, true );
 
-            service.mergeRepositories( testRepoId + "-stage", testRepoId, true );
+        assertTrue( new File( repo, mergedArtifactPath ).exists() );
+        assertTrue( new File( repo, mergedArtifactPomPath ).exists() );
+    }
 
-            assertTrue( new File( repo, mergedArtifactPath ).exists() );
-            assertTrue( new File( repo, mergedArtifactPomPath ).exists() );
+    @After
+    public void deleteStageRepo()
+        throws Exception
+    {
+        waitForScanToComplete( TEST_REPOSITORY );
 
-        }
-        catch ( Exception e )
-        {
-            log.error( e.getMessage(), e );
-            throw e;
-        }
-        finally
-        {
-            deleteTestRepo( testRepoId );
-        }
+        deleteTestRepo( TEST_REPOSITORY );
+
+        FileUtils.deleteDirectory( repo );
+        FileUtils.deleteDirectory( repoStage );
+    }
+
+    @Before
+    public void createStageRepo()
+        throws Exception
+    {
+        FileUtils.copyDirectory( new File( System.getProperty( "basedir" ), "src/test/repo-with-osgi" ), repo );
+        FileUtils.copyDirectory( new File( System.getProperty( "basedir" ), "src/test/repo-with-osgi-stage" ),
+                                 repoStage );
+
+        createStagedNeededRepo( TEST_REPOSITORY, repo.getAbsolutePath(), true );
     }
 }

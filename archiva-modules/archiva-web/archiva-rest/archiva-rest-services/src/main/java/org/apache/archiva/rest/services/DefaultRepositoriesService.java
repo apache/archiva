@@ -64,6 +64,7 @@ import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
+import org.apache.archiva.repository.scanner.RepositoryScannerInstance;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
 import org.apache.archiva.rest.api.model.StringList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
@@ -169,6 +170,13 @@ public class DefaultRepositoriesService
     @Override
     public Boolean alreadyScanning( String repositoryId )
     {
+        for ( RepositoryScannerInstance scan : repoScanner.getInProgressScans() )
+        {
+            if ( scan.getRepository().getId().equals( repositoryId ) )
+            {
+                return true;
+            }
+        }
         return repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId );
     }
 
