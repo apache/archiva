@@ -1313,17 +1313,9 @@ public class JcrMetadataRepository
     public void close()
         throws MetadataRepositoryException
     {
-        try
+        if ( jcrSession != null && jcrSession.isLive() )
         {
-            if ( getJcrSession().isLive() )
-            {
-                getJcrSession().logout();
-            }
-        }
-        catch ( RepositoryException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new MetadataRepositoryException( e.getMessage(), e );
+            jcrSession.logout();
         }
     }
 
