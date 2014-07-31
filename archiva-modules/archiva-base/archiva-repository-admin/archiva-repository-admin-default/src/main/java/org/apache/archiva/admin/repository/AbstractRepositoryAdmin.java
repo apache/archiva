@@ -21,17 +21,18 @@ package org.apache.archiva.admin.repository;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.RepositoryCommonValidator;
-import org.apache.archiva.audit.AuditEvent;
-import org.apache.archiva.audit.AuditListener;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.components.registry.Registry;
+import org.apache.archiva.repository.events.AuditListener;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -47,6 +48,7 @@ public abstract class AbstractRepositoryAdmin
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
+    @Autowired(required = false)
     private List<AuditListener> auditListeners = new ArrayList<>();
 
     @Inject

@@ -21,7 +21,7 @@ package org.apache.archiva.webdav;
 
 import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.audit.AuditListener;
+import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavException;

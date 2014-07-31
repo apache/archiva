@@ -19,6 +19,8 @@ package org.apache.archiva.audit;
  * under the License.
  */
 
+import org.apache.archiva.repository.events.AuditListener;
+
 /**
  * Auditable 
  *

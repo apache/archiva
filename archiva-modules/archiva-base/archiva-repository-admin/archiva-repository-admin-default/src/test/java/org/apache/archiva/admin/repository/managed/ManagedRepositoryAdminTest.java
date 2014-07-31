@@ -20,7 +20,7 @@ package org.apache.archiva.admin.repository.managed;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
-import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.junit.Test;
 

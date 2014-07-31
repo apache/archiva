@@ -1,4 +1,4 @@
-package org.apache.archiva.audit;
+package org.apache.archiva.repository.events;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -18,6 +18,8 @@ package org.apache.archiva.audit;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 
 /**
  * AuditListener 

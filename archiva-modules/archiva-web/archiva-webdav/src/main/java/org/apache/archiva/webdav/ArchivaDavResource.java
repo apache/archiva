@@ -20,8 +20,8 @@ package org.apache.archiva.webdav;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.audit.AuditEvent;
-import org.apache.archiva.audit.AuditListener;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.common.filelock.FileLockException;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.filelock.FileLockTimeoutException;

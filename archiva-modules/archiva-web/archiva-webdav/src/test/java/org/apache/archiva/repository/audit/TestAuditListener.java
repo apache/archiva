@@ -19,8 +19,8 @@ package org.apache.archiva.repository.audit;
  * under the License.
  */
 
-import org.apache.archiva.audit.AuditEvent;
-import org.apache.archiva.audit.AuditListener;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.archiva.repository.events.AuditListener;
 
 import java.util.ArrayList;
 import java.util.List;

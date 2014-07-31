@@ -21,6 +21,7 @@ package org.apache.archiva.audit;
 
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.springframework.stereotype.Service;
 
 /**
