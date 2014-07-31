@@ -22,8 +22,6 @@ package org.apache.archiva.cli;
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
@@ -163,7 +161,7 @@ public class ArchivaCli
     }
 
     private void doScan( String path, String[] consumers )
-        throws ConsumerException, MalformedURLException, PlexusSisuBridgeException
+        throws ConsumerException, MalformedURLException
     {
         ManagedRepository repo = new ManagedRepository();
         repo.setId( "cliRepo" );
@@ -179,7 +177,7 @@ public class ArchivaCli
         List<String> ignoredContent = new ArrayList<>();
         ignoredContent.addAll( Arrays.asList( RepositoryScanner.IGNORABLE_CONTENT ) );
 
-        RepositoryScanner scanner = lookup( RepositoryScanner.class );
+        RepositoryScanner scanner = applicationContext.getBean( RepositoryScanner.class );
 
         try
         {
@@ -194,15 +192,8 @@ public class ArchivaCli
         }
     }
 
-    private <T> T lookup( Class<T> clazz )
-        throws PlexusSisuBridgeException
-    {
-        PlexusSisuBridge plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
-        return plexusSisuBridge.lookup( clazz );
-    }
-
     private List<KnownRepositoryContentConsumer> getConsumerList( String[] consumers )
-        throws ConsumerException, PlexusSisuBridgeException
+        throws ConsumerException
     {
         List<KnownRepositoryContentConsumer> consumerList = new ArrayList<>();
 
@@ -224,7 +215,6 @@ public class ArchivaCli
     }
 
     private void dumpAvailableConsumers()
-        throws PlexusSisuBridgeException
     {
         Map<String, KnownRepositoryContentConsumer> availableConsumers = getConsumers();
 
@@ -241,7 +231,6 @@ public class ArchivaCli
 
     @SuppressWarnings( "unchecked" )
     private Map<String, KnownRepositoryContentConsumer> getConsumers()
-        throws PlexusSisuBridgeException
     {
         Map<String, KnownRepositoryContentConsumer> beans =
             applicationContext.getBeansOfType( KnownRepositoryContentConsumer.class );
@@ -259,9 +248,9 @@ public class ArchivaCli
     }
 
     private void doConversion( String properties )
-        throws IOException, RepositoryConversionException, PlexusSisuBridgeException
+        throws IOException, RepositoryConversionException
     {
-        LegacyRepositoryConverter legacyRepositoryConverter = lookup( LegacyRepositoryConverter.class );
+        LegacyRepositoryConverter legacyRepositoryConverter = applicationContext.getBean( LegacyRepositoryConverter.class );
 
         Properties p = new Properties();
 
