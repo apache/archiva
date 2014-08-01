@@ -22,7 +22,7 @@
     "http://struts.apache.org/dtds/struts-2.0.dtd"> 
 
 <struts>
-  <constant name="struts.action.excludePattern" value="^/$,^/repository/.*" />
+  <constant name="struts.action.excludePattern" value="^/$,^/repository/.*,^/xmlrpc$,^/feeds/.*" />
 
   <!-- Include plexus-security xwork configurations. -->
   <include file="struts-security.xml"/>
