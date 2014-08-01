@@ -164,7 +164,7 @@ public class ArchivaCli
         throws ConsumerException, MalformedURLException
     {
         ManagedRepository repo = new ManagedRepository();
-        repo.setId( "cliRepo" );
+        repo.setId( new File( path ).getName() );
         repo.setName( "Archiva CLI Provided Repo" );
         repo.setLocation( path );
 
