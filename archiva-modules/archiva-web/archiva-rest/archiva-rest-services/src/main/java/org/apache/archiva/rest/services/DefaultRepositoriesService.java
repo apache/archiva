@@ -170,6 +170,11 @@ public class DefaultRepositoriesService
     @Override
     public Boolean alreadyScanning( String repositoryId )
     {
+        // check queue first to make sure it doesn't get dequeued between calls
+        if ( repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId ) )
+        {
+            return true;
+        }
         for ( RepositoryScannerInstance scan : repoScanner.getInProgressScans() )
         {
             if ( scan.getRepository().getId().equals( repositoryId ) )
@@ -177,7 +182,7 @@ public class DefaultRepositoriesService
                 return true;
             }
         }
-        return repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId );
+        return false;
     }
 
     @Override
