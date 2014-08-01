@@ -491,6 +491,12 @@
         <groupId>org.apache.archiva.redback.components</groupId>
         <artifactId>spring-jdo2</artifactId>
         <version>2.2</version>
+        <exclusions>
+          <exclusion>
+            <groupId>geronimo-spec</groupId>
+            <artifactId>geronimo-spec-jta</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -1602,6 +1608,7 @@
                     <exclude>velocity:velocity</exclude>
                     <exclude>classworlds:classworlds</exclude>
                     <exclude>javax.transaction:jta</exclude>
+                    <exclude>*:geronimo-spec-jta</exclude>
                     <exclude>javax.sql:jdbc-stdext</exclude>
                     <exclude>ant:ant-optional</exclude>
                     <exclude>xom:xom</exclude>
@@ -1618,7 +1625,6 @@
                     <exclude>org.codehaus.plexus.registry:plexus-registry-api</exclude>
                     <exclude>org.codehaus.plexus.registry:plexus-registry-commons</exclude>
                     <exclude>org.codehaus.plexus:plexus-taskqueue</exclude>
-
 
                     <exclude>commons-logging:commons-logging-api</exclude>
                     <exclude>log4j:log4j</exclude>
