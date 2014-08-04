@@ -29,7 +29,7 @@
 
     <RollingRandomAccessFile name="rolling" fileName="${logsDirectory}/archiva.log"
                  filePattern="${logsDirectory}/archiva-%d{yyyyMMdd}.log"
-                 immediateFlush="false" append="true">
+                 immediateFlush="true" append="true">
       <PatternLayout>
         <pattern>%d [%t] %-5p %c %x - %m%n</pattern>
       </PatternLayout>
