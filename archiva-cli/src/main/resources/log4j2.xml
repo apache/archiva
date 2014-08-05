@@ -25,6 +25,7 @@
   </appenders>
   <loggers>
     <logger name="org.apache.archiva" level="info"/>
+    <logger name="org.apache.archiva.redback.components.cache.ehcache" level="warn" />
 
     <root level="error" includeLocation="true">
       <appender-ref ref="console"/>
