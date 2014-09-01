@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
-    <version>2.1.1</version>
+    <version>2.1.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>archiva-webdav</artifactId>
