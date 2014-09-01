@@ -244,7 +244,7 @@ public class ArchivaDavResourceFactory
                         getResourceFromGroup( request, repoGroupConfig.getRepositories(), archivaLocator,
                                               repoGroupConfig );
 
-                    setHeaders( response, locator, davResource );
+                    setHeaders( response, locator, davResource, true );
 
                     return davResource;
 
@@ -291,7 +291,7 @@ public class ArchivaDavResourceFactory
                                                        auditListeners, //
                                                        scheduler, //
                                                        fileLockManager );
-                    setHeaders( response, locator, resource );
+                    setHeaders( response, locator, resource, false );
                     return resource;
                 }
             }
@@ -432,7 +432,7 @@ public class ArchivaDavResourceFactory
             }
         }
 
-        setHeaders( response, locator, resource );
+        setHeaders( response, locator, resource, false );
 
         // compatibility with MRM-440 to ensure browsing the repository works ok
         if ( resource.isCollection() && !request.getRequestURI().endsWith( "/" ) )
@@ -873,7 +873,8 @@ public class ArchivaDavResourceFactory
         this.auditListeners.remove( listener );
     }
 
-    private void setHeaders( DavServletResponse response, DavResourceLocator locator, DavResource resource )
+    private void setHeaders( DavServletResponse response, DavResourceLocator locator, DavResource resource,
+                             boolean group )
     {
         // [MRM-503] - Metadata file need Pragma:no-cache response
         // header.
@@ -893,6 +894,14 @@ public class ArchivaDavResourceFactory
             response.setHeader( "Pragma", "no-cache" );
             response.setHeader( "Cache-Control", "no-cache" );
             response.setDateHeader( "Last-Modified", new Date().getTime() );
+        }
+        else if ( group )
+        {
+            if ( resource instanceof ArchivaVirtualDavResource )
+            {
+                //MRM-1854 here we have a directory so force "Last-Modified"
+                response.setDateHeader( "Last-Modified", new Date().getTime() );
+            }
         }
         else
         {
