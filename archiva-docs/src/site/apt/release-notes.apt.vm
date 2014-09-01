@@ -63,53 +63,17 @@ Release Notes for Archiva ${project.version}
 
   Released: <<???>>
 
-** Improvement
-
-    * [MRM-1210] - Dependency tree should include the artifact type
-
-    * [MRM-1558] - Please provide some UI element which shows degraded and/or badly connected remote repository
-
-    * [MRM-1802] - Find a cache solution for browsing part (especially root browsing)
-
-    * [MRM-1829] - Change default value of of AysncLogger strategy for log4j async
-
-    * [MRM-1834] - Add limit to index search query to prevent unnecessary calculations
-
-    * [MRM-1836] - Make search limit (maxCount) configurable via UI
-
-    * [MRM-1843] - provide mechanism to obtain the latest version of an artifact
-
 ** Bug
 
-    * [MRM-887] - Start script has no valid "uname" option
+     * [MRM-1832] - RepositoryScannerTest#testDefaultRepositoryScanner fails on Linux with src release zip
 
-    * [MRM-1809] - Users - Manage section sort by name doesn't work as expected
+     * [MRM-1853] - On first start up, you get a perpetual loading indicator.
 
-    * [MRM-1812] - Users - Manage section needs Sort by User Name, Sort by Full Name, and Sort by Email buttons
+     * [MRM-1854] - Last modified date is epoch on directory listing for a group
 
-    * [MRM-1813] - Users - Manage section filters don't seem to work
+     * [MRM-1855] - "Loading" button never disappears when no one is logged in in some browsers
 
-    * [MRM-1823] - java 1.7 as prerequisite
-
-    * [MRM-1824] - metadata storage using Cassandra
-
-    * [MRM-1825] - MD5 hashes are for wrong file name
-
-    * [MRM-1826] - Force Internet Explorer into Standards Mode
-
-    * [MRM-1830] - Charset applied to binary repository HTTP responses
-
-    * [MRM-1833] - Nullpointer when browsing artifacts which have dependencies with scope "import"
-
-    * [MRM-1837] - DefaultArchivaConfiguration holds references to classes
-
-    * [MRM-1841] - "Remember me" not working
-
-    * [MRM-1842] - Remove per default log4j2 Async Logging
-
-    * [MRM-1846] - Regression in 2.0.1 : uniqueVersion false not supported
-
-    * [MRM-1849] - Unable to download -SNAPSHOT jars after 2.0.1 Upgrade
+     * [MRM-1856] - archiva-cli does not work
 
 
 * History
