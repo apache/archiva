@@ -24,8 +24,6 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
-import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
@@ -42,6 +40,7 @@ import org.apache.archiva.indexer.merger.MergedRemoteIndexesTaskRequest;
 import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.storage.RelocationException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
@@ -64,6 +63,7 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.content.legacy.LegacyPathParser;
 import org.apache.archiva.repository.content.maven2.RepositoryRequest;
+import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
@@ -279,10 +279,18 @@ public class ArchivaDavResourceFactory
                     File resourceFile = StringUtils.equals( logicalResource, "/" )
                         ? new File( indexingContext.getIndexDirectoryFile().getParent() )
                         : new File( indexingContext.getIndexDirectoryFile().getParent(), logicalResource );
-                    resource = new ArchivaDavResource( resourceFile.getAbsolutePath(), locator.getResourcePath(), null,
-                                                       request.getRemoteAddr(), activePrincipal,
-                                                       request.getDavSession(), archivaLocator, this, mimeTypes,
-                                                       auditListeners, scheduler, fileLockManager );
+                    resource = new ArchivaDavResource( resourceFile.getAbsolutePath(), //
+                                                       locator.getResourcePath(), //
+                                                       null, //
+                                                       request.getRemoteAddr(), //
+                                                       activePrincipal, //
+                                                       request.getDavSession(), //
+                                                       archivaLocator, //
+                                                       this, //
+                                                       mimeTypes, //
+                                                       auditListeners, //
+                                                       scheduler, //
+                                                       fileLockManager );
                     setHeaders( response, locator, resource );
                     return resource;
                 }
@@ -316,8 +324,7 @@ public class ArchivaDavResourceFactory
             {
                 resource = processRepository( request, archivaLocator, activePrincipal, managedRepositoryContent,
                                               managedRepositoryAdmin.getManagedRepository(
-                                                  archivaLocator.getRepositoryId() )
-                );
+                                                  archivaLocator.getRepositoryId() ) );
 
                 String logicalResource = getLogicalResource( archivaLocator, null, false );
                 resourcesInAbsolutePath.add(
@@ -352,6 +359,7 @@ public class ArchivaDavResourceFactory
                 {
                     File metadataChecksum =
                         new File( filePath + "." + StringUtils.substringAfterLast( requestedResource, "." ) );
+
                     if ( metadataChecksum.exists() )
                     {
                         LogicalResource logicalResource =
@@ -590,8 +598,8 @@ public class ArchivaDavResourceFactory
             // Maven Centric part ask evaluation if -SNAPSHOT
             // MRM-1846 test if read method to prevent issue with maven 2.2.1 and uniqueVersion false
 
-            String path = readMethod ?
-                evaluatePathWithVersion( archivaLocator, managedRepositoryContent, request.getContextPath() )
+            String path = readMethod
+                ? evaluatePathWithVersion( archivaLocator, managedRepositoryContent, request.getContextPath() )
                 : getLogicalResource( archivaLocator, managedRepository, false );
             if ( path.startsWith( "/" ) )
             {
@@ -947,11 +955,9 @@ public class ArchivaDavResourceFactory
             AuthenticationResult result = httpAuth.getAuthenticationResult( request, null );
             SecuritySession securitySession = httpAuth.getSecuritySession( request.getSession( true ) );
 
-            return servletAuth.isAuthenticated( request, result ) && servletAuth.isAuthorized( request, securitySession,
-                                                                                               repositoryId,
-                                                                                               WebdavMethodUtil.getMethodPermission(
-                                                                                                   request.getMethod() )
-            );
+            return servletAuth.isAuthenticated( request, result ) //
+                && servletAuth.isAuthorized( request, securitySession, repositoryId, //
+                                             WebdavMethodUtil.getMethodPermission( request.getMethod() ) );
         }
         catch ( AuthenticationException e )
         {
@@ -1048,8 +1054,7 @@ public class ArchivaDavResourceFactory
                 {
                     File tmpDirectory = new File( SystemUtils.getJavaIoTmpDir(),
                                                   repositoryGroupConfiguration.getId() + "/"
-                                                      + repositoryGroupConfiguration.getMergedIndexPath()
-                    );
+                                                      + repositoryGroupConfiguration.getMergedIndexPath() );
                     if ( !tmpDirectory.exists() )
                     {
                         synchronized ( tmpDirectory.getAbsolutePath() )
@@ -1093,8 +1098,7 @@ public class ArchivaDavResourceFactory
                                 repoIndexDirectory = new File( managedRepository.getRepository().getLocation(),
                                                                StringUtils.isEmpty( repoIndexDirectory )
                                                                    ? ".indexer"
-                                                                   : repoIndexDirectory
-                                ).getAbsolutePath();
+                                                                   : repoIndexDirectory ).getAbsolutePath();
                             }
                         }
                         if ( StringUtils.isEmpty( repoIndexDirectory ) )
@@ -1134,8 +1138,7 @@ public class ArchivaDavResourceFactory
                                 {
                                     if ( servletAuth.isAuthorized( activePrincipal, repository,
                                                                    WebdavMethodUtil.getMethodPermission(
-                                                                       request.getMethod() )
-                                    ) )
+                                                                       request.getMethod() ) ) )
                                     {
                                         mergedRepositoryContents.add( resourceFile );
                                         log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
@@ -1348,7 +1351,7 @@ public class ArchivaDavResourceFactory
             log.info( "generate temporary merged index for repository group '{}' for repositories '{}'",
                       repositoryGroupConfiguration.getId(), authzRepos );
 
-            File tempRepoFile = Files.createTempDirectory("temp").toFile();
+            File tempRepoFile = Files.createTempDirectory( "temp" ).toFile();
             tempRepoFile.deleteOnExit();
 
             IndexMergerRequest indexMergerRequest =
@@ -1367,8 +1370,8 @@ public class ArchivaDavResourceFactory
             File mergedRepoDir = indexingContext.getIndexDirectoryFile();
             TemporaryGroupIndex temporaryGroupIndex =
                 new TemporaryGroupIndex( mergedRepoDir, indexingContext.getId(), repositoryGroupConfiguration.getId(),
-                                         repositoryGroupConfiguration.getMergedIndexTtl() ).setCreationTime(
-                    new Date().getTime() );
+                                         repositoryGroupConfiguration.getMergedIndexTtl() ) //
+                    .setCreationTime( new Date().getTime() );
             temporaryGroupIndexMap.put( repositoryGroupConfiguration.getId(), temporaryGroupIndex );
             session.setAttribute( TemporaryGroupIndexSessionCleaner.TEMPORARY_INDEX_SESSION_KEY,
                                   temporaryGroupIndexMap );
@@ -1381,7 +1384,8 @@ public class ArchivaDavResourceFactory
         catch ( IndexMergerException e )
         {
             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
         }
