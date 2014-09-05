@@ -21,7 +21,7 @@
 
 Release Notes for Archiva ${project.version}
 
-  The Apache Archiva team would like to announce the release of Archiva
+  The Apache Archiva team is pleased to announce the release of Archiva
   ${project.version}.  Archiva is {{{http://archiva.apache.org/download.html}
   available for download from the web site}}.
 
@@ -38,7 +38,7 @@ Release Notes for Archiva ${project.version}
 
   Apache Archiva ${project.version} is a bugs fix release:
 
-  * NOTE: jdk 1.7 is now prerequisite with Apache Archiva 1.7
+  * NOTE: jdk 1.7 is now prerequisite with Apache Archiva ${project.version}
 
 * Compatibility Changes
 
