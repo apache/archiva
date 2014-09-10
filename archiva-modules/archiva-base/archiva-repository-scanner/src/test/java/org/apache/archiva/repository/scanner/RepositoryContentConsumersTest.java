@@ -100,7 +100,7 @@ public class RepositoryContentConsumersTest
 
         RepositoryContentConsumers consumerUtil =
             applicationContext.getBean( "repositoryContentConsumers#test", RepositoryContentConsumers.class );
-        ApplicationContext context = new MockApplicationContext( consumerUtil.getAvailableKnownConsumers( ),
+        ApplicationContext context = new MockApplicationContext( consumerUtil.getAvailableKnownConsumers( ), //
                                                                  consumerUtil.getAvailableInvalidConsumers( ) );
 
         consumerUtilStub.setApplicationContext( context );
@@ -431,6 +431,13 @@ public class RepositoryContentConsumersTest
 
         @Override
         public String[] getBeanNamesForType( Class type, boolean includeNonSingletons, boolean allowEagerInit )
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        @Override
+        public <T> T getBean( Class<T> aClass, Object... objects )
+            throws BeansException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
         }

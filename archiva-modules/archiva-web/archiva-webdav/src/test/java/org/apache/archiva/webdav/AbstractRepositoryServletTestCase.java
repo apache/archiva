@@ -329,6 +329,13 @@ public abstract class AbstractRepositoryServletTestCase
         }
 
         @Override
+        public <T> T getBean( Class<T> aClass, Object... objects )
+            throws BeansException
+        {
+            return applicationContext.getBean( aClass, objects );
+        }
+
+        @Override
         public Object getBean( String s )
             throws BeansException
         {

@@ -21,7 +21,6 @@ package org.apache.archiva.web.rss;
 
 
 import junit.framework.TestCase;
-import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.codec.Encoder;
 import org.apache.commons.codec.binary.Base64;
@@ -235,6 +234,13 @@ public class RssFeedServletTest
             throws BeansException
         {
             return applicationContext.getBeansOfType( tClass );
+        }
+
+        @Override
+        public <T> T getBean( Class<T> aClass, Object... objects )
+            throws BeansException
+        {
+            return applicationContext.getBean( aClass, objects );
         }
 
         @Override
