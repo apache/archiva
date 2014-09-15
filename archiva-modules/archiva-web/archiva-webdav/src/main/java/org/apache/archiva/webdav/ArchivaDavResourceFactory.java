@@ -557,8 +557,9 @@ public class ArchivaDavResourceFactory
         return path;
     }
 
-    private String evaluatePathWithVersion( ArchivaDavResourceLocator archivaLocator,
-                                            ManagedRepositoryContent managedRepositoryContent, String contextPath )
+    private String evaluatePathWithVersion( ArchivaDavResourceLocator archivaLocator, //
+                                            ManagedRepositoryContent managedRepositoryContent, //
+                                            String contextPath )
         throws DavException
     {
         String layout = managedRepositoryContent.getRepository() == null
@@ -568,7 +569,7 @@ public class ArchivaDavResourceFactory
             this.applicationContext.getBean( "repositoryStorage#" + layout, RepositoryStorage.class );
         try
         {
-            return repositoryStorage.getFilePathWithVersion( archivaLocator.getResourcePath(),
+            return repositoryStorage.getFilePathWithVersion( archivaLocator.getResourcePath(), //
                                                              managedRepositoryContent );
         }
         catch ( RelocationException e )

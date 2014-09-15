@@ -35,6 +35,7 @@ import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RelocationException;
@@ -49,7 +50,6 @@ import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
-import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.repository.layout.LayoutException;
@@ -107,7 +107,7 @@ import java.util.Map;
  * within the session in the context of a single managed repository's resolution needs.
  * <p/>
  */
-@Service("repositoryStorage#maven2")
+@Service( "repositoryStorage#maven2" )
 public class Maven2RepositoryStorage
     implements RepositoryStorage
 {
@@ -129,7 +129,7 @@ public class Maven2RepositoryStorage
     private NetworkProxyAdmin networkProxyAdmin;
 
     @Inject
-    @Named("repositoryPathTranslator#maven2")
+    @Named( "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
     @Inject
@@ -139,7 +139,7 @@ public class Maven2RepositoryStorage
     private ApplicationContext applicationContext;
 
     @Inject
-    @Named("pathParser#default")
+    @Named( "pathParser#default" )
     private PathParser pathParser;
 
     private static final String METADATA_FILENAME_START = "maven-metadata";
@@ -804,6 +804,12 @@ public class Maven2RepositoryStorage
             ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( metadataFile );
             int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
             String timestamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
+
+            // MRM-1846
+            if ( buildNumber < 1 && timestamp == null )
+            {
+                return filePath;
+            }
 
             // org/apache/archiva/archiva-checksum/1.4-M4-SNAPSHOT/archiva-checksum-1.4-M4-SNAPSHOT.jar
             // ->  archiva-checksum-1.4-M4-20130425.081822-1.jar
