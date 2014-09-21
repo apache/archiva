@@ -337,6 +337,8 @@ public class BrowseServiceTest
     public void deleteTestRepo()
         throws Exception
     {
+        scanRepo( TEST_REPO_ID );
+        waitForScanToComplete( TEST_REPO_ID );
         deleteTestRepo( TEST_REPO_ID );
     }
 }
