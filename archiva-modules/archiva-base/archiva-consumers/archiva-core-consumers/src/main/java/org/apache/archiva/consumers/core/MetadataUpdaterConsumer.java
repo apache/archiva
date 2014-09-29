@@ -219,22 +219,26 @@ public class MetadataUpdaterConsumer
         }
         catch ( LayoutException e )
         {
+            log.warn( "Unable to convert path [{}] to an internal project reference: ", path, e );
             triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF,
                                     "Unable to convert path [" + path + "] to an internal project reference: "
                                         + e.getMessage() );
         }
         catch ( RepositoryMetadataException e )
         {
+            log.error( "Unable to write project metadat for artifact [{}]:", path, e );
             triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
                                   "Unable to write project metadata for artifact [" + path + "]: " + e.getMessage() );
         }
         catch ( IOException e )
         {
+            log.warn( "Project metadata not written due to IO warning: ", e );
             triggerConsumerWarning( TYPE_METADATA_IO,
                                     "Project metadata not written due to IO warning: " + e.getMessage() );
         }
         catch ( ContentNotFoundException e )
         {
+            log.warn( "Project metadata not written because no versions were found to update: ", e );
             triggerConsumerWarning( TYPE_METADATA_IO,
                                     "Project metadata not written because no versions were found to update: "
                                         + e.getMessage() );
@@ -266,22 +270,26 @@ public class MetadataUpdaterConsumer
         }
         catch ( LayoutException e )
         {
+            log.warn( "Unable to convert path [{}] to an internal version reference: ", path, e );
             triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF,
                                     "Unable to convert path [" + path + "] to an internal version reference: "
                                         + e.getMessage() );
         }
         catch ( RepositoryMetadataException e )
         {
+            log.error( "Unable to write version metadata for artifact [{}]: ", path, e ); 
             triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
                                   "Unable to write version metadata for artifact [" + path + "]: " + e.getMessage() );
         }
         catch ( IOException e )
         {
+            log.warn( "Version metadata not written due to IO warning: ", e );
             triggerConsumerWarning( TYPE_METADATA_IO,
                                     "Version metadata not written due to IO warning: " + e.getMessage() );
         }
         catch ( ContentNotFoundException e )
         {
+            log.warn( "Version metadata not written because no versions were found to update: ", e ); 
             triggerConsumerWarning( TYPE_METADATA_IO,
                                     "Version metadata not written because no versions were found to update: "
                                         + e.getMessage() );

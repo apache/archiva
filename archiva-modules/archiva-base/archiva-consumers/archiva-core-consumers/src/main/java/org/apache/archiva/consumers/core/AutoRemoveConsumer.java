@@ -30,6 +30,8 @@ import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -49,6 +51,9 @@ public class AutoRemoveConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
 {
+
+    private Logger log = LoggerFactory.getLogger( AutoRemoveConsumer.class );
+
     /**
      * default-value="auto-remove"
      */
@@ -138,6 +143,7 @@ public class AutoRemoveConsumer
         File file = new File( this.repositoryDir, path );
         if ( file.exists() )
         {
+            log.info( "(Auto) Removing File: {}", file.getAbsolutePath() );
             triggerConsumerInfo( "(Auto) Removing File: " + file.getAbsolutePath() );
             file.delete();
         }

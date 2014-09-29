@@ -32,6 +32,8 @@ import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -54,6 +56,9 @@ public class ArtifactMissingChecksumsConsumer
     // it's prototype bean so we assume configuration won't change during a run
     //, RegistryListener
 {
+
+    private Logger log = LoggerFactory.getLogger( ArtifactMissingChecksumsConsumer.class );
+
     private String id = "create-missing-checksums";
 
     private String description = "Create Missing and/or Fix Invalid Checksums (.sha1, .md5)";
@@ -169,11 +174,13 @@ public class ArtifactMissingChecksumsConsumer
                 if ( !checksum.isValidChecksum( checksumAlgorithm[0] ) )
                 {
                     checksum.fixChecksums( checksumAlgorithm );
+                    log.info( "Fixed checksum file {}", checksumFile.getAbsolutePath() );
                     triggerConsumerInfo( "Fixed checksum file " + checksumFile.getAbsolutePath() );
                 }
             }
             catch ( IOException e )
             {
+                log.error( "Cannot calculate checksum for file {} :", checksumFile, e );
                 triggerConsumerError( TYPE_CHECKSUM_CANNOT_CALC, "Cannot calculate checksum for file " + checksumFile +
                     ": " + e.getMessage() );
             }
@@ -184,16 +191,19 @@ public class ArtifactMissingChecksumsConsumer
             try
             {
                 checksum.createChecksum( checksumAlgorithm[0] );
+                log.info( "Created missing checksum file {}", checksumFile.getAbsolutePath() ); 
                 triggerConsumerInfo( "Created missing checksum file " + checksumFile.getAbsolutePath() );
             }
             catch ( IOException e )
             {
+                log.error( "Cannot create checksum for file {} :", checksumFile, e );
                 triggerConsumerError( TYPE_CHECKSUM_CANNOT_CREATE, "Cannot create checksum for file " + checksumFile +
                     ": " + e.getMessage() );
             }
         }
         else
         {
+            log.warn( "Checksum file {} is not a file. ", checksumFile.getAbsolutePath() );
             triggerConsumerWarning( TYPE_CHECKSUM_NOT_FILE,
                                     "Checksum file " + checksumFile.getAbsolutePath() + " is not a file." );
         }

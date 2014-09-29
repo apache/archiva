@@ -26,6 +26,8 @@ import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.commons.io.FileUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +49,8 @@ public class AutoRenameConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer
 {
+    private Logger log = LoggerFactory.getLogger( AutoRenameConsumer.class ); 
+
     private String id = "auto-rename";
 
     private String description = "Automatically rename common artifact mistakes.";
@@ -149,12 +153,14 @@ public class AutoRenameConsumer
                     }
                     catch ( IOException e )
                     {
+                        log.warn( "Unable to rename {} to {} :", path, correctedPath, e );
                         triggerConsumerWarning( RENAME_FAILURE, "Unable to rename " + path + " to " + correctedPath +
                             ": " + e.getMessage() );
                     }
                 }
             }
 
+            log.info( "(Auto) Removing File: {} ", file.getAbsolutePath() );
             triggerConsumerInfo( "(Auto) Removing File: " + file.getAbsolutePath() );
             file.delete();
         }
