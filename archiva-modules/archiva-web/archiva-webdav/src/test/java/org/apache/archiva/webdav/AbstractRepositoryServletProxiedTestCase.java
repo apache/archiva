@@ -39,9 +39,9 @@ import org.junit.Before;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Rule;
 
 /**
  * AbstractRepositoryServletProxiedTestCase
@@ -94,6 +94,9 @@ public abstract class AbstractRepositoryServletProxiedTestCase
 
     protected RemoteRepoInfo remoteSnapshots;
 
+    @Rule
+    public ArchivaTemporaryFolderRule repoRootInternali = new ArchivaTemporaryFolderRule();
+    
     @Before
     @Override
     public void setUp()
@@ -119,8 +122,8 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         RemoteRepoInfo repo = new RemoteRepoInfo();
         repo.id = id;
         repo.context = "/" + id;
-        repo.root = Files.createTempDirectory(
-            "temp" ).toFile();// new File( System.getProperty( "basedir" ) + "target/remote-repos/" + id + "/" );
+        repo.root = repoRootInternali.getRoot();/*Files.createTempDirectory(
+            "temp" ).toFile();*/// new File( System.getProperty( "basedir" ) + "target/remote-repos/" + id + "/" );
 
         // Remove exising root contents.
         if ( repo.root.exists() )

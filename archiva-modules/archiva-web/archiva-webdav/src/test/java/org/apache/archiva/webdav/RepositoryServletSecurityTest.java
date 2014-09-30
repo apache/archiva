@@ -20,8 +20,6 @@ package org.apache.archiva.webdav;
  */
 
 
-import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.WebResponse;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -42,13 +40,11 @@ import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.util.MavenIndexerCleaner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
@@ -57,22 +53,22 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletConfig;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.inject.Inject;
-import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
+import org.junit.Rule;
 
 /**
  * RepositoryServletSecurityTest Test the flow of the authentication and authorization checks. This does not necessarily
@@ -84,9 +80,6 @@ public class RepositoryServletSecurityTest
     extends TestCase
 {
     protected static final String REPOID_INTERNAL = "internal";
-
-
-    protected File repoRootInternal;
 
     @Inject
     protected ArchivaConfiguration archivaConfiguration;
@@ -105,12 +98,17 @@ public class RepositoryServletSecurityTest
 
     @Inject
     ApplicationContext applicationContext;
+   
 
+    @Rule
+    public ArchivaTemporaryFolderRule repoRootInternal = new ArchivaTemporaryFolderRule();
+    
     @Before
     @Override
     public void setUp()
         throws Exception
     {
+        
         super.setUp();
 
         String appserverBase =
@@ -119,16 +117,20 @@ public class RepositoryServletSecurityTest
         File testConf = new File( "src/test/resources/repository-archiva.xml" );
         File testConfDest = new File( appserverBase, "conf/archiva.xml" );
         FileUtils.copyFile( testConf, testConfDest );
-
-        repoRootInternal = new File( appserverBase, "data/repositories/internal" );
-
+        
+        
+ 
         Configuration config = archivaConfiguration.getConfiguration();
-
-        if ( !config.getManagedRepositoriesAsMap().containsKey( REPOID_INTERNAL ) )
-        {
-            config.addManagedRepository(
-                createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal ) );
+        // clear managed repository
+        List<ManagedRepositoryConfiguration> f1 = new ArrayList<>(config.getManagedRepositories());
+        for (ManagedRepositoryConfiguration f: f1 ) {
+            config.removeManagedRepository(f);
         }
+        assertEquals(0,config.getManagedRepositories().size());
+        // add internal repo
+        config.addManagedRepository(
+                createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal.getRoot() ) );
+        
         saveConfiguration( archivaConfiguration );
 
         CacheManager.getInstance().clearAll();
@@ -175,27 +177,22 @@ public class RepositoryServletSecurityTest
         return repo;
     }
 
-    protected void saveConfiguration()
+    /*protected void saveConfiguration()
         throws Exception
     {
         saveConfiguration( archivaConfiguration );
-    }
+    }*/
 
     protected void saveConfiguration( ArchivaConfiguration archivaConfiguration )
         throws Exception
     {
-        archivaConfiguration.save( archivaConfiguration.getConfiguration() );
+        archivaConfiguration.save( archivaConfiguration.getConfiguration() );        
     }
 
-    protected void setupCleanRepo( File repoRootDir )
+    /*protected void setupCleanRepo( File repoRootDir )
         throws IOException
     {
-        FileUtils.deleteDirectory( repoRootDir );
-        if ( !repoRootDir.exists() )
-        {
-            repoRootDir.mkdirs();
-        }
-    }
+    }*/
 
     @Override
     @After
@@ -203,10 +200,10 @@ public class RepositoryServletSecurityTest
         throws Exception
     {
 
-        if ( repoRootInternal.exists() )
+       /* if ( repoRootInternal.exists() )
         {
             FileUtils.deleteDirectory( repoRootInternal );
-        }
+        }*/
 
         applicationContext.getBean( MavenIndexerCleaner.class ).cleanupIndex();
 
@@ -221,8 +218,7 @@ public class RepositoryServletSecurityTest
     public void testPutWithInvalidUserAndGuestHasNoWriteAccess()
         throws Exception
     {
-        setupCleanRepo( repoRootInternal );
-
+        
         InputStream is = getClass().getResourceAsStream( "/artifact.jar" );
         assertNotNull( "artifact.jar inputstream", is );
 
@@ -266,8 +262,7 @@ public class RepositoryServletSecurityTest
     public void testPutWithInvalidUserAndGuestHasWriteAccess()
         throws Exception
     {
-        setupCleanRepo( repoRootInternal );
-
+        
         servlet.setDavSessionProvider( davSessionProvider );
 
         ArchivaDavResourceFactory archivaDavResourceFactory = (ArchivaDavResourceFactory) servlet.getResourceFactory();
@@ -337,8 +332,7 @@ public class RepositoryServletSecurityTest
     public void testPutWithValidUserWithNoWriteAccess()
         throws Exception
     {
-        setupCleanRepo( repoRootInternal );
-
+        
         servlet.setDavSessionProvider( davSessionProvider );
 
         ArchivaDavResourceFactory archivaDavResourceFactory = (ArchivaDavResourceFactory) servlet.getResourceFactory();
@@ -403,8 +397,7 @@ public class RepositoryServletSecurityTest
     public void testPutWithValidUserWithWriteAccess()
         throws Exception
     {
-        setupCleanRepo( repoRootInternal );
-        assertTrue( repoRootInternal.exists() );
+        assertTrue( repoRootInternal.getRoot().exists() );
 
         MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
         String putUrl = "http://machine.com/repository/internal/path/to/artifact.jar";
@@ -480,7 +473,7 @@ public class RepositoryServletSecurityTest
         String commonsLangJar = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
         String expectedArtifactContents = "dummy-commons-lang-artifact";
 
-        File artifactFile = new File( repoRootInternal, commonsLangJar );
+        File artifactFile = new File( repoRootInternal.getRoot(), commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
         FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
@@ -532,7 +525,6 @@ public class RepositoryServletSecurityTest
         mockHttpServletRequest.setMethod( "GET" );
         mockHttpServletRequest.setRequestURI( "/repository/internal/" + commonsLangJar );
 
-
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
 
         servlet.service( mockHttpServletRequest, mockHttpServletResponse );
@@ -553,7 +545,7 @@ public class RepositoryServletSecurityTest
         String commonsLangJar = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
         String expectedArtifactContents = "dummy-commons-lang-artifact";
 
-        File artifactFile = new File( repoRootInternal, commonsLangJar );
+        File artifactFile = new File( repoRootInternal.getRoot(), commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
         FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
@@ -581,7 +573,6 @@ public class RepositoryServletSecurityTest
         mockHttpServletRequest.setMethod( "GET" );
         mockHttpServletRequest.setRequestURI( "/repository/internal/" + commonsLangJar );
 
-
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
 
         servlet.service( mockHttpServletRequest, mockHttpServletResponse );
@@ -600,7 +591,7 @@ public class RepositoryServletSecurityTest
         String commonsLangJar = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
         String expectedArtifactContents = "dummy-commons-lang-artifact";
 
-        File artifactFile = new File( repoRootInternal, commonsLangJar );
+        File artifactFile = new File( repoRootInternal.getRoot(), commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
         FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
@@ -647,7 +638,6 @@ public class RepositoryServletSecurityTest
         mockHttpServletRequest.setMethod( "GET" );
         mockHttpServletRequest.setRequestURI( "/repository/internal/" + commonsLangJar );
 
-
         MockHttpServletResponse mockHttpServletResponse = new MockHttpServletResponse();
 
         servlet.service( mockHttpServletRequest, mockHttpServletResponse );
@@ -667,7 +657,7 @@ public class RepositoryServletSecurityTest
         String commonsLangJar = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
         String expectedArtifactContents = "dummy-commons-lang-artifact";
 
-        File artifactFile = new File( repoRootInternal, commonsLangJar );
+        File artifactFile = new File( repoRootInternal.getRoot(), commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
         FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
@@ -725,4 +715,5 @@ public class RepositoryServletSecurityTest
 
         assertEquals( HttpServletResponse.SC_UNAUTHORIZED, mockHttpServletResponse.getStatus() );
     }
+
 }
