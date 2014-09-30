@@ -299,7 +299,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>${webdav.argLine}</argLine>
+          <argLine>${webdav.argLine} ${jacocoagent}</argLine>
           <systemPropertyVariables>
             <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             <plexus.home>${project.build.directory}/appserver-base</plexus.home>

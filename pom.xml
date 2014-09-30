@@ -80,7 +80,7 @@
     <javax.jcr.version>2.0</javax.jcr.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
-
+    <jacocoagent></jacocoagent>
     <lucene.version>3.6.2</lucene.version>
     <jackrabbit.version>2.8.0</jackrabbit.version>
 
@@ -1837,6 +1837,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
+            <argLine>${jacocoagent}</argLine>
             <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
             <runOrder>alphabetical</runOrder>
             <systemPropertyVariables>
@@ -1919,7 +1920,41 @@
         <module>archiva-modules/archiva-web/archiva-webapp-test</module>
       </modules>
     </profile>
-
+    <profile>
+      <id>jacoco-coverage</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.7.2.201409121644</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+                <configuration>
+                  <propertyName>jacocoproperty</propertyName>
+                </configuration>
+              </execution>
+              <execution>
+                <id>report</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <properties>
+        <jacocoagent>${jacocoproperty}</jacocoagent>
+      </properties>
+    </profile>
   </profiles>
 
   <repositories>
