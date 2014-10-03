@@ -953,32 +953,50 @@
 <script id="artifact-details-download-content_tmpl" type="text/html">
 
   <div class="row-fluid">
-    <div class="span5">
-      <ul id="artifact-download-list-files" class="package-list">
-        {{each(i, row) artifacts()}}
-        <li>
-          <img src="images/system-search-16-16.png" class="cursor-hand" id="${row.classifier}:${row.version}:${row.packaging}"
-                  title="${$.i18n.prop('browse.artifact.content.view.tooltip')}"/>
-          {{if deleteKarma}}
-            <a href="#" data-bind="click: function(){deleteArtifact(row)}">
-              <img src="images/trash.png" title="${$.i18n.prop('browse.artifact.content.delete.tooltip')}"/>
-            </a>
-            &nbsp;
-            <a href="${row.url}">
-              <img src="images/drive-removable-media-16-16.png" title="${$.i18n.prop('browse.artifact.content.download.tooltip')}"/>
-            </a>
-            &nbsp;
-            <span class="text-info">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</span>
-          {{else}}
-            <a href="${row.url}">
-              <img src="images/drive-removable-media-16-16.png" title="${$.i18n.prop('browse.artifact.content.download.tooltip')}"/>
-            </a>
-            &nbsp;
-            <span class="text-info">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</span>
-          {{/if}}
-        </li>
-        {{/each}}
-      </ul>
+    <div class="span12">
+      <table id="artifact-download-list-files" class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>&nbsp;</th>
+            {{if deleteKarma}}<th>&nbsp;</th>{{/if}}
+            <th>&nbsp;</th>
+            <th>${$.i18n.prop('browse.artifact.version')}</th>
+            <th>${$.i18n.prop('browse.artifact.packaging')}</th>            
+            <th>${$.i18n.prop('browse.artifact.classifier')}</th>               
+            <th>${$.i18n.prop('browse.artifact.size')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{each(i, row) artifacts()}}
+          <tr>
+            <td>
+              <img src="images/system-search-16-16.png" class="cursor-hand" id="${row.classifier}:${row.version}:${row.packaging}"
+                   title="${$.i18n.prop('browse.artifact.content.view.tooltip')}"/>
+            </td>
+            {{if deleteKarma}}
+            <td>
+              <a href="#" data-bind="click: function(){deleteArtifact(row)}">
+                <img src="images/trash.png" title="${$.i18n.prop('browse.artifact.content.delete.tooltip')}"/>
+              </a>
+            </td>
+            {{/if}}
+            <td>
+              <a href="${row.url}">
+                <img src="images/drive-removable-media-16-16.png" title="${$.i18n.prop('browse.artifact.content.download.tooltip')}"/>
+              </a>
+            </td>
+            <td>${row.version}</td>
+            <td>${row.packaging}</td>
+            {{if row.classifier }} 
+            <td>${row.classifier}</td>
+            {{else}}
+            <td>&nbsp;</td>
+            {{/if}}
+            <td>${row.size}</td>           
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
     </div>
     <div class="span7">
       <div id="artifact_content_tree">
