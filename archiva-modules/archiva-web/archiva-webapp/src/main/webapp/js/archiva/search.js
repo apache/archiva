@@ -1407,6 +1407,13 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     if (selectedRepository){
       newLocation+="~"+selectedRepository;
     }
+    if (currentHash.contains("/")) {
+        // MRM-1767 
+        // from all to internal
+        // #browse -> #browse~internal
+        // #browse/org.a.....  -> #browse~internal/org.a.... not #browse~internalorg.a
+        newLocation += "/";
+    }
     newLocation += currentHash.substringAfterFirst("/");
     // do we have extra path after repository ?
 
