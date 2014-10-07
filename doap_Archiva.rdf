@@ -35,16 +35,25 @@ security access management, build artifact storage, delivery, browsing, indexing
     <download-page rdf:resource="http://archiva.apache.org/download.html" />
     <programming-language>Java</programming-language>
     <category rdf:resource="http://projects.apache.org/category/build-management" />
-    <release>
+     <release>
       <Version>
-        <name>Apache Archiva 1.3.6</name>
-        <created>2013-01-07</created>
-        <revision>1.3.6</revision>
-        <file-release>http://www.us.apache.org/dist/archiva/1.3.6/binaries/apache-archiva-1.3.6-bin.zip</file-release>
-        <file-release>http://www.us.apache.org/dist/archiva/1.3.6/binaries/apache-archiva-1.3.6.war</file-release>
+        <name>Apache Archiva 2.x.x</name>
+        <created>2014-09-04</created>
+        <revision>2.1.1</revision>
+        <file-release>http://www.us.apache.org/dist/archiva/2.1.1/binaries/apache-archiva-2.1.1-bin.zip</file-release>
+        <file-release>http://www.us.apache.org/dist/archiva/2.1.1/binaries/apache-archiva-2.1.1.war</file-release>
       </Version>
     </release>
     <release>
+      <Version>
+        <name>Apache Archiva 1.3.x</name>
+        <created>2014-07-01</created>
+        <revision>1.3.9</revision>
+        <file-release>http://www.us.apache.org/dist/archiva/1.3.9/binaries/apache-archiva-1.3.9.1-bin.zip</file-release>
+        <file-release>http://www.us.apache.org/dist/archiva/1.3.9/binaries/apache-archiva-1.3.9.war</file-release>
+      </Version>
+    </release>
+    <!--<release>
       <Version>
         <name>Apache Archiva 1.4-M4</name>
         <created>2013-05-27</created>
@@ -52,21 +61,16 @@ security access management, build artifact storage, delivery, browsing, indexing
         <file-release>http://www.us.apache.org/dist/archiva/1.4-M4/binaries/apache-archiva-1.4-M4-bin.zip</file-release>
         <file-release>http://www.us.apache.org/dist/archiva/1.4-M4/binaries/apache-archiva-1.4-M4.war</file-release>
       </Version>
-    </release>
-    <release>
-      <Version>
-        <name>Apache Archiva 2.0.1</name>
-        <created>2014-03-26</created>
-        <revision>2.0.1</revision>
-        <file-release>http://www.us.apache.org/dist/archiva/2.0.1/binaries/apache-archiva-2.0.1-bin.zip</file-release>
-        <file-release>http://www.us.apache.org/dist/archiva/2.0.1/binaries/apache-archiva-2.0.1.war</file-release>
-      </Version>
-    </release>
+    </release>-->
     <repository>
       <SVNRepository>
         <location rdf:resource="https://svn.apache.org/repos/asf/archiva/"/>
         <browse rdf:resource="https://svn.apache.org/viewvc/archiva/"/>
       </SVNRepository>
+      <GitRepository>
+        <location rdf:resource="https://git-wip-us.apache.org/repos/asf?p=archiva.git"/>
+        <browse rdf:resource="https://git-wip-us.apache.org/repos/asf/archiva.git"/>
+      </GitRepository>
     </repository>
     <maintainer>
       <foaf:Person>
