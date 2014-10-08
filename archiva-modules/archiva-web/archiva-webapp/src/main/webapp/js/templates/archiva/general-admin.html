@@ -1269,8 +1269,6 @@
   <tbody>
   {{each(i, row) itemsOnCurrentPage()}}
     {{var key = row.key}}
-    <!-- do not display mapped ldap groups as keys -->
-    {{if !key.startsWith('ldap.config.groups.')}}
     <tr>
       <td>
         <a class="popover-doc"
