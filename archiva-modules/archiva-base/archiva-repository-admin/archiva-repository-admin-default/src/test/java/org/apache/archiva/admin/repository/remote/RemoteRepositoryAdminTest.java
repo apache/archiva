@@ -48,7 +48,7 @@ public class RemoteRepositoryAdminTest
     {
         RemoteRepository central = remoteRepositoryAdmin.getRemoteRepository( "central" );
         assertNotNull( central );
-        assertEquals( "http://repo.maven.apache.org/maven2", central.getUrl() );
+        assertEquals( "https://repo.maven.apache.org/maven2", central.getUrl() );
         assertEquals( 60, central.getTimeout() );
         assertNull( central.getUserName() );
         assertNull( central.getPassword() );
