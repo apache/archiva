@@ -111,12 +111,6 @@ public class DuplicateArtifactsConsumer
     }
 
     @Override
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
-    @Override
     public List<String> getIncludes()
     {
         return includes;

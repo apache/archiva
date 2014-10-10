@@ -63,12 +63,6 @@ public class TestConsumer
     }
 
     @Override
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
-    @Override
     public List<String> getIncludes()
     {
         return Collections.singletonList( "**/**" );

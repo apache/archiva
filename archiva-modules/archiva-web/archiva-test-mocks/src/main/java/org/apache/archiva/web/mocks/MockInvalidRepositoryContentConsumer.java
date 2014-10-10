@@ -47,12 +47,6 @@ public class MockInvalidRepositoryContentConsumer
     }
 
     @Override
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
-    @Override
     public void addConsumerMonitor( ConsumerMonitor monitor )
     {
         //To change body of implemented methods use File | Settings | File Templates.

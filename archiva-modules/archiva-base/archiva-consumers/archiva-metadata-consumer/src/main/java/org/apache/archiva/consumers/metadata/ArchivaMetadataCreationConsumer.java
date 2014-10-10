@@ -107,12 +107,6 @@ public class ArchivaMetadataCreationConsumer
     }
 
     @Override
-    public boolean isPermanent()
-    {
-        return true;
-    }
-
-    @Override
     public List<String> getExcludes()
     {
         return getDefaultArtifactExclusions();

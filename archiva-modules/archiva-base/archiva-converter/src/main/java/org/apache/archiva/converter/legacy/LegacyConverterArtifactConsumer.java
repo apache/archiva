@@ -164,12 +164,6 @@ public class LegacyConverterArtifactConsumer
         return "artifact-legacy-to-default-converter";
     }
 
-    @Override
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
     public void setExcludes( List<String> excludes )
     {
         this.excludes = excludes;

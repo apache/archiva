@@ -296,12 +296,6 @@ public class MetadataUpdaterConsumer
         }
     }
 
-    @Override
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
     /*
     @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )

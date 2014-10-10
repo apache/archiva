@@ -80,12 +80,6 @@ public class ArtifactCountConsumer
     }
 
     @Override
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
-    @Override
     public List<String> getExcludes()
     {
         return null;

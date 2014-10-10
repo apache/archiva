@@ -175,7 +175,7 @@ public class RepositoryContentConsumers
 
         for ( KnownRepositoryContentConsumer consumer : getAvailableKnownConsumers() )
         {
-            if ( knownSelected.contains( consumer.getId() ) || consumer.isPermanent() )
+            if ( knownSelected.contains( consumer.getId() ) )
             {
                 ret.add( consumer );
             }
@@ -222,7 +222,7 @@ public class RepositoryContentConsumers
 
         for ( InvalidRepositoryContentConsumer consumer : getAvailableInvalidConsumers() )
         {
-            if ( invalidSelected.contains( consumer.getId() ) || consumer.isPermanent() )
+            if ( invalidSelected.contains( consumer.getId() ) )
             {
                 ret.add( consumer );
             }

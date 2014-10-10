@@ -118,12 +118,6 @@ public class InvalidScanConsumer
         return id;
     }
 
-    @Override
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
     public int getProcessCount()
     {
         return processCount;

@@ -87,12 +87,6 @@ public class AutoRenameConsumer
     }
 
     @Override
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
-    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {

@@ -41,13 +41,6 @@ public abstract interface Consumer
     String getDescription();
     
     /**
-     * Flag indicating permanance of consumer. (if it can be disabled or not)
-     * 
-     * @return true indicating that consumer is permanent and cannot be disabled. 
-     */
-    boolean isPermanent();
-
-    /**
      * Add a consumer monitor to the consumer.
      * 
      * @param monitor the monitor to add.

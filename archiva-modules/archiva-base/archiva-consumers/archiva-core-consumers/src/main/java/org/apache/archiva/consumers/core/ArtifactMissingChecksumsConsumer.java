@@ -23,13 +23,10 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.archiva.redback.components.registry.Registry;
-import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -101,13 +98,7 @@ public class ArtifactMissingChecksumsConsumer
     {
         return this.description;
     }
-
-    @Override
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
+    
     @Override
     public void beginScan( ManagedRepository repo, Date whenGathered )
         throws ConsumerException

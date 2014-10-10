@@ -127,12 +127,6 @@ public class KnownScanConsumer
     }
 
     @Override
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
-    @Override
     public boolean isProcessUnmodified()
     {
         return processUnmodified;

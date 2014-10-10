@@ -123,12 +123,6 @@ public class RepositoryPurgeConsumer
     }
 
     @Override
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
-    @Override
     public List<String> getExcludes()
     {
         return getDefaultArtifactExclusions();
