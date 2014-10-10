@@ -1870,6 +1870,7 @@
               <exclude>**/.java-version</exclude>
               <exclude>patch.diff</exclude>
               <exclude>**/overlays/**</exclude>
+              <exclude>nbactions.xml</exclude>
             </excludes>
           </configuration>
         </plugin>
