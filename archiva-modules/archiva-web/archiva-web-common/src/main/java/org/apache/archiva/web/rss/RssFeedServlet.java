@@ -78,8 +78,6 @@ public class RssFeedServlet
 
     private Logger log = LoggerFactory.getLogger( RssFeedServlet.class );
 
-    private RssFeedProcessor processor;
-
     private WebApplicationContext wac;
 
     private UserRepositories userRepositories;
@@ -130,6 +128,8 @@ public class RssFeedServlet
             res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Invalid request url." );
             return;
         }
+
+        RssFeedProcessor processor = null;
 
         try
         {

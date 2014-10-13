@@ -431,7 +431,7 @@ public class RssFeedServletTest
     }
 
     @Ignore
-    public void XXX_testInvalidRequest()
+    public void testInvalidRequest()
         throws Exception
     {
         //RssFeedServlet servlet =
@@ -450,7 +450,7 @@ public class RssFeedServletTest
     }
 
     @Ignore
-    public void XXX_testInvalidAuthenticationRequest()
+    public void testInvalidAuthenticationRequest()
         throws Exception
     {
         //RssFeedServlet servlet =
@@ -476,7 +476,7 @@ public class RssFeedServletTest
     }
 
     @Ignore
-    public void XXX_testUnauthorizedRequest()
+    public void testUnauthorizedRequest()
         throws Exception
     {
 
