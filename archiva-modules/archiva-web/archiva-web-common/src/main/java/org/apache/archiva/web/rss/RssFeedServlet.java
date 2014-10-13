@@ -25,8 +25,13 @@ import com.sun.syndication.io.SyndFeedOutput;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authorization.AuthorizationException;
+import org.apache.archiva.redback.authorization.UnauthorizedException;
+import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.rss.processor.RssFeedProcessor;
@@ -40,11 +45,6 @@ import org.apache.commons.codec.Decoder;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.redback.authentication.AuthenticationResult;
-import org.apache.archiva.redback.authorization.AuthorizationException;
-import org.apache.archiva.redback.authorization.UnauthorizedException;
-import org.apache.archiva.redback.system.SecuritySession;
-import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
@@ -86,6 +86,10 @@ public class RssFeedServlet
 
     private HttpAuthenticator httpAuth;
 
+    private RssFeedProcessor newArtifactsprocessor;
+
+    private RssFeedProcessor newVersionsprocessor;
+
     /**
      * FIXME: this could be multiple implementations and needs to be configured.
      */
@@ -102,6 +106,9 @@ public class RssFeedServlet
         httpAuth = wac.getBean( "httpAuthenticator#basic", HttpAuthenticator.class );
         // TODO: what if there are other types?
         repositorySessionFactory = wac.getBean( "repositorySessionFactory", RepositorySessionFactory.class );
+
+        newArtifactsprocessor = wac.getBean( "rssFeedProcessor#new-artifacts", RssFeedProcessor.class );
+        newVersionsprocessor = wac.getBean( "rssFeedProcessor#new-versions", RssFeedProcessor.class );
     }
 
     @Override
@@ -141,14 +148,14 @@ public class RssFeedServlet
                 if ( repoId != null )
                 {
                     // new artifacts in repo feed request
-                    processor = wac.getBean( "rssFeedProcessor#new-artifacts", RssFeedProcessor.class );
+                    processor = newArtifactsprocessor;
                     map.put( RssFeedProcessor.KEY_REPO_ID, repoId );
                 }
                 else if ( ( groupId != null ) && ( artifactId != null ) )
                 {
                     // TODO: this only works for guest - we could pass in the list of repos
                     // new versions of artifact feed request
-                    processor = wac.getBean( "rssFeedProcessor#new-versions", RssFeedProcessor.class );
+                    processor = newVersionsprocessor;
                     map.put( RssFeedProcessor.KEY_GROUP_ID, groupId );
                     map.put( RssFeedProcessor.KEY_ARTIFACT_ID, artifactId );
                 }
@@ -296,20 +303,22 @@ public class RssFeedServlet
                 AuthenticationResult result = httpAuth.getAuthenticationResult( req, null );
                 SecuritySession securitySession = httpAuth.getSecuritySession( req.getSession( true ) );
 
-                if ( servletAuth.isAuthenticated( req, result ) && servletAuth.isAuthorized( req, securitySession,
-                                                                                             repoId,
-                                                                                             ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ) )
+                if ( servletAuth.isAuthenticated( req, result ) //
+                    && servletAuth.isAuthorized( req, //
+                                                 securitySession, //
+                                                 repoId, //
+                                                 ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ) )
                 {
                     return true;
                 }
             }
             catch ( AuthorizationException e )
             {
-
+                log.debug( "AuthorizationException for repoId: {}", repoId );
             }
             catch ( UnauthorizedException e )
             {
-
+                log.debug( "UnauthorizedException for repoId: {}", repoId );
             }
         }
 

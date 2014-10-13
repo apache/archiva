@@ -54,9 +54,6 @@ public class NewVersionsOfArtifactRssFeedProcessor
 
     private static final String desc = "These are the new versions of artifact ";
 
-    /**
-     *
-     */
     @Inject
     private RssFeedGenerator generator;
 
