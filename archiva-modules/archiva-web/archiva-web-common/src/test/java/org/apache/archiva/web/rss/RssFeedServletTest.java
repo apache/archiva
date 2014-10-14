@@ -430,12 +430,10 @@ public class RssFeedServletTest
                       mockHttpServletResponse.getStatus() );
     }
 
-    @Ignore
+    @Test
     public void testInvalidRequest()
         throws Exception
     {
-        //RssFeedServlet servlet =
-        //    (RssFeedServlet) client.newInvocation( "http://localhost/feeds?invalid_param=xxx" ).getServlet();
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setRequestURI( "/feeds?invalid_param=xxx" );
         request.addHeader( "User-Agent", "Apache Archiva unit test" );

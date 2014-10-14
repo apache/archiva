@@ -115,11 +115,14 @@ public class RssFeedServlet
     public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws ServletException, IOException
     {
+
+
         String repoId = null;
         String groupId = null;
         String artifactId = null;
 
         String url = StringUtils.removeEnd( req.getRequestURL().toString(), "/" );
+
         if ( StringUtils.countMatches( StringUtils.substringAfter( url, "feeds/" ), "/" ) > 0 )
         {
             artifactId = StringUtils.substringAfterLast( url, "/" );
@@ -128,6 +131,12 @@ public class RssFeedServlet
         }
         else if ( StringUtils.countMatches( StringUtils.substringAfter( url, "feeds/" ), "/" ) == 0 )
         {
+            // we receive feeds?babla=ded which is not correct
+            if ( StringUtils.countMatches( url, "feeds?" ) > 0 )
+            {
+                res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Invalid request url." );
+                return;
+            }
             repoId = StringUtils.substringAfterLast( url, "/" );
         }
         else
