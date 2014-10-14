@@ -53,7 +53,7 @@ public class Checksum
         }
     }
 
-    protected final MessageDigest md;
+    private final MessageDigest md;
 
     private ChecksumAlgorithm checksumAlgorithm;
 
