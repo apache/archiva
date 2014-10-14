@@ -466,7 +466,6 @@
               org.quartz;version="[2,3)",
               org.slf4j;resolution:=optional,
               org.springframework*;version="[3,4)",
-              org.springframework.web*;version="[3,4)",
               com.sun.syndication.feed.synd,
               com.sun.syndication.io,
               org.apache.archiva.metadata.repository,
