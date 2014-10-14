@@ -19,7 +19,7 @@
   -->
 
 
-<configuration status="debug">
+<configuration> <!--  status="debug"> -->
   <appenders>
     <Console name="console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d [%t] %-5p %c %x - %m%n"/>

@@ -447,14 +447,10 @@ public class RssFeedServletTest
 
     }
 
-    @Ignore
+    @Test
     public void testInvalidAuthenticationRequest()
         throws Exception
     {
-        //RssFeedServlet servlet =
-        //    (RssFeedServlet) client.newInvocation( "http://localhost/feeds/unauthorized-repo" ).getServlet();
-
-        //WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/unauthorized-repo" );
 
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setRequestURI( "/feeds/unauthorized-repo" );

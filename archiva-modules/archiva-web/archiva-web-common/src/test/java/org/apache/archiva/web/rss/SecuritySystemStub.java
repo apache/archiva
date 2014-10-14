@@ -96,11 +96,11 @@ public class SecuritySystemStub
     }
 
     @Override
-    public AuthorizationResult authorize( SecuritySession arg0, String arg1, String arg2 )
+    public AuthorizationResult authorize( SecuritySession arg0, String permission, String repositoryId )
         throws AuthorizationException
     {
-        AuthorizationResult result = new AuthorizationResult( true, arg1, null );
 
+        AuthorizationResult result = new AuthorizationResult( this.repoIds.contains( repositoryId ), permission, null );
         return result;
     }
 
