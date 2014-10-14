@@ -48,7 +48,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,typeahead) {
           filter: true
         }
       ],
-      pageSize: 10,
+      pageSize: 10,innerNavigation : true,
       gridUpdateCallBack: function(){
         $.log("gridUpdateCallBack users result");
         applyAutocompleteOnUsersHeaders(self);

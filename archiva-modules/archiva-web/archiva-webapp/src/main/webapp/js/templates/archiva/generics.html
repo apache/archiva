@@ -65,6 +65,59 @@
   </div>
 </script>
 
+<script id="ko_simpleGrid_pageLinksinnernav" type="text/html">
+  <div class="pagination">
+    <ul>
+      <li data-bind="css: { active: 0 == currentPageIndex() }">
+        <a href="#" data-bind="click: function() { currentPageIndex(0) }">
+          ${$.i18n.prop('navigation.first')}
+        </a>
+      </li>
+      <li data-bind="css: { active: 0 == currentPageIndex() }">
+        <a href="#" data-bind="click: function() { currentPageIndex(currentPageIndex()-1) }">
+          ${$.i18n.prop('navigation.previous')}
+        </a>
+      </li>
+      {{if currentPageIndex() < navsize }}
+      {{each(i) ko.utils.range(1, Math.min( navsize, maxPageIndex()-1))}}
+       <li data-bind="css: {active: i == currentPageIndex() }">
+        <a href="#" data-bind="click: function() { currentPageIndex( i + 1 ) }">         
+          ${ 1 + i }
+        </a>
+      </li>
+      {{/each}}
+      {{else currentPageIndex() > maxPageIndex() - navsize  }}
+      {{each(i) ko.utils.range(1,navsize)}}
+      <li data-bind="css: {active: currentPageIndex() ==  maxPageIndex() - navsize + i }">
+        <a href="#" data-bind="click: function() { currentPageIndex( maxPageIndex() - navsize + i  ) }">         
+         ${ maxPageIndex() - navsize + i + 1 }
+        </a>
+      </li>
+      {{/each}}
+      {{else}}
+       {{each(i) ko.utils.range(currentPageIndex(), Math.min( currentPageIndex() + navsize, maxPageIndex()-1))}}
+      <li data-bind="css: {active: i == 0 }">
+        <a href="#" data-bind="click: function() { currentPageIndex( i + currentPageIndex()  ) }">         
+        ${ currentPageIndex() + 1 + i}
+        </a>
+      </li>
+      {{/each}}
+      {{/if}}
+      
+      <li data-bind="css: { active: maxPageIndex()-1 == currentPageIndex() }">
+        <a href="#" data-bind="click: function() { currentPageIndex(currentPageIndex()+1) }">
+          ${$.i18n.prop('navigation.next')}
+        </a>
+      </li>
+      <li data-bind="css: { active: maxPageIndex()-1 == currentPageIndex() }">
+        <a href="#" data-bind="click: function() { currentPageIndex(maxPageIndex()-1) }">
+          ${$.i18n.prop('navigation.last')}
+        </a>
+      </li>
+    </ul>
+  </div>
+</script>
+
 <script id="welcome" type="text/html">
   <div class="row-fluid">
     <div class="row">
