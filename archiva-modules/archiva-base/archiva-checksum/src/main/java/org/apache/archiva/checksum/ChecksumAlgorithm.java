@@ -50,17 +50,17 @@ public enum ChecksumAlgorithm {
     /**
      * The MessageDigest algorithm for this hash.
      */
-    private String algorithm;
+    private final String algorithm;
 
     /**
      * The file extension for this ChecksumAlgorithm.
      */
-    private String ext;
+    private final String ext;
 
     /**
      * The checksum type, the key that you see in checksum files.
      */
-    private String type;
+    private final String type;
 
     /**
      * Construct a ChecksumAlgorithm
