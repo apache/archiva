@@ -469,7 +469,7 @@ public class RssFeedServletTest
 
     }
 
-    @Ignore
+    @Test
     public void testUnauthorizedRequest()
         throws Exception
     {
@@ -478,8 +478,6 @@ public class RssFeedServletTest
         request.setRequestURI( "/feeds/unauthorized-repo" );
         request.addHeader( "User-Agent", "Apache Archiva unit test" );
         request.setMethod( "GET" );
-
-        //WebRequest request = new GetMethodWebRequest( "http://localhost/feeds/unauthorized-repo" );
 
         Base64 encoder = new Base64( 0, new byte[0] );
         String userPass = "user1:password1";
