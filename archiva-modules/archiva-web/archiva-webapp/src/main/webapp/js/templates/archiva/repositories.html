@@ -1461,11 +1461,17 @@
             </div>
           </div>
           <div>
-            <a href="${window.archivaRuntimeInfo.baseUrl}/repository/${repositoryGroup.id()}" target="_blank">
             {{if repositoryGroup.id()}}
+            {{if applicationUrl}}            
+            <a href="${applicationUrl}/repository/${repositoryGroup.id()}" target="_blank">
               ${applicationUrl}/repository/${repositoryGroup.id()}
-            {{/if}}
             </a>
+            {{else}}
+            <a href="${window.archivaRuntimeInfo.baseUrl}/repository/${repositoryGroup.id()}" target="_blank">
+              ${window.archivaRuntimeInfo.baseUrl}/repository/${repositoryGroup.id()}
+            </a>
+            {{/if}}
+            {{/if}}
           </div>
         </fieldset>
       </form>
