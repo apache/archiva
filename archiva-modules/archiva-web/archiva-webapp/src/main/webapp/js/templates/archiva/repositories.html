@@ -1462,7 +1462,7 @@
           </div>
           <div>
             {{if repositoryGroup.id()}}
-            {{if applicationUrl}}            
+            {{if applicationUrl && applicationUrl.trim().length>0 }}            
             <a href="${applicationUrl}/repository/${repositoryGroup.id()}" target="_blank">
               ${applicationUrl}/repository/${repositoryGroup.id()}
             </a>
