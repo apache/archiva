@@ -282,9 +282,16 @@ public class DefaultBrowseService
                 {
                     try
                     {
-                        versionMetadata =
+                        ProjectVersionMetadata versionMetadataTmp =
                             metadataResolver.resolveProjectVersion( repositorySession, repoId, groupId, artifactId,
                                                                     version );
+
+                        if ( versionMetadata == null && versionMetadataTmp != null )
+                        {
+                            versionMetadata = versionMetadataTmp;
+                        }
+
+
                     }
                     catch ( MetadataResolutionException e )
                     {
@@ -836,8 +843,7 @@ public class DefaultBrowseService
                 ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version,
                                                                        StringUtils.isEmpty( classifier )
                                                                            ? ""
-                                                                           : classifier, "jar", repoId
-                );
+                                                                           : classifier, "jar", repoId );
                 File file = managedRepositoryContent.toFile( archivaArtifact );
 
                 if ( file != null && file.exists() )
@@ -999,8 +1005,7 @@ public class DefaultBrowseService
 
                     artifactContentEntryMap.put( entryRootPath,
                                                  new ArtifactContentEntry( entryRootPath, !currentEntry.isDirectory(),
-                                                                           depth, repoId )
-                    );
+                                                                           depth, repoId ) );
                 }
                 else
                 {
