@@ -1965,7 +1965,7 @@
             <artifactId>modernizer-maven-plugin</artifactId>
             <version>1.1.0</version>
             <configuration>
-              <javaVersion>1.8</javaVersion>
+              <javaVersion>1.7</javaVersion>
             </configuration>
             <executions>
               <execution>
