@@ -41,8 +41,6 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
     kUser.rememberme(user.rememberme());
     var userJson=ko.toJSON(kUser);
-    //$.log("reccordLoginCookie:"+userJson);
-    //$.log("reccordLoginCookie:expires:"+expires+",path:"+path+",domain:"+domain+",secure:"+secure+",user:"+userJson);
 
     var options = null;
     if (secure == 'true'){
