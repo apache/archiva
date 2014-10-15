@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -99,7 +100,7 @@ public class XMLReader
 
         try (InputStream in = url.openStream())
         {
-            InputStreamReader inReader = new InputStreamReader( in, "UTF-8" );
+            InputStreamReader inReader = new InputStreamReader( in, Charset.forName( "UTF-8" ) );
             LatinEntityResolutionReader latinReader = new LatinEntityResolutionReader( inReader );
             this.document = reader.read( latinReader );
         }

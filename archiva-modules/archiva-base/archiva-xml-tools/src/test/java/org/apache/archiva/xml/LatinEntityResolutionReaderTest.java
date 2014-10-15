@@ -22,6 +22,7 @@ package org.apache.archiva.xml;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -32,12 +33,10 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.net.URL;
-import org.junit.Test;
+import java.nio.charset.Charset;
 
 /**
  * LatinEntityResolutionReaderTest
- *
- *
  */
 public class LatinEntityResolutionReaderTest
     extends AbstractArchivaXmlTestCase
@@ -140,7 +139,7 @@ public class LatinEntityResolutionReaderTest
             fail( "IOException: " + e.getMessage() );
         }
     }
-    
+
     @Test
     public void testReaderNormalBufsize()
         throws IOException
@@ -215,7 +214,7 @@ public class LatinEntityResolutionReaderTest
         SAXReader reader = new SAXReader();
         URL url = inputFile.toURL();
         in = url.openStream();
-        InputStreamReader inReader = new InputStreamReader( in, "UTF-8" );
+        InputStreamReader inReader = new InputStreamReader( in, Charset.forName( "UTF-8" ) );
         LatinEntityResolutionReader latinReader = new LatinEntityResolutionReader( inReader );
         try
         {
