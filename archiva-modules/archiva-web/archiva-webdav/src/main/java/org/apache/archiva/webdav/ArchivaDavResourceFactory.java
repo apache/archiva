@@ -47,6 +47,7 @@ import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
+import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
@@ -626,9 +627,7 @@ public class ArchivaDavResourceFactory
                     {
                         boolean previouslyExisted = resourceFile.exists();
 
-                        // Attempt to fetch the resource from any defined proxy.
-                        boolean fromProxy =
-                            fetchContentFromProxies( managedRepositoryContent, request, logicalResource );
+                        boolean fromProxy = fetchContentFromProxies( managedRepositoryContent, request, logicalResource );
 
                         // At this point the incoming request can either be in default or
                         // legacy layout format.
@@ -656,14 +655,14 @@ public class ArchivaDavResourceFactory
 
                         if ( fromProxy )
                         {
-                            String event = ( previouslyExisted ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE )
+                            String action = ( previouslyExisted ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE )
                                 + PROXIED_SUFFIX;
 
                             log.debug( "Proxied artifact '{}' in repository '{}' (current user '{}')",
                                        resourceFile.getName(), managedRepositoryContent.getId(), activePrincipal );
 
                             triggerAuditEvent( request.getRemoteAddr(), archivaLocator.getRepositoryId(),
-                                               logicalResource.getPath(), event, activePrincipal );
+                                               logicalResource.getPath(), action, activePrincipal );
                         }
 
                         if ( !resourceFile.exists() )
@@ -793,7 +792,7 @@ public class ArchivaDavResourceFactory
         // Is it a Metadata resource?
         if ( repositoryRequest.isDefault( path ) && repositoryRequest.isMetadata( path ) )
         {
-            return connectors.fetchMetatadaFromProxies( managedRepository, path ) != null;
+            return connectors.fetchMetadataFromProxies( managedRepository, path ).isModified();
         }
 
         // Is it an Archetype Catalog?

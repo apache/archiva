@@ -442,13 +442,13 @@ public class ArchivaDavResource
         }
     }
 
-    private void triggerAuditEvent( DavResource member, String event )
+    private void triggerAuditEvent( DavResource member, String action )
         throws DavException
     {
         String path = logicalResource + "/" + member.getDisplayName();
 
         ArchivaDavResource resource = checkDavResourceIsArchivaDavResource( member );
-        AuditEvent auditEvent = new AuditEvent( locator.getRepositoryId(), resource.principal, path, event );
+        AuditEvent auditEvent = new AuditEvent( locator.getRepositoryId(), resource.principal, path, action );
         auditEvent.setRemoteIP( resource.remoteAddr );
 
         for ( AuditListener listener : auditListeners )

@@ -31,6 +31,7 @@ import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
@@ -124,9 +125,9 @@ public class MetadataTransferTest
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository,
+        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
-                                                                         metadata ) );
+                                                                         metadata ) ).getFile();
 
         assertNull( "Should not have downloaded a file.", downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -987,9 +988,9 @@ public class MetadataTransferTest
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository,
+        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
-                                                                         metadata ) );
+                                                                         metadata ) ).getFile();
 
         assertNotNull( "Should have downloaded a file.", downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -1013,9 +1014,9 @@ public class MetadataTransferTest
         File expectedFile = new File( managedDefaultDir, requestedResource );
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository,
+        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
-                                                                         metadata ) );
+                                                                         metadata ) ).getFile();
 
         assertNull( downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -1034,9 +1035,9 @@ public class MetadataTransferTest
 
         VersionedReference metadata = createVersionedReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository,
+        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
-                                                                         metadata ) );
+                                                                         metadata ) ).getFile();
 
         assertNotNull( "Should have downloaded a file.", downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -1060,9 +1061,9 @@ public class MetadataTransferTest
         File expectedFile = new File( managedDefaultDir, requestedResource );
         VersionedReference metadata = createVersionedReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository,
+        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
-                                                                         metadata ) );
+                                                                         metadata ) ).getFile();
 
         assertNull( downloadedFile );
         assertNoTempFiles( expectedFile );
