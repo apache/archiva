@@ -48,6 +48,7 @@ import org.apache.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
+import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.redback.components.registry.Registry;
@@ -447,7 +448,7 @@ public class DefaultRepositoryProxyConnectors
     }
 
     @Override
-    public File fetchMetatadaFromProxies( ManagedRepositoryContent repository, String logicalPath )
+    public ProxyFetchResult fetchMetadataFromProxies( ManagedRepositoryContent repository, String logicalPath )
     {
         File localFile = new File( repository.getRepoRoot(), logicalPath );
 
@@ -517,14 +518,15 @@ public class DefaultRepositoryProxyConnectors
             {
                 log.warn( "Unable to update metadata {}:{}", localFile.getAbsolutePath(), e.getMessage(), e );
             }
+
         }
 
         if ( fileExists( localFile ) )
         {
-            return localFile;
+            return new ProxyFetchResult( localFile, metadataNeedsUpdating );
         }
 
-        return null;
+        return new ProxyFetchResult( null, false );
     }
 
     /**

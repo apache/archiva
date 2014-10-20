@@ -868,7 +868,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     }
 
 
-    this.gridMetatadasViewModel = new ko.simpleGrid.viewModel({
+    this.gridMetadataViewModel = new ko.simpleGrid.viewModel({
       data: self.entries,
       pageSize: 10
     });

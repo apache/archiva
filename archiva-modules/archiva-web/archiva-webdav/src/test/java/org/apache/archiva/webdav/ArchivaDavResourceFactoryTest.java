@@ -33,6 +33,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.proxy.DefaultRepositoryProxyConnectors;
+import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.content.legacy.LegacyPathParser;
@@ -645,7 +646,7 @@ public class ArchivaDavResourceFactoryTest
         extends DefaultRepositoryProxyConnectors
     {
         @Override
-        public File fetchMetatadaFromProxies( ManagedRepositoryContent repository, String logicalPath )
+        public ProxyFetchResult fetchMetadataFromProxies( ManagedRepositoryContent repository, String logicalPath )
         {
             File target = new File( repository.getRepoRoot(), logicalPath );
             try
@@ -657,7 +658,7 @@ public class ArchivaDavResourceFactoryTest
 
             }
 
-            return target;
+            return new ProxyFetchResult( target, true );
         }
     }
 }

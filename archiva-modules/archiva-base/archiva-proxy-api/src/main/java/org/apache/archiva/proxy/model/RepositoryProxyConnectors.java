@@ -59,7 +59,7 @@ public interface RepositoryProxyConnectors
      * @param logicalPath the metadata to fetch.
      * @return the file that was obtained, or null if no content was obtained
      */
-    File fetchMetatadaFromProxies( ManagedRepositoryContent repository, String logicalPath );
+    ProxyFetchResult fetchMetadataFromProxies( ManagedRepositoryContent repository, String logicalPath );
 
     /**
      * Performs the fetch operation against the target repositories
