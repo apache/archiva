@@ -23,26 +23,31 @@ import java.io.File;
 
 /**
  * A result from a proxy fetch operation.
+ *
+ * @since 2.1.2
  */
 public class ProxyFetchResult
 {
 
     //The file returned
-    File file;
+    private File file;
 
     //Was the local file modified by the fetch?
-    boolean modified;
+    private boolean modified;
 
-    public ProxyFetchResult( File file, boolean modified) {
+    public ProxyFetchResult( File file, boolean modified )
+    {
         this.file = file;
         this.modified = modified;
-    }    
+    }
 
-    public File getFile() {
+    public File getFile()
+    {
         return file;
     }
 
-    public boolean isModified() {
+    public boolean isModified()
+    {
         return modified;
     }
 }
