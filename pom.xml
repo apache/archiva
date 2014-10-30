@@ -47,7 +47,6 @@
     <connection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva.git</connection>
     <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva.git</developerConnection>
     <url>https://github.com/apache/archiva</url>
-    <tag>HEAD</tag>
   </scm>
 
   <properties>
@@ -73,7 +72,7 @@
     <redback.spring-utils.version>2.1</redback.spring-utils.version>
     <redback.taskqueue.version>2.1</redback.taskqueue.version>
     <slf4j.version>1.7.7</slf4j.version>
-    <log4j.version>2.0.2</log4j.version>
+    <log4j.version>2.1</log4j.version>
 
     <spring.version>4.1.0.RELEASE</spring.version>
 
