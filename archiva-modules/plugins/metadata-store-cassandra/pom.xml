@@ -227,6 +227,7 @@
                 <portName>cassandraPort</portName>
                 <portName>cassandra.storagePort</portName>
                 <portName>cassandra.stopPort</portName>
+                <portName>cassandra.jmxPort</portName>
               </portNames>
             </configuration>
           </execution>
@@ -247,6 +248,7 @@
               <rpcPort>${cassandraPort}</rpcPort>
               <storagePort>${cassandra.storagePort}</storagePort>
               <stopPort>${cassandra.stopPort}</stopPort>
+              <jmxPort>${cassandra.jmxPort}</jmxPort>
               <addMainClasspath>false</addMainClasspath>
               <addTestClasspath>false</addTestClasspath>
             </configuration>
