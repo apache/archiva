@@ -31,14 +31,8 @@
 
   <properties>
 
-    <cassandraVersion>1.2.11</cassandraVersion>
-    <!--
-    2.x has 1.7 required
-    <cassandraVersion>2.0.2</cassandraVersion>
-    -->
-    <!--
-    <astyanax.version>1.56.48</astyanax.version>
-    -->
+    <cassandraVersion>2.0.9</cassandraVersion>
+
   </properties>
 
   <dependencies>
