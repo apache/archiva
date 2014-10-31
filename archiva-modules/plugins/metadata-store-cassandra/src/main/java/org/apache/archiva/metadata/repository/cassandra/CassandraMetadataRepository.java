@@ -125,50 +125,45 @@ public class CassandraMetadataRepository
         this.keyspace = cassandraArchivaManager.getKeyspace();
 
         this.projectVersionMetadataTemplate =
-            new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
-                                                            cassandraArchivaManager.getProjectVersionMetadataFamilyName(),
-                                                            StringSerializer.get(), //
-                                                            StringSerializer.get() );
+            new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
+                                              cassandraArchivaManager.getProjectVersionMetadataFamilyName(), //
+                                              StringSerializer.get(), //
+                                              StringSerializer.get() );
 
-        this.projectTemplate = new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
-                                                                               cassandraArchivaManager.getProjectFamilyName(),
-                                                                               //
-                                                                               StringSerializer.get(), //
-                                                                               StringSerializer.get() );
+        this.projectTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
+                                                                 cassandraArchivaManager.getProjectFamilyName(), //
+                                                                 //
+                                                                 StringSerializer.get(), //
+                                                                 StringSerializer.get() );
 
-        this.artifactMetadataTemplate =
-            new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
-                                                            cassandraArchivaManager.getArtifactMetadataFamilyName(),
-                                                            //
-                                                            StringSerializer.get(), //
-                                                            StringSerializer.get() );
+        this.artifactMetadataTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
+                                                                          cassandraArchivaManager.getArtifactMetadataFamilyName(),
+                                                                          StringSerializer.get(), //
+                                                                          StringSerializer.get() );
 
-        this.metadataFacetTemplate =
-            new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
-                                                            cassandraArchivaManager.getMetadataFacetFamilyName(),
-                                                            //
-                                                            StringSerializer.get(), //
-                                                            StringSerializer.get() );
+        this.metadataFacetTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
+                                                                       cassandraArchivaManager.getMetadataFacetFamilyName(),
+                                                                       //
+                                                                       StringSerializer.get(), //
+                                                                       StringSerializer.get() );
 
-        this.mailingListTemplate =
-            new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
-                                                            cassandraArchivaManager.getMailingListFamilyName(),
-                                                            //
-                                                            StringSerializer.get(), //
-                                                            StringSerializer.get() );
+        this.mailingListTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
+                                                                     cassandraArchivaManager.getMailingListFamilyName(),
+                                                                     //
+                                                                     StringSerializer.get(), //
+                                                                     StringSerializer.get() );
 
-        this.licenseTemplate = new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
-                                                                               cassandraArchivaManager.getLicenseFamilyName(),
-                                                                               //
-                                                                               StringSerializer.get(), //
-                                                                               StringSerializer.get() );
+        this.licenseTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
+                                                                 cassandraArchivaManager.getLicenseFamilyName(),
+                                                                 //
+                                                                 StringSerializer.get(), //
+                                                                 StringSerializer.get() );
 
-        this.dependencyTemplate =
-            new ThriftColumnFamilyTemplate<String, String>( cassandraArchivaManager.getKeyspace(), //
-                                                            cassandraArchivaManager.getDependencyFamilyName(),
-                                                            //
-                                                            StringSerializer.get(), //
-                                                            StringSerializer.get() );
+        this.dependencyTemplate = new ThriftColumnFamilyTemplate<>( cassandraArchivaManager.getKeyspace(), //
+                                                                    cassandraArchivaManager.getDependencyFamilyName(),
+                                                                    //
+                                                                    StringSerializer.get(), //
+                                                                    StringSerializer.get() );
     }
 
 
@@ -202,6 +197,7 @@ public class CassandraMetadataRepository
                     .addInsertion( repositoryId, cf,
                                    CassandraUtils.column( "repositoryName", repository.getName() ) ) //
                     .execute();
+                logger.debug( "time to insert repository: {}", mutationResult.getExecutionTimeMicro() );
                 return repository;
             }
             catch ( HInvalidRequestException e )
