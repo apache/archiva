@@ -52,7 +52,7 @@ import java.util.Set;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@Service("redbackRuntimeConfigurationAdmin#default")
+@Service( "redbackRuntimeConfigurationAdmin#default" )
 public class DefaultRedbackRuntimeConfigurationAdmin
     extends AbstractRepositoryAdmin
     implements RedbackRuntimeConfigurationAdmin, UserConfiguration
@@ -68,9 +68,9 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
     @Inject
     public DefaultRedbackRuntimeConfigurationAdmin( ArchivaConfiguration archivaConfiguration,//
-                                                    @Named(value = "userConfiguration#redback") //
+                                                    @Named( value = "userConfiguration#redback" ) //
                                                         UserConfiguration userConfiguration,
-                                                    @Named(value = "cache#users") Cache usersCache )
+                                                    @Named( value = "cache#users" ) Cache usersCache )
     {
         this.archivaConfiguration = archivaConfiguration;
         this.userConfiguration = userConfiguration;
@@ -92,7 +92,8 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 redbackRuntimeConfiguration = new RedbackRuntimeConfiguration();
                 // so migrate if available
                 String userManagerImpl =
-                    userConfiguration.getConcatenatedList( UserConfigurationKeys.USER_MANAGER_IMPL, "jdo" );
+                    userConfiguration.getConcatenatedList( UserConfigurationKeys.USER_MANAGER_IMPL, //
+                                                           DEFAULT_USER_MANAGER_IMPL );
                 if ( StringUtils.isNotEmpty( userManagerImpl ) )
                 {
                     String[] impls = StringUtils.split( userManagerImpl, ',' );
@@ -101,9 +102,14 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                         redbackRuntimeConfiguration.getUserManagerImpls().add( impl );
                     }
                 }
+                else
+                {
+                    redbackRuntimeConfiguration.getUserManagerImpls().add( DEFAULT_USER_MANAGER_IMPL );
+                }
 
                 String rbacManagerImpls =
-                    userConfiguration.getConcatenatedList( UserConfigurationKeys.RBAC_MANAGER_IMPL, "jdo" );
+                    userConfiguration.getConcatenatedList( UserConfigurationKeys.RBAC_MANAGER_IMPL, //
+                                                           DEFAULT_RBAC_MANAGER_IMPL );
 
                 if ( StringUtils.isNotEmpty( rbacManagerImpls ) )
                 {
@@ -112,6 +118,10 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                     {
                         redbackRuntimeConfiguration.getRbacManagerImpls().add( impl );
                     }
+                }
+                else
+                {
+                    redbackRuntimeConfiguration.getRbacManagerImpls().add( DEFAULT_RBAC_MANAGER_IMPL );
                 }
 
                 // now ldap
@@ -132,16 +142,13 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
                 ldapConfiguration.setBaseGroupsDn(
                     userConfiguration.getConcatenatedList( UserConfigurationKeys.LDAP_GROUPS_BASEDN,
-                                                           ldapConfiguration.getBaseDn() )
-                );
+                                                           ldapConfiguration.getBaseDn() ) );
 
                 ldapConfiguration.setContextFactory(
                     userConfiguration.getString( UserConfigurationKeys.LDAP_CONTEX_FACTORY,
                                                  isSunContextFactoryAvailable()
                                                      ? "com.sun.jndi.ldap.LdapCtxFactory"
-                                                     : ""
-                    )
-                );
+                                                     : "" ) );
                 ldapConfiguration.setBindDn(
                     userConfiguration.getConcatenatedList( UserConfigurationKeys.LDAP_BINDDN, null ) );
                 ldapConfiguration.setPassword(

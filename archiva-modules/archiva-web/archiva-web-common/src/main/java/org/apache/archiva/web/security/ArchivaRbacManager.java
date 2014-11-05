@@ -98,6 +98,11 @@ public class ArchivaRbacManager
             List<String> rbacManagerIds =
                 redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getRbacManagerImpls();
 
+            if ( rbacManagerIds.isEmpty() )
+            {
+                rbacManagerIds.add( RedbackRuntimeConfigurationAdmin.DEFAULT_RBAC_MANAGER_IMPL );
+            }
+
             log.info( "use rbacManagerIds: '{}'", rbacManagerIds );
 
             this.rbacManagersPerId = new LinkedHashMap<>( rbacManagerIds.size() );
@@ -111,7 +116,7 @@ public class ArchivaRbacManager
         }
         catch ( RepositoryAdminException e )
         {
-            // revert to a default one ?
+
             log.error( e.getMessage(), e );
             throw new RuntimeException( e.getMessage(), e );
         }
@@ -126,7 +131,9 @@ public class ArchivaRbacManager
                 return rbacManager;
             }
         }
-        return this.rbacManagersPerId.values().iterator().next();
+        return this.rbacManagersPerId.isEmpty() ? applicationContext.getBean(
+            "rbacManager#" + RedbackRuntimeConfigurationAdmin.DEFAULT_RBAC_MANAGER_IMPL, RBACManager.class ) //
+            : this.rbacManagersPerId.values().iterator().next();
     }
 
     @Override
@@ -294,7 +301,7 @@ public class ArchivaRbacManager
     @Override
     public Permission createPermission( String name, String operationName, String resourceIdentifier )
         throws RbacManagerException
-  {
+    {
         return getRbacManagerForWrite().createPermission( name, operationName, resourceIdentifier );
     }
 
@@ -418,7 +425,7 @@ public class ArchivaRbacManager
         if ( lastException != null && allFailed )
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
-       }
+        }
     }
 
     @Override
@@ -609,7 +616,7 @@ public class ArchivaRbacManager
                     return r;
                 }
             }
-          catch ( Exception e )
+            catch ( Exception e )
             {
                 lastException = e;
             }
@@ -700,7 +707,7 @@ public class ArchivaRbacManager
                 {
                     userAssignment = rbacManager.saveUserAssignment( userAssignment );
                     allFailed = false;
-               }
+                }
             }
             catch ( Exception e )
             {
@@ -793,7 +800,7 @@ public class ArchivaRbacManager
     {
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
         {
-           try
+            try
             {
                 boolean exists = rbacManager.userAssignmentExists( assignment );
                 if ( exists )
@@ -929,7 +936,7 @@ public class ArchivaRbacManager
             }
             catch ( Exception e )
             {
-            lastException = e;
+                lastException = e;
             }
         }
 
