@@ -231,4 +231,102 @@ public interface BrowseService
     @RedbackAuthorization(noPermission = true, noRestriction = true)
     List<Artifact> getArtifacts( @PathParam("r") String repositoryId )
         throws ArchivaRestServiceException;
+
+    /**
+     * Return List of artifacts from this repository with project version level metadata key matching value. If
+     * repository is not provided the search runs in all repositories.
+     *
+     * @param key
+     * @param value
+     * @param repositoryId
+     * @return
+     * @throws ArchivaRestServiceException
+     * @since 2.2
+     */
+    @Path( "artifactsByProjectVersionMetadata/{key}/{value}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    List<Artifact> getArtifactsByProjectVersionMetadata( @PathParam( "key" ) String key, @PathParam( "value" ) String value,
+                                           @QueryParam("repositoryId") String repositoryId )
+        throws ArchivaRestServiceException;
+
+    /**
+     * Return List of artifacts from this repository with artifact metadata key matching value.
+     * If repository is not provided the search runs in all repositories.
+     *
+     * @param key
+     * @param value
+     * @param repositoryId
+     * @return
+     * @throws ArchivaRestServiceException
+     * @since 2.2
+     */
+    @Path( "artifactsByMetadata/{key}/{value}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    List<Artifact> getArtifactsByMetadata( @PathParam( "key" ) String key, @PathParam( "value" ) String value,
+                                           @QueryParam("repositoryId") String repositoryId )
+        throws ArchivaRestServiceException;
+
+    /**
+     * Return List of artifacts from this repository with property key matching value.
+     * If repository is not provided the search runs in all repositories.
+     *
+     * @param key
+     * @param value
+     * @param repositoryId
+     * @return
+     * @throws ArchivaRestServiceException
+     * @since 2.2
+     */
+    @Path( "artifactsByProperty/{key}/{value}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    List<Artifact> getArtifactsByProperty( @PathParam( "key" ) String key, @PathParam( "value" ) String value,
+                                           @QueryParam("repositoryId") String repositoryId )
+        throws ArchivaRestServiceException;
+
+    /**
+     * Search artifacts with any property matching text. If repository is not provided the search runs in all
+     * repositories. If exact is true only the artifacts whose property match exactly are returned.
+     *
+     * @param text
+     * @param repositoryId
+     * @param exact
+     * @return
+     * @throws ArchivaRestServiceException
+     * @since 2.2
+     */
+    @Path( "searchArtifacts/{text}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    List<Artifact> searchArtifacts( @PathParam( "text" ) String text,
+                                    @QueryParam( "repositoryId" ) String repositoryId,
+                                    @QueryParam( "exact" ) Boolean exact )
+        throws ArchivaRestServiceException;
+
+    /**
+     * Search artifacts with the property specified by key matching text. If repository is not provided the search runs
+     * in all repositories. If exact is true only the artifacts whose property match exactly are returned.
+     *
+     * @param key
+     * @param text
+     * @param repositoryId
+     * @param exact
+     * @return
+     * @throws ArchivaRestServiceException
+     * @since 2.2
+     */
+    @Path( "searchArtifacts/{key}/{text}" )
+    @GET
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    List<Artifact> searchArtifacts( @PathParam( "key" ) String key, @PathParam( "text" ) String text,
+                                    @QueryParam( "repositoryId" ) String repositoryId,
+                                    @QueryParam( "exact" ) Boolean exact )
+        throws ArchivaRestServiceException;
 }

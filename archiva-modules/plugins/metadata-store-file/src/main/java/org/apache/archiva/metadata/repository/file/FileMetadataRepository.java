@@ -778,6 +778,27 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
+    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException( "not yet implemented in File backend" );
+    }
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByMetadata( String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException( "not yet implemented in File backend" );
+    }
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByProperty( String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException( "getArtifactsByProperty not yet implemented in File backend" );
+    }
+
     private File getMetadataDirectory( String repoId, String facetId )
     {
         return new File( getBaseDirectory( repoId ), "facets/" + facetId );
@@ -1295,5 +1316,19 @@ public class FileMetadataRepository
                 }
             }
         }
+    }
+
+    @Override
+    public List<ArtifactMetadata> searchArtifacts( String text, String repositoryId, boolean exact )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException( "searchArtifacts not yet implemented in File backend" );
+    }
+
+    @Override
+    public List<ArtifactMetadata> searchArtifacts( String key, String text, String repositoryId, boolean exact )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException( "searchArtifacts not yet implemented in File backend" );
     }
 }

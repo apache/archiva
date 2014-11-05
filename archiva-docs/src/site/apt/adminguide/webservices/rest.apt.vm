@@ -75,6 +75,39 @@ Using REST Services
 
   To know all the possible options, you can refer to the javadoc of SearchRequest class.
 
+* Browse Service
+
+   Get a Browse Service Client :
+
+%{snippet|id=cxf-browseservice-creation|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/AbstractArchivaRestTest.java}
+
+  Get artifacts based on project version metadata, generic metadata added previously in Archiva :
+
+%{snippet|id=get-artifacts-by-project-version-metadata|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/BrowseServiceTest.java}
+
+  Get artifacts based on the artifact properties :
+
+%{snippet|id=get-artifacts-by-metadata|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/BrowseServiceTest.java}
+
+
+  Get artifacts based on the project properties from POM :
+
+%{snippet|id=get-artifacts-by-property|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/BrowseServiceTest.java}
+
+
+  Searching by properties and metadata :
+
+%{snippet|id=search-artifacts-by-field|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/BrowseServiceTest.java}
+
+%{snippet|id=search-artifacts|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/BrowseServiceTest.java}
+
+
+
+   Get  Search
+
+%{snippet|id=quick-search|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
+
+
   Dependencies to add in order to use those REST Services
 
 %{snippet|id=rest-dependencies|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/pom.xml}

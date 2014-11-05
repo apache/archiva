@@ -942,6 +942,66 @@ public class DefaultBrowseService
     }
 
     @Override
+    public List<Artifact> getArtifactsByProjectVersionMetadata( String key, String value, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByProjectVersionMetadata( key, value, repositoryId );
+            return buildArtifacts( artifactMetadatas, repositoryId );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+    }
+
+    @Override
+    public List<Artifact> getArtifactsByMetadata( String key, String value, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByMetadata( key, value, repositoryId );
+            return buildArtifacts( artifactMetadatas, repositoryId );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+    }
+
+    @Override
+    public List<Artifact> getArtifactsByProperty( String key, String value, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByProperty( key, value, repositoryId );
+            return buildArtifacts( artifactMetadatas, repositoryId );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+    }
+
+    @Override
     public Boolean importMetadata( MetadataAddRequest metadataAddRequest, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -957,6 +1017,48 @@ public class DefaultBrowseService
             }
         }
         return result;
+    }
+
+    @Override
+    public List<Artifact> searchArtifacts( String text, String repositoryId, Boolean exact )
+        throws ArchivaRestServiceException
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            List<ArtifactMetadata> artifactMetadatas =
+                repositorySession.getRepository().searchArtifacts( text, repositoryId, exact == null ? false : exact );
+            return buildArtifacts( artifactMetadatas, repositoryId );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+    }
+
+    @Override
+    public List<Artifact> searchArtifacts( String key, String text, String repositoryId, Boolean exact )
+        throws ArchivaRestServiceException
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            List<ArtifactMetadata> artifactMetadatas =
+                repositorySession.getRepository().searchArtifacts( key, text, repositoryId, exact == null ? false : exact );
+            return buildArtifacts( artifactMetadatas, repositoryId );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
     }
 
     //---------------------------

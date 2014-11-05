@@ -62,6 +62,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -322,9 +323,14 @@ public abstract class AbstractRestService
                 for ( ArtifactMetadata artifact : artifactMetadatas )
                 {
 
+                    String repoId = repositoryId != null ? repositoryId : artifact.getRepositoryId();
+                    if ( repoId == null ) {
+                        throw new IllegalStateException( "Repository Id is null" );
+                    }
+
                     ArtifactBuilder builder =
                         new ArtifactBuilder().forArtifactMetadata( artifact ).withManagedRepositoryContent(
-                            repositoryContentFactory.getManagedRepositoryContent( repositoryId ) );
+                            repositoryContentFactory.getManagedRepositoryContent( repoId ) );
                     Artifact art = builder.build();
                     art.setUrl( getArtifactUrl( art, repositoryId ) );
                     artifacts.add( art );

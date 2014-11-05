@@ -237,6 +237,92 @@ public class BrowseServiceTest
 
 
     @Test
+    public void getArtifactsByMetadata()
+        throws Exception
+    {
+        // START SNIPPET: get-artifacts-by-metadata
+        BrowseService browseService = getBrowseService( authorizationHeader, true );
+
+        List<Artifact> artifactDownloadInfos = browseService.getArtifactsByMetadata( "type", "pom", TEST_REPO_ID );
+
+        assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 11 );
+        // END SNIPPET: get-artifacts-by-metadata
+    }
+
+
+    @Test
+    public void getArtifactsByProjectVersionMetadata()
+        throws Exception
+    {
+        // START SNIPPET: get-artifacts-by-project-version-metadata
+        BrowseService browseService = getBrowseService( authorizationHeader, true );
+
+        browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", TEST_REPO_ID );
+
+        List<Artifact> artifactDownloadInfos = browseService.getArtifactsByProjectVersionMetadata( "wine", "bordeaux", TEST_REPO_ID );
+
+        assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 3 );
+        // END SNIPPET: get-artifacts-by-project-version-metadata
+    }
+
+
+    @Test
+    public void getArtifactsByProjectVersionMetadataWithNoRepository()
+        throws Exception
+    {
+        BrowseService browseService = getBrowseService( authorizationHeader, true );
+
+        browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", TEST_REPO_ID );
+
+        List<Artifact> artifactDownloadInfos = browseService.getArtifactsByProjectVersionMetadata( "wine", "bordeaux", null );
+
+        assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 3 );
+    }
+
+
+    @Test
+    public void getArtifactsByProperty()
+        throws Exception
+    {
+        // START SNIPPET: get-artifacts-by-property
+        BrowseService browseService = getBrowseService( authorizationHeader, true );
+
+        List<Artifact> artifactDownloadInfos = browseService.getArtifactsByProperty( "org.name", "The Apache Software Foundation", TEST_REPO_ID );
+
+        assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 7 );
+        // END SNIPPET: get-artifacts-by-property
+    }
+
+
+    @Test
+    public void searchArtifacts()
+        throws Exception
+    {
+        // START SNIPPET: search-artifacts
+        BrowseService browseService = getBrowseService( authorizationHeader, true );
+
+        List<Artifact> artifactDownloadInfos = browseService.searchArtifacts( "The Apache Software Foundation", TEST_REPO_ID, true );
+
+        assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 7 );
+        // END SNIPPET: search-artifacts
+    }
+
+
+    @Test
+    public void searchArtifactsByField()
+        throws Exception
+    {
+        // START SNIPPET: search-artifacts-by-field
+        BrowseService browseService = getBrowseService( authorizationHeader, true );
+
+        List<Artifact> artifactDownloadInfos = browseService.searchArtifacts( "org.name", "The Apache Software Foundation", TEST_REPO_ID, true );
+
+        assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 7 );
+        // END SNIPPET: search-artifacts-by-field
+    }
+
+
+    @Test
     public void readArtifactContentText()
         throws Exception
     {

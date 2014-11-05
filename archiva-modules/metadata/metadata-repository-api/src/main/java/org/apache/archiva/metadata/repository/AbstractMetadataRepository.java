@@ -125,6 +125,27 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
+    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( String key , String value , String repositoryId  )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByMetadata( String key , String value , String repositoryId  )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByProperty( String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void removeArtifact( String repositoryId, String namespace, String project, String version, String id )
         throws MetadataRepositoryException
     {
@@ -272,6 +293,20 @@ public abstract class AbstractMetadataRepository
 
     @Override
     public <T> T obtainAccess( Class<T> aClass )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<ArtifactMetadata> searchArtifacts( String text, String repositoryId, boolean exact )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<ArtifactMetadata> searchArtifacts( String key, String text, String repositoryId, boolean exact )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();

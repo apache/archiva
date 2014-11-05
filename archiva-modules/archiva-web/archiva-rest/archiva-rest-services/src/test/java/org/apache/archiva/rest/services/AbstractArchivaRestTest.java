@@ -252,6 +252,7 @@ public abstract class AbstractArchivaRestTest
 
     protected BrowseService getBrowseService( String authzHeader, boolean useXml )
     {
+        // START SNIPPET: cxf-browseservice-creation
         BrowseService service =
             JAXRSClientFactory.create( getBaseUrl() + "/" + getRestServicesPath() + "/archivaServices/",
                                        BrowseService.class,
@@ -274,6 +275,7 @@ public abstract class AbstractArchivaRestTest
             WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
         }
         return service;
+        // END SNIPPET: cxf-browseservice-creation
 
     }
 

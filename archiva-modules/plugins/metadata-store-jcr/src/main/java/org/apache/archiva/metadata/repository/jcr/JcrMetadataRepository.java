@@ -40,6 +40,8 @@ import org.apache.jackrabbit.commons.JcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableMap;
+
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -55,6 +57,9 @@ import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
+import javax.jcr.query.Row;
+import javax.jcr.query.RowIterator;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -66,6 +71,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -711,6 +717,83 @@ public class JcrMetadataRepository
         return artifacts;
     }
 
+    private List<ArtifactMetadata> runJcrQuery( String repositoryId, String q, Map<String, String> bindings )
+        throws MetadataRepositoryException
+    {
+        List<ArtifactMetadata> artifacts;
+        if ( repositoryId != null )
+        {
+            q += " AND ISDESCENDANTNODE(artifact,'/" + getRepositoryContentPath( repositoryId ) + "')";
+        }
+
+        log.info( "Running JCR Query: {}", q );
+
+        try
+        {
+            Query query = getJcrSession().getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
+            ValueFactory valueFactory = getJcrSession().getValueFactory();
+            for ( Entry<String, String> entry : bindings.entrySet() )
+            {
+                query.bindValue( entry.getKey(), valueFactory.createValue( entry.getValue() ) );
+            }
+            long start = Calendar.getInstance().getTimeInMillis();
+            QueryResult result = query.execute();
+            long end = Calendar.getInstance().getTimeInMillis();
+            log.info( "JCR Query ran in {} milliseconds: {}", end - start , q );
+
+            artifacts = new ArrayList<>();
+            RowIterator rows = result.getRows();
+            while ( rows.hasNext() )
+            {
+                Row row = rows.nextRow();
+                Node node = row.getNode( "artifact" );
+                artifacts.add( getArtifactFromNode( repositoryId, node ) );
+            }
+        }
+        catch ( RepositoryException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+        return artifacts;
+    }
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        String q =
+            "SELECT * FROM [" + PROJECT_VERSION_NODE_TYPE + "] AS projectVersion INNER JOIN [" + ARTIFACT_NODE_TYPE
+                + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) INNER JOIN [" + FACET_NODE_TYPE
+                + "] AS facet ON ISCHILDNODE(facet, projectVersion) WHERE ([facet].[" + key + "] = $value)";
+
+        return runJcrQuery( repositoryId, q, ImmutableMap.of( "value", value ) );
+    }
+
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByMetadata( String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        String q =
+            "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "] AS artifact INNER JOIN [" + FACET_NODE_TYPE
+                + "] AS facet ON ISCHILDNODE(facet, artifact) WHERE ([facet].[" + key + "] = $value)";
+
+        return runJcrQuery( repositoryId, q, ImmutableMap.of( "value", value ) );
+    }
+
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByProperty( String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        String q =
+            "SELECT * FROM [" + PROJECT_VERSION_NODE_TYPE + "] AS projectVersion INNER JOIN [" + ARTIFACT_NODE_TYPE
+                + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) WHERE ([projectVersion].[" + key
+                + "] = $value)";
+
+        return runJcrQuery( repositoryId, q, ImmutableMap.of( "value", value ) );
+    }
+
 
     @Override
     public void removeRepository( String repositoryId )
@@ -1319,6 +1402,33 @@ public class JcrMetadataRepository
         }
     }
 
+
+    @Override
+    public List<ArtifactMetadata> searchArtifacts( String text, String repositoryId, boolean exact )
+        throws MetadataRepositoryException
+    {
+        return searchArtifacts( null, text, repositoryId, exact );
+    }
+
+    @Override
+    public List<ArtifactMetadata> searchArtifacts( String key, String text, String repositoryId, boolean exact )
+        throws MetadataRepositoryException
+    {
+        // we can't do exact search in any property (*), we need a key
+        boolean e = exact && key != null;
+        String theKey = key == null ? "*" : "[" + key + "]";
+        String projectVersionCondition =
+            e ? "(projectVersion." + theKey + " = $value)" : "contains([projectVersion]." + theKey + ", $value)";
+        String facetCondition = e ? "(facet." + theKey + " = $value)" : "contains([facet]." + theKey + ", $value)";
+        String q =
+            "SELECT * FROM [" + PROJECT_VERSION_NODE_TYPE + "] AS projectVersion LEFT OUTER JOIN ["
+                + ARTIFACT_NODE_TYPE + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) LEFT OUTER JOIN ["
+                + FACET_NODE_TYPE + "] AS facet ON ISCHILDNODE(facet, projectVersion) WHERE ("
+                + projectVersionCondition + " OR " + facetCondition + ")";
+
+        return runJcrQuery( repositoryId, q, ImmutableMap.of( "value", text ) );
+    }
+
     private ArtifactMetadata getArtifactFromNode( String repositoryId, Node artifactNode )
         throws RepositoryException
     {
@@ -1326,7 +1436,7 @@ public class JcrMetadataRepository
 
         ArtifactMetadata artifact = new ArtifactMetadata();
         artifact.setId( id );
-        artifact.setRepositoryId( repositoryId );
+        artifact.setRepositoryId( repositoryId == null ? artifactNode.getAncestor(2).getName() : repositoryId );
 
         Node projectVersionNode = artifactNode.getParent();
         Node projectNode = projectVersionNode.getParent();
