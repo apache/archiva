@@ -19,22 +19,17 @@ package org.apache.archiva.webtest.memory;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.MetadataFacet;
-import org.apache.archiva.metadata.model.ProjectMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionReference;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
+
 public class TestMetadataRepository
-    implements MetadataRepository
+    extends AbstractMetadataRepository
 {
     private static final String TEST_REPO = "test-repo";
 
@@ -75,104 +70,15 @@ public class TestMetadataRepository
     }
 
     @Override
-    public ProjectMetadata getProject( String repoId, String namespace, String projectId )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
-                                                     String projectVersion )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
-                                                   String projectVersion )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
-                                                                     String projectVersion )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Collection<String> getRootNamespaces( String repoId )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Collection<String> getNamespaces( String repoId, String namespace )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Collection<String> getProjects( String repoId, String namespace )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
     {
         return versions;
     }
 
     @Override
-    public void updateProject( String repoId, ProjectMetadata project )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void updateArtifact( String repoId, String namespace, String projectId, String projectVersion,
-                                ArtifactMetadata artifactMeta )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void updateProjectVersion( String repoId, String namespace, String projectId,
-                                      ProjectVersionMetadata versionMetadata )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void updateNamespace( String repoId, String namespace )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public List<String> getMetadataFacets( String repodId, String facetId )
     {
         return Collections.emptyList();
-    }
-
-    @Override
-    public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
- {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeMetadataFacets( String repositoryId, String facetId )
-    {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -194,64 +100,10 @@ public class TestMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByChecksum( String repoId, String checksum )
-    {
-        return null;
-    }
-
-    @Override
-    public void removeArtifact( String repositoryId, String namespace, String project, String version, String id )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeArtifact( String repositoryId, String namespace, String project, String version,
-                                MetadataFacet metadataFacet )
-        throws MetadataRepositoryException
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeRepository( String repoId )
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                       String projectVersion )
     {
         return artifacts;
-    }
-
-    @Override
-    public void save()
-    {
-    }
-
-    @Override
-    public void close()
-    {
-    }
-
-    @Override
-    public void revert()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean canObtainAccess( Class<?> aClass )
-    {
-        return false;
-    }
-
-    @Override
-    public <T>T obtainAccess( Class<T> aClass )
-    {
-        return null;
     }
 
     @Override
@@ -260,39 +112,4 @@ public class TestMetadataRepository
         return artifacts;
     }
 
-    @Override
-    public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
-        throws MetadataRepositoryException
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeNamespace( String repositoryId, String namespace )
-        throws MetadataRepositoryException
-    {
-
-    }
-
-    @Override
-    public void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
-        throws MetadataRepositoryException
-    {
-
-    }
-
-    @Override
-    public void removeProject( String repositoryId, String namespace, String projectId )
-        throws MetadataRepositoryException
-    {
-        throw new UnsupportedOperationException();
-    }
-
-
-    @Override
-    public boolean hasMetadataFacet( String repositoryId, String facetId )
-        throws MetadataRepositoryException
-    {
-        return false;
-    }
 }

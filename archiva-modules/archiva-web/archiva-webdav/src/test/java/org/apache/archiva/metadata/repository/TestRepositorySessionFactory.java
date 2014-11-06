@@ -30,7 +30,7 @@ public class TestRepositorySessionFactory
     @Override
     public RepositorySession createSession()
     {
-        return new RepositorySession( new TestMetadataRepository(), resolver );
+        return new RepositorySession( new AbstractMetadataRepository() {}, resolver );
     }
 
     public void setResolver( MetadataResolver resolver )

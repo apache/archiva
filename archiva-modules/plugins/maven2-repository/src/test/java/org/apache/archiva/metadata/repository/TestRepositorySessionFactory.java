@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class TestRepositorySessionFactory
     implements RepositorySessionFactory
 {
-    private MetadataRepository metadataRepository = new TestMetadataRepository();
+    private MetadataRepository metadataRepository = new AbstractMetadataRepository() {};
 
     private MetadataResolver resolver = new TestMetadataResolver();
 

@@ -24,14 +24,14 @@ import org.springframework.stereotype.Service;
 public class TestRepositorySessionFactory
     implements RepositorySessionFactory
 {
-    private MetadataRepository repository;
+    private MetadataRepository repository = new AbstractMetadataRepository() {};
 
     private MetadataResolver resolver;
 
     @Override
     public RepositorySession createSession()
     {
-        return new RepositorySession( new TestMetadataRepository(), resolver )
+        return new RepositorySession( repository, resolver )
         {
             @Override
             public void close()
