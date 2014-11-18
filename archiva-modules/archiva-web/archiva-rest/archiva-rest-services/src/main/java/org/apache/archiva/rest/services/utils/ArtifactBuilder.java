@@ -59,6 +59,25 @@ public class ArtifactBuilder
         return this;
     }
 
+    /**
+     * 
+     * @param filename
+     * @return 
+     */
+    private static String specialExtensions( String filename ) 
+    {
+        String[] special = {
+            "tar.gz"
+        };
+        for ( String extension : special ) 
+        {
+            if ( filename.endsWith( extension ) ) 
+            {
+                return extension;
+            }
+        }
+        return null;
+    }
     public Artifact build()
     {
         ArtifactReference ref = new ArtifactReference();
@@ -80,7 +99,12 @@ public class ArtifactBuilder
         File file = managedRepositoryContent.toFile( ref );
 
         String extension = FilenameUtils.getExtension( file.getName() );
-
+        // handle more than one point extension we know.
+        if ( specialExtensions( file.getName() ) != null ) 
+        {
+            extension = specialExtensions( file.getName() );
+        }
+        
         Artifact artifact = new Artifact( ref.getGroupId(), ref.getArtifactId(), ref.getVersion() );
         artifact.setRepositoryId( artifactMetadata.getRepositoryId() );
         artifact.setClassifier( classifier );
