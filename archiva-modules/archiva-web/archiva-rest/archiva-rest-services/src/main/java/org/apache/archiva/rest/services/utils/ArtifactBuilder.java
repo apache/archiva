@@ -29,6 +29,8 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Olivier Lamy
@@ -59,25 +61,6 @@ public class ArtifactBuilder
         return this;
     }
 
-    /**
-     * 
-     * @param filename
-     * @return 
-     */
-    private static String specialExtensions( String filename ) 
-    {
-        String[] special = {
-            "tar.gz"
-        };
-        for ( String extension : special ) 
-        {
-            if ( filename.endsWith( extension ) ) 
-            {
-                return extension;
-            }
-        }
-        return null;
-    }
     public Artifact build()
     {
         ArtifactReference ref = new ArtifactReference();
@@ -98,12 +81,7 @@ public class ArtifactBuilder
         ref.setType( type );
         File file = managedRepositoryContent.toFile( ref );
 
-        String extension = FilenameUtils.getExtension( file.getName() );
-        // handle more than one point extension we know.
-        if ( specialExtensions( file.getName() ) != null ) 
-        {
-            extension = specialExtensions( file.getName() );
-        }
+        String extension = getExtensionFromFile(file);
         
         Artifact artifact = new Artifact( ref.getGroupId(), ref.getArtifactId(), ref.getVersion() );
         artifact.setRepositoryId( artifactMetadata.getRepositoryId() );
@@ -142,5 +120,26 @@ public class ArtifactBuilder
 
     }
 
+
+    /**
+     * Extract file extension
+     */
+    String getExtensionFromFile( File file )
+    {
+        // we are just interested in the section after the last -
+        String[] parts = file.getName().split( "-" );
+        if ( parts.length > 0 )
+        {
+            // get anything after a dot followed by a letter a-z, including other dots
+            Pattern p = Pattern.compile( "\\.([a-z]+[a-z0-9\\.]*)" );
+            Matcher m = p.matcher( parts[parts.length - 1] );
+            if ( m.find() )
+            {
+                return m.group( 1 );
+            }
+        }
+        // just in case
+        return FilenameUtils.getExtension( file.getName() );
+    }
 
 }
