@@ -20,8 +20,12 @@ package org.apache.archiva.metadata.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 @XmlRootElement( name = "projectVersionMetadata" )
 public class ProjectVersionMetadata
@@ -51,6 +55,8 @@ public class ProjectVersionMetadata
     private List<MailingList> mailingLists = new ArrayList<>();
 
     private List<Dependency> dependencies = new ArrayList<>();
+
+    private Map<String, String> properties = new HashMap<String, String>();
 
     private boolean incomplete;
 
@@ -182,6 +188,22 @@ public class ProjectVersionMetadata
     public void addDependency( Dependency dependency )
     {
         this.dependencies.add( dependency );
+    }
+
+    public Map<String, String> getProperties()
+    {
+        return properties;
+    }
+
+    public void setProperties( Map<String, String> properties )
+    {
+        this.properties = properties;
+    }
+
+    @SuppressWarnings( { "unchecked", "rawtypes" } )
+    public void setProperties( Properties properties )
+    {
+        setProperties( new HashMap<String, String>((Map) properties ) );
     }
 
     public boolean isIncomplete()

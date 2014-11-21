@@ -372,6 +372,7 @@ public class Maven2RepositoryStorage
             metadata.setOrganization( convertOrganization( model.getOrganization() ) );
             metadata.setScm( convertScm( model.getScm() ) );
             metadata.setUrl( model.getUrl() );
+            metadata.setProperties( model.getProperties() );
 
             MavenProjectFacet facet = new MavenProjectFacet();
             facet.setGroupId( model.getGroupId() != null ? model.getGroupId() : model.getParent().getGroupId() );
