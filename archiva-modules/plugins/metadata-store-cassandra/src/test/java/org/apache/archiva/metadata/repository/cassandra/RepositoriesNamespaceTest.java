@@ -61,14 +61,14 @@ public class RepositoriesNamespaceTest
         {
             cassandraArchivaManager.start();
         }
-        clearReposAndNamespace();
+        CassandraMetadataRepositoryTest.clearReposAndNamespace( cassandraArchivaManager );
     }
 
     @After
     public void shutdown()
         throws Exception
     {
-        clearReposAndNamespace();
+        CassandraMetadataRepositoryTest.clearReposAndNamespace( cassandraArchivaManager );
         cassandraArchivaManager.shutdown();
     }
 
@@ -136,18 +136,7 @@ public class RepositoriesNamespaceTest
         }
         finally
         {
-            clearReposAndNamespace();
+            CassandraMetadataRepositoryTest.clearReposAndNamespace( cassandraArchivaManager );
         }
-    }
-
-    protected void clearReposAndNamespace()
-        throws Exception
-    {
-        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       "project" );
-        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       "namespace" );
-        cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
-                                                       "repository" );
     }
 }

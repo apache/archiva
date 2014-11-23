@@ -70,7 +70,7 @@ public class CassandraMetadataRepositoryTest
         this.cmr = new CassandraMetadataRepository( factories, null, cassandraArchivaManager );
         this.repository = this.cmr;
 
-        clearReposAndNamespace();
+        clearReposAndNamespace( cassandraArchivaManager );
     }
 
     /**
@@ -109,11 +109,11 @@ public class CassandraMetadataRepositoryTest
     public void shutdown()
         throws Exception
     {
-        clearReposAndNamespace();
+        clearReposAndNamespace( cassandraArchivaManager );
         super.tearDown();
     }
 
-    protected void clearReposAndNamespace()
+    static void clearReposAndNamespace( CassandraArchivaManager cassandraArchivaManager )
         throws Exception
     {
         cassandraArchivaManager.getCluster().truncate( cassandraArchivaManager.getKeyspace().getKeyspaceName(),
