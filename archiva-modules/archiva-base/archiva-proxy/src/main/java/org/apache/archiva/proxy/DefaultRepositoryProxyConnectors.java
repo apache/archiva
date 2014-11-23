@@ -134,7 +134,7 @@ public class DefaultRepositoryProxyConnectors
     @Inject
     private UrlFailureCache urlFailureCache;
 
-    private Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<>();
+    private Map<String, List<ProxyConnector>> proxyConnectorMap = new ConcurrentHashMap<>();
 
     private Map<String, ProxyInfo> networkProxyMap = new ConcurrentHashMap<>();
 
@@ -457,7 +457,7 @@ public class DefaultRepositoryProxyConnectors
         boolean metadataNeedsUpdating = false;
         long originalTimestamp = getLastModified( localFile );
 
-        List<ProxyConnector> connectors = getProxyConnectors( repository );
+        List<ProxyConnector> connectors = new ArrayList<>( getProxyConnectors( repository ) );
         for ( ProxyConnector connector : connectors )
         {
             if ( connector.isDisabled() )
