@@ -19,6 +19,8 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  * under the License.
  */
 
+import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames.*;
+
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
 /**
@@ -29,6 +31,9 @@ import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
  */
 public class MetadataFacetModel
 {
+    public static final String[] COLUMNS = new String[] { FACET_ID.toString(), KEY.toString(), VALUE.toString(),
+        REPOSITORY_NAME.toString(), NAMESPACE_ID.toString(), PROJECT_ID.toString(), PROJECT_VERSION.toString() };
+
     private String facetId;
 
     private String key;

@@ -1403,6 +1403,9 @@ public class JcrMetadataRepository
     }
 
 
+    /**
+     * Exact is ignored as we can't do exact search in any property, we need a key
+     */
     @Override
     public List<ArtifactMetadata> searchArtifacts( String text, String repositoryId, boolean exact )
         throws MetadataRepositoryException

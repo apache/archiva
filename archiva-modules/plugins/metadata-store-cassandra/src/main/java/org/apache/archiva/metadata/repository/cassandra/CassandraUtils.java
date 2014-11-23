@@ -95,18 +95,18 @@ public class CassandraUtils
         return hColumn == null ? null : hColumn.getValue();
     }
 
-    public static Long getLongValue( ColumnSlice<String, Long> columnSlice, String columnName )
+    public static Long getLongValue( ColumnSlice<String, ?> columnSlice, String columnName )
     {
         if ( StringUtils.isEmpty( columnName ) )
         {
             return null;
         }
 
-        HColumn<String, Long> hColumn = columnSlice.getColumnByName( columnName );
+        HColumn<String, Long> hColumn = (HColumn<String, Long>) columnSlice.getColumnByName( columnName );
         return hColumn == null ? null : hColumn.getValue();
     }
 
-    public static String getAsStringValue( ColumnSlice<String, Long> columnSlice, String columnName )
+    public static <T> String getAsStringValue( ColumnSlice<String, T> columnSlice, String columnName )
     {
         StringSerializer ss = StringSerializer.get();
         if ( StringUtils.isEmpty( columnName ) )
@@ -114,7 +114,7 @@ public class CassandraUtils
             return null;
         }
 
-        HColumn<String, Long> hColumn = columnSlice.getColumnByName( columnName );
+        HColumn<String, T> hColumn = columnSlice.getColumnByName( columnName );
         return hColumn == null ? null : ss.fromByteBuffer( hColumn.getValueBytes() );
     }
 

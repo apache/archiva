@@ -77,6 +77,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1826,25 +1827,114 @@ public class CassandraMetadataRepository
         return artifactMetadataMap.values();
     }
 
+    /**
+     * Project version and artifact level metadata are stored in the same place, no distinctions in Cassandra
+     * implementation, just calls {@link #getArtifactsByMetadata(String, String, String)}
+     */
     @Override
     public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
-        throw new UnsupportedOperationException( "not yet implemented in Cassandra backend" );
+        return getArtifactsByMetadata( key, value, repositoryId );
     }
 
     @Override
     public List<ArtifactMetadata> getArtifactsByMetadata( String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
-        throw new UnsupportedOperationException( "not yet implemented in Cassandra backend" );
+        RangeSlicesQuery<String, String, String> query =
+            HFactory.createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+            .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
+            .setColumnNames( MetadataFacetModel.COLUMNS ) //
+            .addEqualsExpression( VALUE.toString(), value );
+
+        if ( key != null )
+        {
+            query.addEqualsExpression( KEY.toString(), key ); //
+        }
+        if ( repositoryId != null )
+        {
+            query.addEqualsExpression( "repositoryName", repositoryId );
+        }
+
+        QueryResult<OrderedRows<String, String, String>> metadataFacetResult = query.execute();
+        if ( metadataFacetResult.get() == null || metadataFacetResult.get().getCount() < 1 )
+        {
+            return Collections.emptyList();
+        }
+
+        List<ArtifactMetadata> artifactMetadatas = new LinkedList<ArtifactMetadata>();
+
+        // TODO doing multiple queries, there should be a way to get all the artifactMetadatas for any number of
+        // projects
+        for ( Row<String, String, String> row : metadataFacetResult.get() )
+        {
+            QueryResult<OrderedRows<String, String, String>> artifactMetadataResult =
+                HFactory.createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+                .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
+                .setColumnNames( ArtifactMetadataModel.COLUMNS ) //
+                .setRowCount( Integer.MAX_VALUE ) //
+                .addEqualsExpression( REPOSITORY_NAME.toString(),
+                                      getStringValue( row.getColumnSlice(), REPOSITORY_NAME ) ) //
+                .addEqualsExpression( NAMESPACE_ID.toString(), getStringValue( row.getColumnSlice(), NAMESPACE_ID ) ) //
+                .addEqualsExpression( PROJECT.toString(), getStringValue( row.getColumnSlice(), PROJECT_ID ) ) //
+                .addEqualsExpression( PROJECT_VERSION.toString(),
+                                      getStringValue( row.getColumnSlice(), PROJECT_VERSION ) ) //
+                .execute();
+
+            if ( artifactMetadataResult.get() == null || artifactMetadataResult.get().getCount() < 1 )
+            {
+                return Collections.emptyList();
+            }
+
+            for ( Row<String, String, String> artifactMetadataRow : artifactMetadataResult.get() )
+            {
+                artifactMetadatas.add( mapArtifactMetadataStringColumnSlice( artifactMetadataRow.getColumnSlice() ) );
+            }
+        }
+
+        return mapArtifactMetadataToArtifact( metadataFacetResult, artifactMetadatas );
     }
 
     @Override
     public List<ArtifactMetadata> getArtifactsByProperty( String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
-        throw new UnsupportedOperationException( "getArtifactsByProperty not yet implemented in Cassandra backend" );
+        QueryResult<OrderedRows<String, String, String>> result =
+            HFactory.createRangeSlicesQuery( keyspace, ss, ss, ss ) //
+            .setColumnFamily( cassandraArchivaManager.getProjectVersionMetadataFamilyName() ) //
+            .setColumnNames( PROJECT_ID.toString(), REPOSITORY_NAME.toString(), NAMESPACE_ID.toString(),
+                             PROJECT_VERSION.toString() ) //
+            .addEqualsExpression( key, value ) //
+            .execute();
+
+        int count = result.get().getCount();
+
+        if ( count < 1 )
+        {
+            return Collections.emptyList();
+        }
+
+        List<ArtifactMetadata> artifacts = new LinkedList<ArtifactMetadata>();
+
+        for ( Row<String, String, String> row : result.get() )
+        {
+            // TODO doing multiple queries, there should be a way to get all the artifactMetadatas for any number of
+            // projects
+            try
+            {
+                artifacts.addAll( getArtifacts( getStringValue( row.getColumnSlice(), REPOSITORY_NAME ),
+                                                getStringValue( row.getColumnSlice(), NAMESPACE_ID ),
+                                                getStringValue( row.getColumnSlice(), PROJECT_ID ),
+                                                getStringValue( row.getColumnSlice(), PROJECT_VERSION ) ) );
+            }
+            catch ( MetadataResolutionException e )
+            {
+                // never raised
+                throw new IllegalStateException( e );
+            }
+        }
+        return artifacts;
     }
 
     @Override
@@ -2046,29 +2136,12 @@ public class CassandraMetadataRepository
 
         for ( Row<String, String, String> row : result.get() )
         {
-            ColumnSlice<String, String> columnSlice = row.getColumnSlice();
-            ArtifactMetadata artifactMetadata = new ArtifactMetadata();
-            artifactMetadata.setNamespace( getStringValue( columnSlice, NAMESPACE_ID.toString() ) );
-            artifactMetadata.setSize( getAsLongValue( columnSlice, SIZE.toString() ) );
-            artifactMetadata.setId( getStringValue( columnSlice, ID.toString() ) );
-            artifactMetadata.setFileLastModified( getAsLongValue( columnSlice, FILE_LAST_MODIFIED.toString() ) );
-            artifactMetadata.setMd5( getStringValue( columnSlice, MD5.toString() ) );
-            artifactMetadata.setProject( getStringValue( columnSlice, PROJECT.toString() ) );
-            artifactMetadata.setProjectVersion( getStringValue( columnSlice, PROJECT_VERSION.toString() ) );
-            artifactMetadata.setRepositoryId( repoId );
-            artifactMetadata.setSha1( getStringValue( columnSlice, SHA1.toString() ) );
-            artifactMetadata.setVersion( getStringValue( columnSlice, VERSION.toString() ) );
-            Long whenGathered = getAsLongValue( columnSlice, WHEN_GATHERED.toString() );
-            if ( whenGathered != null )
-            {
-                artifactMetadata.setWhenGathered( new Date( whenGathered ) );
-            }
-            artifactMetadatas.add( artifactMetadata );
+            artifactMetadatas.add( mapArtifactMetadataStringColumnSlice( row.getColumnSlice() ) );
         }
 
         result = HFactory.createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getMetadataFacetFamilyName() ) //
-            .setColumnNames( FACET_ID.toString(), NAME.toString(), VALUE.toString(), KEY.toString(), PROJECT_VERSION.toString() ) //
+            .setColumnNames( MetadataFacetModel.COLUMNS ) //
             .setRowCount( Integer.MAX_VALUE ) //
             .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
             .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //
@@ -2076,6 +2149,13 @@ public class CassandraMetadataRepository
             .addEqualsExpression( PROJECT_VERSION.toString(), projectVersion ) //
             .execute();
 
+        return mapArtifactMetadataToArtifact(result, artifactMetadatas);
+    }
+
+    /**
+     * Attach metadata to each of the  ArtifactMetadata objects
+     */
+    private List<ArtifactMetadata> mapArtifactMetadataToArtifact(QueryResult<OrderedRows<String, String, String>> result, List<ArtifactMetadata> artifactMetadatas) {
         if ( result.get() == null || result.get().getCount() < 1 )
         {
             return artifactMetadatas;
@@ -2147,8 +2227,6 @@ public class CassandraMetadataRepository
                     }
                 }
             }
-
-
         }
 
         return artifactMetadatas;
@@ -2198,17 +2276,28 @@ public class CassandraMetadataRepository
         return ModelMapperHolder.MODEL_MAPPER;
     }
 
+    /**
+     * This implementation just calls getArtifactsByMetadata( null, text, repositoryId ). We can't search artifacts by
+     * any property.
+     */
     @Override
     public List<ArtifactMetadata> searchArtifacts( String text, String repositoryId, boolean exact )
         throws MetadataRepositoryException
     {
-        throw new UnsupportedOperationException( "searchArtifacts not yet implemented in Cassandra backend" );
+        return getArtifactsByMetadata( null, text, repositoryId );
     }
 
+    /**
+     * The exact parameter is ignored as we can't do non exact searches in Cassandra
+     */
     @Override
     public List<ArtifactMetadata> searchArtifacts( String key, String text, String repositoryId, boolean exact )
         throws MetadataRepositoryException
     {
-        throw new UnsupportedOperationException( "searchArtifacts not yet implemented in Cassandra backend" );
+        // TODO optimize
+        List<ArtifactMetadata> artifacts = new LinkedList<ArtifactMetadata>();
+        artifacts.addAll( getArtifactsByMetadata( key, text, repositoryId ) );
+        artifacts.addAll( getArtifactsByProperty( key, text, repositoryId ) );
+        return artifacts;
     }
 }

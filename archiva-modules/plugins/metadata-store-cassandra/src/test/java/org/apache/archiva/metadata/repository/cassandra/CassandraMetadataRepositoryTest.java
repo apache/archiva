@@ -25,7 +25,6 @@ import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMeta
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -68,103 +67,6 @@ public class CassandraMetadataRepositoryTest
 
         clearReposAndNamespace( cassandraArchivaManager );
     }
-
-    @Override
-    @Ignore
-    public void testGetArtifactsByProjectVersionMetadata()
-        throws Exception
-    {
-        // TODO not implemented
-    }
-
-    @Override
-    @Ignore
-    public void testGetArtifactsByProjectVersionMetadataNoRepository()
-        throws Exception
-    {
-        // TODO not implemented
-    }
-
-    @Override
-    @Ignore
-    public void testGetArtifactsByProjectVersionMetadataAllRepositories()
-        throws Exception
-    {
-        // TODO not implemented
-    }
-
-    @Override
-    @Ignore
-    public void testGetArtifactsByMetadataAllRepositories()
-        throws Exception
-    {
-        // TODO not implemented
-    }
-
-    @Override
-    @Ignore
-    public void testGetArtifactsByPropertySingleResult()
-        throws Exception
-    {
-        // TODO not implemented
-    }
-
-    @Override
-    @Ignore
-    public void testSearchArtifactsByKey()
-        throws Exception
-    {
-        // TODO not implemented
-    }
-
-    @Override
-    @Ignore
-    public void testSearchArtifactsByKeyExact()
-        throws Exception
-    {
-        // TODO not implemented
-    }
-
-    @Override
-    @Ignore
-    public void testSearchArtifactsFullText()
-        throws Exception
-    {
-        // TODO not implemented
-    }
-
-    @Override
-    @Ignore
-    public void testSearchArtifactsFullTextExact()
-        throws Exception
-    {
-        // TODO not implemented
-    }
-
-    @Override
-    @Ignore
-    public void testSearchArtifactsByFacetKeyAllRepos()
-        throws Exception
-    {
-        // TODO not implemented
-    }
-
-    @Override
-    @Ignore
-    public void testSearchArtifactsByFacetKey()
-        throws Exception
-    {
-        // TODO not implemented
-    }
-
-    @Override
-    @Ignore
-    public void testSearchArtifactsFullTextByFacet()
-        throws Exception
-    {
-        // TODO not implemented
-    }
-
 
     /**
      * ensure all dependant tables are cleaned up (mailinglist, license, dependencies)
