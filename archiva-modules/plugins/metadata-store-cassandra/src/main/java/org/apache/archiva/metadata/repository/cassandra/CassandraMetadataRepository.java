@@ -1706,8 +1706,7 @@ public class CassandraMetadataRepository
         RangeSlicesQuery<String, String, Long> query = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ls ) //
             .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-            .setColumnNames( NAMESPACE_ID.toString(), SIZE.toString(), ID.toString(), FILE_LAST_MODIFIED.toString(), MD5.toString(), PROJECT.toString(), PROJECT_VERSION.toString(),
-                             REPOSITORY_NAME.toString(), VERSION.toString(), WHEN_GATHERED.toString(), SHA1.toString() ); //
+            .setColumnNames( ArtifactMetadataModel.COLUMNS ); //
 
         if ( startTime != null )
         {
@@ -1789,8 +1788,7 @@ public class CassandraMetadataRepository
         RangeSlicesQuery<String, String, String> query = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-            .setColumnNames( NAMESPACE_ID.toString(), SIZE.toString(), ID.toString(), FILE_LAST_MODIFIED.toString(), MD5.toString(), PROJECT.toString(), PROJECT_VERSION.toString(),
-                             REPOSITORY_NAME.toString(), VERSION.toString(), WHEN_GATHERED.toString(), SHA1.toString() ); //
+            .setColumnNames( ArtifactMetadataModel.COLUMNS ); //
 
         query = query.addEqualsExpression( SHA1.toString(), checksum ).addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId );
 
@@ -1899,8 +1897,7 @@ public class CassandraMetadataRepository
         RangeSlicesQuery<String, String, String> query = HFactory //
             .createRangeSlicesQuery( keyspace, ss, ss, ss ) //
             .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-            .setColumnNames( NAMESPACE_ID.toString(), SIZE.toString(), ID.toString(), FILE_LAST_MODIFIED.toString(), MD5.toString(), PROJECT.toString(), PROJECT_VERSION.toString(),
-                             REPOSITORY_NAME.toString(), VERSION.toString(), WHEN_GATHERED.toString(), SHA1.toString() ); //
+            .setColumnNames( ArtifactMetadataModel.COLUMNS ); //
 
         query = query.addEqualsExpression( REPOSITORY_NAME.toString(), repositoryId );
 
@@ -2009,8 +2006,7 @@ public class CassandraMetadataRepository
         QueryResult<OrderedRows<String, String, String>> result =
             HFactory.createRangeSlicesQuery( keyspace, ss, ss, ss ) //
                 .setColumnFamily( cassandraArchivaManager.getArtifactMetadataFamilyName() ) //
-                .setColumnNames( ID.toString(), REPOSITORY_NAME.toString(), NAMESPACE_ID.toString(), PROJECT.toString(), PROJECT_VERSION.toString(), VERSION.toString(),
-                                 FILE_LAST_MODIFIED.toString(), SIZE.toString(), MD5.toString(), SHA1.toString(), WHEN_GATHERED.toString() )//
+                .setColumnNames( ArtifactMetadataModel.COLUMNS )//
                 .setRowCount( Integer.MAX_VALUE ) //
                 .addEqualsExpression( REPOSITORY_NAME.toString(), repoId ) //
                 .addEqualsExpression( NAMESPACE_ID.toString(), namespace ) //

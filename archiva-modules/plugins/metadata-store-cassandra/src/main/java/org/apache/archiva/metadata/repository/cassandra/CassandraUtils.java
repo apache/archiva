@@ -28,6 +28,8 @@ import me.prettyprint.hector.api.beans.ColumnSlice;
 import me.prettyprint.hector.api.beans.HColumn;
 import me.prettyprint.hector.api.factory.HFactory;
 import me.prettyprint.hector.api.mutation.Mutator;
+
+import org.apache.archiva.metadata.repository.cassandra.model.ColumnNames;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -75,6 +77,11 @@ public class CassandraUtils
                                       value, //
                                       (Serializer<A>) SerializerTypeInferer.getSerializer( name ), //
                                       (Serializer<B>) SerializerTypeInferer.getSerializer( value ) );
+    }
+
+    public static String getStringValue( ColumnSlice<String, String> columnSlice, ColumnNames columnName )
+    {
+        return getStringValue( columnSlice, columnName.toString() );
     }
 
     public static String getStringValue( ColumnSlice<String, String> columnSlice, String columnName )

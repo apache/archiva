@@ -19,6 +19,8 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  * under the License.
  */
 
+import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames.*;
+
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
 import java.io.Serializable;
@@ -33,6 +35,10 @@ import java.util.Date;
 public class ArtifactMetadataModel
     implements Serializable
 {
+
+    public final static String[] COLUMNS = new String[] { ID.toString(), REPOSITORY_NAME.toString(),
+        NAMESPACE_ID.toString(), PROJECT.toString(), PROJECT_VERSION.toString(), VERSION.toString(),
+        FILE_LAST_MODIFIED.toString(), SIZE.toString(), MD5.toString(), SHA1.toString(), WHEN_GATHERED.toString() };
 
     private String id;
 
