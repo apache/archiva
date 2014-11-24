@@ -209,6 +209,9 @@ public class Maven2RepositoryMetadataResolverTest
         assertDependency( dependencies.get( 7 ), "junit", "junit", "3.8.1", "test" );
         assertDependency( dependencies.get( 8 ), "easymock", "easymock", "1.2_Java1.3", "test" );
         assertDependency( dependencies.get( 9 ), "easymock", "easymockclassextension", "1.2", "test" );
+
+        assertEquals( 8, metadata.getProperties().size() );
+        assertEquals( "http://www.apache.org/images/asf_logo_wide.gif", metadata.getProperties().get("organization.logo") );
     }
 
     @Test
