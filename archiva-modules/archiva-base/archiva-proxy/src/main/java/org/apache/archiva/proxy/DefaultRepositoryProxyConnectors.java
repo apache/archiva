@@ -97,6 +97,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * DefaultRepositoryProxyConnectors
@@ -134,9 +135,9 @@ public class DefaultRepositoryProxyConnectors
     @Inject
     private UrlFailureCache urlFailureCache;
 
-    private Map<String, List<ProxyConnector>> proxyConnectorMap = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, List<ProxyConnector>> proxyConnectorMap = new ConcurrentHashMap<>();
 
-    private Map<String, ProxyInfo> networkProxyMap = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, ProxyInfo> networkProxyMap = new ConcurrentHashMap<>();
 
     @Inject
     private WagonFactory wagonFactory;
@@ -1253,17 +1254,16 @@ public class DefaultRepositoryProxyConnectors
     @Override
     public List<ProxyConnector> getProxyConnectors( ManagedRepositoryContent repository )
     {
-        synchronized ( this.proxyConnectorMap )
-        {
-            List<ProxyConnector> ret = this.proxyConnectorMap.get( repository.getId() );
-            if ( ret == null )
-            {
-                return Collections.emptyList();
-            }
 
-            Collections.sort( ret, ProxyConnectorOrderComparator.getInstance() );
-            return ret;
+        List<ProxyConnector> ret = this.proxyConnectorMap.get( repository.getId() );
+        if ( ret == null )
+        {
+            return Collections.emptyList();
         }
+
+        Collections.sort( ret, ProxyConnectorOrderComparator.getInstance() );
+        return ret;
+
     }
 
     @Override
