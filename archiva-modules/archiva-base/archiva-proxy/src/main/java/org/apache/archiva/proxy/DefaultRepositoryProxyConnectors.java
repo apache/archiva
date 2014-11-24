@@ -1262,7 +1262,7 @@ public class DefaultRepositoryProxyConnectors
         }
 
         Collections.sort( ret, ProxyConnectorOrderComparator.getInstance() );
-        return ret;
+        return new ArrayList<>( ret );
 
     }
 
