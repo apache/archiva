@@ -32,7 +32,7 @@ public enum ColumnNames
     NAMESPACE_ID( "namespaceId" ),
     PROJECT_ID( "projectId" ),
     PROJECT_VERSION( "projectVersion" ),
-    KEY( "key" ),
+    KEY( "facetKey" ),
     VALUE( "value" ),
     ID( "id" ),
     SIZE( "size" ),
