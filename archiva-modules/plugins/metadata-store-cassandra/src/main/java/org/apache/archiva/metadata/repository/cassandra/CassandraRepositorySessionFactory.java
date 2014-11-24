@@ -63,7 +63,7 @@ public class CassandraRepositorySessionFactory
     {
         Map<String, MetadataFacetFactory> tmpMetadataFacetFactories =
             applicationContext.getBeansOfType( MetadataFacetFactory.class );
-        // olamy with spring the "id" is now "metadataFacetFactory#hint"
+        // olamy with spring the ID.toString() is now "metadataFacetFactory#hint"
         // whereas was only hint with plexus so let remove  metadataFacetFactory#
         metadataFacetFactories = new HashMap<>( tmpMetadataFacetFactories.size() );
 

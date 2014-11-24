@@ -19,6 +19,8 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
+import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames.*;
+
 import me.prettyprint.cassandra.model.BasicColumnDefinition;
 import me.prettyprint.cassandra.model.ConfigurableConsistencyLevel;
 import me.prettyprint.cassandra.serializers.StringSerializer;
@@ -76,7 +78,7 @@ public class DefaultCassandraArchivaManager
 
     private String namespaceFamilyName = "namespace";
 
-    private String projectFamilyName = "project";
+    private String projectFamilyName = PROJECT.toString();
 
     private String projectVersionMetadataFamilyName = "projectversionmetadata";
 
@@ -151,15 +153,15 @@ public class DefaultCassandraArchivaManager
             // creating indexes for cql query
 
             BasicColumnDefinition nameColumn = new BasicColumnDefinition();
-            nameColumn.setName( StringSerializer.get().toByteBuffer( "name" ) );
-            nameColumn.setIndexName( "name" );
+            nameColumn.setName( StringSerializer.get().toByteBuffer( NAME.toString() ) );
+            nameColumn.setIndexName( NAME.toString() );
             nameColumn.setIndexType( ColumnIndexType.KEYS );
             nameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             namespace.addColumnDefinition( nameColumn );
 
             BasicColumnDefinition repositoryIdColumn = new BasicColumnDefinition();
-            repositoryIdColumn.setName( StringSerializer.get().toByteBuffer( "repositoryName" ) );
-            repositoryIdColumn.setIndexName( "repositoryName" );
+            repositoryIdColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
+            repositoryIdColumn.setIndexName( REPOSITORY_NAME.toString() );
             repositoryIdColumn.setIndexType( ColumnIndexType.KEYS );
             repositoryIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             namespace.addColumnDefinition( repositoryIdColumn );
@@ -175,8 +177,8 @@ public class DefaultCassandraArchivaManager
             cfds.add( repository );
 
             BasicColumnDefinition nameColumn = new BasicColumnDefinition();
-            nameColumn.setName( StringSerializer.get().toByteBuffer( "repositoryName" ) );
-            nameColumn.setIndexName( "repositoryName" );
+            nameColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
+            nameColumn.setIndexName( REPOSITORY_NAME.toString() );
             nameColumn.setIndexType( ColumnIndexType.KEYS );
             nameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             repository.addColumnDefinition( nameColumn );
@@ -193,22 +195,22 @@ public class DefaultCassandraArchivaManager
             // creating indexes for cql query
 
             BasicColumnDefinition projectIdColumn = new BasicColumnDefinition();
-            projectIdColumn.setName( StringSerializer.get().toByteBuffer( "projectId" ) );
-            projectIdColumn.setIndexName( "projectId" );
+            projectIdColumn.setName( StringSerializer.get().toByteBuffer( PROJECT_ID.toString() ) );
+            projectIdColumn.setIndexName( PROJECT_ID.toString() );
             projectIdColumn.setIndexType( ColumnIndexType.KEYS );
             projectIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             project.addColumnDefinition( projectIdColumn );
 
             BasicColumnDefinition repositoryIdColumn = new BasicColumnDefinition();
-            repositoryIdColumn.setName( StringSerializer.get().toByteBuffer( "repositoryName" ) );
-            repositoryIdColumn.setIndexName( "repositoryName" );
+            repositoryIdColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
+            repositoryIdColumn.setIndexName( REPOSITORY_NAME.toString() );
             repositoryIdColumn.setIndexType( ColumnIndexType.KEYS );
             repositoryIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             project.addColumnDefinition( repositoryIdColumn );
 
             BasicColumnDefinition namespaceIdColumn = new BasicColumnDefinition();
-            namespaceIdColumn.setName( StringSerializer.get().toByteBuffer( "namespaceId" ) );
-            namespaceIdColumn.setIndexName( "namespaceId" );
+            namespaceIdColumn.setName( StringSerializer.get().toByteBuffer( NAMESPACE_ID.toString() ) );
+            namespaceIdColumn.setIndexName( NAMESPACE_ID.toString() );
             namespaceIdColumn.setIndexType( ColumnIndexType.KEYS );
             namespaceIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             project.addColumnDefinition( namespaceIdColumn );
@@ -226,29 +228,29 @@ public class DefaultCassandraArchivaManager
             // creating indexes for cql query
 
             BasicColumnDefinition namespaceIdColumn = new BasicColumnDefinition();
-            namespaceIdColumn.setName( StringSerializer.get().toByteBuffer( "namespaceId" ) );
-            namespaceIdColumn.setIndexName( "namespaceId" );
+            namespaceIdColumn.setName( StringSerializer.get().toByteBuffer( NAMESPACE_ID.toString() ) );
+            namespaceIdColumn.setIndexName( NAMESPACE_ID.toString() );
             namespaceIdColumn.setIndexType( ColumnIndexType.KEYS );
             namespaceIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             projectVersionMetadataModel.addColumnDefinition( namespaceIdColumn );
 
             BasicColumnDefinition repositoryNameColumn = new BasicColumnDefinition();
-            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( "repositoryName" ) );
-            repositoryNameColumn.setIndexName( "repositoryName" );
+            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
+            repositoryNameColumn.setIndexName( REPOSITORY_NAME.toString() );
             repositoryNameColumn.setIndexType( ColumnIndexType.KEYS );
             repositoryNameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             projectVersionMetadataModel.addColumnDefinition( repositoryNameColumn );
 
             BasicColumnDefinition idColumn = new BasicColumnDefinition();
-            idColumn.setName( StringSerializer.get().toByteBuffer( "id" ) );
-            idColumn.setIndexName( "id" );
+            idColumn.setName( StringSerializer.get().toByteBuffer( ID.toString() ) );
+            idColumn.setIndexName( ID.toString() );
             idColumn.setIndexType( ColumnIndexType.KEYS );
             idColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             projectVersionMetadataModel.addColumnDefinition( idColumn );
 
             BasicColumnDefinition projectIdColumn = new BasicColumnDefinition();
-            projectIdColumn.setName( StringSerializer.get().toByteBuffer( "projectId" ) );
-            projectIdColumn.setIndexName( "projectId" );
+            projectIdColumn.setName( StringSerializer.get().toByteBuffer( PROJECT_ID.toString() ) );
+            projectIdColumn.setIndexName( PROJECT_ID.toString() );
             projectIdColumn.setIndexType( ColumnIndexType.KEYS );
             projectIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             projectVersionMetadataModel.addColumnDefinition( projectIdColumn );
@@ -267,64 +269,64 @@ public class DefaultCassandraArchivaManager
             // creating indexes for cql query
 
             BasicColumnDefinition idColumn = new BasicColumnDefinition();
-            idColumn.setName( StringSerializer.get().toByteBuffer( "id" ) );
-            idColumn.setIndexName( "id" );
+            idColumn.setName( StringSerializer.get().toByteBuffer( ID.toString() ) );
+            idColumn.setIndexName( ID.toString() );
             idColumn.setIndexType( ColumnIndexType.KEYS );
             idColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             artifactMetadataModel.addColumnDefinition( idColumn );
 
             BasicColumnDefinition repositoryNameColumn = new BasicColumnDefinition();
-            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( "repositoryName" ) );
-            repositoryNameColumn.setIndexName( "repositoryName" );
+            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
+            repositoryNameColumn.setIndexName( REPOSITORY_NAME.toString() );
             repositoryNameColumn.setIndexType( ColumnIndexType.KEYS );
             repositoryNameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             artifactMetadataModel.addColumnDefinition( repositoryNameColumn );
 
             BasicColumnDefinition namespaceIdColumn = new BasicColumnDefinition();
-            namespaceIdColumn.setName( StringSerializer.get().toByteBuffer( "namespaceId" ) );
-            namespaceIdColumn.setIndexName( "namespaceId" );
+            namespaceIdColumn.setName( StringSerializer.get().toByteBuffer( NAMESPACE_ID.toString() ) );
+            namespaceIdColumn.setIndexName( NAMESPACE_ID.toString() );
             namespaceIdColumn.setIndexType( ColumnIndexType.KEYS );
             namespaceIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             artifactMetadataModel.addColumnDefinition( namespaceIdColumn );
 
             BasicColumnDefinition projectColumn = new BasicColumnDefinition();
-            projectColumn.setName( StringSerializer.get().toByteBuffer( "project" ) );
-            projectColumn.setIndexName( "project" );
+            projectColumn.setName( StringSerializer.get().toByteBuffer( PROJECT.toString() ) );
+            projectColumn.setIndexName( PROJECT.toString() );
             projectColumn.setIndexType( ColumnIndexType.KEYS );
             projectColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             artifactMetadataModel.addColumnDefinition( projectColumn );
 
             BasicColumnDefinition projectVersionColumn = new BasicColumnDefinition();
-            projectVersionColumn.setName( StringSerializer.get().toByteBuffer( "projectVersion" ) );
-            projectVersionColumn.setIndexName( "projectVersion" );
+            projectVersionColumn.setName( StringSerializer.get().toByteBuffer( PROJECT_VERSION.toString() ) );
+            projectVersionColumn.setIndexName( PROJECT_VERSION.toString() );
             projectVersionColumn.setIndexType( ColumnIndexType.KEYS );
             projectVersionColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             artifactMetadataModel.addColumnDefinition( projectVersionColumn );
 
             BasicColumnDefinition versionColumn = new BasicColumnDefinition();
-            versionColumn.setName( StringSerializer.get().toByteBuffer( "version" ) );
-            versionColumn.setIndexName( "version" );
+            versionColumn.setName( StringSerializer.get().toByteBuffer( VERSION.toString() ) );
+            versionColumn.setIndexName( VERSION.toString() );
             versionColumn.setIndexType( ColumnIndexType.KEYS );
             versionColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             artifactMetadataModel.addColumnDefinition( versionColumn );
 
             BasicColumnDefinition whenGatheredColumn = new BasicColumnDefinition();
-            whenGatheredColumn.setName( StringSerializer.get().toByteBuffer( "whenGathered" ) );
-            whenGatheredColumn.setIndexName( "whenGathered" );
+            whenGatheredColumn.setName( StringSerializer.get().toByteBuffer( WHEN_GATHERED.toString() ) );
+            whenGatheredColumn.setIndexName( WHEN_GATHERED.toString() );
             whenGatheredColumn.setIndexType( ColumnIndexType.KEYS );
             whenGatheredColumn.setValidationClass( ComparatorType.LONGTYPE.getClassName() );
             artifactMetadataModel.addColumnDefinition( whenGatheredColumn );
 
             BasicColumnDefinition sha1Column = new BasicColumnDefinition();
-            sha1Column.setName( StringSerializer.get().toByteBuffer( "sha1" ) );
-            sha1Column.setIndexName( "sha1" );
+            sha1Column.setName( StringSerializer.get().toByteBuffer( SHA1.toString() ) );
+            sha1Column.setIndexName( SHA1.toString() );
             sha1Column.setIndexType( ColumnIndexType.KEYS );
             sha1Column.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             artifactMetadataModel.addColumnDefinition( sha1Column );
 
             BasicColumnDefinition md5Column = new BasicColumnDefinition();
-            md5Column.setName( StringSerializer.get().toByteBuffer( "md5" ) );
-            md5Column.setIndexName( "md5" );
+            md5Column.setName( StringSerializer.get().toByteBuffer( MD5.toString() ) );
+            md5Column.setIndexName( MD5.toString() );
             md5Column.setIndexType( ColumnIndexType.KEYS );
             md5Column.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             artifactMetadataModel.addColumnDefinition( md5Column );
@@ -343,43 +345,43 @@ public class DefaultCassandraArchivaManager
             // creating indexes for cql query
 
             BasicColumnDefinition facetIdColumn = new BasicColumnDefinition();
-            facetIdColumn.setName( StringSerializer.get().toByteBuffer( "facetId" ) );
-            facetIdColumn.setIndexName( "facetId" );
+            facetIdColumn.setName( StringSerializer.get().toByteBuffer( FACET_ID.toString() ) );
+            facetIdColumn.setIndexName( FACET_ID.toString() );
             facetIdColumn.setIndexType( ColumnIndexType.KEYS );
             facetIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             metadataFacetModel.addColumnDefinition( facetIdColumn );
 
             BasicColumnDefinition repositoryNameColumn = new BasicColumnDefinition();
-            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( "repositoryName" ) );
-            repositoryNameColumn.setIndexName( "repositoryName" );
+            repositoryNameColumn.setName( StringSerializer.get().toByteBuffer( REPOSITORY_NAME.toString() ) );
+            repositoryNameColumn.setIndexName( REPOSITORY_NAME.toString() );
             repositoryNameColumn.setIndexType( ColumnIndexType.KEYS );
             repositoryNameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             metadataFacetModel.addColumnDefinition( repositoryNameColumn );
 
             BasicColumnDefinition nameColumn = new BasicColumnDefinition();
-            nameColumn.setName( StringSerializer.get().toByteBuffer( "name" ) );
-            nameColumn.setIndexName( "name" );
+            nameColumn.setName( StringSerializer.get().toByteBuffer( NAME.toString() ) );
+            nameColumn.setIndexName( NAME.toString() );
             nameColumn.setIndexType( ColumnIndexType.KEYS );
             nameColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             metadataFacetModel.addColumnDefinition( nameColumn );
 
             BasicColumnDefinition namespaceColumn = new BasicColumnDefinition();
-            namespaceColumn.setName( StringSerializer.get().toByteBuffer( "namespaceId" ) );
-            namespaceColumn.setIndexName( "namespaceId" );
+            namespaceColumn.setName( StringSerializer.get().toByteBuffer( NAMESPACE_ID.toString() ) );
+            namespaceColumn.setIndexName( NAMESPACE_ID.toString() );
             namespaceColumn.setIndexType( ColumnIndexType.KEYS );
             namespaceColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             metadataFacetModel.addColumnDefinition( namespaceColumn );
 
             BasicColumnDefinition projectIdColumn = new BasicColumnDefinition();
-            projectIdColumn.setName( StringSerializer.get().toByteBuffer( "projectId" ) );
-            projectIdColumn.setIndexName( "projectId" );
+            projectIdColumn.setName( StringSerializer.get().toByteBuffer( PROJECT_ID.toString() ) );
+            projectIdColumn.setIndexName( PROJECT_ID.toString() );
             projectIdColumn.setIndexType( ColumnIndexType.KEYS );
             projectIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             metadataFacetModel.addColumnDefinition( projectIdColumn );
 
             BasicColumnDefinition projectVersionColumn = new BasicColumnDefinition();
-            projectVersionColumn.setName( StringSerializer.get().toByteBuffer( "projectVersion" ) );
-            projectVersionColumn.setIndexName( "projectVersion" );
+            projectVersionColumn.setName( StringSerializer.get().toByteBuffer( PROJECT_VERSION.toString() ) );
+            projectVersionColumn.setIndexName( PROJECT_VERSION.toString() );
             projectVersionColumn.setIndexType( ColumnIndexType.KEYS );
             projectVersionColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
             metadataFacetModel.addColumnDefinition( projectVersionColumn );
@@ -437,7 +439,7 @@ public class DefaultCassandraArchivaManager
             // creating indexes for cql query
 
             BasicColumnDefinition groupIdColumn = new BasicColumnDefinition();
-            groupIdColumn.setName( StringSerializer.get().toByteBuffer( "groupId" ) );
+            groupIdColumn.setName( StringSerializer.get().toByteBuffer( GROUP_ID.toString() ) );
             groupIdColumn.setIndexName( "groupIdIdx" );
             groupIdColumn.setIndexType( ColumnIndexType.KEYS );
             groupIdColumn.setValidationClass( ComparatorType.UTF8TYPE.getClassName() );
