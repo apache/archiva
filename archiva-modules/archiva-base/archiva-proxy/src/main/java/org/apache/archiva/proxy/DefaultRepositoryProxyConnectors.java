@@ -1255,14 +1255,14 @@ public class DefaultRepositoryProxyConnectors
     public List<ProxyConnector> getProxyConnectors( ManagedRepositoryContent repository )
     {
 
-        List<ProxyConnector> ret = this.proxyConnectorMap.get( repository.getId() );
-        if ( ret == null )
+        if ( !this.proxyConnectorMap.containsKey( repository.getId() ) )
         {
             return Collections.emptyList();
         }
+        List<ProxyConnector> ret = new ArrayList<>( this.proxyConnectorMap.get( repository.getId() ) );
 
         Collections.sort( ret, ProxyConnectorOrderComparator.getInstance() );
-        return new ArrayList<>( ret );
+        return ret;
 
     }
 
