@@ -731,7 +731,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     {
         Collection<String> keys = userConfiguration.getKeys();
 
-        Set<String> keysSet = new HashSet<String>( keys );
+        Set<String> keysSet = new HashSet<>( keys );
 
         keysSet.addAll( getRedbackRuntimeConfiguration().getConfigurationProperties().keySet() );
 

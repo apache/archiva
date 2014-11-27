@@ -77,7 +77,7 @@ import java.util.Map;
 public abstract class AbstractRestService
 {
 
-    protected Logger log = LoggerFactory.getLogger( getClass() );
+    protected final Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
     private List<AuditListener> auditListeners = new ArrayList<>();

@@ -89,7 +89,7 @@ import java.util.Set;
  * before reading it from the registry.
  * </p>
  */
-@Service( "archivaConfiguration#default" )
+@Service("archivaConfiguration#default")
 public class DefaultArchivaConfiguration
     implements ArchivaConfiguration, RegistryListener
 {
@@ -99,7 +99,7 @@ public class DefaultArchivaConfiguration
      * Plexus registry to read the configuration from.
      */
     @Inject
-    @Named( value = "commons-configuration" )
+    @Named(value = "commons-configuration")
     private Registry registry;
 
     @Inject
@@ -183,7 +183,7 @@ public class DefaultArchivaConfiguration
         return configuration;
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     private Configuration load()
     {
         // TODO: should this be the same as section? make sure unnamed sections still work (eg, sys properties)
@@ -439,7 +439,7 @@ public class DefaultArchivaConfiguration
         return registry.getSubset( KEY );
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings("unchecked")
     @Override
     public synchronized void save( Configuration configuration )
         throws IndeterminateConfigurationException, RegistryException
@@ -464,10 +464,13 @@ public class DefaultArchivaConfiguration
 
                 // a little aggressive with the repositoryScanning and databaseScanning - should be no need to split
                 // that configuration
-                if ( key.startsWith( "repositories" ) || key.startsWith( "proxyConnectors" ) || key.startsWith(
-                    "networkProxies" ) || key.startsWith( "repositoryScanning" ) || key.startsWith(
-                    "remoteRepositories" ) || key.startsWith( "managedRepositories" ) || key.startsWith(
-                    "repositoryGroups" ) )
+                if ( key.startsWith( "repositories" ) //
+                    || key.startsWith( "proxyConnectors" ) //
+                    || key.startsWith( "networkProxies" ) //
+                    || key.startsWith( "repositoryScanning" ) //
+                    || key.startsWith( "remoteRepositories" ) //
+                    || key.startsWith( "managedRepositories" ) //
+                    || key.startsWith( "repositoryGroups" ) ) //
                 {
                     foundList = true;
                 }
@@ -537,8 +540,6 @@ public class DefaultArchivaConfiguration
         {
             c.setRefreshCronExpression( escapeCronExpression( c.getRefreshCronExpression() ) );
         }
-
-
     }
 
     private Registry createDefaultConfigurationFile()
@@ -558,8 +559,7 @@ public class DefaultArchivaConfiguration
                 throw new RegistryException(
                     "Unable to create configuration file in either user [" + userConfigFilename + "] or alternative ["
                         + altConfigFilename
-                        + "] locations on disk, usually happens when not allowed to write to those locations."
-                );
+                        + "] locations on disk, usually happens when not allowed to write to those locations." );
             }
         }
 

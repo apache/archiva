@@ -62,6 +62,7 @@ public class DefaultRedbackRuntimeConfigurationService
     extends AbstractRestService
     implements RedbackRuntimeConfigurationService
 {
+
     @Inject
     private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
@@ -97,7 +98,12 @@ public class DefaultRedbackRuntimeConfigurationService
     {
         try
         {
-            return redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration();
+            RedbackRuntimeConfiguration redbackRuntimeConfiguration =
+                redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration();
+
+            log.debug( "getRedbackRuntimeConfiguration -> {}", redbackRuntimeConfiguration );
+
+            return redbackRuntimeConfiguration;
         }
         catch ( RepositoryAdminException e )
         {
