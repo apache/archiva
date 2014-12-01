@@ -42,6 +42,10 @@ Release Notes for Archiva ${project.version}
 
 * Compatibility Changes
 
+  * If using the Cassandra backend, the metadatafacet column 'key' has been
+    renamed to 'facetKey' in 2.2.0 so you should copy the data to the new
+    column manually.
+
   * If upgrading from earlier versions of Archiva, the list of libraries in
     <<<wrapper.conf>>> has changed. If you have customized your copy of
     <<<wrapper.conf>>>, please update it for compatibility with the version
