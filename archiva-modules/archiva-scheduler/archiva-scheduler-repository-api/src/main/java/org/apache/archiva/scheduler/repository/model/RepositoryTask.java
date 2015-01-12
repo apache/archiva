@@ -26,8 +26,6 @@ import java.io.File;
 /**
  * DataRefreshTask - task for discovering changes in the repository
  * and updating all associated data.
- *
- *
  */
 public class RepositoryTask
     implements Task
@@ -39,6 +37,22 @@ public class RepositoryTask
     private boolean updateRelatedArtifacts;
 
     private boolean scanAll;
+
+    public RepositoryTask()
+    {
+        // no op
+    }
+
+    public RepositoryTask( String repositoryId )
+    {
+        this.repositoryId = repositoryId;
+    }
+
+    public RepositoryTask( String repositoryId, boolean scanAll )
+    {
+        this.repositoryId = repositoryId;
+        this.scanAll = scanAll;
+    }
 
     public boolean isScanAll()
     {

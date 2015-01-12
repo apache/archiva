@@ -20,6 +20,7 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.rest.api.model.ChecksumSearch;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.SearchService;
 import org.assertj.core.api.Assertions;
@@ -145,8 +146,7 @@ public class SearchServiceTest
         assertNotNull( artifacts );
         assertTrue(
             " not 1 results for Bundle Symbolic Name org.apache.karaf.features.command but " + artifacts.size() + ":"
-                + artifacts, artifacts.size() == 1
-        );
+                + artifacts, artifacts.size() == 1 );
     }
 
     @Test
@@ -201,8 +201,7 @@ public class SearchServiceTest
     @Test
     /**
      * ensure we don't return response for an unknown repo
-     */
-    public void searchWithSearchUnknwownRepoId()
+     */ public void searchWithSearchUnknwownRepoId()
         throws Exception
     {
         SearchService searchService = getSearchService( authorizationHeader );
@@ -221,8 +220,7 @@ public class SearchServiceTest
     @Test
     /**
      * ensure we revert to all observable repos in case of no repo in the request
-     */
-    public void searchWithSearchNoRepos()
+     */ public void searchWithSearchNoRepos()
         throws Exception
     {
         SearchService searchService = getSearchService( authorizationHeader );
@@ -255,8 +253,7 @@ public class SearchServiceTest
     @Test
     /**
      * test we don't return 2 artifacts pom + zip one
-     */
-    public void getSearchArtifactsWithOnlyClassifier()
+     */ public void getSearchArtifactsWithOnlyClassifier()
         throws Exception
     {
         // force guest user creation if not exists
@@ -275,6 +272,39 @@ public class SearchServiceTest
         List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
         log.info( "artifacts: {}", artifacts );
         assertEquals( 1, artifacts.size() );
+    }
+
+    /**
+     * sha1 commons-logging 1.1 ba24d5de831911b684c92cd289ed5ff826271824
+     */
+    @Test
+    public void search_with_sha1()
+        throws Exception
+    {
+        SearchService searchService = getSearchService( authorizationHeader );
+
+        List<Artifact> artifacts = searchService.getArtifactByChecksum(
+            new ChecksumSearch( null, "ba24d5de831911b684c92cd289ed5ff826271824" ) );
+
+        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 1 );
+
+    }
+
+
+    /**
+     * md5 commons-logging 1.1 6b62417e77b000a87de66ee3935edbf5
+     */
+    @Test
+    public void search_with_md5()
+        throws Exception
+    {
+        SearchService searchService = getSearchService( authorizationHeader );
+
+        List<Artifact> artifacts = searchService.getArtifactByChecksum(
+            new ChecksumSearch( null, "6b62417e77b000a87de66ee3935edbf5" ) );
+
+        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 1 );
+
     }
 
     @Before

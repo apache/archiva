@@ -27,7 +27,12 @@ import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.maven2.model.Artifact;
-import org.apache.archiva.rest.api.model.Dependency;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.rest.api.model.ChecksumSearch;
 import org.apache.archiva.rest.api.model.GroupIdList;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.model.StringList;
@@ -42,8 +47,11 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -59,6 +67,9 @@ public class DefaultSearchService
 
     @Inject
     private RepositorySearch repositorySearch;
+
+    @Inject
+    private RepositorySessionFactory repositorySessionFactory;
 
     @Override
     public List<Artifact> quickSearch( String queryString )
@@ -193,16 +204,46 @@ public class DefaultSearchService
 
     }
 
-    public List<Dependency> getDependencies( String groupId, String artifactId, String version )
-        throws ArchivaRestServiceException
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
 
-    public List<Artifact> getArtifactByChecksum( String checksum )
+    public List<Artifact> getArtifactByChecksum( ChecksumSearch checksumSearch )
         throws ArchivaRestServiceException
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+
+        // if no repos set we use ones available for the user
+        if ( checksumSearch.getRepositories() == null || checksumSearch.getRepositories().isEmpty() )
+        {
+            checksumSearch.setRepositories( getObservableRepos() );
+        }
+
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+
+        MetadataRepository metadataRepository = repositorySession.getRepository();
+
+        Set<Artifact> artifactSet = new HashSet<>();
+
+        try
+        {
+            for ( String repoId : checksumSearch.getRepositories() )
+            {
+                Collection<ArtifactMetadata> artifactMetadatas =
+                    metadataRepository.getArtifactsByChecksum( repoId, checksumSearch.getChecksum() );
+                artifactSet.addAll( buildArtifacts( artifactMetadatas, repoId ) );
+            }
+
+            return new ArrayList<>( artifactSet );
+
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            log.error( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.closeQuietly();
+        }
+
+
     }
 
     @Override
@@ -398,6 +439,7 @@ public class DefaultSearchService
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
     }
+
 
     //-------------------------------------
     // internal

@@ -219,6 +219,9 @@ public class DefaultRepositoriesService
             task.setOnlyUpdate( !fullScan );
 
             archivaIndexingTaskExecutor.executeTask( task );
+
+            scheduler.queueTask( new RepositoryTask( repositoryId, fullScan ) );
+
             return Boolean.TRUE;
         }
         catch ( Exception e )

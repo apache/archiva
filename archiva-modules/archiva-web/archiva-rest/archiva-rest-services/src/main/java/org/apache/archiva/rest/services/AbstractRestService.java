@@ -43,6 +43,7 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.services.utils.ArtifactBuilder;
 import org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.security.AccessDeniedException;
 import org.apache.archiva.security.ArchivaSecurityException;
@@ -64,6 +65,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +110,7 @@ public abstract class AbstractRestService
 
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
-    protected DefaultRepositoryArchivaTaskScheduler repositoryTaskScheduler;
+    protected RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
 
     @Inject
@@ -312,7 +314,7 @@ public abstract class AbstractRestService
         }
     }
 
-    protected List<Artifact> buildArtifacts( List<ArtifactMetadata> artifactMetadatas, String repositoryId )
+    protected List<Artifact> buildArtifacts( Collection<ArtifactMetadata> artifactMetadatas, String repositoryId )
         throws ArchivaRestServiceException
     {
         try
