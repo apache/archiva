@@ -35,12 +35,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -63,7 +63,6 @@ public class BrowseServiceTest
 
         return map;
     }
-
 
     @Test
     public void metadatagetthenadd()
@@ -120,9 +119,13 @@ public class BrowseServiceTest
 
         BrowseResult browseResult = browseService.getRootGroups( TEST_REPO_ID );
         assertThat( browseResult ).isNotNull();
-        assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isNotEmpty().hasSize( 3 ).contains(
-            new BrowseResultEntry( "commons-cli", false ), new BrowseResultEntry( "commons-logging", false ),
-            new BrowseResultEntry( "org.apache", false ) );
+        assertThat( browseResult.getBrowseResultEntries() ) //
+            .isNotNull() //
+            .isNotEmpty() //
+            .hasSize( 3 ) //
+            .contains( new BrowseResultEntry( "commons-cli", false ), //
+                       new BrowseResultEntry( "commons-logging", false ), //
+                       new BrowseResultEntry( "org.apache", false ) );
     }
 
     @Test
@@ -133,9 +136,12 @@ public class BrowseServiceTest
 
         BrowseResult browseResult = browseService.browseGroupId( "org.apache", TEST_REPO_ID );
         assertThat( browseResult ).isNotNull();
-        assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isNotEmpty().hasSize( 2 ).contains(
-            new BrowseResultEntry( "org.apache.felix", false ),
-            new BrowseResultEntry( "org.apache.karaf.features", false ) );
+        assertThat( browseResult.getBrowseResultEntries() ) //
+            .isNotNull() //
+            .isNotEmpty() //
+            .hasSize( 2 ) //
+            .contains( new BrowseResultEntry( "org.apache.felix", false ), //
+                       new BrowseResultEntry( "org.apache.karaf.features", false ) );
     }
 
 
@@ -155,9 +161,14 @@ public class BrowseServiceTest
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
         VersionsList versions =
-            browseService.getVersionsList( "org.apache.karaf.features", "org.apache.karaf.features.core", TEST_REPO_ID );
+            browseService.getVersionsList( "org.apache.karaf.features", "org.apache.karaf.features.core",
+                                           TEST_REPO_ID );
         assertThat( versions ).isNotNull();
-        assertThat( versions.getVersions() ).isNotNull().isNotEmpty().hasSize( 2 ).contains( "2.2.1", "2.2.2" );
+        assertThat( versions.getVersions() ) //
+            .isNotNull() //
+            .isNotEmpty() //
+            .hasSize( 2 ) //
+            .contains( "2.2.1", "2.2.2" );
     }
 
     @Test
@@ -166,9 +177,9 @@ public class BrowseServiceTest
     {
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
-        ProjectVersionMetadata metadata = browseService.getProjectVersionMetadata( "org.apache.karaf.features",
-                                                                                   "org.apache.karaf.features.core",
-                                                                                   TEST_REPO_ID );
+        ProjectVersionMetadata metadata =
+            browseService.getProjectVersionMetadata( "org.apache.karaf.features", "org.apache.karaf.features.core",
+                                                     TEST_REPO_ID );
 
         assertThat( metadata ).isNotNull();
     }
@@ -185,8 +196,11 @@ public class BrowseServiceTest
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
-        assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 2 ).contains( new ArtifactContentEntry(
-            "org", false, 0, TEST_REPO_ID ), new ArtifactContentEntry( "META-INF", false, 0, TEST_REPO_ID ) );
+        assertThat( artifactContentEntries ).isNotNull() //
+            .isNotEmpty() //
+            .hasSize( 2 ) //
+            .contains( new ArtifactContentEntry( "org", false, 0, TEST_REPO_ID ), //
+                       new ArtifactContentEntry( "META-INF", false, 0, TEST_REPO_ID ) );
     }
 
     @Test
@@ -201,8 +215,10 @@ public class BrowseServiceTest
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
-        assertThat( artifactContentEntries ).isNotNull().isNotEmpty().hasSize( 1 ).contains(
-            new ArtifactContentEntry( "org/apache", false, 1, TEST_REPO_ID ) );
+        assertThat( artifactContentEntries ).isNotNull() //
+            .isNotEmpty() //
+            .hasSize( 1 ) //
+            .contains( new ArtifactContentEntry( "org/apache", false, 1, TEST_REPO_ID ) );
     }
 
     @Test
@@ -259,7 +275,8 @@ public class BrowseServiceTest
 
         browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", TEST_REPO_ID );
 
-        List<Artifact> artifactDownloadInfos = browseService.getArtifactsByProjectVersionMetadata( "wine", "bordeaux", TEST_REPO_ID );
+        List<Artifact> artifactDownloadInfos =
+            browseService.getArtifactsByProjectVersionMetadata( "wine", "bordeaux", TEST_REPO_ID );
 
         assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 3 );
         // END SNIPPET: get-artifacts-by-project-version-metadata
@@ -274,7 +291,8 @@ public class BrowseServiceTest
 
         browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", TEST_REPO_ID );
 
-        List<Artifact> artifactDownloadInfos = browseService.getArtifactsByProjectVersionMetadata( "wine", "bordeaux", null );
+        List<Artifact> artifactDownloadInfos =
+            browseService.getArtifactsByProjectVersionMetadata( "wine", "bordeaux", null );
 
         assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 3 );
     }
@@ -287,7 +305,8 @@ public class BrowseServiceTest
         // START SNIPPET: get-artifacts-by-property
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
-        List<Artifact> artifactDownloadInfos = browseService.getArtifactsByProperty( "org.name", "The Apache Software Foundation", TEST_REPO_ID );
+        List<Artifact> artifactDownloadInfos =
+            browseService.getArtifactsByProperty( "org.name", "The Apache Software Foundation", TEST_REPO_ID );
 
         assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 7 );
         // END SNIPPET: get-artifacts-by-property
@@ -301,7 +320,8 @@ public class BrowseServiceTest
         // START SNIPPET: search-artifacts
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
-        List<Artifact> artifactDownloadInfos = browseService.searchArtifacts( "The Apache Software Foundation", TEST_REPO_ID, true );
+        List<Artifact> artifactDownloadInfos =
+            browseService.searchArtifacts( "The Apache Software Foundation", TEST_REPO_ID, true );
 
         assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 7 );
         // END SNIPPET: search-artifacts
@@ -315,7 +335,8 @@ public class BrowseServiceTest
         // START SNIPPET: search-artifacts-by-field
         BrowseService browseService = getBrowseService( authorizationHeader, true );
 
-        List<Artifact> artifactDownloadInfos = browseService.searchArtifacts( "org.name", "The Apache Software Foundation", TEST_REPO_ID, true );
+        List<Artifact> artifactDownloadInfos =
+            browseService.searchArtifacts( "org.name", "The Apache Software Foundation", TEST_REPO_ID, true );
 
         assertThat( artifactDownloadInfos ).isNotNull().isNotEmpty().hasSize( 7 );
         // END SNIPPET: search-artifacts-by-field
