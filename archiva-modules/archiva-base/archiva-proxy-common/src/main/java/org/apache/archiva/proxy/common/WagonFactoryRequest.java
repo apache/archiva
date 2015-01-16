@@ -153,4 +153,15 @@ public class WagonFactoryRequest
         result = 31 * result + ( userAgent != null ? userAgent.hashCode() : 0 );
         return result;
     }
+
+    @Override
+    public String toString()
+    {
+        return "WagonFactoryRequest{" +
+            "protocol='" + protocol + '\'' +
+            ", headers=" + headers +
+            ", userAgent='" + userAgent + '\'' +
+            ", networkProxy=" + networkProxy +
+            '}';
+    }
 }

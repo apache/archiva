@@ -189,7 +189,7 @@ public class NetworkProxy
         sb.append( ", host='" ).append( host ).append( '\'' );
         sb.append( ", port=" ).append( port );
         sb.append( ", username='" ).append( username ).append( '\'' );
-        sb.append( ", password='" ).append( password ).append( '\'' );
+        //sb.append( ", password='" ).append( password ).append( '\'' );
         sb.append( ", useNtlm=" ).append( useNtlm );
         sb.append( '}' );
         return sb.toString();
