@@ -1398,8 +1398,9 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     // #browse~internal/org.apache.maven
     // or #artifact~snapshots/org.apache.maven.plugins/maven-compiler-plugin
     var currentHash=window.location.hash;
-    $.log("currentHash:"+currentHash);
+    //$.log("currentHash:"+currentHash);
     var newLocation = currentHash.substringBeforeFirst("/");
+    //$.log("changeBrowseRepository newLocation:"+newLocation);
     // maybe the current hash contains a repositoryId so remove it
     if (newLocation.indexOf("~")>-1){
       newLocation=currentHash.substringBeforeFirst("~");
@@ -1407,7 +1408,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
     if (selectedRepository){
       newLocation+="~"+selectedRepository;
     }
-    if (currentHash.contains("/")) {
+    if (currentHash.indexOf("/")>-1) {
         // MRM-1767 
         // from all to internal
         // #browse -> #browse~internal
