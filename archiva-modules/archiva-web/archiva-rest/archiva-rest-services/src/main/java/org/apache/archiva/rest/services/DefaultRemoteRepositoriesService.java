@@ -25,26 +25,20 @@ import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.proxy.common.WagonFactory;
-import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.wagon.ResourceDoesNotExistException;
-import org.apache.maven.wagon.StreamWagon;
 import org.apache.maven.wagon.TransferFailedException;
 import org.apache.maven.wagon.Wagon;
-import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.providers.http.AbstractHttpClientWagon;
 import org.apache.maven.wagon.providers.http.HttpConfiguration;
 import org.apache.maven.wagon.providers.http.HttpMethodConfiguration;
-import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.apache.maven.wagon.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -172,9 +166,9 @@ public class DefaultRemoteRepositoriesService
 
             String wagonProtocol = new URL( remoteRepository.getUrl() ).getProtocol();
 
-            final Wagon wagon = wagonFactory.getWagon(
-                new WagonFactoryRequest( wagonProtocol, remoteRepository.getExtraHeaders() ).networkProxy(
-                    networkProxy ) );
+            final Wagon wagon =
+                wagonFactory.getWagon( new WagonFactoryRequest( wagonProtocol, remoteRepository.getExtraHeaders() ) //
+                                           .networkProxy( networkProxy ) );
 
             // hardcoded value as it's a check of the remote repo connectivity
             wagon.setReadTimeout( 4000 );
@@ -182,11 +176,10 @@ public class DefaultRemoteRepositoriesService
 
             if ( wagon instanceof AbstractHttpClientWagon )
             {
-                HttpConfiguration httpConfiguration = new HttpConfiguration();
-                HttpMethodConfiguration httpMethodConfiguration = new HttpMethodConfiguration();
-                httpMethodConfiguration.setUsePreemptive( true );
-                httpMethodConfiguration.setReadTimeout( 4000 );
-                httpConfiguration.setGet( httpMethodConfiguration );
+                HttpMethodConfiguration httpMethodConfiguration = new HttpMethodConfiguration() //
+                    .setUsePreemptive( true ) //
+                    .setReadTimeout( 4000 );
+                HttpConfiguration httpConfiguration = new HttpConfiguration().setGet( httpMethodConfiguration );
                 AbstractHttpClientWagon.class.cast( wagon ).setHttpConfiguration( httpConfiguration );
             }
 
