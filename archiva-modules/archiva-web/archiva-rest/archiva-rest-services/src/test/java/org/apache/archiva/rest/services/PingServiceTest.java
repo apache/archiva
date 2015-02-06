@@ -20,10 +20,11 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.rest.api.services.PingService;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import javax.ws.rs.ForbiddenException;
 
 /**
  * @author Olivier Lamy
@@ -45,7 +46,7 @@ public class PingServiceTest
         assertEquals( "Yeah Baby It rocks!", res );
     }
 
-    @Test( expected = ServerWebApplicationException.class )
+    @Test( expected = ForbiddenException.class )
     public void pingWithAuthzFailed()
         throws Exception
     {
@@ -55,9 +56,9 @@ public class PingServiceTest
             String res = getPingService().pingWithAuthz();
             fail( "not in exception" );
         }
-        catch ( ServerWebApplicationException e )
+        catch ( ForbiddenException e )
         {
-            assertEquals( 403, e.getStatus() );
+            assertEquals( 403, e.getResponse().getStatus() );
             throw e;
         }
     }

@@ -82,6 +82,8 @@ public class BypassSecuritySystem
         return new AuthorizationResult( true, session.getUser(), null );
     }
 
+
+
     @Override
     public String getAuthenticatorId()
     {

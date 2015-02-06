@@ -71,7 +71,7 @@
     <redback.registry.version>2.4-SNAPSHOT</redback.registry.version>
     <redback.spring-utils.version>2.1</redback.spring-utils.version>
     <redback.taskqueue.version>2.1</redback.taskqueue.version>
-    <slf4j.version>1.7.7</slf4j.version>
+    <slf4j.version>1.7.10</slf4j.version>
     <log4j.version>2.1</log4j.version>
 
     <spring.version>4.1.4.RELEASE</spring.version>
@@ -85,7 +85,7 @@
 
     <sirona.version>0.1-incubating</sirona.version>
 
-    <cxfVersion>2.6.15</cxfVersion>
+    <cxf.version>3.0.3</cxf.version>
     <derbyVersion>10.10.1.1</derbyVersion>
     <httpclient.version>4.3.6</httpclient.version>
     <httpclient.core.version>4.4</httpclient.core.version>
@@ -562,22 +562,20 @@
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-bundle-jaxrs</artifactId>
-        <version>${cxfVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.codehaus.jettison</groupId>
-            <artifactId>jettison</artifactId>
-          </exclusion>
-        </exclusions>
+        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-rs-client</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-rs-extension-providers</artifactId>
+        <version>${cxf.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
@@ -1260,6 +1258,12 @@
         <artifactId>slf4j-log4j12</artifactId>
         <version>${slf4j.version}</version>
         <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+        <scope>test</scope>
       </dependency>
 
       <dependency>

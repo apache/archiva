@@ -104,6 +104,13 @@ public class SecuritySystemStub
         return result;
     }
 
+    @Override
+    public AuthorizationResult authorize( User user, String permission, String resource )
+        throws AuthorizationException
+    {
+        return null;
+    }
+
     public String getAuthenticatorId()
     {
         return null;

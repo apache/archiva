@@ -29,12 +29,13 @@ import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.commons.io.FileUtils;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 
+import javax.ws.rs.ForbiddenException;
 import java.io.File;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -43,7 +44,7 @@ public class RepositoriesServiceTest
     extends AbstractArchivaRestTest
 {
 
-    @Test ( expected = ServerWebApplicationException.class )
+    @Test( expected = ForbiddenException.class )
     public void scanRepoKarmaFailed()
         throws Exception
     {
@@ -52,9 +53,9 @@ public class RepositoriesServiceTest
         {
             service.scanRepository( "id", true );
         }
-        catch ( ServerWebApplicationException e )
+        catch ( ForbiddenException e )
         {
-            assertEquals( 403, e.getStatus() );
+            assertEquals( 403, e.getResponse().getStatus() );
             throw e;
         }
     }
@@ -79,7 +80,7 @@ public class RepositoriesServiceTest
         assertTrue( service.scanRepository( repoId, true ) );
     }
 
-    @Test ( expected = ServerWebApplicationException.class )
+    @Test( expected = ForbiddenException.class )
     public void deleteArtifactKarmaFailed()
         throws Exception
     {
@@ -96,15 +97,15 @@ public class RepositoriesServiceTest
 
             repositoriesService.deleteArtifact( artifact );
         }
-        catch ( ServerWebApplicationException e )
+        catch ( ForbiddenException e )
         {
-            assertEquals( 403, e.getStatus() );
+            assertEquals( 403, e.getResponse().getStatus() );
             throw e;
 
         }
     }
 
-    @Test ( expected = ServerWebApplicationException.class )
+    @Test( expected = ForbiddenException.class )
     public void deleteWithRepoNull()
         throws Exception
     {
@@ -121,9 +122,9 @@ public class RepositoriesServiceTest
 
             repositoriesService.deleteArtifact( artifact );
         }
-        catch ( ServerWebApplicationException e )
+        catch ( ForbiddenException e )
         {
-            assertEquals( "not http 400 status", 400, e.getStatus() );
+            assertEquals( "not http 400 status", 400, e.getResponse().getStatus() );
             throw e;
         }
     }

@@ -87,17 +87,7 @@
     <!-- normally not needed but here for wadl feature currently in cxf -->
     <dependency>
       <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-bundle-jaxrs</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>jetty-server</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
     </dependency>
 
   </dependencies>
