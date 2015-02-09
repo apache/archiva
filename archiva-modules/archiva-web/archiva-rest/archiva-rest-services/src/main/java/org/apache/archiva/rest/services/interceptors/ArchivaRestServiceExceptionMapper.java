@@ -36,10 +36,31 @@ public class ArchivaRestServiceExceptionMapper
     implements ExceptionMapper<ArchivaRestServiceException>
 {
     @Override
-    public Response toResponse( ArchivaRestServiceException e )
+    public Response toResponse( final ArchivaRestServiceException e )
     {
         ArchivaRestError restError = new ArchivaRestError( e );
-        Response.ResponseBuilder responseBuilder = Response.status( e.getHttpErrorCode() ).entity( restError );
-        return responseBuilder.build();
+        Response response = //
+            Response.status( new Response.StatusType()
+            {
+                @Override
+                public int getStatusCode()
+                {
+                    return Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+                }
+
+                @Override
+                public Response.Status.Family getFamily()
+                {
+                    return Response.Status.Family.SERVER_ERROR;
+                }
+
+                @Override
+                public String getReasonPhrase()
+                {
+                    return e.getMessage();
+                }
+            } ).build();
+
+        return response;
     }
 }
