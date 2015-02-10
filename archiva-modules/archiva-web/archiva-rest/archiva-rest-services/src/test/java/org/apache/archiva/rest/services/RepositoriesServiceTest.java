@@ -31,7 +31,9 @@ import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.util.List;
 
@@ -105,7 +107,7 @@ public class RepositoriesServiceTest
         }
     }
 
-    @Test( expected = ForbiddenException.class )
+    @Test( expected = BadRequestException.class )
     public void deleteWithRepoNull()
         throws Exception
     {
@@ -122,9 +124,10 @@ public class RepositoriesServiceTest
 
             repositoriesService.deleteArtifact( artifact );
         }
-        catch ( ForbiddenException e )
+        catch ( BadRequestException e )
         {
-            assertEquals( "not http 400 status", 400, e.getResponse().getStatus() );
+            assertEquals( "not http " + Response.Status.BAD_REQUEST.getStatusCode() + " status",
+                          Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus() );
             throw e;
         }
     }

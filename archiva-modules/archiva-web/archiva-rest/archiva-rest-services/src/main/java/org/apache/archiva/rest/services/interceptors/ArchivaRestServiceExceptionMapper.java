@@ -45,13 +45,13 @@ public class ArchivaRestServiceExceptionMapper
                 @Override
                 public int getStatusCode()
                 {
-                    return Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+                    return e.getHttpErrorCode();
                 }
 
                 @Override
                 public Response.Status.Family getFamily()
                 {
-                    return Response.Status.Family.SERVER_ERROR;
+                    return Response.Status.Family.familyOf( e.getHttpErrorCode() );
                 }
 
                 @Override
@@ -59,7 +59,9 @@ public class ArchivaRestServiceExceptionMapper
                 {
                     return e.getMessage();
                 }
-            } ).build();
+            } )//
+                .entity( restError ) //
+                .build();
 
         return response;
     }
