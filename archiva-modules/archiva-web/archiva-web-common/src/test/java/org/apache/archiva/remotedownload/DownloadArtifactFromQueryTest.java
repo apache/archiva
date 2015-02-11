@@ -137,12 +137,6 @@ public class DownloadArtifactFromQueryTest
                 getSearchService().redirectToArtifactFile( null, "org.apache.archiva", "archiva-test", "1.0", null,
                                                            null );
 
-            Assert.assertEquals( Response.Status.TEMPORARY_REDIRECT.getStatusCode(), response.getStatus() );
-
-            //String location = String.class.cast( response.getMetadata().get( "Location" ).get( 0 ) );
-
-            //Assert.assertEquals( "http://localhost:" + port + "/repository/" + id
-            //                         + "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar", location );
         }
         catch ( RedirectionException e )
         {
@@ -170,15 +164,6 @@ public class DownloadArtifactFromQueryTest
             Response response =
                 getSearchService().redirectToArtifactFile( null, "org.apache.archiva", "archiva-test", "LATEST", null,
                                                            null );
-
-            Assert.assertEquals( Response.Status.TEMPORARY_REDIRECT.getStatusCode(), response.getStatus() );
-
-            String location = String.class.cast( response.getMetadata().get( "Location" ).get( 0 ) );
-
-            /// http://localhost:57168/repository/1400639145722/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar
-
-            //Assert.assertEquals( "http://localhost:" + port + "/repository/" + id
-            //                         + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar", location );
 
         }
         catch ( RedirectionException e )
