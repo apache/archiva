@@ -23,6 +23,7 @@ import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
+import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -30,9 +31,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.ws.rs.RedirectionException;
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -121,7 +124,7 @@ public class DownloadArtifactFromQueryTest
 
     }
 
-    @Test
+    @Test( expected = RedirectionException.class )
     public void downloadFixedVersion()
         throws Exception
     {
@@ -136,10 +139,17 @@ public class DownloadArtifactFromQueryTest
 
             Assert.assertEquals( Response.Status.TEMPORARY_REDIRECT.getStatusCode(), response.getStatus() );
 
-            String location = String.class.cast( response.getMetadata().get( "Location" ).get( 0 ) );
+            //String location = String.class.cast( response.getMetadata().get( "Location" ).get( 0 ) );
 
-            Assert.assertEquals( "http://localhost:" + port + "/repository/" + id
-                                     + "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar", location );
+            //Assert.assertEquals( "http://localhost:" + port + "/repository/" + id
+            //                         + "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar", location );
+        }
+        catch ( RedirectionException e )
+        {
+            Assertions.assertThat( e.getLocation().compareTo( new URI( "http://localhost:" + port + "/repository/" + id
+                                                                           + "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) ) ).isEqualTo(
+                0 );
+            throw e;
         }
         finally
         {
@@ -149,7 +159,7 @@ public class DownloadArtifactFromQueryTest
     }
 
 
-    @Test
+    @Test( expected = RedirectionException.class )
     public void downloadLatestVersion()
         throws Exception
     {
@@ -167,10 +177,16 @@ public class DownloadArtifactFromQueryTest
 
             /// http://localhost:57168/repository/1400639145722/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar
 
-            Assert.assertEquals( "http://localhost:" + port + "/repository/" + id
-                                     + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar", location );
+            //Assert.assertEquals( "http://localhost:" + port + "/repository/" + id
+            //                         + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar", location );
 
-
+        }
+        catch ( RedirectionException e )
+        {
+            Assertions.assertThat( e.getLocation().compareTo( new URI( "http://localhost:" + port + "/repository/" + id
+                                                                           + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) ) ).isEqualTo(
+                0 );
+            throw e;
         }
         finally
         {
