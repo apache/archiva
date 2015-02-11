@@ -52,8 +52,7 @@ public class DownloadArtifactFromQueryTest
         previousAppServerBase = System.getProperty( "appserver.base" );
         System.setProperty( "appserver.base",
                             new File( System.getProperty( "java.io.tmpdir" ) ).getCanonicalPath() + "/target/"
-                                + DownloadArtifactFromQueryTest.class.getName()
-        );
+                                + DownloadArtifactFromQueryTest.class.getName() );
     }
 
     @AfterClass
@@ -139,11 +138,8 @@ public class DownloadArtifactFromQueryTest
 
             String location = String.class.cast( response.getMetadata().get( "Location" ).get( 0 ) );
 
-            /// http://localhost:57168/repository/1400639145722/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar
-
             Assert.assertEquals( "http://localhost:" + port + "/repository/" + id
-                                     + "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar", location
-            );
+                                     + "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar", location );
         }
         finally
         {
@@ -172,8 +168,7 @@ public class DownloadArtifactFromQueryTest
             /// http://localhost:57168/repository/1400639145722/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar
 
             Assert.assertEquals( "http://localhost:" + port + "/repository/" + id
-                                     + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar", location
-            );
+                                     + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar", location );
 
 
         }
@@ -193,8 +188,8 @@ public class DownloadArtifactFromQueryTest
         try
         {
             Response response =
-                getSearchService().redirectToArtifactFile( null, "org.apache.archiva.beer", "archiva-wine", "LATEST", null,
-                                                           null );
+                getSearchService().redirectToArtifactFile( null, "org.apache.archiva.beer", "archiva-wine", "LATEST",
+                                                           null, null );
 
             Assert.assertEquals( Response.Status.NO_CONTENT.getStatusCode(), response.getStatus() );
 
