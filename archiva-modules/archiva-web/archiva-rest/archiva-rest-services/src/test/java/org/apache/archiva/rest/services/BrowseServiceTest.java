@@ -89,26 +89,34 @@ public class BrowseServiceTest
     public void metadatagetthenaddthendelete()
         throws Exception
     {
-        scanRepo( TEST_REPO_ID );
+        try
+        {
+            scanRepo( TEST_REPO_ID );
 
-        BrowseService browseService = getBrowseService( authorizationHeader, false );
+            BrowseService browseService = getBrowseService( authorizationHeader, false );
 
-        Map<String, String> metadatas =
-            toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", TEST_REPO_ID ) );
+            Map<String, String> metadatas =
+                toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", TEST_REPO_ID ) );
 
-        assertThat( metadatas ).isNotNull().isEmpty();
+            assertThat( metadatas ).isNotNull().isEmpty();
 
-        browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", TEST_REPO_ID );
+            browseService.addMetadata( "commons-cli", "commons-cli", "1.0", "wine", "bordeaux", TEST_REPO_ID );
 
-        metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", TEST_REPO_ID ) );
+            metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", TEST_REPO_ID ) );
 
-        assertThat( metadatas ).isNotNull().isNotEmpty().contains( MapEntry.entry( "wine", "bordeaux" ) );
+            assertThat( metadatas ).isNotNull().isNotEmpty().contains( MapEntry.entry( "wine", "bordeaux" ) );
 
-        browseService.deleteMetadata( "commons-cli", "commons-cli", "1.0", "wine", TEST_REPO_ID );
+            browseService.deleteMetadata( "commons-cli", "commons-cli", "1.0", "wine", TEST_REPO_ID );
 
-        metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", TEST_REPO_ID ) );
+            metadatas = toMap( browseService.getMetadatas( "commons-cli", "commons-cli", "1.0", TEST_REPO_ID ) );
 
-        assertThat( metadatas ).isNotNull().isEmpty();
+            assertThat( metadatas ).isNotNull().isEmpty();
+        }
+        catch ( ArchivaRestServiceException e )
+        {
+            log.error( e.getMessage(), e );
+            throw e;
+        }
     }
 
     @Test

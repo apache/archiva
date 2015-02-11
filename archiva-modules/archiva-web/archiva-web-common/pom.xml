@@ -266,7 +266,12 @@
           <artifactId>slf4j-simple</artifactId>
         </exclusion>
       </exclusions>
-    </dependency> 
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http</artifactId>
