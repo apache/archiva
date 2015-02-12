@@ -22,8 +22,6 @@ package org.apache.archiva.repository.content.maven2;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.PathParser;
-import org.apache.archiva.repository.content.legacy.LegacyPathParser;
-import org.apache.archiva.repository.content.legacy.ManagedLegacyRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.commons.lang.StringUtils;
@@ -36,11 +34,9 @@ public class RepositoryRequest
 {
     private PathParser defaultPathParser = new DefaultPathParser();
 
-    private PathParser legacyPathParser;
-
-    public RepositoryRequest( LegacyPathParser legacyPathParser )
+    public RepositoryRequest()
     {
-        this.legacyPathParser = legacyPathParser;
+        // no op
     }
 
     /**
@@ -77,7 +73,7 @@ public class RepositoryRequest
         }
         else if ( isLegacy( path ) )
         {
-            return legacyPathParser.toArtifactReference( path );
+            throw new LayoutException( "Legacy Maven1 repository not supported anymore." );
         }
         else
         {
@@ -264,11 +260,6 @@ public class RepositoryRequest
 
         if ( isMetadata( referencedResource ) )
         {
-            if ( repository instanceof ManagedLegacyRepositoryContent )
-            {
-                throw new LayoutException( "Cannot translate metadata request to legacy layout." );
-            }
-
             /* Nothing to translate.
              * Default layout is the only layout that can contain maven-metadata.xml files, and
              * if the managedRepository is layout legacy, this request would never occur.

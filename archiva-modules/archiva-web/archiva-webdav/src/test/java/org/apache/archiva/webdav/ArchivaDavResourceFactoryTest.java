@@ -36,7 +36,6 @@ import org.apache.archiva.proxy.DefaultRepositoryProxyConnectors;
 import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
-import org.apache.archiva.repository.content.legacy.LegacyPathParser;
 import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.content.maven2.RepositoryRequest;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -460,7 +459,7 @@ public class ArchivaDavResourceFactoryTest
         ManagedRepositoryContent internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
 
         // use actual object (this performs the isMetadata, isDefault and isSupportFile check!)
-        RepositoryRequest repoRequest = new RepositoryRequest( new LegacyPathParser( this.archivaConfiguration ) );
+        RepositoryRequest repoRequest = new RepositoryRequest( );
         resourceFactory.setRepositoryRequest( repoRequest );
 
         try
@@ -521,7 +520,7 @@ public class ArchivaDavResourceFactoryTest
         ManagedRepositoryContent internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
 
         // use actual object (this performs the isMetadata, isDefault and isSupportFile check!)
-        RepositoryRequest repoRequest = new RepositoryRequest( new LegacyPathParser( this.archivaConfiguration ) );
+        RepositoryRequest repoRequest = new RepositoryRequest( );
         resourceFactory.setRepositoryRequest( repoRequest );
 
         try
@@ -572,7 +571,7 @@ public class ArchivaDavResourceFactoryTest
         ManagedRepositoryContent legacyRepo = createManagedRepositoryContent( LEGACY_REPO );
 
         // use actual object (this performs the isMetadata, isDefault and isSupportFile check!)
-        RepositoryRequest repoRequest = new RepositoryRequest( new LegacyPathParser( this.archivaConfiguration ) );
+        RepositoryRequest repoRequest = new RepositoryRequest( );
         resourceFactory.setRepositoryRequest( repoRequest );
 
         try

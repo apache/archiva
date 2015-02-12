@@ -51,14 +51,6 @@ public interface ArchivaAdministrationService
     List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws ArchivaRestServiceException;
 
-    @Path( "addLegacyArtifactPath" )
-    @POST
-    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath )
-        throws ArchivaRestServiceException;
-
     @Path( "deleteLegacyArtifactPath" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )

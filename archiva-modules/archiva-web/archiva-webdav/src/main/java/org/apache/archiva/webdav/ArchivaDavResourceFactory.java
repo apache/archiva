@@ -62,7 +62,6 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
-import org.apache.archiva.repository.content.legacy.LegacyPathParser;
 import org.apache.archiva.repository.content.maven2.RepositoryRequest;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.repository.layout.LayoutException;
@@ -201,7 +200,7 @@ public class ArchivaDavResourceFactory
         this.digestSha1 = plexusSisuBridge.lookup( Digester.class, "sha1" );
 
         // TODO remove this hard dependency on maven !!
-        repositoryRequest = new RepositoryRequest( new LegacyPathParser( archivaConfiguration ) );
+        repositoryRequest = new RepositoryRequest( );
     }
 
     @PostConstruct

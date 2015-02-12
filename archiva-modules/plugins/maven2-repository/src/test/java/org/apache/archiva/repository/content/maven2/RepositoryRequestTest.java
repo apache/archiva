@@ -24,7 +24,6 @@ import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.content.legacy.LegacyPathParser;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang.StringUtils;
@@ -43,9 +42,9 @@ import static org.junit.Assert.*;
 /**
  * RepositoryRequestTest
  */
-@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration (
-    { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-repo-request-test.xml" } )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( { "classpath*:/META-INF/spring-context.xml",
+    "classpath:/spring-context-repo-request-test.xml" } )
 public class RepositoryRequestTest
 {
 
@@ -53,7 +52,7 @@ public class RepositoryRequestTest
     protected ApplicationContext applicationContext;
 
     @Inject
-    @Named ( "archivaConfiguration#repo-request-test" )
+    @Named( "archivaConfiguration#repo-request-test" )
     private ArchivaConfiguration archivaConfiguration;
 
     private RepositoryRequest repoRequest;
@@ -62,8 +61,7 @@ public class RepositoryRequestTest
     public void setUp()
         throws Exception
     {
-        LegacyPathParser legacyPathParser = new LegacyPathParser( archivaConfiguration );
-        repoRequest = new RepositoryRequest( legacyPathParser );
+        repoRequest = new RepositoryRequest();
     }
 
     @Test
@@ -84,11 +82,6 @@ public class RepositoryRequestTest
         assertInvalidRequest( "groupId/jars/-1.0.jar" );
     }
 
-    @Test
-    public void testInvalidLegacyRequestBadLocation()
-    {
-        assertInvalidRequest( "org.apache.maven.test/jars/artifactId-1.0.war" );
-    }
 
     @Test
     public void testInvalidRequestTooShort()
@@ -102,7 +95,7 @@ public class RepositoryRequestTest
         assertInvalidRequest( "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar" );
     }
 
-    @Test
+    @Test( expected = LayoutException.class )
     public void testValidLegacyGanymed()
         throws Exception
     {
@@ -118,7 +111,7 @@ public class RepositoryRequestTest
                      "ganymed-ssh2", "build210", null, "jar" );
     }
 
-    @Test
+    @Test( expected = LayoutException.class )
     public void testValidLegacyJavaxComm()
         throws Exception
     {
@@ -132,7 +125,7 @@ public class RepositoryRequestTest
         assertValid( "javax/comm/3.0-u1/comm-3.0-u1.jar", "javax", "comm", "3.0-u1", null, "jar" );
     }
 
-    @Test
+    @Test( expected = LayoutException.class )
     public void testValidLegacyJavaxPersistence()
         throws Exception
     {
@@ -148,7 +141,7 @@ public class RepositoryRequestTest
                      "3.0-public_review", null, "jar" );
     }
 
-    @Test
+    @Test( expected = LayoutException.class )
     public void testValidLegacyMavenTestPlugin()
         throws Exception
     {
@@ -163,7 +156,7 @@ public class RepositoryRequestTest
                      null, "pom" );
     }
 
-    @Test
+    @Test( expected = LayoutException.class )
     public void testValidLegacyCommonsLangJavadoc()
         throws Exception
     {
@@ -179,7 +172,7 @@ public class RepositoryRequestTest
                      "2.1", "javadoc", "javadoc" );
     }
 
-    @Test
+    @Test( expected = LayoutException.class )
     public void testValidLegacyDerbyPom()
         throws Exception
     {
@@ -197,7 +190,7 @@ public class RepositoryRequestTest
                      null, "pom" );
     }
 
-    @Test
+    @Test( expected = LayoutException.class )
     public void testValidLegacyGeronimoEjbSpec()
         throws Exception
     {
@@ -213,7 +206,7 @@ public class RepositoryRequestTest
                      "org.apache.geronimo.specs", "geronimo-ejb_2.1_spec", "1.0.1", null, "jar" );
     }
 
-    @Test
+    @Test( expected = LayoutException.class )
     public void testValidLegacyLdapSnapshot()
         throws Exception
     {
@@ -229,7 +222,7 @@ public class RepositoryRequestTest
                      "directory-clients", "ldap-clients", "0.9.1-SNAPSHOT", null, "pom" );
     }
 
-    @Test
+    @Test( expected = LayoutException.class )
     public void testValidLegacyTestArchSnapshot()
         throws Exception
     {
@@ -245,7 +238,7 @@ public class RepositoryRequestTest
                      "test-arch", "2.0.3-SNAPSHOT", null, "pom" );
     }
 
-    @Test
+    @Test( expected = LayoutException.class )
     public void testValidLegacyOddDottedArtifactId()
         throws Exception
     {
@@ -261,7 +254,7 @@ public class RepositoryRequestTest
                      "com.company.department", "com.company.department.project", "0.2", null, "pom" );
     }
 
-    @Test
+    @Test( expected = LayoutException.class )
     public void testValidLegacyTimestampedSnapshot()
         throws Exception
     {
@@ -394,22 +387,6 @@ public class RepositoryRequestTest
                                                 repository ) );
     }
 
-    /**
-     * [MRM-481] Artifact requests with a .xml.zip extension fail with a 404 Error
-     */
-    @Test
-    public void testToNativePathArtifactLegacyToDefaultDualExtension()
-        throws Exception
-    {
-        ManagedRepositoryContent repository = createManagedRepo( "default" );
-
-        // TODO: this is a good test case for maven 1 -> maven 2 link, since m2 doesn't support the distribution-zip type
-
-        // Test (artifact) legacy to default - dual extension
-        // NOTE: The detection of a dual extension is flawed.
-        assertEquals( "org/project/example-presentation/3.2.xml/example-presentation-3.2.xml.zip",
-                      repoRequest.toNativePath( "org.project/zips/example-presentation-3.2.xml.zip", repository ) );
-    }
 
     @Test
     public void testToNativePathMetadataDefaultToDefault()
@@ -423,71 +400,6 @@ public class RepositoryRequestTest
                                                 repository ) );
     }
 
-    @Test
-    public void testNativePathPomLegacyToDefault()
-        throws Exception
-    {
-        ManagedRepositoryContent repository = createManagedRepo( "default" );
-
-        // Test (pom) legacy to default
-        assertEquals( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0.pom",
-                      repoRequest.toNativePath( "org.apache.derby/poms/derby-10.2.2.0.pom", repository ) );
-    }
-
-    @Test
-    public void testNativePathPomLegacyToLegacy()
-        throws Exception
-    {
-        ManagedRepositoryContent repository = createManagedRepo( "legacy" );
-
-        // Test (pom) legacy to default
-        assertEquals( "org.apache.derby/poms/derby-10.2.2.0.pom",
-                      repoRequest.toNativePath( "org.apache.derby/poms/derby-10.2.2.0.pom", repository ) );
-    }
-
-    @Test
-    public void testNativePathPomLegacyToDefaultEjb()
-        throws Exception
-    {
-        ManagedRepositoryContent repository = createManagedRepo( "default" );
-
-        // Test (pom) legacy to default
-        String result = repoRequest.toNativePath( "mygroup/ejbs/myejb-1.0.jar", repository );
-        assertEquals( "mygroup/myejb/1.0/myejb-1.0.jar", result );
-    }
-
-    @Test
-    public void testNativePathPomLegacyToLegacyEjb()
-        throws Exception
-    {
-        ManagedRepositoryContent repository = createManagedRepo( "legacy" );
-
-        // Test (pom) legacy to default
-        assertEquals( "mygroup/ejbs/myejb-1.0.jar",
-                      repoRequest.toNativePath( "mygroup/ejbs/myejb-1.0.jar", repository ) );
-    }
-
-    @Test
-    public void testNativePathPomLegacyToLegacyStrutsModule()
-        throws Exception
-    {
-        ManagedRepositoryContent repository = createManagedRepo( "legacy" );
-
-        // Test (pom) legacy to default
-        assertEquals( "WebPortal/struts-modules/eventsDB-1.2.3.struts-module",
-                      repoRequest.toNativePath( "WebPortal/struts-modules/eventsDB-1.2.3.struts-module", repository ) );
-    }
-
-    @Test
-    public void testNativePathSupportFileLegacyToDefault()
-        throws Exception
-    {
-        ManagedRepositoryContent repository = createManagedRepo( "default" );
-
-        // Test (supportfile) legacy to default
-        assertEquals( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0.jar.sha1",
-                      repoRequest.toNativePath( "org.apache.derby/jars/derby-10.2.2.0.jar.sha1", repository ) );
-    }
 
     @Test
     public void testNativePathBadRequestTooShort()
@@ -561,48 +473,6 @@ public class RepositoryRequestTest
         }
     }
 
-    @Test
-    public void testToNativePathLegacyMetadataDefaultToLegacy()
-        throws Exception
-    {
-        ManagedRepositoryContent repository = createManagedRepo( "legacy" );
-
-        // Test (metadata) default to legacy
-
-        // Special Case: This direction is not supported, should throw a LayoutException.
-        try
-        {
-            repoRequest.toNativePath( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml", repository );
-            fail( "Should have thrown a LayoutException, can't translate a maven-metadata.xml to a legacy layout." );
-        }
-        catch ( LayoutException e )
-        {
-            // expected path.
-        }
-    }
-
-    @Test
-    public void testNativePathPomDefaultToLegacy()
-        throws Exception
-    {
-        ManagedRepositoryContent repository = createManagedRepo( "legacy" );
-
-        // Test (pom) default to legacy
-        assertEquals( "org.apache.derby/poms/derby-10.2.2.0.pom",
-                      repoRequest.toNativePath( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0.pom", repository ) );
-    }
-
-    @Test
-    public void testNativePathSupportFileDefaultToLegacy()
-        throws Exception
-    {
-        ManagedRepositoryContent repository = createManagedRepo( "legacy" );
-
-        // Test (supportfile) default to legacy
-        assertEquals( "org.apache.derby/jars/derby-10.2.2.0.jar.sha1",
-                      repoRequest.toNativePath( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0.jar.sha1",
-                                                repository ) );
-    }
 
     private void assertValid( String path, String groupId, String artifactId, String version, String classifier,
                               String type )
