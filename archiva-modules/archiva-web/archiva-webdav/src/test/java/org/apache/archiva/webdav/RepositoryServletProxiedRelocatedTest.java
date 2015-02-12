@@ -72,7 +72,7 @@ public class RepositoryServletProxiedRelocatedTest
         WebResponse response = getServletUnitClient().getResponse( request );
 
         // --- Verification
-        assertResponseOK( response );
-        assertEquals( "Expected remote file contents", expectedRemoteContents, response.getContentAsString() );
+        assertResponseNotFound( response );
+
     }
 }

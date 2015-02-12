@@ -229,9 +229,7 @@ public class RepositoryServletNoProxyTest
         //WebRequest request = new GetMethodWebRequest(
         //    "http://machine.com/repository/internal/" + "commons-lang/jars/commons-lang-2.1-SNAPSHOT.jar" );
         WebResponse response = getWebResponse( "/repository/internal/commons-lang/jars/commons-lang-2.1-SNAPSHOT.jar" );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", expectedArtifactContents, response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     @Test
