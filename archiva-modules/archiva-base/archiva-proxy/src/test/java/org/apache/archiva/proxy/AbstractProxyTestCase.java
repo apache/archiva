@@ -70,8 +70,8 @@ import static org.junit.Assert.*;
 /**
  * AbstractProxyTestCase
  */
-@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractProxyTestCase
 {
     @Inject
@@ -136,7 +136,6 @@ public abstract class AbstractProxyTestCase
         // Setup source repository (using default layout)
         String name = getClass().getSimpleName();
         String repoPath = "target/test-repository/managed/" + name;
-        File repoLocation = new File( repoPath );
 
         managedDefaultRepository =
             createRepository( ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath, "default" );
@@ -153,7 +152,14 @@ public abstract class AbstractProxyTestCase
         // to prevent windauze file leaking
         removeMavenIndexes();
 
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository( repoConfig, false, null );
+        ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
+
+        if ( managedRepositoryAdmin.getManagedRepository( repoConfig.getId() ) != null )
+        {
+            managedRepositoryAdmin.deleteManagedRepository( repoConfig.getId(), null, true );
+        }
+
+        managedRepositoryAdmin.addManagedRepository( repoConfig, false, null );
 
         // Setup target (proxied to) repository.
         saveRemoteRepositoryConfig( ID_PROXIED1, "Proxied Repository 1",
@@ -169,7 +175,7 @@ public abstract class AbstractProxyTestCase
         proxyHandler = applicationContext.getBean( "repositoryProxyConnectors#test", RepositoryProxyConnectors.class );
 
         // Setup the wagon mock.
-        wagonMockControl = EasyMock.createNiceControl( );
+        wagonMockControl = EasyMock.createNiceControl();
         wagonMock = wagonMockControl.createMock( Wagon.class );
 
         delegate = (WagonDelegate) applicationContext.getBean( "wagon#test", Wagon.class );
@@ -306,7 +312,7 @@ public abstract class AbstractProxyTestCase
         assertNull( "Found file: " + downloadedFile + "; but was expecting a failure", downloadedFile );
     }
 
-    @SuppressWarnings ( "unchecked" )
+    @SuppressWarnings( "unchecked" )
     protected void assertNoTempFiles( File expectedFile )
     {
         File workingDir = expectedFile.getParentFile();
@@ -575,8 +581,8 @@ public abstract class AbstractProxyTestCase
         if ( !sourceDir.exists() )
         {
             // This is just a warning.
-            System.err.println(
-                "[WARN] Skipping setup of testable managed repository, source dir does not exist: " + sourceDir );
+            log.error( "[WARN] Skipping setup of testable managed repository, source dir does not exist: {}", //
+                       sourceDir );
         }
         else
         {
@@ -628,7 +634,6 @@ public abstract class AbstractProxyTestCase
         assertEquals( "File <" + file.getAbsolutePath() + "> not have been modified.", expectedModificationTime,
                       file.lastModified() );
     }
-
 
 
     protected void assertNotExistsInManagedDefaultRepo( File file )
