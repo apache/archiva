@@ -28,8 +28,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
   }
 
   window.managedRepositoryTypes = [
-            new ManagedRepositoryType("default","Maven 2.x Repository"),
-            new ManagedRepositoryType("legacy", "Maven 1.x Repository")
+            new ManagedRepositoryType("default","Maven 2.x Repository")
             ];
 
   ManagedRepository=function(id,name,layout,indexDirectory,location,snapshots,releases,blockRedeployments,cronExpression,
