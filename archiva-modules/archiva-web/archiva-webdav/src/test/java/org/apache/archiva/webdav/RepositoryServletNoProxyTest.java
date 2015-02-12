@@ -33,8 +33,6 @@ import java.util.ArrayList;
 
 /**
  * RepositoryServletTest
- *
- *
  */
 public class RepositoryServletNoProxyTest
     extends AbstractRepositoryServletTestCase
@@ -59,7 +57,7 @@ public class RepositoryServletNoProxyTest
         File checksumFile = new File( repoRootInternal, commonsLangSha1 );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset() );
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangSha1 );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangSha1 );
@@ -75,7 +73,7 @@ public class RepositoryServletNoProxyTest
         File checksumFile = new File( repoRootInternal, commonsLangSha1 );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset() );
 
         //WebRequest request = new WebRequest( "http://machine.com/repository/internal/" + commonsLangSha1 );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangSha1 );
@@ -93,14 +91,13 @@ public class RepositoryServletNoProxyTest
         File checksumFile = new File( repoRootInternal, commonsLangSha1 );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset() );
 
         //WebRequest request = new GetMethodWebRequest(
         //    "http://machine.com/repository/internal/" + "commons-lang/jars/commons-lang-2.1.jar.sha1" );
-        WebResponse response = getWebResponse( "/repository/internal/" + "commons-lang/jars/commons-lang-2.1.jar.sha1" );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", "dummy-checksum", response.getContentAsString() );
+        WebResponse response =
+            getWebResponse( "/repository/internal/" + "commons-lang/jars/commons-lang-2.1.jar.sha1" );
+        assertResponseNotFound( response );
     }
 
     @Test
@@ -113,7 +110,7 @@ public class RepositoryServletNoProxyTest
         File metadataFile = new File( repoRootInternal, commonsLangMetadata );
         metadataFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset() );
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangMetadata );
@@ -132,7 +129,7 @@ public class RepositoryServletNoProxyTest
         File metadataFile = new File( repoRootInternal, commonsLangMetadata );
         metadataFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset() );
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangMetadata );
@@ -151,7 +148,7 @@ public class RepositoryServletNoProxyTest
         File metadataFile = new File( repoRootInternal, commonsLangMetadata );
         metadataFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset() );
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangMetadata );
@@ -170,7 +167,7 @@ public class RepositoryServletNoProxyTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangJar );
@@ -189,14 +186,13 @@ public class RepositoryServletNoProxyTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         //WebRequest request = new GetMethodWebRequest(
         //    "http://machine.com/repository/internal/" + "commons-lang/jars/commons-lang-2.1.jar" );
         WebResponse response = getWebResponse( "/repository/internal/" + "commons-lang/jars/commons-lang-2.1.jar" );
-        assertResponseOK( response );
+        assertResponseNotFound( response );
 
-        assertEquals( "Expected file contents", expectedArtifactContents, response.getContentAsString() );
     }
 
     @Test
@@ -209,7 +205,7 @@ public class RepositoryServletNoProxyTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangJar );
@@ -228,7 +224,7 @@ public class RepositoryServletNoProxyTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         //WebRequest request = new GetMethodWebRequest(
         //    "http://machine.com/repository/internal/" + "commons-lang/jars/commons-lang-2.1-SNAPSHOT.jar" );
@@ -248,7 +244,7 @@ public class RepositoryServletNoProxyTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangJar );
@@ -267,14 +263,12 @@ public class RepositoryServletNoProxyTest
         File artifactFile = new File( repoRootInternal, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/internal/" + "commons-lang/jars/commons-lang-2.1-20050821.023400-1.jar" );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", expectedArtifactContents, response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     /**
@@ -290,7 +284,7 @@ public class RepositoryServletNoProxyTest
         File checksumFile = new File( repoRootInternal, dualExtensionPath );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, expectedContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( checksumFile, expectedContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + dualExtensionPath );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -309,14 +303,13 @@ public class RepositoryServletNoProxyTest
         File checksumFile = new File( repoRootInternal, dualExtensionPath );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, expectedContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( checksumFile, expectedContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/internal/" + "org.project/distributions/example-presentation-3.2.zip" );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
+        assertResponseNotFound( response );
 
-        assertEquals( "Expected file contents", expectedContents, response.getContentAsString() );
     }
 
     @Test
@@ -328,7 +321,7 @@ public class RepositoryServletNoProxyTest
         File checksumFile = new File( repoRootLegacy, "commons-lang/jars/commons-lang-2.1.jar.sha1" );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangSha1 );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -345,7 +338,7 @@ public class RepositoryServletNoProxyTest
         File checksumFile = new File( repoRootLegacy, commonsLangSha1 );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangSha1 );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -365,7 +358,7 @@ public class RepositoryServletNoProxyTest
         File metadataFile = new File( repoRootLegacy, commonsLangMetadata );
         metadataFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -385,7 +378,7 @@ public class RepositoryServletNoProxyTest
         File metadataFile = new File( repoRootLegacy, commonsLangMetadata );
         metadataFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -404,7 +397,7 @@ public class RepositoryServletNoProxyTest
         File metadataFile = new File( repoRootLegacy, commonsLangMetadata );
         metadataFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -423,7 +416,7 @@ public class RepositoryServletNoProxyTest
         File artifactFile = new File( repoRootLegacy, "commons-lang/jars/commons-lang-2.1.jar" );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -442,7 +435,7 @@ public class RepositoryServletNoProxyTest
         File artifactFile = new File( repoRootLegacy, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -461,7 +454,7 @@ public class RepositoryServletNoProxyTest
         File artifactFile = new File( repoRootLegacy, "commons-lang/jars/commons-lang-2.1-SNAPSHOT.jar" );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -480,13 +473,11 @@ public class RepositoryServletNoProxyTest
         File artifactFile = new File( repoRootLegacy, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", expectedArtifactContents, response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     @Test
@@ -500,7 +491,7 @@ public class RepositoryServletNoProxyTest
         File artifactFile = new File( repoRootLegacy, "commons-lang/jars/" + filename );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -519,7 +510,7 @@ public class RepositoryServletNoProxyTest
         File artifactFile = new File( repoRootLegacy, commonsLangJar );
         artifactFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -541,7 +532,7 @@ public class RepositoryServletNoProxyTest
         File checksumFile = new File( repoRootLegacy, "org.project/distributions/example-presentation-3.2.xml.zip" );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, expectedContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( checksumFile, expectedContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + dualExtensionPath );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -560,7 +551,7 @@ public class RepositoryServletNoProxyTest
         File checksumFile = new File( repoRootLegacy, dualExtensionPath );
         checksumFile.getParentFile().mkdirs();
 
-        FileUtils.writeStringToFile( checksumFile, expectedContents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( checksumFile, expectedContents, Charset.defaultCharset() );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + dualExtensionPath );
         WebResponse response = getServletUnitClient().getResponse( request );

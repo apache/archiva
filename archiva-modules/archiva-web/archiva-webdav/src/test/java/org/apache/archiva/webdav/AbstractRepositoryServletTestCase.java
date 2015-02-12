@@ -86,8 +86,6 @@ public abstract class AbstractRepositoryServletTestCase
 {
     protected static final String REPOID_INTERNAL = "internal";
 
-    protected static final String REPOID_LEGACY = "legacy";
-
     protected File repoRootInternal;
 
     protected File repoRootLegacy;
@@ -139,9 +137,6 @@ public abstract class AbstractRepositoryServletTestCase
             createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal, true ) );
 
         managedRepositoryAdmin.createIndexContext( managedRepositoryAdmin.getManagedRepository( REPOID_INTERNAL ) );
-
-        config.addManagedRepository(
-            createManagedRepository( REPOID_LEGACY, "Legacy Format Test Repo", repoRootLegacy, "legacy", true ) );
 
         config.getProxyConnectors().clear();
 
@@ -447,19 +442,7 @@ public abstract class AbstractRepositoryServletTestCase
         throws Exception
     {
         return unauthenticatedRepositoryServlet;
-        /*
-        Container[] childs = context.findChildren();
-        for ( Container container : childs )
-        {
-            if ( StringUtils.equals( container.getName(), name ) )
-            {
-                Tomcat.ExistingStandardWrapper esw = Tomcat.ExistingStandardWrapper.class.cast( container );
-                Servlet servlet = esw.loadServlet();
 
-                return servlet;
-            }
-        }
-        return null;*/
     }
 
     protected String getSpringConfigLocation()
@@ -467,31 +450,6 @@ public abstract class AbstractRepositoryServletTestCase
         return "classpath*:/META-INF/spring-context.xml,classpath*:spring-context.xml";
     }
 
-
-
-
-    /*
-    protected ServletUnitClient getServletUnitClient()
-        throws Exception
-    {
-        if ( servletUnitClient != null )
-        {
-            return servletUnitClient;
-        }
-        servletRunner = new ServletRunner( new File( "src/test/resources/WEB-INF/web.xml" ) );
-
-        servletRunner.registerServlet( "/repository/*", UnauthenticatedRepositoryServlet.class.getName() );
-
-        servletUnitClient = servletRunner.newClient();
-
-        return servletUnitClient;
-    }*/
-
-    /*
-    protected <P extends Page> P page(final String path) throws IOException {
-        return newClient().getPage(base.toExternalForm() + "repository/" + path);
-    }
-    */
 
     protected static WebClient newClient()
     {

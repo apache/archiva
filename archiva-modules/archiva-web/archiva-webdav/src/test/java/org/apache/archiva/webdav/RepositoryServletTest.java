@@ -134,7 +134,7 @@ public class RepositoryServletTest
         WebRequest request = new GetMethodWebRequest( path );
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseNotFound( response );
-        assertThat( response.getContentAsString() ).contains(
-            "Invalid path to Artifact: legacy paths should have an expected type ending in [s] in the second part of the path." );
+        assertThat( response.getContentAsString() ) //
+            .contains( "Legacy Maven1 repository not supported anymore." );
     }
 }
