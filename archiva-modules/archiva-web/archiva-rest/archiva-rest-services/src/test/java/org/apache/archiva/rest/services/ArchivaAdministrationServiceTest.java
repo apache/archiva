@@ -44,23 +44,6 @@ public class ArchivaAdministrationServiceTest
     }
 
     @Test
-    public void addAndDeleteLegacyPath()
-        throws Exception
-    {
-        //Path 	jaxen/jars/jaxen-1.0-FCS-full.jar
-        //Artifact 	jaxen:jaxen:1.0-FCS:full:jar
-        int initialSize = getArchivaAdministrationService().getLegacyArtifactPaths().size();
-        LegacyArtifactPath legacyArtifactPath = new LegacyArtifactPath();
-        legacyArtifactPath.setArtifact( "wine:bordeaux:2006:GREAT:jar" );
-        legacyArtifactPath.setPath( "wine/jars/bordeaux-2006-GREAT.jar" );
-        getArchivaAdministrationService().addLegacyArtifactPath( legacyArtifactPath );
-        assertEquals( initialSize + 1, getArchivaAdministrationService().getLegacyArtifactPaths().size() );
-
-        getArchivaAdministrationService().deleteLegacyArtifactPath( "wine/jars/bordeaux-2006-GREAT.jar" );
-        assertEquals( initialSize, getArchivaAdministrationService().getLegacyArtifactPaths().size() );
-    }
-
-    @Test
     public void addAndDeleteFileType()
         throws Exception
     {
