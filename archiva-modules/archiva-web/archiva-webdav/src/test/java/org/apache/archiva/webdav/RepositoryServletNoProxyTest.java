@@ -325,9 +325,7 @@ public class RepositoryServletNoProxyTest
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangSha1 );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", "dummy-checksum", response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     @Test
@@ -342,9 +340,7 @@ public class RepositoryServletNoProxyTest
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangSha1 );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", "dummy-checksum", response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     @Test
@@ -362,9 +358,7 @@ public class RepositoryServletNoProxyTest
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", expectedMetadataContents, response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     @Test
@@ -382,9 +376,7 @@ public class RepositoryServletNoProxyTest
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", expectedMetadataContents, response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     @Test
@@ -401,9 +393,7 @@ public class RepositoryServletNoProxyTest
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", expectedMetadataContents, response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     @Test
@@ -420,9 +410,7 @@ public class RepositoryServletNoProxyTest
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", expectedArtifactContents, response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     @Test
@@ -439,9 +427,7 @@ public class RepositoryServletNoProxyTest
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", expectedArtifactContents, response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     @Test
@@ -458,9 +444,7 @@ public class RepositoryServletNoProxyTest
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", expectedArtifactContents, response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     @Test
@@ -495,9 +479,7 @@ public class RepositoryServletNoProxyTest
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", expectedArtifactContents, response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     @Test
@@ -514,9 +496,7 @@ public class RepositoryServletNoProxyTest
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", expectedArtifactContents, response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     /**
@@ -536,9 +516,7 @@ public class RepositoryServletNoProxyTest
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + dualExtensionPath );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", expectedContents, response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
     @Test
@@ -555,9 +533,7 @@ public class RepositoryServletNoProxyTest
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + dualExtensionPath );
         WebResponse response = getServletUnitClient().getResponse( request );
-        assertResponseOK( response );
-
-        assertEquals( "Expected file contents", expectedContents, response.getContentAsString() );
+        assertResponseNotFound( response );
     }
 
 }
