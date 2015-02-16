@@ -479,7 +479,7 @@ public abstract class AbstractRepositoryServletTestCase
 
         request.setMethod( webRequest.getHttpMethod().name() );
 
-        if (webRequest.getHttpMethod() == HttpMethod.PUT )
+        if ( webRequest.getHttpMethod() == HttpMethod.PUT )
         {
             PutMethodWebRequest putRequest = PutMethodWebRequest.class.cast( webRequest );
             request.setContentType( putRequest.contentType );
@@ -497,7 +497,7 @@ public abstract class AbstractRepositoryServletTestCase
             || response.getStatus() == HttpServletResponse.SC_MOVED_TEMPORARILY )
         {
             String location = response.getHeader( "Location" );
-            log.debug("follow redirect to {}", location);
+            log.debug( "follow redirect to {}", location );
             return getWebResponse( new GetMethodWebRequest( location ) );
         }
 
@@ -660,9 +660,9 @@ public abstract class AbstractRepositoryServletTestCase
 
     protected void assertResponseOK( WebResponse response )
     {
-
         assertNotNull( "Should have recieved a response", response );
-        Assert.assertEquals( "Should have been an OK response code", HttpServletResponse.SC_OK,
+        Assert.assertEquals( "Should have been an OK response code", //
+                             HttpServletResponse.SC_OK, //
                              response.getStatusCode() );
     }
 

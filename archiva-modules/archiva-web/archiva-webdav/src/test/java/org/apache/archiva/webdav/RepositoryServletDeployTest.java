@@ -240,6 +240,48 @@ public class RepositoryServletDeployTest
         File mkColLocalPath = new File(repoRootInternal, "path/to/");
         assertFalse(mkColLocalPath.exists());
     }
+
+    @Test
+    public void testArtifactsDeploymentArtifactIsSnapshot()
+        throws Exception
+    {
+        setupCleanRepo( repoRootInternal );
+
+        String putUrl = "http://machine.com/repository/internal/path/to/artifact/SNAPSHOT/artifact-SNAPSHOT.jar";
+        String metadataUrl = "http://machine.com/repository/internal/path/to/artifact/maven-metadata.xml";
+        String checksumUrl = "http://machine.com/repository/internal/path/to/artifact/SNAPSHOT/artifact-SNAPSHOT.jar.sha1";
+
+        InputStream is = getClass().getResourceAsStream( "/artifact.jar" );
+        // verify that the file exists in resources-dir
+        assertNotNull( "artifact.jar inputstream", is );
+
+        // send request #1 and verify it's successful
+        WebRequest request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
+        WebResponse response = getServletUnitClient().getResponse( request );
+        assertResponseCreated( response );
+
+        is = getClass().getResourceAsStream( "/artifact.jar.sha1" );
+        request = new PutMethodWebRequest( checksumUrl, is, "application/octet-stream" );
+        response = getServletUnitClient().getResponse( request );
+        assertResponseCreated( response );
+
+        is = getClass().getResourceAsStream( "/maven-metadata.xml" );
+        request = new PutMethodWebRequest( metadataUrl, is, "application/octet-stream" );
+        response = getServletUnitClient().getResponse( request );
+        assertResponseCreated( response );
+
+        // send request #2 and verify it's re-deployed
+        is = getClass().getResourceAsStream( "/artifact.jar" );
+        request = new PutMethodWebRequest( putUrl, is, "application/octet-stream" );
+        response = getServletUnitClient().getResponse( request );
+        assertResponseNoContent( response );
+
+        request = new GetMethodWebRequest( putUrl );
+        response = getServletUnitClient().getResponse( request );
+        assertResponseOK( response );
+
+
+    }
     
     protected void assertResponseNoContent( WebResponse response )
     {
