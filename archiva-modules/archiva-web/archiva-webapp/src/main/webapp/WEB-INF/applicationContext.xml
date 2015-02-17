@@ -193,7 +193,7 @@
     <property name="eternal" value="false"/>
     <property name="maxElementsInMemory" value="1000"/>
     <property name="memoryEvictionPolicy" value="LRU"/>
-    <property name="name" value="usersCache"/>
+    <property name="name" value="keys"/>
     <property name="timeToIdleSeconds" value="1800"/>
     <property name="timeToLiveSeconds" value="14400"/>
   </bean>
@@ -296,7 +296,7 @@
     <property name="eternal" value="false"/>
     <property name="maxElementsInMemory" value="1000"/>
     <property name="memoryEvictionPolicy" value="LRU"/>
-    <property name="name" value="usersCache"/>
+    <property name="name" value="namespaces"/>
     <property name="timeToIdleSeconds" value="600"/>
     <property name="timeToLiveSeconds" value="600"/>
   </bean>
