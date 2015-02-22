@@ -65,10 +65,10 @@
     <maven-model-converter.version>2.1</maven-model-converter.version>
     <maven.indexer.version>5.1.1</maven.indexer.version>
     <wagon.version>2.5</wagon.version>
-    <redback.version>2.3-SNAPSHOT</redback.version>
+    <redback.version>2.3</redback.version>
     <redback.cache.version>2.2</redback.cache.version>
     <redback.quartz.version>2.1</redback.quartz.version>
-    <redback.registry.version>2.4-SNAPSHOT</redback.registry.version>
+    <redback.registry.version>2.4</redback.registry.version>
     <redback.spring-utils.version>2.1</redback.spring-utils.version>
     <redback.taskqueue.version>2.1</redback.taskqueue.version>
     <slf4j.version>1.7.10</slf4j.version>
