@@ -55,7 +55,6 @@
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
-    <commons-dbcp.version>1.4</commons-dbcp.version>
 
     <maven3x.version>3.0.5</maven3x.version>
     <maven.version>2.0.8</maven.version>
@@ -688,12 +687,6 @@
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-jdbc</artifactId>
         <version>${tomcat7Version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-dbcp</groupId>
-        <artifactId>commons-dbcp</artifactId>
-        <version>${commons-dbcp.version}</version>
-        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
