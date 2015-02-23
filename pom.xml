@@ -55,7 +55,6 @@
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
-    <commons-pool.version>1.6</commons-pool.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
 
     <maven3x.version>3.0.5</maven3x.version>
@@ -684,12 +683,6 @@
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>${commons-lang.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-pool</groupId>
-        <artifactId>commons-pool</artifactId>
-        <version>${commons-pool.version}</version>
-        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.tomcat</groupId>
