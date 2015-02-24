@@ -22,7 +22,7 @@
   <parent>
     <artifactId>metadata</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>2.2.0</version>
+    <version>2.2.1-SNAPSHOT</version>
   </parent>
   <artifactId>metadata-model-maven2</artifactId>
   <packaging>bundle</packaging>
