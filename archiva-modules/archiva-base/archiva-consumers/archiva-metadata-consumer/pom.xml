@@ -23,7 +23,7 @@
   <parent>
     <artifactId>archiva-consumers</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>2.2.0-SNAPSHOT</version>
+    <version>2.2.0</version>
   </parent>
   <artifactId>archiva-metadata-consumer</artifactId>
   <packaging>bundle</packaging>
