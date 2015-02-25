@@ -86,7 +86,7 @@ Release Notes for Archiva ${project.version}
 
      * [MRM-837] - Cannot download SNAPSHOT version
 
-     * [MRM-935] - Archiva doesn't supports artifact with <version>SNAPSHOT</version>
+     * [MRM-935] - Archiva doesn't supports artifact with \<version\>SNAPSHOT\</version\>
 
      * [MRM-1145] - RSS tests do not correctly check responses
 
