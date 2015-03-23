@@ -79,7 +79,7 @@ public class ArtifactMissingChecksumsConsumerTest
         long sha1LastModified = sha1Path.toFile().lastModified();
         Assertions.assertThat( md5FilePath.toFile() ).exists();
         long md5LastModified = md5FilePath.toFile().lastModified();
-        Thread.sleep( 1 );
+        Thread.sleep( 1000 );
         consumer.processFile( path );
 
         Assertions.assertThat( sha1Path.toFile() ).exists();
