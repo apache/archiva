@@ -1,15 +1,19 @@
 package org.apache.archiva.consumers.core;
 
-import java.io.File;
-import java.util.Calendar;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.commons.io.FileUtils;
-import static org.junit.Assert.*;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Calendar;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -58,21 +62,26 @@ public class ArtifactMissingChecksumsConsumerTest
     {
         String path = "/no-checksums-artifact/1.0/no-checksums-artifact-1.0.jar";
 
-        File sha1File = new File( repoConfig.getLocation(), path + ".sha1" );
-        File md5File = new File( repoConfig.getLocation(), path + ".md5" );
+        Path sha1Path = Paths.get( repoConfig.getLocation(),
+                                   path + ".sha1" );// new File( repoConfig.getLocation(), path + ".sha1" );
+        Path md5FilePath =
+            Paths.get( repoConfig.getLocation(), path + ".md5" );// new File( repoConfig.getLocation(), path + ".md5" );
 
-        sha1File.delete();
-        md5File.delete();
+        Files.deleteIfExists( sha1Path );
+        Files.deleteIfExists( md5FilePath );
 
-        assertFalse( sha1File.exists() );
-        assertFalse( md5File.exists() );
+        //sha1File.delete();
+        //md5File.delete();
+
+        Assertions.assertThat( sha1Path.toFile() ).doesNotExist();// assertFalse( sha1File.exists() );
+        Assertions.assertThat( md5FilePath.toFile() ).doesNotExist();// assertFalse( md5File.exists() );
 
         consumer.beginScan( repoConfig, Calendar.getInstance().getTime() );
 
         consumer.processFile( path );
 
-        assertTrue( sha1File.exists() );
-        assertTrue( md5File.exists() );
+        Assertions.assertThat( sha1Path.toFile() ).exists();// assertTrue( sha1File.exists() );
+        Assertions.assertThat( md5FilePath.toFile() ).exists();//assertTrue( md5File.exists() );
     }
 
     @Test
@@ -86,21 +95,28 @@ public class ArtifactMissingChecksumsConsumerTest
 
         String path = "/incorrect-checksums/1.0/incorrect-checksums-1.0.jar";
 
-        File sha1File = new File( repoConfig.getLocation(), path + ".sha1" );
-        File md5File = new File( repoConfig.getLocation(), path + ".md5" );
+        // new File( repoConfig.getLocation(), path + ".sha1" );
+        Path sha1Path = Paths.get( repoConfig.getLocation(), path + ".sha1" );
+
+        //new File( repoConfig.getLocation(), path + ".md5" );
+        Path md5Path = Paths.get( repoConfig.getLocation(), path + ".md5" );
 
         ChecksummedFile checksum = new ChecksummedFile( new File( repoConfig.getLocation(), path ) );
 
-        assertTrue( sha1File.exists() );
-        assertTrue( md5File.exists() );
-        assertFalse( checksum.isValidChecksums( new ChecksumAlgorithm[] { ChecksumAlgorithm.MD5, ChecksumAlgorithm.SHA1 } ) );
+        Assertions.assertThat( sha1Path.toFile() ).exists();
+        Assertions.assertThat( md5Path.toFile() ).exists();
+        Assertions.assertThat(
+            checksum.isValidChecksums( new ChecksumAlgorithm[]{ ChecksumAlgorithm.MD5, ChecksumAlgorithm.SHA1 } ) ) //
+            .isFalse();
 
         consumer.beginScan( repoConfig, Calendar.getInstance().getTime() );
 
         consumer.processFile( path );
 
-        assertTrue( sha1File.exists() );
-        assertTrue( md5File.exists() );
-        assertTrue( checksum.isValidChecksums( new ChecksumAlgorithm[] { ChecksumAlgorithm.MD5, ChecksumAlgorithm.SHA1 } ) );        
+        Assertions.assertThat( sha1Path.toFile() ).exists();
+        Assertions.assertThat( md5Path.toFile() ).exists();
+        Assertions.assertThat(
+            checksum.isValidChecksums( new ChecksumAlgorithm[]{ ChecksumAlgorithm.MD5, ChecksumAlgorithm.SHA1 } ) ) //
+            .isTrue();
     }
 }

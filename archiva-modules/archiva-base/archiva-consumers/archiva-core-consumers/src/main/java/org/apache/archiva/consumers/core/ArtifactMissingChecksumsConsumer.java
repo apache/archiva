@@ -141,8 +141,8 @@ public class ArtifactMissingChecksumsConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        createFixChecksum( path, new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1 } );
-        createFixChecksum( path, new ChecksumAlgorithm[]{ ChecksumAlgorithm.MD5 } );
+        createFixChecksum( path, ChecksumAlgorithm.SHA1 );
+        createFixChecksum( path, ChecksumAlgorithm.MD5 );
     }
 
     @Override
@@ -152,19 +152,19 @@ public class ArtifactMissingChecksumsConsumer
         processFile( path );
     }
 
-    private void createFixChecksum( String path, ChecksumAlgorithm checksumAlgorithm[] )
+    private void createFixChecksum( String path, ChecksumAlgorithm checksumAlgorithm )
     {
         File artifactFile = new File( this.repositoryDir, path );
-        File checksumFile = new File( this.repositoryDir, path + checksumAlgorithm[0].getExt() );
+        File checksumFile = new File( this.repositoryDir, path  + checksumAlgorithm.getExt() );
 
         if ( checksumFile.exists() )
         {
             checksum = new ChecksummedFile( artifactFile );
             try
             {
-                if ( !checksum.isValidChecksum( checksumAlgorithm[0] ) )
+                if ( !checksum.isValidChecksum( checksumAlgorithm ) )
                 {
-                    checksum.fixChecksums( checksumAlgorithm );
+                    checksum.fixChecksums( new ChecksumAlgorithm[]{ checksumAlgorithm } );
                     log.info( "Fixed checksum file {}", checksumFile.getAbsolutePath() );
                     triggerConsumerInfo( "Fixed checksum file " + checksumFile.getAbsolutePath() );
                 }
@@ -181,7 +181,7 @@ public class ArtifactMissingChecksumsConsumer
             checksum = new ChecksummedFile( artifactFile );
             try
             {
-                checksum.createChecksum( checksumAlgorithm[0] );
+                checksum.createChecksum( checksumAlgorithm );
                 log.info( "Created missing checksum file {}", checksumFile.getAbsolutePath() ); 
                 triggerConsumerInfo( "Created missing checksum file " + checksumFile.getAbsolutePath() );
             }

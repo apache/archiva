@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 
 /**
  * ChecksummedFile
- *
+ * <p/>
  * <p>Terminology:</p>
  * <dl>
  * <dt>Checksum File</dt>
@@ -46,12 +46,12 @@ import java.util.regex.Pattern;
  * <dt>Reference File</dt>
  * <dd>The file that is being referenced in the checksum file.</dd>
  * </dl>
- *
- *
  */
 public class ChecksummedFile
 {
     private final Logger log = LoggerFactory.getLogger( ChecksummedFile.class );
+
+    private static final Pattern METADATA_PATTERN = Pattern.compile( "maven-metadata-\\S*.xml" );
 
     private final File referenceFile;
 
@@ -76,7 +76,7 @@ public class ChecksummedFile
         throws IOException
     {
 
-        try (InputStream fis = Files.newInputStream( referenceFile.toPath() ) )
+        try (InputStream fis = Files.newInputStream( referenceFile.toPath() ))
         {
             Checksum checksum = new Checksum( checksumAlgorithm );
             checksum.update( fis );
@@ -115,7 +115,7 @@ public class ChecksummedFile
      * <p>
      * Given a checksum file, check to see if the file it represents is valid according to the checksum.
      * </p>
-     *
+     * <p/>
      * <p>
      * NOTE: Only supports single file checksums of type MD5 or SHA1.
      * </p>
@@ -199,7 +199,8 @@ public class ChecksummedFile
             }
 
             return valid;
-        } catch ( IOException e )
+        }
+        catch ( IOException e )
         {
             log.warn( "Unable to read / parse checksum: {}", e.getMessage() );
             return false;
@@ -227,7 +228,6 @@ public class ChecksummedFile
             // No checksum objects, no checksum files, default to is valid.
             return true;
         }
-
 
         try (InputStream fis = Files.newInputStream( referenceFile.toPath() ))
         {
@@ -281,8 +281,8 @@ public class ChecksummedFile
     private boolean isValidChecksumPattern( String filename, String path )
     {
         // check if it is a remote metadata file
-        Pattern pattern = Pattern.compile( "maven-metadata-\\S*.xml" );
-        Matcher m = pattern.matcher( path );
+
+        Matcher m = METADATA_PATTERN.matcher( path );
         if ( m.matches() )
         {
             return filename.endsWith( path ) || ( "-".equals( filename ) ) || filename.endsWith( "maven-metadata.xml" );
@@ -297,6 +297,7 @@ public class ChecksummedFile
      * Validate the expected path, and expected checksum algorithm, then return
      * the trimmed checksum hex string.
      * </p>
+     *
      * @param rawChecksumString
      * @param expectedHash
      * @param expectedPath
