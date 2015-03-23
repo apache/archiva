@@ -62,26 +62,32 @@ public class ArtifactMissingChecksumsConsumerTest
     {
         String path = "/no-checksums-artifact/1.0/no-checksums-artifact-1.0.jar";
 
-        Path sha1Path = Paths.get( repoConfig.getLocation(),
-                                   path + ".sha1" );// new File( repoConfig.getLocation(), path + ".sha1" );
-        Path md5FilePath =
-            Paths.get( repoConfig.getLocation(), path + ".md5" );// new File( repoConfig.getLocation(), path + ".md5" );
+        Path sha1Path = Paths.get( repoConfig.getLocation(), path + ".sha1" );
+        Path md5FilePath = Paths.get( repoConfig.getLocation(), path + ".md5" );
 
         Files.deleteIfExists( sha1Path );
         Files.deleteIfExists( md5FilePath );
 
-        //sha1File.delete();
-        //md5File.delete();
-
-        Assertions.assertThat( sha1Path.toFile() ).doesNotExist();// assertFalse( sha1File.exists() );
-        Assertions.assertThat( md5FilePath.toFile() ).doesNotExist();// assertFalse( md5File.exists() );
+        Assertions.assertThat( sha1Path.toFile() ).doesNotExist();
+        Assertions.assertThat( md5FilePath.toFile() ).doesNotExist();
 
         consumer.beginScan( repoConfig, Calendar.getInstance().getTime() );
 
         consumer.processFile( path );
 
-        Assertions.assertThat( sha1Path.toFile() ).exists();// assertTrue( sha1File.exists() );
-        Assertions.assertThat( md5FilePath.toFile() ).exists();//assertTrue( md5File.exists() );
+        Assertions.assertThat( sha1Path.toFile() ).exists();
+        long sha1LastModified = sha1Path.toFile().lastModified();
+        Assertions.assertThat( md5FilePath.toFile() ).exists();
+        long md5LastModified = md5FilePath.toFile().lastModified();
+        Thread.sleep( 1 );
+        consumer.processFile( path );
+
+        Assertions.assertThat( sha1Path.toFile() ).exists();
+        Assertions.assertThat( md5FilePath.toFile() ).exists();
+
+        Assertions.assertThat( sha1Path.toFile().lastModified() ).isEqualTo( sha1LastModified );
+
+        Assertions.assertThat( md5FilePath.toFile().lastModified() ).isEqualTo( md5LastModified );
     }
 
     @Test
@@ -95,10 +101,8 @@ public class ArtifactMissingChecksumsConsumerTest
 
         String path = "/incorrect-checksums/1.0/incorrect-checksums-1.0.jar";
 
-        // new File( repoConfig.getLocation(), path + ".sha1" );
         Path sha1Path = Paths.get( repoConfig.getLocation(), path + ".sha1" );
 
-        //new File( repoConfig.getLocation(), path + ".md5" );
         Path md5Path = Paths.get( repoConfig.getLocation(), path + ".md5" );
 
         ChecksummedFile checksum = new ChecksummedFile( new File( repoConfig.getLocation(), path ) );

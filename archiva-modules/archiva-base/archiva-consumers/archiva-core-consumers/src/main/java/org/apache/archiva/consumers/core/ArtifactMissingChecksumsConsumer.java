@@ -155,7 +155,7 @@ public class ArtifactMissingChecksumsConsumer
     private void createFixChecksum( String path, ChecksumAlgorithm checksumAlgorithm )
     {
         File artifactFile = new File( this.repositoryDir, path );
-        File checksumFile = new File( this.repositoryDir, path + "."  + checksumAlgorithm.getExt() );
+        File checksumFile = new File( this.repositoryDir, path + checksumAlgorithm.getExt() );//+ "."
 
         if ( checksumFile.exists() )
         {

@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -95,8 +96,10 @@ public class ChecksummedFile
         throws IOException
     {
         File checksumFile = new File( referenceFile.getAbsolutePath() + "." + checksumAlgorithm.getExt() );
+        Files.deleteIfExists( checksumFile.toPath() );
         String checksum = calculateChecksum( checksumAlgorithm );
-        FileUtils.writeStringToFile( checksumFile, checksum + "  " + referenceFile.getName() );
+        Files.write( checksumFile.toPath(), (checksum + "  " + referenceFile.getName()).getBytes(), StandardOpenOption.CREATE_NEW );
+        //FileUtils.writeStringToFile( checksumFile, checksum + "  " + referenceFile.getName() );
         return checksumFile;
     }
 
