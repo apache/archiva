@@ -27,10 +27,10 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -42,8 +42,6 @@ import java.util.List;
 
 /**
  * ArtifactMissingChecksumsConsumer - Create missing and/or fix invalid checksums for the artifact.
- *
- *
  */
 @Service( "knownRepositoryContentConsumer#create-missing-checksums" )
 @Scope( "prototype" )
@@ -98,7 +96,7 @@ public class ArtifactMissingChecksumsConsumer
     {
         return this.description;
     }
-    
+
     @Override
     public void beginScan( ManagedRepository repo, Date whenGathered )
         throws ConsumerException
@@ -155,7 +153,7 @@ public class ArtifactMissingChecksumsConsumer
     private void createFixChecksum( String path, ChecksumAlgorithm checksumAlgorithm )
     {
         File artifactFile = new File( this.repositoryDir, path );
-        File checksumFile = new File( this.repositoryDir, path + checksumAlgorithm.getExt() );//+ "."
+        File checksumFile = new File( this.repositoryDir, path + "." + checksumAlgorithm.getExt() );
 
         if ( checksumFile.exists() )
         {
@@ -182,7 +180,7 @@ public class ArtifactMissingChecksumsConsumer
             try
             {
                 checksum.createChecksum( checksumAlgorithm );
-                log.info( "Created missing checksum file {}", checksumFile.getAbsolutePath() ); 
+                log.info( "Created missing checksum file {}", checksumFile.getAbsolutePath() );
                 triggerConsumerInfo( "Created missing checksum file " + checksumFile.getAbsolutePath() );
             }
             catch ( IOException e )

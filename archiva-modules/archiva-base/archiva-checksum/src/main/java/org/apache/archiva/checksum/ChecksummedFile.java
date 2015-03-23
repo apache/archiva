@@ -98,8 +98,9 @@ public class ChecksummedFile
         File checksumFile = new File( referenceFile.getAbsolutePath() + "." + checksumAlgorithm.getExt() );
         Files.deleteIfExists( checksumFile.toPath() );
         String checksum = calculateChecksum( checksumAlgorithm );
-        Files.write( checksumFile.toPath(), (checksum + "  " + referenceFile.getName()).getBytes(), StandardOpenOption.CREATE_NEW );
-        //FileUtils.writeStringToFile( checksumFile, checksum + "  " + referenceFile.getName() );
+        Files.write( checksumFile.toPath(), //
+                     ( checksum + "  " + referenceFile.getName() ).getBytes(), //
+                     StandardOpenOption.CREATE_NEW );
         return checksumFile;
     }
 
