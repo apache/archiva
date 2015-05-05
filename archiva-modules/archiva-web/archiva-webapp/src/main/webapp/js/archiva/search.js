@@ -936,7 +936,7 @@ define("archiva.search",["jquery","jquery.ui","i18n","jquery.tmpl","select2","kn
       ko.applyBindings(artifactDetailsDownloadViewModel,mainContent.find("#artifact-details-download-content" ).get(0));
 
 
-      mainContent.find("#artifact-download-list-files li img" ).on("click",function(){
+      mainContent.find("#artifact-download-list-files tr td img" ).on("click",function(){
         mainContent.find("#artifact_content_tree").empty();
         var contentText = mainContent.find("#artifact-content-text" );
         contentText.empty();
