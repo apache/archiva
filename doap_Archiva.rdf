@@ -30,12 +30,13 @@
     <shortdesc>Apache Archiva software is an extensible repository management tool that helps taking care of your own personal or enterprise-wide build artifact repository.</shortdesc>
     <description>Archiva is the perfect companion for build tools such as Maven, Continuum, and ANT. Archiva offers several capabilities, amongst which remote repository proxying,
 security access management, build artifact storage, delivery, browsing, indexing and usage reporting, extensible scanning functionality and many more!</description>
-    <bug-database rdf:resource="http://jira.codehaus.org/browse/MRM" />
+    <bug-database rdf:resource="http://issues.apache.org/jira/browse/MRM" />
     <mailing-list rdf:resource="http://archiva.apache.org/mail-lists.html" />
     <download-page rdf:resource="http://archiva.apache.org/download.html" />
     <programming-language>Java</programming-language>
     <category rdf:resource="http://projects.apache.org/category/build-management" />
-     <release>
+
+    <release>
       <Version>
         <name>Apache Archiva 2.2.x</name>
         <created>2015-03-02</created>
@@ -44,6 +45,7 @@ security access management, build artifact storage, delivery, browsing, indexing
         <file-release>http://www.us.apache.org/dist/archiva/2.2.0/binaries/apache-archiva-2.2.0.war</file-release>
       </Version>
     </release>
+
     <release>
       <Version>
         <name>Apache Archiva 2.1.x</name>
@@ -52,7 +54,8 @@ security access management, build artifact storage, delivery, browsing, indexing
         <file-release>http://www.us.apache.org/dist/archiva/2.1.1/binaries/apache-archiva-2.1.1-bin.zip</file-release>
         <file-release>http://www.us.apache.org/dist/archiva/2.1.1/binaries/apache-archiva-2.1.1.war</file-release>
       </Version>
-    </release>    
+    </release>
+
     <release>
       <Version>
         <name>Apache Archiva 1.3.x</name>
