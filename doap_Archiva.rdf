@@ -67,10 +67,12 @@ security access management, build artifact storage, delivery, browsing, indexing
     </release>
     
     <repository>
-      <!--<SVNRepository>
+      <SVNRepository>
         <location rdf:resource="https://svn.apache.org/repos/asf/archiva/"/>
         <browse rdf:resource="https://svn.apache.org/viewvc/archiva/"/>
-      </SVNRepository>-->
+      </SVNRepository>    
+    </repository>
+    <repository>  
       <GitRepository>
         <location rdf:resource="https://git-wip-us.apache.org/repos/asf?p=archiva.git"/>
         <browse rdf:resource="https://git-wip-us.apache.org/repos/asf/archiva.git"/>
