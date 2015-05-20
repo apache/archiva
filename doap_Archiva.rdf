@@ -67,16 +67,18 @@ security access management, build artifact storage, delivery, browsing, indexing
     </release>
     
     <repository>
-      <SVNRepository>
-        <location rdf:resource="https://svn.apache.org/repos/asf/archiva/"/>
-        <browse rdf:resource="https://svn.apache.org/viewvc/archiva/"/>
-      </SVNRepository>    
-    </repository>
-    <repository>  
+      <!-- git first as archiva migrated core to this place-->
       <GitRepository>
         <location rdf:resource="https://git-wip-us.apache.org/repos/asf?p=archiva.git"/>
         <browse rdf:resource="https://git-wip-us.apache.org/repos/asf/archiva.git"/>
       </GitRepository>
+    </repository>
+    <repository>
+      <!-- archiva parent pom is located here -->
+      <SVNRepository>
+        <location rdf:resource="https://svn.apache.org/viewvc/archiva/parent/"/>
+        <browse rdf:resource="https://svn.apache.org/viewvc/archiva/parent/"/>
+      </SVNRepository>    
     </repository>
     <maintainer>
       <foaf:Person>
