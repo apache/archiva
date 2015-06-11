@@ -34,6 +34,7 @@ import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.providers.http.AbstractHttpClientWagon;
 import org.apache.maven.wagon.providers.http.HttpConfiguration;
 import org.apache.maven.wagon.providers.http.HttpMethodConfiguration;
+import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
 import org.springframework.stereotype.Service;
 
@@ -182,8 +183,19 @@ public class DefaultRemoteRepositoriesService
                 HttpConfiguration httpConfiguration = new HttpConfiguration().setGet( httpMethodConfiguration );
                 AbstractHttpClientWagon.class.cast( wagon ).setHttpConfiguration( httpConfiguration );
             }
+            
+            ProxyInfo proxyInfo = null;
+            if ( networkProxy != null )
+            {
+                proxyInfo = new ProxyInfo();
+                proxyInfo.setType( networkProxy.getProtocol() );
+                proxyInfo.setHost( networkProxy.getHost() );
+                proxyInfo.setPort( networkProxy.getPort() );
+                proxyInfo.setUserName( networkProxy.getUsername() );
+                proxyInfo.setPassword( networkProxy.getPassword() );
+            }            
 
-            wagon.connect( new Repository( remoteRepository.getId(), remoteRepository.getUrl() ) );
+            wagon.connect( new Repository( remoteRepository.getId(), remoteRepository.getUrl() ), proxyInfo );
 
             // we only check connectivity as remote repo can be empty
             wagon.getFileList( "/" );

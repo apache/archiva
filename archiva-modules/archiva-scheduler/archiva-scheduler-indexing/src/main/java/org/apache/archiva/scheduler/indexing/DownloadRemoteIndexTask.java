@@ -156,6 +156,7 @@ public class DownloadRemoteIndexTask
             if ( this.networkProxy != null )
             {
                 proxyInfo = new ProxyInfo();
+                proxyInfo.setType( this.networkProxy.getProtocol() );
                 proxyInfo.setHost( this.networkProxy.getHost() );
                 proxyInfo.setPort( this.networkProxy.getPort() );
                 proxyInfo.setUserName( this.networkProxy.getUsername() );
