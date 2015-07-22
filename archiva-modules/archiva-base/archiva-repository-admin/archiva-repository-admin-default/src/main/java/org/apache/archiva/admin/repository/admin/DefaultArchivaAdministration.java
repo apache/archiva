@@ -33,6 +33,7 @@ import org.apache.archiva.configuration.WebappConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +52,7 @@ public class DefaultArchivaAdministration
     implements ArchivaAdministration
 {
 
-    private PoolingClientConnectionManager poolingClientConnectionManager;
+    private PoolingHttpClientConnectionManager poolingClientConnectionManager;
 
     @PostConstruct
     public void initialize()
@@ -413,20 +414,20 @@ public class DefaultArchivaAdministration
         if ( networkConfiguration == null )
         {
             // back to default values
-            HttpWagon.setUseClientManagerPooled( true );
-            poolingClientConnectionManager = new PoolingClientConnectionManager();
+            HttpWagon.setPersistentPool( true );
+            poolingClientConnectionManager = new PoolingHttpClientConnectionManager();
             poolingClientConnectionManager.setDefaultMaxPerRoute( 30 );
             poolingClientConnectionManager.setMaxTotal( 30 );
-            HttpWagon.setConnectionManagerPooled( poolingClientConnectionManager );
+            HttpWagon.setPoolingHttpClientConnectionManager( poolingClientConnectionManager );
 
         }
         else
         {
-            HttpWagon.setUseClientManagerPooled( networkConfiguration.isUsePooling() );
-            poolingClientConnectionManager = new PoolingClientConnectionManager();
+            HttpWagon.setPersistentPool( networkConfiguration.isUsePooling() );
+            poolingClientConnectionManager = new PoolingHttpClientConnectionManager();
             poolingClientConnectionManager.setDefaultMaxPerRoute( networkConfiguration.getMaxTotalPerHost() );
             poolingClientConnectionManager.setMaxTotal( networkConfiguration.getMaxTotal() );
-            HttpWagon.setConnectionManagerPooled( poolingClientConnectionManager );
+            HttpWagon.setPoolingHttpClientConnectionManager( poolingClientConnectionManager );
         }
     }
 
