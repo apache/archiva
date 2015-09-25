@@ -1841,6 +1841,7 @@
               <exclude>**/overlays/**</exclude>
               <exclude>nbactions.xml</exclude>
               <exclude>nb-configuration.xml</exclude>
+              <exclude>.travis.yml</exclude>
             </excludes>
           </configuration>
         </plugin>
