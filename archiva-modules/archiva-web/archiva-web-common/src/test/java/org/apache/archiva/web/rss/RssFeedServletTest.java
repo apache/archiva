@@ -39,6 +39,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -375,6 +376,25 @@ public class RssFeedServletTest
         public ClassLoader getClassLoader()
         {
             return applicationContext.getClassLoader();
+        }
+
+        @Override
+        public void publishEvent( Object o )
+        {
+            // no op
+        }
+
+        @Override
+        public String[] getBeanNamesForType( ResolvableType resolvableType )
+        {
+            return new String[0];
+        }
+
+        @Override
+        public boolean isTypeMatch( String s, ResolvableType resolvableType )
+            throws NoSuchBeanDefinitionException
+        {
+            return false;
         }
     }
 
