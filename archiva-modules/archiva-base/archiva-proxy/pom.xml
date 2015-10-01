@@ -176,6 +176,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-rbac-cached</artifactId>
       <scope>test</scope>
@@ -254,7 +259,7 @@
             <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
-            <archiva.repositorySessionFactory.id>test</archiva.repositorySessionFactory.id>
+            <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
           </systemPropertyVariables>
         </configuration>
       </plugin>
