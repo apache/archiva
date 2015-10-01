@@ -110,7 +110,12 @@
       <artifactId>archiva-test-utils</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
-    </dependency> 
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
@@ -176,7 +181,7 @@
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
             <systemPropertyVariables>
-              <archiva.repositorySessionFactory.id>test</archiva.repositorySessionFactory.id>
+              <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
             </systemPropertyVariables>
           </configuration>
         </plugin>
