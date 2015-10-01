@@ -50,6 +50,7 @@
       </value>
     </property>
   </bean>
+
   <bean name="repositorySessionFactory" class="org.apache.archiva.webtest.memory.TestRepositorySessionFactory"/>
 
   <alias name="userManager#configurable" alias="userManager#default"/>
