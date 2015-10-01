@@ -67,20 +67,11 @@ public class SimpleArtifactConsumer
      */
     private String id = "simple-artifact-consumer";
 
-    /**
-     *
-     */
     private String description = "Simple consumer to illustrate how to consume the contents of a repository.";
 
-    /**
-     *
-     */
     @Inject
     private FileTypes filetypes;
 
-    /**
-     *
-     */
     @Inject
     private ArchivaConfiguration configuration;
 
