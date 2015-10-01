@@ -28,7 +28,6 @@
 
   <mockito:mock id="mockManagedRepositoryAdmin" class="org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin" />
   <mockito:mock id="mockRemoteRepositoryAdmin" class="org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin" />
-  <mockito:mock id="mockRepositorySessionFactory" class="org.apache.archiva.metadata.repository.RepositorySessionFactory" />
 
-  <alias alias="repositorySessionFactory#jcr" name="mockRepositorySessionFactory" />
+  <alias alias="repositorySessionFactory#jcr" name="repositorySessionFactory#mock" />
 </beans>

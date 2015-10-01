@@ -73,6 +73,12 @@
       <version>${archiva.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-mock</artifactId>
+      <version>${archiva.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.redback.components.registry</groupId>
       <artifactId>spring-registry-api</artifactId>
       <version>${redback.registry.version}</version>
