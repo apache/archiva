@@ -1,4 +1,5 @@
-package org.apache.archiva.admin.mock;
+package org.apache.archiva.mock;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -51,7 +52,9 @@ public class MockRepositorySessionFactory
             @Override
             public MetadataRepository getRepository()
             {
-                return new AbstractMetadataRepository() {};
+                return new AbstractMetadataRepository()
+                {
+                };
             }
         };
     }

@@ -17,41 +17,39 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
-    <artifactId>archiva-modules</artifactId>
+    <artifactId>archiva-base</artifactId>
     <version>2.2.1-SNAPSHOT</version>
   </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>archiva-mock</artifactId>
+  <packaging>jar</packaging>
+  <name>Archiva Base :: Mocks</name>
+  <dependencies>
 
-  <artifactId>archiva-base</artifactId>
-  <name>Archiva :: Base</name>
-  <packaging>pom</packaging>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-repository-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+  </dependencies>
 
-  <modules>
-    <module>archiva-test-utils</module>
-    <module>archiva-common</module>
-    <module>archiva-mock</module>
-    <module>archiva-filelock</module>
-    <module>archiva-model</module>
-    <module>archiva-configuration</module>
-    <module>archiva-checksum</module>
-    <module>archiva-plexus-bridge</module>
-    <module>archiva-policies</module>
-    <module>archiva-indexer</module>
-    <module>archiva-consumers</module>
-    <module>archiva-repository-layer</module>
-    <module>archiva-xml-tools</module>
-    <module>archiva-proxy-api</module>
-    <module>archiva-proxy-common</module>
-    <module>archiva-proxy</module>
-    <module>archiva-transaction</module>
-    <module>archiva-converter</module>
-    <module>archiva-repository-scanner</module>
-    <module>archiva-repository-admin</module>
-    <module>archiva-security-common</module>
-    <module>archiva-maven2-metadata</module>
-    <module>archiva-maven2-model</module>
-  </modules>
 </project>
