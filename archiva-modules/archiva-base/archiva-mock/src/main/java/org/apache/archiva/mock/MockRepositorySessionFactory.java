@@ -32,10 +32,19 @@ import org.springframework.stereotype.Service;
 public class MockRepositorySessionFactory
     implements RepositorySessionFactory
 {
+    private MetadataRepository repository = new AbstractMetadataRepository()
+    {
+    };
+
+    public void setRepository( MetadataRepository repository )
+    {
+        this.repository = repository;
+    }
+
     @Override
     public RepositorySession createSession()
     {
-        return new RepositorySession( null, null )
+        return new RepositorySession( repository, null )
         {
             @Override
             public void close()
@@ -52,9 +61,7 @@ public class MockRepositorySessionFactory
             @Override
             public MetadataRepository getRepository()
             {
-                return new AbstractMetadataRepository()
-                {
-                };
+                return repository;
             }
         };
     }

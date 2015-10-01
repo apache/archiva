@@ -150,6 +150,11 @@
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <pluginManagement>
@@ -165,7 +170,7 @@
               <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
               <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
               <archiva.user.configFileName>${project.build.directory}/archiva.xml</archiva.user.configFileName>
-              <archiva.repositorySessionFactory.id>test</archiva.repositorySessionFactory.id>
+              <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
             </systemPropertyVariables>
           </configuration>
         </plugin>
