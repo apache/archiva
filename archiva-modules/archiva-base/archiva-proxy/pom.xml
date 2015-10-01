@@ -204,6 +204,11 @@
       <artifactId>xercesImpl</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -260,6 +265,8 @@
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
             <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
+            <http.proxyHost></http.proxyHost>
+            <http.proxyPort></http.proxyPort>
           </systemPropertyVariables>
         </configuration>
       </plugin>
