@@ -233,6 +233,11 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-common-test-resources</artifactId>
       <scope>test</scope>
@@ -308,7 +313,7 @@
             <archiva.user.configFileName>${project.build.testOutputDirectory}/repository-archiva.xml</archiva.user.configFileName>
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
-            <archiva.repositorySessionFactory.id>beer</archiva.repositorySessionFactory.id>
+            <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
           </systemPropertyVariables>
           <forkMode>${webdav.forkMode}</forkMode>
         </configuration>

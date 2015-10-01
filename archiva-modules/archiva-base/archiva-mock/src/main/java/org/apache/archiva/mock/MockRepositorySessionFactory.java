@@ -21,6 +21,7 @@ package org.apache.archiva.mock;
 
 import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.springframework.stereotype.Service;
@@ -36,15 +37,22 @@ public class MockRepositorySessionFactory
     {
     };
 
+    private MetadataResolver resolver;
+
     public void setRepository( MetadataRepository repository )
     {
         this.repository = repository;
     }
 
+    public void setResolver( MetadataResolver resolver )
+    {
+        this.resolver = resolver;
+    }
+
     @Override
     public RepositorySession createSession()
     {
-        return new RepositorySession( repository, null )
+        return new RepositorySession( repository, resolver )
         {
             @Override
             public void close()
