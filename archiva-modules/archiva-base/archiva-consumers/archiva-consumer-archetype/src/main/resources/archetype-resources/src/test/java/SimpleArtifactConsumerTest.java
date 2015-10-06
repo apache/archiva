@@ -66,12 +66,6 @@ public class SimpleArtifactConsumerTest
         throws Exception
     {
         setUpMockRepository();
-
-        RepositorySession repositorySession = mock( RepositorySession.class );
-        when( repositorySessionFactory.createSession() ).thenReturn( repositorySession );
-
-        metadataRepository = mock( MetadataRepository.class );
-        when( repositorySession.getRepository() ).thenReturn( metadataRepository );
     }
 
     private void setUpMockRepository()

@@ -29,5 +29,8 @@
   <mockito:mock id="mockManagedRepositoryAdmin" class="org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin" />
   <mockito:mock id="mockRemoteRepositoryAdmin" class="org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin" />
 
-  <alias alias="repositorySessionFactory#jcr" name="repositorySessionFactory#mock" />
+  <alias alias="repositorySessionFactory#jcr" name="repositorySessionFactory#file" />
+
+  <bean name="proxyConnectorAdmin#mock" class="org.apache.archiva.mock.MockProxyConnectorAdmin"/>
+  <bean name="networkProxyAdmin#mock" class="org.apache.archiva.mock.MockNetworkProxyAdmin"/>
 </beans>

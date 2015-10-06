@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -70,6 +71,7 @@ public abstract class AbstractRepositoryAdminTest
     protected ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
+    @Named("proxyConnectorAdmin#default")
     protected ProxyConnectorAdmin proxyConnectorAdmin;
 
     @Inject
