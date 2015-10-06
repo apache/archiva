@@ -71,7 +71,6 @@ public abstract class AbstractRepositoryAdminTest
     protected ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
-    @Named("proxyConnectorAdmin#default")
     protected ProxyConnectorAdmin proxyConnectorAdmin;
 
     @Inject
