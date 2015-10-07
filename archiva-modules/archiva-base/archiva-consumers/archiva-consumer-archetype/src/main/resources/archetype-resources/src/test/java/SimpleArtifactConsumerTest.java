@@ -99,11 +99,7 @@ public class SimpleArtifactConsumerTest
         consumer.beginScan( testRepository, new Date() );
         consumer.processFile( "org/simple/test/testartifact/testartifact/1.0/testartifact-1.0.pom" );
         consumer.processFile( "org/simple/test/testartifact/testartifact/1.1/testartifact-1.1.pom" );
-
-        verify( metadataRepository ).getArtifacts( testRepository.getId(), "org.simple.test.testartifact",
-                                                   "testartifact", "1.0" );
-        verify( metadataRepository ).getArtifacts( testRepository.getId(), "org.simple.test.testartifact",
-                                                   "testartifact", "1.1" );
+        
     }
 
 }

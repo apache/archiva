@@ -101,7 +101,7 @@ public class SimpleArtifactConsumer
         throws ConsumerException
     {
         this.repository = repository;
-        log.info( "Beginning scan of repository [" + this.repository.getId() + "]" );
+        log.info( "Beginning scan of repository [{}]", this.repository.getId() );
 
         repositorySession = repositorySessionFactory.createSession();
     }
@@ -115,7 +115,7 @@ public class SimpleArtifactConsumer
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
-        log.info( "Processing entry [" + path + "] from repository [" + this.repository.getId() + "]" );
+        log.info( "Processing entry [{}] from repository [{}]", path, this.repository.getId() );
 
         try
         {
