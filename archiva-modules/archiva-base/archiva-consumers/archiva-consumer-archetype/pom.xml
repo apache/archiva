@@ -122,12 +122,40 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-archetype-plugin</artifactId>
         <version>${archetypeVersion}</version>
-        <configuration>
-          <settingsFile>${basedir}/src/test/test-settings.xml</settingsFile>
-          <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-
-        </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-archetype-plugin</artifactId>
+          <version>${archetypeVersion}</version>
+          <configuration>
+            <settingsFile>${basedir}/src/test/test-settings.xml</settingsFile>
+            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
+  <profiles>
+    <profile>
+      <id>ci-build</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-archetype-plugin</artifactId>
+              <version>${archetypeVersion}</version>
+              <configuration>
+                <settingsFile>${basedir}/src/test/ci-test-settings.xml</settingsFile>
+                <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
 </project>
