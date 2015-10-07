@@ -420,10 +420,7 @@ public class FileMetadataRepository
         try
         {
             File dir = getMetadataDirectory( repositoryId, facetId );
-            if ( !Files.deleteIfExists( dir.toPath() ) )
-            {
-                log.error( "Cannot delete the metadata repository {}", dir );
-            }
+            FileUtils.deleteDirectory( dir );
         }
         catch ( IOException e )
         {
@@ -438,10 +435,7 @@ public class FileMetadataRepository
         try
         {
             File dir = new File( getMetadataDirectory( repoId, facetId ), name );
-            if ( !Files.deleteIfExists( dir.toPath() ) )
-            {
-                log.error( "Cannot delete the metadata repository {}", dir );
-            }
+            FileUtils.deleteDirectory( dir );
         }
         catch ( IOException e )
         {
@@ -778,7 +772,7 @@ public class FileMetadataRepository
                 }
             }
 
-            Files.deleteIfExists( directory.toPath() );
+            FileUtils.deleteDirectory( directory );
             //writeProperties( properties, directory, PROJECT_VERSION_METADATA_KEY );
         }
         catch ( IOException e )
@@ -812,10 +806,7 @@ public class FileMetadataRepository
         try
         {
             File dir = getDirectory( repoId );
-            if ( !Files.deleteIfExists( dir.toPath() ) )
-            {
-                log.error( "Cannot delete repository {}", dir );
-            }
+            FileUtils.deleteDirectory( dir );
         }
         catch ( IOException e )
         {
@@ -1365,7 +1356,7 @@ public class FileMetadataRepository
         try
         {
             File directory = new File( getDirectory( repositoryId ), namespace + "/" + projectId );
-            Files.deleteIfExists( directory.toPath() );
+            FileUtils.deleteDirectory( directory );
         }
         catch ( IOException e )
         {
@@ -1380,7 +1371,7 @@ public class FileMetadataRepository
         try
         {
             File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
-            Files.deleteIfExists( directory.toPath() );
+            FileUtils.deleteDirectory( directory );
         }
         catch ( IOException e )
         {
