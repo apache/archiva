@@ -453,16 +453,23 @@ public class FileMetadataRepository
     public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
         throws MetadataRepositoryException
     {
-        // TODO: this is quite slow - if we are to persist with this repository implementation we should build an index
-        //  of this information (eg. in Lucene, as before)
-
-        List<ArtifactMetadata> artifacts = new ArrayList<>();
-        for ( String ns : getRootNamespaces( repoId ) )
+        try
         {
-            getArtifactsByDateRange( artifacts, repoId, ns, startTime, endTime );
+            // TODO: this is quite slow - if we are to persist with this repository implementation we should build an index
+            //  of this information (eg. in Lucene, as before)
+
+            List<ArtifactMetadata> artifacts = new ArrayList<>();
+            for ( String ns : getRootNamespaces( repoId ) )
+            {
+                getArtifactsByDateRange( artifacts, repoId, ns, startTime, endTime );
+            }
+            Collections.sort( artifacts, new ArtifactComparator() );
+            return artifacts;
         }
-        Collections.sort( artifacts, new ArtifactComparator() );
-        return artifacts;
+        catch ( MetadataResolutionException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
     }
 
     private void getArtifactsByDateRange( List<ArtifactMetadata> artifacts, String repoId, String ns, Date startTime,
