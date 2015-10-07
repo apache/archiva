@@ -86,6 +86,12 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-store-file</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
   <build>
     <resources>
