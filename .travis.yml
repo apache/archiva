@@ -4,7 +4,7 @@ jdk:
   - oraclejdk7
   - oraclejdk8
 
-script: "mvn clean install -Pit-js"
+script: "mvn clean install -Pit-js -Pci-build"
 
 cache:
     directories:
