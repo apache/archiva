@@ -17,7 +17,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<enunciate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://enunciate.codehaus.org/schemas/enunciate-1.26.xsd">
+<enunciate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://enunciate.webcohesion.com/schemas/enunciate-2.0.0.xsd">
 
   <services>
     <rest defaultRestSubcontext="archivaUiServices"/>
@@ -34,8 +34,8 @@
     <jaxws-support disabled="true"/>
 
     <docs disabled="false" title="Apache Archiva UI REST API" includeExampleXml="true" includeExampleJson="true"
-          includeDefaultDownloads="false">
-      <war docsDir="apidocs" />
+          includeDefaultDownloads="false" docsSubdir="">
+     <!-- <war docsDir="apidocs" />-->
     </docs>
 
   </modules>
