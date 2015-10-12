@@ -97,14 +97,12 @@ public class RepositoryScanStatistics
 
     public void increaseFileCount()
     {
-        long count = getTotalFileCount();
-        this.totalFileCount = ++count;
+        this.totalFileCount += 1;
     }
 
     public void increaseNewFileCount()
     {
-        long count = getNewFileCount();
-        this.newFileCount = ++count;
+        this.newFileCount += 1;
     }
 
     public void setKnownConsumers( List<String> consumers )

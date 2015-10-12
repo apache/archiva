@@ -194,9 +194,6 @@ public class Maven2RepositoryMerger
         copyFile( sourceArtifactFile, targetArtifactFile );
 
         // pom file copying
-        String fileName = artifactMetadata.getProject() + "-" + artifactMetadata.getVersion() + ".pom";
-
-        // pom file copying
         // TODO need to use path translator to get the pom file path
 //        String fileName = artifactMetadata.getProject() + "-" + artifactMetadata.getVersion() + ".pom";
 //

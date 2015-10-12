@@ -189,7 +189,7 @@ public class DefaultFileUploadService
         // try with full name as ui only know the file name
         if ( !removed )
         {
-            removed = getSessionFileMetadatas().remove( new FileMetadata( file.getPath() ) );
+            /* unused */ getSessionFileMetadatas().remove( new FileMetadata( file.getPath() ) );
         }
         if ( file.exists() )
         {

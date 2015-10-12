@@ -280,12 +280,8 @@ public class Maven3DependencyTreeBuilder
         DependencySelector depFilter = new AndDependencySelector( new ExclusionDependencySelector() );
         session.setDependencySelector( depFilter );
 
-        LocalRepository localRepo = new LocalRepository( localRepoDir );
         session.setLocalRepositoryManager(
-            new SimpleLocalRepositoryManager( localRepoDir ) );// system.newLocalRepositoryManager( localRepo ) );
-
-        //session.setTransferListener(  );
-        //session.setRepositoryListener( n );
+            new SimpleLocalRepositoryManager( localRepoDir ) );
 
         return session;
     }
