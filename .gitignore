@@ -15,7 +15,7 @@ build
 .site-content/
 
 #eclipse files
-.project 
+.project
 .classpath
 .settings/
 
