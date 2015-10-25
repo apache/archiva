@@ -423,7 +423,7 @@ public class DefaultRepositoriesService
             String timestamp = null;
 
             File versionMetadataFile = new File( targetPath, MetadataTools.MAVEN_METADATA );
-            ArchivaRepositoryMetadata versionMetadata = getMetadata( versionMetadataFile );
+            /* unused */ getMetadata( versionMetadataFile );
 
             if ( !targetPath.exists() )
             {
@@ -482,6 +482,7 @@ public class DefaultRepositoriesService
                 "Artifact \'" + artifactTransferRequest.getGroupId() + ":" + artifactTransferRequest.getArtifactId()
                     + ":" + artifactTransferRequest.getVersion() + "\' was successfully deployed to repository \'"
                     + artifactTransferRequest.getTargetRepositoryId() + "\'";
+            log.debug("copyArtifact {}", msg);
 
         }
         catch ( RepositoryException e )
