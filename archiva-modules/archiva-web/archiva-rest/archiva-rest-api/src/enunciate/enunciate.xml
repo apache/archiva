@@ -34,7 +34,7 @@
     <jaxws-support disabled="true"/>
 
     <docs disabled="false" title="Apache Archiva REST API" includeExampleXml="true" includeExampleJson="true"
-          includeDefaultDownloads="false" docsSubdir="">
+          includeDefaultDownloads="false" docsSubdir="" freemarkerTemplate="${project.basedir}/src/enunciate/archiva.fmt" css="${project.basedir}/src/enunciate/archiva.css" >
       <!--<war docsDir="apidocs" />-->
     </docs>
 

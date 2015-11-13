@@ -1,0 +1,937 @@
+[#ftl]
+<#-- 
+Copyright 2015 The Apache Software Foundation.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+[#-- @ftlvariable name="resourceApis" type="java.util.List<com.webcohesion.enunciate.api.resources.ResourceApi>" --]
+[#-- @ftlvariable name="serviceApis" type="java.util.List<com.webcohesion.enunciate.api.services.ServiceApi>" --]
+[#-- @ftlvariable name="data" type="java.util.List<com.webcohesion.enunciate.api.datatype.Syntax>" --]
+[#-- @ftlvariable name="downloads" type="java.util.List<com.webcohesion.enunciate.api.Download>" --]
+[#-- @ftlvariable name="title" type="java.lang.String" --]
+[#-- @ftlvariable name="indexPageName" type="java.lang.String" --]
+[#-- @ftlvariable name="disableMountpoint" type="java.lang.Boolean" --]
+[#-- @ftlvariable name="apiRelativePath" type="java.lang.String" --]
+[#-- @ftlvariable name="cssFile" type="java.lang.String" --]
+[#-- @ftlvariable name="additionalCssFiles" type="java.util.List<java.lang.String>" --]
+[#-- @ftlvariable name="copyright" type="java.lang.String" --]
+[#-- @ftlvariable name="apiDoc" type="java.lang.String" --]
+[#-- @ftlvariable name="swaggerUI" type="com.webcohesion.enunciate.api.InterfaceDescriptionFile" --]
+[#--set up the subnavigation menus--]
+[#assign nav_sections = { } /]
+[#if resourceApis?size > 0]
+  [#assign nav_sections = nav_sections + { "Resources" : "resources.html" }/]
+[/#if]
+[#if serviceApis?size > 0]
+  [#assign nav_sections = nav_sections + { "Services" : "services.html" }/]
+[/#if]
+[#if data?size > 0]
+  [#list data as syntax]
+    [#assign nav_sections = { syntax.label : syntax.slug + ".html" } /]
+  [/#list]
+[/#if]
+[#if downloads?size > 0]
+  [#assign nav_sections = nav_sections + { "Files and Libraries" : "downloads.html"} /]
+[/#if]
+[#--Basic boilerplate macro.--]
+[#macro boilerplate title=title breadcrumbs=[{"title" : "Home", "href" : indexPageName}] pagenav=[] codeblocks=true]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+  <title>${title}</title>
+
+  <!-- Mobile viewport optimized: j.mp/bplateviewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Bootstrap core CSS -->
+  <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"> -->
+
+  [#if cssFile??]
+  <!--custom css for these pages-->
+  <link rel="stylesheet" href="${cssFile}">
+  [/#if]
+  [#list additionalCssFiles as additionalCssFile]
+  <link rel="stylesheet" href="${additionalCssFile}">
+  [/#list]
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.css" type="text/css">
+
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+
+<body class="home">
+ <div class="container">
+  <header>
+ 
+   <div id="header" class="column first last span-20">
+        <div id="site-name" class="column span-18 append-1 prepend-1 first last"><a href="${indexPageName}">${title}</a></div>
+        <div id="primary" class="column span-18 append-1 prepend-1 first last">
+          <ul class="navigation">
+            <li id="nav-rest"><a href="resources.html">REST</a></li>
+            <li id="nav-data"><a href="data.html">Data Model</a></li>
+          </ul>
+        </div>
+        <div>
+          <ul class="xbreadcrumbs" id="breadcrumbs">
+[#list breadcrumbs as crumb]
+<li[#if !crumb_has_next] class="current"[/#if]>
+ <a href="${crumb.href}"[#if crumb_index = 0] class="home"[/#if]>${crumb.title}</a>[#if crumb_has_next] &gt;[/#if]
+
+            </li>
+          [/#list]
+          </ul>
+        </div>
+      </div>
+  <!--<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="${indexPageName}">${title}</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+  [#if serviceApis?size > 0]
+          <li><a href="services.html">Services</a></li>
+  [/#if]
+  [#if resourceApis?size > 0]
+          <li><a href="resources.html">Resources</a></li>
+  [/#if]
+  [#if data?size > 0]
+          <li><a href="data.html">Data Types</a></li>
+  [/#if]
+  [#if downloads?size > 0]
+          <li><a href="downloads.html">Files and Libraries</a></li>
+  [/#if]
+        </ul>
+      </div>
+    </div>
+  </nav>-->
+ </header>
+  <div id="main" class="column first last span-20">
+  
+        [#nested/]
+        
+        <footer>
+          <div class="footer">
+            [#if copyright??]Copyright &copy; <script type="text/javascript" language="javascript">d = new Date;document.write(d.getFullYear());</script> <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">${copyright}</span>. [/#if]Generated by <a href="http://enunciate.webcohesion.com">Enunciate</a>.
+          </div>
+        </footer>
+
+      </div>
+    
+  </div>
+
+
+  <!-- JavaScript placed at the end of the document so the pages load faster. -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+  
+  <!-- prettify code blocks. see http://code.google.com/p/google-code-prettify/ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/run_prettify.js" type="text/javascript"></script>
+  
+
+</body>
+</html>
+[/#macro]
+[#--Macro that wraps its text in a deprecated <s> tag if the element is deprecated.--]
+[#macro deprecation element]
+  [#assign deprecated=(element?? && element.deprecated??)/]
+  [#if deprecated]<s>[/#if][#nested/][#if deprecated]</s>[/#if]
+[/#macro]
+[@file name=indexPageName]
+  [#assign pagenav=[]/]
+  [#if resourceApis?size > 0]
+    [#assign pagenav=pagenav + [{ "href" : "#resources", "title" : "Resources" }]/]
+  [/#if]
+  [#if serviceApis?size > 0]
+    [#assign pagenav=pagenav + [{ "href" : "#services", "title" : "Services" }]/]
+  [/#if]
+  [#list data as syntax]
+    [#assign pagenav=pagenav + [{ "href" : "#" + syntax.slug, "title" : syntax.label }]/]
+  [/#list]
+  [@boilerplate pagenav=pagenav]
+    [#if apiDoc??]
+  <div class="jumbotron">
+    <div class="container">
+      ${apiDoc}
+    </div>
+  </div>
+    [/#if]
+    [#if resourceApis?size > 0]
+
+  <h1 class="page-header" id="resources">Resources</h1>
+      [#list resourceApis as resourceApi]
+        [#if downloads?size > 0]
+
+  <p>
+    The resources use a data model that is supported by a set of client-side libraries that are made available on the
+    <a href="downloads.html">files and libraries</a> page.
+  </p>
+        [/#if]
+        [#if resourceApi.wadlFile??]
+
+  <p>
+    There is a <a href="${resourceApi.wadlFile.href}">WADL document</a> available that describes the resources API.
+  </p>
+        [/#if]
+        [#if swaggerUI??]
+
+  <p>
+    You may also enjoy the <a href="${swaggerUI.href}">Swagger UI</a> provided for this API.
+  </p>
+        [/#if]
+ <ul>
+ [#list resourceApi.resourceGroups as resourceGroup]
+ [@processResourceGroup resourceGroup=resourceGroup/]
+<li><a href="${resourceGroup.slug}.html">${resourceGroup.label}</a></li>
+      
+ [/#list]
+  </ul>
+  
+      [/#list]
+    [/#if]
+    [#if serviceApis?size > 0]
+
+  <h1 class="page-header" id="services">Services</h1>
+      [#list serviceApis as serviceApi]
+        [#list serviceApi.serviceGroups as serviceGroup]
+
+  <table class="table table-hover">
+    <caption>Namespace <code>${serviceGroup.namespace!"(Default)"}</code>[#if serviceGroup.wsdlFile??] (<a href="${serviceGroup.wsdlFile.href}">wsdl</a>)[/#if]</caption>
+    <thead>
+    <tr>
+      <th align="center">name</th>
+      <th align="center">description</th>
+    </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+          [#list serviceGroup.services as service]
+            [@processService service=service/]
+    <tr class="clickable-row" data-href="${service.slug}.html">
+      <td>[@deprecation element=service]${service.label}[/@deprecation]</td>
+      <td>[@deprecation element=service]${service.description!"&nbsp;"}[/@deprecation]</td>
+    </tr>
+          [/#list]
+    </tbody>
+    </table>
+        [/#list]
+      [/#list]
+      [#if downloads?size > 0]
+
+  <p>The services API is also accessible by a set of client-side libraries that can be downloaded from the <a href="downloads.html">files and libraries page</a>.</p>
+      [/#if]
+    [/#if]
+    [#if data?size > 0]
+
+  <h1 class="page-header" id="data">Data Types</h1>
+      [#list data as syntax]
+        [@processDataSyntax syntax=syntax/]
+
+  <h3 id="${syntax.slug}">${syntax.label}</h3>
+        [#list syntax.namespaces as ns]
+          [#if ns.types?size > 0]
+
+ 
+            [#if ns.uri?? && ns.uri?length > 0]
+    <p>Namespace <code>${ns.uri}</code>[#if ns.schemaFile??] (<a href="${ns.schemaFile.href}">schema</a>)[/#if]</p>
+            [#else]
+    <p>Default Namespace [#if ns.schemaFile??] (<a href="${ns.schemaFile.href}">schema</a>)[/#if]</p>
+            [/#if]
+    <ul>
+          [#list ns.types?sort_by("label") as type]
+    <li><a href="${type.slug}.html">${type.label}</a></li>
+     
+          [/#list]
+  </ul>
+   
+          [/#if]
+        [/#list]
+      [/#list]
+    [/#if]
+  [/@boilerplate]
+[/@file]
+[@file name="data.html"]
+  [#assign pagenav=[]/]
+  [#list data as syntax]
+    [#assign pagenav=pagenav + [{ "href" : "#" + syntax.slug, "title" : syntax.label }]/]
+  [/#list]
+  [@boilerplate title=title + ": Data Types" breadcrumbs=[{"title" : "Home", "href" : indexPageName}, {"title" : "Data Types" , "href" : "data.html"}] pagenav=pagenav]
+  <h1 class="page-header" id="data">Data Types</h1>
+    [#list data as syntax]
+
+  <h3 id="${syntax.slug}">${syntax.label}</h3>
+      [#list syntax.namespaces as ns]
+        [#if ns.types?size > 0]
+
+ 
+          [#if ns.uri?? && ns.uri?length > 0]
+  <p>Namespace <code>${ns.uri}</code>[#if ns.schemaFile??] (<a href="${ns.schemaFile.href}">schema</a>)[/#if]</p>
+          [#else]
+  <p>Default Namespace [#if ns.schemaFile??] (<a href="${ns.schemaFile.href}">schema</a>)[/#if]</p>
+          [/#if]
+  
+  <ul>
+          [#list ns.types as type]
+    <li><a href="${type.slug}.html">${type.label}</a></li>
+     
+          [/#list]
+  </ul>
+ 
+        [/#if]
+      [/#list]
+    [/#list]
+  [/@boilerplate]
+[/@file]
+[#if downloads?size > 0]
+  [@file name="downloads.html"]
+    [#assign pagenav=[]/]
+    [#list downloads as download]
+      [#assign pagenav=pagenav + [{ "href" : "#" + download.slug, "title" : download.name }]/]
+    [/#list]
+    [@boilerplate title=title + ": Files and Libraries" breadcrumbs=[{"title" : "Home", "href" : indexPageName}, { "title" : "Files and Libraries" , "href" : "downloads.html"}] codeblocks=true pagenav=pagenav]
+  <h1 class="page-header">Files and Libraries</h1>
+
+      [#list downloads as download]
+  <h3 id="${download.slug}">${download.name}</h3>
+        [#if download.created??]
+  <p class="lead">Created ${download.created?date?string.long}</p>
+        [/#if]
+        [#if download.description??]
+  <p>${download.description}</p>
+        [/#if]
+  <table class="table table-hover">
+    <caption>Files</caption>
+    <thead>
+    <tr>
+      <th>name</th>
+      <th>size</th>
+      <th>description</th>
+    </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+        [#list download.files as file]
+    <tr class="clickable-row" data-href="${file.name}">
+      <td>${file.name}</td>
+      <td>${file.size}</td>
+      <td>${file.description!"&nbsp;"}</td>
+    </tr>
+        [/#list]
+    </tbody>
+  </table>
+      [/#list]
+    [/@boilerplate]
+  [/@file]
+[/#if]
+[#if resourceApis?size > 0]
+  [@file name="resources.html"]
+    [@boilerplate title=title + ": Resources" breadcrumbs=[{"title" : "Home", "href" : indexPageName}, {"title" : "Resources" , "href" : "resources.html"}]]
+  <h1 class="page-header" id="resources">Resources</h1>
+
+      [#list resourceApis as resourceApi]
+        [#if downloads?size > 0]
+  <p>
+    The resources use a data model that is supported by a set of client-side libraries that are made available on the
+    <a href="downloads.html">files and libraries</a> page.
+  </p>
+        [/#if]
+        [#if resourceApi.wadlFile??]
+  <p>
+    There is a <a href="${resourceApi.wadlFile.href}">WADL document</a> available that describes the resources API.
+  </p>
+        [/#if]
+        [#if swaggerUI??]
+  <p>
+    You may also enjoy the <a href="${swaggerUI.href}">Swagger UI</a> provided for this API.
+  </p>
+        [/#if]
+
+  <ul>
+ [#list resourceApi.resourceGroups as resourceGroup]
+<li><a href="${resourceGroup.slug}.html">${resourceGroup.label}</a></li>
+      
+ [/#list]
+  </ul>
+ 
+      [/#list]
+    [/@boilerplate]
+  [/@file]
+[/#if]
+[#if serviceApis?size > 0]
+  [@file name="services.html"]
+    [@boilerplate title=title + ": Services" breadcrumbs=[{"title" : "Home", "href" : indexPageName}, {"title" : "Services" , "href" : "services.html"}]]
+  <h1 class="page-header" id="services">Services</h1>
+      [#list serviceApis as serviceApi]
+        [#list serviceApi.serviceGroups as serviceGroup]
+
+  <table class="table table-hover">
+  <caption>Namespace <code>${serviceGroup.namespace}</code>[#if serviceGroup.wsdlFile??] (<a href="${serviceGroup.wsdlFile.href}">wsdl</a>)[/#if]</caption>
+  <thead>
+    <tr>
+      <th align="center">name</th>
+      <th align="center">description</th>
+    </tr>
+  </thead>
+  <tbody data-link="row" class="rowlink">
+         [#list serviceGroup.services as service]
+    <tr class="clickable-row" data-href="${service.slug}.html">
+      <td>[@deprecation element=service]${service.label}[/@deprecation]</td>
+      <td>[@deprecation element=service]${service.description!"&nbsp;"}[/@deprecation]</td>
+    </tr>
+          [/#list]
+  </tbody>
+  </table>
+        [/#list]
+      [/#list]
+      [#if downloads?size > 0]
+
+  <p>The services API is also accessible by a set of client-side libraries that can be downloaded from the <a href="downloads.html">files and libraries page</a>.</p>
+      [/#if]
+    [/@boilerplate]
+  [/@file]
+[/#if]
+[#macro processResourceGroup resourceGroup]
+  [#assign pagenav=[]/]
+  [#list resourceGroup.resources as resource]
+    [#list resource.methods as method]
+      [#assign pagenav=pagenav + [{ "href" : "#" + method.slug, "title" : method.label + " " + resource.path }]/]
+    [/#list]
+  [/#list]
+  [#-- @ftlvariable name="resourceGroup" type="com.webcohesion.enunciate.api.resources.ResourceGroup" --]
+  [@file name=resourceGroup.slug + ".html"]
+    [@boilerplate title=title + ": " + resourceGroup.label breadcrumbs=[{"title" : "Home", "href" : indexPageName}, {"title" : "Resources" , "href" : "resources.html"}, {"title" : resourceGroup.label , "href" : resourceGroup.slug + ".html"}] pagenav=pagenav]
+      <h1 class="page-header">${resourceGroup.label} <small>Resource</small></h1>
+      [#if resourceGroup.description??]
+
+      <p>${resourceGroup.description}</p>
+      [/#if]
+      <ul>
+      [#list resourceGroup.resources?sort_by("path") as resource]
+[#list resource.methods as method]
+<li><a href="#${method.slug}">${apiRelativePath}${resourceGroup.contextPath}${resource.path}</a></li>
+[/#list]
+      [/#list]
+      </ul>
+      [#list resourceGroup.resources?sort_by("path") as resource]
+        [#if resource.since?? || resource.version??]
+
+      <dl class="dl-horizontal">
+        [#if resource.since??]
+        <dt>Available Since</dt>
+        <dd>${resource.since}</dd>
+        [/#if]
+        [#if resource.version??]
+        <dt>Version</dt>
+        <dd>${resource.version}</dd>
+        [/#if]
+      </dl>
+        [/#if]
+        [#list resource.methods as method]
+
+      <div id="${method.slug}">
+        <h2>${method.label} <small>${resource.path} <a href="${apiRelativePath}${resourceGroup.contextPath}${resource.path}" class="glyphicon glyphicon-new-window" target="_blank"></a></small></h2>
+          [#if resourceGroup.deprecated?? || method.deprecated??]
+
+        <div class="alert alert-danger">This method has been deprecated. [#if method.deprecated??] ${method.deprecated!""}[#else] ${resource.deprecated!""}[/#if]</div>
+          [/#if]
+          [#if method.description??]
+
+        <p>${method.description}</p>
+          [/#if]
+          [#-- would be nice to enable a "Try it out" link to Swagger. See https://github.com/swagger-api/swagger-spec/issues/239
+          [#if swaggerUI??]
+
+        <p><a href="${swaggerUI.href}#!/${resourceGroup.label?url}/${method.slug}" class="btn btn-default">Try it out!</a></p>
+          [/#if]
+          --]
+          [#if (method.since?? || method.version??)]
+
+        <dl class="dl-horizontal">
+            [#if method.since??]
+          <dt>Available Since</dt>
+          <dd>${method.since}</dd>
+            [/#if]
+            [#if method.version??]
+          <dt>Version</dt>
+          <dd>${method.version}</dd>
+            [/#if]
+        </dl>
+          [/#if]
+          [#if method.parameters?size > 0]
+
+        <table class="table">
+          <caption>Request Parameters</caption>
+          <thead>
+          <tr>
+            <th>name</th>
+            <th>type</th>
+            <th>description</th>
+            <th>default</th>
+          </tr>
+          </thead>
+          <tbody>
+            [#list method.parameters as parameter]
+          <tr>
+            <td>${parameter.name}</td>
+            <td>${parameter.typeLabel}</td>
+            <td>${parameter.description!"&nbsp;"}</td>
+            <td>${parameter.defaultValue!"n/a"}</td>
+          </tr>
+            [/#list]
+          </tbody>
+        </table>
+          [/#if]
+          [#if method.requestEntity??]
+
+        <table class="table">
+          <caption>Request Body</caption>
+          <thead>
+          <tr>
+            <th>media type</th>
+            <th>data type</th>
+            [#if method.requestEntity.description??]
+            <th>description</th>
+            [/#if]
+          </tr>
+          </thead>
+          <tbody>
+            [#list method.requestEntity.mediaTypes as io]
+          <tr>
+            <td><abbr data-toggle="tooltip" data-placement="top" title="Use the &quot;Content-Type: ${io.mediaType}&quot; HTTP header to specify this media type to the server.">${io.mediaType}</abbr></td>
+            <td>[@referenceDataType referenceType=io.dataType!{"label" : "(custom)"}/][#if io.syntax??] (${io.syntax})[/#if]</td>
+              [#if io_index = 0 && method.requestEntity.description??]
+            <td rowspan="${method.requestEntity.mediaTypes?size}">${method.requestEntity.description}</td>
+              [/#if]
+          </tr>
+            [/#list]
+          </tbody>
+        </table>
+          [/#if]
+          [#if method.responseCodes?size > 0]
+
+        <table class="table">
+          <caption>Response Codes</caption>
+          <thead>
+          <tr>
+            <th>code</th>
+            <th>condition</th>
+          </tr>
+          </thead>
+          <tbody>
+            [#list method.responseCodes as responseCode]
+          <tr>
+            <td>${responseCode.code}</td>
+            <td>${responseCode.condition}</td>
+          </tr>
+            [/#list]
+          </tbody>
+        </table>
+          [/#if]
+          [#if method.responseEntity??]
+
+        <table class="table">
+          <caption>Response Body</caption>
+          <thead>
+          <tr>
+            <th>media type</th>
+            <th>data type</th>
+            [#if method.responseEntity.description??]
+            <th>description</th>
+            [/#if]
+          </tr>
+          </thead>
+          <tbody>
+            [#list method.responseEntity.mediaTypes as io]
+          <tr>
+            <td><abbr data-toggle="tooltip" data-placement="top" title="Use the &quot;Accept: ${io.mediaType}&quot; HTTP header to request that this media type be provided by the server.">${io.mediaType}</abbr></td>
+            <td>[@referenceDataType referenceType=io.dataType!{"label" : "(custom)"}/][#if io.syntax??] (${io.syntax})[/#if]</td>
+              [#if io_index = 0 && method.responseEntity.description??]
+            <td rowspan="${method.responseEntity.mediaTypes?size}">${method.responseEntity.description}</td>
+              [/#if]
+          </tr>
+            [/#list]
+          </tbody>
+        </table>
+          [/#if]
+          [#if method.warnings?size > 0]
+
+        <table class="table">
+          <caption>Response Warnings</caption>
+          <thead>
+          <tr>
+            <th>code</th>
+            <th>condition</th>
+          </tr>
+          </thead>
+          <tbody>
+            [#list method.warnings as responseCode]
+          <tr>
+            <td>${responseCode.code}</td>
+            <td>${responseCode.condition}</td>
+          </tr>
+            [/#list]
+          </tbody>
+        </table>
+          [/#if]
+          [#if method.responseHeaders?size > 0]
+
+        <table class="table">
+          <caption>Response Headers</caption>
+          <thead>
+          <tr>
+            <th>name</th>
+            <th>description</th>
+          </tr>
+          </thead>
+          <tbody>
+            [#list method.responseHeaders as header]
+          <tr>
+            <td>${header.name}</td>
+            <td>${header.description!"&nbsp;"}</td>
+          </tr>
+            [/#list]
+          </tbody>
+        </table>
+          [/#if]
+      </div>
+        [/#list]
+      [/#list]
+    [/@boilerplate]
+  [/@file]
+[/#macro]
+[#macro processService service]
+  [#assign pagenav=[]/]
+  [#list service.operations as operation]
+    [#assign pagenav=pagenav + [{ "href" : "#" + operation.slug, "title" : operation.name }]/]
+  [/#list]
+  [#-- @ftlvariable name="service" type="com.webcohesion.enunciate.api.services.Service" --]
+  [@file name=service.slug + ".html"]
+    [@boilerplate title=title + ": " + service.label breadcrumbs=[{"title" : "Home", "href" : indexPageName}, {"title" : service.label , "href" : service.slug + ".html"}] pagenav=pagenav]
+      <h1 class="page-header">${service.label} <small>Service</small></h1>
+      [#if service.deprecated??]
+
+      <div class="alert alert-danger">This service has been deprecated. ${service.deprecated}</div>
+      [/#if]
+      [#if service.description??]
+
+      <p>${service.description}</p>
+      [/#if]
+
+      <dl class="dl-horizontal">
+        [#if service.namespace?? && service.namespace?length > 0]
+        <dt>Namespace</dt>
+        <dd>${service.namespace}</dd>
+        [/#if]
+        [#if service.group.wsdlFile??]
+        <dt>WSDL</dt>
+        <dd><a href="${service.group.wsdlFile.href}">${service.group.wsdlFile.href}</a></dd>
+        [/#if]
+        [#if service.path??]
+        <dt>Path</dt>
+        <dd><a href="${apiRelativePath}${service.path}">${service.path}</a></dd>
+        [/#if]
+        [#if service.since??]
+        <dt>Available Since</dt>
+        <dd>${service.since}</dd>
+        [/#if]
+        [#if service.version??]
+        <dt>Version</dt>
+        <dd>${service.version}</dd>
+        [/#if]
+      </dl>
+      [#list service.operations as operation]
+
+      <h2 id="${operation.slug}">${operation.name} <small>Operation</small></h2>
+        [#if operation.deprecated??]
+
+      <div class="alert alert-danger">This method has been deprecated. ${operation.deprecated}</div>
+        [/#if]
+        [#if operation.description??]
+
+        <p>${operation.description}</p>
+        [/#if]
+        [#if (operation.since?? || operation.version??)]
+
+      <dl class="dl-horizontal">
+          [#if operation.since??]
+        <dt>Available Since</dt>
+        <dd>${operation.since}</dd>
+          [/#if]
+          [#if operation.version??]
+        <dt>Version</dt>
+        <dd>${operation.version}</dd>
+          [/#if]
+      </dl>
+        [/#if]
+        [#if operation.inputParameters?size > 0]
+
+      <table class="table">
+        <caption>Input Parameters</caption>
+        <thead>
+        <tr>
+          <th>name</th>
+          <th>type</th>
+          <th>description</th>
+        </tr>
+        </thead>
+        <tbody>
+          [#list operation.inputParameters as parameter]
+        <tr>
+          <td>${parameter.name}</td>
+          <td>[@referenceDataType referenceType=parameter.dataType/]</td>
+          <td>${parameter.description!"&nbsp;"}</td>
+        </tr>
+          [/#list]
+        </tbody>
+      </table>
+        [/#if]
+        [#if operation.outputParameters?size > 0]
+
+      <table class="table">
+        <caption>Output Parameters</caption>
+        <thead>
+        <tr>
+          <th>name</th>
+          <th>type</th>
+          <th>description</th>
+        </tr>
+        </thead>
+        <tbody>
+          [#list operation.outputParameters as parameter]
+        <tr>
+          <td>${parameter.name}</td>
+          <td>[@referenceDataType referenceType=parameter.dataType/]</td>
+          <td>${parameter.description!"&nbsp;"}</td>
+        </tr>
+          [/#list]
+        </tbody>
+      </table>
+        [/#if]
+        [#if operation.returnType??]
+
+      <table class="table">
+        <caption>Return Value</caption>
+        <thead>
+        <tr>
+          <th>type</th>
+          <th>description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>[#if operation.returnType.slug??]<a href="${operation.returnType.slug}.html">[/#if]${operation.returnType.label}[#if operation.returnType.slug??]</a>[/#if]</td>
+          <td>${operation.returnDescription!"&nbsp;"}</td>
+        </tr>
+        </tbody>
+      </table>
+        [/#if]
+        [#if operation.faults?size > 0]
+
+      <table class="table">
+        <caption>Faults</caption>
+        <thead>
+        <tr>
+          <th>name</th>
+          <th>type</th>
+          <th>description</th>
+        </tr>
+        </thead>
+        <tbody>
+          [#list operation.faults as fault]
+        <tr>
+          <td>${fault.name}</td>
+          <td>[@referenceDataType referenceType=fault.dataType/]</td>
+          <td>${fault.description!"&nbsp;"}</td>
+        </tr>
+          [/#list]
+        </tbody>
+      </table>
+        [/#if]
+      [/#list]
+    [/@boilerplate]
+  [/@file]
+[/#macro]
+[#macro processDataSyntax syntax]
+  [#-- @ftlvariable name="syntax" type="com.webcohesion.enunciate.api.datatype.Syntax" --]
+  [@file name=syntax.slug + ".html"]
+    [@boilerplate title=title + ": " + syntax.label breadcrumbs=[{"title" : "Home", "href" : indexPageName}, {"title" : syntax.label , "href" : syntax.slug + ".html"} ]]
+  <h1 class="page-header">${syntax.label}</h1>
+      [#list syntax.namespaces as ns]
+        [#if ns.types?size > 0]
+
+  <table class="table table-hover">
+          [#if ns.uri?? && ns.uri?length > 0]
+  <caption>Namespace <code>${ns.uri}</code>[#if ns.schemaFile??] (<a href="${ns.schemaFile.href}">schema</a>)[/#if]</caption>
+          [#else]
+  <caption>Default Namespace [#if ns.schemaFile??] (<a href="${ns.schemaFile.href}">schema</a>)[/#if]</caption>
+          [/#if]
+  <thead>
+    <tr>
+      <th align="center">type</th>
+      <th align="center">description</th>
+    </tr>
+  </thead>
+  <tbody data-link="row" class="rowlink">
+          [#list ns.types as type]
+            [@processDataType type=type/]
+    <tr class="clickable-row" data-href="${type.slug}.html">
+      <td>[@deprecation element=type]${type.label}[/@deprecation]</td>
+      <td>[@deprecation element=type]${type.description}[/@deprecation]</td>
+    </tr>
+          [/#list]
+  </tbody>
+  </table>
+        [/#if]
+      [/#list]
+    [/@boilerplate]
+  [/@file]
+[/#macro]
+[#macro processDataType type]
+  [#-- @ftlvariable name="type" type="com.webcohesion.enunciate.api.datatype.DataType" --]
+  [@file name=type.slug + ".html"]
+    [@boilerplate title=title + ": " + type.label breadcrumbs=[{"title" : "Home", "href" : indexPageName}, {"title" : type.syntax.label , "href" : type.syntax.slug + ".html"}, {"title" : type.label , "href" : type.slug + ".html"} ] codeblocks=true]
+      <h1 class="page-header">${type.label} <small>Data Type</small></h1>
+      [#if type.deprecated??]
+
+      <div class="alert alert-danger">This data type has been deprecated. ${type.deprecated}</div>
+      [/#if]
+      [#if type.description??]
+
+      <p>${type.description}</p>
+      [/#if]
+
+      <dl class="dl-horizontal">
+      [#if type.namespace.uri??]
+        <dt>Namespace</dt>
+        [#if type.namespace.uri?length > 0]
+        <dd><code>${type.namespace.uri}</code></dd>
+        [#else]
+        <dd>(Default)</dd>
+        [/#if]
+      [/#if]
+      [#if type.namespace.schemaFile??]
+        <dt>Schema</dt>
+        <dd><a href="${type.namespace.schemaFile.href}">${type.namespace.schemaFile.href}</a></dd>
+      [/#if]
+      [#if type.since??]
+        <dt>Available Since</dt>
+        <dd>${type.since}</dd>
+      [/#if]
+      [#if type.version??]
+        <dt>Version</dt>
+        <dd>${type.version}</dd>
+      [/#if]
+      </dl>
+      [#if type.values??]
+
+      <table class="table">
+        <caption>Values</caption>
+        <thead>
+        <tr>
+          <th>value</th>
+          <th>description</th>
+        </tr>
+        </thead>
+        <tbody>
+          [#list type.values as value]
+        <tr>
+          <td>${value.value}</td>
+          <td>${value.description!"&nbsp;"}</td>
+        </tr>
+          [/#list]
+        </tbody>
+      </table>
+      [/#if]
+      [#if type.properties??]
+
+      <table class="table">
+        <caption>Properties</caption>
+        <thead>
+        <tr>
+          <th>name</th>
+          <th>data type</th>
+        [#list type.propertyMetadata?keys as meta]
+          <th>${type.propertyMetadata[meta]}</th>
+        [/#list]
+          <th>description</th>
+        </tr>
+        </thead>
+        <tbody>
+          [#list type.properties as property]
+        <tr>
+          <td>[@deprecation element=property]${property.name}[/@deprecation]</td>
+          <td>[@deprecation element=property][@referenceDataType referenceType=property.dataType/][/@deprecation]</td>
+            [#list type.propertyMetadata?keys as meta]
+          <td>[@deprecation element=property][@printPropertyMetadata property=property meta=meta/][/@deprecation]</td>
+            [/#list]
+          <td>[@deprecation element=property]${property.description!"&nbsp;"}[/@deprecation]</td>
+        </tr>
+          [/#list]
+        </tbody>
+          [#if type.supertypes??]
+            [#list type.supertypes as supertype]
+              [#if supertype.value?? && supertype.value.properties?? && supertype.value.properties?size > 0]
+        <tr>
+          <td colspan="${3 + type.propertyMetadata?size}"><h5 class="text-muted">Properties inherited from <a href="${supertype.slug}.html">${supertype.label}</a></h5></td>
+        </tr>
+        <tbody>
+                [#list supertype.value.properties as superProperty]
+        <tr>
+          <td>${superProperty.name}</td>
+          <td>[@referenceDataType referenceType=superProperty.dataType/]</td>
+            [#list type.propertyMetadata?keys as meta]
+          <td>[@printPropertyMetadata property=superProperty meta=meta/]</td>
+            [/#list]
+          <td>${superProperty.description!"&nbsp;"}</td>
+        </tr>
+                [/#list]
+        </tbody>
+              [/#if]
+            [/#list]
+          [/#if]
+      </table>
+      [/#if]
+      [#if type.example??]
+
+      <h2>Example</h2>
+
+      <pre class="prettyprint lang-${type.example.lang}">${type.example.body?xhtml}</pre>
+      [/#if]
+    [/@boilerplate]
+  [/@file]
+[/#macro]
+[#macro referenceDataType referenceType]
+[#-- @ftlvariable name="type" type="com.webcohesion.enunciate.api.datatype.DataTypeReference" --]
+[#if referenceType.containers??][#list referenceType.containers as container]${container?string} of [/#list][/#if][#if referenceType.slug??]<a href="${referenceType.slug}.html">[/#if]${referenceType.label!"(custom)"}[#if referenceType.slug??]</a>[/#if]
+[/#macro]
+[#macro printPropertyMetadata property meta]
+  [#assign metaValue=property[meta]!({ "structure" : true })/]
+  [#if metaValue?is_hash && metaValue.structure!false]
+[#if metaValue.href??]<a href="${metaValue.href}">[/#if][#if metaValue.title??]<abbr title="${metaValue.title}">[/#if]${metaValue.value!"&nbsp;"}[#if metaValue.title??]</abbr>[/#if][#if metaValue.href??]</a>[/#if]
+  [#else]
+${metaValue}
+  [/#if]
+[/#macro]
