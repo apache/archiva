@@ -66,7 +66,7 @@ public class RestDocsServlet
         // replace all links !!
         Document document = Jsoup.parse( is, "UTF-8", "" );
 
-        Element body = document.body();
+        Element body = document.body().child( 0 );
 
         Elements links = body.select( "a[href]" );
 
@@ -107,7 +107,7 @@ public class RestDocsServlet
         }
 
         Document res = new Document( "" );
-        res.appendChild( body.select( "div[class=container-fluid]" ).last() );
+        res.appendChild( body.select( "div[id=main]" ).first() );
         
         Elements scripts = body.select( "script" );
         for ( Element script : scripts )
