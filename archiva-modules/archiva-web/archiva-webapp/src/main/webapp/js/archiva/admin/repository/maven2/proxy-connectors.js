@@ -191,6 +191,7 @@ define("archiva/admin/repository/maven2/proxy-connectors",["jquery","i18n","jque
       var pattern = $("#main-content" ).find("#whitelist-value").val();
       var tab =  self.proxyConnector.whiteListPatterns();
       tab.push(pattern);
+      tab.sort();
       self.proxyConnector.whiteListPatterns(tab);
       self.proxyConnector.modified(true);
 
