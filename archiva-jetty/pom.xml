@@ -178,7 +178,6 @@
                   <systemProperty>jetty.logs=%ARCHIVA_BASE%/logs</systemProperty>
                   <systemProperty>java.io.tmpdir=%ARCHIVA_BASE%/temp</systemProperty>
                   <systemProperty>AsyncLoggerConfig.WaitStrategy=Block</systemProperty>
-                  <systemProperty>AsyncLoggerConfig.WaitStrategy=Block</systemProperty>
                   <systemProperty>archiva.repositorySessionFactory.id=jcr</systemProperty>
                   <systemProperty>archiva.cassandra.configuration.file=%ARCHIVA_BASE%/conf/archiva-cassandra.properties</systemProperty>
                 </systemProperties>
