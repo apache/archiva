@@ -6,6 +6,7 @@ build
 .idea
 *.ipr
 *.iws
+out/
 
 #jenv
 .java-version
