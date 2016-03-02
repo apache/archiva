@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 
+import javax.jcr.InvalidItemStateException;
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -1346,6 +1347,9 @@ public class JcrMetadataRepository
         try
         {
             getJcrSession().save();
+        } catch ( InvalidItemStateException e ) {
+            // olamy this might happen when deleting a repo while is under scanning
+            log.warn( "skip InvalidItemStateException:" + e.getMessage(), e );
         }
         catch ( RepositoryException e )
         {
