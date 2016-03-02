@@ -1847,6 +1847,7 @@
               <exclude>nbactions.xml</exclude>
               <exclude>nb-configuration.xml</exclude>
               <exclude>.travis.yml</exclude>
+              <exclude>out/**</exclude>
             </excludes>
           </configuration>
         </plugin>
