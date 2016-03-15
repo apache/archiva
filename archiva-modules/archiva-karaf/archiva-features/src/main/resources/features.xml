@@ -372,11 +372,6 @@
     <bundle>mvn:org.apache.archiva/metadata-store-jcr/${project.version}</bundle>
   </feature>
 
-  <feature name="archiva-npanday-support" description="Archiva Npanday Support module" version="${project.version}" resolver="(obr)">
-    <feature version="${project.version}">archiva-repository-layer</feature>
-    <bundle>mvn:org.apache.archiva/npanday-support/${project.version}</bundle>
-  </feature>
-
   <feature name="archiva-webapp-common" description="Archiva WebApp Common" version="${project.version}" resolver="(obr)">
     <feature>war</feature>
     <feature version="[3,4)">spring</feature>

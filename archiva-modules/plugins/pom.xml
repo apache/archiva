@@ -33,8 +33,6 @@
     <module>repository-statistics</module>
     <module>problem-reports</module>
     <module>audit</module>
-    <!-- TODO: eventually not a core plugin, needs to be moved to a separate tree, with it's own Selenium tests -->
-    <module>npanday-support</module>
     <module>stage-repository-merge</module>
     <module>generic-metadata-support</module>
     <module>metadata-store-jcr</module>
