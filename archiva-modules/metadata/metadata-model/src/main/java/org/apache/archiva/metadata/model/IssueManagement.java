@@ -24,7 +24,7 @@ import java.io.Serializable;
 
 /**
  * Information about the issue management system used by the project.
- * <p/>
+ *
  * TODO considering moving this to a facet - avoid referring to it externally
  */
 @XmlRootElement(name = "issueManagement")

@@ -43,21 +43,24 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * <p>
  * Default implementation of the metadata resolver API. At present it will handle updating the content repository
  * from new or changed information in the model and artifacts from the repository storage.
- * <p/>
+ * </p>
+ * <p>
  * This is a singleton component to allow an alternate implementation to be provided. It is intended to be the same
  * system-wide for the whole content repository instead of on a per-managed-repository basis. Therefore, the session is
  * passed in as an argument to obtain any necessary resources, rather than the class being instantiated within the
  * session in the context of a single managed repository's resolution needs.
- * <p/>
+ * </p>
+ * <p>
  * Note that the caller is responsible for the session, such as closing and saving (which is implied by the resolver
  * being obtained from within the session). The {@link RepositorySession#markDirty()} method is used as a hint to ensure
  * that the session knows we've made changes at close. We cannot ensure the changes will be persisted if the caller
  * chooses to revert first. This is preferable to storing the metadata immediately - a separate session would require
  * having a bi-directional link with the session factory, and saving the existing session might save other changes
  * unknowingly by the caller.
- * <p/>
+ * </p>
  */
 @Service("metadataResolver#default")
 public class DefaultMetadataResolver
@@ -67,12 +70,15 @@ public class DefaultMetadataResolver
     private Logger log = LoggerFactory.getLogger( DefaultMetadataResolver.class );
 
     /**
+     * <p>
      * FIXME: this needs to be configurable based on storage type - and could also be instantiated per repo. Change to a
      * factory, and perhaps retrieve from the session. We should avoid creating one per request, however.
-     * <p/>
+     * </p>
+     * <p>
      * TODO: Also need to accommodate availability of proxy module
      * ... could be a different type since we need methods to modify the storage metadata, which would also allow more
      * appropriate methods to pass in the already determined repository configuration, for example, instead of the ID
+     * </p>
      */
     @Inject
     @Named(value = "repositoryStorage#maven2")

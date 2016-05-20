@@ -99,13 +99,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * <p>
  * Maven 2 repository format storage implementation. This class currently takes parameters to indicate the repository to
  * deal with rather than being instantiated per-repository.
  * FIXME: instantiate one per repository and allocate permanently from a factory (which can be obtained within the session).
- * <p/>
+ * </p>
+ * <p>
  * The session is passed in as an argument to obtain any necessary resources, rather than the class being instantiated
  * within the session in the context of a single managed repository's resolution needs.
- * <p/>
+ * </p>
  */
 @Service( "repositoryStorage#maven2" )
 public class Maven2RepositoryStorage

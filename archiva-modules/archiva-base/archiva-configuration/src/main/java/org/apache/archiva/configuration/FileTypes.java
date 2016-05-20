@@ -84,8 +84,6 @@ public class FileTypes
 
     /**
      * Get the list of patterns for a specified filetype.
-     * <p/>
-     * <p/>
      * You will always get a list.  In this order.
      * <ul>
      * <li>The Configured List</li>

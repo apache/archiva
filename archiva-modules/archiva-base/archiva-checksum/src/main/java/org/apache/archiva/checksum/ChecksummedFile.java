@@ -36,7 +36,6 @@ import java.util.regex.Pattern;
 
 /**
  * ChecksummedFile
- * <p/>
  * <p>Terminology:</p>
  * <dl>
  * <dt>Checksum File</dt>
@@ -119,7 +118,6 @@ public class ChecksummedFile
      * <p>
      * Given a checksum file, check to see if the file it represents is valid according to the checksum.
      * </p>
-     * <p/>
      * <p>
      * NOTE: Only supports single file checksums of type MD5 or SHA1.
      * </p>

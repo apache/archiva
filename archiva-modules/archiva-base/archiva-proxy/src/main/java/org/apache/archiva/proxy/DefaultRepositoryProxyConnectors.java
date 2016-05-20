@@ -101,7 +101,6 @@ import java.util.concurrent.ConcurrentMap;
 
 /**
  * DefaultRepositoryProxyConnectors
- * <p/>
  * TODO exception handling needs work - "not modified" is not really an exceptional case, and it has more layers than
  * your average brown onion
  */
