@@ -22,7 +22,7 @@
   <parent>
     <artifactId>archiva-modules</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>2.2.1</version>
+    <version>2.2.2-SNAPSHOT</version>
   </parent>
   <artifactId>plugins</artifactId>
   <name>Archiva :: Core Plugins</name>
