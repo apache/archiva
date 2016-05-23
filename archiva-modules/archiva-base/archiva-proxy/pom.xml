@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-base</artifactId>
-    <version>2.2.1-SNAPSHOT</version>
+    <version>2.2.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-proxy</artifactId>
@@ -265,8 +265,8 @@
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
             <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
-            <http.proxyHost></http.proxyHost>
-            <http.proxyPort></http.proxyPort>
+            <http.proxyHost />
+            <http.proxyPort />
           </systemPropertyVariables>
         </configuration>
       </plugin>
