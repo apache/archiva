@@ -69,6 +69,7 @@ public class BrowseServiceTest
         throws Exception
     {
         scanRepo( TEST_REPO_ID );
+        waitForScanToComplete( TEST_REPO_ID );
 
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
@@ -92,6 +93,7 @@ public class BrowseServiceTest
         try
         {
             scanRepo( TEST_REPO_ID );
+            waitForScanToComplete( TEST_REPO_ID );
 
             BrowseService browseService = getBrowseService( authorizationHeader, false );
 
@@ -410,6 +412,7 @@ public class BrowseServiceTest
         throws Exception
     {
         scanRepo( TEST_REPO_ID );
+        waitForScanToComplete( TEST_REPO_ID );
 
         BrowseService browseService = getBrowseService( authorizationHeader, false );
 
