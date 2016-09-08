@@ -385,11 +385,13 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
         customShowError("#user-login-form",validator,errorMap,errorMap);
       }
     });
+    $("#modal-login-ok").off();
     $("#modal-login-ok").on("click", function(e) {
       e.preventDefault();
       login();
     });
 
+    $("#modal-login-password-reset").off();
     $("#modal-login-password-reset").on("click", function(e) {
       e.preventDefault();
       $.log("password reset");
