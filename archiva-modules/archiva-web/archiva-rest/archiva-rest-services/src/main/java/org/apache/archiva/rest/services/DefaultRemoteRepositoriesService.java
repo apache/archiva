@@ -64,6 +64,9 @@ public class DefaultRemoteRepositoriesService
     @Inject
     private NetworkProxyAdmin networkProxyAdmin;
 
+    int checkReadTimeout = 10000;
+    int checkTimeout = 9000;
+
     @Override
     public List<RemoteRepository> getRemoteRepositories()
         throws ArchivaRestServiceException
@@ -172,14 +175,14 @@ public class DefaultRemoteRepositoriesService
                                            .networkProxy( networkProxy ) );
 
             // hardcoded value as it's a check of the remote repo connectivity
-            wagon.setReadTimeout( 4000 );
-            wagon.setTimeout( 3000 );
+            wagon.setReadTimeout( checkReadTimeout );
+            wagon.setTimeout( checkTimeout );
 
             if ( wagon instanceof AbstractHttpClientWagon )
             {
                 HttpMethodConfiguration httpMethodConfiguration = new HttpMethodConfiguration() //
                     .setUsePreemptive( true ) //
-                    .setReadTimeout( 4000 );
+                    .setReadTimeout( checkReadTimeout );
                 HttpConfiguration httpConfiguration = new HttpConfiguration().setGet( httpMethodConfiguration );
                 AbstractHttpClientWagon.class.cast( wagon ).setHttpConfiguration( httpConfiguration );
             }
@@ -213,5 +216,21 @@ public class DefaultRemoteRepositoriesService
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
 
+    }
+
+    public int getCheckReadTimeout() {
+        return checkReadTimeout;
+    }
+
+    public void setCheckReadTimeout(int checkReadTimeout) {
+        this.checkReadTimeout = checkReadTimeout;
+    }
+
+    public int getCheckTimeout() {
+        return checkTimeout;
+    }
+
+    public void setCheckTimeout(int checkTimeout) {
+        this.checkTimeout = checkTimeout;
     }
 }
