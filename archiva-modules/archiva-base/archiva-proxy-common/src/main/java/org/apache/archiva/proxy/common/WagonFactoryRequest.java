@@ -29,6 +29,11 @@ import java.util.Map;
  */
 public class WagonFactoryRequest
 {
+
+    public static final String USER_AGENT_SYSTEM_PROPERTY = "archiva.userAgent";
+
+    private static String DEFAULT_USER_AGENT = "Java-Archiva";
+
     /**
      * the protocol to find the Wagon for, which must be prefixed with <code>wagon#</code>, for example
      * <code>wagon#http</code>. <b>to have a wagon supporting ntlm add -ntlm</b>
@@ -37,7 +42,13 @@ public class WagonFactoryRequest
 
     private Map<String, String> headers = new HashMap<>();
 
-    private String userAgent = "Java-Archiva";
+    private String userAgent = DEFAULT_USER_AGENT;
+
+    static {
+        if (System.getProperty(USER_AGENT_SYSTEM_PROPERTY)!=null && !"".equals(System.getProperty(USER_AGENT_SYSTEM_PROPERTY))) {
+            DEFAULT_USER_AGENT=System.getProperty(USER_AGENT_SYSTEM_PROPERTY);
+        }
+    }
 
     private NetworkProxy networkProxy;
 
