@@ -19,6 +19,7 @@ package org.apache.archiva.proxy.common;
  */
 
 import org.apache.archiva.admin.model.beans.NetworkProxy;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class WagonFactoryRequest
     private String userAgent = DEFAULT_USER_AGENT;
 
     static {
-        if (System.getProperty(USER_AGENT_SYSTEM_PROPERTY)!=null && !"".equals(System.getProperty(USER_AGENT_SYSTEM_PROPERTY))) {
+        if ( StringUtils.isNotBlank( System.getProperty( USER_AGENT_SYSTEM_PROPERTY))) {
             DEFAULT_USER_AGENT=System.getProperty(USER_AGENT_SYSTEM_PROPERTY);
         }
     }
