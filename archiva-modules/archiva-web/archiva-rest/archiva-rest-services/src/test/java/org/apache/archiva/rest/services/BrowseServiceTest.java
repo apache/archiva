@@ -18,8 +18,10 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.redback.rest.api.model.Role;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.rest.api.model.BrowseResult;
@@ -38,9 +40,7 @@ import org.junit.Test;
 import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -154,6 +154,52 @@ public class BrowseServiceTest
                        new BrowseResultEntry( "org.apache.karaf.features", false ) );
     }
 
+    @Test
+    public void listUserRepositories()
+            throws Exception
+    {
+        initSourceTargetRepo();
+        BrowseService browseService = getBrowseService( authorizationHeader, false );
+
+        List<ManagedRepository> browseResult = browseService.getUserRepositories();
+        assertThat( browseResult )
+                .isNotNull()
+                .isNotEmpty()
+                .hasSize(5);
+        List<String> repIds = new ArrayList<>();
+        for(ManagedRepository rep : browseResult) {
+            repIds.add(rep.getId());
+        }
+        assertThat(repIds).contains("internal","snapshots","test-repo","test-copy-target","test-origin-repo");
+
+    }
+
+
+    @Test
+    public void listUserManagableRepositories()
+            throws Exception
+    {
+        initSourceTargetRepo();
+        // Giving the guest user a manager role
+        String name = "Repository Manager - internal";
+        Role role = getRoleManagementService( authorizationHeader ).getRole( name );
+        role.setUsers( Arrays.asList( getUserService( authorizationHeader ).getUser( "guest" ) ) );
+        getRoleManagementService( authorizationHeader ).updateRoleUsers( role );
+
+        // browseService with guest user
+        BrowseService browseService = getBrowseService( "", false );
+
+        List<ManagedRepository> browseResult = browseService.getUserManagableRepositories();
+        assertThat( browseResult )
+                .isNotNull()
+                .isNotEmpty().hasSize(1);
+        List<String> repIds = new ArrayList<>();
+        for(ManagedRepository rep : browseResult) {
+            repIds.add(rep.getId());
+        }
+        assertThat(repIds).contains("internal");
+
+    }
 
     @Test
     public void browsegroupIdWithReleaseStartNumber()
