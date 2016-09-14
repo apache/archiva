@@ -102,6 +102,16 @@ public interface BrowseService
         throws ArchivaRestServiceException;
 
     /**
+     * @return List of repositories current user can manage
+     */
+    @Path("userManagableRepositories")
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization(noPermission = true, noRestriction = true)
+    List<ManagedRepository> getUserManagableRepositories()
+            throws ArchivaRestServiceException;
+
+    /**
      * return the dependency Tree for an artifacts
      * <b>the List result has only one entry</b>
      */

@@ -508,6 +508,19 @@ public class DefaultBrowseService
     }
 
     @Override
+    public List<ManagedRepository> getUserManagableRepositories() throws ArchivaRestServiceException {
+        try
+        {
+            return userRepositories.getManagableRepositories( getPrincipal() );
+        }
+        catch ( ArchivaSecurityException e )
+        {
+            throw new ArchivaRestServiceException( "repositories.read.managable.error",
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
+        }
+    }
+
+    @Override
     public List<Artifact> getDependees( String groupId, String artifactId, String version, String repositoryId )
         throws ArchivaRestServiceException
     {

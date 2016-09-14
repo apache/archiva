@@ -88,4 +88,9 @@ public class UserRepositoriesStub
     {
         return Collections.emptyList();
     }
+
+    @Override
+    public List<ManagedRepository> getManagableRepositories(String principal) throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException {
+        return Collections.emptyList();
+    }
 }

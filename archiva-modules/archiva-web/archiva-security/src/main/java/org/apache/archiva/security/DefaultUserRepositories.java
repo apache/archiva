@@ -99,6 +99,11 @@ public class DefaultUserRepositories
         return getAccessibleRepositories( principal, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
     }
 
+    @Override
+    public List<ManagedRepository> getManagableRepositories(String principal) throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException {
+        return getAccessibleRepositories( principal, ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
+    }
+
     private List<ManagedRepository> getAccessibleRepositories( String principal, String operation )
         throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException
     {
