@@ -146,6 +146,21 @@ public class RemoteRepositoriesServiceTest
 
     }
 
+    @Test
+    public void checkRemoteConnectivity()
+            throws Exception {
+        RemoteRepositoriesService service = getRemoteRepositoriesService();
+
+        WebClient.client(service).header("Authorization", authorizationHeader);
+
+        int initialSize = service.getRemoteRepositories().size();
+
+        service.addRemoteRepository(getRemoteRepository());
+
+        assertTrue(service.checkRemoteConnectivity("id-new"));
+
+    }
+
     RemoteRepository getRemoteRepository()
     {
         return new RemoteRepository( "id-new", "new one", "http://foo.com", "default", "foo", "foopassword", 120,

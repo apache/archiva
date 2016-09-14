@@ -201,7 +201,8 @@ public class DefaultRemoteRepositoriesService
             wagon.connect( new Repository( remoteRepository.getId(), remoteRepository.getUrl() ), proxyInfo );
 
             // we only check connectivity as remote repo can be empty
-            wagon.getFileList( "/" );
+            // MRM-1909: Wagon implementation appends a slash already
+            wagon.getFileList( "" );
 
             return Boolean.TRUE;
         }
