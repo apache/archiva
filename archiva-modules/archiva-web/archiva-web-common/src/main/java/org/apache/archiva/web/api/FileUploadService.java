@@ -70,7 +70,7 @@ public interface FileUploadService
     @Path( "save/{repositoryId}/{groupId}/{artifactId}/{version}/{packaging}" )
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD )
+    @RedbackAuthorization( resource = "{repositoryId}", permissions = ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD )
     Boolean save( @PathParam( "repositoryId" ) String repositoryId, @PathParam( "groupId" ) String groupId,
                   @PathParam( "artifactId" ) String artifactId, @PathParam( "version" ) String version,
                   @PathParam( "packaging" ) String packaging, @QueryParam( "generatePom" ) boolean generatePom )
