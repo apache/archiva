@@ -48,8 +48,8 @@ import org.apache.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
-import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.proxy.model.ProxyConnector;
+import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
@@ -90,7 +90,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,6 +97,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * DefaultRepositoryProxyConnectors
@@ -1184,12 +1184,13 @@ public class DefaultRepositoryProxyConnectors
         }
 
         // Convert seconds to milliseconds
-        int timeoutInMilliseconds = remoteRepository.getRepository().getTimeout() * 1000;
+        long timeoutInMilliseconds = TimeUnit.MILLISECONDS.convert( remoteRepository.getRepository().getTimeout(), //
+                                                                    TimeUnit.SECONDS );
 
         // Set timeout  read and connect
         // FIXME olamy having 2 config values
-        wagon.setReadTimeout( timeoutInMilliseconds );
-        wagon.setTimeout( timeoutInMilliseconds );
+        wagon.setReadTimeout( (int) timeoutInMilliseconds );
+        wagon.setTimeout( (int)  timeoutInMilliseconds );
 
         try
         {
@@ -1263,9 +1264,10 @@ public class DefaultRepositoryProxyConnectors
     @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isNetworkProxy( propertyName ) || ConfigurationNames.isManagedRepositories(
-            propertyName ) || ConfigurationNames.isRemoteRepositories( propertyName )
-            || ConfigurationNames.isProxyConnector( propertyName ) )
+        if ( ConfigurationNames.isNetworkProxy( propertyName ) //
+            || ConfigurationNames.isManagedRepositories( propertyName ) //
+            || ConfigurationNames.isRemoteRepositories( propertyName ) //
+            || ConfigurationNames.isProxyConnector( propertyName ) ) //
         {
             initConnectorsAndNetworkProxies();
         }
