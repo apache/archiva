@@ -1092,8 +1092,7 @@ public class DefaultRepositoryProxyConnectors
         throws ProxyException
     {
 
-        // TODO file lock library
-        Lock lock = null;
+        Lock lock;
         try
         {
             lock = fileLockManager.writeFileLock( target );
@@ -1131,11 +1130,7 @@ public class DefaultRepositoryProxyConnectors
                 }
             }
         }
-        catch ( FileLockException e )
-        {
-            throw new ProxyException( e.getMessage(), e );
-        }
-        catch ( FileLockTimeoutException e )
+        catch ( FileLockException | FileLockTimeoutException e )
         {
             throw new ProxyException( e.getMessage(), e );
         }
