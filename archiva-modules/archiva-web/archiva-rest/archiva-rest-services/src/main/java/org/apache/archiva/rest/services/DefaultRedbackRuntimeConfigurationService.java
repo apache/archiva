@@ -132,6 +132,20 @@ public class DefaultRedbackRuntimeConfigurationService
                 rbacManagerChanged || ( redbackRuntimeConfiguration.getRbacManagerImpls().toString().hashCode()
                     != redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getRbacManagerImpls().toString().hashCode() );
 
+            boolean ldapConfigured = false;
+            for (String um : redbackRuntimeConfiguration.getUserManagerImpls()) {
+                if (um.contains("ldap")) {
+                    ldapConfigured=true;
+                }
+            }
+            if (!ldapConfigured) {
+                for (String rbm : redbackRuntimeConfiguration.getRbacManagerImpls()) {
+                    if (rbm.contains("ldap")) {
+                        ldapConfigured = true;
+                    }
+                }
+            }
+
             redbackRuntimeConfigurationAdmin.updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
 
             if ( userManagerChanged )
@@ -149,8 +163,15 @@ public class DefaultRedbackRuntimeConfigurationService
                 roleManager.initialize();
             }
 
-            ldapConnectionFactory.initialize();
-
+            if (ldapConfigured) {
+                try {
+                    ldapConnectionFactory.initialize();
+                } catch (Exception e) {
+                    ArchivaRestServiceException newEx = new ArchivaRestServiceException(e.getMessage(), e);
+                    newEx.setErrorKey("error.ldap.connectionFactory.init.failed");
+                    throw newEx;
+                }
+            }
             Collection<PasswordRule> passwordRules = applicationContext.getBeansOfType( PasswordRule.class ).values();
 
             for ( PasswordRule passwordRule : passwordRules )
@@ -184,16 +205,27 @@ public class DefaultRedbackRuntimeConfigurationService
             usersCache.setMaxElementsOnDisk(
                 redbackRuntimeConfiguration.getUsersCacheConfiguration().getMaxElementsOnDisk() );
 
-            ldapUserMapper.initialize();
+            if (ldapConfigured) {
+                try {
+                    ldapUserMapper.initialize();
+                } catch (Exception e) {
+                    ArchivaRestServiceException newEx = new ArchivaRestServiceException(e.getMessage(), e);
+                    newEx.setErrorKey("error.ldap.userMapper.init.failed");
+                    throw newEx;
+                }
+            }
 
             //check repositories roles are here !!!
 
             return Boolean.TRUE;
         }
-        catch ( Exception e )
+        catch (ArchivaRestServiceException e) {
+            log.error(e.getMessage(), e);
+            throw e;
+        } catch ( Exception e )
         {
             log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(), e );
+            throw new ArchivaRestServiceException(e.getMessage(), e);
         }
     }
 
