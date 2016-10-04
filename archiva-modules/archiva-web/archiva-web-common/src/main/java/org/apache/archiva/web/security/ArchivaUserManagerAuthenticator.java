@@ -67,6 +67,8 @@ public class ArchivaUserManagerAuthenticator
 
     private List<UserManager> userManagers;
 
+    private boolean valid = false;
+
     @PostConstruct
     @Override
     public void initialize()
@@ -83,10 +85,12 @@ public class ArchivaUserManagerAuthenticator
             {
                 userManagers.add( applicationContext.getBean( "userManager#" + beanId, UserManager.class ) );
             }
+            valid=true;
         }
         catch ( RepositoryAdminException e )
         {
-            throw new AuthenticationException( e.getMessage(), e );
+            log.error("Error during repository initialization "+e.getMessage(),e);
+            // throw new AuthenticationException( e.getMessage(), e );
         }
     }
 
@@ -224,5 +228,9 @@ public class ArchivaUserManagerAuthenticator
     public String getId()
     {
         return "ArchivaUserManagerAuthenticator";
+    }
+
+    public boolean isValid() {
+        return valid;
     }
 }

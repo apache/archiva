@@ -192,7 +192,12 @@ public class DefaultRedbackRuntimeConfigurationService
 
             for ( Authenticator authenticator : authenticators )
             {
-                authenticator.initialize();
+                try {
+                    log.debug("Initializing authenticatior "+authenticator.getId());
+                    authenticator.initialize();
+                } catch (Exception e) {
+                    log.error("Initialization of authenticator failed "+authenticator.getId(),e);
+                }
             }
 
             // users cache
