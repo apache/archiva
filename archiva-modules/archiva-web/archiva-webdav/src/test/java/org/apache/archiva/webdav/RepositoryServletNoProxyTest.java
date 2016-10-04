@@ -30,6 +30,9 @@ import org.junit.Test;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * RepositoryServletTest
@@ -532,6 +535,43 @@ public class RepositoryServletNoProxyTest
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + dualExtensionPath );
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseNotFound( response );
+    }
+
+    @Test
+    public void testGetNoProxySnapshotRedirectToTimestampedSnapshot()
+        throws Exception
+    {
+        String commonsLangQuery = "commons-lang/commons-lang/2.1-SNAPSHOT/commons-lang-2.1-SNAPSHOT.jar";
+        String commonsLangMetadata = "commons-lang/commons-lang/2.1-SNAPSHOT/maven-metadata.xml";
+        String commonsLangJar = "commons-lang/commons-lang/2.1-SNAPSHOT/commons-lang-2.1-20050821.023400-1.jar";
+        String expectedArtifactContents = "dummy-commons-lang-snapshot-artifact";
+
+        archivaConfiguration.getConfiguration().getWebapp().getUi().setApplicationUrl("http://localhost");
+
+        File artifactFile = new File( repoRootInternal, commonsLangJar );
+        artifactFile.getParentFile().mkdirs();
+        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+
+        File metadataFile = new File( repoRootInternal, commonsLangMetadata );
+        metadataFile.getParentFile().mkdirs();
+        FileUtils.writeStringToFile( metadataFile, createVersionMetadata("commons-lang", "commons-lang",
+                "2.1-SNAPSHOT", "20050821.023400", "1", "20050821.023400"));
+
+        WebRequest webRequest = new GetMethodWebRequest(
+                "http://localhost/repository/internal/" + commonsLangQuery );
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRequestURI( webRequest.getUrl().getPath() );
+        request.addHeader( "User-Agent", "Apache Archiva unit test" );
+        request.setMethod( webRequest.getHttpMethod().name() );
+
+        final MockHttpServletResponse response = execute( request );
+
+        assertEquals( HttpServletResponse.SC_MOVED_TEMPORARILY,
+                      response.getStatus() );
+
+        assertEquals( "http://localhost/repository/internal/" + commonsLangJar,
+                      response.getHeader("Location") );
     }
 
 }
