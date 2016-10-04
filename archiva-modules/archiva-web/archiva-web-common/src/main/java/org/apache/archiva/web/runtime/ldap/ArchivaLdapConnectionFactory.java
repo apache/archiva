@@ -23,6 +23,8 @@ import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.common.ldap.connection.ConfigurableLdapConnectionFactory;
 import org.apache.archiva.redback.common.ldap.connection.LdapConnectionConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -39,6 +41,10 @@ import java.util.Properties;
 public class ArchivaLdapConnectionFactory
     extends ConfigurableLdapConnectionFactory
 {
+
+    private final Logger log = LoggerFactory.getLogger(ArchivaLdapConnectionFactory.class);
+
+    private boolean valid = false;
 
     @Inject
     private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
@@ -63,10 +69,12 @@ public class ArchivaLdapConnectionFactory
             ldapConnectionConfiguration.setPassword( ldapConfiguration.getPassword() );
             ldapConnectionConfiguration.setAuthenticationMethod( ldapConfiguration.getAuthenticationMethod() );
             ldapConnectionConfiguration.setExtraProperties( toProperties( ldapConfiguration.getExtraProperties() ) );
+            valid=true;
         }
         catch ( InvalidNameException e )
         {
-            throw new RuntimeException( "Error while initializing connection factory.", e );
+            log.error("Error during initialization of LdapConnectionFactory "+e.getMessage(),e);
+            // throw new RuntimeException( "Error while initializing connection factory.", e );
         }
         catch ( RepositoryAdminException e )
         {
@@ -98,5 +106,10 @@ public class ArchivaLdapConnectionFactory
     public void setLdapConnectionConfiguration( LdapConnectionConfiguration ldapConnectionConfiguration )
     {
         this.ldapConnectionConfiguration = ldapConnectionConfiguration;
+    }
+
+    @Override
+    public boolean isValid() {
+        return valid;
     }
 }
