@@ -489,45 +489,50 @@ public class DefaultArchivaConfiguration
         escapeCronExpressions( configuration );
 
         // [MRM-661] Due to a bug in the modello registry writer, we need to take these out by hand. They'll be put back by the writer.
-        if ( configuration.getManagedRepositories().isEmpty() && section != null )
+        if ( section != null )
         {
-            section.removeSubset( "managedRepositories" );
-        }
-        if ( configuration.getRemoteRepositories().isEmpty() && section != null )
-        {
-            section.removeSubset( "remoteRepositories" );
-
-        }
-        if ( configuration.getProxyConnectors().isEmpty() && section != null )
-        {
-            section.removeSubset( "proxyConnectors" );
-        }
-        if ( configuration.getNetworkProxies().isEmpty() && section != null )
-        {
-            section.removeSubset( "networkProxies" );
-        }
-        if ( configuration.getLegacyArtifactPaths().isEmpty() && section != null )
-        {
-            section.removeSubset( "legacyArtifactPaths" );
-        }
-        if ( configuration.getRepositoryGroups().isEmpty() && section != null )
-        {
-            section.removeSubset( "repositoryGroups" );
-        }
-        if ( configuration.getRepositoryScanning() != null )
-        {
-            if ( configuration.getRepositoryScanning().getKnownContentConsumers().isEmpty() && section != null )
+            if ( configuration.getManagedRepositories().isEmpty() )
             {
-                section.removeSubset( "repositoryScanning.knownContentConsumers" );
+                section.removeSubset( "managedRepositories" );
             }
-            if ( configuration.getRepositoryScanning().getInvalidContentConsumers().isEmpty() && section != null )
+            if ( configuration.getRemoteRepositories().isEmpty() )
             {
-                section.removeSubset( "repositoryScanning.invalidContentConsumers" );
+                section.removeSubset( "remoteRepositories" );
+
             }
+            if ( configuration.getProxyConnectors().isEmpty() )
+            {
+                section.removeSubset( "proxyConnectors" );
+            }
+            if ( configuration.getNetworkProxies().isEmpty() )
+            {
+                section.removeSubset( "networkProxies" );
+            }
+            if ( configuration.getLegacyArtifactPaths().isEmpty() )
+            {
+                section.removeSubset( "legacyArtifactPaths" );
+            }
+            if ( configuration.getRepositoryGroups().isEmpty() )
+            {
+                section.removeSubset( "repositoryGroups" );
+            }
+            if ( configuration.getRepositoryScanning() != null )
+            {
+                if ( configuration.getRepositoryScanning().getKnownContentConsumers().isEmpty() )
+                {
+                    section.removeSubset( "repositoryScanning.knownContentConsumers" );
+                }
+                if ( configuration.getRepositoryScanning().getInvalidContentConsumers().isEmpty() )
+                {
+                    section.removeSubset( "repositoryScanning.invalidContentConsumers" );
+                }
+            }
+
+            new ConfigurationRegistryWriter().write( configuration, section );
+            section.save();
         }
 
-        new ConfigurationRegistryWriter().write( configuration, section );
-        section.save();
+
 
         this.configuration = unescapeExpressions( configuration );
 
