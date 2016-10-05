@@ -47,7 +47,6 @@ import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
-import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
@@ -577,8 +576,7 @@ public class ArchivaDavResourceFactory
             String path = e.getPath();
             log.debug( "Relocation to {}", path );
 
-            throw new BrowserRedirectException( contextPath + ( StringUtils.startsWith( path, "/" ) ? "" : "/" ) + path,
-                                                e.getRelocationType() );
+            throw new BrowserRedirectException( addHrefPrefix( contextPath, path ), e.getRelocationType() );
         }
         catch ( XMLException e )
         {
@@ -933,6 +931,16 @@ public class ArchivaDavResourceFactory
             throw new DavException( HttpServletResponse.SC_NO_CONTENT );
         }
         return archivaLocator;
+    }
+
+    private String addHrefPrefix( String contextPath, String path ) {
+        String prefix = archivaConfiguration.getConfiguration().getWebapp().getUi().getApplicationUrl();
+        if (prefix == null || prefix.isEmpty()) {
+            prefix = contextPath;
+        }
+        return prefix + ( StringUtils.startsWith( path, "/" ) ? "" :
+                        ( StringUtils.endsWith( prefix, "/" ) ? "" : "/" ) )
+                      + path;
     }
 
     private static class LogicalResource
