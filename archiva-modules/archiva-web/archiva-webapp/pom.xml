@@ -831,6 +831,18 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+
+
 
   </dependencies>
 
@@ -969,6 +981,8 @@
           <additionalClasspathDirs>
             <additionalClasspathDir>${basedir}/src/test/tomcat</additionalClasspathDir>
           </additionalClasspathDirs>
+
+
         </configuration>
         <dependencies>
           <dependency>
@@ -981,6 +995,27 @@
             <artifactId>mail</artifactId>
             <version>${javaxMailVersion}</version>
           </dependency>
+          <dependency>
+            <groupId>org.apache.openjpa</groupId>
+            <artifactId>openjpa</artifactId>
+            <version>${openjpaVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jpa_2.0_spec</artifactId>
+            <version>1.1</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+            <version>1.1.1</version>
+          </dependency>
+          <dependency>
+            <groupId>net.sourceforge.serp</groupId>
+            <artifactId>serp</artifactId>
+            <version>1.15.1</version>
+          </dependency>
+
         </dependencies>
       </plugin>
 

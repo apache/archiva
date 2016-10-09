@@ -91,6 +91,7 @@
     <javaxMailVersion>1.4</javaxMailVersion>
     <jettyVersion>8.1.14.v20131031</jettyVersion>
     <guava.version>16.0.1</guava.version>
+    <openjpaVersion>2.4.1</openjpaVersion>
 
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
@@ -1537,6 +1538,7 @@
         <artifactId>jsoup</artifactId>
         <version>1.7.2</version>
       </dependency>
+
     </dependencies>
   </dependencyManagement>
 
