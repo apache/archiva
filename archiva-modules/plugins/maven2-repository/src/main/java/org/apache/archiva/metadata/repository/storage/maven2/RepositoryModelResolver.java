@@ -413,15 +413,30 @@ public class RepositoryModelResolver
         return connected;
     }
 
-    private File transferChecksum( Wagon wagon, RemoteRepository remoteRepository, String remotePath, File resource,
-                                   File tmpDirectory, String ext )
+    /**
+     *
+     * @param wagon The wagon instance that should be connected.
+     * @param remoteRepository The repository from where the checksum file should be retrieved
+     * @param remotePath The remote path of the artifact (without extension)
+     * @param resource The local artifact (without extension)
+     * @param workingDir The working directory where the downloaded file should be placed to
+     * @param ext The extension of th checksum file
+     * @return The file where the data has been downloaded to.
+     * @throws AuthorizationException
+     * @throws TransferFailedException
+     * @throws ResourceDoesNotExistException
+     */
+    private File transferChecksum( final Wagon wagon, final RemoteRepository remoteRepository,
+                                   final String remotePath, final File resource,
+                                   final File workingDir, final String ext )
         throws AuthorizationException, TransferFailedException, ResourceDoesNotExistException
     {
-        File destFile = new File( tmpDirectory, resource.getName() + ext );
+        File destFile = new File( workingDir, resource.getName() + ext );
+        String remoteChecksumPath = remotePath + ext;
 
-        log.info( "Retrieving {} from {}", remotePath, remoteRepository.getName() );
+        log.info( "Retrieving {} from {}", remoteChecksumPath, remoteRepository.getName() );
 
-        wagon.get( addParameters( remotePath, remoteRepository ), destFile );
+        wagon.get( addParameters( remoteChecksumPath, remoteRepository ), destFile );
 
         log.debug( "Downloaded successfully." );
 
