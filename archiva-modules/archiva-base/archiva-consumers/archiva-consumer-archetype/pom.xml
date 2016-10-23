@@ -78,6 +78,14 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- for some reasons needed by the archetype -->
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.9</version>
+      <scope>test</scope>
+    </dependency>
+
     <!-- for some reasons this help sonar to run -->
     <dependency>
       <groupId>org.apache.maven.surefire</groupId>
