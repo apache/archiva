@@ -98,6 +98,8 @@ public class ArchivaRbacManager
             List<String> rbacManagerIds =
                 redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getRbacManagerImpls();
 
+            clearCaches();
+
             if ( rbacManagerIds.isEmpty() )
             {
                 rbacManagerIds.add( RedbackRuntimeConfigurationAdmin.DEFAULT_RBAC_MANAGER_IMPL );
@@ -113,6 +115,7 @@ public class ArchivaRbacManager
 
                 rbacManagersPerId.put( id, rbacManager );
             }
+
         }
         catch ( RepositoryAdminException e )
         {
@@ -122,12 +125,23 @@ public class ArchivaRbacManager
         }
     }
 
+    private void clearCaches() {
+        resourcesCache.clear();
+        operationsCache.clear();
+        permissionsCache.clear();
+        rolesCache.clear();
+        userAssignmentsCache.clear();
+        userPermissionsCache.clear();
+        effectiveRoleSetCache.clear();
+    }
+
     protected RBACManager getRbacManagerForWrite()
     {
         for ( RBACManager rbacManager : this.rbacManagersPerId.values() )
         {
             if ( !rbacManager.isReadOnly() )
             {
+                log.debug("Writable Rbac manager {}", rbacManager.getDescriptionKey());
                 return rbacManager;
             }
         }
