@@ -220,7 +220,8 @@ public class DefaultRedbackRuntimeConfigurationService
                 }
             }
 
-            //check repositories roles are here !!!
+
+
 
             return Boolean.TRUE;
         }
