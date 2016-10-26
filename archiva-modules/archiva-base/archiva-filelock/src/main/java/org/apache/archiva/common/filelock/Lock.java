@@ -90,7 +90,7 @@ public class Lock
 
     public boolean isValid()
     {
-        return this.fileLock.isValid();
+        return this.fileLock!=null && this.fileLock.isValid();
     }
 
     public Map<Thread, AtomicInteger> getFileClients()

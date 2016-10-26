@@ -35,7 +35,9 @@ import javax.inject.Named;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -83,6 +85,22 @@ public class DefaultFileLockManagerTest
 
         }
 
+        // Files.copy is not atomic so have to try several times in
+        // a multithreaded test
+        private void copyFile(Path source, Path destination) {
+            int attempts=10;
+            boolean finished = false;
+            while(!finished && attempts-->0) {
+                try {
+                    Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING,
+                            StandardCopyOption.COPY_ATTRIBUTES);
+                    finished=true;
+                } catch (IOException ex) {
+                    //
+                }
+            }
+        }
+
         public void thread1()
             throws FileLockException, FileLockTimeoutException, IOException
         {
@@ -91,8 +109,7 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING,
-                            StandardCopyOption.COPY_ATTRIBUTES );
+                copyFile( largeJar.toPath(), lock.getFile().toPath());
             }
             finally
             {
@@ -110,8 +127,7 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING,
-                            StandardCopyOption.COPY_ATTRIBUTES );
+                copyFile( largeJar.toPath(), lock.getFile().toPath());
             }
             finally
             {
@@ -147,8 +163,7 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING,
-                            StandardCopyOption.COPY_ATTRIBUTES );
+                copyFile( largeJar.toPath(), lock.getFile().toPath());
             }
             finally
             {
@@ -166,8 +181,7 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING,
-                            StandardCopyOption.COPY_ATTRIBUTES );
+                copyFile( largeJar.toPath(), lock.getFile().toPath());
             }
             finally
             {
@@ -202,8 +216,7 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING,
-                            StandardCopyOption.COPY_ATTRIBUTES );
+                copyFile( largeJar.toPath(), lock.getFile().toPath());
             }
             finally
             {
@@ -238,8 +251,7 @@ public class DefaultFileLockManagerTest
             try
             {
                 lock.getFile().delete();
-                Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING,
-                            StandardCopyOption.COPY_ATTRIBUTES );
+                copyFile( largeJar.toPath(), lock.getFile().toPath());
             }
             finally
             {
@@ -283,9 +295,9 @@ public class DefaultFileLockManagerTest
     {
         ConcurrentFileWrite concurrentFileWrite = new ConcurrentFileWrite( fileLockManager );
         //concurrentFileWrite.setTrace( true );
-        TestFramework.runOnce( concurrentFileWrite );
+        TestFramework.runManyTimes( concurrentFileWrite, 10);
         logger.info( "success: {}", concurrentFileWrite.success );
-        Assert.assertEquals( 10, concurrentFileWrite.success.intValue() );
+        Assert.assertEquals( 100, concurrentFileWrite.success.intValue() );
     }
 
 
