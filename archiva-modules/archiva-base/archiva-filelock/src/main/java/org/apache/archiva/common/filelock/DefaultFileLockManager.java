@@ -31,6 +31,7 @@ import java.io.RandomAccessFile;
 import java.nio.channels.ClosedChannelException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author Olivier Lamy
@@ -50,7 +51,6 @@ public class DefaultFileLockManager
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     private int timeout = 0;
-
 
     @Override
     public Lock readFileLock( File file )
@@ -162,20 +162,18 @@ public class DefaultFileLockManager
                 }
             }
 
-            Lock current = lockFiles.get( file );
-
             try
             {
-
+                Lock current = lockFiles.get( file );
                 if ( current != null )
                 {
                     log.debug( "write lock file exist continue wait" );
 
                     continue;
                 }
-                lock = new Lock( file, true );
-                createNewFileQuietly( file );
-                lock.openLock( true, timeout > 0 );
+                lock = new Lock(file, true);
+                createNewFileQuietly(file);
+                lock.openLock(true, timeout > 0);
                 acquired = true;
             }
             catch ( FileNotFoundException e )
@@ -191,12 +189,29 @@ public class DefaultFileLockManager
             }
             catch ( IOException e )
             {
+                if (lock!=null && lock.isValid()) {
+                    try {
+                        lock.close();
+                    } catch (IOException ex) {
+                        // Ignore
+                    }
+                }
                 throw new FileLockException( e.getMessage(), e );
             }
-            catch ( IllegalStateException e )
+            catch ( Throwable e )
             {
+                if (lock!=null && lock.isValid()) {
+                    try {
+                        lock.close();
+                    } catch (IOException ex) {
+                        // Ignore
+                    } finally {
+                        lock = null;
+                    }
+                }
                 log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
             }
+
         }
 
         Lock current = lockFiles.putIfAbsent( file, lock );
