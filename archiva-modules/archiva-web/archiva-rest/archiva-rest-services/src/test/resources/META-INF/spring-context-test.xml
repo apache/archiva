@@ -21,13 +21,14 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
            http://www.springframework.org/schema/context
            http://www.springframework.org/schema/context/spring-context-3.0.xsd
            http://cxf.apache.org/jaxrs
-           http://cxf.apache.org/schemas/jaxrs.xsd" default-lazy-init="true">
+           http://cxf.apache.org/schemas/jaxrs.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
+       default-lazy-init="true">
 
   <context:annotation-config/>
   <context:component-scan
@@ -88,4 +89,36 @@
   <alias name="authorizer#rbac" alias="authorizer#default"/>
 
   <alias name="userManager#configurable" alias="userManager#default"/>
+
+  <!-- ***
+ JPA settings
+ *** -->
+  <bean name="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <property name="jpaVendorAdapter" >
+      <bean class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter" />
+    </property>
+    <property name="persistenceXmlLocation" value="classpath:META-INF/persistence-hsqldb.xml" />
+    <property name="jpaPropertyMap">
+      <map>
+        <entry key="openjpa.ConnectionURL" value="jdbc:hsqldb:mem:redback_database" />
+        <entry key="openjpa.ConnectionDriverName" value="org.hsqldb.jdbcDriver" />
+        <entry key="openjpa.ConnectionUserName" value="sa" />
+        <entry key="openjpa.ConnectionPassword" value="" />
+        <entry key="openjpa.Log" value="DefaultLevel=TRACE, Runtime=TRACE, Tool=INFO, SQL=TRACE" />
+        <entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
+        <entry key="openjpa.jdbc.MappingDefaults"
+               value="ForeignKeyDeleteAction=restrict,JoinForeignKeyDeleteAction=restrict"/>
+      </map>
+    </property>
+
+  </bean>
+
+  <bean name="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" >
+    <property name="entityManagerFactory" ref="entityManagerFactory" />
+  </bean>
+
+  <tx:annotation-driven />
+  <!-- ***
+     End of JPA settings
+     *** -->
 </beans>
