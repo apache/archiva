@@ -246,7 +246,7 @@ public class DefaultFileLockManagerTest
         public void thread9()
             throws FileLockException, FileLockTimeoutException, IOException
         {
-            logger.info( "thread7" );
+            logger.info( "thread9" );
             Lock lock = fileLockManager.writeFileLock( this.file );
             try
             {
@@ -274,7 +274,7 @@ public class DefaultFileLockManagerTest
             {
                 fileLockManager.release( lock );
             }
-            logger.info( "thread8 ok" );
+            logger.info( "thread10 ok" );
             success.incrementAndGet();
         }
 

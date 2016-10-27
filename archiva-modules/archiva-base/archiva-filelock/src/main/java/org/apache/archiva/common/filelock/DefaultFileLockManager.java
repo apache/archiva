@@ -198,27 +198,37 @@ public class DefaultFileLockManager
                 }
                 throw new FileLockException( e.getMessage(), e );
             }
-            catch ( Throwable e )
+            catch ( IllegalStateException e )
             {
+                // Ignore this
+                log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
+            } catch (Throwable t) {
                 if (lock!=null && lock.isValid()) {
                     try {
                         lock.close();
                     } catch (IOException ex) {
                         // Ignore
-                    } finally {
-                        lock = null;
                     }
                 }
-                log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
+                throw t;
             }
 
         }
 
         Lock current = lockFiles.putIfAbsent( file, lock );
+        if (lock!=null && lock != current) {
+            try {
+                lock.close();
+            } catch (IOException e) {
+                // ignore
+            }
+
+        }
         if ( current != null )
         {
             lock = current;
         }
+
 
         return lock;
 
