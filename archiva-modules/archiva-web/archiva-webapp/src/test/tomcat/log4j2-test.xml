@@ -26,12 +26,14 @@
   </properties>
 
   <appenders>
-    <Console name="console" target="SYSTEM_OUT">
+    <Console name="console" target="SYSTEM_OUT" level="info">
       <!--PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/-->
       <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n}" />
     </Console>
     <RollingRandomAccessFile name="rolling" fileName="${logsDirectory}/archiva.log"
-                     filePattern="${logsDirectory}/archiva-%d{MM-dd-yyyy}.log" immediateFlush="false" append="true">
+                     filePattern="${logsDirectory}/archiva-%d{MM-dd-yyyy}.log"
+
+                             immediateFlush="true" append="true">
       <PatternLayout>
         <pattern>%d [%t] %-5p %c %x - %m%n</pattern>
       </PatternLayout>
@@ -82,6 +84,9 @@
 
     <logger name="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry" level="debug"/>
 
+    <logger name="org.apache.archiva.redback.components.taskqueue.DefaultTaskQueue" level="info" />
+
+    <logger name="org.apache.archiva" level="debug" />
     <!--
     <logger name="org.apache.archiva.scheduler.indexing" level="debug"/>
     -->

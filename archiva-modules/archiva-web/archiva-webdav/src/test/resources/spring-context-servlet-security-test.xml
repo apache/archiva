@@ -31,7 +31,7 @@
 
   <context:annotation-config/>
   <context:component-scan
-      base-package="org.apache.archiva.webdav,org.apache.archiva.metadata.repository,org.apache.archiva.webdav.util,org.apache.archiva.common.plexusbridge"/>
+      base-package="org.apache.archiva.redback.keys,org.apache.archiva.webdav,org.apache.archiva.metadata.repository,org.apache.archiva.webdav.util,org.apache.archiva.common.plexusbridge"/>
 
   <bean name="scheduler" class="org.apache.archiva.redback.components.scheduler.DefaultScheduler">
     <property name="properties">

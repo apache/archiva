@@ -29,7 +29,7 @@
 
   <context:annotation-config/>
   <context:component-scan
-      base-package="org.apache.archiva.rest.services.utils"/>
+      base-package="org.apache.archiva.redback.keys,org.apache.archiva.rest.services.utils"/>
 
   <bean name="scheduler" class="org.apache.archiva.redback.components.scheduler.DefaultScheduler">
     <property name="properties">

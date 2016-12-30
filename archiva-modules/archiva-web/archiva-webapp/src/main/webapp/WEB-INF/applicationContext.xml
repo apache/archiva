@@ -21,6 +21,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:task="http://www.springframework.org/schema/task" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
            http://www.springframework.org/schema/context
@@ -28,7 +29,8 @@
            http://www.springframework.org/schema/task
            http://www.springframework.org/schema/task/spring-task-3.0.xsd
            http://www.springframework.org/schema/util
-           http://www.springframework.org/schema/util/spring-util.xsd">
+           http://www.springframework.org/schema/util/spring-util.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
   <context:property-placeholder location="classpath:application.properties" />
 
@@ -107,37 +109,6 @@
     </property>    
   </bean>
   <!-- END SNIPPET: configuration-files-list -->
-
-  <bean name="jdoFactory#users" class="org.apache.archiva.redback.components.jdo.DataSourceConfigurableJdoFactory">
-    <property name="connectionFactoryName" value="java:comp/env/jdbc/users"/>
-    <property name="shutdownConnectionFactoryName" value="java:comp/env/jdbc/usersShutdown"/>
-    <property name="persistenceManagerFactoryClass" value="org.jpox.PersistenceManagerFactoryImpl"/>
-    <property name="otherProperties">
-      <props>
-        <prop key="org.jpox.autoCreateSchema">true</prop>
-        <prop key="org.jpox.validateTables">false</prop>
-        <prop key="org.jpox.validateConstraints">false</prop>
-        <prop key="org.jpox.validateColumns">false</prop>
-        <prop key="org.jpox.autoStartMechanism">None</prop>
-        <prop key="org.jpox.transactionIsolation">READ_COMMITTED</prop>
-        <prop key="org.jpox.poid.transactionIsolation">READ_COMMITTED</prop>
-        <prop key="org.jpox.rdbms.dateTimezone">JDK_DEFAULT_TIMEZONE</prop>
-        <!-- NEEDED FOR MYSQL UTF-8 Databases -->
-        <prop key="org.jpox.rdbms.stringDefaultLength">255</prop>
-
-        <!-- NEEDED FOR POSTGRES, But causes problems in other JDBC implementations.
-        <prop key="org.jpox.identifier.case">PreserveCase</prop>
-        -->
-
-        <!-- cache activation -->
-        <prop key="org.jpox.cache.level2">true</prop>
-        <prop key="org.jpox.cache.level2.type">ehcacheclassbased</prop>
-        <prop key="org.jpox.cache.level2.cacheName">defaultJpox</prop>
-        <prop key="org.jpox.cache.level2.configurationFile">/ehcache.xml</prop>
-      </props>
-    </property>
-  </bean>
-
 
   <bean name="scheduler" class="org.apache.archiva.redback.components.scheduler.DefaultScheduler">
     <property name="properties">
@@ -323,5 +294,29 @@
     </property>
   </bean>
   -->
+
+  <bean name="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+    <property name="jpaVendorAdapter" >
+      <bean class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter" />
+    </property>
+    <property name="persistenceXmlLocation" value="classpath:META-INF/persistence.xml" />
+    <property name="jpaPropertyMap">
+      <map>
+        <entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+        <entry key="openjpa.jdbc.SchemaFactory" value="native(ForeignKeys=true)" />
+        <entry key="openjpa.jdbc.MappingDefaults"
+                  value="ForeignKeyDeleteAction=restrict,JoinForeignKeyDeleteAction=restrict"/>
+        <entry key="openjpa.Log" value="DefaultLevel=TRACE, Runtime=TRACE, Tool=INFO, SQL=TRACE"/>
+        <entry key="openjpa.jdbc.DBDictionary" value="(disableSchemaFactoryColumnTypeErrors=true,BitTypeName=CHAR(1),BooleanTypeName=CHAR(1),BooleanRepresentation=STRING_YN)"/>
+      </map>
+    </property>
+
+  </bean>
+
+  <bean name="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" >
+    <property name="entityManagerFactory" ref="entityManagerFactory" />
+  </bean>
+
+  <tx:annotation-driven />
 
 </beans>

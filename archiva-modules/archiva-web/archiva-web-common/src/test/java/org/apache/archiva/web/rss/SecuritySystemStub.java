@@ -36,7 +36,7 @@ import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserManagerListener;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.UserQuery;
-import org.apache.archiva.redback.users.jdo.JdoUser;
+import org.apache.archiva.redback.users.jpa.model.JpaUser;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,7 +74,7 @@ public class SecuritySystemStub
         {
             result = new AuthenticationResult( true, source.getUsername(), null );
 
-            User user = new JdoUser();
+            User user = new JpaUser();
             user.setUsername( source.getUsername() );
             user.setPassword( users.get( source.getUsername() ) );
 

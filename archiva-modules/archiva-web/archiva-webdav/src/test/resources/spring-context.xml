@@ -30,7 +30,7 @@
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.webdav,org.apache.archiva.metadata.repository"/>
+  <context:component-scan base-package="org.apache.archiva.redback.keys,org.apache.archiva.webdav,org.apache.archiva.metadata.repository"/>
 
   <bean name="scheduler" class="org.apache.archiva.redback.components.scheduler.DefaultScheduler">
     <property name="properties">

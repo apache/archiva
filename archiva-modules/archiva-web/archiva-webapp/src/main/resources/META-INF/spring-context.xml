@@ -49,7 +49,7 @@
 
 
 
-  <jee:jndi-lookup id="dataSource" jndi-name="java:/comp/env/jdbc/redbackjpa" />
+  <jee:jndi-lookup id="dataSource" jndi-name="java:/comp/env/jdbc/users" />
   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
     <property name="dataSource" ref="dataSource" />
     <property name="jpaVendorAdapter" >

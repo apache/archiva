@@ -1031,6 +1031,17 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva.redback</groupId>
+        <artifactId>redback-keys-jpa</artifactId>
+        <version>${redback.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-rbac-model</artifactId>
         <version>${redback.version}</version>
         <exclusions>

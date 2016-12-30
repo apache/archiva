@@ -40,7 +40,7 @@ public class RedbackRuntimeConfigurationServiceTest
     {
         RedbackRuntimeConfiguration redbackRuntimeConfiguration =
             getRedbackRuntimeConfigurationService().getRedbackRuntimeConfiguration();
-        assertEquals( "jdo", redbackRuntimeConfiguration.getUserManagerImpls().get( 0 ) );
+        assertEquals( "jpa", redbackRuntimeConfiguration.getUserManagerImpls().get( 0 ) );
     }
 
     @Test
@@ -49,7 +49,7 @@ public class RedbackRuntimeConfigurationServiceTest
     {
         RedbackRuntimeConfiguration redbackRuntimeConfiguration =
             getRedbackRuntimeConfigurationService().getRedbackRuntimeConfiguration();
-        assertEquals( "jdo", redbackRuntimeConfiguration.getUserManagerImpls().get( 0 ) );
+        assertEquals( "jpa", redbackRuntimeConfiguration.getUserManagerImpls().get( 0 ) );
 
         redbackRuntimeConfiguration.setUserManagerImpls( Arrays.asList( "foo" ) );
 
@@ -68,7 +68,7 @@ public class RedbackRuntimeConfigurationServiceTest
         RedbackRuntimeConfigurationService service = getRedbackRuntimeConfigurationService();
         List<UserManagerImplementationInformation> infos = service.getUserManagerImplementationInformations();
         assertThat( infos ).isNotNull().isNotEmpty().contains(
-            new UserManagerImplementationInformation( "jdo", null, false ) );
+            new UserManagerImplementationInformation( "jpa", null, false ) );
 
     }
 
@@ -79,7 +79,7 @@ public class RedbackRuntimeConfigurationServiceTest
         RedbackRuntimeConfigurationService service = getRedbackRuntimeConfigurationService();
         List<RBACManagerImplementationInformation> infos = service.getRbacManagerImplementationInformations();
         assertThat( infos ).isNotNull().isNotEmpty().contains(
-            new RBACManagerImplementationInformation( "jdo", null, false ) );
+            new RBACManagerImplementationInformation( "jpa", null, false ) );
 
     }
 
