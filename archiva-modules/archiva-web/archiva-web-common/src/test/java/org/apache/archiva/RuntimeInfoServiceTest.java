@@ -25,6 +25,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
+import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -84,6 +85,7 @@ public class RuntimeInfoServiceTest
                                        RuntimeInfoService.class,
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
+        WebClient.client(service).header("Referer","http://localhost");
         ApplicationRuntimeInfo applicationRuntimeInfo = service.getApplicationRuntimeInfo( "en" );
 
         assertEquals( System.getProperty( "expectedVersion" ), applicationRuntimeInfo.getVersion() );

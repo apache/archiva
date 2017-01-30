@@ -173,6 +173,8 @@ public abstract class AbstractDownloadTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.client(service).header("Referer","http://localhost:"+port);
+
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
         return service;
     }
@@ -185,6 +187,8 @@ public abstract class AbstractDownloadTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.client(service).header("Referer","http://localhost:"+port);
+
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
         return service;
     }
@@ -197,6 +201,8 @@ public abstract class AbstractDownloadTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.client(service).header("Referer","http://localhost:"+port);
+
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
         return service;
     }
@@ -210,6 +216,8 @@ public abstract class AbstractDownloadTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.client(service).header("Referer","http://localhost:"+port);
+
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
         return service;
     }
@@ -222,6 +230,8 @@ public abstract class AbstractDownloadTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.client(service).header("Referer","http://localhost:"+port);
+
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
         return service;
     }
@@ -234,6 +244,8 @@ public abstract class AbstractDownloadTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.client(service).header("Referer","http://localhost:"+port);
+
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
         return service;
     }
@@ -252,6 +264,8 @@ public abstract class AbstractDownloadTest
                                        RoleManagementService.class,
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
+        WebClient.client(service).header("Referer","http://localhost:"+port);
+
         // for debuging purpose
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 3000000L );
 
@@ -267,6 +281,8 @@ public abstract class AbstractDownloadTest
         UserService service =
             JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/redbackServices/",
                                        UserService.class, Collections.singletonList( new JacksonJaxbJsonProvider() ) );
+
+        WebClient.client(service).header("Referer","http://localhost:"+port);
 
         // for debuging purpose
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 3000000L );
