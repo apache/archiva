@@ -138,6 +138,7 @@ public abstract class AbstractArchivaRestTest
         {
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
+        WebClient.client(service).header("Referer","http://localhost:"+port);
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
@@ -200,6 +201,7 @@ public abstract class AbstractArchivaRestTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.client(service).header("Referer","http://localhost:"+port);
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
@@ -214,6 +216,7 @@ public abstract class AbstractArchivaRestTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.client(service).header("Referer","http://localhost:"+port);
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
@@ -231,6 +234,8 @@ public abstract class AbstractArchivaRestTest
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.client(service).header("Referer","http://localhost:"+port);
+
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         return service;
     }
@@ -246,6 +251,7 @@ public abstract class AbstractArchivaRestTest
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
+        WebClient.client(service).header("Referer","http://localhost:"+port);
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         return service;
     }
@@ -262,6 +268,7 @@ public abstract class AbstractArchivaRestTest
         {
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
+        WebClient.client(service).header("Referer","http://localhost:"+port);
 
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
         if ( useXml )
@@ -291,6 +298,7 @@ public abstract class AbstractArchivaRestTest
         {
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
+        WebClient.client(service).header("Referer","http://localhost:"+port);
         // to configure read timeout
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
         // if you want to use json as exchange format xml is supported too
@@ -312,6 +320,7 @@ public abstract class AbstractArchivaRestTest
         {
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
+        WebClient.client(service).header("Referer","http://localhost:"+port);
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
