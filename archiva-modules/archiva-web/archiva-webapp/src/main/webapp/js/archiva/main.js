@@ -37,7 +37,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
 
     var kUser = new User(user.username, user.password, user.confirmPassword,user.fullName,user.email,user.permanent,user.validated,
                          user.timestampAccountCreation,user.timestampLastLogin,user.timestampLastPasswordChange,user.locked,
-                         user.passwordChangeRequired,null,user.readOnly,user.userManagerId);
+                         user.passwordChangeRequired,null,user.readOnly,user.userManagerId, user.validationToken);
 
     kUser.rememberme(user.rememberme());
     var userJson=ko.toJSON(kUser);
@@ -73,7 +73,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
     }
     var kUser = new User(user.username, user.password, user.confirmPassword,user.fullName,user.email,user.permanent,user.validated,
                     user.timestampAccountCreation,user.timestampLastLogin,user.timestampLastPasswordChange,user.locked,
-                    user.passwordChangeRequired,null,user.readOnly,user.userManagerId);
+                    user.passwordChangeRequired,null,user.readOnly,user.userManagerId, user.validationToken);
 
     $.log("user.rememberme:"+user.rememberme);
 
@@ -860,6 +860,19 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
     return $.inArray(karmaName,window.redbackModel.operatioNames)>=0;
   };
 
+  addValidationTokenHeader=function(user) {
+    if (user.validationToken) {
+      $.log("Adding validation token "+user.validationToken);
+      $.ajaxSetup({
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader('X-XSRF-TOKEN', user.validationToken);
+        }
+      });
+    } else {
+      $.log("No validation token in user object "+user.username+", "+user.validationToken);
+    }
+  }
+
   startArchivaApplication=function(){
 
     $.log("startArchivaApplication");
@@ -896,6 +909,9 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
       window.redbackModel.password=user.password();
       loginCall(user.username(),user.password(),user.rememberme()
           ,successLoginCallbackFn,errorLoginCallbackFn,completeLoginCallbackFn);
+    } else {
+      // Token for origin validation
+      addValidationTokenHeader(user);
     }
 
   };
@@ -918,6 +934,7 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
     }
     if (logged == true) {
       var user = mapUser(result);
+      addValidationTokenHeader(user);
 
       if (user.passwordChangeRequired()==true){
         changePasswordBox(true,false,user);
@@ -948,6 +965,8 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
       }
       clearForm("#user-login-form");
       decorateMenuWithKarma(user);
+
+      // Token for origin validation
       $("#login-welcome" ).show();
       $("#welcome-label" ).html( $.i18n.prop("user.login.welcome",user.username()));
       return;

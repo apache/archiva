@@ -36,9 +36,11 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
    * @param ownerViewModel
    * @param readOnly
    * @param uuserManagerId
+   * @param validationToken
    */
   User=function(username, password, confirmPassword,fullName,email,permanent,validated,timestampAccountCreation,
-                timestampLastLogin,timestampLastPasswordChange,locked,passwordChangeRequired,ownerViewModel,readOnly,userManagerId) {
+                timestampLastLogin,timestampLastPasswordChange,locked,passwordChangeRequired,ownerViewModel,readOnly,
+                userManagerId,validationToken) {
     var self=this;
     // Potentially Editable Field.
     this.username = ko.observable(username);
@@ -83,6 +85,8 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
     this.userManagerId=userManagerId;
 
     this.rememberme=ko.observable(false);
+
+    this.validationToken=validationToken;
 
     this.logged=false;
 
@@ -145,17 +149,20 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
             var created = result;
             if (created == true) {
               displaySuccessMessage( $.i18n.prop("user.admin.created"));
-              var onSuccessCall=function(){
+              var onSuccessCall=function(result){
+                var logUser = mapUser(result);
+                currentAdminUser.validationToken=logUser.validationToken;
                 reccordLoginCookie(currentAdminUser);
+                addValidationTokenHeader(currentAdminUser);
                 window.archivaModel.adminExists=true;
                 screenChange();
                 checkCreateAdminLink();
                 checkSecurityLinks();
+                if(succesCallbackFn){
+                  succesCallbackFn();
+                }
               }
               loginCall(currentAdminUser.username(), currentAdminUser.password(),false,onSuccessCall);
-              if(succesCallbackFn){
-                succesCallbackFn();
-              }
               return this;
             } else {
               displayErrorMessage("admin user not created");
@@ -757,7 +764,8 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
   mapUser=function(data) {
     return new User(data.username, data.password, null,data.fullName,data.email,data.permanent,data.validated,
                     data.timestampAccountCreation,data.timestampLastLogin,data.timestampLastPasswordChange,
-                    data.locked,data.passwordChangeRequired,self,data.readOnly,data.userManagerId);
+                    data.locked,data.passwordChangeRequired,self,data.readOnly,data.userManagerId,
+                    data.validationToken);
   }
 
 
