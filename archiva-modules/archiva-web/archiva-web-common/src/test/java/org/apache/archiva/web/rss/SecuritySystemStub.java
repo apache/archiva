@@ -22,6 +22,7 @@ package org.apache.archiva.web.rss;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.TokenManager;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.AuthorizationResult;
 import org.apache.archiva.redback.keys.KeyManager;
@@ -702,5 +703,10 @@ public class SecuritySystemStub
     public boolean userManagerReadOnly()
     {
         return true;
+    }
+
+    @Override
+    public TokenManager getTokenManager() {
+        return null;
     }
 }
