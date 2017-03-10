@@ -83,6 +83,21 @@
     <constructor-arg value="${appserver.base}/jcr"/>
   </bean>
 
+  <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry"
+        init-method="initialize">
+    <property name="properties">
+      <value>
+        <![CDATA[
+        <configuration>
+          <system/>
+          <properties fileName="${basedir}/src/test/resources/security.properties" config-optional="true"
+                      config-at="org.apache.archiva.redback"/>
+        </configuration>
+        ]]>
+      </value>
+    </property>
+  </bean>
+
   <alias name="userConfiguration#redback" alias="userConfiguration#default"/>
 
   <alias name="authorizer#rbac" alias="authorizer#default"/>
