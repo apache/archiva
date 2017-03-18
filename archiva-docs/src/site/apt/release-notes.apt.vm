@@ -38,7 +38,8 @@ Release Notes for Archiva ${project.version}
 
   Apache Archiva ${project.version} is a bugs fix release:
 
-  * NOTE: jdk 1.7 is now prerequisite with Apache Archiva ${project.version}
+  * There are added some fixes to avoid requests from unknown origin
+
 
 * Compatibility Changes
 
@@ -67,62 +68,33 @@ Release Notes for Archiva ${project.version}
 
   Released: <<???>>
 
-** New Feature
 
-     * [MRM-1867] - Adding a find jar by checksum functionality to the REST api
+** New Feature
 
 
 ** Improvement
 
-     * [MRM-1390] - Generic metadata should be searcheable in Archiva search
+     * [MRM-1925] - Make User-Agent header configurable for HTTP requests
 
-     * [MRM-1844] - Allow LDAP groupOfNames
+     * [MRM-1874] - Login Dialog triggers multiple events (+messages)
+
+     * [MRM-1924] - Increasing timeouts for repository check
 
 ** Bug
 
-     * [MRM-770] - Archiva web client does not recognize classifier
+     * [MRM-1908] - Logged on users can write any repository
 
-     * [MRM-813] - Audit log is reporting "Modify File (proxied)" when no proxy connectors exist and the file has not changed
+     * [MRM-1928] - Bad redirect URL when using Archiva through HTTP reverse proxy
 
-     * [MRM-837] - Cannot download SNAPSHOT version
+     * [MRM-1926] - Invalid checksum files in Archiva repository after download from remote repository
 
-     * [MRM-935] - Archiva doesn't supports artifact with \<version\>SNAPSHOT\</version\>
+     * [MRM-1923] - Fixing bind issue with certain ldap servers, when user not found
 
-     * [MRM-1145] - RSS tests do not correctly check responses
+     * [MRM-1909] - Remote repository check fails for https://repo.maven.apache.org/maven2
 
-     * [MRM-1311] - Logging in ArtifactMissingChecksumsConsumer does not appear in the logs even if configured properly
-
-     * [MRM-1486] - ldap.config.mapper.attribute.user.filter using ldap not working correctly with commas.
-
-     * [MRM-1767] - When selecting a specific repository to browse, I get an error  that I don't have sufficient privileges.
-
-     * [MRM-1807] - Archiva wrapper fail to start
-
-     * [MRM-1810] - LDAP - groups config not available in Users Runtime Configuration - Properties
-
-     * [MRM-1811] - Users - Manage section: pagination needs to change
-
-     * [MRM-1846] - Regression in 2.0.1 : uniqueVersion false not supported
-
-     * [MRM-1848] - download links for files mult-dot extensions incorrect in Browse view
-
-     * [MRM-1851] - generic metadata GUI broken
-
-     * [MRM-1860] - ClassNotFound exception with JBoss
-
-     * [MRM-1863] - RepositoryGroup URL is not build using the Application URL
-
-     * [MRM-1864] - Default configuration for central should now use SSL
-
-     * [MRM-1871] - ConcurrentModificationException in DefaultRepositoryProxyConnectors
-
-     * [MRM-1873] - archiva doesn't recognise ldap-group to ldap-users mapping
 
 ** Task
 
-     * [MRM-1359] - Remove Maven 1.x functionality
-
-     * [MRM-1865] - remove isPermanent from Consumer API
 
 
 * History
