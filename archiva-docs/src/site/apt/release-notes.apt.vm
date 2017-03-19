@@ -43,22 +43,14 @@ Release Notes for Archiva ${project.version}
 
 * Compatibility Changes
 
-  * If using the Cassandra backend, the metadatafacet column 'key' has been
-    renamed to 'facetKey' in 2.2.0 so you should copy the data to the new
-    column manually.
+  * The REST services are now checking for the origin of the requests by analysing Origin
+    and Referer header of the HTTP requests and adding an validation token to the Header.
+    This prevents requests from malicious sites if they are open in the same browser. If you use
+    the REST services from other clients you may change the behaviour with the new
+    configuration properties for the redback security (rest.csrffilter.*, rest.baseUrl)
+    For more information see {{{./adminguide/customising-security.html}Archiva Security Configuration}} and
+    the {{{/redback/integration/rest.html}Redback REST documentation }}
 
-  * If upgrading from earlier versions of Archiva, the list of libraries in
-    <<<wrapper.conf>>> has changed. If you have customized your copy of
-    <<<wrapper.conf>>>, please update it for compatibility with the version
-    distributed with the current release.
-
-  * As the database storage has been removed, you can remove the JNDI entry
-    for <<<jdbc/archiva>>>.  After upgrading from a previous version, you will
-    have to run a full scan to populate the new JCR Repository. This will be
-    done on first start of Archiva.
-
-  Refer to the {{{./adminguide/upgrade.html} Upgrading Archiva guide}} for more
-  information.
 
 * Release Notes
 
@@ -66,7 +58,7 @@ Release Notes for Archiva ${project.version}
 
 * Changes in Archiva ${project.version}
 
-  Released: <<???>>
+  Released: <<${releaseDate}>>
 
 
 ** New Feature

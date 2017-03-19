@@ -32,6 +32,8 @@
   <properties>
     <siteFilePath>${user.home}/archiva-sites/archiva-docs-${project.version}/</siteFilePath>
     <scmPubCheckoutDirectory>${basedir}/.site-content</scmPubCheckoutDirectory>
+    <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+    <releaseDate>${maven.build.timestamp}</releaseDate>
   </properties>
 
   <build>
