@@ -268,6 +268,7 @@ public abstract class AbstractArchivaRestTest
         {
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
+        // Set the Referer header to your archiva server url
         WebClient.client(service).header("Referer","http://localhost:"+port);
 
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
@@ -298,6 +299,7 @@ public abstract class AbstractArchivaRestTest
         {
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
+        // Set the Referer header to your archiva server url
         WebClient.client(service).header("Referer","http://localhost:"+port);
         // to configure read timeout
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
