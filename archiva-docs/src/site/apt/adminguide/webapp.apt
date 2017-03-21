@@ -25,10 +25,10 @@
 
 Installing Apache Archiva as a Web Application
 
-~~TODO: link to wiki location for other application servers
-
   Archiva can be deployed as a web application into any Java EE application server. This document will show an
-  example of doing so with Apache Tomcat 5.5, 6.0.x and 7.0.x
+  example of doing so with Apache Tomcat 5.5, 6.0.x and 7.0.x.
+
+  You can find information about additional application servers on {{{https://cwiki.apache.org/confluence/display/ARCHIVA/HOWTO+run+Archiva+on+your+Application+Server+or+Database} the archiva wiki}}.
 
   <<Note>>: When you first start Archiva, you will see an Exception that schema SA does not exist - however it doesn't 
   cause a problem. If you use a username other than 'sa', such as 'archiva', then you seem to get the same error but

@@ -38,6 +38,13 @@ Using REST Services
 
   * Redback REST api is available here: {{http://archiva.apache.org/docs/${project.version}/rest-docs-redback-rest-api/index.html}}
 
+* Security related information
+
+  Starting with version 2.2.2 we added HTTP verification techniques to avoid cross site request forgery attacks. The
+  updating services check Origin and Referer header and use a token provided by the login service.
+  If you use the webservices with a native client that is no browser or want to allow requests from different origin
+  URLs you have to change the configuration. For further information see the {{{/redback/integration/rest.html}Redback REST documentation}}
+
 * Search Service
 
    Authentication headers for connect to your Archiva instance :
@@ -114,11 +121,11 @@ Using REST Services
 
   Current versions use in Apache Archiva:
 
-   * $\{project.version}: ${project.version}
+   * <<<$\{project.version}>>>: ${project.version}
 
-   * $\{cxfVersion}: ${cxfVersion}
+   * <<<$\{cxfVersion}>>>: ${cxf.version}
 
-   * $\{jacksonVersion}: ${jacksonVersion}
+   * <<<$\{jacksonVersion}>>>: ${jacksonVersion}
 
 * Security Framework Services:
 

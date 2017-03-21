@@ -38,8 +38,9 @@ Release Notes for Archiva ${project.version}
 
   Apache Archiva ${project.version} is a bugs fix release:
 
-  * There are added some fixes to avoid requests from unknown origin
+  * Some fixes were added to avoid requests from unknown origin
 
+  * Some minor bugfixes were added
 
 * Compatibility Changes
 
@@ -51,6 +52,7 @@ Release Notes for Archiva ${project.version}
     For more information see {{{./adminguide/customising-security.html}Archiva Security Configuration}} and
     the {{{/redback/integration/rest.html}Redback REST documentation }}
 
+  * Archiva uses redback for authentication and authorization in version ${redback.version}
 
 * Release Notes
 

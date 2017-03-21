@@ -30,7 +30,7 @@
 Writing a Consumer Plugin
 
  For a sample custom consumer, you can checkout the archiva-consumer-plugin at the archiva sandbox in the SVN repository:
- Prior to release 1.4, plexus components are not anymore supported, you must use Spring components.
+ Starting with release 1.4, plexus components are not anymore supported, you must use Spring components.
 
 * Writing manually
 
