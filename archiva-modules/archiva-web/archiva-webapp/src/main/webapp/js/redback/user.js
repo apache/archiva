@@ -325,6 +325,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
             }
 
           });
+          $("#username").prop('disabled',true);
           // desactivate roles pill when adding user
           $("#edit_user_details_pills_headers").hide();
 
