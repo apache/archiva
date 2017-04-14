@@ -148,6 +148,9 @@ public class Maven2RepositoryStorage
 
     private static final String METADATA_FILENAME = METADATA_FILENAME_START + ".xml";
 
+    // This array must be lexically sorted
+    private static final String[] IGNORED_FILES = { METADATA_FILENAME, "resolver-status.properties" };
+
     private static final MavenXpp3Reader MAVEN_XPP_3_READER = new MavenXpp3Reader();
 
 
@@ -615,13 +618,25 @@ public class Maven2RepositoryStorage
         List<ArtifactMetadata> artifacts = new ArrayList<>();
         if ( files != null )
         {
+            int errorCount=0;
             for ( File file : files )
             {
-                ArtifactMetadata metadata =
-                    getArtifactFromFile( readMetadataRequest.getRepositoryId(), readMetadataRequest.getNamespace(),
-                                         readMetadataRequest.getProjectId(), readMetadataRequest.getProjectVersion(),
-                                         file );
-                artifacts.add( metadata );
+                try {
+                    ArtifactMetadata metadata =
+                            getArtifactFromFile(readMetadataRequest.getRepositoryId(), readMetadataRequest.getNamespace(),
+                                    readMetadataRequest.getProjectId(), readMetadataRequest.getProjectVersion(),
+                                    file);
+                    artifacts.add(metadata);
+                } catch (Exception ex) {
+                    LOGGER.error("Error while retrieving metadata of file {} (Project: {}, Repository: {}): {}",
+                            file.getName(), readMetadataRequest.getProjectId(), readMetadataRequest.getRepositoryId(),
+                            ex.getMessage());
+                    errorCount++;
+                }
+            }
+            // We throw only an error, if the number of errors equals the number of files
+            if (errorCount>0 && errorCount==files.length) {
+                throw new RepositoryStorageRuntimeException(readMetadataRequest.getRepositoryId(), "Could not retrieve metadata of the files");
             }
         }
         return artifacts;
@@ -1016,7 +1031,7 @@ public class Maven2RepositoryStorage
             {
                 return false;
             }
-            else if ( name.equals( METADATA_FILENAME ) )
+            else if ( Arrays.binarySearch(IGNORED_FILES, name)>=0 )
             {
                 return false;
             }

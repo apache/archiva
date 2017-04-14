@@ -304,6 +304,8 @@
               <exclude>src/test/resources/m1-repo-filelist.txt</exclude>
               <exclude>src/test/repositories/**</exclude>
               <exclude>src/test/expected-poms/**</exclude>
+              <exclude>src/test/resources/resolver-status.properties</exclude>
+              <exclude>src/test/resources/test01.properties</exclude>
             </excludes>
           </configuration>
         </plugin>

@@ -52,6 +52,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -322,6 +328,90 @@ public class Maven2RepositoryMetadataResolverTest
         assertEquals( "20100310.014828", facet.getTimestamp() );
         assertNull( facet.getClassifier() );
         assertEquals( "pom", facet.getType() );
+    }
+
+    @Test
+    public void testGetArtifactMetadataSnapshotsMRM1859()
+            throws Exception
+    {
+        Path repoDir = Paths.get("target/test-repository/com/example/test/test-artifact/1.0-SNAPSHOT");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("resolver-status.properties");
+        Path resFile = Paths.get(url.toURI());
+        Path destFile = repoDir.resolve(resFile.getFileName());
+        Files.copy(resFile, destFile, StandardCopyOption.REPLACE_EXISTING);
+        URL url2 = Thread.currentThread().getContextClassLoader().getResource("test01.properties");
+        Path resFile2 = Paths.get(url2.toURI());
+        Path destFile2 = repoDir.resolve(resFile2.getFileName());
+        Files.copy(resFile2, destFile2, StandardCopyOption.REPLACE_EXISTING);
+
+        try {
+
+
+            Collection<ArtifactMetadata> testArtifacts = storage.readArtifactsMetadata(
+                    new ReadMetadataRequest(TEST_REPO_ID, "com.example.test", "test-artifact", "1.0-SNAPSHOT", ALL));
+            List<ArtifactMetadata> artifacts = new ArrayList<>(testArtifacts);
+            Collections.sort(artifacts, new Comparator<ArtifactMetadata>() {
+                @Override
+                public int compare(ArtifactMetadata o1, ArtifactMetadata o2) {
+                    return o1.getId().compareTo(o2.getId());
+                }
+            });
+
+            assertEquals(6, artifacts.size());
+
+            ArtifactMetadata artifactMetadata = artifacts.get(0);
+            assertEquals("test-artifact-1.0-20100308.230825-1.jar", artifactMetadata.getId());
+            MavenArtifactFacet facet = (MavenArtifactFacet) artifactMetadata.getFacet(MavenArtifactFacet.FACET_ID);
+            assertEquals(1, facet.getBuildNumber());
+            assertEquals("20100308.230825", facet.getTimestamp());
+            assertNull(facet.getClassifier());
+            assertEquals("jar", facet.getType());
+
+            artifactMetadata = artifacts.get(1);
+            assertEquals("test-artifact-1.0-20100308.230825-1.pom", artifactMetadata.getId());
+            facet = (MavenArtifactFacet) artifactMetadata.getFacet(MavenArtifactFacet.FACET_ID);
+            assertEquals(1, facet.getBuildNumber());
+            assertEquals("20100308.230825", facet.getTimestamp());
+            assertNull(facet.getClassifier());
+            assertEquals("pom", facet.getType());
+
+            artifactMetadata = artifacts.get(2);
+            assertEquals("test-artifact-1.0-20100310.014828-2-javadoc.jar", artifactMetadata.getId());
+            facet = (MavenArtifactFacet) artifactMetadata.getFacet(MavenArtifactFacet.FACET_ID);
+            assertEquals(2, facet.getBuildNumber());
+            assertEquals("20100310.014828", facet.getTimestamp());
+            assertEquals("javadoc", facet.getClassifier());
+            assertEquals("javadoc", facet.getType());
+
+            artifactMetadata = artifacts.get(3);
+            assertEquals("test-artifact-1.0-20100310.014828-2-sources.jar", artifactMetadata.getId());
+            facet = (MavenArtifactFacet) artifactMetadata.getFacet(MavenArtifactFacet.FACET_ID);
+            assertEquals(2, facet.getBuildNumber());
+            assertEquals("20100310.014828", facet.getTimestamp());
+            assertEquals("sources", facet.getClassifier());
+            assertEquals("java-source", facet.getType());
+
+            artifactMetadata = artifacts.get(4);
+            assertEquals("test-artifact-1.0-20100310.014828-2.jar", artifactMetadata.getId());
+            facet = (MavenArtifactFacet) artifactMetadata.getFacet(MavenArtifactFacet.FACET_ID);
+            assertEquals(2, facet.getBuildNumber());
+            assertEquals("20100310.014828", facet.getTimestamp());
+            assertNull(facet.getClassifier());
+            assertEquals("jar", facet.getType());
+
+            artifactMetadata = artifacts.get(5);
+            assertEquals("test-artifact-1.0-20100310.014828-2.pom", artifactMetadata.getId());
+            facet = (MavenArtifactFacet) artifactMetadata.getFacet(MavenArtifactFacet.FACET_ID);
+            assertEquals(2, facet.getBuildNumber());
+            assertEquals("20100310.014828", facet.getTimestamp());
+            assertNull(facet.getClassifier());
+            assertEquals("pom", facet.getType());
+
+        } finally {
+            Files.delete(destFile);
+            Files.delete(destFile2);
+        }
+
     }
 
     private void assertDependency( Dependency dependency, String groupId, String artifactId, String version )

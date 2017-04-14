@@ -101,11 +101,14 @@ public class DependencyTreeBuilderTestMaven3
             builder.buildDependencyTree( Collections.singletonList( TEST_REPO_ID ), TEST_GROUP_ID, TEST_ARTIFACT_ID,
                                          TEST_VERSION );
 
-        assertThat( treeEntries ).isNotNull().isNotEmpty().contains(
-            new TreeEntry( new Artifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION, "", "" ) ) );
+        Artifact artifact = new Artifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION, "", "" );
+        artifact.setFileExtension("jar");
+        assertThat( treeEntries ).isNotNull().isNotEmpty().contains(new TreeEntry(artifact) );
 
+        artifact = new Artifact( "commons-lang", "commons-lang", "2.2", "compile", "" );
+        artifact.setFileExtension("jar");
         assertThat( treeEntries.get( 0 ).getChilds() ).isNotNull().isNotEmpty().contains(
-            new TreeEntry( new Artifact( "commons-lang", "commons-lang", "2.2", "compile", "" ) ) );
+            new TreeEntry(artifact) );
     }
 
 
