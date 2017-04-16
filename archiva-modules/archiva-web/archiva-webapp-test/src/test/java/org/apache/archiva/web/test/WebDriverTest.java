@@ -29,13 +29,18 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.io.FileUtils;
 import org.fluentlenium.core.Fluent;
 import org.junit.Before;
@@ -44,86 +49,86 @@ import org.junit.Before;
  * @author Olivier Lamy
  */
 public class WebDriverTest
-    extends FluentTest
-{
+        extends FluentTest {
 
     @Override
-    public Fluent takeScreenShot( String fileName )
-    {
-        try
-        {
+    public Fluent takeScreenShot(String fileName) {
+        try {
             // save html to have a minimum feedback if jenkins firefox not up
-            File fileNameHTML = new File( fileName + ".html" );
-            FileUtils.writeStringToFile( fileNameHTML, getDriver().getPageSource() );
-        }
-        catch ( IOException e )
-        {
-            System.out.print( e.getMessage() );
+            File fileNameHTML = new File(fileName + ".html");
+            FileUtils.writeStringToFile(fileNameHTML, getDriver().getPageSource());
+        } catch (IOException e) {
+            System.out.print(e.getMessage());
             e.printStackTrace();
         }
-        return super.takeScreenShot( fileName );
+        return super.takeScreenShot(fileName);
     }
-    
+
     @Before
-    public void init()
-    {
-        setSnapshotMode( Mode.TAKE_SNAPSHOT_ON_FAIL );
-        setSnapshotPath( new File( "target", "errorshtmlsnap" ).getAbsolutePath() );
+    public void init() {
+        setSnapshotMode(Mode.TAKE_SNAPSHOT_ON_FAIL);
+        setSnapshotPath(new File("target", "errorshtmlsnap").getAbsolutePath());
     }
-    
+
     @Test
     public void simpletest()
-        throws Exception
-    {
-        
+            throws Exception {
+
         Properties tomcatPortProperties = new Properties();
         tomcatPortProperties.load(
-            new FileInputStream( new File( System.getProperty( "tomcat.propertiesPortFilePath" ) ) ) );
+                new FileInputStream(new File(System.getProperty("tomcat.propertiesPortFilePath"))));
 
-        int tomcatPort = Integer.parseInt( tomcatPortProperties.getProperty( "tomcat.maven.http.port" ) );
+        int tomcatPort = Integer.parseInt(tomcatPortProperties.getProperty("tomcat.maven.http.port"));
 
-        goTo( "http://localhost:" + tomcatPort + "/archiva/index.html?request_lang=en" );
-        
+        goTo("http://localhost:" + tomcatPort + "/archiva/index.html?request_lang=en");
+
         // wait until topbar-menu-container is feeded
         await().atMost(5, TimeUnit.SECONDS).until("#topbar-menu").isPresent();
-        
-        FluentList<FluentWebElement> elements = find( "#create-admin-link-a" );
 
-        if ( !elements.isEmpty() && elements.get( 0 ).isDisplayed() )
-        {
-            WebElement webElement = elements.get( 0 ).getElement();
-            Assert.assertEquals( "Create Admin User", webElement.getText() );
-        }
-        else
-        {
-            elements = find( "#login-link-a" );
-            WebElement webElement = elements.get( 0 ).getElement();
-            Assert.assertEquals( "LOGIN", webElement.getText() );
+        FluentList<FluentWebElement> elements = find("#create-admin-link-a");
+
+        if (!elements.isEmpty() && elements.get(0).isDisplayed()) {
+            WebElement webElement = elements.get(0).getElement();
+            Assert.assertEquals("Create Admin User", webElement.getText());
+        } else {
+            elements = find("#login-link-a");
+            WebElement webElement = elements.get(0).getElement();
+            Assert.assertEquals("LOGIN", webElement.getText());
         }
 
     }
 
     @Override
-    public WebDriver getDefaultDriver()
-    {
-        String seleniumBrowser = System.getProperty( "selenium.browser" );
+    public WebDriver getDefaultDriver() {
+        String seleniumBrowser = System.getProperty("selenium.browser");
+        String seleniumHost = System.getProperty("seleniumHost", "localhost");
+        int seleniumPort = Integer.getInteger("seleniumPort", 4444);
+        try {
 
-        if ( StringUtils.contains( seleniumBrowser, "chrome" ) )
-        {
-            return new ChromeDriver();
+            if (StringUtils.contains(seleniumBrowser, "chrome")) {
+                return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
+                        DesiredCapabilities.chrome()
+                );
+            }
+
+            if (StringUtils.contains(seleniumBrowser, "safari")) {
+                return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
+                        DesiredCapabilities.safari()
+                );
+            }
+
+            if (StringUtils.contains(seleniumBrowser, "iexplore")) {
+                return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
+                        DesiredCapabilities.internetExplorer()
+                );
+            }
+
+            return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
+                    DesiredCapabilities.firefox()
+            );
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Initializion of remote driver failed");
         }
-
-        if ( StringUtils.contains( seleniumBrowser, "safari" ) )
-        {
-            return new SafariDriver();
-        }
-
-        if ( StringUtils.contains( seleniumBrowser, "iexplore" ) )
-        {
-            return new InternetExplorerDriver();
-        }
-
-        return new FirefoxDriver();
 
     }
 }

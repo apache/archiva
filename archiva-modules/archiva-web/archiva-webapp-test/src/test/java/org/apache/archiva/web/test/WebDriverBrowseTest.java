@@ -30,11 +30,15 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
@@ -136,26 +140,36 @@ public class WebDriverBrowseTest
     }
 
     @Override
-    public WebDriver getDefaultDriver()
-    {
-        String seleniumBrowser = System.getProperty( "selenium.browser" );
+    public WebDriver getDefaultDriver() {
+        String seleniumBrowser = System.getProperty("selenium.browser");
+        String seleniumHost = System.getProperty("seleniumHost", "localhost");
+        int seleniumPort = Integer.getInteger("seleniumPort", 4444);
+        try {
 
-        if ( StringUtils.contains( seleniumBrowser, "chrome" ) )
-        {
-            return new ChromeDriver();
-        }
+            if (StringUtils.contains(seleniumBrowser, "chrome")) {
+                return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
+                        DesiredCapabilities.chrome()
+                );
+            }
 
-        if ( StringUtils.contains( seleniumBrowser, "safari" ) )
-        {
-            return new SafariDriver();
-        }
+            if (StringUtils.contains(seleniumBrowser, "safari")) {
+                return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
+                        DesiredCapabilities.safari()
+                );
+            }
 
-        if ( StringUtils.contains( seleniumBrowser, "iexplore" ) )
-        {
-            return new InternetExplorerDriver();
+            if (StringUtils.contains(seleniumBrowser, "iexplore")) {
+                return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
+                        DesiredCapabilities.internetExplorer()
+                );
+            }
+
+            return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
+                    DesiredCapabilities.firefox()
+            );
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Initializion of remote driver failed");
         }
-        
-        return new FirefoxDriver();
 
     }
 }
