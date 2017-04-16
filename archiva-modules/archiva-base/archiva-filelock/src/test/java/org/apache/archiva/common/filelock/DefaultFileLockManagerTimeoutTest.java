@@ -30,6 +30,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -72,7 +73,13 @@ public class DefaultFileLockManagerTimeoutTest
 
                 Lock lock = fileLockManager.writeFileLock(file);
 
-                Files.copy(largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+                try {
+                    Files.copy(largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    logger.warn("Copy failed "+e.getMessage());
+                    // On windows a FileSystemException is thrown
+                    // We ignore this
+                }
 
                 lock = fileLockManager.writeFileLock(file);
             } catch (FileSystemException ex) {
