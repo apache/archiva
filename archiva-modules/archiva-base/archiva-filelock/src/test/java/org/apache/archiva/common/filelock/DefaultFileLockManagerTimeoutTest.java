@@ -30,6 +30,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
@@ -62,17 +63,23 @@ public class DefaultFileLockManagerTimeoutTest
         throws Throwable
     {
 
-        File file = new File( System.getProperty( "buildDirectory" ), "foo.txt" );
+            try {
+                File file = new File(System.getProperty("buildDirectory"), "foo.txt");
 
-        Files.deleteIfExists( file.toPath() );
+                Files.deleteIfExists(file.toPath());
 
-        File largeJar = new File( System.getProperty( "basedir" ), "src/test/cassandra-all-2.0.3.jar" );
+                File largeJar = new File(System.getProperty("basedir"), "src/test/cassandra-all-2.0.3.jar");
 
-        Lock lock = fileLockManager.writeFileLock( file );
+                Lock lock = fileLockManager.writeFileLock(file);
 
-        Files.copy( largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING );
+                Files.copy(largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-        lock = fileLockManager.writeFileLock( file );
+                lock = fileLockManager.writeFileLock(file);
+            } catch (FileSystemException ex) {
+                logger.error("Exception from filesystem "+ex.getMessage());
+                ex.printStackTrace();
+                throw ex;
+            }
 
     }
 
