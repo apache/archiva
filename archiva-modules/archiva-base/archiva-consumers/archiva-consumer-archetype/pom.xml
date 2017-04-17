@@ -31,7 +31,8 @@
   <description>Simple archetype to create archiva consumers</description>
   <properties>
     <archivaVersion>${project.version}</archivaVersion>
-    <archetypeVersion>2.2</archetypeVersion>
+    <archetypeVersion>2.4</archetypeVersion>
+    <mavenInvokerVersion>2.2</mavenInvokerVersion>
   </properties>
   <dependencies>
     <!-- Used by the archetype, so needed to be built before integration
@@ -142,6 +143,13 @@
             <settingsFile>${basedir}/src/test/test-settings.xml</settingsFile>
             <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
           </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.maven.shared</groupId>
+              <artifactId>maven-invoker</artifactId>
+              <version>${mavenInvokerVersion}</version>
+            </dependency>
+          </dependencies>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -160,6 +168,13 @@
                 <settingsFile>${basedir}/src/test/ci-test-settings.xml</settingsFile>
                 <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
               </configuration>
+              <dependencies>
+                <dependency>
+                  <groupId>org.apache.maven.shared</groupId>
+                  <artifactId>maven-invoker</artifactId>
+                  <version>${mavenInvokerVersion}</version>
+                </dependency>
+              </dependencies>
             </plugin>
           </plugins>
         </pluginManagement>
