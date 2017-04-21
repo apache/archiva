@@ -30,7 +30,7 @@
   </parent>
 
   <artifactId>archiva</artifactId>
-  <version>2.2.2-SNAPSHOT</version>
+  <version>2.2.2</version>
   <packaging>pom</packaging>
 
   <name>Apache Archiva</name>
@@ -47,7 +47,7 @@
     <connection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva.git</connection>
     <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva.git</developerConnection>
     <url>https://github.com/apache/archiva</url>
-    <tag>HEAD</tag>
+    <tag>archiva-2.2.2</tag>
   </scm>
 
   <properties>
