@@ -36,11 +36,11 @@ Release Notes for Archiva ${project.version}
 
 * New in Archiva ${project.version}
 
-  Apache Archiva ${project.version} is a bugs fix release:
+  Apache Archiva ${project.version} is a bug fix release:
 
-  * Some fixes were added to avoid requests from unknown origin
+  * Some fixes for the REST API were added to detect requests from unknown origin
 
-  * Some minor bugfixes were added
+  * Some bugfixes were added
 
 * Compatibility Changes
 
@@ -70,24 +70,30 @@ Release Notes for Archiva ${project.version}
 
      * [MRM-1925] - Make User-Agent header configurable for HTTP requests
 
+     * [MRM-1861], [MRM-1924] - Increasing timeouts for repository check
+
+     * [MRM-1937] - Prevent creating initial admin user with wrong name.
+
+     * Adding origin header validation checks for REST requests
+
+ ** Bugs fixed
+
+     * [MRM-1859] - Error upon viewing 'Artifacts' tab when browsing an artifact
+
      * [MRM-1874] - Login Dialog triggers multiple events (+messages)
-
-     * [MRM-1924] - Increasing timeouts for repository check
-
-** Bug
 
      * [MRM-1908] - Logged on users can write any repository
 
-     * [MRM-1928] - Bad redirect URL when using Archiva through HTTP reverse proxy
-
-     * [MRM-1926] - Invalid checksum files in Archiva repository after download from remote repository
+     * [MRM-1909] - Remote repository check fails for https://repo.maven.apache.org/maven2
 
      * [MRM-1923] - Fixing bind issue with certain ldap servers, when user not found
 
-     * [MRM-1909] - Remote repository check fails for https://repo.maven.apache.org/maven2
+     * [MRM-1926] - Invalid checksum files in Archiva repository after download from remote repository
+
+     * [MRM-1928] - Bad redirect URL when using Archiva through HTTP reverse proxy
 
 
-** Task
+ ** Task
 
 
 

@@ -42,8 +42,6 @@ Installing Archiva
   You will need to choose a different start command based on your platform. The <<<console>>> argument
   starts the server with the logs going to standard output, and waits for Ctrl+C to stop the server.
 
-  <<Note:>> A Derby exception "Schema 'SA' does not exist" occurs, but is not of concern.
-
   Archiva is now running on <<<{{http://localhost:8080/}}>>>
 
 {Setting up your Archiva instance}
