@@ -1843,6 +1843,7 @@
               <exclude>nb-configuration.xml</exclude>
               <exclude>.travis.yml</exclude>
               <exclude>out/**</exclude>
+              <exclude>Jenkinsfile</exclude>
             </excludes>
           </configuration>
         </plugin>
