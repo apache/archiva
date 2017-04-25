@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
-    <version>17</version>
+    <version>18-SNAPSHOT</version>
   </parent>
 
   <artifactId>archiva</artifactId>
@@ -61,14 +61,14 @@
     <maven-model-converter.version>2.1</maven-model-converter.version>
     <maven.indexer.version>5.1.1</maven.indexer.version>
     <wagon.version>2.9</wagon.version>
-    <redback.version>2.5</redback.version>
+    <redback.version>2.6-SNAPSHOT</redback.version>
     <redback.cache.version>2.2</redback.cache.version>
     <redback.quartz.version>2.1</redback.quartz.version>
     <redback.registry.version>2.4</redback.registry.version>
     <redback.spring-utils.version>2.1</redback.spring-utils.version>
     <redback.taskqueue.version>2.1</redback.taskqueue.version>
     <slf4j.version>1.7.12</slf4j.version>
-    <log4j.version>2.5</log4j.version>
+    <log4j.version>2.8.2</log4j.version>
 
     <spring.version>4.2.1.RELEASE</spring.version>
 
