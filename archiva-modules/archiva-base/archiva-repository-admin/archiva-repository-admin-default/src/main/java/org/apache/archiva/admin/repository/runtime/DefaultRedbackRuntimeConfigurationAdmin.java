@@ -42,6 +42,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -389,6 +390,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         properties.remove( UserConfigurationKeys.LDAP_AUTHENTICATION_METHOD );
         properties.remove( UserConfigurationKeys.LDAP_WRITABLE );
         properties.remove( UserConfigurationKeys.LDAP_GROUPS_USE_ROLENAME );
+
         // cleanup groups <-> role mapping
         /**for ( Map.Entry<String, String> entry : new HashMap<String, String>( properties ).entrySet() )
          {
@@ -690,10 +692,13 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     @Override
     public List<String> getList( String key )
     {
+        RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
+        if (conf.getConfigurationProperties().containsKey(key)) {
+            return Arrays.asList(conf.getConfigurationProperties().get(key).split(","));
+        }
+
         List<String> value = userConfiguration.getList( key );
 
-        RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
-        // TODO concat values
         conf.getConfigurationProperties().put( key, "" );
         try
         {
