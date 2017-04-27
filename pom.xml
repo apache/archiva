@@ -1796,7 +1796,7 @@
             <autoVersionSubmodules>true</autoVersionSubmodules>
             <goals>deploy</goals>
             <preparationGoals>${release.preparationGoals}</preparationGoals>
-            <arguments>-Prelease</arguments>
+            <arguments>-Prelease -DretryFailedDeploymentCount=5</arguments>
           </configuration>
         </plugin>
         <plugin>
