@@ -1093,15 +1093,16 @@ public class DefaultBrowseService
         }
     }
 
-    protected List<ArtifactContentEntry> readFileEntries( File file, String filterPath, String repoId )
+    protected List<ArtifactContentEntry> readFileEntries(final File file, final String filterPath, final String repoId )
         throws IOException
     {
+        String cleanedfilterPath = filterPath==null ? "" : (StringUtils.startsWith(filterPath, "/") ?
+                StringUtils.substringAfter(filterPath, "/") : filterPath);
         Map<String, ArtifactContentEntry> artifactContentEntryMap = new HashMap<>();
-        int filterDepth = StringUtils.countMatches( filterPath, "/" );
-        /*if ( filterDepth == 0 )
-        {
-            filterDepth = 1;
-        }*/
+        int filterDepth = StringUtils.countMatches( cleanedfilterPath, "/" );
+        if (!StringUtils.endsWith(cleanedfilterPath,"/") && !StringUtils.isEmpty(cleanedfilterPath)) {
+            filterDepth++;
+        }
         JarFile jarFile = new JarFile( file );
         try
         {
@@ -1113,7 +1114,7 @@ public class DefaultBrowseService
                     StringUtils.substringBeforeLast( currentEntry.getName(), "/" ) : currentEntry.getName();
                 String entryRootPath = getRootPath( cleanedEntryName );
                 int depth = StringUtils.countMatches( cleanedEntryName, "/" );
-                if ( StringUtils.isEmpty( filterPath ) //
+                if ( StringUtils.isEmpty( cleanedfilterPath ) //
                     && !artifactContentEntryMap.containsKey( entryRootPath ) //
                     && depth == filterDepth )
                 {
@@ -1124,7 +1125,7 @@ public class DefaultBrowseService
                 }
                 else
                 {
-                    if ( StringUtils.startsWith( cleanedEntryName, filterPath ) //
+                    if ( StringUtils.startsWith( cleanedEntryName, cleanedfilterPath ) //
                         && ( depth == filterDepth || ( !currentEntry.isDirectory() && depth == filterDepth ) ) )
                     {
                         artifactContentEntryMap.put( cleanedEntryName, new ArtifactContentEntry( cleanedEntryName,
@@ -1134,7 +1135,7 @@ public class DefaultBrowseService
                 }
             }
 
-            if ( StringUtils.isNotEmpty( filterPath ) )
+            if ( StringUtils.isNotEmpty( cleanedfilterPath ) )
             {
                 Map<String, ArtifactContentEntry> filteredArtifactContentEntryMap = new HashMap<>();
 

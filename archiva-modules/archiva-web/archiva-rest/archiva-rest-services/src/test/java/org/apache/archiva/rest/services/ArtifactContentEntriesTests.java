@@ -20,6 +20,7 @@ package org.apache.archiva.rest.services;
 
 import junit.framework.TestCase;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -34,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Olivier Lamy
  */
-@RunWith( JUnit4.class )
+@RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ArtifactContentEntriesTests
     extends TestCase
 {
