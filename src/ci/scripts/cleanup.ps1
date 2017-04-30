@@ -1,6 +1,6 @@
-<#
-    Powershell script for cleaning up remaining browser and selenium server processes on the CI servers
-#>
+#
+#   Powershell script for cleaning up remaining browser and selenium server processes on the CI servers
+#
 
 param (
     [switch]$Verbose = $False,
@@ -8,7 +8,8 @@ param (
     [String[]]$SeleniumProcesses = @("mshta.exe","java.exe")
 )
 
-$currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+# $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+$currentUser = $env:UserName
 Write-Output "User: $currentUser"
 
 if ($Verbose) 
