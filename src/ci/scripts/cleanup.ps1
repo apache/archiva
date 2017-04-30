@@ -37,22 +37,14 @@ if ($Verbose)
 foreach ($procName in $seleniumProcesses) 
 {
   Write-Output "Filter: name = '$procName'"
-  $processes = Get-WmiObject Win32_Process -Filter "name = '$procName'" | Where-Object {$_.GetOwner().User -eq $currentUser } 
-  $processes2 = Get-WmiObject Win32_Process -Filter "name = '$procName'" 
+  $processes = Get-WmiObject Win32_Process -Filter "name = '$procName'" | Where-Object {$_.GetOwner().User -eq $currentUser }  | Where-Object {$_.CommandLine -match "selenium-server"}
   if ($Verbose) {
     Write-Output "Processes $processes"
-    Write-Output "Processes2 $processes2"
   }
   foreach($proc in $processes)
   {
-      if($proc.CommandLine.Contains("selenium-server"))
-      {
-          Write-Host "stopping proccess $($proc.ProcessId) with $($proc.ThreadCount) threads; $($proc.CommandLine.Substring(0, 50))..."
-          Stop-Process -F $proc.ProcessId
-      } else
-      {
-          Write-Host "skipping proccess $($proc.ProcessId) with $($proc.ThreadCount) threads; $($proc.CommandLine.Substring(0, 50))..."
-      }
+    Write-Host "stopping proccess $($proc.ProcessId) with $($proc.ThreadCount) threads; $($proc.CommandLine.Substring(0, 50))..."
+    Stop-Process -F $proc.ProcessId
   }
 }
 
