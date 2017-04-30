@@ -5,6 +5,7 @@
 param (
     [switch]$Verbose = $False,
     [String[]]$Browsers = @("firefox.exe","iexplore.exe","chrome.exe")
+    [String[]]$SeleniumProcesses = @("mshta.exe","java.exe")
 )
 
 $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
@@ -32,19 +33,20 @@ if ($Verbose)
   }  
 }
 
-
-
-$processes = Get-WmiObject Win32_Process -Filter "name = 'java.exe'" | Where-Object {$_.GetOwner().User -eq $currentUser } 
-foreach($proc in $processes)
+foreach ($procName in $seleniumProcesses) 
 {
-    if($proc.CommandLine.Contains("selenium-server.jar"))
-    {
-        Write-Host "stopping proccess $($proc.ProcessId) with $($proc.ThreadCount) threads; $($proc.CommandLine.Substring(0, 50))..."
-        Stop-Process -F $proc.ProcessId
-    } else
-    {
-        Write-Host "skipping proccess $($proc.ProcessId) with $($proc.ThreadCount) threads; $($proc.CommandLine.Substring(0, 50))..."
-    }
+  $processes = Get-WmiObject Win32_Process -Filter "name = '$procName'" | Where-Object {$_.GetOwner().User -eq $currentUser } 
+  foreach($proc in $processes)
+  {
+      if($proc.CommandLine.Contains("selenium-server"))
+      {
+          Write-Host "stopping proccess $($proc.ProcessId) with $($proc.ThreadCount) threads; $($proc.CommandLine.Substring(0, 50))..."
+          Stop-Process -F $proc.ProcessId
+      } else
+      {
+          Write-Host "skipping proccess $($proc.ProcessId) with $($proc.ThreadCount) threads; $($proc.CommandLine.Substring(0, 50))..."
+      }
+  }
 }
 
 foreach ($procName in $Browsers) 
