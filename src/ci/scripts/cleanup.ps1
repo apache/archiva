@@ -3,7 +3,9 @@
 #>
 
 $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
-Write-Output "$currentUser"
+Write-Output "User: $currentUser"
+$currentUser = "$env:UserDomain\$env:UserName"
+Write-Output "User2: $currentUser"
 
 Get-Process | Get-Member
 
