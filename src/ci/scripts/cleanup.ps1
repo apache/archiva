@@ -35,7 +35,13 @@ if ($Verbose)
 
 foreach ($procName in $seleniumProcesses) 
 {
+  Write-Output "Filter: name = '$procName'"
   $processes = Get-WmiObject Win32_Process -Filter "name = '$procName'" | Where-Object {$_.GetOwner().User -eq $currentUser } 
+  $processes2 = Get-WmiObject Win32_Process -Filter "name = '$procName'" 
+  if ($Verbose) {
+    Write-Output "Processes $processes"
+    Write-Output "Processes2 $processes2"
+  }
   foreach($proc in $processes)
   {
       if($proc.CommandLine.Contains("selenium-server"))
