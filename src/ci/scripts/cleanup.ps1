@@ -40,7 +40,8 @@ foreach($proc in $processes)
 }
 
 Write-Output "Filter: name = '$procName'"
-foreach ($procName in ['firefox.exe','ieplore.exe','chrome.exe']) 
+$browsers = "firefox.exe","iexplore.exe","chrome.exe"
+foreach ($procName in $browsers) 
 {
   $processes = Get-WmiObject Win32_Process -Filter "name = '$procName'" | Where-Object {$_.GetOwner().User -eq $currentUser } 
   foreach($proc in $processes)
