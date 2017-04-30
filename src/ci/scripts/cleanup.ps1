@@ -7,5 +7,4 @@ foreach ($item in $list) {
      $fn = $item.name + "_.txt"
      get-itemproperty $item | format-list 
 }
-Get-Process | sort -Descending CPU
-Get-Process iexplo*
+Get-Process -IncludeUserName -FileVersionInfo  | sort -Descending CPU
