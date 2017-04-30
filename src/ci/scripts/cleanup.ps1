@@ -36,25 +36,26 @@ if ($Verbose)
 
 foreach ($procName in $seleniumProcesses) 
 {
-  Write-Output "Filter: name = '$procName'"
   $processes = Get-WmiObject Win32_Process -Filter "name = '$procName'" | Where-Object {$_.GetOwner().User -eq $currentUser }  | Where-Object {$_.CommandLine -match "selenium-server"}
   if ($Verbose) {
-    Write-Output "Processes $processes"
+    Write-Output "Filter: name = '$procName'"
   }
   foreach($proc in $processes)
   {
-    Write-Host "stopping proccess $($proc.ProcessId) with $($proc.ThreadCount) threads; $($proc.CommandLine.Substring(0, 50))..."
+    Write-Output "stopping proccess $($proc.ProcessId) with $($proc.ThreadCount) threads; $($proc.CommandLine.Substring(0, 50))..."
     Stop-Process -F $proc.ProcessId
   }
 }
 
 foreach ($procName in $Browsers) 
 {
-  Write-Output "Filter: name = '$procName'"
   $processes = Get-WmiObject Win32_Process -Filter "name = '$procName'" | Where-Object {$_.GetOwner().User -eq $currentUser } 
+  if ($Verbose) {
+    Write-Output "Filter: name = '$procName'"
+  }
   foreach($proc in $processes)
   {
-     Write-Host "stopping proccess $($proc.ProcessId) with $($proc.ThreadCount) threads; $($proc.CommandLine.Substring(0, 50))..."
+     Write-Output "stopping proccess $($proc.ProcessId) with $($proc.ThreadCount) threads; $($proc.CommandLine.Substring(0, 50))..."
      Stop-Process -F $proc.ProcessId
   }
 }
