@@ -1,30 +1,36 @@
 <#
-    Powershell script for cleaning up remaining processes on the CI servers
+    Powershell script for cleaning up remaining browser and selenium server processes on the CI servers
 #>
+
+param (
+    [switch]$Verbose = $False,
+    [String[]]$Browsers = @("firefox.exe","iexplore.exe","chrome.exe")
+)
 
 $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 Write-Output "User: $currentUser"
-$currentUser = "$env:UserDomain\$env:UserName"
-Write-Output "User2: $currentUser"
 
-Get-Process | Get-Member
-
-$View = @(
- @{l='Handles';e={$_.HandleCount}},
- @{l='NPM(K)';e={ (Get-Process -Id $_.ProcessId).NonpagedSystemMemorySize/1KB -as [int]}},
- @{l='PM(K)';e={ $_.PrivatePageCount/1KB -as [int]}},
- @{l='WS(K)';e={ $_.WorkingSetSize/1KB -as [int]}},
- @{l='VM(M)';e={ $_.VirtualSize/1mB -as [int]}},
- @{l='CPU(s)';e={ (Get-Process -Id $_.ProcessId).CPU -as [int]}},
- @{l='Id';e={ $_.ProcessId}},
- 'UserName'
- @{l='ProcessName';e={ $_.ProcessName}}
-)
-Get-WmiObject Win32_Process | % { $_ | 
-    Add-Member -MemberType ScriptProperty -Name UserName -Value {
-        '{0}\{1}' -f $this.GetOwner().Domain,$this.GetOwner().User
-    } -Force -PassThru
-}  
+if ($Verbose) 
+{
+  Get-Process | Get-Member
+  
+  $View = @(
+   @{l='Handles';e={$_.HandleCount}},
+   @{l='NPM(K)';e={ (Get-Process -Id $_.ProcessId).NonpagedSystemMemorySize/1KB -as [int]}},
+   @{l='PM(K)';e={ $_.PrivatePageCount/1KB -as [int]}},
+   @{l='WS(K)';e={ $_.WorkingSetSize/1KB -as [int]}},
+   @{l='VM(M)';e={ $_.VirtualSize/1mB -as [int]}},
+   @{l='CPU(s)';e={ (Get-Process -Id $_.ProcessId).CPU -as [int]}},
+   @{l='Id';e={ $_.ProcessId}},
+   'UserName'
+   @{l='ProcessName';e={ $_.ProcessName}}
+  )
+  Get-WmiObject Win32_Process | % { $_ | 
+      Add-Member -MemberType ScriptProperty -Name UserName -Value {
+          '{0}\{1}' -f $this.GetOwner().Domain,$this.GetOwner().User
+      } -Force -PassThru
+  }  
+}
 
 
 
@@ -41,10 +47,9 @@ foreach($proc in $processes)
     }
 }
 
-Write-Output "Filter: name = '$procName'"
-$browsers = "firefox.exe","iexplore.exe","chrome.exe"
-foreach ($procName in $browsers) 
+foreach ($procName in $Browsers) 
 {
+  Write-Output "Filter: name = '$procName'"
   $processes = Get-WmiObject Win32_Process -Filter "name = '$procName'" | Where-Object {$_.GetOwner().User -eq $currentUser } 
   foreach($proc in $processes)
   {
