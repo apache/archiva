@@ -38,11 +38,14 @@ import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -66,6 +69,16 @@ public class DefaultRemoteRepositoriesService
 
     int checkReadTimeout = 10000;
     int checkTimeout = 9000;
+
+    // TODO: make this configurable
+    private Map<String,String> remoteConnectivityCheckPaths = new HashMap<>();
+
+    @PostConstruct
+    private void init() {
+        // default initialization for known servers
+        remoteConnectivityCheckPaths.put("http://download.oracle.com/maven","com/sleepycat/je/license.txt");
+        remoteConnectivityCheckPaths.put("https://download.oracle.com/maven","com/sleepycat/je/license.txt");
+    }
 
     @Override
     public List<RemoteRepository> getRemoteRepositories()
@@ -197,12 +210,17 @@ public class DefaultRemoteRepositoriesService
                 proxyInfo.setUserName( networkProxy.getUsername() );
                 proxyInfo.setPassword( networkProxy.getPassword() );
             }            
+            String url = StringUtils.stripEnd(remoteRepository.getUrl(),"/");
+            wagon.connect( new Repository( remoteRepository.getId(), url ), proxyInfo );
 
-            wagon.connect( new Repository( remoteRepository.getId(), remoteRepository.getUrl() ), proxyInfo );
-
-            // we only check connectivity as remote repo can be empty
-            // MRM-1909: Wagon implementation appends a slash already
-            wagon.getFileList( "" );
+            // MRM-1933, there are certain servers that do not allow browsing
+            if (remoteConnectivityCheckPaths.containsKey(url)) {
+                return wagon.resourceExists(remoteConnectivityCheckPaths.get(url));
+            } else {
+                // we only check connectivity as remote repo can be empty
+                // MRM-1909: Wagon implementation appends a slash already
+                wagon.getFileList("");
+            }
 
             return Boolean.TRUE;
         }
@@ -213,8 +231,10 @@ public class DefaultRemoteRepositoriesService
         }
         catch ( Exception e )
         {
-            throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
+            // This service returns either true or false, Exception cannot be handled by the clients
+            log.debug("Exception occured on connectivity test.", e);
+            log.info("Connection exception: {}", e.getMessage());
+            return Boolean.FALSE;
         }
 
     }
@@ -233,5 +253,13 @@ public class DefaultRemoteRepositoriesService
 
     public void setCheckTimeout(int checkTimeout) {
         this.checkTimeout = checkTimeout;
+    }
+
+    public Map<String, String> getRemoteConnectivityCheckPaths() {
+        return remoteConnectivityCheckPaths;
+    }
+
+    public void setRemoteConnectivityCheckPaths(Map<String, String> remoteConnectivityCheckPaths) {
+        this.remoteConnectivityCheckPaths = remoteConnectivityCheckPaths;
     }
 }

@@ -19,6 +19,8 @@ package org.apache.archiva.admin.model.beans;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -112,7 +114,7 @@ public class RemoteRepository
                              int timeout )
     {
         super( id, name, layout );
-        this.url = url;
+        this.url = StringUtils.stripEnd(url,"/");
         this.userName = userName;
         this.password = password;
         this.timeout = timeout;
@@ -135,7 +137,7 @@ public class RemoteRepository
 
     public void setUrl( String url )
     {
-        this.url = url;
+        this.url = StringUtils.stripEnd(url,"/");
     }
 
     public String getUserName()
