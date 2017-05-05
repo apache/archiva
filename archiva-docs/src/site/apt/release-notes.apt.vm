@@ -48,11 +48,11 @@ Release Notes for Archiva ${project.version}
     and Referer header of the HTTP requests and adding an validation token to the Header.
     This prevents requests from malicious sites if they are open in the same browser. If you use
     the REST services from other clients you may change the behaviour with the new
-    configuration properties for the redback security (rest.csrffilter.*, rest.baseUrl)
+    configuration properties for the redback security (rest.csrffilter.*, rest.baseUrl).
     For more information see {{{./adminguide/customising-security.html}Archiva Security Configuration}} and
     the {{{/redback/integration/rest.html}Redback REST documentation }}
 
-  * Archiva uses redback for authentication and authorization in version ${redback.version}
+  * Archiva uses redback for authentication and authorization in version 2.5
 
 * Release Notes
 
@@ -76,7 +76,7 @@ Release Notes for Archiva ${project.version}
 
      * Adding origin header validation checks for REST requests
 
- ** Bugs fixed
+** Bugs fixed
 
      * [MRM-1859] - Error upon viewing 'Artifacts' tab when browsing an artifact
 
@@ -91,9 +91,13 @@ Release Notes for Archiva ${project.version}
      * [MRM-1926] - Invalid checksum files in Archiva repository after download from remote repository
 
      * [MRM-1928] - Bad redirect URL when using Archiva through HTTP reverse proxy
+ 
+     * [MRM-1933] - No message body writer has been found for class org.apache.archiva.rest.services.ArchivaRestError
+ 
+     * [MRM-1940] - Slashes appended to remote repo url
 
 
- ** Task
+** Task
 
 
 
