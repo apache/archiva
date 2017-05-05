@@ -98,7 +98,7 @@
         <inherited>false</inherited>
         <configuration>
           <notimestamp>true</notimestamp>
-          <source>1.5</source>
+          <source>1.7</source>
           <links>
             <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
             <link>http://commons.apache.org/collections/apidocs-COLLECTIONS_3_0/</link>
