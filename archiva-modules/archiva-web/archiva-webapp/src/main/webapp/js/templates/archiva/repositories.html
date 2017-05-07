@@ -733,6 +733,20 @@
         </div>
       </div>
 
+      <div class="control-group">
+        <label class="control-label" for="checkPath">${$.i18n.prop('remoteRepository.checkPath')}</label>
+
+        <div class="controls">
+          <input type="text" class="input-xxlarge" id="checkPath" name="checkPath"
+                 data-bind="value: remoteRepository.checkPath"/>
+          <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-checkPath-info-button"
+             data-original-title="${$.i18n.prop('remoteRepository.checkPath.help.title')}"
+             data-content="${$.i18n.prop('remoteRepository.checkPath.help.content')}">
+            <i class="icon-question-sign icon-white"></i>
+          </a>
+        </div>
+      </div>
+
       <div class="row-fluid">
         <div class="control-group span6">
           <strong>${$.i18n.prop('remoteRepository.extraParametersEntries')}</strong>

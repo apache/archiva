@@ -29,6 +29,7 @@ import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.RepositoryCheckPath;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.NexusIndexer;
@@ -137,6 +138,7 @@ public class DefaultRemoteRepositoryAdmin
             remoteRepository.setDescription( repositoryConfiguration.getDescription() );
             remoteRepository.setExtraHeaders( repositoryConfiguration.getExtraHeaders() );
             remoteRepository.setExtraParameters( repositoryConfiguration.getExtraParameters() );
+            remoteRepository.setCheckPath(repositoryConfiguration.getCheckPath());
             remoteRepositories.add( remoteRepository );
         }
         return remoteRepositories;
@@ -170,7 +172,19 @@ public class DefaultRemoteRepositoryAdmin
         }
 
         //MRM-752 - url needs trimming
-        remoteRepository.setUrl( StringUtils.trim( remoteRepository.getUrl() ) );
+        //MRM-1940 - URL should not end with a slash
+        remoteRepository.setUrl( StringUtils.stripEnd(StringUtils.trim( remoteRepository.getUrl() ), "/"));
+
+        if (StringUtils.isEmpty(remoteRepository.getCheckPath())) {
+            String checkUrl = remoteRepository.getUrl().toLowerCase();
+            for (RepositoryCheckPath path : getArchivaConfiguration ().getConfiguration().getArchivaDefaultConfiguration().getDefaultCheckPaths()) {
+                log.debug("Checking path for urls: {} <-> {}", checkUrl, path.getUrl());
+                if (checkUrl.startsWith(path.getUrl())) {
+                    remoteRepository.setCheckPath(path.getPath());
+                    break;
+                }
+            }
+        }
 
         RemoteRepositoryConfiguration remoteRepositoryConfiguration =
             getRemoteRepositoryConfiguration( remoteRepository );
@@ -365,6 +379,7 @@ public class DefaultRemoteRepositoryAdmin
         remoteRepositoryConfiguration.setDescription( remoteRepository.getDescription() );
         remoteRepositoryConfiguration.setExtraHeaders( remoteRepository.getExtraHeaders() );
         remoteRepositoryConfiguration.setExtraParameters( remoteRepository.getExtraParameters() );
+        remoteRepositoryConfiguration.setCheckPath(remoteRepository.getCheckPath());
         return remoteRepositoryConfiguration;
     }
 

@@ -47,6 +47,12 @@ public class RemoteRepository
     private int timeout = 60;
 
     /**
+     * @since 2.2.3
+     * The path to use for checking availability of the remote repository
+     */
+    private String checkPath;
+
+    /**
      * Activate download of remote index if remoteIndexUrl is set too.
      */
     private boolean downloadRemoteIndex = false;
@@ -316,6 +322,22 @@ public class RemoteRepository
         }
     }
 
+    public void setCheckPath(String checkPath) {
+        if (checkPath==null) {
+            this.checkPath="";
+        } else if (checkPath.startsWith("/")) {
+            this.checkPath = StringUtils.removeStart(checkPath, "/");
+            while(this.checkPath.startsWith("/")) {
+                this.checkPath = StringUtils.removeStart(checkPath, "/");
+            }
+        } else {
+            this.checkPath = checkPath;
+        }
+    }
+
+    public String getCheckPath() {
+        return checkPath;
+    }
 
     @Override
     public String toString()
@@ -335,6 +357,7 @@ public class RemoteRepository
         sb.append( ", downloadRemoteIndexOnStartup=" ).append( downloadRemoteIndexOnStartup );
         sb.append( ", extraParameters=" ).append( extraParameters );
         sb.append( ", extraHeaders=" ).append( extraHeaders );
+        sb.append( ", checkPath=").append(checkPath);
         sb.append( '}' );
         return sb.toString();
     }

@@ -197,6 +197,15 @@
             The list of ProxyConnectorRuleConfigurations.
           </description>
         </field>
+        <field>
+          <name>archivaDefaultConfiguration</name>
+          <version>1.4.2+</version>
+          <association>
+            <type>ArchivaDefaultConfiguration</type>
+            <multiplicity>1</multiplicity>
+          </association>
+          <description>Archiva default settings.</description>
+        </field>
       </fields>
       <codeSegments>
         <codeSegment>
@@ -597,11 +606,17 @@
           <name>extraHeaders</name>
           <version>1.4.0+</version>
           <type>Map</type>
-          <description>Additionnal http headers to add to url when requesting remote repositories.</description>
+          <description>Additional http headers to add to url when requesting remote repositories.</description>
           <association xml.mapStyle="inline">
             <type>String</type>
             <multiplicity>*</multiplicity>
           </association>
+        </field>
+        <field>
+          <name>checkPath</name>
+          <version>1.4.2+</version>
+          <type>String</type>
+          <description>The path to check the repository availability (relative to the repository URL). Some repositories do not allow browsing, so a certain artifact must be checked.</description>
         </field>
       </fields>
       <codeSegments>
@@ -874,6 +889,30 @@
             <multiplicity>*</multiplicity>
           </association>
           <description>The list of repository ids under the group.</description>          
+        </field>
+      </fields>
+    </class>
+    <class>
+      <name>RepositoryCheckPath</name>
+      <version>1.4.2+</version>
+      <fields >
+        <field >
+          <name>url</name>
+          <version>1.4.2+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The URL for which this path should be used
+          </description>
+        </field>
+        <field>
+          <name>path</name>
+          <version>1.4.2+</version>
+          <type>String</type>
+          <required>true</required>
+          <description>
+            The path to use for checking the repository connection.
+          </description>
         </field>
       </fields>
     </class>
@@ -1584,6 +1623,25 @@
     </class>
 
     <class>
+    <name>ArchivaDefaultConfiguration</name>
+    <version>1.4.2+</version>
+    <description>
+      Archiva default settings.
+    </description>
+      <fields>
+        <field>
+          <name>defaultCheckPaths</name>
+          <description>The default check paths for certain remote repositories</description>
+          <version>1.4.2+</version>
+          <association>
+            <type>RepositoryCheckPath</type>
+            <multiplicity>*</multiplicity>
+          </association>
+        </field>
+      </fields>
+    </class>
+
+    <class>
       <name>LdapConfiguration</name>
       <version>1.4.0+</version>
       <description>
@@ -1670,7 +1728,7 @@
           <name>extraProperties</name>
           <version>1.4.0+</version>
           <type>Map</type>
-          <description>Additionnal properties to use for ldap connection.</description>
+          <description>Additional properties to use for ldap connection.</description>
           <association xml.mapStyle="inline">
             <type>String</type>
             <multiplicity>*</multiplicity>
