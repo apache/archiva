@@ -861,17 +861,19 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
   };
 
   addValidationTokenHeader=function(user) {
-    if (user.validationToken) {
-      $.log("Adding validation token "+user.validationToken);
-      $.ajaxSetup({
-        beforeSend: function (xhr) {
-          xhr.setRequestHeader('X-XSRF-TOKEN', user.validationToken);
-        }
-      });
-    } else {
-      $.log("No validation token in user object "+user.username+", "+user.validationToken);
+    if(user) {
+      if (user.validationToken) {
+        $.log("Adding validation token "+user.validationToken);
+        $.ajaxSetup({
+                      beforeSend: function (xhr) {
+                        xhr.setRequestHeader('X-XSRF-TOKEN', user.validationToken);
+                      }
+                    });
+      } else {
+        $.log("No validation token in user object "+user.username+", "+user.validationToken);
+      }
     }
-  }
+  };
 
   startArchivaApplication=function(){
 
