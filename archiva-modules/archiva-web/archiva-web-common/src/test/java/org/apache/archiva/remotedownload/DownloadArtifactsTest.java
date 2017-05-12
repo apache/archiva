@@ -25,7 +25,9 @@ import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.apache.maven.wagon.repository.Repository;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.After;
@@ -96,7 +98,9 @@ public class DownloadArtifactsTest
 
         // repo handler
 
-        this.repoServer = new Server( 0 );
+        this.repoServer = new Server(  );
+        ServerConnector repoServerConnector = new ServerConnector( this.repoServer, new HttpConnectionFactory());
+        this.repoServer.addConnector( repoServerConnector );
 
         ServletHolder shRepo = new ServletHolder( RepoServlet.class );
         ServletContextHandler contextRepo = new ServletContextHandler();
@@ -105,12 +109,16 @@ public class DownloadArtifactsTest
         contextRepo.addServlet( shRepo, "/*" );
 
         repoServer.setHandler( contextRepo );
+
         repoServer.start();
-        this.repoServerPort = repoServer.getConnectors()[0].getLocalPort();
+        this.repoServerPort = repoServerConnector.getLocalPort();
 
         //redirect handler
 
-        this.redirectServer = new Server( 0 );
+        this.redirectServer = new Server( );
+        ServerConnector redirectServerConnector = new ServerConnector( this.redirectServer, new HttpConnectionFactory());
+        this.redirectServer.addConnector( redirectServerConnector );
+
         ServletHolder shRedirect = new ServletHolder( RedirectServlet.class );
         ServletContextHandler contextRedirect = new ServletContextHandler();
         contextRedirect.setAttribute( "redirectToPort", Integer.toString( this.repoServerPort ) );
@@ -120,7 +128,7 @@ public class DownloadArtifactsTest
 
         redirectServer.setHandler( contextRedirect );
         redirectServer.start();
-        this.redirectPort = redirectServer.getConnectors()[0].getLocalPort();
+        this.redirectPort = redirectServerConnector.getLocalPort();
         log.info( "redirect server port {}", redirectPort );
 
     }

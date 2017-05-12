@@ -30,7 +30,7 @@
     <logger name="org.apache.archiva.redback.rest.services" level="error"/>
     <logger name="JPOX" level="error"/>
     <logger name="org.apache.archiva.rest.services" level="info"/>
-    <logger name="org.springframework" level="info"/>
+    <logger name="org.springframework" level="error"/>
     <logger name="org.apache.commons.configuration" level="error"/>
 
     <root level="info">

@@ -31,7 +31,9 @@ import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.expr.StringSearchExpression;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -61,6 +63,7 @@ public class DownloadRemoteIndexTaskTest
 {
 
     private Server server;
+    private ServerConnector serverConnector;
 
     private int port;
 
@@ -81,12 +84,12 @@ public class DownloadRemoteIndexTaskTest
     public void initialize()
         throws Exception
     {
-        server = new Server( 0 );
+        server = new Server( );
+        serverConnector = new ServerConnector( server, new HttpConnectionFactory());
+        server.addConnector( serverConnector );
         createContext( server, new File( "src/test/" ) );
-
         this.server.start();
-        Connector connector = this.server.getConnectors()[0];
-        this.port = connector.getLocalPort();
+        this.port = serverConnector.getLocalPort();
         log.info( "start server on port {}", this.port );
         nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
     }

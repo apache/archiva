@@ -37,7 +37,6 @@
     -->
     <redbackTestJdbcUrl>jdbc:hsqldb:mem:redback-test</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.hsqldb.jdbcDriver</redbackTestJdbcDriver>
-    <jetty.version>9.4.5.v20170502</jetty.version>
   </properties>
 
   <dependencies>
@@ -387,12 +386,12 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
-      <version>${jetty.version}</version>
+      <version>${jettyVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlet</artifactId>
-      <version>${jetty.version}</version>
+      <version>${jettyVersion}</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
