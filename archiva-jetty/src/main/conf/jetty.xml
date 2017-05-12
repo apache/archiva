@@ -19,13 +19,13 @@
   ~ under the License.
   -->
 
-<!-- =============================================================== -->
-<!-- Configure the Jetty Server                                      -->
-<!--                                                                 -->
-<!-- Documentation of this file format can be found at:              -->
-<!-- http://docs.codehaus.org/display/JETTY/jetty.xml                -->
-<!--                                                                 -->
-<!-- =============================================================== -->
+<!-- ============================================================================= -->
+<!-- Configure the Jetty Server                                                    -->
+<!--                                                                               -->
+<!-- Documentation of this file format can be found at:                            -->
+<!-- https://www.eclipse.org/jetty/documentation/9.4.x/reference-section.html      -->
+<!--                                                                               -->
+<!-- ============================================================================= -->
 
 
 <Configure id="Server" class="org.eclipse.jetty.server.Server">
@@ -49,7 +49,6 @@
   <!-- =========================================================== -->
   <!-- Set connectors                                              -->
   <!-- =========================================================== -->
-  <!-- One of each type!                                           -->
   <!-- =========================================================== -->
 
   <!-- Use this connector for many frequently idle connections
