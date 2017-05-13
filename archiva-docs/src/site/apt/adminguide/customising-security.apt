@@ -27,66 +27,24 @@
 
 Archiva Security Configuration
 
- Security properties and password rules can be configured in the
- <<<security.properties>>> file, which by default is searched for in:
+ Security properties and password rules are configured now in the Redback Runtime Configuration
+ properties (see {{{./redback-runtime-configuration.html#Runtime_properties}Redback Runtime Configuration}}).
 
-   * <<<~/.m2/security.properties>>>
-  
-   * <<<conf/security.properties>>> in the Archiva installation
+ The Redback Runtime Configuration properties are stored in <<<archiva.xml>>>.
+ The former <<<security.properties>>> file, if it exists, is only used once for populating the
+ Runtime Configuration settings. After that, this file will be ignored.
 
    []
 
- (In the above list, <<<~>>> is the home directory of the user who is running
- Archiva.)
 
 ~~TODO: Link to plexus-redback documentation when available
 
- Following are some of the properties you can modify.  For a complete list,
- consult the default properties file in Redback's svn repo:
+ These are the default properties. The file can be found in in Redback's svn repo:
  {{{http://svn.apache.org/repos/asf/archiva/redback/redback-core/trunk/redback-configuration/src/main/resources/org/apache/archiva/redback/config-defaults.properties}
  config-defaults.properties}}
 
-+-----+
-# Security Policies
-# -----------------
-#security.policy.password.encoder=
-security.policy.password.previous.count=6
-security.policy.password.expiration.days=90
-security.policy.password.expiration.enabled=true
-security.policy.allowed.login.attempt=3
+%{snippet|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva-redback-core/master/redback-configuration/src/main/resources/org/apache/archiva/redback/config-defaults.properties}
 
-# Password Rules
-# --------------
-security.policy.password.rule.alphanumeric.enabled=false
-security.policy.password.rule.alphacount.enabled=true
-security.policy.password.rule.alphacount.minimum=1
-security.policy.password.rule.characterlength.enabled=true
-security.policy.password.rule.characterlength.minimum=1
-security.policy.password.rule.characterlength.maximum=8
-security.policy.password.rule.musthave.enabled=true
-security.policy.password.rule.numericalcount.enabled=true
-security.policy.password.rule.numericalcount.minimum=1
-security.policy.password.rule.reuse.enabled=true
-security.policy.password.rule.nowhitespace.enabled=true
-
-# Cross Site Request Forgery (CSRF) Prevention
-# --------------------------------------------
-# Enable/Disable CSRF filtering.
-# Possible values: true, false
-rest.csrffilter.enabled=true
-# Base URL used to verify the origin headers of the requests. If not set or empty
-# it tries to determine the base url automatically
-rest.baseUrl=
-# What to do, if the request contains no Origin or Referer header.
-# If true, requests without Origin or Referer Header are denied, otherwise accepted.
-# Possible values: true, false
-rest.csrffilter.absentorigin.deny=true
-# Enable/Disable the token validation only.
-# If true, the validation of the CSRF tokens will be disabled.
-# Possible values: true, false
-rest.csrffilter.disableTokenValidation=false
-+-----+
- 
   <<Note:>> If installed standalone, Archiva's list of configuration files is <itself> configurable, and
   can be found in:
   <<<apps/archiva/WEB-INF/applicationContext.xml>>>

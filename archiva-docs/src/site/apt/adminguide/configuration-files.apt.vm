@@ -31,7 +31,9 @@ Configuration Files of Apache Archiva
 
     * <<<archiva.xml>>> - this is the primary Archiva configuration file
 
-    * <<<security.properties>>> - this configures the security as described in the {{{./security.html} security configuration documentation}}
+    * <<<security.properties>>> - This file, if it exists, is only read once to populate the
+         Redback Runtime Configuration properties (see {{{./redback-runtime-configuration.html#Runtime_Properties}Redback Runtime Configuration}},
+         stored in <<<archiva.xml>>>. The file will be ignored after this.
 
   This section will focus on the <<<archiva.xml>>> file.
 
