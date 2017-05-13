@@ -48,11 +48,16 @@ Release Notes for Archiva ${project.version}
     and Referer header of the HTTP requests and adding an validation token to the Header.
     This prevents requests from malicious sites if they are open in the same browser. If you use
     the REST services from other clients you may change the behaviour with the new
-    configuration properties for the redback security (rest.csrffilter.*, rest.baseUrl).
+    configuration properties for the redback security (<<<rest.csrffilter.*>>>, <<<rest.baseUrl>>>).
     For more information see {{{./adminguide/customising-security.html}Archiva Security Configuration}} and
-    the {{{/redback/integration/rest.html}Redback REST documentation }}
+    the {{{/redback/integration/rest.html}Redback REST documentation }}.
 
-  * Archiva uses redback for authentication and authorization in version 2.5
+    <<Note:>> If your archiva installation is behind a reverse proxy or load balancer, it may be possible
+     that the Archiva Web UI does not load after the upgrade. If this is the case you may access the WebUI
+     via localhost or edit archiva.xml manually. In the "Redback Runtime Configuration" properties you have to
+     enter the base URLs of your archiva installation to the <<<rest.baseUrl>>> field.
+
+  * Archiva uses redback for authentication and authorization in version 2.6
 
 * Release Notes
 
