@@ -23,6 +23,13 @@
 # Date  : 2017-05-14
 #
 # Description:
+# This script checks, if the selenium drivers are available on the system and downloads
+# and extracts them, if they do not exist.
+#
+# Parameter:
+# -Verbose: Print additional output
+# -Force: Remove the existing drivers and download/extract them again
+
 
 param (
     [switch]$Verbose = $False,
@@ -30,9 +37,12 @@ param (
 )
 
 $psVersion = $PSVersionTable.PSVersion
+$baseDir = "F:\jenkins\tools"
 
-Write-Output "PS-Version: $psVersion"
-Write-Output "Verbose: $Verbose, Force: $Force"
+if ($Verbose) {
+  Write-Output "PS-Version: $psVersion"
+  Write-Output "Verbose: $Verbose, Force: $Force"
+}
 
 $urls = @{
   "iedriver\2.53.1\win64\DriverServer.zip"="http://selenium-release.storage.googleapis.com/2.53/IEDriverServer_x64_2.53.1.zip"
@@ -46,8 +56,8 @@ $urls = @{
 
 foreach ($h in $urls.GetEnumerator()) {
   $url = $h.Value
-  Write-Output "Driver $url"
-  $downloadFile = "C:\jenkins\tools\$($h.Name)"
+  Write-Output "Downloading Driver $url"
+  $downloadFile = "$($baseDir)\$($h.Name)"
   $downloadDir = Split-Path $downloadFile -Parent
 
   if ($Force -And (Test-Path -Path $downloadDir ) ) {
@@ -66,7 +76,8 @@ foreach ($h in $urls.GetEnumerator()) {
     foreach ($item in $zip.items()) {
       $shell.Namespace($downloadDir).CopyHere($item)
     }
-
-    Get-ChildItem -Path $downloadDir
+    if ($Verbose) {
+      Get-ChildItem -Path $downloadDir
+    }
   }
 }
