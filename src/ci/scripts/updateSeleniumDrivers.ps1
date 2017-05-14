@@ -32,6 +32,7 @@ param (
 $psVersion = $PSVersionTable.PSVersion
 
 Write-Output "PS-Version: $psVersion"
+Write-Output "Verbose: $Verbose, Force: $Force"
 
 $urls = @{
   "iedriver\2.53.1\win64\DriverServer.zip"="http://selenium-release.storage.googleapis.com/2.53/IEDriverServer_x64_2.53.1.zip"
@@ -49,8 +50,8 @@ foreach ($h in $urls.GetEnumerator()) {
   $downloadFile = "C:\jenkins\tools\$($h.Name)"
   $downloadDir = Split-Path $downloadFile -Parent
 
-  if ($Force -And (Test-Path -Path $downloadFile ) ) {
-    Remove-Item $downloadDir\* -recurse
+  if ($Force -And (Test-Path -Path $downloadDir ) ) {
+    Get-ChildItem -Path $downloadDir -Recurse | Remove-Item -force -recurse
   }
 
   if(!(Test-Path -Path $downloadDir )){
