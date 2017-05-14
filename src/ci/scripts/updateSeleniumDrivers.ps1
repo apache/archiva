@@ -43,8 +43,17 @@ if(!(Test-Path -Path $downloadDir )){
   New-Item -ItemType directory -Path $downloadFile
 
 }
+if ($Force -And (Test-Path -Path $downloadFile ) ) {
+  Remove-Item $downloadFile
+}
+
 if ($Force -Or !(Test-Path -Path $downloadFile )){
   Invoke-WebRequest -Uri $url -OutFile $downloadFile
-  [System.IO.Compression.ZipFile]::ExtractToDirectory($downloadFile, $downloadDir)
+
+  $shell = New-Object -ComObject shell.application
+  $zip = $shell.NameSpace($downloadFile)
+  foreach ($item in $zip.items()) {
+    $shell.Namespace($downloadDir).CopyHere($item)
+  }
 }
 
