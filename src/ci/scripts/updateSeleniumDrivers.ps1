@@ -33,7 +33,7 @@ if(!(Test-Path -Path $downloadDir )){
   New-Item -ItemType directory -Path $downloadFile
 
 }
-if !(Test-Path -Path $downloadFile )){
+if (!(Test-Path -Path $downloadFile )){
   Invoke-WebRequest -Uri $url -OutFile $downloadFile
 }
 
