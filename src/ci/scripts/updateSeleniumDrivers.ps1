@@ -24,14 +24,16 @@
 #
 # Description:
 
-$psVersion = $PSVersionTable.PSVersion
-
-Write-Output "PS-Version: $psVersion"
-
 param (
     [switch]$Verbose = $False,
     [switch]$Force = $False
 )
+
+$psVersion = $PSVersionTable.PSVersion
+
+Write-Output "PS-Version: $psVersion"
+
+
 
 $url = "http://selenium-release.storage.googleapis.com/2.53/IEDriverServer_x64_2.53.1.zip"
 $downloadFile = "C:\jenkins\tools\iedriver\2.53.1\win64\IEDriverServer_x64_2.53.1.zip"
@@ -43,6 +45,6 @@ if(!(Test-Path -Path $downloadDir )){
 }
 if ($Force -Or !(Test-Path -Path $downloadFile )){
   Invoke-WebRequest -Uri $url -OutFile $downloadFile
-  Expand-Archive $downloadFile -DestinationPath $downloadDir
+  [System.IO.Compression.ZipFile]::ExtractToDirectory($downloadFile, $downloadDir)
 }
 
