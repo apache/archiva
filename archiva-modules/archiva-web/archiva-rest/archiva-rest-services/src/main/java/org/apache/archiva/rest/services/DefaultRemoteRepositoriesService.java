@@ -38,11 +38,14 @@ import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -51,8 +54,7 @@ import java.util.List;
 @Service( "remoteRepositoriesService#rest" )
 public class DefaultRemoteRepositoriesService
     extends AbstractRestService
-    implements RemoteRepositoriesService
-{
+    implements RemoteRepositoriesService {
 
     @Inject
     private RemoteRepositoryAdmin remoteRepositoryAdmin;
@@ -67,32 +69,26 @@ public class DefaultRemoteRepositoriesService
     int checkReadTimeout = 10000;
     int checkTimeout = 9000;
 
+
     @Override
     public List<RemoteRepository> getRemoteRepositories()
-        throws ArchivaRestServiceException
-    {
-        try
-        {
+            throws ArchivaRestServiceException {
+        try {
             List<RemoteRepository> remoteRepositories = remoteRepositoryAdmin.getRemoteRepositories();
             return remoteRepositories == null ? Collections.<RemoteRepository>emptyList() : remoteRepositories;
-        }
-        catch ( RepositoryAdminException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName(), e );
+        } catch (RepositoryAdminException e) {
+            log.error(e.getMessage(), e);
+            throw new ArchivaRestServiceException(e.getMessage(), e.getFieldName(), e);
         }
     }
 
     @Override
-    public RemoteRepository getRemoteRepository( String repositoryId )
-        throws ArchivaRestServiceException
-    {
+    public RemoteRepository getRemoteRepository(String repositoryId)
+            throws ArchivaRestServiceException {
 
         List<RemoteRepository> remoteRepositories = getRemoteRepositories();
-        for ( RemoteRepository repository : remoteRepositories )
-        {
-            if ( StringUtils.equals( repositoryId, repository.getId() ) )
-            {
+        for (RemoteRepository repository : remoteRepositories) {
+            if (StringUtils.equals(repositoryId, repository.getId())) {
                 return repository;
             }
         }
@@ -100,121 +96,106 @@ public class DefaultRemoteRepositoriesService
     }
 
     @Override
-    public Boolean deleteRemoteRepository( String repositoryId )
-        throws ArchivaRestServiceException
-    {
-        try
-        {
-            return remoteRepositoryAdmin.deleteRemoteRepository( repositoryId, getAuditInformation() );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName(), e );
+    public Boolean deleteRemoteRepository(String repositoryId)
+            throws ArchivaRestServiceException {
+        try {
+            return remoteRepositoryAdmin.deleteRemoteRepository(repositoryId, getAuditInformation());
+        } catch (RepositoryAdminException e) {
+            log.error(e.getMessage(), e);
+            throw new ArchivaRestServiceException(e.getMessage(), e.getFieldName(), e);
         }
     }
 
     @Override
-    public Boolean addRemoteRepository( RemoteRepository remoteRepository )
-        throws ArchivaRestServiceException
-    {
-        try
-        {
-            return remoteRepositoryAdmin.addRemoteRepository( remoteRepository, getAuditInformation() );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName(), e );
+    public Boolean addRemoteRepository(RemoteRepository remoteRepository)
+            throws ArchivaRestServiceException {
+        try {
+            return remoteRepositoryAdmin.addRemoteRepository(remoteRepository, getAuditInformation());
+        } catch (RepositoryAdminException e) {
+            log.error(e.getMessage(), e);
+            throw new ArchivaRestServiceException(e.getMessage(), e.getFieldName(), e);
         }
     }
 
     @Override
-    public Boolean updateRemoteRepository( RemoteRepository remoteRepository )
-        throws ArchivaRestServiceException
-    {
-        try
-        {
-            return remoteRepositoryAdmin.updateRemoteRepository( remoteRepository, getAuditInformation() );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(), e.getFieldName(), e );
+    public Boolean updateRemoteRepository(RemoteRepository remoteRepository)
+            throws ArchivaRestServiceException {
+        try {
+            return remoteRepositoryAdmin.updateRemoteRepository(remoteRepository, getAuditInformation());
+        } catch (RepositoryAdminException e) {
+            log.error(e.getMessage(), e);
+            throw new ArchivaRestServiceException(e.getMessage(), e.getFieldName(), e);
         }
     }
 
     @Override
-    public Boolean checkRemoteConnectivity( String repositoryId )
-        throws ArchivaRestServiceException
-    {
-        try
-        {
-            RemoteRepository remoteRepository = remoteRepositoryAdmin.getRemoteRepository( repositoryId );
-            if ( remoteRepository == null )
-            {
-                log.warn( "ignore scheduleDownloadRemote for repo with id {} as not exists", repositoryId );
+    public Boolean checkRemoteConnectivity(String repositoryId)
+            throws ArchivaRestServiceException {
+        try {
+            RemoteRepository remoteRepository = remoteRepositoryAdmin.getRemoteRepository(repositoryId);
+            if (remoteRepository == null) {
+                log.warn("ignore scheduleDownloadRemote for repo with id {} as not exists", repositoryId);
                 return Boolean.FALSE;
             }
             NetworkProxy networkProxy = null;
-            if ( StringUtils.isNotBlank( remoteRepository.getRemoteDownloadNetworkProxyId() ) )
-            {
-                networkProxy = networkProxyAdmin.getNetworkProxy( remoteRepository.getRemoteDownloadNetworkProxyId() );
-                if ( networkProxy == null )
-                {
+            if (StringUtils.isNotBlank(remoteRepository.getRemoteDownloadNetworkProxyId())) {
+                networkProxy = networkProxyAdmin.getNetworkProxy(remoteRepository.getRemoteDownloadNetworkProxyId());
+                if (networkProxy == null) {
                     log.warn(
-                        "your remote repository is configured to download remote index trought a proxy we cannot find id:{}",
-                        remoteRepository.getRemoteDownloadNetworkProxyId() );
+                            "your remote repository is configured to download remote index trought a proxy we cannot find id:{}",
+                            remoteRepository.getRemoteDownloadNetworkProxyId());
                 }
             }
 
-            String wagonProtocol = new URL( remoteRepository.getUrl() ).getProtocol();
+            String wagonProtocol = new URL(remoteRepository.getUrl()).getProtocol();
 
             final Wagon wagon =
-                wagonFactory.getWagon( new WagonFactoryRequest( wagonProtocol, remoteRepository.getExtraHeaders() ) //
-                                           .networkProxy( networkProxy ) );
+                    wagonFactory.getWagon(new WagonFactoryRequest(wagonProtocol, remoteRepository.getExtraHeaders()) //
+                            .networkProxy(networkProxy));
 
             // hardcoded value as it's a check of the remote repo connectivity
-            wagon.setReadTimeout( checkReadTimeout );
-            wagon.setTimeout( checkTimeout );
+            wagon.setReadTimeout(checkReadTimeout);
+            wagon.setTimeout(checkTimeout);
 
-            if ( wagon instanceof AbstractHttpClientWagon )
-            {
+            if (wagon instanceof AbstractHttpClientWagon) {
                 HttpMethodConfiguration httpMethodConfiguration = new HttpMethodConfiguration() //
-                    .setUsePreemptive( true ) //
-                    .setReadTimeout( checkReadTimeout );
-                HttpConfiguration httpConfiguration = new HttpConfiguration().setGet( httpMethodConfiguration );
-                AbstractHttpClientWagon.class.cast( wagon ).setHttpConfiguration( httpConfiguration );
+                        .setUsePreemptive(true) //
+                        .setReadTimeout(checkReadTimeout);
+                HttpConfiguration httpConfiguration = new HttpConfiguration().setGet(httpMethodConfiguration);
+                AbstractHttpClientWagon.class.cast(wagon).setHttpConfiguration(httpConfiguration);
             }
-            
+
             ProxyInfo proxyInfo = null;
-            if ( networkProxy != null )
-            {
+            if (networkProxy != null) {
                 proxyInfo = new ProxyInfo();
-                proxyInfo.setType( networkProxy.getProtocol() );
-                proxyInfo.setHost( networkProxy.getHost() );
-                proxyInfo.setPort( networkProxy.getPort() );
-                proxyInfo.setUserName( networkProxy.getUsername() );
-                proxyInfo.setPassword( networkProxy.getPassword() );
-            }            
+                proxyInfo.setType(networkProxy.getProtocol());
+                proxyInfo.setHost(networkProxy.getHost());
+                proxyInfo.setPort(networkProxy.getPort());
+                proxyInfo.setUserName(networkProxy.getUsername());
+                proxyInfo.setPassword(networkProxy.getPassword());
+            }
+            String url = StringUtils.stripEnd(remoteRepository.getUrl(), "/");
+            wagon.connect(new Repository(remoteRepository.getId(), url), proxyInfo);
 
-            wagon.connect( new Repository( remoteRepository.getId(), remoteRepository.getUrl() ), proxyInfo );
-
-            // we only check connectivity as remote repo can be empty
-            // MRM-1909: Wagon implementation appends a slash already
-            wagon.getFileList( "" );
+            // MRM-1933, there are certain servers that do not allow browsing
+            if (!(StringUtils.isEmpty(remoteRepository.getCheckPath()) ||
+                    "/".equals(remoteRepository.getCheckPath()))) {
+                return wagon.resourceExists(remoteRepository.getCheckPath());
+            } else {
+                // we only check connectivity as remote repo can be empty
+                // MRM-1909: Wagon implementation appends a slash already
+                wagon.getFileList("");
+            }
 
             return Boolean.TRUE;
-        }
-        catch ( TransferFailedException e )
-        {
-            log.info( "TransferFailedException :{}", e.getMessage() );
+        } catch (TransferFailedException e) {
+            log.info("TransferFailedException :{}", e.getMessage());
             return Boolean.FALSE;
-        }
-        catch ( Exception e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
+        } catch (Exception e) {
+            // This service returns either true or false, Exception cannot be handled by the clients
+            log.debug("Exception occured on connectivity test.", e);
+            log.info("Connection exception: {}", e.getMessage());
+            return Boolean.FALSE;
         }
 
     }
@@ -234,4 +215,5 @@ public class DefaultRemoteRepositoriesService
     public void setCheckTimeout(int checkTimeout) {
         this.checkTimeout = checkTimeout;
     }
+
 }

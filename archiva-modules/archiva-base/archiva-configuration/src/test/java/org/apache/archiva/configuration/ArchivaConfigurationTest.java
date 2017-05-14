@@ -814,7 +814,6 @@ public class ArchivaConfigurationTest
     {
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-configuration" );
 
-        archivaConfiguration.reload();
         Configuration configuration = archivaConfiguration.getConfiguration();
         assertConfiguration( configuration, 2, 2, 2 );
         assertEquals( "check remote repositories", 2, configuration.getRemoteRepositories().size() );

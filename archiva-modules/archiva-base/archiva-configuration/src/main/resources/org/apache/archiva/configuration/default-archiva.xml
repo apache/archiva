@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-  <version>2</version>
+  <version>3</version>
   <managedRepositories>
     <managedRepository>
       <id>internal</id>
@@ -151,5 +151,17 @@
     </rbacManagerImpls>
   </redbackRuntimeConfiguration>
 
+  <archivaDefaultConfiguration>
+    <defaultCheckPaths>
+      <defaultCheckPath>
+        <url>http://download.oracle.com/maven</url>
+        <path>com/sleepycat/je/license.txt</path>
+      </defaultCheckPath>
+      <defaultCheckPath>
+        <url>https://download.oracle.com/maven</url>
+        <path>com/sleepycat/je/license.txt</path>
+      </defaultCheckPath>
+    </defaultCheckPaths>
+  </archivaDefaultConfiguration>
 
 </configuration>

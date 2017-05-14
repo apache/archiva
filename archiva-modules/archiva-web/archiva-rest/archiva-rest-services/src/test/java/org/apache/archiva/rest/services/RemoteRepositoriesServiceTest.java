@@ -161,10 +161,62 @@ public class RemoteRepositoriesServiceTest
 
     }
 
+    /*
+     * Check maven repository
+     */
+    @Test
+    public void checkRemoteConnectivity2()
+            throws Exception {
+        RemoteRepositoriesService service = getRemoteRepositoriesService();
+
+        WebClient.client(service).header("Authorization", authorizationHeader);
+
+        int initialSize = service.getRemoteRepositories().size();
+
+        service.addRemoteRepository(getRemoteMavenRepository());
+
+        assertTrue(service.checkRemoteConnectivity("id-maven1"));
+
+    }
+
+
+    /*
+     *  Check oracle repository that allows not browsing (MRM-1933)
+     */
+    @Test
+    public void checkRemoteConnectivity3()
+            throws Exception {
+        RemoteRepositoriesService service = getRemoteRepositoriesService();
+
+        WebClient.client(service).header("Authorization", authorizationHeader);
+        WebClient.client(service).accept("application/json");
+
+        int initialSize = service.getRemoteRepositories().size();
+
+        service.addRemoteRepository(getRemoteOracleRepository());
+
+        assertTrue(service.checkRemoteConnectivity("id-oracle"));
+
+    }
+
     RemoteRepository getRemoteRepository()
     {
         return new RemoteRepository( "id-new", "new one", "http://foo.com", "default", "foo", "foopassword", 120,
                                      "cool repo" );
+    }
+
+
+    RemoteRepository getRemoteMavenRepository()
+    {
+        return new RemoteRepository( "id-maven1", "Maven1", "http://repo.maven.apache.org/maven2", "default", "foo", "foopassword", 120,
+                "cool repo3" );
+    }
+
+
+    RemoteRepository getRemoteOracleRepository()
+    {
+        return new RemoteRepository( "id-oracle", "Oracle", "http://download.oracle.com/maven", "default", "foo", "foopassword", 120,
+                "cool repo4" );
     }
 
 }

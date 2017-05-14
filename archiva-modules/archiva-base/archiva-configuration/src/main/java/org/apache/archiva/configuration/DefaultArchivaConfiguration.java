@@ -162,6 +162,9 @@ public class DefaultArchivaConfiguration
 
     private static final String KEY = "org.apache.archiva";
 
+    // Section used for default only configuration
+    private static final String KEY_DEFAULT_ONLY = "org.apache.archiva_default";
+
     @Override
     public Configuration getConfiguration()
     {
@@ -183,6 +186,11 @@ public class DefaultArchivaConfiguration
         return configuration;
     }
 
+    private boolean hasConfigVersionChanged(Configuration current, Registry defaultOnlyConfiguration) {
+        return current==null || current.getVersion()==null ||
+                !current.getVersion().trim().equals(defaultOnlyConfiguration.getString("version","").trim());
+    }
+
     @SuppressWarnings("unchecked")
     private Configuration load()
     {
@@ -199,6 +207,7 @@ public class DefaultArchivaConfiguration
         }
 
         Configuration config = new ConfigurationRegistryReader().read( subset );
+
 
         config.getRepositoryGroups();
         config.getRepositoryGroupsAsMap();
@@ -363,7 +372,61 @@ public class DefaultArchivaConfiguration
             }
         }
 
+
+
         return config;
+    }
+
+    /*
+     * Updates the checkpath list for repositories.
+     *
+     * We are replacing existing ones and adding new ones. This allows to update the list with new releases.
+     *
+     * We are also updating existing remote repositories, if they exist already.
+     *
+     * This update method should only be called, if the config version changes to avoid overwriting
+     * user repository settings all the time.
+     */
+    private void updateCheckPathDefaults(Configuration config, Registry defaultConfiguration) {
+        List<RepositoryCheckPath> existingCheckPathList = config.getArchivaDefaultConfiguration().getDefaultCheckPaths();
+        HashMap<String, RepositoryCheckPath> existingCheckPaths = new HashMap<>();
+        HashMap<String, RepositoryCheckPath> newCheckPaths = new HashMap<>();
+        for (RepositoryCheckPath path : config.getArchivaDefaultConfiguration().getDefaultCheckPaths()) {
+            existingCheckPaths.put(path.getUrl(), path);
+        }
+        List defaultCheckPathsSubsets = defaultConfiguration.getSubsetList("archivaDefaultConfiguration.defaultCheckPaths.defaultCheckPath" );
+        for ( Iterator i = defaultCheckPathsSubsets.iterator(); i.hasNext(); )
+        {
+            RepositoryCheckPath v = readRepositoryCheckPath( (Registry) i.next() );
+            if (existingCheckPaths.containsKey(v.getUrl())) {
+                existingCheckPathList.remove(existingCheckPaths.get(v.getUrl()));
+            }
+            existingCheckPathList.add(v);
+            newCheckPaths.put(v.getUrl(), v);
+        }
+        // Remote repositories update
+        for (RemoteRepositoryConfiguration remoteRepositoryConfiguration : config.getRemoteRepositories()) {
+            String url = remoteRepositoryConfiguration.getUrl().toLowerCase();
+            if (newCheckPaths.containsKey(url)) {
+                String currentPath = remoteRepositoryConfiguration.getCheckPath();
+                String newPath = newCheckPaths.get(url).getPath();
+                log.info("Updating connection check path for repository {}, from '{}' to '{}'.", remoteRepositoryConfiguration.getId(),
+                        currentPath, newPath);
+                remoteRepositoryConfiguration.setCheckPath(newPath);
+            }
+        }
+    }
+
+    private RepositoryCheckPath readRepositoryCheckPath( Registry registry )
+    {
+        RepositoryCheckPath value = new RepositoryCheckPath();
+
+        String url = registry.getString( "url", value.getUrl() );
+
+        value.setUrl( url );
+        String path = registry.getString( "path", value.getPath() );
+        value.setPath( path );
+        return value;
     }
 
     private Policy findPolicy( String policyId )
@@ -437,6 +500,25 @@ public class DefaultArchivaConfiguration
                 "Fatal error: Unable to find the built-in default configuration and load it into the registry", e );
         }
         return registry.getSubset( KEY );
+    }
+
+    /*
+     * Reads the default only configuration into a special prefix. This allows to check for changes
+     * of the default configuration.
+     */
+    private Registry readDefaultOnlyConfiguration()
+    {
+        registry.removeSubset(KEY_DEFAULT_ONLY);
+        try
+        {
+            registry.addConfigurationFromResource( "org/apache/archiva/configuration/default-archiva.xml", KEY_DEFAULT_ONLY);
+        }
+        catch ( RegistryException e )
+        {
+            throw new ConfigurationRuntimeException(
+                    "Fatal error: Unable to find the built-in default configuration and load it into the registry", e );
+        }
+        return registry.getSubset(KEY_DEFAULT_ONLY);
     }
 
     @SuppressWarnings("unchecked")
@@ -526,6 +608,9 @@ public class DefaultArchivaConfiguration
                 {
                     section.removeSubset( "repositoryScanning.invalidContentConsumers" );
                 }
+            }
+            if (configuration.getArchivaRuntimeConfiguration()!=null) {
+                section.removeSubset("archivaRuntimeConfiguration.defaultCheckPaths");
             }
 
             new ConfigurationRegistryWriter().write( configuration, section );
@@ -736,7 +821,7 @@ public class DefaultArchivaConfiguration
     }
 
     /**
-     * upgrade from 1.3
+     * Handle upgrade to newer version
      */
     private void handleUpgradeConfiguration()
         throws RegistryException, IndeterminateConfigurationException
@@ -781,8 +866,24 @@ public class DefaultArchivaConfiguration
             knowContentConsumers.add( "duplicate-artifacts" );
             configuration.getRepositoryScanning().setKnownContentConsumers( knowContentConsumers );
         }
-        // save ??
-        //save( configuration );
+
+        Registry defaultOnlyConfiguration = readDefaultOnlyConfiguration();
+        // Currently we check only for configuration version change, not certain version numbers.
+        if (hasConfigVersionChanged(configuration, defaultOnlyConfiguration)) {
+            updateCheckPathDefaults(configuration, defaultOnlyConfiguration);
+            String newVersion = defaultOnlyConfiguration.getString("version");
+            if (newVersion==null) {
+                throw new IndeterminateConfigurationException("The default configuration has no version information!");
+            }
+            configuration.setVersion(newVersion);
+            try {
+                save(configuration);
+            } catch (IndeterminateConfigurationException e) {
+                log.error("Error occured during configuration update to new version: {}", e.getMessage());
+            } catch (RegistryException e) {
+                log.error("Error occured during configuration update to new version: {}", e.getMessage());
+            }
+        }
     }
 
     @Override

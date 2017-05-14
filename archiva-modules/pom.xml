@@ -21,7 +21,7 @@
   <parent>
     <artifactId>archiva</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>2.2.3-SNAPSHOT</version>
+    <version>2.2.4-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-modules</artifactId>
@@ -98,7 +98,7 @@
         <inherited>false</inherited>
         <configuration>
           <notimestamp>true</notimestamp>
-          <source>1.5</source>
+          <source>1.7</source>
           <links>
             <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
             <link>http://commons.apache.org/collections/apidocs-COLLECTIONS_3_0/</link>

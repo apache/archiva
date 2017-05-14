@@ -692,7 +692,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 
   RemoteRepository=function(id,name,layout,indexDirectory,url,userName,password,timeout,downloadRemoteIndex,remoteIndexUrl,
                             remoteDownloadNetworkProxyId,cronExpression,remoteDownloadTimeout,downloadRemoteIndexOnStartup,
-                            description,extraParametersEntries,extraHeadersEntries){
+                            description,extraParametersEntries,extraHeadersEntries,checkPath){
 
     var self=this;
 
@@ -774,6 +774,9 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
       self.modified(true);
     });
 
+    this.checkPath=ko.observable(checkPath);
+    this.checkPath.subscribe(function(newValue){self.modified(true)});
+
     this.modified=ko.observable(false);
   }
 
@@ -799,7 +802,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
     return new RemoteRepository(data.id,data.name,data.layout,data.indexDirectory,data.url,data.userName,data.password,
                                 data.timeout,data.downloadRemoteIndex,data.remoteIndexUrl,data.remoteDownloadNetworkProxyId,
                                 data.cronExpression,data.remoteDownloadTimeout,data.downloadRemoteIndexOnStartup,data.description,
-                                extraParametersEntries,extraHeadersEntries);
+                                extraParametersEntries,extraHeadersEntries,data.checkPath);
   }
 
   mapRemoteRepositories=function(data){
