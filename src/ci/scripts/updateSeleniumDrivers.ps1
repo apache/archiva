@@ -20,10 +20,18 @@
 # Powershell script updating Selenium drivers on ci server
 #
 # Author: Martin Stockhammer <martin_s@apache.org>  
-# Date  : 2017-04-30
+# Date  : 2017-05-14
 #
 # Description:
 
+$psVersion = $PSVersionTable.PSVersion
+
+Write-Output "PS-Version: $psVersion"
+
+param (
+    [switch]$Verbose = $False,
+    [switch]$Force = $False
+)
 
 $url = "http://selenium-release.storage.googleapis.com/2.53/IEDriverServer_x64_2.53.1.zip"
 $downloadFile = "C:\jenkins\tools\iedriver\2.53.1\win64\IEDriverServer_x64_2.53.1.zip"
@@ -33,7 +41,8 @@ if(!(Test-Path -Path $downloadDir )){
   New-Item -ItemType directory -Path $downloadFile
 
 }
-if (!(Test-Path -Path $downloadFile )){
+if ($Force -Or !(Test-Path -Path $downloadFile )){
   Invoke-WebRequest -Uri $url -OutFile $downloadFile
+  Expand-Archive $downloadFile -DestinationPath $downloadDir
 }
 
