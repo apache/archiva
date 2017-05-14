@@ -65,7 +65,7 @@ foreach ($h in $urls.GetEnumerator()) {
   }
 
   if(!(Test-Path -Path $downloadDir )){
-    New-Item -ItemType directory -Path $downloadFile
+    New-Item -ItemType directory -Path $downloadDir
   }
 
   if ($Force -Or !(Test-Path -Path $downloadFile )){
