@@ -33,27 +33,39 @@ $psVersion = $PSVersionTable.PSVersion
 
 Write-Output "PS-Version: $psVersion"
 
-
-
-$url = "http://selenium-release.storage.googleapis.com/2.53/IEDriverServer_x64_2.53.1.zip"
-$downloadFile = "C:\jenkins\tools\iedriver\2.53.1\win64\IEDriverServer_x64_2.53.1.zip"
-$downloadDir = Split-Path $downloadFile -Parent
-
-if(!(Test-Path -Path $downloadDir )){
-  New-Item -ItemType directory -Path $downloadFile
-
-}
-if ($Force -And (Test-Path -Path $downloadFile ) ) {
-  Remove-Item $downloadFile
+$urls = @{
+  "iedriver\2.53.1\win64\DriverServer.zip"="http://selenium-release.storage.googleapis.com/2.53/IEDriverServer_x64_2.53.1.zip"
+  "iedriver\2.53.1\win32\DriverServer.zip"="http://selenium-release.storage.googleapis.com/2.53/IEDriverServer_Win32_2.53.1.zip"
+  "iedriver\3.4.0\win64\DriverServer.zip"="http://selenium-release.storage.googleapis.com/3.4/IEDriverServer_x64_3.4.0.zip"
+  "iedriver\3.4.0\win32\DriverServer.zip"="http://selenium-release.storage.googleapis.com/3.4/IEDriverServer_Win32_3.4.0.zip"
+  "chromedriver\2.29\win32\DriverServer.zip"="https://chromedriver.storage.googleapis.com/2.29/chromedriver_win32.zip"
+  "geckodriver\0.16.1\win32\DriverServer.zip"="https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-win32.zip"
+  "geckodriver\0.16.1\win64\DriverServer.zip"="https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-win64.zip"
 }
 
-if ($Force -Or !(Test-Path -Path $downloadFile )){
-  Invoke-WebRequest -Uri $url -OutFile $downloadFile
+foreach ($h in $urls.GetEnumerator()) {
+  $url = $h.Value
+  $downloadFile = "C:\jenkins\tools\$($h.Name)"
+  $downloadDir = Split-Path $downloadFile -Parent
 
-  $shell = New-Object -ComObject shell.application
-  $zip = $shell.NameSpace($downloadFile)
-  foreach ($item in $zip.items()) {
-    $shell.Namespace($downloadDir).CopyHere($item)
+  if(!(Test-Path -Path $downloadDir )){
+    New-Item -ItemType directory -Path $downloadFile
+
+  }
+  if ($Force -And (Test-Path -Path $downloadFile ) ) {
+    Remove-Item $downloadFile
+  }
+
+  if ($Force -Or !(Test-Path -Path $downloadFile )){
+    Invoke-WebRequest -Uri $url -OutFile $downloadFile
+
+    $shell = New-Object -ComObject shell.application
+    $zip = $shell.NameSpace($downloadFile)
+    foreach ($item in $zip.items()) {
+      $shell.Namespace($downloadDir).CopyHere($item)
+    }
+
+    Write-Output "Driver $($h.Value)"
+    Get-ChildItem -Path $downloadDir
   }
 }
-
