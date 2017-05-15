@@ -56,7 +56,6 @@ $urls = @{
 
 foreach ($h in $urls.GetEnumerator()) {
   $url = $h.Value
-  Write-Output "Downloading Driver $url"
   $downloadFile = "$($baseDir)\$($h.Name)"
   $downloadDir = Split-Path $downloadFile -Parent
 
@@ -69,6 +68,7 @@ foreach ($h in $urls.GetEnumerator()) {
   }
 
   if ($Force -Or !(Test-Path -Path $downloadFile )){
+    Write-Output "Downloading Driver $url"
     Invoke-WebRequest -Uri $url -OutFile $downloadFile
 
     $shell = New-Object -ComObject shell.application
