@@ -24,7 +24,9 @@ import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.commons.io.FileUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
@@ -71,6 +73,9 @@ public class RemoteRepositoryConnectivityCheckTest
 
         Server repoServer =
             buildStaticServer( new File( System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" ) );
+
+        ServerConnector serverConnector = new ServerConnector( repoServer, new HttpConnectionFactory());
+        repoServer.addConnector( serverConnector );
         repoServer.start();
 
         RemoteRepositoriesService service = getRemoteRepositoriesService();
@@ -80,7 +85,7 @@ public class RemoteRepositoryConnectivityCheckTest
         try
         {
 
-            int repoServerPort = repoServer.getConnectors()[0].getLocalPort();
+            int repoServerPort = serverConnector.getLocalPort();
 
             RemoteRepository repo = getRemoteRepository();
 
@@ -104,6 +109,8 @@ public class RemoteRepositoryConnectivityCheckTest
 
         File tmpDir = Files.createTempDirectory( "test" ).toFile();
         Server repoServer = buildStaticServer( tmpDir );
+        ServerConnector serverConnector = new ServerConnector( repoServer, new HttpConnectionFactory());
+        repoServer.addConnector( serverConnector );
         repoServer.start();
 
         RemoteRepositoriesService service = getRemoteRepositoriesService();
@@ -113,7 +120,7 @@ public class RemoteRepositoryConnectivityCheckTest
         try
         {
 
-            int repoServerPort = repoServer.getConnectors()[0].getLocalPort();
+            int repoServerPort = serverConnector.getLocalPort();
 
             RemoteRepository repo = getRemoteRepository();
 
@@ -160,7 +167,7 @@ public class RemoteRepositoryConnectivityCheckTest
 
     protected Server buildStaticServer( File path )
     {
-        Server repoServer = new Server( 0 );
+        Server repoServer = new Server(  );
 
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setDirectoriesListed( true );

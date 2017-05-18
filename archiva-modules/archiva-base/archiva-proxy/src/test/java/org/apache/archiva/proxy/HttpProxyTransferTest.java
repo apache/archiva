@@ -38,8 +38,10 @@ import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.junit.After;
 import org.junit.Before;
@@ -164,11 +166,13 @@ public class HttpProxyTransferTest
             }
         };
 
-        server = new Server( 0 );
+        server = new Server(  );
+        ServerConnector serverConnector = new ServerConnector( server, new HttpConnectionFactory());
+        server.addConnector( serverConnector );
         server.setHandler( handler );
         server.start();
 
-        int port = server.getConnectors()[0].getLocalPort();
+        int port = serverConnector.getLocalPort();
 
         NetworkProxyConfiguration proxyConfig = new NetworkProxyConfiguration();
         proxyConfig.setHost( "localhost" );

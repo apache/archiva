@@ -18,11 +18,11 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
-import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.utils.FileUtil;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.index.FlatSearchRequest;
@@ -30,12 +30,12 @@ import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.expr.StringSearchExpression;
-import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +50,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -61,6 +62,7 @@ public class DownloadRemoteIndexTaskTest
 {
 
     private Server server;
+    private ServerConnector serverConnector;
 
     private int port;
 
@@ -81,12 +83,12 @@ public class DownloadRemoteIndexTaskTest
     public void initialize()
         throws Exception
     {
-        server = new Server( 0 );
+        server = new Server( );
+        serverConnector = new ServerConnector( server, new HttpConnectionFactory());
+        server.addConnector( serverConnector );
         createContext( server, new File( "src/test/" ) );
-
         this.server.start();
-        Connector connector = this.server.getConnectors()[0];
-        this.port = connector.getLocalPort();
+        this.port = serverConnector.getLocalPort();
         log.info( "start server on port {}", this.port );
         nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
     }

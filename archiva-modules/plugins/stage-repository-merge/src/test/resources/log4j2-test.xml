@@ -19,7 +19,7 @@
   -->
 
 
-<configuration status="debug">
+<configuration>
   <appenders>
     <Console name="console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
@@ -30,7 +30,6 @@
     <logger name="org.apache.archiva.stagerepository.merge" level="debug"/>
 
     <logger name="org.springframework" level="error"/>
-
 
     <root level="info">
       <appender-ref ref="console"/>

@@ -28,15 +28,15 @@
   <loggers>
 
     <logger name="org.springframework" level="error"/>
-
+    <logger name="org.apache.archiva" level="error"/>
     <logger name="org.apache.archiva.web" level="info"/>
-
     <logger name="org.apache.commons.configuration" level="error"/>
-
-    <logger name="org.apache.archiva.scheduler.indexing" level="debug"/>
-
-    <logger name="org.apache.archiva.remotedownload" level="debug"/>
-
+    <logger name="org.apache.archiva.scheduler.indexing" level="info"/>
+    <logger name="org.apache.archiva.remotedownload" level="info"/>
+    <logger name="org.apache.jackrabbit" level="error"/>
+    <logger name="org.quartz" level="error"/>
+    <logger name="JPOX.RDBMS" level="error"/>
+    <logger name="JPOX" level="error"/>
     <root level="info">
       <appender-ref ref="console"/>
     </root>

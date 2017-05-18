@@ -20,46 +20,30 @@ package org.apache.archiva.webdav;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.redback.authentication.AuthenticationException;
-import org.apache.archiva.redback.policy.AccountLockedException;
-import org.apache.archiva.redback.policy.MustChangePasswordException;
-import org.apache.archiva.redback.users.User;
-import org.apache.jackrabbit.webdav.DavSessionProvider;
-import org.apache.jackrabbit.webdav.WebdavRequest;
-import org.apache.jackrabbit.webdav.WebdavRequestImpl;
-import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.UnauthorizedException;
-import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
-
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.Principal;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.system.SecuritySession;
+import org.apache.archiva.redback.users.User;
+import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
+import org.apache.jackrabbit.webdav.DavSessionProvider;
+import org.apache.jackrabbit.webdav.WebdavRequest;
+import org.apache.jackrabbit.webdav.WebdavRequestImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.mock.web.MockHttpServletRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ArchivaDavSessionProviderTest
@@ -76,7 +60,7 @@ public class ArchivaDavSessionProviderTest
     {
         super.setUp();
         sessionProvider = new ArchivaDavSessionProvider( new ServletAuthenticatorMock(), new HttpAuthenticatorMock() );
-        request = new WebdavRequestImpl( new HttpServletRequestMock(), null );
+        request = new WebdavRequestImpl( new MockHttpServletRequest(), null );
     }
 
     @Test
@@ -101,9 +85,29 @@ public class ArchivaDavSessionProviderTest
     }
 
     @SuppressWarnings( "unchecked" )
+    /*
     private class HttpServletRequestMock
         implements HttpServletRequest
     {
+
+        @Override
+        public long getContentLengthLong()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        @Override
+        public String changeSessionId()
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
+
+        @Override
+        public <T extends HttpUpgradeHandler> T upgrade( Class<T> handlerClass )
+            throws IOException, ServletException
+        {
+            throw new UnsupportedOperationException( "Not supported yet." );
+        }
 
         @Override
         public boolean authenticate( HttpServletResponse httpServletResponse )
@@ -513,6 +517,7 @@ public class ArchivaDavSessionProviderTest
         }
     }
 
+    */
     private class ServletAuthenticatorMock
         implements ServletAuthenticator
     {

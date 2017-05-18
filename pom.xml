@@ -86,7 +86,7 @@
     <httpclient.version>4.5.2</httpclient.version>
     <httpclient.core.version>4.4.4</httpclient.core.version>
     <javaxMailVersion>1.4</javaxMailVersion>
-    <jettyVersion>8.1.14.v20131031</jettyVersion>
+    <jettyVersion>9.4.5.v20170502</jettyVersion>
     <guava.version>16.0.1</guava.version>
 
     <!-- restore when we will be able to use a derby in memory database -->
@@ -1202,13 +1202,8 @@
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.5</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
-        <version>3.0.1</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
