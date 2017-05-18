@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
-    <version>18</version>
+    <version>19-SNAPSHOT</version>
   </parent>
 
   <artifactId>archiva</artifactId>
@@ -1935,7 +1935,7 @@
             <artifactId>modernizer-maven-plugin</artifactId>
             <version>1.1.0</version>
             <configuration>
-              <javaVersion>1.7</javaVersion>
+              <javaVersion>1.8</javaVersion>
             </configuration>
             <executions>
               <execution>
