@@ -825,13 +825,14 @@ function(jquery,ui,sammy,tmpl,i18n,jqueryCookie,bootstrap,archivaSearch,jqueryVa
         } else {
           createAdminLink.hide();
         }
-        if(callbackFn){
-          callbackFn()
+        if(callbackFn) {
+          callbackFn(adminExists)
         }
         $.log("adminExists:"+adminExists);
       }
     });
   };
+
 
   // handle url with registration link
   checkUrlParams=function(){

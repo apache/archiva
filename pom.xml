@@ -88,6 +88,7 @@
     <javaxMailVersion>1.4</javaxMailVersion>
     <jettyVersion>9.4.5.v20170502</jettyVersion>
     <guava.version>16.0.1</guava.version>
+    <openjpaVersion>2.4.1</openjpaVersion>
 
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
@@ -1027,6 +1028,17 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva.redback</groupId>
+        <artifactId>redback-keys-jpa</artifactId>
+        <version>${redback.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva.redback</groupId>
         <artifactId>redback-rbac-model</artifactId>
         <version>${redback.version}</version>
         <exclusions>
@@ -1529,6 +1541,7 @@
         <artifactId>jsoup</artifactId>
         <version>1.7.2</version>
       </dependency>
+
     </dependencies>
   </dependencyManagement>
 

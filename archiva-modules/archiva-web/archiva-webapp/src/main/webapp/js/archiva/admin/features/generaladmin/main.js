@@ -1358,7 +1358,15 @@ define("archiva/admin/features/generaladmin/main",["jquery","jquery.ui","i18n","
         self.redbackRuntimeConfiguration().rbacManagerImpls.push(beanId);
       }
 
-
+      var adminAvailableResponseFn = function(adminExists) {
+        $.log("admin exists "+adminExists);
+        if (adminExists) {
+          window.sammyArchivaApplication.runRoute("get","#redbackruntimeconfig");
+        } else {
+          logout();
+          displayWelcome();
+        }
+      }
       $.log("rememberme enabled:"+self.redbackRuntimeConfiguration().findPropertyValue("security.rememberme.enabled"));
       $.ajax("restServices/archivaServices/redbackRuntimeConfigurationService/redbackRuntimeConfiguration",
         {
@@ -1368,7 +1376,7 @@ define("archiva/admin/features/generaladmin/main",["jquery","jquery.ui","i18n","
           dataType: 'json',
           success: function(data) {
             var message=$.i18n.prop('redback-runtime-configuration.updated');
-            window.sammyArchivaApplication.runRoute("get","#redbackruntimeconfig");
+            checkCreateAdminLink(adminAvailableResponseFn);
             displaySuccessMessage(message);
           },
           error: function(data) {

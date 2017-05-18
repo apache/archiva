@@ -78,7 +78,7 @@ public class ArchivaConfigurableUsersManager
                 setUserManagerImpl( userManagerImpl );
                 userManagerPerId.put( id, userManagerImpl );
             }
-
+            this.usersCache.clear();
             this.useUsersCache = redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().isUseUsersCache();
         }
         catch ( RepositoryAdminException e )
@@ -333,7 +333,7 @@ public class ArchivaConfigurableUsersManager
     @Override
     public String getId()
     {
-        return null;
+        return "archiva-configurable";
     }
 
     @Override

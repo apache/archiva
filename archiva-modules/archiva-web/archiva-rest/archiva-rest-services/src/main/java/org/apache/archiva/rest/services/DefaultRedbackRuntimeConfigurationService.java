@@ -67,7 +67,7 @@ public class DefaultRedbackRuntimeConfigurationService
     private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
     @Inject
-    @Named(value = "userManager#configurable")
+    @Named(value = "userManager#default")
     private UserManager userManager;
 
     @Inject
@@ -220,7 +220,8 @@ public class DefaultRedbackRuntimeConfigurationService
                 }
             }
 
-            //check repositories roles are here !!!
+
+
 
             return Boolean.TRUE;
         }

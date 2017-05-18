@@ -209,6 +209,7 @@ public class ArchivaUserManagerAuthenticator
             {
                 log.warn( "Login for user {} and userManager {} failed, message: {}", source.getUsername(),
                           userManager.getId(), e.getMessage() );
+                e.printStackTrace();
                 resultException = e;
                 authnResultErrors.add( new AuthenticationFailureCause( AuthenticationConstants.AUTHN_RUNTIME_EXCEPTION,
                                                                        "Login for user " + source.getUsername()

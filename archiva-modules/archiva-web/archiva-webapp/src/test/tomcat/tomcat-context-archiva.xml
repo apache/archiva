@@ -24,8 +24,13 @@
             driverClassName="org.apache.derby.jdbc.EmbeddedDriver"
             url="jdbc:derby:${appserver.base}/database/users;create=true"
   />
+
   <Resource name="mail/Session" auth="Container"
           type="javax.mail.Session"
           mail.smtp.host="localhost"/>
-                
+
+
+
+
+
 </Context>
