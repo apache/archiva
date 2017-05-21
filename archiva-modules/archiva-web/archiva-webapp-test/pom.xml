@@ -401,6 +401,7 @@
                     <appserver.home>${project.build.directory}/appserver-base</appserver.home>
                     <derby.system.home>${project.build.directory}</derby.system.home>
                     <archiva.devMode>true</archiva.devMode>
+                    <openjpa.Log>${openjpa.Log}</openjpa.Log>
                   </systemProperties>
                   <contextFile>${project.build.testOutputDirectory}/archiva.xml</contextFile>
                   <propertiesPortFilePath>${tomcat.propertiesPortFilePath}</propertiesPortFilePath>

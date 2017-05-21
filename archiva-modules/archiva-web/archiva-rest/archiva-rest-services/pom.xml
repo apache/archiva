@@ -470,6 +470,7 @@
             <org.apache.jackrabbit.maxMemoryPerCache>1</org.apache.jackrabbit.maxMemoryPerCache>
             <!--org.apache.jackrabbit.minMemoryPerCache>1</org.apache.jackrabbit.minMemoryPerCache-->
             <archiva.repositorySessionFactory.id>jcr</archiva.repositorySessionFactory.id>
+            <openjpa.Log>${openjpa.Log}</openjpa.Log>
           </systemPropertyVariables>
         </configuration>
       </plugin>

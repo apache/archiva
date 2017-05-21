@@ -549,6 +549,7 @@
             <archiva.logMissingI18n>true</archiva.logMissingI18n>
             <java.awt.headless>true</java.awt.headless>
             <archiva.repositorySessionFactory.id>test</archiva.repositorySessionFactory.id>
+            <openjpa.Log>${openjpa.Log}</openjpa.Log>
           </systemPropertyVariables>
         </configuration>
       </plugin>

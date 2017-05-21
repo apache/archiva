@@ -324,6 +324,7 @@
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
             <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
+            <openjpa.Log>${openjpa.Log}</openjpa.Log>
           </systemPropertyVariables>
           <forkMode>${webdav.forkMode}</forkMode>
         </configuration>

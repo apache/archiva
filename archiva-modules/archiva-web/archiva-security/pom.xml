@@ -244,6 +244,7 @@
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
             <archiva.repositorySessionFactory.id>file</archiva.repositorySessionFactory.id>
+            <openjpa.Log>${openjpa.Log}</openjpa.Log>
           </systemPropertyVariables>
         </configuration>
       </plugin>

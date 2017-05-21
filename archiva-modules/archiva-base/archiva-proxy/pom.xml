@@ -273,6 +273,7 @@
             <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
             <http.proxyHost />
             <http.proxyPort />
+            <openjpa.Log>${openjpa.Log}</openjpa.Log>
           </systemPropertyVariables>
         </configuration>
       </plugin>

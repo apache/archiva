@@ -91,7 +91,7 @@
         <entry key="openjpa.ConnectionDriverName" value="org.hsqldb.jdbcDriver" />
         <entry key="openjpa.ConnectionUserName" value="sa" />
         <entry key="openjpa.ConnectionPassword" value="" />
-        <entry key="openjpa.Log" value="DefaultLevel=TRACE, Runtime=TRACE, Tool=INFO, SQL=TRACE" />
+        <entry key="openjpa.Log" value="${openjpa.Log:DefaultLevel=INFO,Runtime=ERROR,Tool=ERROR,SQL=ERROR,Schema=ERROR,MetaData=ERROR}" />
         <entry key="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" />
         <entry key="openjpa.jdbc.MappingDefaults"
                value="ForeignKeyDeleteAction=restrict,JoinForeignKeyDeleteAction=restrict"/>

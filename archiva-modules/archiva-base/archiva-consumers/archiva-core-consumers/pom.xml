@@ -171,6 +171,7 @@
               <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
               <archiva.user.configFileName>${project.build.directory}/archiva.xml</archiva.user.configFileName>
               <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
+              <openjpa.Log>${openjpa.Log}</openjpa.Log>
             </systemPropertyVariables>
           </configuration>
         </plugin>

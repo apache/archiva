@@ -249,6 +249,7 @@
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
             <basedir>${basedir}</basedir>
             <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
+            <openjpa.Log>${openjpa.Log}</openjpa.Log>
           </systemPropertyVariables>
         </configuration>
       </plugin>

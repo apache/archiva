@@ -179,6 +179,7 @@
             <systemPropertyVariables>
               <appserver.base>${project.build.directory}/appserver-base</appserver.base>
               <plexus.home>${project.build.directory}/appserver-base</plexus.home>
+              <openjpa.Log>${openjpa.Log}</openjpa.Log>
             </systemPropertyVariables>
           </configuration>
         </plugin>
