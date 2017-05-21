@@ -36,6 +36,7 @@ import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -138,6 +139,7 @@ public class HttpProxyTransferTest
 
         Handler handler = new AbstractHandler()
         {
+            @Override
             public void handle( String s, Request request, HttpServletRequest httpServletRequest,
                                 HttpServletResponse response )
                 throws IOException, ServletException
@@ -198,8 +200,8 @@ public class HttpProxyTransferTest
     public void testGetOverHttpProxy()
         throws Exception
     {
-        assertNull( System.getProperty( "http.proxyHost" ) );
-        assertNull( System.getProperty( "http.proxyPort" ) );
+        Assertions.assertThat( System.getProperty( "http.proxyHost" ) ).isEmpty();
+        Assertions.assertThat( System.getProperty( "http.proxyPort" ) ).isEmpty();
 
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
 
@@ -225,8 +227,8 @@ public class HttpProxyTransferTest
         String actualContents = FileUtils.readFileToString( downloadedFile, Charset.defaultCharset() );
         assertEquals( "Check file contents.", expectedContents, actualContents );
 
-        assertNull( System.getProperty( "http.proxyHost" ) );
-        assertNull( System.getProperty( "http.proxyPort" ) );
+        Assertions.assertThat( System.getProperty( "http.proxyHost" ) ).isEmpty();
+        Assertions.assertThat( System.getProperty( "http.proxyPort" ) ).isEmpty();
     }
 
     private void addConnector()

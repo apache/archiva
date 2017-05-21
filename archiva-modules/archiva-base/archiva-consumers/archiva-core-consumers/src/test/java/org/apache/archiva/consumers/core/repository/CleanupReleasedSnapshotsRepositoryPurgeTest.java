@@ -19,11 +19,6 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
-import java.io.File;
-import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.List;
-import javax.inject.Inject;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -32,11 +27,18 @@ import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
-import org.easymock.MockControl;
-import static org.junit.Assert.*;
+import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -76,9 +78,9 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         archivaConfiguration =
             applicationContext.getBean( "archivaConfiguration#cleanup-released-snapshots", ArchivaConfiguration.class );
 
-        listenerControl = MockControl.createControl( RepositoryListener.class );
+        listenerControl = EasyMock.createControl( );
 
-        listener = (RepositoryListener) listenerControl.getMock();
+        listener = listenerControl.createMock( RepositoryListener.class );
         List<RepositoryListener> listeners = Collections.singletonList( listener );
         repoPurge = new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), metadataTools,
                                                                  applicationContext.getBean(

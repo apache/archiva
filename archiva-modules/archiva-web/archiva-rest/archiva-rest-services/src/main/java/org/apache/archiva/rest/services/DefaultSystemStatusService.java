@@ -77,6 +77,7 @@ public class DefaultSystemStatusService
         caches = getBeansOfType( applicationContext, Cache.class );
     }
 
+    @Override
     public String getMemoryStatus()
         throws ArchivaRestServiceException
     {
@@ -93,6 +94,7 @@ public class DefaultSystemStatusService
         return l / ( 1024 * 1024 ) + "M";
     }
 
+    @Override
     public String getCurrentServerTime( String locale )
         throws ArchivaRestServiceException
     {
@@ -100,6 +102,7 @@ public class DefaultSystemStatusService
         return sdf.format( new Date() );
     }
 
+    @Override
     public List<QueueEntry> getQueueEntries()
         throws ArchivaRestServiceException
     {
@@ -121,6 +124,7 @@ public class DefaultSystemStatusService
         }
     }
 
+    @Override
     public List<CacheEntry> getCacheEntries()
         throws ArchivaRestServiceException
     {
@@ -142,6 +146,7 @@ public class DefaultSystemStatusService
         return cacheEntries;
     }
 
+    @Override
     public Boolean clearCache( String cacheKey )
         throws ArchivaRestServiceException
     {
@@ -156,6 +161,7 @@ public class DefaultSystemStatusService
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean clearAllCaches()
         throws ArchivaRestServiceException
     {
@@ -166,6 +172,7 @@ public class DefaultSystemStatusService
         return Boolean.TRUE;
     }
 
+    @Override
     public List<RepositoryScannerStatistics> getRepositoryScannerStatistics()
         throws ArchivaRestServiceException
     {

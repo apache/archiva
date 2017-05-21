@@ -20,8 +20,12 @@ package org.apache.archiva.metadata.model;
  */
 
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 @XmlRootElement( name = "projectVersionMetadata" )
 public class ProjectVersionMetadata
@@ -46,11 +50,13 @@ public class ProjectVersionMetadata
 
     private CiManagement ciManagement;
 
-    private List<License> licenses = new ArrayList<License>();
+    private List<License> licenses = new ArrayList<>();
 
-    private List<MailingList> mailingLists = new ArrayList<MailingList>();
+    private List<MailingList> mailingLists = new ArrayList<>();
 
-    private List<Dependency> dependencies = new ArrayList<Dependency>();
+    private List<Dependency> dependencies = new ArrayList<>();
+
+    private Map<String, String> properties = new HashMap<String, String>();
 
     private boolean incomplete;
 
@@ -184,6 +190,22 @@ public class ProjectVersionMetadata
         this.dependencies.add( dependency );
     }
 
+    public Map<String, String> getProperties()
+    {
+        return properties;
+    }
+
+    public void setProperties( Map<String, String> properties )
+    {
+        this.properties = properties;
+    }
+
+    @SuppressWarnings( { "unchecked", "rawtypes" } )
+    public void setProperties( Properties properties )
+    {
+        setProperties( new HashMap<String, String>((Map) properties ) );
+    }
+
     public boolean isIncomplete()
     {
         return incomplete;
@@ -192,5 +214,24 @@ public class ProjectVersionMetadata
     public void setIncomplete( boolean incomplete )
     {
         this.incomplete = incomplete;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "ProjectVersionMetadata{" +
+            "id='" + id + '\'' +
+            ", url='" + url + '\'' +
+            ", name='" + name + '\'' +
+            ", description='" + description + '\'' +
+            ", organization=" + organization +
+            ", issueManagement=" + issueManagement +
+            ", scm=" + scm +
+            ", ciManagement=" + ciManagement +
+            ", licenses=" + licenses +
+            ", mailingLists=" + mailingLists +
+            ", dependencies=" + dependencies +
+            ", incomplete=" + incomplete +
+            '}';
     }
 }

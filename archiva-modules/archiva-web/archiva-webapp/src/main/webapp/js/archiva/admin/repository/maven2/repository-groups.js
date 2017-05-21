@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva/admin/repository/maven2/repository-groups",["jquery","i18n","jquery.tmpl","bootstrap","jquery.validate","jquery.ui","knockout"
+define("archiva/admin/repository/maven2/repository-groups",["jquery","jquery.ui","i18n","jquery.tmpl","bootstrap","jquery.validate","knockout"
   ,"knockout.simpleGrid","knockout.sortable","archiva/admin/repository/maven2/repositories"],
-function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
+function(jquery,jqueryUi,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 
-  RepositoryGroup=function(id,repositories,mergedIndexPath,mergedIndexTtl){
+  RepositoryGroup=function(id,repositories,mergedIndexPath,mergedIndexTtl,cronExpression){
 
     var self=this;
 
@@ -43,6 +43,9 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
     // to store managedRepositories description not sended to server
     this.managedRepositories=ko.observableArray([]);
     this.managedRepositories.subscribe(function(newValue){self.modified(true)});
+
+    this.cronExpression = ko.observable(cronExpression);
+    this.cronExpression.subscribe(function(newValue){self.modified(true)});
 
     this.modified=ko.observable(false);
   }
@@ -73,7 +76,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       mainContent.find("#repository-groups-edit-available-repositories").find(".icon-plus-sign" ).off("click");
       mainContent.find("#repository-groups-edit-order-div").find(".icon-minus-sign" ).off("click");
       self.renderSortableAvailables(self.repositoryGroupsViewModel);
-      self.renderSortableChoosed(self.repositoryGroupsViewModel);
+      self.renderSortableChosed(self.repositoryGroupsViewModel);
     }
 
     this.saveRepositoryGroup=function(repositoryGroup){
@@ -105,7 +108,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       $("#main-content").find("#repository-groups-edit-order-div").find("#minus-"+idVal ).on("click",function(){
         var idVal = $(this).attr("id");
         idVal=idVal.substringAfterFirst("minus-");
-        self.removeChoosed(idVal);
+        self.removeChosed(idVal);
       });
     }
 
@@ -117,7 +120,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       });
     }
 
-    this.removeChoosed=function(idVal){
+    this.removeChosed=function(idVal){
       for (var i=0;i<self.repositoryGroupsViewModel.managedRepositories().length;i++){
         if(self.repositoryGroupsViewModel.managedRepositories()[i].id()==idVal){
           self.availableRepositories.push(repositoryGroupsViewModel.managedRepositories()[i]);
@@ -137,11 +140,11 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       });
     }
 
-    this.renderSortableChoosed=function(repositoryGroupsViewModel){
+    this.renderSortableChosed=function(repositoryGroupsViewModel){
       $("#main-content").find("#repository-groups-edit-order-div").find(".icon-minus-sign" ).on("click",function(){
         var idVal = $(this).attr("id");
         idVal=idVal.substringAfterFirst("minus-");
-        self.removeChoosed(idVal);
+        self.removeChosed(idVal);
       });
     }
   }
@@ -197,7 +200,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
             repositoryGroupViewModel.applicationUrl=applicationUrl;
             activateRepositoryGroupEditTab();
             ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-edit" ).get(0));
-            repositoryGroupViewModel.renderSortableChoosed(self);
+            repositoryGroupViewModel.renderSortableChosed(self);
             repositoryGroupViewModel.renderSortableAvailables(self);
             mainContent.find("#repository-groups-view-tabs-li-edit" ).find("a").html($.i18n.prop("edit"));
             repositoryGroupValidator();
@@ -223,7 +226,9 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
       var userMessages=$("#user-messages");
       userMessages.html(mediumSpinnerImg());
       var valid = $("#main-content").find("#repository-group-edit-form" ).valid();
-
+      if (valid==false) {
+        return;
+      }
 
       $("#repository-group-save" ).button('loading');
       $.ajax("restServices/archivaServices/repositoryGroupService/updateRepositoryGroup",
@@ -324,7 +329,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
 
                       activateRepositoryGroupEditTab();
                       ko.applyBindings(repositoryGroupViewModel,mainContent.find("#repository-groups-edit" ).get(0));
-                      repositoryGroupViewModel.renderSortableChoosed(self.repositoryGroupsViewModel);
+                      repositoryGroupViewModel.renderSortableChosed(self.repositoryGroupsViewModel);
                       repositoryGroupViewModel.renderSortableAvailables(self.repositoryGroupsViewModel);
                     }
                     if ($(e.target).attr("href")=="#repository-groups-view") {
@@ -395,15 +400,22 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
         rules: {
             id: {
               required: true
-              },
+            },
             mergedIndexPath:{
               required:true
+            },
+          cronExpression: {
+              remote: {
+                url: "restServices/archivaServices/commonServices/validateCronExpression",
+                type: "get"
             }
+          }
         },
         showErrors: function(validator, errorMap, errorList) {
            customShowError("#main-content #repository-group-edit-form",validator,errorMap,errorMap);
         }
     });
+    validator.settings.messages["cronExpression"]=$.i18n.prop("cronExpression.notvalid");
     return validator;
   }
 
@@ -418,7 +430,8 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,jqueryUi,ko) {
   }
 
   mapRepositoryGroup=function(data){
-    return new RepositoryGroup(data.id, mapStringArray(data.repositories),data.mergedIndexPath,data.mergedIndexTtl);
+    return new RepositoryGroup(data.id, mapStringArray(data.repositories),data.mergedIndexPath
+        ,data.mergedIndexTtl,data.cronExpression);
   }
 
 });

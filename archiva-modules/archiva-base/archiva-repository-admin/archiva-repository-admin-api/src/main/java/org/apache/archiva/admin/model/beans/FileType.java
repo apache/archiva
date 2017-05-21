@@ -66,7 +66,7 @@ public class FileType
     {
         if ( patterns == null )
         {
-            this.patterns = new ArrayList<String>( 0 );
+            this.patterns = new ArrayList<>( 0 );
         }
         return patterns;
     }

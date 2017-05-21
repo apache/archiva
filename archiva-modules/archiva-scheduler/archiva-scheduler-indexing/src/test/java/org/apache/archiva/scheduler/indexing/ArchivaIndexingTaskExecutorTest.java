@@ -47,10 +47,12 @@ import javax.inject.Inject;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -58,8 +60,8 @@ import java.util.zip.ZipInputStream;
 /**
  * ArchivaIndexingTaskExecutorTest
  */
-@RunWith (ArchivaSpringJUnit4ClassRunner.class)
-@ContextConfiguration (locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" })
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class ArchivaIndexingTaskExecutorTest
     extends TestCase
 {
@@ -80,6 +82,7 @@ public class ArchivaIndexingTaskExecutorTest
     ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -101,6 +104,7 @@ public class ArchivaIndexingTaskExecutorTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {
@@ -154,7 +158,8 @@ public class ArchivaIndexingTaskExecutorTest
                                                                   new File( repositoryConfig.getLocation() ),
                                                                   new File( repositoryConfig.getLocation(),
                                                                             ".indexer" ), null, null,
-                                                                  mavenIndexerUtils.getAllIndexCreators() );
+                                                                  mavenIndexerUtils.getAllIndexCreators()
+            );
             context.setSearchable( true );
         }
 
@@ -255,8 +260,8 @@ public class ArchivaIndexingTaskExecutorTest
         q.add( indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.apache.archiva" ) ),
                Occur.SHOULD );
         q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID,
-                                       new SourcedSearchExpression( "archiva-index-methods-jar-test" ) ),
-               Occur.SHOULD );
+                                       new SourcedSearchExpression( "archiva-index-methods-jar-test" ) ), Occur.SHOULD
+        );
 
         assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
         assertFalse( new File( repositoryConfig.getLocation(), ".index" ).exists() );
@@ -279,6 +284,7 @@ public class ArchivaIndexingTaskExecutorTest
 
         indexerDirectory.listFiles( new FilenameFilter()
         {
+            @Override
             public boolean accept( File file, String s )
             {
                 if ( s.startsWith( "nexus-maven-repository-index" ) )
@@ -342,28 +348,30 @@ public class ArchivaIndexingTaskExecutorTest
     {
         final int buff = 2048;
 
-        new File( destDir ).mkdirs();
+        Files.createDirectories( Paths.get( destDir ) );
 
-        BufferedOutputStream out = null;
-        FileInputStream fin = new FileInputStream( new File( indexDir, "nexus-maven-repository-index.zip" ) );
-        ZipInputStream in = new ZipInputStream( new BufferedInputStream( fin ) );
-        ZipEntry entry;
-
-        while ( ( entry = in.getNextEntry() ) != null )
+        try (InputStream fin = Files.newInputStream( Paths.get( indexDir, "nexus-maven-repository-index.zip" ) ))
         {
-            int count;
-            byte data[] = new byte[buff];
-            FileOutputStream fout = new FileOutputStream( new File( destDir, entry.getName() ) );
-            out = new BufferedOutputStream( fout, buff );
+            ZipInputStream in = new ZipInputStream( new BufferedInputStream( fin ) );
+            ZipEntry entry;
 
-            while ( ( count = in.read( data, 0, buff ) ) != -1 )
+            while ( ( entry = in.getNextEntry() ) != null )
             {
-                out.write( data, 0, count );
-            }
-            out.flush();
-            out.close();
-        }
+                int count;
+                byte data[] = new byte[buff];
+                try (OutputStream fout = Files.newOutputStream( Paths.get( destDir, entry.getName() ) ))
+                {
+                    try (BufferedOutputStream out = new BufferedOutputStream( fout, buff ))
+                    {
 
-        in.close();
+                        while ( ( count = in.read( data, 0, buff ) ) != -1 )
+                        {
+                            out.write( data, 0, count );
+                        }
+                    }
+                }
+            }
+
+        }
     }
 }

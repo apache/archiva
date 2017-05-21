@@ -17,7 +17,8 @@
  * under the License.
  */
 define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
-  "knockout.simpleGrid","redback.roles","redback.user","redback.users"], function(jquery,utils,jqueryValidate,jqueryJson,ko) {
+  "knockout.simpleGrid","redback.roles","redback.user","redback.users"],
+function(jquery,utils,jqueryValidate,jqueryJson,ko) {
 
   // define a container object with various datas
   window.redbackModel = {userOperationNames:null,key:null,i18n:$.i18n.map};
@@ -45,8 +46,15 @@ define("redback",["jquery","utils","jquery.validate","jquery.json","knockout",
       success: function(data) {
         $.log("isLogged:"+data);
         var user = data ? mapUser(data):null;
+        var cookieUser = getUserFromLoginCookie();
+
         window.user=user;
         if(user){
+          if (cookieUser!=null){
+            $.log("cookieUser:"+cookieUser.password());
+            user.password(cookieUser.password());
+            user.rememberme(cookieUser.rememberme());
+          }
           reccordLoginCookie(user);
         }
         $.log("userLogged:"+(user!=null));

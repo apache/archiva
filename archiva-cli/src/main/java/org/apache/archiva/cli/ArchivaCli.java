@@ -22,28 +22,24 @@ package org.apache.archiva.cli;
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.archiva.consumers.ConsumerException;
+import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.converter.RepositoryConversionException;
 import org.apache.archiva.converter.legacy.LegacyRepositoryConverter;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.consumers.ConsumerException;
-import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
-import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
-import org.apache.archiva.consumers.RepositoryContentConsumer;
-import org.apache.maven.artifact.manager.WagonManager;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,8 +51,7 @@ import java.util.Properties;
 /**
  * ArchivaCli
  *
- *
- * @todo add back reading of archiva.xml from a given location
+ * TODO add back reading of archiva.xml from a given location
  */
 public class ArchivaCli
 {
@@ -75,21 +70,16 @@ public class ArchivaCli
     private static String getVersion()
         throws IOException
     {
-        InputStream pomStream = ArchivaCli.class.getResourceAsStream( POM_PROPERTIES );
-        if ( pomStream == null )
-        {
-            throw new IOException( "Failed to load " + POM_PROPERTIES );
-        }
 
-        try
+        try (InputStream pomStream = ArchivaCli.class.getResourceAsStream( POM_PROPERTIES ))
         {
+            if ( pomStream == null )
+            {
+                throw new IOException( "Failed to load " + POM_PROPERTIES );
+            }
             Properties properties = new Properties();
             properties.load( pomStream );
             return properties.getProperty( "version" );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( pomStream );
         }
     }
 
@@ -117,7 +107,20 @@ public class ArchivaCli
             return;
         }
 
-        new ArchivaCli().execute( command );
+        ArchivaCli cli = new ArchivaCli();
+        try
+        {
+            cli.execute( command );
+        }
+        finally
+        {
+            cli.destroy();
+        }
+    }
+
+    private void destroy()
+    {
+        applicationContext.destroy();
     }
 
     private void execute( Commands command )
@@ -157,29 +160,23 @@ public class ArchivaCli
     }
 
     private void doScan( String path, String[] consumers )
-        throws ConsumerException, MalformedURLException, PlexusSisuBridgeException
+        throws ConsumerException, MalformedURLException
     {
-        // hack around poorly configurable project builder by pointing all repositories back at this location to be self
-        // contained
-        PlexusSisuBridge plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
-        WagonManager wagonManager = plexusSisuBridge.lookup( WagonManager.class );
-        wagonManager.addMirror( "internal", "*", new File( path ).toURL().toExternalForm() );
-
         ManagedRepository repo = new ManagedRepository();
-        repo.setId( "cliRepo" );
+        repo.setId( new File( path ).getName() );
         repo.setName( "Archiva CLI Provided Repo" );
         repo.setLocation( path );
 
-        List<KnownRepositoryContentConsumer> knownConsumerList = new ArrayList<KnownRepositoryContentConsumer>();
+        List<KnownRepositoryContentConsumer> knownConsumerList = new ArrayList<>();
 
         knownConsumerList.addAll( getConsumerList( consumers ) );
 
         List<InvalidRepositoryContentConsumer> invalidConsumerList = Collections.emptyList();
 
-        List<String> ignoredContent = new ArrayList<String>();
+        List<String> ignoredContent = new ArrayList<>();
         ignoredContent.addAll( Arrays.asList( RepositoryScanner.IGNORABLE_CONTENT ) );
 
-        RepositoryScanner scanner = (RepositoryScanner) lookup( RepositoryScanner.class );
+        RepositoryScanner scanner = applicationContext.getBean( RepositoryScanner.class );
 
         try
         {
@@ -194,17 +191,10 @@ public class ArchivaCli
         }
     }
 
-    private Object lookup( Class<?> clazz )
-        throws PlexusSisuBridgeException
-    {
-        PlexusSisuBridge plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
-        return plexusSisuBridge.lookup( clazz );
-    }
-
     private List<KnownRepositoryContentConsumer> getConsumerList( String[] consumers )
-        throws ConsumerException, PlexusSisuBridgeException
+        throws ConsumerException
     {
-        List<KnownRepositoryContentConsumer> consumerList = new ArrayList<KnownRepositoryContentConsumer>();
+        List<KnownRepositoryContentConsumer> consumerList = new ArrayList<>();
 
         Map<String, KnownRepositoryContentConsumer> availableConsumers = getConsumers();
 
@@ -224,7 +214,6 @@ public class ArchivaCli
     }
 
     private void dumpAvailableConsumers()
-        throws PlexusSisuBridgeException
     {
         Map<String, KnownRepositoryContentConsumer> availableConsumers = getConsumers();
 
@@ -232,8 +221,8 @@ public class ArchivaCli
 
         for ( Map.Entry<String, KnownRepositoryContentConsumer> entry : availableConsumers.entrySet() )
         {
-            String consumerHint = (String) entry.getKey();
-            RepositoryContentConsumer consumer = (RepositoryContentConsumer) entry.getValue();
+            String consumerHint = entry.getKey();
+            RepositoryContentConsumer consumer = entry.getValue();
             System.out.println(
                 "  " + consumerHint + ": " + consumer.getDescription() + " (" + consumer.getClass().getName() + ")" );
         }
@@ -241,15 +230,13 @@ public class ArchivaCli
 
     @SuppressWarnings( "unchecked" )
     private Map<String, KnownRepositoryContentConsumer> getConsumers()
-        throws PlexusSisuBridgeException
     {
         Map<String, KnownRepositoryContentConsumer> beans =
             applicationContext.getBeansOfType( KnownRepositoryContentConsumer.class );
         // we use a naming conventions knownRepositoryContentConsumer#hint
         // with plexus we used only hint so remove before#
 
-        Map<String, KnownRepositoryContentConsumer> smallNames =
-            new HashMap<String, KnownRepositoryContentConsumer>( beans.size() );
+        Map<String, KnownRepositoryContentConsumer> smallNames = new HashMap<>( beans.size() );
 
         for ( Map.Entry<String, KnownRepositoryContentConsumer> entry : beans.entrySet() )
         {
@@ -260,22 +247,15 @@ public class ArchivaCli
     }
 
     private void doConversion( String properties )
-        throws FileNotFoundException, IOException, RepositoryConversionException, PlexusSisuBridgeException
+        throws IOException, RepositoryConversionException
     {
-        LegacyRepositoryConverter legacyRepositoryConverter =
-            (LegacyRepositoryConverter) lookup( LegacyRepositoryConverter.class );
+        LegacyRepositoryConverter legacyRepositoryConverter = applicationContext.getBean( LegacyRepositoryConverter.class );
 
         Properties p = new Properties();
 
-        FileInputStream fis = new FileInputStream( properties );
-
-        try
+        try (InputStream fis = Files.newInputStream( Paths.get(properties)))
         {
             p.load( fis );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( fis );
         }
 
         File oldRepositoryPath = new File( p.getProperty( SOURCE_REPO_PATH ) );

@@ -105,6 +105,7 @@ public class AbstractRepository
         this.description = description;
     }
 
+    @Override
     public int hashCode()
     {
         int result = 17;
@@ -112,6 +113,7 @@ public class AbstractRepository
         return result;
     }
 
+    @Override
     public boolean equals( Object other )
     {
         if ( this == other )

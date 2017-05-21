@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-consumers</artifactId>
-    <version>1.4-M5-SNAPSHOT</version>
+    <version>2.2.2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-consumer-archetype</artifactId>
   <packaging>maven-archetype</packaging>
@@ -34,42 +34,72 @@
     <archetypeVersion>2.2</archetypeVersion>
   </properties>
   <dependencies>
+    <!-- Used by the archetype, so needed to be built before integration
+         tests run and use them -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-consumer-api</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-configuration</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-admin-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-model</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-layer</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging-api</artifactId>
-        </exclusion>
-      </exclusions>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-indexer</artifactId>
+      <artifactId>metadata-repository-api</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-admin-default</artifactId>
-      <scope>provided</scope>
+      <artifactId>maven2-repository</artifactId>
+      <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.kubek2k</groupId>
+      <artifactId>springockito</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- for some reasons needed by the archetype -->
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.9</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- for some reasons this help sonar to run -->
+    <dependency>
+      <groupId>org.apache.maven.surefire</groupId>
+      <artifactId>surefire-junit4</artifactId>
+      <version>2.18.1</version>
+      <scope>test</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-store-jcr</artifactId>
-      <scope>provided</scope>
+      <artifactId>metadata-store-file</artifactId>
+      <scope>test</scope>
     </dependency>
+
   </dependencies>
   <build>
     <resources>
@@ -77,7 +107,17 @@
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
       </resource>
-    </resources>
+      <resource>
+        <directory>src/main/resourcesstatic</directory>
+        <filtering>false</filtering>
+      </resource>
+    </resources> 
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>  
+    </testResources>
     <extensions>
       <extension>
         <groupId>org.apache.maven.archetype</groupId>
@@ -90,12 +130,40 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-archetype-plugin</artifactId>
         <version>${archetypeVersion}</version>
-        <configuration>
-          <settingsFile>${basedir}/src/test/test-settings.xml</settingsFile>
-          <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
-        </configuration>
       </plugin>
     </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-archetype-plugin</artifactId>
+          <version>${archetypeVersion}</version>
+          <configuration>
+            <settingsFile>${basedir}/src/test/test-settings.xml</settingsFile>
+            <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
-
+  <profiles>
+    <profile>
+      <id>ci-build</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-archetype-plugin</artifactId>
+              <version>${archetypeVersion}</version>
+              <configuration>
+                <settingsFile>${basedir}/src/test/ci-test-settings.xml</settingsFile>
+                <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
 </project>

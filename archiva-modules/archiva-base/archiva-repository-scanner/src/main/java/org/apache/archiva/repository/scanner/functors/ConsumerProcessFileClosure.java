@@ -30,7 +30,6 @@ import java.util.Map;
 /**
  * ConsumerProcessFileClosure 
  *
- *
  */
 public class ConsumerProcessFileClosure
     implements Closure
@@ -45,6 +44,7 @@ public class ConsumerProcessFileClosure
     
     private Map<String,Long> consumerCounts;
 
+    @Override
     public void execute( Object input )
     {
         if ( input instanceof RepositoryContentConsumer )

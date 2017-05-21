@@ -21,6 +21,7 @@ package org.apache.archiva.repository.scanner;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,27 +47,23 @@ import java.util.Set;
 public class DefaultRepositoryScanner
     implements RepositoryScanner
 {
-    /**
-     *
-     */
     @Inject
     private FileTypes filetypes;
 
-    /**
-     *
-     */
     @Inject
-    private RepositoryContentConsumers consumerUtil;
+    private RepositoryContentConsumers repositoryContentConsumers;
 
     private Set<RepositoryScannerInstance> inProgressScans = new LinkedHashSet<RepositoryScannerInstance>();
 
+    @Override
     public RepositoryScanStatistics scan( ManagedRepository repository, long changesSince )
         throws RepositoryScannerException
     {
+        List<KnownRepositoryContentConsumer> knownContentConsumers = null;
         try
         {
-            List<KnownRepositoryContentConsumer> knownContentConsumers = consumerUtil.getSelectedKnownConsumers();
-            List<InvalidRepositoryContentConsumer> invalidContentConsumers = consumerUtil.getSelectedInvalidConsumers();
+            knownContentConsumers = repositoryContentConsumers.getSelectedKnownConsumers();
+            List<InvalidRepositoryContentConsumer> invalidContentConsumers = repositoryContentConsumers.getSelectedInvalidConsumers();
             List<String> ignoredPatterns = filetypes.getFileTypePatterns( FileTypes.IGNORED );
 
             return scan( repository, knownContentConsumers, invalidContentConsumers, ignoredPatterns, changesSince );
@@ -73,9 +71,13 @@ public class DefaultRepositoryScanner
         catch ( RepositoryAdminException e )
         {
             throw new RepositoryScannerException( e.getMessage(), e );
+        } finally
+        {
+            repositoryContentConsumers.releaseSelectedKnownConsumers( knownContentConsumers );
         }
     }
 
+    @Override
     public RepositoryScanStatistics scan( ManagedRepository repository,
                                           List<KnownRepositoryContentConsumer> knownContentConsumers,
                                           List<InvalidRepositoryContentConsumer> invalidContentConsumers,
@@ -105,8 +107,8 @@ public class DefaultRepositoryScanner
 
         // Setup Includes / Excludes.
 
-        List<String> allExcludes = new ArrayList<String>();
-        List<String> allIncludes = new ArrayList<String>();
+        List<String> allExcludes = new ArrayList<>();
+        List<String> allIncludes = new ArrayList<>();
 
         if ( CollectionUtils.isNotEmpty( ignoredContentPatterns ) )
         {
@@ -153,7 +155,7 @@ public class DefaultRepositoryScanner
 
     private List<String> gatherIds( List<? extends RepositoryContentConsumer> consumers )
     {
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         for ( RepositoryContentConsumer consumer : consumers )
         {
             ids.add( consumer.getId() );
@@ -161,6 +163,7 @@ public class DefaultRepositoryScanner
         return ids;
     }
 
+    @Override
     public Set<RepositoryScannerInstance> getInProgressScans()
     {
         return inProgressScans;

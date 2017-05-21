@@ -40,7 +40,7 @@ import static org.junit.Assert.assertFalse;
  *
  */
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@ContextConfiguration ( { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class ArtifactExtensionMappingTest
 {
     private RepositoryPathTranslator pathTranslator = new Maven2RepositoryPathTranslator(

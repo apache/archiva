@@ -22,10 +22,13 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
+import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.audit.AuditEvent;
-import org.apache.archiva.audit.AuditListener;
+import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
@@ -40,12 +43,16 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.services.utils.ArtifactBuilder;
 import org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler;
+import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.security.AccessDeniedException;
 import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.PrincipalNotFoundException;
 import org.apache.archiva.security.UserRepositories;
 import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
+import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -53,9 +60,12 @@ import org.springframework.context.ApplicationContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -70,10 +80,10 @@ import java.util.Map;
 public abstract class AbstractRestService
 {
 
-    protected Logger log = LoggerFactory.getLogger( getClass() );
+    protected final Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private List<AuditListener> auditListeners = new ArrayList<AuditListener>();
+    private List<AuditListener> auditListeners = new ArrayList<>();
 
     @Inject
     protected UserRepositories userRepositories;
@@ -90,6 +100,9 @@ public abstract class AbstractRestService
     protected ArchivaAdministration archivaAdministration;
 
     @Inject
+    protected ProxyConnectorAdmin proxyConnectorAdmin;
+
+    @Inject
     protected ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
@@ -97,15 +110,18 @@ public abstract class AbstractRestService
 
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
-    protected DefaultRepositoryArchivaTaskScheduler repositoryTaskScheduler;
+    protected RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
 
     @Inject
-    @Named( value = "userConfiguration#default" )
+    @Named(value = "userConfiguration#default")
     protected UserConfiguration config;
 
     @Context
     protected HttpServletRequest httpServletRequest;
+
+    @Context
+    protected HttpServletResponse httpServletResponse;
 
     protected AuditInformation getAuditInformation()
     {
@@ -178,7 +194,7 @@ public abstract class AbstractRestService
         // as per convention we named spring bean role#hint remove role# if exists
         Map<String, T> springBeans = applicationContext.getBeansOfType( clazz );
 
-        Map<String, T> beans = new HashMap<String, T>( springBeans.size() );
+        Map<String, T> beans = new HashMap<>( springBeans.size() );
 
         for ( Map.Entry<String, T> entry : springBeans.entrySet() )
         {
@@ -209,6 +225,13 @@ public abstract class AbstractRestService
     protected String getArtifactUrl( Artifact artifact )
         throws ArchivaRestServiceException
     {
+        return getArtifactUrl( artifact, null );
+    }
+
+
+    protected String getArtifactUrl( Artifact artifact, String repositoryId )
+        throws ArchivaRestServiceException
+    {
         try
         {
 
@@ -221,10 +244,40 @@ public abstract class AbstractRestService
 
             sb.append( "/repository" );
 
-            // FIXME when artifact come from a remote repository when have here the remote repo id
+            // when artifact come from a remote repository when have here the remote repo id
             // we must replace it with a valid managed one available for the user.
+            if ( StringUtils.isEmpty( repositoryId ) )
+            {
+                List<String> userRepos = userRepositories.getObservableRepositoryIds( getPrincipal() );
+                // is it a good one? if yes nothing to
+                // if not search the repo who is proxy for this remote
+                if ( !userRepos.contains( artifact.getContext() ) )
+                {
+                    for ( Map.Entry<String, List<ProxyConnector>> entry : proxyConnectorAdmin.getProxyConnectorAsMap().entrySet() )
+                    {
+                        for ( ProxyConnector proxyConnector : entry.getValue() )
+                        {
+                            if ( StringUtils.equals( "remote-" + proxyConnector.getTargetRepoId(),
+                                                     artifact.getContext() ) //
+                                && userRepos.contains( entry.getKey() ) )
+                            {
+                                sb.append( '/' ).append( entry.getKey() );
+                            }
+                        }
+                    }
 
-            sb.append( '/' ).append( artifact.getContext() );
+                }
+                else
+                {
+                    sb.append( '/' ).append( artifact.getContext() );
+                }
+
+
+            }
+            else
+            {
+                sb.append( '/' ).append( repositoryId );
+            }
 
             sb.append( '/' ).append( StringUtils.replaceChars( artifact.getGroupId(), '.', '/' ) );
             sb.append( '/' ).append( artifact.getArtifactId() );
@@ -254,29 +307,34 @@ public abstract class AbstractRestService
 
             return sb.toString();
         }
-        catch ( RepositoryAdminException e )
+        catch ( Exception e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
     }
 
-    protected List<Artifact> buildArtifacts( List<ArtifactMetadata> artifactMetadatas, String repositoryId )
+    protected List<Artifact> buildArtifacts( Collection<ArtifactMetadata> artifactMetadatas, String repositoryId )
         throws ArchivaRestServiceException
     {
         try
         {
             if ( artifactMetadatas != null && !artifactMetadatas.isEmpty() )
             {
-                List<Artifact> artifacts = new ArrayList<Artifact>( artifactMetadatas.size() );
+                List<Artifact> artifacts = new ArrayList<>( artifactMetadatas.size() );
                 for ( ArtifactMetadata artifact : artifactMetadatas )
                 {
 
+                    String repoId = repositoryId != null ? repositoryId : artifact.getRepositoryId();
+                    if ( repoId == null ) {
+                        throw new IllegalStateException( "Repository Id is null" );
+                    }
+
                     ArtifactBuilder builder =
                         new ArtifactBuilder().forArtifactMetadata( artifact ).withManagedRepositoryContent(
-                            repositoryContentFactory.getManagedRepositoryContent( repositoryId ) );
+                            repositoryContentFactory.getManagedRepositoryContent( repoId ) );
                     Artifact art = builder.build();
-                    art.setUrl( getArtifactUrl( art ) );
+                    art.setUrl( getArtifactUrl( art, repositoryId ) );
                     artifacts.add( art );
                 }
                 return artifacts;
@@ -311,5 +369,34 @@ public abstract class AbstractRestService
             return false;
         }
         return true;
+    }
+
+    private static class ModelMapperHolder
+    {
+        private static ModelMapper MODEL_MAPPER = new ModelMapper();
+
+        static
+        {
+            MODEL_MAPPER.addMappings( new SearchResultHitMap() );
+            MODEL_MAPPER.getConfiguration().setMatchingStrategy( MatchingStrategies.STRICT );
+        }
+    }
+
+
+    private static class SearchResultHitMap
+        extends PropertyMap<SearchResultHit, Artifact>
+    {
+        @Override
+        protected void configure()
+        {
+            skip().setId( null );
+        }
+    }
+
+    ;
+
+    protected ModelMapper getModelMapper()
+    {
+        return ModelMapperHolder.MODEL_MAPPER;
     }
 }

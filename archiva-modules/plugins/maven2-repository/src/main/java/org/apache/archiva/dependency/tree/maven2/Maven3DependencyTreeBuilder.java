@@ -92,7 +92,7 @@ public class Maven3DependencyTreeBuilder
     private PlexusSisuBridge plexusSisuBridge;
 
     @Inject
-    @Named(value = "repositoryPathTranslator#maven2")
+    @Named( "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
     @Inject
@@ -124,6 +124,7 @@ public class Maven3DependencyTreeBuilder
         builder = defaultModelBuilderFactory.newInstance();
     }
 
+    @Override
     public void buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId, String version,
                                      DependencyVisitor dependencyVisitor )
         throws DependencyTreeBuilderException
@@ -146,13 +147,14 @@ public class Maven3DependencyTreeBuilder
             return;
         }
 
+        List<RemoteRepository> remoteRepositories = new ArrayList<>();
+        Map<String, NetworkProxy> networkProxies = new HashMap<>();
+
         try
         {
             // MRM-1411
             // TODO: this is a workaround for a lack of proxy capability in the resolvers - replace when it can all be
             //       handled there. It doesn't cache anything locally!
-            List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
-            Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
 
             Map<String, List<ProxyConnector>> proxyConnectorsMap = proxyConnectorAdmin.getProxyConnectorAsMap();
             List<ProxyConnector> proxyConnectors = proxyConnectorsMap.get( repository.getId() );
@@ -179,16 +181,25 @@ public class Maven3DependencyTreeBuilder
         }
 
         // FIXME take care of relative path
-        resolve( repository.getLocation(), groupId, artifactId, version, dependencyVisitor );
+        ResolveRequest resolveRequest = new ResolveRequest();
+        resolveRequest.dependencyVisitor = dependencyVisitor;
+        resolveRequest.localRepoDir = repository.getLocation();
+        resolveRequest.groupId = groupId;
+        resolveRequest.artifactId = artifactId;
+        resolveRequest.version = version;
+        resolveRequest.remoteRepositories = remoteRepositories;
+        resolveRequest.networkProxies = networkProxies;
+        resolve( resolveRequest );
     }
 
 
+    @Override
     public List<TreeEntry> buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId,
                                                 String version )
         throws DependencyTreeBuilderException
     {
 
-        List<TreeEntry> treeEntries = new ArrayList<TreeEntry>();
+        List<TreeEntry> treeEntries = new ArrayList<>();
         TreeDependencyNodeVisitor treeDependencyNodeVisitor = new TreeDependencyNodeVisitor( treeEntries );
 
         buildDependencyTree( repositoryIds, groupId, artifactId, version, treeDependencyNodeVisitor );
@@ -197,24 +208,39 @@ public class Maven3DependencyTreeBuilder
         return treeEntries;
     }
 
+    private static class ResolveRequest
+    {
+        String localRepoDir, groupId, artifactId, version;
 
-    private void resolve( String localRepoDir, String groupId, String artifactId, String version,
-                          DependencyVisitor dependencyVisitor )
+        DependencyVisitor dependencyVisitor;
+
+        List<RemoteRepository> remoteRepositories;
+
+        Map<String, NetworkProxy> networkProxies;
+
+    }
+
+
+    private void resolve( ResolveRequest resolveRequest )
     {
 
         RepositorySystem system = newRepositorySystem();
 
-        RepositorySystemSession session = newRepositorySystemSession( system, localRepoDir );
+        RepositorySystemSession session = newRepositorySystemSession( system, resolveRequest.localRepoDir );
 
-        org.sonatype.aether.artifact.Artifact artifact =
-            new DefaultArtifact( groupId + ":" + artifactId + ":" + version );
+        org.sonatype.aether.artifact.Artifact artifact = new DefaultArtifact(
+            resolveRequest.groupId + ":" + resolveRequest.artifactId + ":" + resolveRequest.version );
 
         CollectRequest collectRequest = new CollectRequest();
         collectRequest.setRoot( new Dependency( artifact, "" ) );
 
-        // add remote repositories ?
-        //collectRequest.addRepository(  )
-
+        // add remote repositories
+        for ( RemoteRepository remoteRepository : resolveRequest.remoteRepositories )
+        {
+            collectRequest.addRepository(
+                new org.sonatype.aether.repository.RemoteRepository( remoteRepository.getId(), "default",
+                                                                     remoteRepository.getUrl() ) );
+        }
         collectRequest.setRequestContext( "project" );
 
         //collectRequest.addRepository( repo );
@@ -222,7 +248,7 @@ public class Maven3DependencyTreeBuilder
         try
         {
             CollectResult collectResult = system.collectDependencies( session, collectRequest );
-            collectResult.getRoot().accept( dependencyVisitor );
+            collectResult.getRoot().accept( resolveRequest.dependencyVisitor );
             log.debug( "test" );
         }
         catch ( DependencyCollectionException e )
@@ -233,7 +259,7 @@ public class Maven3DependencyTreeBuilder
 
     }
 
-    public static RepositorySystem newRepositorySystem()
+    private RepositorySystem newRepositorySystem()
     {
         DefaultServiceLocator locator = new DefaultServiceLocator();
         locator.addService( RepositoryConnectorFactory.class,
@@ -247,19 +273,15 @@ public class Maven3DependencyTreeBuilder
         return locator.getService( RepositorySystem.class );
     }
 
-    public static RepositorySystemSession newRepositorySystemSession( RepositorySystem system, String localRepoDir )
+    private RepositorySystemSession newRepositorySystemSession( RepositorySystem system, String localRepoDir )
     {
         MavenRepositorySystemSession session = new MavenRepositorySystemSession();
 
         DependencySelector depFilter = new AndDependencySelector( new ExclusionDependencySelector() );
         session.setDependencySelector( depFilter );
 
-        LocalRepository localRepo = new LocalRepository( localRepoDir );
         session.setLocalRepositoryManager(
-            new SimpleLocalRepositoryManager( localRepoDir ) );// system.newLocalRepositoryManager( localRepo ) );
-
-        //session.setTransferListener(  );
-        //session.setRepositoryListener( n );
+            new SimpleLocalRepositoryManager( localRepoDir ) );
 
         return session;
     }

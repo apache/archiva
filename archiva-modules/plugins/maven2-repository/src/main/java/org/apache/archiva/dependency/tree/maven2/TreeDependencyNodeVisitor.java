@@ -18,9 +18,10 @@ package org.apache.archiva.dependency.tree.maven2;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.graph.DependencyVisitor;
 
@@ -46,10 +47,12 @@ public class TreeDependencyNodeVisitor
     }
 
 
+    @Override
     public boolean visitEnter( DependencyNode dependencyNode )
     {
-        TreeEntry entry = new TreeEntry(
-            new BeanReplicator().replicateBean( dependencyNode.getDependency().getArtifact(), Artifact.class ) );
+        TreeEntry entry =
+            new TreeEntry( getModelMapper().map( dependencyNode.getDependency().getArtifact(), Artifact.class ) );
+        entry.getArtifact().setFileExtension( dependencyNode.getDependency().getArtifact().getExtension() );
         entry.getArtifact().setScope( dependencyNode.getDependency().getScope() );
         entry.setParent( currentEntry );
         currentEntry = entry;
@@ -66,9 +69,25 @@ public class TreeDependencyNodeVisitor
         return true;
     }
 
+    @Override
     public boolean visitLeave( DependencyNode dependencyNode )
     {
         currentEntry = currentEntry.getParent();
         return true;
+    }
+
+    private static class ModelMapperHolder
+    {
+        private static ModelMapper MODEL_MAPPER = new ModelMapper();
+
+        static
+        {
+            MODEL_MAPPER.getConfiguration().setMatchingStrategy( MatchingStrategies.STRICT );
+        }
+    }
+
+    protected ModelMapper getModelMapper()
+    {
+        return ModelMapperHolder.MODEL_MAPPER;
     }
 }

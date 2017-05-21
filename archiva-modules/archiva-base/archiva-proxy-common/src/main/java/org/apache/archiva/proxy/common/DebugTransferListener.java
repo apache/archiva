@@ -32,36 +32,42 @@ public class DebugTransferListener
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
+    @Override
     public void transferInitiated( TransferEvent transferEvent )
     {
         log.debug( "transferInitiated for resource {} on repository url {}", transferEvent.getResource().getName(),
                    transferEvent.getWagon().getRepository().getUrl() );
     }
 
+    @Override
     public void transferStarted( TransferEvent transferEvent )
     {
         log.debug( "transferStarted for resource {} on repository url {}", transferEvent.getResource().getName(),
                    transferEvent.getWagon().getRepository().getUrl() );
     }
 
+    @Override
     public void transferProgress( TransferEvent transferEvent, byte[] bytes, int i )
     {
         log.debug( "transferProgress for resource {} on repository url {}", transferEvent.getResource().getName(),
                    transferEvent.getWagon().getRepository().getUrl() );
     }
 
+    @Override
     public void transferCompleted( TransferEvent transferEvent )
     {
         log.debug( "transferCompleted for resource {} on repository url {}", transferEvent.getResource().getName(),
                    transferEvent.getWagon().getRepository().getUrl() );
     }
 
+    @Override
     public void transferError( TransferEvent transferEvent )
     {
         log.debug( "transferError for resource {} on repository url {}", transferEvent.getResource().getName(),
                    transferEvent.getWagon().getRepository().getUrl(), transferEvent.getException() );
     }
 
+    @Override
     public void debug( String s )
     {
         log.debug( "wagon debug {}", s );

@@ -25,6 +25,49 @@
     <format>zip</format>
   </formats>
   <fileSets>
+    <!-- main project directory structure -->
+    <fileSet>
+      <directory>.</directory>
+      <outputDirectory>/</outputDirectory>
+      <useDefaultExcludes>true</useDefaultExcludes>
+      <excludes>
+        <!-- build output -->
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/).*${project.build.directory}.*]</exclude>
+
+        <!-- NOTE: Most of the following excludes should not be required
+             if the standard release process is followed. This is because the
+             release plugin checks out project sources into a location like
+             target/checkout, then runs the build from there. The result is
+             a source-release archive that comes from a pretty clean directory
+             structure.
+
+             HOWEVER, if the release plugin is configured to run extra goals
+             or generate a project website, it's definitely possible that some
+             of these files will be present. So, it's safer to exclude them.
+        -->
+
+        <!-- IDEs -->
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?maven-eclipse\.xml]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.project]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.classpath]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?[^/]*\.iws]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.idea(/.*)?]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?out(/.*)?]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?[^/]*\.ipr]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?[^/]*\.iml]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.settings(/.*)?]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.externalToolBuilders(/.*)?]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.deployables(/.*)?]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?\.wtpmodules(/.*)?]</exclude>
+
+        <!-- misc -->
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?cobertura\.ser]</exclude>
+
+        <!-- release-plugin temp files -->
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?pom\.xml\.releaseBackup]</exclude>
+        <exclude>%regex[(?!((?!${project.build.directory}/)[^/]+/)*src/)(.*/)?release\.properties]</exclude>
+      </excludes>
+    </fileSet>
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>.</directory>
@@ -32,27 +75,6 @@
       <includes>
         <include>**/CVS/**</include>
       </includes>
-    </fileSet>
-    <fileSet>
-      <directory>.</directory>
-      <outputDirectory>/</outputDirectory>
-      <excludes>
-        <exclude>**/target/**</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/archiva-applet.jar</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/META-INF/**</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/images/redback/**</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/template/redback/**</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/classes/**</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/lib/**</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/database/**</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/logs/**</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/redback/**</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/css/redback/**</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/jsp/redback/**</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/template/redback/**</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/logs/**</exclude>
-        <exclude>**/archiva-webapp/src/main/webapp/WEB-INF/temp/**</exclude>
-      </excludes>
     </fileSet>
     <fileSet>
       <directory>target/maven-shared-archive-resources/META-INF/</directory>

@@ -149,12 +149,14 @@ public class DefaultDownloadRemoteIndexScheduler
         }
     }
 
+    @Override
     public void configurationEvent( ConfigurationEvent event )
     {
         // TODO remove jobs and add again
     }
 
 
+    @Override
     public void scheduleDownloadRemote( String repositoryId, boolean now, boolean fullDownload )
         throws DownloadRemoteIndexException
     {
@@ -205,7 +207,7 @@ public class DefaultDownloadRemoteIndexScheduler
                 }
                 catch ( IllegalArgumentException e )
                 {
-                    log.warn( "Unable to schedule remote index download: " + e.getLocalizedMessage() );
+                    log.warn( "Unable to schedule remote index download: {}", e.getLocalizedMessage() );
                 }
 
                 if ( remoteRepository.isDownloadRemoteIndexOnStartup() )
@@ -235,5 +237,11 @@ public class DefaultDownloadRemoteIndexScheduler
     public void setTaskScheduler( TaskScheduler taskScheduler )
     {
         this.taskScheduler = taskScheduler;
+    }
+
+    @Override
+    public List<String> getRunningRemoteDownloadIds()
+    {
+        return runningRemoteDownloadIds;
     }
 }

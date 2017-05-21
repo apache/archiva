@@ -27,6 +27,11 @@ import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
  */
 public interface RedbackRuntimeConfigurationAdmin
 {
+
+    static final String DEFAULT_RBAC_MANAGER_IMPL = "jdo";
+
+    static final String DEFAULT_USER_MANAGER_IMPL = "jdo";
+
     RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
         throws RepositoryAdminException;
 

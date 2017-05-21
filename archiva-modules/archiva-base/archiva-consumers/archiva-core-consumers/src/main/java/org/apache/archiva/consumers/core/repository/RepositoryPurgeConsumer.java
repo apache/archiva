@@ -37,6 +37,7 @@ import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -68,9 +69,6 @@ public class RepositoryPurgeConsumer
      */
     private String description = "Purge repository of old snapshots";
 
-    /**
-     *
-     */
     @Inject
     @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration configuration;
@@ -78,27 +76,18 @@ public class RepositoryPurgeConsumer
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
-    /**
-     *
-     */
     @Inject
     @Named( value = "repositoryContentFactory#default" )
     private RepositoryContentFactory repositoryContentFactory;
 
-    /**
-     *
-     */
     @Inject
     private MetadataTools metadataTools;
 
-    /**
-     *
-     */
     @Inject
     @Named( value = "fileTypes" )
     private FileTypes filetypes;
 
-    private List<String> includes = new ArrayList<String>();
+    private List<String> includes = new ArrayList<>();
 
     private RepositoryPurge repoPurge;
 
@@ -110,6 +99,7 @@ public class RepositoryPurgeConsumer
      *
      */
     @Inject
+    @Autowired(required = false)
     private List<RepositoryListener> listeners = Collections.emptyList();
 
     /**
@@ -120,31 +110,31 @@ public class RepositoryPurgeConsumer
 
     private RepositorySession repositorySession;
 
+    @Override
     public String getId()
     {
         return this.id;
     }
 
+    @Override
     public String getDescription()
     {
         return this.description;
     }
 
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
+    @Override
     public List<String> getExcludes()
     {
         return getDefaultArtifactExclusions();
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return this.includes;
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
@@ -182,12 +172,14 @@ public class RepositoryPurgeConsumer
         deleteReleasedSnapshots = repository.isDeleteReleasedSnapshots();
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -206,22 +198,26 @@ public class RepositoryPurgeConsumer
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {
         processFile( path );
     }
 
+    @Override
     public void completeScan()
     {
         repositorySession.close();
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
@@ -230,6 +226,7 @@ public class RepositoryPurgeConsumer
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* do nothing */
@@ -237,7 +234,7 @@ public class RepositoryPurgeConsumer
 
     private void initIncludes()
     {
-        includes = new ArrayList<String>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
+        includes = new ArrayList<>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     @PostConstruct
@@ -248,6 +245,7 @@ public class RepositoryPurgeConsumer
         initIncludes();
     }
 
+    @Override
     public boolean isProcessUnmodified()
     {
         // we need to check all files for deletion, especially if not modified

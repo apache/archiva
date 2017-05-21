@@ -23,7 +23,7 @@
   <parent>
     <artifactId>plugins</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M5-SNAPSHOT</version>
+    <version>2.2.2-SNAPSHOT</version>
   </parent>
   <artifactId>metadata-store-jcr</artifactId>
   <packaging>bundle</packaging>
@@ -79,8 +79,23 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.easytesting</groupId>
-      <artifactId>fest-assert-core</artifactId>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>generic-metadata-support</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>maven2-repository</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

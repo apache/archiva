@@ -38,6 +38,7 @@ public class NetworkProxySelectionPredicate
         this.proxyId = id;
     }
 
+    @Override
     public boolean evaluate( Object object )
     {
         boolean satisfies = false;

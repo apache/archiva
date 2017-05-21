@@ -30,6 +30,7 @@ public class ArtifactContentEntryComparator
 {
     public static final ArtifactContentEntryComparator INSTANCE = new ArtifactContentEntryComparator();
 
+    @Override
     public int compare( ArtifactContentEntry artifactContentEntry, ArtifactContentEntry artifactContentEntry1 )
     {
         // include depth too in comparaison ?

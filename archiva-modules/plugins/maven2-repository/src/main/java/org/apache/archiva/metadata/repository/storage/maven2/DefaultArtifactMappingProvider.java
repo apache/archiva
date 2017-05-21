@@ -37,7 +37,7 @@ public class DefaultArtifactMappingProvider
 
     public DefaultArtifactMappingProvider()
     {
-        classifierAndExtensionToTypeMap = new HashMap<String, String>();
+        classifierAndExtensionToTypeMap = new HashMap<>( 4 );
 
         // Maven 2.2.1 supplied types (excluding defaults where extension == type and no classifier)
         classifierAndExtensionToTypeMap.put( "client:jar", "ejb-client" );
@@ -45,7 +45,7 @@ public class DefaultArtifactMappingProvider
         classifierAndExtensionToTypeMap.put( "javadoc:jar", "javadoc" );
         classifierAndExtensionToTypeMap.put( "tests:jar", "test-jar" );
 
-        typeToExtensionMap = new HashMap<String, String>();
+        typeToExtensionMap = new HashMap<>();
 
         // Maven 2.2.1 supplied types (excluding defaults where extension == type and no classifier)
         typeToExtensionMap.put( "ejb-client", "jar" );
@@ -68,6 +68,7 @@ public class DefaultArtifactMappingProvider
         typeToExtensionMap.put( "aspect", "jar" );
     }
 
+    @Override
     public String mapClassifierAndExtensionToType( String classifier, String ext )
     {
         if ( classifier == null )
@@ -81,6 +82,7 @@ public class DefaultArtifactMappingProvider
         return classifierAndExtensionToTypeMap.get( classifier + ":" + ext );
     }
 
+    @Override
     public String mapTypeToExtension( String type )
     {
         return typeToExtensionMap.get( type );

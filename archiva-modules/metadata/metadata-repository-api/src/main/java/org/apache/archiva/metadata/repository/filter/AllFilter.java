@@ -22,6 +22,7 @@ package org.apache.archiva.metadata.repository.filter;
 public class AllFilter<T>
     implements Filter<T>
 {
+    @Override
     public boolean accept( T value )
     {
         return true;

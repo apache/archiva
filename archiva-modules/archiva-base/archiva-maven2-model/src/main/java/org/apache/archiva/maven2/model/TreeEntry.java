@@ -18,7 +18,8 @@ package org.apache.archiva.maven2.model;
  * under the License.
  */
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -33,7 +34,7 @@ public class TreeEntry
     implements Serializable
 {
 
-    private List<TreeEntry> childs = new ArrayList<TreeEntry>();
+    private List<TreeEntry> childs = new ArrayList<>();
 
     private Artifact artifact;
 

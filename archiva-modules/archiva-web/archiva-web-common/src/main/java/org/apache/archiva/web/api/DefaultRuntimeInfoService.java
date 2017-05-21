@@ -62,6 +62,7 @@ public class DefaultRuntimeInfoService
         this.archivaRuntimeInfo = archivaRuntimeInfo;
     }
 
+    @Override
     public ApplicationRuntimeInfo getApplicationRuntimeInfo( String locale )
         throws ArchivaRestServiceException
     {
@@ -104,6 +105,7 @@ public class DefaultRuntimeInfoService
             : ":" + req.getServerPort() ) + req.getContextPath();
     }
 
+    @Override
     public Boolean logMissingI18n( String key )
     {
         i18nLogger.info( "missing i18n key : '{}'", key );

@@ -1,11 +1,25 @@
 target
 build
+
+#idea files
 *.iml
 .idea
-
-.java-version
-
 *.ipr
 *.iws
+out/
+
+#jenv
+.java-version
+
 .DS_Store
 .extract
+.site-content/
+
+#eclipse files
+.project
+.classpath
+.settings/
+
+#netbeans file
+nbactions.xml
+nb-configuration.xml

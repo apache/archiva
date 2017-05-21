@@ -29,26 +29,31 @@ public class ArchivaDavSession
 {
     private final Set<String> lockTokens = new HashSet<String>();
 
+    @Override
     public void addLockToken( String token )
     {
         lockTokens.add( token );
     }
 
+    @Override
     public String[] getLockTokens()
     {
         return lockTokens.toArray( new String[lockTokens.size()] );
     }
 
+    @Override
     public void removeLockToken( String token )
     {
         lockTokens.remove( token );
     }
 
+    @Override
     public void removeReference( Object reference )
     {
         throw new UnsupportedOperationException( "Not supported yet." );
     }
 
+    @Override
     public void addReference( Object reference )
     {
         throw new UnsupportedOperationException( "Not supported yet." );

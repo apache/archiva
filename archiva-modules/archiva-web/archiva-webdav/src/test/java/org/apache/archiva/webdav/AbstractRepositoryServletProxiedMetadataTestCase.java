@@ -19,10 +19,9 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.HttpUnitOptions;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
+
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
@@ -55,52 +54,12 @@ public abstract class AbstractRepositoryServletProxiedMetadataTestCase
         throws Exception
     {
         // process the response code later, not via an exception.
-        HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
+        //HttpUnitOptions.setExceptionsThrownOnErrorStatus( false );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + path );
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
-        return response.getText();
-    }
-
-    protected String createVersionMetadata( String groupId, String artifactId, String version )
-    {
-        return createVersionMetadata( groupId, artifactId, version, null, null, null );
-    }
-
-    protected String createVersionMetadata( String groupId, String artifactId, String version, String timestamp,
-                                          String buildNumber, String lastUpdated )
-    {
-        StringBuilder buf = new StringBuilder();
-
-        buf.append( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" );
-        buf.append( "<metadata>\n" );
-        buf.append( "  <groupId>" ).append( groupId ).append( "</groupId>\n" );
-        buf.append( "  <artifactId>" ).append( artifactId ).append( "</artifactId>\n" );
-        buf.append( "  <version>" ).append( version ).append( "</version>\n" );
-
-        boolean hasSnapshot = StringUtils.isNotBlank( timestamp ) || StringUtils.isNotBlank( buildNumber );
-        boolean hasLastUpdated = StringUtils.isNotBlank( lastUpdated );
-
-        if ( hasSnapshot || hasLastUpdated )
-        {
-            buf.append( "  <versioning>\n" );
-            if ( hasSnapshot )
-            {
-                buf.append( "    <snapshot>\n" );
-                buf.append( "      <buildNumber>" ).append( buildNumber ).append( "</buildNumber>\n" );
-                buf.append( "      <timestamp>" ).append( timestamp ).append( "</timestamp>\n" );
-                buf.append( "    </snapshot>\n" );
-            }
-            if ( hasLastUpdated )
-            {
-                buf.append( "    <lastUpdated>" ).append( lastUpdated ).append( "</lastUpdated>\n" );
-            }
-            buf.append( "  </versioning>\n" );
-        }
-        buf.append( "</metadata>" );
-
-        return buf.toString();
+        return response.getContentAsString();
     }
 
     protected String createProjectMetadata( String groupId, String artifactId, String latest, String release,
@@ -244,6 +203,7 @@ public abstract class AbstractRepositoryServletProxiedMetadataTestCase
 //    }
 
     @Before
+    @Override
     public void tearDown()
         throws Exception
     {

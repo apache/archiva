@@ -18,13 +18,13 @@ package org.apache.archiva.admin.repository.runtime;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.CacheConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
 import org.apache.archiva.admin.model.beans.LdapGroupMapping;
 import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
+import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
@@ -43,7 +43,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -55,23 +54,31 @@ import java.util.Set;
  */
 @Service( "redbackRuntimeConfigurationAdmin#default" )
 public class DefaultRedbackRuntimeConfigurationAdmin
+    extends AbstractRepositoryAdmin
     implements RedbackRuntimeConfigurationAdmin, UserConfiguration
 {
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
-    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
-    @Inject
-    @Named( value = "userConfiguration#redback" )
     private UserConfiguration userConfiguration;
 
-    @Inject
-    @Named( value = "cache#users" )
     private Cache usersCache;
 
+    @Inject
+    public DefaultRedbackRuntimeConfigurationAdmin( ArchivaConfiguration archivaConfiguration,//
+                                                    @Named( value = "userConfiguration#redback" ) //
+                                                        UserConfiguration userConfiguration,
+                                                    @Named( value = "cache#users" ) Cache usersCache )
+    {
+        this.archivaConfiguration = archivaConfiguration;
+        this.userConfiguration = userConfiguration;
+        this.usersCache = usersCache;
+    }
+
     @PostConstruct
+    @Override
     public void initialize()
         throws UserConfigurationException
     {
@@ -85,7 +92,8 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 redbackRuntimeConfiguration = new RedbackRuntimeConfiguration();
                 // so migrate if available
                 String userManagerImpl =
-                    userConfiguration.getConcatenatedList( UserConfigurationKeys.USER_MANAGER_IMPL, "jdo" );
+                    userConfiguration.getConcatenatedList( UserConfigurationKeys.USER_MANAGER_IMPL, //
+                                                           DEFAULT_USER_MANAGER_IMPL );
                 if ( StringUtils.isNotEmpty( userManagerImpl ) )
                 {
                     String[] impls = StringUtils.split( userManagerImpl, ',' );
@@ -94,9 +102,14 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                         redbackRuntimeConfiguration.getUserManagerImpls().add( impl );
                     }
                 }
+                else
+                {
+                    redbackRuntimeConfiguration.getUserManagerImpls().add( DEFAULT_USER_MANAGER_IMPL );
+                }
 
                 String rbacManagerImpls =
-                    userConfiguration.getConcatenatedList( UserConfigurationKeys.RBAC_MANAGER_IMPL, "jdo" );
+                    userConfiguration.getConcatenatedList( UserConfigurationKeys.RBAC_MANAGER_IMPL, //
+                                                           DEFAULT_RBAC_MANAGER_IMPL );
 
                 if ( StringUtils.isNotEmpty( rbacManagerImpls ) )
                 {
@@ -105,6 +118,10 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                     {
                         redbackRuntimeConfiguration.getRbacManagerImpls().add( impl );
                     }
+                }
+                else
+                {
+                    redbackRuntimeConfiguration.getRbacManagerImpls().add( DEFAULT_RBAC_MANAGER_IMPL );
                 }
 
                 // now ldap
@@ -155,7 +172,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
                 Collection<String> keys = userConfiguration.getKeys();
 
-                List<LdapGroupMapping> ldapGroupMappings = new ArrayList<LdapGroupMapping>();
+                List<LdapGroupMapping> ldapGroupMappings = new ArrayList<>();
 
                 for ( String key : keys )
                 {
@@ -187,14 +204,22 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 redbackRuntimeConfiguration.getUserManagerImpls().add( "jdo" );
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
             }
+            else
+            {
+                log.info( "using userManagerImpls: {}", redbackRuntimeConfiguration.getUserManagerImpls() );
+            }
 
-            // we ensure authorizerImpls is not empty if so put
+            // we ensure rbacManagerImpls is not empty if so put at least cached
             if ( redbackRuntimeConfiguration.getRbacManagerImpls().isEmpty() )
             {
                 log.info(
                     "redbackRuntimeConfiguration with empty rbacManagerImpls so force at least cached implementation !" );
                 redbackRuntimeConfiguration.getRbacManagerImpls().add( "cached" );
                 updateRedbackRuntimeConfiguration( redbackRuntimeConfiguration );
+            }
+            else
+            {
+                log.info( "using rbacManagerImpls: {}", redbackRuntimeConfiguration.getRbacManagerImpls() );
             }
 
             boolean save = false;
@@ -268,11 +293,13 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         }
     }
 
+    @Override
     public RedbackRuntimeConfiguration getRedbackRuntimeConfiguration()
     {
         return build( archivaConfiguration.getConfiguration().getRedbackRuntimeConfiguration() );
     }
 
+    @Override
     public void updateRedbackRuntimeConfiguration( RedbackRuntimeConfiguration redbackRuntimeConfiguration )
         throws RepositoryAdminException
     {
@@ -298,20 +325,18 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         org.apache.archiva.configuration.RedbackRuntimeConfiguration runtimeConfiguration )
     {
         RedbackRuntimeConfiguration redbackRuntimeConfiguration =
-            new BeanReplicator().replicateBean( runtimeConfiguration, RedbackRuntimeConfiguration.class );
+            getModelMapper().map( runtimeConfiguration, RedbackRuntimeConfiguration.class );
 
         if ( runtimeConfiguration.getLdapConfiguration() != null )
         {
             redbackRuntimeConfiguration.setLdapConfiguration(
-                new BeanReplicator().replicateBean( runtimeConfiguration.getLdapConfiguration(),
-                                                    LdapConfiguration.class ) );
+                getModelMapper().map( runtimeConfiguration.getLdapConfiguration(), LdapConfiguration.class ) );
         }
 
         if ( runtimeConfiguration.getUsersCacheConfiguration() != null )
         {
             redbackRuntimeConfiguration.setUsersCacheConfiguration(
-                new BeanReplicator().replicateBean( runtimeConfiguration.getUsersCacheConfiguration(),
-                                                    CacheConfiguration.class ) );
+                getModelMapper().map( runtimeConfiguration.getUsersCacheConfiguration(), CacheConfiguration.class ) );
         }
 
         if ( redbackRuntimeConfiguration.getLdapConfiguration() == null )
@@ -329,7 +354,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
 
         if ( mappings != null && mappings.size() > 0 )
         {
-            List<LdapGroupMapping> ldapGroupMappings = new ArrayList<LdapGroupMapping>( mappings.size() );
+            List<LdapGroupMapping> ldapGroupMappings = new ArrayList<>( mappings.size() );
 
             for ( org.apache.archiva.configuration.LdapGroupMapping mapping : mappings )
             {
@@ -375,36 +400,34 @@ public class DefaultRedbackRuntimeConfigurationAdmin
     }
 
     private org.apache.archiva.configuration.RedbackRuntimeConfiguration build(
-        RedbackRuntimeConfiguration archivaRuntimeConfiguration )
+        RedbackRuntimeConfiguration redbackRuntimeConfiguration )
     {
-        org.apache.archiva.configuration.RedbackRuntimeConfiguration redbackRuntimeConfiguration =
-            new BeanReplicator().replicateBean( archivaRuntimeConfiguration,
-                                                org.apache.archiva.configuration.RedbackRuntimeConfiguration.class );
+        org.apache.archiva.configuration.RedbackRuntimeConfiguration res =
+            getModelMapper().map( redbackRuntimeConfiguration,
+                                  org.apache.archiva.configuration.RedbackRuntimeConfiguration.class );
 
-        if ( archivaRuntimeConfiguration.getLdapConfiguration() == null )
+        if ( redbackRuntimeConfiguration.getLdapConfiguration() == null )
         {
-            archivaRuntimeConfiguration.setLdapConfiguration( new LdapConfiguration() );
+            redbackRuntimeConfiguration.setLdapConfiguration( new LdapConfiguration() );
         }
-        redbackRuntimeConfiguration.setLdapConfiguration(
-            new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getLdapConfiguration(),
-                                                org.apache.archiva.configuration.LdapConfiguration.class ) );
+        res.setLdapConfiguration( getModelMapper().map( redbackRuntimeConfiguration.getLdapConfiguration(),
+                                                        org.apache.archiva.configuration.LdapConfiguration.class ) );
 
-        if ( archivaRuntimeConfiguration.getUsersCacheConfiguration() == null )
+        if ( redbackRuntimeConfiguration.getUsersCacheConfiguration() == null )
         {
-            archivaRuntimeConfiguration.setUsersCacheConfiguration( new CacheConfiguration() );
+            redbackRuntimeConfiguration.setUsersCacheConfiguration( new CacheConfiguration() );
         }
 
-        redbackRuntimeConfiguration.setUsersCacheConfiguration(
-            new BeanReplicator().replicateBean( archivaRuntimeConfiguration.getUsersCacheConfiguration(),
-                                                org.apache.archiva.configuration.CacheConfiguration.class ) );
+        res.setUsersCacheConfiguration( getModelMapper().map( redbackRuntimeConfiguration.getUsersCacheConfiguration(),
+                                                              org.apache.archiva.configuration.CacheConfiguration.class ) );
 
-        List<LdapGroupMapping> ldapGroupMappings = archivaRuntimeConfiguration.getLdapGroupMappings();
+        List<LdapGroupMapping> ldapGroupMappings = redbackRuntimeConfiguration.getLdapGroupMappings();
 
         if ( ldapGroupMappings != null && ldapGroupMappings.size() > 0 )
         {
 
             List<org.apache.archiva.configuration.LdapGroupMapping> mappings =
-                new ArrayList<org.apache.archiva.configuration.LdapGroupMapping>( ldapGroupMappings.size() );
+                new ArrayList<>( ldapGroupMappings.size() );
 
             for ( LdapGroupMapping ldapGroupMapping : ldapGroupMappings )
             {
@@ -412,18 +435,19 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                 org.apache.archiva.configuration.LdapGroupMapping mapping =
                     new org.apache.archiva.configuration.LdapGroupMapping();
                 mapping.setGroup( ldapGroupMapping.getGroup() );
-                mapping.setRoleNames( new ArrayList<String>( ldapGroupMapping.getRoleNames() ) );
+                mapping.setRoleNames( new ArrayList<>( ldapGroupMapping.getRoleNames() ) );
                 mappings.add( mapping );
 
             }
-            redbackRuntimeConfiguration.setLdapGroupMappings( mappings );
+            res.setLdapGroupMappings( mappings );
         }
-        return redbackRuntimeConfiguration;
+        return res;
     }
 
     // wrapper for UserConfiguration to intercept values (and store it not yet migrated)
 
 
+    @Override
     public String getString( String key )
     {
         if ( UserConfigurationKeys.USER_MANAGER_IMPL.equals( key ) )
@@ -471,6 +495,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public String getString( String key, String defaultValue )
     {
         if ( UserConfigurationKeys.LDAP_HOSTNAME.equals( key ) )
@@ -518,6 +543,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public int getInt( String key )
     {
         RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
@@ -543,6 +569,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public int getInt( String key, int defaultValue )
     {
         if ( UserConfigurationKeys.LDAP_PORT.equals( key ) )
@@ -573,6 +600,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public boolean getBoolean( String key )
     {
         RedbackRuntimeConfiguration conf = getRedbackRuntimeConfiguration();
@@ -613,6 +641,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public boolean getBoolean( String key, boolean defaultValue )
     {
         if ( UserConfigurationKeys.LDAP_SSL.equals( key ) )
@@ -658,6 +687,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public List<String> getList( String key )
     {
         List<String> value = userConfiguration.getList( key );
@@ -678,6 +708,7 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return value;
     }
 
+    @Override
     public String getConcatenatedList( String key, String defaultValue )
     {
         if ( UserConfigurationKeys.LDAP_BASEDN.equals( key ) )
@@ -695,11 +726,12 @@ public class DefaultRedbackRuntimeConfigurationAdmin
         return userConfiguration.getConcatenatedList( key, defaultValue );
     }
 
+    @Override
     public Collection<String> getKeys()
     {
         Collection<String> keys = userConfiguration.getKeys();
 
-        Set<String> keysSet = new HashSet<String>( keys );
+        Set<String> keysSet = new HashSet<>( keys );
 
         keysSet.addAll( getRedbackRuntimeConfiguration().getConfigurationProperties().keySet() );
 

@@ -38,7 +38,7 @@ Configuring Maven 2 to use an Archiva repository
   <mirrors>
     <mirror>
       <id>archiva.default</id>
-      <url>http://repo.mycompany.com:8080/archiva/repository/internal/</url>
+      <url>http://repo.mycompany.com:8080/repository/internal/</url>
       <mirrorOf>external:*</mirrorOf>
     </mirror>
   </mirrors>
@@ -58,7 +58,7 @@ Mirror Settings}} for more information.>
     <!-- omitted xml -->
     <mirror>
       <id>archiva.apache.snapshots</id>
-      <url>http://repo.mycompany.com:8080/archiva/repository/snapshots/</url>
+      <url>http://repo.mycompany.com:8080/repository/snapshots/</url>
       <mirrorOf>apache.snapshots</mirrorOf>
     </mirror>
     <!-- omitted xml -->
@@ -114,7 +114,7 @@ Mirror Settings}} for more information.>
 +-------------------------------------------------------------------------+
     <repository>
       <id>repository-1</id>
-      <url>http://repo.mycompany.com:8080/archiva/repository/internal/</url>
+      <url>http://repo.mycompany.com:8080/repository/internal/</url>
       <releases>
         <enabled>true</enabled>
       </releases>

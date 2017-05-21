@@ -33,8 +33,9 @@ import java.util.Map;
 public class FiletypeToMapClosure
     implements Closure
 {
-    private Map<String, FileType> map = new HashMap<String, FileType>();
+    private Map<String, FileType> map = new HashMap<>();
 
+    @Override
     public void execute( Object input )
     {
         if ( input instanceof FileType )

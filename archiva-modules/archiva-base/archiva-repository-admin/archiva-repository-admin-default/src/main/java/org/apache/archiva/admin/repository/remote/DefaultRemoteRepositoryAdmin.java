@@ -23,13 +23,13 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
-import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
@@ -52,7 +52,7 @@ import java.util.Map;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Service ( "remoteRepositoryAdmin#default" )
+@Service("remoteRepositoryAdmin#default")
 public class DefaultRemoteRepositoryAdmin
     extends AbstractRepositoryAdmin
     implements RemoteRepositoryAdmin
@@ -65,9 +65,9 @@ public class DefaultRemoteRepositoryAdmin
     private MavenIndexerUtils mavenIndexerUtils;
 
     // fields
-    List<? extends IndexCreator> indexCreators;
+    private List<? extends IndexCreator> indexCreators;
 
-    NexusIndexer indexer;
+    private NexusIndexer indexer;
 
     @PostConstruct
     private void initialize()
@@ -112,11 +112,12 @@ public class DefaultRemoteRepositoryAdmin
     }
 
 
+    @Override
     public List<RemoteRepository> getRemoteRepositories()
         throws RepositoryAdminException
     {
-        List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>(
-            getArchivaConfiguration().getConfiguration().getRemoteRepositories().size() );
+        List<RemoteRepository> remoteRepositories =
+            new ArrayList<>( getArchivaConfiguration().getConfiguration().getRemoteRepositories().size() );
         for ( RemoteRepositoryConfiguration repositoryConfiguration : getArchivaConfiguration().getConfiguration().getRemoteRepositories() )
         {
             RemoteRepository remoteRepository =
@@ -141,6 +142,7 @@ public class DefaultRemoteRepositoryAdmin
         return remoteRepositories;
     }
 
+    @Override
     public RemoteRepository getRemoteRepository( String repositoryId )
         throws RepositoryAdminException
     {
@@ -154,6 +156,7 @@ public class DefaultRemoteRepositoryAdmin
         return null;
     }
 
+    @Override
     public Boolean addRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -179,6 +182,7 @@ public class DefaultRemoteRepositoryAdmin
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean deleteRemoteRepository( String repositoryId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -199,8 +203,7 @@ public class DefaultRemoteRepositoryAdmin
 
         // TODO use ProxyConnectorAdmin interface ?
         // [MRM-520] Proxy Connectors are not deleted with the deletion of a Repository.
-        List<ProxyConnectorConfiguration> proxyConnectors =
-            new ArrayList<ProxyConnectorConfiguration>( configuration.getProxyConnectors() );
+        List<ProxyConnectorConfiguration> proxyConnectors = new ArrayList<>( configuration.getProxyConnectors() );
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
         {
             if ( StringUtils.equals( proxyConnector.getTargetRepoId(), repositoryId ) )
@@ -214,6 +217,7 @@ public class DefaultRemoteRepositoryAdmin
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean updateRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -243,10 +247,11 @@ public class DefaultRemoteRepositoryAdmin
         return Boolean.TRUE;
     }
 
+    @Override
     public Map<String, RemoteRepository> getRemoteRepositoriesAsMap()
         throws RepositoryAdminException
     {
-        java.util.Map<String, RemoteRepository> map = new HashMap<String, RemoteRepository>();
+        java.util.Map<String, RemoteRepository> map = new HashMap<>();
 
         for ( RemoteRepository repo : getRemoteRepositories() )
         {
@@ -256,6 +261,7 @@ public class DefaultRemoteRepositoryAdmin
         return map;
     }
 
+    @Override
     public IndexingContext createIndexContext( RemoteRepository remoteRepository )
         throws RepositoryAdminException
     {

@@ -38,12 +38,11 @@ import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.wagon.Wagon;
-import org.easymock.ArgumentsMatcher;
-import org.easymock.MockControl;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -71,14 +70,12 @@ import static org.junit.Assert.*;
 /**
  * AbstractProxyTestCase
  */
-@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractProxyTestCase
 {
     @Inject
     protected ApplicationContext applicationContext;
-
-    protected static final String ID_LEGACY_PROXIED = "legacy-proxied";
 
     protected static final String ID_PROXIED1 = "proxied1";
 
@@ -89,10 +86,6 @@ public abstract class AbstractProxyTestCase
     protected static final String ID_PROXIED2_TARGET = "proxied2-target";
 
     protected static final String ID_DEFAULT_MANAGED = "default-managed-repository";
-
-    protected static final String ID_LEGACY_MANAGED = "legacy-managed-repository";
-
-    protected static final String REPOPATH_PROXIED_LEGACY = "src/test/repositories/legacy-proxied";
 
     protected static final String REPOPATH_PROXIED1 = "src/test/repositories/proxied1";
 
@@ -106,11 +99,7 @@ public abstract class AbstractProxyTestCase
 
     // protected static final String REPOPATH_DEFAULT_MANAGED_TARGET = "target/test-repository/managed";
 
-    protected static final String REPOPATH_LEGACY_MANAGED = "src/test/repositories/legacy-managed";
-
-    protected static final String REPOPATH_LEGACY_MANAGED_TARGET = "target/test-repository/legacy-managed";
-
-    protected MockControl wagonMockControl;
+    protected IMocksControl wagonMockControl;
 
     protected Wagon wagonMock;
 
@@ -120,10 +109,6 @@ public abstract class AbstractProxyTestCase
     protected ManagedRepositoryContent managedDefaultRepository;
 
     protected File managedDefaultDir;
-
-    protected ManagedRepositoryContent managedLegacyRepository;
-
-    protected File managedLegacyDir;
 
     protected MockConfiguration config;
 
@@ -151,7 +136,6 @@ public abstract class AbstractProxyTestCase
         // Setup source repository (using default layout)
         String name = getClass().getSimpleName();
         String repoPath = "target/test-repository/managed/" + name;
-        File repoLocation = new File( repoPath );
 
         managedDefaultRepository =
             createRepository( ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath, "default" );
@@ -168,24 +152,14 @@ public abstract class AbstractProxyTestCase
         // to prevent windauze file leaking
         removeMavenIndexes();
 
-        // Setup source repository (using legacy layout)
-        repoLocation = new File( REPOPATH_LEGACY_MANAGED_TARGET );
-        if ( repoLocation.exists() )
+        ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
+
+        if ( managedRepositoryAdmin.getManagedRepository( repoConfig.getId() ) != null )
         {
-            FileUtils.deleteDirectory( repoLocation );
+            managedRepositoryAdmin.deleteManagedRepository( repoConfig.getId(), null, true );
         }
-        copyDirectoryStructure( new File( REPOPATH_LEGACY_MANAGED ), repoLocation );
 
-        managedLegacyRepository =
-            createRepository( ID_LEGACY_MANAGED, "Legacy Managed Repository", REPOPATH_LEGACY_MANAGED_TARGET,
-                              "legacy" );
-
-        managedLegacyDir = new File( managedLegacyRepository.getRepoRoot() );
-
-        repoConfig = managedLegacyRepository.getRepository();
-
-        //config.getConfiguration().addManagedRepository( repoConfig );
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository( repoConfig, false, null );
+        managedRepositoryAdmin.addManagedRepository( repoConfig, false, null );
 
         // Setup target (proxied to) repository.
         saveRemoteRepositoryConfig( ID_PROXIED1, "Proxied Repository 1",
@@ -195,18 +169,14 @@ public abstract class AbstractProxyTestCase
         saveRemoteRepositoryConfig( ID_PROXIED2, "Proxied Repository 2",
                                     new File( REPOPATH_PROXIED2 ).toURL().toExternalForm(), "default" );
 
-        // Setup target (proxied to) repository using legacy layout.
-        saveRemoteRepositoryConfig( ID_LEGACY_PROXIED, "Proxied Legacy Repository",
-                                    new File( REPOPATH_PROXIED_LEGACY ).toURL().toExternalForm(), "legacy" );
-
         // Setup the proxy handler.
         //proxyHandler = applicationContext.getBean (RepositoryProxyConnectors) lookup( RepositoryProxyConnectors.class.getName() );
 
         proxyHandler = applicationContext.getBean( "repositoryProxyConnectors#test", RepositoryProxyConnectors.class );
 
         // Setup the wagon mock.
-        wagonMockControl = MockControl.createNiceControl( Wagon.class );
-        wagonMock = (Wagon) wagonMockControl.getMock();
+        wagonMockControl = EasyMock.createNiceControl();
+        wagonMock = wagonMockControl.createMock( Wagon.class );
 
         delegate = (WagonDelegate) applicationContext.getBean( "wagon#test", Wagon.class );
 
@@ -214,7 +184,7 @@ public abstract class AbstractProxyTestCase
 
         CacheManager.getInstance().clearAll();
 
-        log.info( "\n.\\ " + name + "() \\._________________________________________\n" );
+        log.info( "\n.\\ {}() \\._________________________________________\n", name );
     }
 
     @After
@@ -236,7 +206,7 @@ public abstract class AbstractProxyTestCase
         }
     }
 
-
+    /*
     protected static final ArgumentsMatcher customWagonGetIfNewerMatcher = new ArgumentsMatcher()
     {
 
@@ -288,7 +258,7 @@ public abstract class AbstractProxyTestCase
             return ArrayUtils.toString( arguments );
         }
     };
-
+    */
 
     protected void assertChecksums( File expectedFile, String expectedSha1Contents, String expectedMd5Contents )
         throws Exception
@@ -342,7 +312,7 @@ public abstract class AbstractProxyTestCase
         assertNull( "Found file: " + downloadedFile + "; but was expecting a failure", downloadedFile );
     }
 
-    @SuppressWarnings ( "unchecked" )
+    @SuppressWarnings( "unchecked" )
     protected void assertNoTempFiles( File expectedFile )
     {
         File workingDir = expectedFile.getParentFile();
@@ -423,19 +393,6 @@ public abstract class AbstractProxyTestCase
         }
     }
 
-    protected ManagedRepositoryContent createManagedLegacyRepository()
-        throws Exception
-    {
-        return createRepository( "testManagedLegacyRepo", "Test Managed (Legacy) Repository",
-                                 "src/test/repositories/legacy-managed", "legacy" );
-    }
-
-    protected ManagedRepositoryContent createProxiedLegacyRepository()
-        throws Exception
-    {
-        return createRepository( "testProxiedLegacyRepo", "Test Proxied (Legacy) Repository",
-                                 "src/test/repositories/legacy-proxied", "legacy" );
-    }
 
     protected ManagedRepositoryContent createRepository( String id, String name, String path, String layout )
         throws Exception
@@ -624,8 +581,8 @@ public abstract class AbstractProxyTestCase
         if ( !sourceDir.exists() )
         {
             // This is just a warning.
-            System.err.println(
-                "[WARN] Skipping setup of testable managed repository, source dir does not exist: " + sourceDir );
+            log.error( "[WARN] Skipping setup of testable managed repository, source dir does not exist: {}", //
+                       sourceDir );
         }
         else
         {
@@ -678,18 +635,6 @@ public abstract class AbstractProxyTestCase
                       file.lastModified() );
     }
 
-    protected void assertNotExistsInManagedLegacyRepo( File file )
-        throws Exception
-    {
-        String managedLegacyPath = managedLegacyDir.getCanonicalPath();
-        String testFile = file.getCanonicalPath();
-
-        assertTrue(
-            "Unit Test Failure: File <" + testFile + "> should be have been defined within the legacy managed path of <"
-                + managedLegacyPath + ">", testFile.startsWith( managedLegacyPath ) );
-
-        assertFalse( "File < " + testFile + "> should not exist in managed legacy repository.", file.exists() );
-    }
 
     protected void assertNotExistsInManagedDefaultRepo( File file )
         throws Exception

@@ -33,6 +33,7 @@ public class ProxyConnectorConfigurationOrderComparator
     private static ProxyConnectorConfigurationOrderComparator INSTANCE =
         new ProxyConnectorConfigurationOrderComparator();
 
+    @Override
     public int compare( ProxyConnectorConfiguration o1, ProxyConnectorConfiguration o2 )
     {
         if ( o1 == null && o2 == null )

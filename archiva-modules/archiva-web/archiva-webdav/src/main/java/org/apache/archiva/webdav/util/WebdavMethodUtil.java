@@ -37,7 +37,7 @@ public class WebdavMethodUtil
 
     static
     {
-        READ_METHODS = new ArrayList<String>();
+        READ_METHODS = new ArrayList<>( 5 );
         READ_METHODS.add( "HEAD" );
         READ_METHODS.add( "GET" );
         READ_METHODS.add( "PROPFIND" );

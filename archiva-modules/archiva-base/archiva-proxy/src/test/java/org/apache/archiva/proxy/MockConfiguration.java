@@ -28,7 +28,8 @@ import org.apache.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
-import org.easymock.MockControl;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -53,14 +54,14 @@ public class MockConfiguration
 
     private Set<ConfigurationListener> configListeners = new HashSet<ConfigurationListener>();
 
-    private MockControl registryControl;
+    private IMocksControl registryControl;
 
     private Registry registryMock;
 
     public MockConfiguration()
     {
-        registryControl = MockControl.createNiceControl( org.apache.archiva.redback.components.registry.Registry.class );
-        registryMock = (org.apache.archiva.redback.components.registry.Registry) registryControl.getMock();
+        registryControl = EasyMock.createNiceControl( );
+        registryMock = registryControl.createMock( Registry.class );
     }
 
     @PostConstruct
@@ -81,16 +82,25 @@ public class MockConfiguration
         } );
     }
 
+    @Override
     public void addChangeListener( org.apache.archiva.redback.components.registry.RegistryListener listener )
     {
         registryListeners.add( listener );
     }
 
+    @Override
+    public void removeChangeListener( RegistryListener listener )
+    {
+        registryListeners.remove( listener );
+    }
+
+    @Override
     public Configuration getConfiguration()
     {
         return configuration;
     }
 
+    @Override
     public void save( Configuration configuration )
         throws RegistryException
     {
@@ -112,21 +122,25 @@ public class MockConfiguration
         }
     }
 
+    @Override
     public void addListener( ConfigurationListener listener )
     {
         configListeners.add( listener );
     }
 
+    @Override
     public void removeListener( ConfigurationListener listener )
     {
         configListeners.remove( listener );
     }
 
+    @Override
     public boolean isDefaulted()
     {
         return false;
     }
 
+    @Override
     public void reload()
     {
         // no op

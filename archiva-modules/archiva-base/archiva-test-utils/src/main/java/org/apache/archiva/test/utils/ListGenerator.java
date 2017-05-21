@@ -25,8 +25,8 @@ import java.util.List;
 /**
  * Generator of list of random test method
  * -Dorg.apache.archiva.test=n
- * n<=0 default jdk behavior
- * n>0 number of round of random collection
+ * n&lt;=0 default jdk behavior
+ * n&gt;0 number of round of random collection
  *
  * @author Eric
  */
@@ -58,7 +58,7 @@ public class ListGenerator
             return null;
         }
 
-        List<FrameworkMethod> generated = new ArrayList<FrameworkMethod>();
+        List<FrameworkMethod> generated = new ArrayList<>();
 
         testRound = Math.min( MAXROUND, testRound );
 

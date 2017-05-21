@@ -68,6 +68,7 @@ public class NewArtifactsRssFeedProcessor
      * Process the newly discovered artifacts in the repository. Generate feeds for new artifacts in the repository and
      * new versions of artifact.
      */
+    @Override
     public SyndFeed process( Map<String, String> reqParams, MetadataRepository metadataRepository )
         throws FeedException
     {
@@ -102,7 +103,7 @@ public class NewArtifactsRssFeedProcessor
 
         long tmp = 0;
         RssFeedEntry entry = null;
-        List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
+        List<RssFeedEntry> entries = new ArrayList<>();
         String description = "";
         int idx = 0;
         for ( ArtifactMetadata artifact : artifacts )
@@ -145,11 +146,13 @@ public class NewArtifactsRssFeedProcessor
                                            " during repository scan.", entries );
     }
 
+    @Override
     public String getTitle()
     {
         return title;
     }
 
+    @Override
     public String getDescription()
     {
         return desc;

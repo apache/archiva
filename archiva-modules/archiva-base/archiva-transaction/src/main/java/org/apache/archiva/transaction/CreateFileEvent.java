@@ -41,7 +41,7 @@ public class CreateFileEvent
      * 
      * @param content
      * @param destination
-     * @param digesters {@link List}&lt;{@link Digester}> digesters to use for checksumming 
+     * @param digesters {@link List}&lt;{@link Digester}&gt; digesters to use for checksumming 
      */
     public CreateFileEvent( String content, File destination, List<? extends Digester> digesters )
     {
@@ -50,6 +50,7 @@ public class CreateFileEvent
         this.destination = destination;
     }
 
+    @Override
     public void commit()
         throws IOException
     {
@@ -67,6 +68,7 @@ public class CreateFileEvent
         createChecksums( destination, true );
     }
 
+    @Override
     public void rollback()
         throws IOException
     {

@@ -29,9 +29,11 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -41,23 +43,26 @@ import java.util.Collection;
 import java.util.List;
 
 /**
+ * <p>
  * Default implementation of the metadata resolver API. At present it will handle updating the content repository
  * from new or changed information in the model and artifacts from the repository storage.
- * <p/>
+ * </p>
+ * <p>
  * This is a singleton component to allow an alternate implementation to be provided. It is intended to be the same
  * system-wide for the whole content repository instead of on a per-managed-repository basis. Therefore, the session is
  * passed in as an argument to obtain any necessary resources, rather than the class being instantiated within the
  * session in the context of a single managed repository's resolution needs.
- * <p/>
+ * </p>
+ * <p>
  * Note that the caller is responsible for the session, such as closing and saving (which is implied by the resolver
  * being obtained from within the session). The {@link RepositorySession#markDirty()} method is used as a hint to ensure
  * that the session knows we've made changes at close. We cannot ensure the changes will be persisted if the caller
  * chooses to revert first. This is preferable to storing the metadata immediately - a separate session would require
  * having a bi-directional link with the session factory, and saving the existing session might save other changes
  * unknowingly by the caller.
- * <p/>
+ * </p>
  */
-@Service ("metadataResolver#default")
+@Service("metadataResolver#default")
 public class DefaultMetadataResolver
     implements MetadataResolver
 {
@@ -65,23 +70,32 @@ public class DefaultMetadataResolver
     private Logger log = LoggerFactory.getLogger( DefaultMetadataResolver.class );
 
     /**
+     * <p>
      * FIXME: this needs to be configurable based on storage type - and could also be instantiated per repo. Change to a
      * factory, and perhaps retrieve from the session. We should avoid creating one per request, however.
-     * <p/>
+     * </p>
+     * <p>
      * TODO: Also need to accommodate availability of proxy module
      * ... could be a different type since we need methods to modify the storage metadata, which would also allow more
      * appropriate methods to pass in the already determined repository configuration, for example, instead of the ID
+     * </p>
      */
     @Inject
-    @Named (value = "repositoryStorage#maven2")
+    @Named(value = "repositoryStorage#maven2")
     private RepositoryStorage repositoryStorage;
 
+    @Inject
+    @Autowired(required = false)
+    private List<RepositoryListener> listeners = new ArrayList<>();
+
     /**
-     *
+     * Cache used for namespaces
      */
     @Inject
-    private List<RepositoryListener> listeners;
+    @Named( value = "cache#namespaces" )
+    private Cache<String, Collection<String>> namespacesCache;
 
+    @Override
     public ProjectVersionMetadata resolveProjectVersion( RepositorySession session, String repoId, String namespace,
                                                          String projectId, String projectVersion )
         throws MetadataResolutionException
@@ -101,7 +115,7 @@ public class DefaultMetadataResolver
             {
                 ReadMetadataRequest readMetadataRequest =
                     new ReadMetadataRequest().repositoryId( repoId ).namespace( namespace ).projectId(
-                        projectId ).projectVersion( projectVersion );
+                        projectId ).projectVersion( projectVersion ).browsingRequest( true );
                 metadata = repositoryStorage.readProjectVersionMetadata( readMetadataRequest );
 
                 log.debug( "Resolved project version metadata from storage: {}", metadata );
@@ -126,7 +140,7 @@ public class DefaultMetadataResolver
                 }
                 catch ( MetadataRepositoryException e )
                 {
-                    log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                    log.warn( "Unable to persist resolved information: {}", e.getMessage(), e );
                 }
 
                 session.markDirty();
@@ -160,6 +174,7 @@ public class DefaultMetadataResolver
         return metadata;
     }
 
+    @Override
     public Collection<ProjectVersionReference> resolveProjectReferences( RepositorySession session, String repoId,
                                                                          String namespace, String projectId,
                                                                          String projectVersion )
@@ -171,13 +186,21 @@ public class DefaultMetadataResolver
         return metadataRepository.getProjectReferences( repoId, namespace, projectId, projectVersion );
     }
 
+    @Override
     public Collection<String> resolveRootNamespaces( RepositorySession session, String repoId )
         throws MetadataResolutionException
     {
         try
         {
+
+            Collection<String> namespaces = namespacesCache.get( repoId );
+            if ( namespaces != null )
+            {
+                return namespaces;
+            }
+
             MetadataRepository metadataRepository = session.getRepository();
-            Collection<String> namespaces = metadataRepository.getRootNamespaces( repoId );
+            namespaces = metadataRepository.getRootNamespaces( repoId );
             Collection<String> storageNamespaces =
                 repositoryStorage.listRootNamespaces( repoId, new ExcludesFilter<String>( namespaces ) );
             if ( storageNamespaces != null && !storageNamespaces.isEmpty() )
@@ -190,17 +213,23 @@ public class DefaultMetadataResolver
                     try
                     {
                         metadataRepository.updateNamespace( repoId, n );
+                        // just invalidate cache entry
+                        String cacheKey = repoId + "-" + n;
+                        namespacesCache.remove( cacheKey );
                     }
                     catch ( MetadataRepositoryException e )
                     {
-                        log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                        log.warn( "Unable to persist resolved information: {}", e.getMessage(), e );
                     }
                 }
                 session.markDirty();
 
-                namespaces = new ArrayList<String>( namespaces );
+                namespaces = new ArrayList<>( namespaces );
                 namespaces.addAll( storageNamespaces );
             }
+
+            namespacesCache.put( repoId, namespaces );
+
             return namespaces;
         }
         catch ( RepositoryStorageRuntimeException e )
@@ -209,14 +238,21 @@ public class DefaultMetadataResolver
         }
     }
 
+    @Override
     public Collection<String> resolveNamespaces( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
         try
         {
             MetadataRepository metadataRepository = session.getRepository();
-            Collection<String> namespaces = metadataRepository.getNamespaces( repoId, namespace );
-            Collection<String> exclusions = new ArrayList<String>( namespaces );
+            String cacheKey = repoId + "-" + namespace;
+            Collection<String> namespaces = namespacesCache.get( cacheKey );
+            if ( namespaces == null )
+            {
+                namespaces = metadataRepository.getNamespaces( repoId, namespace );
+                namespacesCache.put( cacheKey, namespaces );
+            }
+            Collection<String> exclusions = new ArrayList<>( namespaces );
             exclusions.addAll( metadataRepository.getProjects( repoId, namespace ) );
             Collection<String> storageNamespaces =
                 repositoryStorage.listNamespaces( repoId, namespace, new ExcludesFilter<String>( exclusions ) );
@@ -230,15 +266,18 @@ public class DefaultMetadataResolver
                     try
                     {
                         metadataRepository.updateNamespace( repoId, namespace + "." + n );
+                        // just invalidate cache entry
+                        cacheKey = repoId + "-" + namespace + "." + n;
+                        namespacesCache.remove( cacheKey );
                     }
                     catch ( MetadataRepositoryException e )
                     {
-                        log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                        log.warn( "Unable to persist resolved information: {}", e.getMessage(), e );
                     }
                 }
                 session.markDirty();
 
-                namespaces = new ArrayList<String>( namespaces );
+                namespaces = new ArrayList<>( namespaces );
                 namespaces.addAll( storageNamespaces );
             }
             return namespaces;
@@ -249,6 +288,7 @@ public class DefaultMetadataResolver
         }
     }
 
+    @Override
     public Collection<String> resolveProjects( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
@@ -256,10 +296,20 @@ public class DefaultMetadataResolver
         {
             MetadataRepository metadataRepository = session.getRepository();
             Collection<String> projects = metadataRepository.getProjects( repoId, namespace );
-            Collection<String> exclusions = new ArrayList<String>( projects );
-            exclusions.addAll( metadataRepository.getNamespaces( repoId, namespace ) );
+            Collection<String> exclusions = new ArrayList<>( projects );
+
+            String cacheKey = repoId + "-" + namespace;
+            Collection<String> namespaces = namespacesCache.get( cacheKey );
+            if ( namespaces == null )
+            {
+                namespaces = metadataRepository.getNamespaces( repoId, namespace );
+                namespacesCache.put( cacheKey, namespaces );
+            }
+
+            exclusions.addAll( namespaces );
+
             Collection<String> storageProjects =
-                repositoryStorage.listProjects( repoId, namespace, new ExcludesFilter<String>( exclusions ) );
+                repositoryStorage.listProjects( repoId, namespace, new ExcludesFilter<>( exclusions ) );
             if ( storageProjects != null && !storageProjects.isEmpty() )
             {
 
@@ -276,13 +326,13 @@ public class DefaultMetadataResolver
                         }
                         catch ( MetadataRepositoryException e )
                         {
-                            log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                            log.warn( "Unable to persist resolved information: {}", e.getMessage(), e );
                         }
                     }
                 }
                 session.markDirty();
 
-                projects = new ArrayList<String>( projects );
+                projects = new ArrayList<>( projects );
                 projects.addAll( storageProjects );
             }
             return projects;
@@ -293,6 +343,7 @@ public class DefaultMetadataResolver
         }
     }
 
+    @Override
     public Collection<String> resolveProjectVersions( RepositorySession session, String repoId, String namespace,
                                                       String projectId )
         throws MetadataResolutionException
@@ -327,13 +378,13 @@ public class DefaultMetadataResolver
                     }
                     catch ( MetadataRepositoryException e )
                     {
-                        log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                        log.warn( "Unable to persist resolved information: {}", e.getMessage(), e );
                     }
                     catch ( RepositoryStorageMetadataInvalidException e )
                     {
                         log.warn(
-                            "Not update project in metadata repository due to an error resolving it from storage: "
-                                + e.getMessage() );
+                            "Not update project in metadata repository due to an error resolving it from storage: {}",
+                            e.getMessage() );
 
                         for ( RepositoryListener listener : listeners )
                         {
@@ -350,7 +401,7 @@ public class DefaultMetadataResolver
                 }
                 session.markDirty();
 
-                projectVersions = new ArrayList<String>( projectVersions );
+                projectVersions = new ArrayList<>( projectVersions );
                 projectVersions.addAll( storageProjectVersions );
             }
             return projectVersions;
@@ -361,6 +412,7 @@ public class DefaultMetadataResolver
         }
     }
 
+    @Override
     public Collection<ArtifactMetadata> resolveArtifacts( RepositorySession session, String repoId, String namespace,
                                                           String projectId, String projectVersion )
         throws MetadataResolutionException
@@ -373,8 +425,8 @@ public class DefaultMetadataResolver
             ExcludesFilter<String> filter = new ExcludesFilter<String>( createArtifactIdList( artifacts ) );
 
             ReadMetadataRequest readMetadataRequest =
-                new ReadMetadataRequest().repositoryId( repoId ).namespace( namespace ).projectId( projectId ).projectVersion(
-                    projectVersion ).filter( filter );
+                new ReadMetadataRequest().repositoryId( repoId ).namespace( namespace ).projectId(
+                    projectId ).projectVersion( projectVersion ).filter( filter );
 
             Collection<ArtifactMetadata> storageArtifacts =
                 repositoryStorage.readArtifactsMetadata( readMetadataRequest );
@@ -391,12 +443,12 @@ public class DefaultMetadataResolver
                     }
                     catch ( MetadataRepositoryException e )
                     {
-                        log.warn( "Unable to persist resolved information: " + e.getMessage(), e );
+                        log.warn( "Unable to persist resolved information: {}", e.getMessage(), e );
                     }
                 }
                 session.markDirty();
 
-                artifacts = new ArrayList<ArtifactMetadata>( artifacts );
+                artifacts = new ArrayList<>( artifacts );
                 artifacts.addAll( storageArtifacts );
             }
             return artifacts;
@@ -413,7 +465,7 @@ public class DefaultMetadataResolver
 
     private Collection<String> createArtifactIdList( Collection<ArtifactMetadata> artifacts )
     {
-        Collection<String> artifactIds = new ArrayList<String>();
+        Collection<String> artifactIds = new ArrayList<>();
         for ( ArtifactMetadata artifact : artifacts )
         {
             artifactIds.add( artifact.getId() );

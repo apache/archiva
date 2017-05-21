@@ -41,6 +41,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

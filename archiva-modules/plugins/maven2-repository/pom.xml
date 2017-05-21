@@ -20,9 +20,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>plugins</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M5-SNAPSHOT</version>
+    <artifactId>plugins</artifactId>
+    <version>2.2.2-SNAPSHOT</version>
   </parent>
   <artifactId>maven2-repository</artifactId>
   <packaging>bundle</packaging>
@@ -44,14 +44,6 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-maven2-metadata</artifactId>
     </dependency>
-    <!--dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-proxy</artifactId>
-    </dependency-->
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>problem-reports</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-proxy-api</artifactId>
@@ -71,8 +63,9 @@
       <artifactId>org.eclipse.sisu.plexus</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.sonatype.sisu</groupId>
-      <artifactId>sisu-guice</artifactId>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <classifier>no_aop</classifier>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -140,22 +133,8 @@
       <artifactId>wagon-provider-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.sf.beanlib</groupId>
-      <artifactId>beanlib</artifactId>
-        <exclusions>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>aopalliance</groupId>
-            <artifactId>aopalliance</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-          </exclusion>
-        </exclusions>
+      <groupId>org.modelmapper</groupId>
+      <artifactId>modelmapper</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
@@ -184,6 +163,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-test-utils</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
@@ -194,14 +178,19 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.easytesting</groupId>
-      <artifactId>fest-assert-core</artifactId>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-1.2-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
@@ -247,13 +236,9 @@
               org.apache.commons.lang*;version="[2.4,3)",
               org.apache.maven.artifact*,
               org.apache.maven.model*,
-              org.apache.maven.shared.dependency.tree*,
-              org.apache.maven.index*,
               org.apache.maven.wagon*,
               org.codehaus.plexus*,
               com.google.common.io,
-              org.codehaus.redback.components*,
-              org.dom4j*;version="[1.6,2)",
               org.springframework*;version="[3,4)",
               org.slf4j;resolution:=optional,
               org.apache.maven.repository.internal,
@@ -269,7 +254,10 @@
               org.sonatype.aether.repository,
               org.sonatype.aether.util,
               org.sonatype.aether.util.artifact,
-              net.sf.beanlib.provider.replicator,
+              org.modelmapper,
+              org.modelmapper.config,
+              org.modelmapper.convention,
+              org.modelmapper.spi,
               org.apache.archiva.maven2.model,
               org.sonatype.aether.util.graph.selector,
               org.apache.archiva.metadata.model.maven2,

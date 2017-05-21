@@ -22,7 +22,7 @@
   <parent>
     <artifactId>archiva-rest</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M5-SNAPSHOT</version>
+    <version>2.2.2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-rest-api</artifactId>
   <!-- DO NOT USE bundle packaging generated documentation is not included in the jar !!! -->
@@ -71,11 +71,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>problem-reports</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-authorization-api</artifactId>
       <exclusions>
@@ -87,22 +82,12 @@
     </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
-      <artifactId>jsr311-api</artifactId>
+      <artifactId>javax.ws.rs-api</artifactId>
     </dependency>
     <!-- normally not needed but here for wadl feature currently in cxf -->
     <dependency>
       <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-bundle-jaxrs</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>jetty-server</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
     </dependency>
 
   </dependencies>

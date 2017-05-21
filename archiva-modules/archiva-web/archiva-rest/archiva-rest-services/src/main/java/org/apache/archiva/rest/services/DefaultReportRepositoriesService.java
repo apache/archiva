@@ -18,12 +18,12 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
-import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ReportRepositoriesService;
 import org.apache.commons.lang.StringUtils;
@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * DefaultReportRepositoriesService
  *
- * @author Adrien Lecharpentier <adrien.lecharpentier@zenika.com>
+ * @author Adrien Lecharpentier &lt;adrien.lecharpentier@zenika.com&gt;
  * @since 1.4-M3
  */
 @Service( "reportRepositoriesService#rest" )
@@ -52,6 +52,7 @@ public class DefaultReportRepositoriesService
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
+    @Override
     public List<RepositoryStatistics> getStatisticsReport( List<String> repositoriesId, int rowCount, Date startDate,
                                                            Date endDate )
         throws ArchivaRestServiceException
@@ -73,7 +74,7 @@ public class DefaultReportRepositoriesService
         try
         {
             MetadataRepository metadataRepository = repositorySession.getRepository();
-            List<RepositoryStatistics> stats = new ArrayList<RepositoryStatistics>();
+            List<RepositoryStatistics> stats = new ArrayList<>();
             for ( String repo : repositoriesId )
             {
                 try
@@ -82,7 +83,7 @@ public class DefaultReportRepositoriesService
                 }
                 catch ( MetadataRepositoryException e )
                 {
-                    log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                    log.warn( "Unable to retrieve stats, assuming is empty: {}", e.getMessage(), e );
                 }
             }
 
@@ -109,7 +110,7 @@ public class DefaultReportRepositoriesService
             }
             catch ( MetadataRepositoryException e )
             {
-                log.warn( "Unable to retrieve stats, assuming is empty: " + e.getMessage(), e );
+                log.warn( "Unable to retrieve stats, assuming is empty: {}", e.getMessage(), e );
             }
             if ( stats == null || stats.isEmpty() )
             {
@@ -124,6 +125,7 @@ public class DefaultReportRepositoriesService
         }
     }
 
+    @Override
     public List<RepositoryProblemFacet> getHealthReport( String repository, String groupId, int rowCount )
         throws ArchivaRestServiceException
     {
@@ -140,10 +142,10 @@ public class DefaultReportRepositoriesService
 
             if ( !ALL_REPOSITORIES.equals( repository ) )
             {
-                observableRepositories = Collections.<String>singletonList( repository );
+                observableRepositories = Collections.singletonList( repository );
             }
 
-            List<RepositoryProblemFacet> problemArtifacts = new ArrayList<RepositoryProblemFacet>();
+            List<RepositoryProblemFacet> problemArtifacts = new ArrayList<>();
             MetadataRepository metadataRepository = repositorySession.getRepository();
             for ( String repoId : observableRepositories )
             {

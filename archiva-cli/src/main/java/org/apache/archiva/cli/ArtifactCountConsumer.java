@@ -52,7 +52,7 @@ public class ArtifactCountConsumer
     public ArtifactCountConsumer()
     {
         // TODO: shouldn't this use filetypes?
-        includes = new ArrayList<String>();
+        includes = new ArrayList<>();
         includes.add( "**/*.pom" );
         includes.add( "**/*.jar" );
         includes.add( "**/*.war" );
@@ -67,26 +67,25 @@ public class ArtifactCountConsumer
         includes.add( "**/*.zip" );
     }
 
+    @Override
     public String getDescription()
     {
         return description;
     }
 
+    @Override
     public String getId()
     {
         return id;
     }
 
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
+    @Override
     public List<String> getExcludes()
     {
         return null;
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return includes;

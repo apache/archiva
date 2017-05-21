@@ -98,9 +98,14 @@ public class ArchivaRbacManager
             List<String> rbacManagerIds =
                 redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getRbacManagerImpls();
 
+            if ( rbacManagerIds.isEmpty() )
+            {
+                rbacManagerIds.add( RedbackRuntimeConfigurationAdmin.DEFAULT_RBAC_MANAGER_IMPL );
+            }
+
             log.info( "use rbacManagerIds: '{}'", rbacManagerIds );
 
-            this.rbacManagersPerId = new LinkedHashMap<String, RBACManager>( rbacManagerIds.size() );
+            this.rbacManagersPerId = new LinkedHashMap<>( rbacManagerIds.size() );
 
             for ( String id : rbacManagerIds )
             {
@@ -111,7 +116,7 @@ public class ArchivaRbacManager
         }
         catch ( RepositoryAdminException e )
         {
-            // revert to a default one ?
+
             log.error( e.getMessage(), e );
             throw new RuntimeException( e.getMessage(), e );
         }
@@ -126,14 +131,18 @@ public class ArchivaRbacManager
                 return rbacManager;
             }
         }
-        return this.rbacManagersPerId.values().iterator().next();
+        return this.rbacManagersPerId.isEmpty() ? applicationContext.getBean(
+            "rbacManager#" + RedbackRuntimeConfigurationAdmin.DEFAULT_RBAC_MANAGER_IMPL, RBACManager.class ) //
+            : this.rbacManagersPerId.values().iterator().next();
     }
 
+    @Override
     public Role createRole( String name )
     {
         return getRbacManagerForWrite().createRole( name );
     }
 
+    @Override
     public Role saveRole( Role role )
         throws RbacObjectInvalidException, RbacManagerException
     {
@@ -161,6 +170,7 @@ public class ArchivaRbacManager
         return role;
     }
 
+    @Override
     public void saveRoles( Collection<Role> roles )
         throws RbacObjectInvalidException, RbacManagerException
     {
@@ -187,6 +197,7 @@ public class ArchivaRbacManager
         }
     }
 
+    @Override
     public Role getRole( String roleName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
@@ -222,10 +233,11 @@ public class ArchivaRbacManager
         return null;
     }
 
+    @Override
     public List<Role> getAllRoles()
         throws RbacManagerException
     {
-        Map<String, Role> allRoles = new HashMap<String, Role>();
+        Map<String, Role> allRoles = new HashMap<>();
         boolean allFailed = true;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
@@ -250,9 +262,10 @@ public class ArchivaRbacManager
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
 
-        return new ArrayList<Role>( allRoles.values() );
+        return new ArrayList<>( allRoles.values() );
     }
 
+    @Override
     public void removeRole( Role role )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
@@ -278,18 +291,21 @@ public class ArchivaRbacManager
         }
     }
 
+    @Override
     public Permission createPermission( String name )
         throws RbacManagerException
     {
         return getRbacManagerForWrite().createPermission( name );
     }
 
+    @Override
     public Permission createPermission( String name, String operationName, String resourceIdentifier )
         throws RbacManagerException
     {
         return getRbacManagerForWrite().createPermission( name, operationName, resourceIdentifier );
     }
 
+    @Override
     public Permission savePermission( Permission permission )
         throws RbacObjectInvalidException, RbacManagerException
     {
@@ -319,6 +335,7 @@ public class ArchivaRbacManager
         return permission;
     }
 
+    @Override
     public Permission getPermission( String permissionName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
@@ -354,10 +371,11 @@ public class ArchivaRbacManager
         return null;
     }
 
+    @Override
     public List<Permission> getAllPermissions()
         throws RbacManagerException
     {
-        Map<String, Permission> allPermissions = new HashMap<String, Permission>();
+        Map<String, Permission> allPermissions = new HashMap<>();
         boolean allFailed = true;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
@@ -381,9 +399,10 @@ public class ArchivaRbacManager
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
-        return new ArrayList<Permission>( allPermissions.values() );
+        return new ArrayList<>( allPermissions.values() );
     }
 
+    @Override
     public void removePermission( Permission permission )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
@@ -409,12 +428,14 @@ public class ArchivaRbacManager
         }
     }
 
+    @Override
     public Operation createOperation( String name )
         throws RbacManagerException
     {
         return getRbacManagerForWrite().createOperation( name );
     }
 
+    @Override
     public Operation saveOperation( Operation operation )
         throws RbacObjectInvalidException, RbacManagerException
     {
@@ -443,6 +464,7 @@ public class ArchivaRbacManager
         return operation;
     }
 
+    @Override
     public Operation getOperation( String operationName )
         throws RbacObjectNotFoundException, RbacManagerException
     {
@@ -478,10 +500,11 @@ public class ArchivaRbacManager
         return null;
     }
 
+    @Override
     public List<Operation> getAllOperations()
         throws RbacManagerException
     {
-        Map<String, Operation> allOperations = new HashMap<String, Operation>();
+        Map<String, Operation> allOperations = new HashMap<>();
         boolean allFailed = true;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
@@ -505,9 +528,10 @@ public class ArchivaRbacManager
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
-        return new ArrayList<Operation>( allOperations.values() );
+        return new ArrayList<>( allOperations.values() );
     }
 
+    @Override
     public void removeOperation( Operation operation )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
@@ -533,12 +557,14 @@ public class ArchivaRbacManager
         }
     }
 
+    @Override
     public Resource createResource( String identifier )
         throws RbacManagerException
     {
         return getRbacManagerForWrite().createResource( identifier );
     }
 
+    @Override
     public Resource saveResource( Resource resource )
         throws RbacObjectInvalidException, RbacManagerException
     {
@@ -567,6 +593,7 @@ public class ArchivaRbacManager
         return resource;
     }
 
+    @Override
     public Resource getResource( String resourceIdentifier )
         throws RbacObjectNotFoundException, RbacManagerException
     {
@@ -602,10 +629,11 @@ public class ArchivaRbacManager
         return null;
     }
 
+    @Override
     public List<Resource> getAllResources()
         throws RbacManagerException
     {
-        Map<String, Resource> allResources = new HashMap<String, Resource>();
+        Map<String, Resource> allResources = new HashMap<>();
         boolean allFailed = true;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
@@ -629,9 +657,10 @@ public class ArchivaRbacManager
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
-        return new ArrayList<Resource>( allResources.values() );
+        return new ArrayList<>( allResources.values() );
     }
 
+    @Override
     public void removeResource( Resource resource )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
@@ -657,12 +686,14 @@ public class ArchivaRbacManager
         }
     }
 
+    @Override
     public UserAssignment createUserAssignment( String principal )
         throws RbacManagerException
     {
         return getRbacManagerForWrite().createUserAssignment( principal );
     }
 
+    @Override
     public UserAssignment saveUserAssignment( UserAssignment userAssignment )
         throws RbacObjectInvalidException, RbacManagerException
     {
@@ -691,6 +722,7 @@ public class ArchivaRbacManager
         return userAssignment;
     }
 
+    @Override
     public UserAssignment getUserAssignment( String principal )
         throws RbacObjectNotFoundException, RbacManagerException
     {
@@ -785,10 +817,11 @@ public class ArchivaRbacManager
         return false;
     }
 
+    @Override
     public List<UserAssignment> getAllUserAssignments()
         throws RbacManagerException
     {
-        Map<String, UserAssignment> allUserAssignments = new HashMap<String, UserAssignment>();
+        Map<String, UserAssignment> allUserAssignments = new HashMap<>();
         boolean allFailed = true;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
@@ -820,13 +853,14 @@ public class ArchivaRbacManager
         {
             throw new RbacManagerException( lastException.getMessage(), lastException );
         }
-        return new ArrayList<UserAssignment>( allUserAssignments.values() );
+        return new ArrayList<>( allUserAssignments.values() );
     }
 
+    @Override
     public List<UserAssignment> getUserAssignmentsForRoles( Collection<String> roleNames )
         throws RbacManagerException
     {
-        List<UserAssignment> allUserAssignments = new ArrayList<UserAssignment>();
+        List<UserAssignment> allUserAssignments = new ArrayList<>();
         boolean allFailed = true;
         Exception lastException = null;
         for ( RBACManager rbacManager : rbacManagersPerId.values() )
@@ -852,6 +886,7 @@ public class ArchivaRbacManager
         return allUserAssignments;
     }
 
+    @Override
     public void removeUserAssignment( UserAssignment userAssignment )
         throws RbacObjectNotFoundException, RbacObjectInvalidException, RbacManagerException
     {
@@ -919,6 +954,7 @@ public class ArchivaRbacManager
         return roleExists( role.getName() );
     }
 
+    @Override
     public void eraseDatabase()
     {
         log.warn( "eraseDatabase not implemented" );
@@ -930,11 +966,13 @@ public class ArchivaRbacManager
         return false;
     }
 
+    @Override
     public String getDescriptionKey()
     {
         return "archiva.redback.rbacmanager.archiva";
     }
 
+    @Override
     public boolean isReadOnly()
     {
         return false;

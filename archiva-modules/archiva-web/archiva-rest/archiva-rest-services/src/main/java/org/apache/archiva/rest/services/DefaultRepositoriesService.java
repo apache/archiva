@@ -23,7 +23,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
@@ -44,6 +44,7 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
@@ -63,7 +64,9 @@ import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
+import org.apache.archiva.repository.scanner.RepositoryScannerInstance;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
+import org.apache.archiva.rest.api.model.StringList;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
@@ -76,20 +79,20 @@ import org.apache.archiva.security.ArchivaSecurityException;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -105,7 +108,7 @@ import java.util.TimeZone;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Service( "repositoriesService#rest" )
+@Service("repositoriesService#rest")
 public class DefaultRepositoriesService
     extends AbstractRestService
     implements RepositoriesService
@@ -113,7 +116,7 @@ public class DefaultRepositoriesService
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named( value = "taskExecutor#indexing" )
+    @Named(value = "taskExecutor#indexing")
     private ArchivaIndexingTaskExecutor archivaIndexingTaskExecutor;
 
     @Inject
@@ -132,34 +135,57 @@ public class DefaultRepositoriesService
     private RepositoryContentFactory repositoryFactory;
 
     @Inject
-    @Named( value = "archivaTaskScheduler#repository" )
+    @Named(value = "archivaTaskScheduler#repository")
     private ArchivaTaskScheduler scheduler;
 
     @Inject
     private DownloadRemoteIndexScheduler downloadRemoteIndexScheduler;
 
     @Inject
-    @Named( value = "repositorySessionFactory" )
+    @Named(value = "repositorySessionFactory")
     protected RepositorySessionFactory repositorySessionFactory;
 
     @Inject
+    @Autowired(required = false)
     protected List<RepositoryListener> listeners = new ArrayList<RepositoryListener>();
 
     @Inject
     private RepositoryScanner repoScanner;
 
+    /**
+     * Cache used for namespaces
+     */
+    @Inject
+    @Named(value = "cache#namespaces")
+    private Cache<String, Collection<String>> namespacesCache;
+
     private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
 
+    @Override
     public Boolean scanRepository( String repositoryId, boolean fullScan )
     {
         return doScanRepository( repositoryId, fullScan );
     }
 
+    @Override
     public Boolean alreadyScanning( String repositoryId )
     {
-        return repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId );
+        // check queue first to make sure it doesn't get dequeued between calls
+        if ( repositoryTaskScheduler.isProcessingRepositoryTask( repositoryId ) )
+        {
+            return true;
+        }
+        for ( RepositoryScannerInstance scan : repoScanner.getInProgressScans() )
+        {
+            if ( scan.getRepository().getId().equals( repositoryId ) )
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
+    @Override
     public Boolean removeScanningTaskFromQueue( String repositoryId )
     {
         RepositoryTask task = new RepositoryTask();
@@ -175,6 +201,7 @@ public class DefaultRepositoriesService
         }
     }
 
+    @Override
     public Boolean scanRepositoryNow( String repositoryId, boolean fullScan )
         throws ArchivaRestServiceException
     {
@@ -192,6 +219,9 @@ public class DefaultRepositoriesService
             task.setOnlyUpdate( !fullScan );
 
             archivaIndexingTaskExecutor.executeTask( task );
+
+            scheduler.queueTask( new RepositoryTask( repositoryId, fullScan ) );
+
             return Boolean.TRUE;
         }
         catch ( Exception e )
@@ -201,6 +231,7 @@ public class DefaultRepositoriesService
         }
     }
 
+    @Override
     public Boolean scheduleDownloadRemoteIndex( String repositoryId, boolean now, boolean fullDownload )
         throws ArchivaRestServiceException
     {
@@ -216,6 +247,7 @@ public class DefaultRepositoriesService
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean copyArtifact( ArtifactTransferRequest artifactTransferRequest )
         throws ArchivaRestServiceException
     {
@@ -391,7 +423,7 @@ public class DefaultRepositoriesService
             String timestamp = null;
 
             File versionMetadataFile = new File( targetPath, MetadataTools.MAVEN_METADATA );
-            ArchivaRepositoryMetadata versionMetadata = getMetadata( versionMetadataFile );
+            /* unused */ getMetadata( versionMetadataFile );
 
             if ( !targetPath.exists() )
             {
@@ -408,7 +440,8 @@ public class DefaultRepositoriesService
             {
                 throw new ArchivaRestServiceException(
                     "artifact already exists in target repo: " + artifactTransferRequest.getTargetRepositoryId()
-                        + " and redeployment blocked", null );
+                        + " and redeployment blocked", null
+                );
             }
             else
             {
@@ -449,6 +482,7 @@ public class DefaultRepositoriesService
                 "Artifact \'" + artifactTransferRequest.getGroupId() + ":" + artifactTransferRequest.getArtifactId()
                     + ":" + artifactTransferRequest.getVersion() + "\' was successfully deployed to repository \'"
                     + artifactTransferRequest.getTargetRepositoryId() + "\'";
+            log.debug("copyArtifact {}", msg);
 
         }
         catch ( RepositoryException e )
@@ -516,18 +550,8 @@ public class DefaultRepositoriesService
     private void copyFile( File sourceFile, File targetPath, String targetFilename, boolean fixChecksums )
         throws IOException
     {
-        FileOutputStream out = new FileOutputStream( new File( targetPath, targetFilename ) );
-        FileInputStream input = new FileInputStream( sourceFile );
-
-        try
-        {
-            IOUtils.copy( input, out );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( out );
-            IOUtils.closeQuietly( input );
-        }
+        Files.copy( sourceFile.toPath(), new File( targetPath, targetFilename ).toPath(), StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.COPY_ATTRIBUTES );
 
         if ( fixChecksums )
         {
@@ -545,7 +569,7 @@ public class DefaultRepositoriesService
                                         boolean fixChecksums, ArtifactTransferRequest artifactTransferRequest )
         throws RepositoryMetadataException
     {
-        List<String> availableVersions = new ArrayList<String>();
+        List<String> availableVersions = new ArrayList<>();
         String latestVersion = artifactTransferRequest.getVersion();
 
         File projectDir = new File( targetPath ).getParentFile();
@@ -601,6 +625,7 @@ public class DefaultRepositoriesService
         }
     }
 
+    @Override
     public Boolean removeProjectVersion( String repositoryId, String namespace, String projectId, String version )
         throws ArchivaRestServiceException
     {
@@ -608,6 +633,8 @@ public class DefaultRepositoriesService
         if ( !VersionUtil.isGenericSnapshot( version ) )
         {
             Artifact artifact = new Artifact( namespace, projectId, version );
+            artifact.setRepositoryId( repositoryId );
+            artifact.setContext( repositoryId );
             return deleteArtifact( artifact );
         }
 
@@ -704,11 +731,18 @@ public class DefaultRepositoriesService
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean deleteArtifact( Artifact artifact )
         throws ArchivaRestServiceException
     {
 
         String repositoryId = artifact.getContext();
+        // some rest call can use context or repositoryId
+        // so try both!!
+        if ( StringUtils.isEmpty( repositoryId ) )
+        {
+            repositoryId = artifact.getRepositoryId();
+        }
         if ( StringUtils.isEmpty( repositoryId ) )
         {
             throw new ArchivaRestServiceException( "repositoryId cannot be null", 400, null );
@@ -941,6 +975,7 @@ public class DefaultRepositoriesService
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean deleteGroupId( String groupId, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -971,6 +1006,11 @@ public class DefaultRepositoriesService
 
             metadataRepository.removeNamespace( repositoryId, groupId );
 
+            // just invalidate cache entry
+            String cacheKey = repositoryId + "-" + groupId;
+            namespacesCache.remove( cacheKey );
+            namespacesCache.remove( repositoryId );
+
             metadataRepository.save();
         }
         catch ( MetadataRepositoryException e )
@@ -991,6 +1031,7 @@ public class DefaultRepositoriesService
         return true;
     }
 
+    @Override
     public Boolean deleteProject( String groupId, String projectId, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -1055,6 +1096,7 @@ public class DefaultRepositoriesService
 
     }
 
+    @Override
     public Boolean isAuthorizedToDeleteArtifacts( String repoId )
         throws ArchivaRestServiceException
     {
@@ -1072,6 +1114,7 @@ public class DefaultRepositoriesService
         }
     }
 
+    @Override
     public RepositoryScanStatistics scanRepositoryDirectoriesNow( String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -1101,7 +1144,7 @@ public class DefaultRepositoriesService
                                  Artifact artifact )
         throws RepositoryMetadataException
     {
-        List<String> availableVersions = new ArrayList<String>();
+        List<String> availableVersions = new ArrayList<>();
         String latestVersion = "";
 
         if ( metadataFile.exists() )
@@ -1151,6 +1194,12 @@ public class DefaultRepositoriesService
         RepositoryMetadataWriter.write( metadata, metadataFile );
         ChecksummedFile checksum = new ChecksummedFile( metadataFile );
         checksum.fixChecksums( algorithms );
+    }
+
+    @Override
+    public StringList getRunningRemoteDownloadIds()
+    {
+        return new StringList( downloadRemoteIndexScheduler.getRunningRemoteDownloadIds() );
     }
 
     public ManagedRepositoryAdmin getManagedRepositoryAdmin()

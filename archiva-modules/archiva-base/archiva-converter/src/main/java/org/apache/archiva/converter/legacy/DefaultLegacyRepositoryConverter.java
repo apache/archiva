@@ -81,6 +81,7 @@ public class DefaultLegacyRepositoryConverter
         defaultLayout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );
     }
 
+    @Override
     public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
                                          List<String> fileExclusionPatterns )
         throws RepositoryConversionException
@@ -101,7 +102,7 @@ public class DefaultLegacyRepositoryConverter
             legacyConverterConsumer.setExcludes( fileExclusionPatterns );
             legacyConverterConsumer.setDestinationRepository( repository );
 
-            List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>( 1 );
+            List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<>( 1 );
             knownConsumers.add( legacyConverterConsumer );
 
             List<InvalidRepositoryContentConsumer> invalidConsumers = Collections.emptyList();

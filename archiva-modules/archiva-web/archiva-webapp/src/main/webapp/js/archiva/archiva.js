@@ -22,7 +22,7 @@ appendArchivaVersion=function(){
 };
 
 timestampNoCache=function(){
-  if (window.archivaRuntimeInfo.version.match("SNAPSHOT$")){
+  if (window.archivaRuntimeInfo.version && window.archivaRuntimeInfo.version.match("SNAPSHOT$")){
     return "&archivaTimestamp="+window.archivaRuntimeInfo.timestamp+(window.archivaRuntimeInfo.devMode?"&_="+jQuery.now():"");
   }
   return "";
@@ -58,17 +58,17 @@ $.ajax({
                 },
           paths: {
               "i18n":"jquery.i18n.properties-1.0.9",
-              "jquery": "jquery-1.9.1.min",
+              "jquery": "jquery-1.11.1.min",
               "jquery.tmpl": "jquery.tmpl",
               "utils": "archiva/utils",
               "startup": "archiva/startup",
-              "jquery.ui": "jquery-ui-1.9.2.custom.min",
+              "jquery.ui": "jquery-ui-1.10.4.min",
               "jquery.ui.widget": "jquery.ui.widget-1.9.2",
-              "jquery.cookie": "jquery.cookie.1.0.0",
+              "jquery.cookie": "jquery.cookie.1.4.1",
               "bootstrap": "bootstrap.2.2.2",
-              "jquery.validate": "jquery.validate-1.9.0",
+              "jquery.validate": "jquery.validate.1.11.1.min",
               "jquery.json": "jquery.json-2.3.min",
-              "knockout": "knockout-2.2.0.debug",
+              "knockout": "knockout-2.3.0.debug",
               "knockout.simpleGrid": "knockout.simpleGrid",
               "knockout.select2": "knockout.select2",
               "knockout.sortable": "knockout-sortable.0.7.2",
@@ -82,7 +82,9 @@ $.ajax({
               "sammy": "sammy.0.7.4",
               "select2": "select2.min-3.2",
               "jqueryFileTree": "jqueryFileTree-1.0.1",
-              "d3": "d3.min.3.1.5",
+              "d3": "d3.v3.min",
+              "typeahead": "typeahead.min.0.9.3",
+              "hogan": "hogan-2.0.0",
               "redback": "redback/redback",
               "redback.roles": "redback/roles",
               "redback.user": "redback/user",
@@ -90,13 +92,8 @@ $.ajax({
               "redback.templates": "redback/redback-tmpl",
               "archiva.cookie-information":"archiva/cookie-information",
               "archiva.templates": "archiva/main-tmpl",
-             // "archiva.repositories": "archiva/repositories",
-             // "archiva.network-proxies": "archiva/network-proxies",
-             // "archiva.proxy-connectors": "archiva/proxy-connectors",
-             // "archiva.repository-groups": "archiva/repository-groups",
               "archiva.artifacts-management": "archiva/artifacts-management",
               "archiva.search": "archiva/search",
-             // "archiva.proxy-connectors-rules": "archiva/proxy-connectors-rules",
               "archiva.docs": "archiva/docs",
               "archiva.main": "archiva/main"
           }

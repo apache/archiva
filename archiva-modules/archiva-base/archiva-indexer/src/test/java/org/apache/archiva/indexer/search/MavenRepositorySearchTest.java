@@ -23,11 +23,16 @@ import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.codehaus.plexus.util.FileUtils;
+import org.easymock.EasyMock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,8 +40,8 @@ import java.util.Collections;
 import java.util.List;
 
 
-@RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@RunWith(ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" })
 public class MavenRepositorySearchTest
     extends AbstractMavenRepositorySearch
 {
@@ -45,13 +50,13 @@ public class MavenRepositorySearchTest
     private void createSimpleIndex( boolean scan )
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
-        files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
-            + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
-            + "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
-        files.add( new File( FileUtil.getBasedir(), "/src/test/" + TEST_REPO_1
-            + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
+        List<File> files = new ArrayList<>();
+        files.add( Paths.get( FileUtil.getBasedir(), "src/test", TEST_REPO_1,
+                              "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ).toFile() );
+        files.add( Paths.get( FileUtil.getBasedir(), "src/test", TEST_REPO_1,
+                              "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ).toFile() );
+        files.add( Paths.get( FileUtil.getBasedir(), "src/test", TEST_REPO_1,
+                              "org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ).toFile() );
 
         createIndex( TEST_REPO_1, files, scan );
     }
@@ -59,7 +64,7 @@ public class MavenRepositorySearchTest
     private void createIndexContainingMoreArtifacts( boolean scan )
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
@@ -81,10 +86,14 @@ public class MavenRepositorySearchTest
     private void createIndexContainingMultipleArtifactsSameVersion( boolean scan )
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
 
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
+
+        files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
+            + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.pom" ) );
+
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0-sources.jar" ) );
 
@@ -100,7 +109,7 @@ public class MavenRepositorySearchTest
         List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
 
         // search artifactId
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -120,7 +129,7 @@ public class MavenRepositorySearchTest
         archivaConfigControl.reset();
 
         // search groupId
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -143,7 +152,7 @@ public class MavenRepositorySearchTest
         List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
 
         // search artifactId
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -163,7 +172,7 @@ public class MavenRepositorySearchTest
         archivaConfigControl.reset();
 
         // search groupId
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -183,11 +192,11 @@ public class MavenRepositorySearchTest
     {
         createIndexContainingMultipleArtifactsSameVersion( false );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         // search artifactId
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -196,7 +205,7 @@ public class MavenRepositorySearchTest
         archivaConfigControl.verify();
 
         assertNotNull( results );
-        assertEquals( 2, results.getTotalHits() );
+        assertEquals( 3, results.getTotalHits() );
 
         SearchResultHit hit = results.getHits().get( 0 );
         assertEquals( "org.apache.archiva", hit.getGroupId() );
@@ -213,11 +222,11 @@ public class MavenRepositorySearchTest
     {
         createIndexContainingMultipleArtifactsSameVersion( true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         // search artifactId
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -250,10 +259,10 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( false );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
         archivaConfigControl.replay();
 
         SearchResults results = search.search( "user", selectedRepos, "archiva search", null, null );
@@ -270,18 +279,18 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         // page 1
         SearchResultLimits limits = new SearchResultLimits( 0 );
         limits.setPageSize( 1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
-        SearchResults results = search.search( "user", selectedRepos, "org", limits, new ArrayList<String>() );
+        SearchResults results = search.search( "user", selectedRepos, "org", limits, Collections.<String>emptyList() );
 
         archivaConfigControl.verify();
 
@@ -297,7 +306,7 @@ public class MavenRepositorySearchTest
         limits = new SearchResultLimits( 1 );
         limits.setPageSize( 1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -319,20 +328,20 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( true );
 
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.1/archiva-search-1.1.jar" ) );
         createIndex( TEST_REPO_2, files, false );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
         selectedRepos.add( TEST_REPO_2 );
 
         config.addManagedRepository( createRepositoryConfig( TEST_REPO_2 ) );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 5 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 5 );
 
         archivaConfigControl.replay();
 
@@ -364,10 +373,10 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( false );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -383,10 +392,10 @@ public class MavenRepositorySearchTest
     public void testNoIndexFound()
         throws Exception
     {
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -401,10 +410,10 @@ public class MavenRepositorySearchTest
     public void testRepositoryNotFound()
         throws Exception
     {
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( "non-existing-repo" );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -421,13 +430,13 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
-        List<String> previousSearchTerms = new ArrayList<String>();
+        List<String> previousSearchTerms = new ArrayList<>();
         previousSearchTerms.add( "archiva-test" );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -450,14 +459,14 @@ public class MavenRepositorySearchTest
     public void testAdvancedSearch()
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.1/archiva-search-1.1.jar" ) );
         createIndex( TEST_REPO_2, files, false );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_2 );
 
         SearchFields searchFields = new SearchFields();
@@ -465,7 +474,7 @@ public class MavenRepositorySearchTest
         searchFields.setVersion( "1.0" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -488,7 +497,7 @@ public class MavenRepositorySearchTest
     {
         createIndexContainingMoreArtifacts( false );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
@@ -500,7 +509,7 @@ public class MavenRepositorySearchTest
         SearchResultLimits limits = new SearchResultLimits( 0 );
         limits.setPageSize( 1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -518,7 +527,7 @@ public class MavenRepositorySearchTest
         limits = new SearchResultLimits( 1 );
         limits.setPageSize( 1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -536,21 +545,21 @@ public class MavenRepositorySearchTest
     public void testAdvancedSearchArtifactIdHasNumericChar()
         throws Exception
     {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         files.add( new File( FileUtil.getBasedir(),
                              "src/test/" + TEST_REPO_1 + "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
         files.add( new File( FileUtil.getBasedir(), "src/test/" + TEST_REPO_1
             + "/com/artifactid-numeric123/1.0/artifactid-numeric123-1.0.jar" ) );
         createIndex( TEST_REPO_1, files, true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
         searchFields.setArtifactId( "artifactid-numeric" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -585,7 +594,7 @@ public class MavenRepositorySearchTest
     public void testAdvancedSearchSearchFieldsAreNull()
         throws Exception
     {
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
@@ -593,7 +602,7 @@ public class MavenRepositorySearchTest
 
         try
         {
-            archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+            EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
             archivaConfigControl.replay();
 
@@ -613,7 +622,7 @@ public class MavenRepositorySearchTest
     public void testAdvancedSearchSearchFieldsAreBlank()
         throws Exception
     {
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
@@ -627,7 +636,7 @@ public class MavenRepositorySearchTest
 
         try
         {
-            archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+            EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
             archivaConfigControl.replay();
 
@@ -649,7 +658,7 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
@@ -660,7 +669,7 @@ public class MavenRepositorySearchTest
         searchFields.setClassName( "org.apache.archiva.test.App" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -684,14 +693,14 @@ public class MavenRepositorySearchTest
     {
         createIndexContainingMoreArtifacts( true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
         searchFields.setPackaging( "jar" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -709,7 +718,7 @@ public class MavenRepositorySearchTest
     {
         createSimpleIndex( true );
 
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
@@ -719,7 +728,7 @@ public class MavenRepositorySearchTest
         searchFields.setPackaging( "war" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndDefaultReturn( archivaConfig.getConfiguration(), config );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
         archivaConfigControl.replay();
 
         SearchResults results = search.search( "user", searchFields, null );
@@ -742,7 +751,7 @@ public class MavenRepositorySearchTest
         searchFields.setClassName( "com.classname.search.App" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -763,14 +772,14 @@ public class MavenRepositorySearchTest
     public void testAdvancedSearchNoIndexFound()
         throws Exception
     {
-        List<String> selectedRepos = new ArrayList<String>();
+        List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
         SearchFields searchFields = new SearchFields();
         searchFields.setGroupId( "org.apache.archiva" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -794,7 +803,7 @@ public class MavenRepositorySearchTest
         searchFields.setClassName( "SomeClass" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -815,7 +824,7 @@ public class MavenRepositorySearchTest
 
         List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 0, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 0, 2 );
 
         archivaConfigControl.replay();
 
@@ -823,7 +832,7 @@ public class MavenRepositorySearchTest
 
         archivaConfigControl.verify();
 
-        log.info( "groupIds: " + groupIds );
+        log.info( "groupIds: {}", groupIds );
 
         assertEquals( 3, groupIds.size() );
         assertTrue( groupIds.contains( "com" ) );
@@ -843,7 +852,7 @@ public class MavenRepositorySearchTest
         searchFields.setClassName( "SomeClass" );
         searchFields.setRepositories( selectedRepos );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -870,10 +879,10 @@ public class MavenRepositorySearchTest
                                          repo.toURI().toURL().toExternalForm(),
                                          indexDirectory.toURI().toURL().toString(), search.getAllIndexCreators() );
 
-        SearchResultLimits limits = new SearchResultLimits( 0 );
+        SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
         limits.setPageSize( 300 );
 
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 5 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 5 );
 
         archivaConfigControl.replay();
 

@@ -26,7 +26,7 @@ import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
-import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.junit.Test;
 
 import javax.inject.Inject;

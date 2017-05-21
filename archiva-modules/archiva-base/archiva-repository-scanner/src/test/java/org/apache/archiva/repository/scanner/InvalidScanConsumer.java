@@ -23,9 +23,12 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -42,66 +45,77 @@ public class InvalidScanConsumer
      * default-value="unset-id"
      */
     private String id = "unset-id";
+
+    private Logger logger = LoggerFactory.getLogger( getClass() );
     
     private int processCount = 0;
 
+    private List<String> paths = new ArrayList<>( );
+
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         /* do nothing */
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void completeScan()
     {
         /* do nothing */
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return null;
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return null;
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
+        logger.info( "processFile: {}", path );
+        paths.add( path );
         processCount++;
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         processFile( path );
     }
 
+    @Override
     public String getDescription()
     {
         return "Bad Content Scan Consumer (for testing)";
     }
 
+    @Override
     public String getId()
     {
         return id;
-    }
-
-    public boolean isPermanent()
-    {
-        return false;
     }
 
     public int getProcessCount()
@@ -117,5 +131,10 @@ public class InvalidScanConsumer
     public void setId( String id )
     {
         this.id = id;
+    }
+
+    public List<String> getPaths()
+    {
+        return paths;
     }
 }

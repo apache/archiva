@@ -25,10 +25,8 @@ import org.apache.archiva.redback.users.AbstractUserManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserManagerException;
-import org.apache.archiva.redback.users.UserManagerListener;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.UserQuery;
-import org.apache.archiva.redback.users.configurable.ConfigurableUserManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +62,7 @@ public class ArchivaConfigurableUsersManager
     private boolean useUsersCache;
 
     @PostConstruct
+    @Override
     public void initialize()
     {
         try
@@ -72,7 +71,7 @@ public class ArchivaConfigurableUsersManager
                 redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getUserManagerImpls();
             log.info( "use userManagerImpls: '{}'", userManagerImpls );
 
-            userManagerPerId = new LinkedHashMap<String, UserManager>( userManagerImpls.size() );
+            userManagerPerId = new LinkedHashMap<>( userManagerImpls.size() );
             for ( String id : userManagerImpls )
             {
                 UserManager userManagerImpl = applicationContext.getBean( "userManager#" + id, UserManager.class );
@@ -95,6 +94,7 @@ public class ArchivaConfigurableUsersManager
         return this.useUsersCache;
     }
 
+    @Override
     public User addUser( User user )
         throws UserManagerException
     {
@@ -108,6 +108,7 @@ public class ArchivaConfigurableUsersManager
         return user;
     }
 
+    @Override
     public void addUserUnchecked( User user )
         throws UserManagerException
     {
@@ -119,6 +120,7 @@ public class ArchivaConfigurableUsersManager
         }
     }
 
+    @Override
     public User createUser( String username, String fullName, String emailAddress )
         throws UserManagerException
     {
@@ -147,12 +149,14 @@ public class ArchivaConfigurableUsersManager
         return user;
     }
 
+    @Override
     public UserQuery createUserQuery()
     {
         return userManagerPerId.values().iterator().next().createUserQuery();
     }
 
 
+    @Override
     public void deleteUser( String username )
         throws UserNotFoundException, UserManagerException
     {
@@ -180,6 +184,7 @@ public class ArchivaConfigurableUsersManager
         }
     }
 
+    @Override
     public void eraseDatabase()
     {
         for ( UserManager userManager : userManagerPerId.values() )
@@ -188,12 +193,12 @@ public class ArchivaConfigurableUsersManager
         }
     }
 
-    public User findUser( String username )
-        throws UserManagerException
+    @Override
+    public User findUser( String username, boolean useCache )
+        throws UserNotFoundException, UserManagerException
     {
-
         User user = null;
-        if ( useUsersCache() )
+        if ( useUsersCache() && useCache )
         {
             user = usersCache.get( username );
             if ( user != null )
@@ -242,18 +247,26 @@ public class ArchivaConfigurableUsersManager
         return user;
     }
 
+    @Override
+    public User findUser( String username )
+        throws UserManagerException
+    {
+        return findUser( username, useUsersCache() );
+    }
+
 
     @Override
     public User getGuestUser()
-        throws UserNotFoundException, UserManagerException
+     throws UserNotFoundException, UserManagerException
     {
         return findUser( GUEST_USERNAME );
     }
 
+    @Override
     public List<User> findUsersByEmailKey( String emailKey, boolean orderAscending )
         throws UserManagerException
     {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
@@ -266,14 +279,15 @@ public class ArchivaConfigurableUsersManager
         return users;
     }
 
+    @Override
     public List<User> findUsersByFullNameKey( String fullNameKey, boolean orderAscending )
         throws UserManagerException
     {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-            List<User> found = userManager.findUsersByFullNameKey( fullNameKey, orderAscending );
+            List<User> found = userManager.findUsersByFullNameKey( fullNameKey, orderAscending );            
             if ( found != null )
             {
                 users.addAll( found );
@@ -282,10 +296,11 @@ public class ArchivaConfigurableUsersManager
         return users;
     }
 
+    @Override
     public List<User> findUsersByQuery( UserQuery query )
         throws UserManagerException
     {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
@@ -298,10 +313,11 @@ public class ArchivaConfigurableUsersManager
         return users;
     }
 
+    @Override
     public List<User> findUsersByUsernameKey( String usernameKey, boolean orderAscending )
         throws UserManagerException
     {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
@@ -314,15 +330,17 @@ public class ArchivaConfigurableUsersManager
         return users;
     }
 
+    @Override
     public String getId()
     {
         return null;
     }
 
+    @Override
     public List<User> getUsers()
         throws UserManagerException
     {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
@@ -335,10 +353,11 @@ public class ArchivaConfigurableUsersManager
         return users;
     }
 
+    @Override
     public List<User> getUsers( boolean orderAscending )
         throws UserManagerException
     {
-        List<User> users = new ArrayList<User>();
+        List<User> users = new ArrayList<>();
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
@@ -351,6 +370,7 @@ public class ArchivaConfigurableUsersManager
         return users;
     }
 
+    @Override
     public boolean isReadOnly()
     {
         boolean readOnly = false;
@@ -362,10 +382,14 @@ public class ArchivaConfigurableUsersManager
         return readOnly;
     }
 
+    @Override
     public User updateUser( User user )
         throws UserNotFoundException, UserManagerException
     {
-        user = userManagerPerId.get( user.getUserManagerId() ).updateUser( user );
+
+        UserManager userManager = userManagerPerId.get( user.getUserManagerId() );
+
+        user = userManager.updateUser( user );
 
         if ( useUsersCache() )
         {
@@ -375,6 +399,7 @@ public class ArchivaConfigurableUsersManager
         return user;
     }
 
+    @Override
     public User updateUser( User user, boolean passwordChangeRequired )
         throws UserNotFoundException, UserManagerException
     {
@@ -424,6 +449,7 @@ public class ArchivaConfigurableUsersManager
     }
 
 
+    @Override
     public boolean userExists( String userName )
         throws UserManagerException
     {
@@ -461,6 +487,7 @@ public class ArchivaConfigurableUsersManager
         return false;
     }
 
+    @Override
     public String getDescriptionKey()
     {
         return "archiva.redback.usermanager.configurable.archiva";

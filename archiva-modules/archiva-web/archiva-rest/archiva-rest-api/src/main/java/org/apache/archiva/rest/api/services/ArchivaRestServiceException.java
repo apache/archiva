@@ -91,4 +91,5 @@ public class ArchivaRestServiceException
     {
         this.fieldName = fieldName;
     }
+
 }

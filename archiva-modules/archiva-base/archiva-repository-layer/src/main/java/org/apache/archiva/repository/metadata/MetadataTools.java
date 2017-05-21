@@ -121,6 +121,7 @@ public class MetadataTools
         lastUpdatedFormat.setTimeZone( DateUtils.UTC_TIME_ZONE );
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isProxyConnector( propertyName ) )
@@ -129,6 +130,7 @@ public class MetadataTools
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* nothing to do */
@@ -349,8 +351,8 @@ public class MetadataTools
     @PostConstruct
     public void initialize()
     {
-        this.artifactPatterns = new ArrayList<String>();
-        this.proxies = new HashMap<String, Set<String>>();
+        this.artifactPatterns = new ArrayList<>();
+        this.proxies = new HashMap<>();
         initConfigVariables();
 
         configuration.addChangeListener( this );
@@ -376,7 +378,7 @@ public class MetadataTools
         {
             // TODO: [monitor] consider a monitor for this event.
             // TODO: consider a read-redo on monitor return code?
-            log.warn( "Unable to read metadata: " + metadataFile.getAbsolutePath(), e );
+            log.warn( "Unable to read metadata: {}", metadataFile.getAbsolutePath(), e );
             return null;
         }
     }
@@ -401,7 +403,7 @@ public class MetadataTools
         {
             // TODO: [monitor] consider a monitor for this event.
             // TODO: consider a read-redo on monitor return code?
-            log.warn( "Unable to read metadata: " + metadataFile.getAbsolutePath(), e );
+            log.warn( "Unable to read metadata: {}", metadataFile.getAbsolutePath(), e );
             return null;
         }
     }
@@ -426,7 +428,7 @@ public class MetadataTools
         {
             // TODO: [monitor] consider a monitor for this event.
             // TODO: consider a read-redo on monitor return code?
-            log.warn( "Unable to read metadata: " + metadataFile.getAbsolutePath(), e );
+            log.warn( "Unable to read metadata: {}", metadataFile.getAbsolutePath(), e );
             return null;
         }
     }
@@ -504,7 +506,7 @@ public class MetadataTools
     private List<ArchivaRepositoryMetadata> getMetadatasForManagedRepository(
         ManagedRepositoryContent managedRepository, String logicalResource )
     {
-        List<ArchivaRepositoryMetadata> metadatas = new ArrayList<ArchivaRepositoryMetadata>();
+        List<ArchivaRepositoryMetadata> metadatas = new ArrayList<>();
         File file = new File( managedRepository.getRepoRoot(), logicalResource );
         if ( file.exists() )
         {
@@ -547,7 +549,7 @@ public class MetadataTools
      * based off of information present in the repository,
      * the maven-metadata.xml files, and the proxy/repository specific
      * metadata file contents.
-     * <p/>
+     * <p>
      * We must treat this as a group or a project metadata file as there is no way to know in advance
      *
      * @param managedRepository the managed repository where the metadata is kept.
@@ -622,7 +624,7 @@ public class MetadataTools
         else
         {
             // Add the plugins to the metadata model.
-            metadata.setPlugins( new ArrayList<Plugin>( allPlugins ) );
+            metadata.setPlugins( new ArrayList<>( allPlugins ) );
 
             // artifact ID was actually the last part of the group
             metadata.setGroupId( metadata.getGroupId() + "." + metadata.getArtifactId() );
@@ -643,12 +645,12 @@ public class MetadataTools
     private void updateMetadataVersions( Collection<String> allVersions, ArchivaRepositoryMetadata metadata )
     {
         // Sort the versions
-        List<String> sortedVersions = new ArrayList<String>( allVersions );
+        List<String> sortedVersions = new ArrayList<>( allVersions );
         Collections.sort( sortedVersions, VersionComparator.getInstance() );
 
         // Split the versions into released and snapshots.
-        List<String> releasedVersions = new ArrayList<String>();
-        List<String> snapshotVersions = new ArrayList<String>();
+        List<String> releasedVersions = new ArrayList<>();
+        List<String> snapshotVersions = new ArrayList<>();
 
         for ( String version : sortedVersions )
         {
@@ -754,7 +756,7 @@ public class MetadataTools
 
     /**
      * Update the metadata based on the following rules.
-     * <p/>
+     * <p>
      * 1) If this is a SNAPSHOT reference, then utilize the proxy/repository specific
      * metadata files to represent the current / latest SNAPSHOT available.
      * 2) If this is a RELEASE reference, and the metadata file does not exist, then
@@ -795,7 +797,7 @@ public class MetadataTools
             }
 
             // sort the list to determine to aide in determining the Latest version.
-            List<String> sortedVersions = new ArrayList<String>();
+            List<String> sortedVersions = new ArrayList<>();
             sortedVersions.addAll( snapshotVersions );
             Collections.sort( sortedVersions, new VersionComparator() );
 

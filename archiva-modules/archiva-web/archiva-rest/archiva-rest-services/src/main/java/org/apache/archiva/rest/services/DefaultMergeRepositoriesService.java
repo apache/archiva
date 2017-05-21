@@ -20,7 +20,7 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -57,6 +57,7 @@ public class DefaultMergeRepositoriesService
     private Maven2RepositoryMerger repositoryMerger;
 
 
+    @Override
     public List<Artifact> getMergeConflictedArtifacts( String sourceRepositoryId, String targetRepositoryId )
         throws ArchivaRestServiceException
     {
@@ -79,6 +80,7 @@ public class DefaultMergeRepositoriesService
         }
     }
 
+    @Override
     public void mergeRepositories( String sourceRepositoryId, String targetRepositoryId, boolean skipConflicts )
         throws ArchivaRestServiceException
     {
@@ -197,7 +199,7 @@ public class DefaultMergeRepositoriesService
                                         String sourceRepoId, String repoid )
         throws RepositoryMergerException
     {
-        List<ArtifactMetadata> artifactsWithOutSnapshots = new ArrayList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifactsWithOutSnapshots = new ArrayList<>();
         for ( ArtifactMetadata metadata : sourceArtifacts )
         {
             if ( VersionUtil.isSnapshot( metadata.getProjectVersion() ) )

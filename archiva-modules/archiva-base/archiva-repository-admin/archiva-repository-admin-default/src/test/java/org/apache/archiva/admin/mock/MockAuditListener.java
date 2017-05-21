@@ -18,8 +18,8 @@ package org.apache.archiva.admin.mock;
  * under the License.
  */
 
-import org.apache.archiva.audit.AuditEvent;
-import org.apache.archiva.audit.AuditListener;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.archiva.repository.events.AuditListener;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,8 +33,9 @@ public class MockAuditListener
     implements AuditListener
 {
 
-    private List<AuditEvent> auditEvents = new ArrayList<AuditEvent>();
+    private List<AuditEvent> auditEvents = new ArrayList<>();
 
+    @Override
     public void auditEvent( AuditEvent event )
     {
         auditEvents.add( event );

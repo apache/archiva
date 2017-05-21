@@ -21,10 +21,10 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Test;
 
+import javax.ws.rs.ForbiddenException;
 import java.util.List;
 
 /**
@@ -35,7 +35,7 @@ public class RemoteRepositoriesServiceTest
 {
 
 
-    @Test (expected = ServerWebApplicationException.class)
+    @Test( expected = ForbiddenException.class )
     public void listRemoteRepositoriesKarmaFailed()
         throws Exception
     {
@@ -44,9 +44,9 @@ public class RemoteRepositoriesServiceTest
         {
             assertFalse( service.getRemoteRepositories().isEmpty() );
         }
-        catch ( ServerWebApplicationException e )
+        catch ( ForbiddenException e )
         {
-            assertEquals( 403, e.getStatus() );
+            assertEquals( 403, e.getResponse().getStatus() );
             throw e;
         }
     }
@@ -146,11 +146,25 @@ public class RemoteRepositoriesServiceTest
 
     }
 
+    @Test
+    public void checkRemoteConnectivity()
+            throws Exception {
+        RemoteRepositoriesService service = getRemoteRepositoriesService();
+
+        WebClient.client(service).header("Authorization", authorizationHeader);
+
+        int initialSize = service.getRemoteRepositories().size();
+
+        service.addRemoteRepository(getRemoteRepository());
+
+        assertTrue(service.checkRemoteConnectivity("id-new"));
+
+    }
+
     RemoteRepository getRemoteRepository()
     {
         return new RemoteRepository( "id-new", "new one", "http://foo.com", "default", "foo", "foopassword", 120,
                                      "cool repo" );
     }
-
 
 }

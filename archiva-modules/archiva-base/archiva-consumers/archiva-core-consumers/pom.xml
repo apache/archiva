@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-consumers</artifactId>
-    <version>1.4-M5-SNAPSHOT</version>
+    <version>2.2.2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-core-consumers</artifactId>
   <packaging>bundle</packaging>
@@ -140,6 +140,21 @@
       <artifactId>wagon-http-lightweight</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <pluginManagement>
@@ -155,6 +170,7 @@
               <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
               <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
               <archiva.user.configFileName>${project.build.directory}/archiva.xml</archiva.user.configFileName>
+              <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
             </systemPropertyVariables>
           </configuration>
         </plugin>

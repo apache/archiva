@@ -19,6 +19,9 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.DigestInputStream;
@@ -26,13 +29,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.NullOutputStream;
-
 /**
- * Checksum - simple checksum hashing routines. 
- *
- *
+ * Checksum - simple checksum hashing routines.
  */
 public class Checksum
 {
@@ -53,7 +51,7 @@ public class Checksum
         }
     }
 
-    protected final MessageDigest md;
+    private final MessageDigest md;
 
     private ChecksumAlgorithm checksumAlgorithm;
 
@@ -67,8 +65,9 @@ public class Checksum
         catch ( NoSuchAlgorithmException e )
         {
             // Not really possible, but here none-the-less
-            throw new IllegalStateException( "Unable to initialize MessageDigest algorithm " + checksumAlgorithm.getAlgorithm()
-                + " : " + e.getMessage(), e );
+            throw new IllegalStateException(
+                "Unable to initialize MessageDigest algorithm " + checksumAlgorithm.getAlgorithm() + " : "
+                    + e.getMessage(), e );
         }
     }
 
@@ -96,9 +95,10 @@ public class Checksum
     public Checksum update( InputStream stream )
         throws IOException
     {
-        DigestInputStream dig = new DigestInputStream( stream, md );
-        IOUtils.copy( dig, new NullOutputStream() );
-
+        try (DigestInputStream dig = new DigestInputStream( stream, md ))
+        {
+            IOUtils.copy( dig, new NullOutputStream() );
+        }
         return this;
     }
 }

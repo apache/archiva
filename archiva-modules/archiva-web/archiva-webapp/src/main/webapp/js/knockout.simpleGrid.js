@@ -29,7 +29,9 @@
       this.currentPageIndex = ko.observable(0);
       this.pageSize = configuration.pageSize || 5;
       this.columns = configuration.columns;
-
+      // true for prev next nav
+      this.innerNavigation = configuration.innerNavigation;
+      this.navsize = configuration.navsize || 10; 
       this.itemsOnCurrentPage = ko.computed(function () {
           var startIndex = this.pageSize * this.currentPageIndex();
           var items = this.data.slice(startIndex, startIndex + this.pageSize);
@@ -67,14 +69,16 @@
         // Allow the default templates to be overridden
         var gridTemplateName      = allBindings.simpleGridTemplate || "ko_usersGrid_grid",
             pageLinksTemplateName = allBindings.simpleGridPagerTemplate || "ko_simpleGrid_pageLinks";
-
+//ko_simpleGrid_pageLinksinnernav
+        if (viewModel.innerNavigation) {
+            pageLinksTemplateName = "ko_simpleGrid_pageLinksinnernav";
+        }
         // Render the main grid
         var gridContainer = element.appendChild(document.createElement("DIV"));
         ko.renderTemplate(gridTemplateName, viewModel, { templateEngine: templateEngine }, gridContainer, "replaceNode")
             .subscribe(viewModel.gridUpdateCallBack?viewModel.gridUpdateCallBack:function(){});
 
         if (viewModel.gridUpdateCallBack) viewModel.gridUpdateCallBack();
-
         // Render the page links
         var pageLinksContainer = $("#"+allBindings.pageLinksId).get(0);
         var renderedTemplate = ko.renderTemplate(pageLinksTemplateName, viewModel, { templateEngine: templateEngine }, pageLinksContainer, "replaceNode");

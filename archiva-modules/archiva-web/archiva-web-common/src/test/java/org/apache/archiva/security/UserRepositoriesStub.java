@@ -34,11 +34,13 @@ public class UserRepositoriesStub
 {
     private List<String> repoIds = Collections.singletonList( "test-repo" );
 
+    @Override
     public void createMissingRepositoryRoles( String repoId )
         throws ArchivaSecurityException
     {
     }
 
+    @Override
     public List<String> getObservableRepositoryIds( String principal )
         throws ArchivaSecurityException
     {
@@ -50,17 +52,20 @@ public class UserRepositoriesStub
         this.repoIds = repoIds;
     }
 
+    @Override
     public boolean isAuthorizedToUploadArtifacts( String principal, String repoId )
         throws ArchivaSecurityException
     {
         return true;
     }
 
+    @Override
     public boolean isAuthorizedToDeleteArtifacts( String principal, String repoId )
     {
         return true;
     }
 
+    @Override
     public List<String> getManagableRepositoryIds( String principal )
         throws ArchivaSecurityException
     {
@@ -77,9 +82,15 @@ public class UserRepositoriesStub
         this.repoIds = repoIds;
     }
 
+    @Override
     public List<ManagedRepository> getAccessibleRepositories( String principal )
         throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException
     {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<ManagedRepository> getManagableRepositories(String principal) throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException {
         return Collections.emptyList();
     }
 }

@@ -34,7 +34,6 @@ import org.apache.archiva.redback.policy.PasswordEncoder;
 import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +67,8 @@ public class ArchivaUserManagerAuthenticator
 
     private List<UserManager> userManagers;
 
+    private boolean valid = false;
+
     @PostConstruct
     @Override
     public void initialize()
@@ -78,20 +79,23 @@ public class ArchivaUserManagerAuthenticator
             List<String> userManagerImpls =
                 redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getUserManagerImpls();
 
-            userManagers = new ArrayList<UserManager>( userManagerImpls.size() );
+            userManagers = new ArrayList<>( userManagerImpls.size() );
 
             for ( String beanId : userManagerImpls )
             {
                 userManagers.add( applicationContext.getBean( "userManager#" + beanId, UserManager.class ) );
             }
+            valid=true;
         }
         catch ( RepositoryAdminException e )
         {
-            throw new AuthenticationException( e.getMessage(), e );
+            log.error("Error during repository initialization "+e.getMessage(),e);
+            // throw new AuthenticationException( e.getMessage(), e );
         }
     }
 
 
+    @Override
     public AuthenticationResult authenticate( AuthenticationDataSource ds )
         throws AuthenticationException, AccountLockedException, MustChangePasswordException
     {
@@ -99,7 +103,7 @@ public class ArchivaUserManagerAuthenticator
         String username = null;
         Exception resultException = null;
         PasswordBasedAuthenticationDataSource source = (PasswordBasedAuthenticationDataSource) ds;
-        List<AuthenticationFailureCause> authnResultErrors = new ArrayList<AuthenticationFailureCause>();
+        List<AuthenticationFailureCause> authnResultErrors = new ArrayList<>();
 
         for ( UserManager userManager : userManagers )
         {
@@ -214,13 +218,19 @@ public class ArchivaUserManagerAuthenticator
         return new AuthenticationResult( authenticationSuccess, username, resultException, authnResultErrors );
     }
 
+    @Override
     public boolean supportsDataSource( AuthenticationDataSource source )
     {
         return ( source instanceof PasswordBasedAuthenticationDataSource );
     }
 
+    @Override
     public String getId()
     {
         return "ArchivaUserManagerAuthenticator";
+    }
+
+    public boolean isValid() {
+        return valid;
     }
 }

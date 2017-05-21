@@ -54,6 +54,7 @@ public class ArchivaServletAuthenticator
     @Inject
     private SecuritySystem securitySystem;
 
+    @Override
     public boolean isAuthenticated( HttpServletRequest request, AuthenticationResult result )
         throws AuthenticationException, AccountLockedException, MustChangePasswordException
     {
@@ -65,6 +66,7 @@ public class ArchivaServletAuthenticator
         return true;
     }
 
+    @Override
     public boolean isAuthorized( HttpServletRequest request, SecuritySession securitySession, String repositoryId,
                                  String permission )
         throws AuthorizationException, UnauthorizedException
@@ -77,8 +79,8 @@ public class ArchivaServletAuthenticator
         {
             if ( authzResult.getException() != null )
             {
-                log.info( "Authorization Denied [ip=" + request.getRemoteAddr() + ",permission=" + permission + ",repo="
-                              + repositoryId + "] : " + authzResult.getException().getMessage() );
+                log.info( "Authorization Denied [ip={},permission={},repo={}] : {}", request.getRemoteAddr(),
+                          permission, repositoryId, authzResult.getException().getMessage() );
 
                 throw new UnauthorizedException( "Access denied for repository " + repositoryId );
             }
@@ -88,6 +90,7 @@ public class ArchivaServletAuthenticator
         return true;
     }
 
+    @Override
     public boolean isAuthorized( String principal, String repoId, String permission )
         throws UnauthorizedException
     {

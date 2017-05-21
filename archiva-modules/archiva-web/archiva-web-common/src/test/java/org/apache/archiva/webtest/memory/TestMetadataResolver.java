@@ -36,25 +36,27 @@ import java.util.Set;
 public class TestMetadataResolver
     implements MetadataResolver
 {
-    private Map<String, ProjectVersionMetadata> projectVersions = new HashMap<String, ProjectVersionMetadata>();
+    private Map<String, ProjectVersionMetadata> projectVersions = new HashMap<>();
 
-    private Map<String, List<ArtifactMetadata>> artifacts = new HashMap<String, List<ArtifactMetadata>>();
+    private Map<String, List<ArtifactMetadata>> artifacts = new HashMap<>();
 
     private Map<String, List<ProjectVersionReference>> references =
         new HashMap<String, List<ProjectVersionReference>>();
 
-    private Map<String, List<String>> namespaces = new HashMap<String, List<String>>();
+    private Map<String, List<String>> namespaces = new HashMap<>();
 
-    private Map<String, Collection<String>> projectsInNamespace = new HashMap<String, Collection<String>>();
+    private Map<String, Collection<String>> projectsInNamespace = new HashMap<>();
 
-    private Map<String, Collection<String>> versionsInProject = new HashMap<String, Collection<String>>();
+    private Map<String, Collection<String>> versionsInProject = new HashMap<>();
 
+    @Override
     public ProjectVersionMetadata resolveProjectVersion( RepositorySession repositorySession, String repoId,
                                                          String namespace, String projectId, String projectVersion )
     {
         return projectVersions.get( createMapKey( repoId, namespace, projectId, projectVersion ) );
     }
 
+    @Override
     public Collection<ProjectVersionReference> resolveProjectReferences( RepositorySession repositorySession,
                                                                          String repoId, String namespace,
                                                                          String projectId, String projectVersion )
@@ -64,11 +66,13 @@ public class TestMetadataResolver
         return projectVersionReferences;
     }
 
+    @Override
     public Collection<String> resolveRootNamespaces( RepositorySession repositorySession, String repoId )
     {
         return resolveNamespaces( repositorySession, repoId, null );
     }
 
+    @Override
     public Collection<String> resolveNamespaces( RepositorySession repositorySession, String repoId,
                                                  String baseNamespace )
     {
@@ -92,12 +96,14 @@ public class TestMetadataResolver
         return namespaces;
     }
 
+    @Override
     public Collection<String> resolveProjects( RepositorySession repositorySession, String repoId, String namespace )
     {
         Collection<String> list = projectsInNamespace.get( namespace );
         return list != null ? list : Collections.<String>emptyList();
     }
 
+    @Override
     public Collection<String> resolveProjectVersions( RepositorySession repositorySession, String repoId,
                                                       String namespace, String projectId )
     {
@@ -105,6 +111,7 @@ public class TestMetadataResolver
         return list != null ? list : Collections.<String>emptyList();
     }
 
+    @Override
     public Collection<ArtifactMetadata> resolveArtifacts( RepositorySession repositorySession, String repoId,
                                                           String namespace, String projectId, String projectVersion )
     {

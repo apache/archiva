@@ -36,47 +36,52 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Path( "/remoteRepositoriesService/" )
+@Path("/remoteRepositoriesService/")
 public interface RemoteRepositoriesService
 {
-    @Path( "getRemoteRepositories" )
+    @Path("getRemoteRepositories")
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
     List<RemoteRepository> getRemoteRepositories()
         throws ArchivaRestServiceException;
 
-    @Path( "getRemoteRepository/{repositoryId}" )
+    @Path("getRemoteRepository/{repositoryId}")
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    RemoteRepository getRemoteRepository( @PathParam( "repositoryId" ) String repositoryId )
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
+    RemoteRepository getRemoteRepository( @PathParam("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
-    @Path( "deleteRemoteRepository/{repositoryId}" )
+    @Path("deleteRemoteRepository/{repositoryId}")
     @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
-    Boolean deleteRemoteRepository( @PathParam( "repositoryId" ) String repositoryId )
-        throws Exception;
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
+    Boolean deleteRemoteRepository( @PathParam("repositoryId") String repositoryId )
+        throws ArchivaRestServiceException;
 
 
-    @Path( "addRemoteRepository" )
+    @Path("addRemoteRepository")
     @POST
-    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
     Boolean addRemoteRepository( RemoteRepository remoteRepository )
-        throws Exception;
+        throws ArchivaRestServiceException;
 
 
-    @Path( "updateRemoteRepository" )
+    @Path("updateRemoteRepository")
     @POST
-    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION )
+    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
     Boolean updateRemoteRepository( RemoteRepository remoteRepository )
-        throws Exception;
+        throws ArchivaRestServiceException;
 
-
+    @Path("checkRemoteConnectivity/{repositoryId}")
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+    @RedbackAuthorization(permissions = ArchivaRoleConstants.OPERATION_MANAGE_CONFIGURATION)
+    Boolean checkRemoteConnectivity( @PathParam( "repositoryId" ) String repositoryId )
+        throws ArchivaRestServiceException;
 }

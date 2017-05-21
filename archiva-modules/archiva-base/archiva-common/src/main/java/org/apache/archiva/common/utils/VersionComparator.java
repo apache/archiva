@@ -29,36 +29,38 @@ import java.util.List;
 
 /**
  * VersionComparator - compare the parts of two version strings.
- * <p/>
+ * <p>
  * Technique.
- * <p/>
+ * </p>
+ * <p>
  * * Split the version strings into parts by splitting on <code>"-._"</code> first, then breaking apart words from numbers.
- * <p/>
+ * </p>
  * <code>
  * "1.0"         = "1", "0"
  * "1.0-alpha-1" = "1", "0", "alpha", "1"
  * "2.0-rc2"     = "2", "0", "rc", "2"
  * "1.3-m2"      = "1", "3", "m", "3"
  * </code>
- * <p/>
+ * <p>
  * compare each part individually, and when they do not match, perform the following test.
- * <p/>
+ * </p>
+ * <p>
  * Numbers are calculated per normal comparison rules.
  * Words that are part of the "special word list" will be treated as their index within that heirarchy.
  * Words that cannot be identified as special, are treated using normal case-insensitive comparison rules.
- *
+ * </p>
  *
  */
 public class VersionComparator
     implements Comparator<String>
 {
-    private static Comparator<String> INSTANCE = new VersionComparator();
+    private static final Comparator<String> INSTANCE = new VersionComparator();
 
-    private List<String> specialWords;
+    private final List<String> specialWords;
 
     public VersionComparator()
     {
-        specialWords = new ArrayList<String>( 23 );
+        specialWords = new ArrayList<>( 23 );
 
         // ids that refer to LATEST
         specialWords.add( "final" );
@@ -95,6 +97,7 @@ public class VersionComparator
         return INSTANCE;
     }
 
+    @Override
     public int compare( String o1, String o2 )
     {
         if ( o1 == null && o2 == null )
@@ -201,7 +204,7 @@ public class VersionComparator
         int modeDigit = 1;
         int modeText = 2;
 
-        List<String> parts = new ArrayList<String>();
+        List<String> parts = new ArrayList<>();
         int len = version.length();
         int i = 0;
         int start = 0;

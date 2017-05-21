@@ -18,7 +18,6 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.RepositoryCommonValidator;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
@@ -58,6 +57,7 @@ public class DefaultManagedRepositoriesService
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
+    @Override
     public List<ManagedRepository> getManagedRepositories()
         throws ArchivaRestServiceException
     {
@@ -73,6 +73,7 @@ public class DefaultManagedRepositoriesService
         }
     }
 
+    @Override
     public ManagedRepository getManagedRepository( String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -88,6 +89,7 @@ public class DefaultManagedRepositoriesService
     }
 
 
+    @Override
     public Boolean deleteManagedRepository( String repoId, boolean deleteContent )
         throws ArchivaRestServiceException
     {
@@ -103,6 +105,7 @@ public class DefaultManagedRepositoriesService
         }
     }
 
+    @Override
     public ManagedRepository addManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException
     {
@@ -125,6 +128,7 @@ public class DefaultManagedRepositoriesService
     }
 
 
+    @Override
     public Boolean updateManagedRepository( ManagedRepository managedRepository )
         throws ArchivaRestServiceException
     {
@@ -142,6 +146,7 @@ public class DefaultManagedRepositoriesService
         }
     }
 
+    @Override
     public Boolean fileLocationExists( String fileLocation )
         throws ArchivaRestServiceException
     {
@@ -149,6 +154,7 @@ public class DefaultManagedRepositoriesService
         return new File( location ).exists();
     }
 
+    @Override
     public ArchivaRepositoryStatistics getManagedRepositoryStatistics( String repositoryId, String lang )
         throws ArchivaRestServiceException
     {
@@ -165,12 +171,12 @@ public class DefaultManagedRepositoriesService
             }
             catch ( MetadataRepositoryException e )
             {
-                log.warn( "Error retrieving repository statistics: " + e.getMessage(), e );
+                log.warn( "Error retrieving repository statistics: {}", e.getMessage(), e );
             }
             if ( stats != null )
             {
                 ArchivaRepositoryStatistics archivaRepositoryStatistics =
-                    new BeanReplicator().replicateBean( stats, ArchivaRepositoryStatistics.class );
+                    getModelMapper().map( stats, ArchivaRepositoryStatistics.class );
                 archivaRepositoryStatistics.setDuration( archivaRepositoryStatistics.getScanEndTime().getTime()
                                                              - archivaRepositoryStatistics.getScanStartTime().getTime() );
                 archivaRepositoryStatistics.setLastScanDate(
@@ -189,6 +195,7 @@ public class DefaultManagedRepositoriesService
         return null;
     }
 
+    @Override
     public String getPomSnippet( String repositoryId )
         throws ArchivaRestServiceException
     {

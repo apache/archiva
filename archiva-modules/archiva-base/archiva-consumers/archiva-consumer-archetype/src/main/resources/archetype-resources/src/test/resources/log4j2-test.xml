@@ -19,7 +19,7 @@
   -->
 
 
-<configuration status="debug">
+<configuration>
   <appenders>
     <Console name="console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d [%t] %-5p %c %x - %m%n"/>
@@ -27,7 +27,7 @@
   </appenders>
   <loggers>
 
-    <logger name="org.springframework" level="info"/>
+    <logger name="org.springframework" level="error"/>
 
     <root level="info">
       <appender-ref ref="console"/>

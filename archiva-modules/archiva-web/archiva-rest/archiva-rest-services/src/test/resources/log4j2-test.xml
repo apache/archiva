@@ -22,7 +22,7 @@
 <configuration status="debug">
   <appenders>
     <Console name="console" target="SYSTEM_OUT">
-      <PatternLayout pattern="%d [%t] %-5p %c %x - %m%n"/>
+      <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%L] [%t] %-5level %logger{3} - %msg%n}" />
     </Console>
   </appenders>
   <loggers>

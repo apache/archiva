@@ -26,10 +26,9 @@ import java.io.Serializable;
 /**
  * Information about the CI system used by the project.
  *
- * @todo considering moving this to a facet - avoid referring to it externally
+ * TODO considering moving this to a facet - avoid referring to it externally
  */
 @XmlRootElement(name = "ciManagement")
-@Entity
 public class CiManagement
     implements Serializable
 {
@@ -42,6 +41,17 @@ public class CiManagement
      * The base URL of the CI system.
      */
     private String url;
+
+    public CiManagement()
+    {
+        // no op
+    }
+
+    public CiManagement( String system, String url )
+    {
+        this.system = system;
+        this.url = url;
+    }
 
     public String getUrl()
     {
@@ -61,5 +71,14 @@ public class CiManagement
     public void setSystem( String system )
     {
         this.system = system;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "CiManagement{" +
+            "system='" + system + '\'' +
+            ", url='" + url + '\'' +
+            '}';
     }
 }

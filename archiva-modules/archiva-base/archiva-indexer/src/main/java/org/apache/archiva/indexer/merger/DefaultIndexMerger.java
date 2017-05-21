@@ -18,9 +18,6 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
-import com.google.common.io.Files;
-
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
@@ -52,15 +49,7 @@ public class DefaultIndexMerger
     implements IndexMerger
 {
 
-    /**
-     * default tmp created group index ttl in minutes
-     */
-    static final int DEFAULT_GROUP_INDEX_TTL = 30;
-
     private Logger log = LoggerFactory.getLogger( getClass() );
-
-    @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     private MavenIndexerUtils mavenIndexerUtils;
 
@@ -68,7 +57,9 @@ public class DefaultIndexMerger
 
     private IndexPacker indexPacker;
 
-    private List<TemporaryGroupIndex> temporaryGroupIndexes = new CopyOnWriteArrayList<TemporaryGroupIndex>();
+    private List<TemporaryGroupIndex> temporaryGroupIndexes = new CopyOnWriteArrayList<>();
+
+    private List<String> runningGroups = new CopyOnWriteArrayList<String>();
 
     @Inject
     public DefaultIndexMerger( PlexusSisuBridge plexusSisuBridge, MavenIndexerUtils mavenIndexerUtils )
@@ -79,22 +70,33 @@ public class DefaultIndexMerger
         indexPacker = plexusSisuBridge.lookup( IndexPacker.class, "default" );
     }
 
+    @Override
     public IndexingContext buildMergedIndex( IndexMergerRequest indexMergerRequest )
         throws IndexMergerException
     {
+        String groupId = indexMergerRequest.getGroupId();
+
+        if ( runningGroups.contains( groupId ) )
+        {
+            log.info( "skip build merge remote indexes for id: '{}' as already running", groupId );
+            return null;
+        }
+
+        runningGroups.add( groupId );
+
         StopWatch stopWatch = new StopWatch();
         stopWatch.reset();
         stopWatch.start();
-        File tempRepoFile = Files.createTempDir();
-        tempRepoFile.deleteOnExit();
 
-        String tempRepoId = tempRepoFile.getName();
+        File mergedIndexDirectory = indexMergerRequest.getMergedIndexDirectory();
+
+        String tempRepoId = mergedIndexDirectory.getName();
 
         try
         {
-            File indexLocation = new File( tempRepoFile, indexMergerRequest.getMergedIndexPath() );
+            File indexLocation = new File( mergedIndexDirectory, indexMergerRequest.getMergedIndexPath() );
             IndexingContext indexingContext =
-                indexer.addIndexingContext( tempRepoId, tempRepoId, tempRepoFile, indexLocation, null, null,
+                indexer.addIndexingContext( tempRepoId, tempRepoId, mergedIndexDirectory, indexLocation, null, null,
                                             mavenIndexerUtils.getAllIndexCreators() );
 
             for ( String repoId : indexMergerRequest.getRepositoriesIds() )
@@ -113,8 +115,12 @@ public class DefaultIndexMerger
                 IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexLocation );
                 indexPacker.packIndex( request );
             }
-            temporaryGroupIndexes.add(
-                new TemporaryGroupIndex( tempRepoFile, tempRepoId, indexMergerRequest.getGroupId(), indexMergerRequest.getMergedIndexTtl() ) );
+
+            if ( indexMergerRequest.isTemporary() )
+            {
+                temporaryGroupIndexes.add( new TemporaryGroupIndex( mergedIndexDirectory, tempRepoId, groupId,
+                                                                    indexMergerRequest.getMergedIndexTtl() ) );
+            }
             stopWatch.stop();
             log.info( "merged index for repos {} in {} s", indexMergerRequest.getRepositoriesIds(),
                       stopWatch.getTime() );
@@ -128,9 +134,14 @@ public class DefaultIndexMerger
         {
             throw new IndexMergerException( e.getMessage(), e );
         }
+        finally
+        {
+            runningGroups.remove( groupId );
+        }
     }
 
     @Async
+    @Override
     public void cleanTemporaryGroupIndex( TemporaryGroupIndex temporaryGroupIndex )
     {
         if ( temporaryGroupIndex == null )
@@ -158,6 +169,7 @@ public class DefaultIndexMerger
         }
     }
 
+    @Override
     public Collection<TemporaryGroupIndex> getTemporaryGroupIndexes()
     {
         return this.temporaryGroupIndexes;

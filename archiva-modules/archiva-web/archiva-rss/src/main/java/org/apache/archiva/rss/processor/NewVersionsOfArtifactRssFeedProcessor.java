@@ -54,15 +54,13 @@ public class NewVersionsOfArtifactRssFeedProcessor
 
     private static final String desc = "These are the new versions of artifact ";
 
-    /**
-     *
-     */
     @Inject
     private RssFeedGenerator generator;
 
     /**
      * Process all versions of the artifact which had a rss feed request.
      */
+    @Override
     public SyndFeed process( Map<String, String> reqParams, MetadataRepository metadataRepository )
         throws FeedException
     {
@@ -81,7 +79,7 @@ public class NewVersionsOfArtifactRssFeedProcessor
                                                    MetadataRepository metadataRepository )
         throws FeedException
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifacts = new ArrayList<>();
         try
         {
             for ( String repoId : metadataRepository.getRepositories() )
@@ -106,7 +104,7 @@ public class NewVersionsOfArtifactRssFeedProcessor
 
         long tmp = 0;
         RssFeedEntry entry = null;
-        List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
+        List<RssFeedEntry> entries = new ArrayList<>();
         String description = "";
         int idx = 0;
         for ( ArtifactMetadata artifact : artifacts )
@@ -151,11 +149,13 @@ public class NewVersionsOfArtifactRssFeedProcessor
                                        entries );
     }
 
+    @Override
     public String getTitle()
     {
         return title;
     }
 
+    @Override
     public String getDescription()
     {
         return desc;

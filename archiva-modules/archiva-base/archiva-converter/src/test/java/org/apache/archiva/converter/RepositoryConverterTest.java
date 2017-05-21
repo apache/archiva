@@ -65,6 +65,7 @@ public class RepositoryConverterTest
     PlexusSisuBridge plexusSisuBridge;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -95,6 +96,7 @@ public class RepositoryConverterTest
         //repositoryConverter = (LegacyRepositoryConverter) lookup( LegacyRepositoryConverter.ROLE, "default" );
     }
 
+    @Override
     protected void tearDown()
         throws Exception
     {
@@ -154,7 +156,7 @@ public class RepositoryConverterTest
     {
         File legacyRepoDir = new File( sourceRepository.getBasedir() );
         File destRepoDir = new File( targetRepository.getLocation() );
-        List<String> excludes = new ArrayList<String>();
+        List<String> excludes = new ArrayList<>();
         repositoryConverter.convertLegacyRepository( legacyRepoDir, destRepoDir, excludes );
     }
 }

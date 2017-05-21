@@ -51,6 +51,12 @@ public class RepositoryGroup
      */
     private int mergedIndexTtl = 30;
 
+    /**
+     * default model value is empty so none
+     * @since 2.0.0
+     */
+    private String cronExpression;
+
     public RepositoryGroup()
     {
         // no op
@@ -91,7 +97,7 @@ public class RepositoryGroup
     {
         if ( this.repositories == null )
         {
-            this.repositories = new ArrayList<String>( 0 );
+            this.repositories = new ArrayList<>( 0 );
         }
 
         return this.repositories;
@@ -160,6 +166,23 @@ public class RepositoryGroup
         return this;
     }
 
+    public String getCronExpression()
+    {
+        return cronExpression;
+    }
+
+    public void setCronExpression( String cronExpression )
+    {
+        this.cronExpression = cronExpression;
+    }
+
+    public RepositoryGroup cronExpression( String mergedIndexCronExpression )
+    {
+        this.cronExpression = mergedIndexCronExpression;
+        return this;
+    }
+
+    @Override
     public boolean equals( Object other )
     {
         if ( this == other )
@@ -178,6 +201,7 @@ public class RepositoryGroup
         return result;
     }
 
+    @Override
     public int hashCode()
     {
         int result = 17;
@@ -188,10 +212,12 @@ public class RepositoryGroup
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder();
-        sb.append( "RepositoryGroup" );
-        sb.append( "{id='" ).append( id ).append( '\'' );
+        final StringBuilder sb = new StringBuilder( "RepositoryGroup{" );
+        sb.append( "id='" ).append( id ).append( '\'' );
         sb.append( ", repositories=" ).append( repositories );
+        sb.append( ", mergedIndexPath='" ).append( mergedIndexPath ).append( '\'' );
+        sb.append( ", mergedIndexTtl=" ).append( mergedIndexTtl );
+        sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
         sb.append( '}' );
         return sb.toString();
     }

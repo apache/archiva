@@ -40,6 +40,9 @@ import org.apache.jackrabbit.commons.JcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableMap;
+
+import javax.jcr.InvalidItemStateException;
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -55,6 +58,9 @@ import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
+import javax.jcr.query.Row;
+import javax.jcr.query.RowIterator;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -66,11 +72,12 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * @todo below: revise storage format for project version metadata
- * @todo revise reference storage
+ * TODO below: revise storage format for project version metadata
+ * TODO revise reference storage
  */
 public class JcrMetadataRepository
     implements MetadataRepository
@@ -116,7 +123,6 @@ public class JcrMetadataRepository
 //        {
 //            session.getWorkspace().getNamespaceRegistry().registerNamespace( facetId, facetId );
 //        }
-
         Workspace workspace = session.getWorkspace();
         NamespaceRegistry registry = workspace.getNamespaceRegistry();
 
@@ -150,6 +156,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void updateProject( String repositoryId, ProjectMetadata project )
         throws MetadataRepositoryException
     {
@@ -171,6 +178,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void updateArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifactMeta )
         throws MetadataRepositoryException
@@ -227,6 +235,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void updateProjectVersion( String repositoryId, String namespace, String projectId,
                                       ProjectVersionMetadata versionMetadata )
         throws MetadataRepositoryException
@@ -357,6 +366,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void updateNamespace( String repositoryId, String namespace )
         throws MetadataRepositoryException
     {
@@ -371,6 +381,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void removeProject( String repositoryId, String namespace, String projectId )
         throws MetadataRepositoryException
     {
@@ -401,6 +412,7 @@ public class JcrMetadataRepository
     }
 
 
+    @Override
     public boolean hasMetadataFacet( String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
@@ -420,10 +432,11 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public List<String> getMetadataFacets( String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
-        List<String> facets = new ArrayList<String>();
+        List<String> facets = new ArrayList<>();
 
         try
         {
@@ -464,6 +477,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
         throws MetadataRepositoryException
     {
@@ -482,7 +496,7 @@ public class JcrMetadataRepository
             if ( metadataFacetFactory != null )
             {
                 metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
-                Map<String, String> map = new HashMap<String, String>();
+                Map<String, String> map = new HashMap<>();
                 for ( Property property : JcrUtils.getProperties( node ) )
                 {
                     String p = property.getName();
@@ -505,6 +519,7 @@ public class JcrMetadataRepository
         return metadataFacet;
     }
 
+    @Override
     public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
@@ -529,6 +544,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void removeNamespace( String repositoryId, String projectId )
         throws MetadataRepositoryException
     {
@@ -551,6 +567,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void removeMetadataFacets( String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
@@ -569,6 +586,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void removeMetadataFacet( String repositoryId, String facetId, String name )
         throws MetadataRepositoryException
     {
@@ -595,6 +613,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
         throws MetadataRepositoryException
     {
@@ -625,7 +644,7 @@ public class JcrMetadataRepository
             }
             QueryResult result = query.execute();
 
-            artifacts = new ArrayList<ArtifactMetadata>();
+            artifacts = new ArrayList<>();
             for ( Node n : JcrUtils.getNodes( result ) )
             {
                 artifacts.add( getArtifactFromNode( repoId, n ) );
@@ -638,6 +657,7 @@ public class JcrMetadataRepository
         return artifacts;
     }
 
+    @Override
     public Collection<String> getRepositories()
         throws MetadataRepositoryException
     {
@@ -650,7 +670,7 @@ public class JcrMetadataRepository
             {
                 Node node = root.getNode( "repositories" );
 
-                repositories = new ArrayList<String>();
+                repositories = new ArrayList<>();
                 NodeIterator i = node.getNodes();
                 while ( i.hasNext() )
                 {
@@ -670,6 +690,7 @@ public class JcrMetadataRepository
         return repositories;
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
         throws MetadataRepositoryException
     {
@@ -684,7 +705,7 @@ public class JcrMetadataRepository
             query.bindValue( "checksum", valueFactory.createValue( checksum ) );
             QueryResult result = query.execute();
 
-            artifacts = new ArrayList<ArtifactMetadata>();
+            artifacts = new ArrayList<>();
             for ( Node n : JcrUtils.getNodes( result ) )
             {
                 artifacts.add( getArtifactFromNode( repositoryId, n ) );
@@ -697,7 +718,85 @@ public class JcrMetadataRepository
         return artifacts;
     }
 
+    private List<ArtifactMetadata> runJcrQuery( String repositoryId, String q, Map<String, String> bindings )
+        throws MetadataRepositoryException
+    {
+        List<ArtifactMetadata> artifacts;
+        if ( repositoryId != null )
+        {
+            q += " AND ISDESCENDANTNODE(artifact,'/" + getRepositoryContentPath( repositoryId ) + "')";
+        }
 
+        log.info( "Running JCR Query: {}", q );
+
+        try
+        {
+            Query query = getJcrSession().getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
+            ValueFactory valueFactory = getJcrSession().getValueFactory();
+            for ( Entry<String, String> entry : bindings.entrySet() )
+            {
+                query.bindValue( entry.getKey(), valueFactory.createValue( entry.getValue() ) );
+            }
+            long start = Calendar.getInstance().getTimeInMillis();
+            QueryResult result = query.execute();
+            long end = Calendar.getInstance().getTimeInMillis();
+            log.info( "JCR Query ran in {} milliseconds: {}", end - start , q );
+
+            artifacts = new ArrayList<>();
+            RowIterator rows = result.getRows();
+            while ( rows.hasNext() )
+            {
+                Row row = rows.nextRow();
+                Node node = row.getNode( "artifact" );
+                artifacts.add( getArtifactFromNode( repositoryId, node ) );
+            }
+        }
+        catch ( RepositoryException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+        return artifacts;
+    }
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        String q =
+            "SELECT * FROM [" + PROJECT_VERSION_NODE_TYPE + "] AS projectVersion INNER JOIN [" + ARTIFACT_NODE_TYPE
+                + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) INNER JOIN [" + FACET_NODE_TYPE
+                + "] AS facet ON ISCHILDNODE(facet, projectVersion) WHERE ([facet].[" + key + "] = $value)";
+
+        return runJcrQuery( repositoryId, q, ImmutableMap.of( "value", value ) );
+    }
+
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByMetadata( String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        String q =
+            "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "] AS artifact INNER JOIN [" + FACET_NODE_TYPE
+                + "] AS facet ON ISCHILDNODE(facet, artifact) WHERE ([facet].[" + key + "] = $value)";
+
+        return runJcrQuery( repositoryId, q, ImmutableMap.of( "value", value ) );
+    }
+
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByProperty( String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        String q =
+            "SELECT * FROM [" + PROJECT_VERSION_NODE_TYPE + "] AS projectVersion INNER JOIN [" + ARTIFACT_NODE_TYPE
+                + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) WHERE ([projectVersion].[" + key
+                + "] = $value)";
+
+        return runJcrQuery( repositoryId, q, ImmutableMap.of( "value", value ) );
+    }
+
+
+    @Override
     public void removeRepository( String repositoryId )
         throws MetadataRepositoryException
     {
@@ -716,6 +815,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifacts( String repositoryId )
         throws MetadataRepositoryException
     {
@@ -728,7 +828,7 @@ public class JcrMetadataRepository
             Query query = getJcrSession().getWorkspace().getQueryManager().createQuery( q, Query.JCR_SQL2 );
             QueryResult result = query.execute();
 
-            artifacts = new ArrayList<ArtifactMetadata>();
+            artifacts = new ArrayList<>();
             for ( Node n : JcrUtils.getNodes( result ) )
             {
                 if ( n.isNodeType( ARTIFACT_NODE_TYPE ) )
@@ -750,6 +850,7 @@ public class JcrMetadataRepository
             getRepositoryContentPath( repositoryId ) + "')";
     }
 
+    @Override
     public ProjectMetadata getProject( String repositoryId, String namespace, String projectId )
         throws MetadataResolutionException
     {
@@ -776,6 +877,7 @@ public class JcrMetadataRepository
         return metadata;
     }
 
+    @Override
     public ProjectVersionMetadata getProjectVersion( String repositoryId, String namespace, String projectId,
                                                      String projectVersion )
         throws MetadataResolutionException
@@ -931,7 +1033,7 @@ public class JcrMetadataRepository
                     else
                     {
                         MetadataFacet facet = factory.createMetadataFacet();
-                        Map<String, String> map = new HashMap<String, String>();
+                        Map<String, String> map = new HashMap<>();
                         for ( Property property : JcrUtils.getProperties( n ) )
                         {
                             String p = property.getName();
@@ -954,6 +1056,7 @@ public class JcrMetadataRepository
         return versionMetadata;
     }
 
+    @Override
     public Collection<String> getArtifactVersions( String repositoryId, String namespace, String projectId,
                                                    String projectVersion )
         throws MetadataResolutionException
@@ -983,11 +1086,13 @@ public class JcrMetadataRepository
         return versions;
     }
 
+    @Override
     public Collection<ProjectVersionReference> getProjectReferences( String repositoryId, String namespace,
                                                                      String projectId, String projectVersion )
         throws MetadataResolutionException
     {
-        List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
+
+        List<ProjectVersionReference> references = new ArrayList<>();
 
         // TODO: bind variables instead
         String q = "SELECT * FROM [archiva:dependency] WHERE ISDESCENDANTNODE([/repositories/" + repositoryId +
@@ -1030,12 +1135,14 @@ public class JcrMetadataRepository
         return references;
     }
 
+    @Override
     public Collection<String> getRootNamespaces( String repositoryId )
         throws MetadataResolutionException
     {
         return getNamespaces( repositoryId, null );
     }
 
+    @Override
     public Collection<String> getNamespaces( String repositoryId, String baseNamespace )
         throws MetadataResolutionException
     {
@@ -1046,18 +1153,21 @@ public class JcrMetadataRepository
         return getNodeNames( path, NAMESPACE_NODE_TYPE );
     }
 
+    @Override
     public Collection<String> getProjects( String repositoryId, String namespace )
         throws MetadataResolutionException
     {
         return getNodeNames( getNamespacePath( repositoryId, namespace ), PROJECT_NODE_TYPE );
     }
 
+    @Override
     public Collection<String> getProjectVersions( String repositoryId, String namespace, String projectId )
         throws MetadataResolutionException
     {
         return getNodeNames( getProjectPath( repositoryId, namespace, projectId ), PROJECT_VERSION_NODE_TYPE );
     }
 
+    @Override
     public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
@@ -1101,6 +1211,7 @@ public class JcrMetadataRepository
     }
 
 
+    @Override
     public void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
         throws MetadataRepositoryException
     {
@@ -1127,6 +1238,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void removeArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
                                 String id )
         throws MetadataRepositoryException
@@ -1148,8 +1260,8 @@ public class JcrMetadataRepository
 
             for ( Node node : JcrUtils.getChildNodes( nodeAtPath ) )
             {
-                if ( node.isNodeType( PROJECT_VERSION_NODE_TYPE ) && StringUtils.equals( node.getName(),
-                                                                                         projectVersion ) )
+                if ( node.isNodeType( PROJECT_VERSION_NODE_TYPE ) //
+                    && StringUtils.equals( node.getName(), projectVersion ) )
                 {
                     node.remove();
                 }
@@ -1161,6 +1273,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void removeArtifact( String repositoryId, String namespace, String project, String projectVersion,
                                 MetadataFacet metadataFacet )
         throws MetadataRepositoryException
@@ -1195,11 +1308,12 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public Collection<ArtifactMetadata> getArtifacts( String repositoryId, String namespace, String projectId,
                                                       String projectVersion )
         throws MetadataResolutionException
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifacts = new ArrayList<>();
 
         try
         {
@@ -1227,11 +1341,15 @@ public class JcrMetadataRepository
         return artifacts;
     }
 
+    @Override
     public void save()
     {
         try
         {
             getJcrSession().save();
+        } catch ( InvalidItemStateException e ) {
+            // olamy this might happen when deleting a repo while is under scanning
+            log.warn( "skip InvalidItemStateException:" + e.getMessage(), e );
         }
         catch ( RepositoryException e )
         {
@@ -1239,6 +1357,7 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public void revert()
     {
         try
@@ -1251,11 +1370,13 @@ public class JcrMetadataRepository
         }
     }
 
+    @Override
     public boolean canObtainAccess( Class<?> aClass )
     {
         return aClass == Session.class;
     }
 
+    @Override
     public <T>T obtainAccess( Class<T> aClass )
         throws MetadataRepositoryException
     {
@@ -1275,21 +1396,44 @@ public class JcrMetadataRepository
             "Access using " + aClass + " is not supported on the JCR metadata storage" );
     }
 
+    @Override
     public void close()
         throws MetadataRepositoryException
     {
-        try
+        if ( jcrSession != null && jcrSession.isLive() )
         {
-            if ( getJcrSession().isLive() )
-            {
-                getJcrSession().logout();
-            }
+            jcrSession.logout();
         }
-        catch ( RepositoryException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new MetadataRepositoryException( e.getMessage(), e );
-        }
+    }
+
+
+    /**
+     * Exact is ignored as we can't do exact search in any property, we need a key
+     */
+    @Override
+    public List<ArtifactMetadata> searchArtifacts( String text, String repositoryId, boolean exact )
+        throws MetadataRepositoryException
+    {
+        return searchArtifacts( null, text, repositoryId, exact );
+    }
+
+    @Override
+    public List<ArtifactMetadata> searchArtifacts( String key, String text, String repositoryId, boolean exact )
+        throws MetadataRepositoryException
+    {
+        // we can't do exact search in any property (*), we need a key
+        boolean e = exact && key != null;
+        String theKey = key == null ? "*" : "[" + key + "]";
+        String projectVersionCondition =
+            e ? "(projectVersion." + theKey + " = $value)" : "contains([projectVersion]." + theKey + ", $value)";
+        String facetCondition = e ? "(facet." + theKey + " = $value)" : "contains([facet]." + theKey + ", $value)";
+        String q =
+            "SELECT * FROM [" + PROJECT_VERSION_NODE_TYPE + "] AS projectVersion LEFT OUTER JOIN ["
+                + ARTIFACT_NODE_TYPE + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) LEFT OUTER JOIN ["
+                + FACET_NODE_TYPE + "] AS facet ON ISCHILDNODE(facet, projectVersion) WHERE ("
+                + projectVersionCondition + " OR " + facetCondition + ")";
+
+        return runJcrQuery( repositoryId, q, ImmutableMap.of( "value", text ) );
     }
 
     private ArtifactMetadata getArtifactFromNode( String repositoryId, Node artifactNode )
@@ -1299,7 +1443,7 @@ public class JcrMetadataRepository
 
         ArtifactMetadata artifact = new ArtifactMetadata();
         artifact.setId( id );
-        artifact.setRepositoryId( repositoryId );
+        artifact.setRepositoryId( repositoryId == null ? artifactNode.getAncestor(2).getName() : repositoryId );
 
         Node projectVersionNode = artifactNode.getParent();
         Node projectNode = projectVersionNode.getParent();
@@ -1350,7 +1494,7 @@ public class JcrMetadataRepository
                 else
                 {
                     MetadataFacet facet = factory.createMetadataFacet();
-                    Map<String, String> map = new HashMap<String, String>();
+                    Map<String, String> map = new HashMap<>();
                     for ( Property p : JcrUtils.getProperties( n ) )
                     {
                         String property = p.getName();
@@ -1376,7 +1520,7 @@ public class JcrMetadataRepository
     private Collection<String> getNodeNames( String path, String nodeType )
         throws MetadataResolutionException
     {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
 
         try
         {

@@ -21,6 +21,7 @@ package org.apache.archiva.audit;
 
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.springframework.stereotype.Service;
 
 /**
@@ -30,11 +31,13 @@ import org.springframework.stereotype.Service;
 public class AuditEventFactory
     implements MetadataFacetFactory
 {
+    @Override
     public MetadataFacet createMetadataFacet()
     {
         throw new UnsupportedOperationException( "Must construct an audit event with a name" );
     }
 
+    @Override
     public MetadataFacet createMetadataFacet( String repositoryId, String name )
     {
         return new AuditEvent( name, repositoryId );

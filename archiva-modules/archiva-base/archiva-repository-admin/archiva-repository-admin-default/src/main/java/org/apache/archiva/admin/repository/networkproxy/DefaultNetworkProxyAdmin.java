@@ -18,16 +18,15 @@ package org.apache.archiva.admin.repository.networkproxy;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
-import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -44,11 +43,12 @@ public class DefaultNetworkProxyAdmin
     implements NetworkProxyAdmin
 {
 
+    @Override
     public List<NetworkProxy> getNetworkProxies()
         throws RepositoryAdminException
     {
         List<NetworkProxy> networkProxies =
-            new ArrayList<NetworkProxy>( getArchivaConfiguration().getConfiguration().getNetworkProxies().size() );
+            new ArrayList<>( getArchivaConfiguration().getConfiguration().getNetworkProxies().size() );
         for ( NetworkProxyConfiguration networkProxyConfiguration : getArchivaConfiguration().getConfiguration().getNetworkProxies() )
         {
             networkProxies.add( getNetworkProxy( networkProxyConfiguration ) );
@@ -56,6 +56,7 @@ public class DefaultNetworkProxyAdmin
         return networkProxies;
     }
 
+    @Override
     public NetworkProxy getNetworkProxy( String networkProxyId )
         throws RepositoryAdminException
     {
@@ -70,6 +71,7 @@ public class DefaultNetworkProxyAdmin
         return null;
     }
 
+    @Override
     public void addNetworkProxy( NetworkProxy networkProxy, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -90,6 +92,7 @@ public class DefaultNetworkProxyAdmin
         saveConfiguration( configuration );
     }
 
+    @Override
     public void updateNetworkProxy( NetworkProxy networkProxy, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -112,6 +115,7 @@ public class DefaultNetworkProxyAdmin
         saveConfiguration( configuration );
     }
 
+    @Override
     public void deleteNetworkProxy( String networkProxyId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -143,13 +147,13 @@ public class DefaultNetworkProxyAdmin
     {
         return networkProxyConfiguration == null
             ? null
-            : new BeanReplicator().replicateBean( networkProxyConfiguration, NetworkProxy.class );
+            : getModelMapper().map( networkProxyConfiguration, NetworkProxy.class );
     }
 
     protected NetworkProxyConfiguration getNetworkProxyConfiguration( NetworkProxy networkProxy )
     {
         return networkProxy == null
             ? null
-            : new BeanReplicator().replicateBean( networkProxy, NetworkProxyConfiguration.class );
+            : getModelMapper().map( networkProxy, NetworkProxyConfiguration.class );
     }
 }

@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-base</artifactId>
-    <version>1.4-M5-SNAPSHOT</version>
+    <version>2.2.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-indexer</artifactId>
@@ -91,8 +91,9 @@
       <artifactId>org.eclipse.sisu.plexus</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.sonatype.sisu</groupId>
-      <artifactId>sisu-guice</artifactId>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+      <classifier>no_aop</classifier>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -105,6 +106,11 @@
     <dependency>
       <groupId>javax.inject</groupId>
       <artifactId>javax.inject</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-mock</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -157,6 +163,11 @@
       <artifactId>wagon-http-lightweight</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <pluginManagement>
@@ -195,6 +206,9 @@
               org.apache.lucene*;version="[3,4)",
               org.springframework*;version="[3,4)",
               org.apache.maven.index*,
+              org.apache.archiva.redback.components.scheduler,
+              org.quartz,
+              org.apache.archiva.scheduler,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>
@@ -210,6 +224,7 @@
             <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
+            <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
           </systemPropertyVariables>
         </configuration>
       </plugin>

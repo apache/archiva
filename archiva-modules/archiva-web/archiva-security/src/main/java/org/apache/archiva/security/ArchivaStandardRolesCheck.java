@@ -53,6 +53,7 @@ public class ArchivaStandardRolesCheck
      */
     private boolean checked = false;
 
+    @Override
     public void validateEnvironment( List<String> violations )
     {
         if ( !checked )

@@ -60,6 +60,7 @@ public class NexusIndexerConsumerTest
     {
         Set<File> indexed = new HashSet<File>();
 
+        @Override
         public void queueTask( ArtifactIndexingTask task )
             throws TaskQueueException
         {

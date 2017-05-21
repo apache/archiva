@@ -90,6 +90,7 @@ public class Maven2RepositoryMerger
         this.configuration = configuration;
     }
 
+    @Override
     public void merge( MetadataRepository metadataRepository, String sourceRepoId, String targetRepoId )
         throws RepositoryMergerException
     {
@@ -118,6 +119,7 @@ public class Maven2RepositoryMerger
     }
 
     // TODO when UI needs a subset to merge
+    @Override
     public void merge( MetadataRepository metadataRepository, String sourceRepoId, String targetRepoId,
                        Filter<ArtifactMetadata> filter )
         throws RepositoryMergerException
@@ -190,9 +192,6 @@ public class Maven2RepositoryMerger
         }
         // artifact copying
         copyFile( sourceArtifactFile, targetArtifactFile );
-
-        // pom file copying
-        String fileName = artifactMetadata.getProject() + "-" + artifactMetadata.getVersion() + ".pom";
 
         // pom file copying
         // TODO need to use path translator to get the pom file path
@@ -285,7 +284,7 @@ public class Maven2RepositoryMerger
                                         Date lastUpdatedTimestamp, String timestamp )
         throws RepositoryMetadataException
     {
-        ArrayList<String> availableVersions = new ArrayList<String>();
+        ArrayList<String> availableVersions = new ArrayList<>();
         String latestVersion = artifactMetadata.getProjectVersion();
 
         ArchivaRepositoryMetadata projectMetadata = getMetadata( projectMetaDataFileIntargetRepo );
@@ -368,6 +367,7 @@ public class Maven2RepositoryMerger
         return metadata;
     }
 
+    @Override
     public List<ArtifactMetadata> getConflictingArtifacts( MetadataRepository metadataRepository, String sourceRepo,
                                                            String targetRepo )
         throws RepositoryMergerException
@@ -376,7 +376,7 @@ public class Maven2RepositoryMerger
         {
             List<ArtifactMetadata> targetArtifacts = metadataRepository.getArtifacts( targetRepo );
             List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepo );
-            List<ArtifactMetadata> conflictsArtifacts = new ArrayList<ArtifactMetadata>();
+            List<ArtifactMetadata> conflictsArtifacts = new ArrayList<>();
 
             for ( ArtifactMetadata targetArtifact : targetArtifacts )
             {

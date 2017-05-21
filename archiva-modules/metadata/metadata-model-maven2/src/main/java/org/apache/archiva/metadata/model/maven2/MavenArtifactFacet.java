@@ -78,20 +78,23 @@ public class MavenArtifactFacet
         this.buildNumber = buildNumber;
     }
 
+    @Override
     public String getFacetId()
     {
         return FACET_ID;
     }
 
+    @Override
     public String getName()
     {
         // TODO: not needed, perhaps artifact/version metadata facet should be separate interface?
         return null;
     }
 
+    @Override
     public Map<String, String> toProperties()
     {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put( "type", type );
         if ( classifier != null )
         {
@@ -108,6 +111,7 @@ public class MavenArtifactFacet
         return properties;
     }
 
+    @Override
     public void fromProperties( Map<String, String> properties )
     {
         type = properties.get( "type" );

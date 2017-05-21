@@ -53,7 +53,7 @@ public interface ServletAuthenticator
      * @param request
      * @param securitySession
      * @param repositoryId
-     * @param isWriteRequest
+     * @param permission
      * @return
      * @throws AuthorizationException
      * @throws UnauthorizedException
@@ -70,7 +70,7 @@ public interface ServletAuthenticator
      * 
      * @param principal
      * @param repoId
-     * @param isWriteRequest
+     * @param permission
      * @return
      * @throws UnauthorizedException
      */

@@ -30,7 +30,7 @@ import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
-import org.apache.archiva.metadata.repository.TestRepositorySessionFactory;
+import org.apache.archiva.mock.MockRepositorySessionFactory;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.After;
@@ -58,7 +58,7 @@ public class RepositoryPurgeConsumerTest
     {
         super.setUp();
 
-        TestRepositorySessionFactory factory = applicationContext.getBean( TestRepositorySessionFactory.class );
+        MockRepositorySessionFactory factory = applicationContext.getBean( MockRepositorySessionFactory.class );
         factory.setRepository( metadataRepository );
     }
 

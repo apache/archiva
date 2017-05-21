@@ -21,7 +21,8 @@ package org.apache.archiva.webdav;
 
 import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.audit.AuditListener;
+import org.apache.archiva.repository.events.AuditListener;
+import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
@@ -57,6 +58,9 @@ public class DavResourceTest
 
     @Inject
     private MimeTypes mimeTypes;
+
+    @Inject
+    private FileLockManager fileLockManager;
 
     private ArchivaDavResourceLocator resourceLocator;
 
@@ -95,6 +99,7 @@ public class DavResourceTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {
@@ -105,7 +110,7 @@ public class DavResourceTest
     private DavResource getDavResource( String logicalPath, File file )
     {
         return new ArchivaDavResource( file.getAbsolutePath(), logicalPath, repository, session, resourceLocator,
-                                       resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(), null );
+                                       resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(), null, fileLockManager );
     }
 
     @Test
@@ -312,6 +317,7 @@ public class DavResourceTest
     private class RootContextDavResourceFactory
         implements DavResourceFactory
     {
+        @Override
         public DavResource createResource( DavResourceLocator locator, DavServletRequest request,
                                            DavServletResponse response )
             throws DavException
@@ -319,12 +325,13 @@ public class DavResourceTest
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @Override
         public DavResource createResource( DavResourceLocator locator, DavSession session )
             throws DavException
         {
             return new ArchivaDavResource( baseDir.getAbsolutePath(), "/", repository, session, resourceLocator,
                                            resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(),
-                                           null );
+                                           null, fileLockManager );
         }
     }
 }

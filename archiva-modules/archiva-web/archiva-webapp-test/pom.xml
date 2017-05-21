@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
-    <version>1.4-M5-SNAPSHOT</version>
+    <version>2.2.1-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-webapp-test</artifactId>
   <packaging>pom</packaging>
@@ -36,7 +36,10 @@
     <maxWaitTimeInMs>10000</maxWaitTimeInMs>
 
     <seleniumPluginVersion>2.3</seleniumPluginVersion>
-    <selenium-server.version>2.31.0</selenium-server.version>
+    <selenium-server.version>2.43.1</selenium-server.version>
+    <fluentlenium.version>0.10.2</fluentlenium.version>
+
+    <browserPath></browserPath>
   </properties>
 
   <dependencies>
@@ -84,14 +87,19 @@
     <dependency>
       <groupId>org.fluentlenium</groupId>
       <artifactId>fluentlenium-festassert</artifactId>
-      <version>0.7.6</version>
+      <version>${fluentlenium.version}</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.fluentlenium</groupId>
       <artifactId>fluentlenium-core</artifactId>
-      <version>0.7.6</version>
+      <version>${fluentlenium.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -124,8 +132,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.easytesting</groupId>
-      <artifactId>fest-assert-core</artifactId>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -317,6 +325,18 @@
                     </copy>
                     <copy todir="${project.build.directory}/local-repo">
                       <fileset dir="src/test/resources/local-repo"/>
+                    </copy>
+                    <copy todir="${project.build.directory}/errorshtmlsnap/css">
+                      <fileset dir="${webappDirectory}/css"/>
+                    </copy>
+                    <copy todir="${project.build.directory}/errorshtmlsnap/js">
+                      <fileset dir="${webappDirectory}/js"/>
+                    </copy>
+                    <copy todir="${project.build.directory}/errorshtmlsnap/img">
+                      <fileset dir="${webappDirectory}/img"/>
+                    </copy>
+                    <copy todir="${project.build.directory}/errorshtmlsnap/images">
+                      <fileset dir="${webappDirectory}/images"/>
                     </copy>
                   </tasks>
                 </configuration>

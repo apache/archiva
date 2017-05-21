@@ -35,26 +35,31 @@ public class ReleasesPolicy
     /**
      * Defaults to {@link AbstractUpdatePolicy#HOURLY}
      */
+    @Override
     public String getDefaultOption()
     {
         return AbstractUpdatePolicy.HOURLY;
     }
 
+    @Override
     protected boolean isSnapshotPolicy()
     {
         return false;
     }
     
+    @Override
     protected String getUpdateMode()
     {
         return "releases";
     }
 
+    @Override
     public String getId()
     {
         return "releases";
     }
 
+    @Override
     public String getName()
     {
         return "Releases";

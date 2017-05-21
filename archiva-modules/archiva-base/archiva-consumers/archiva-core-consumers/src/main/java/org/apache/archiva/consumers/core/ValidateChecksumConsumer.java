@@ -31,6 +31,8 @@ import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -52,6 +54,8 @@ public class ValidateChecksumConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer
 {
+    private Logger log = LoggerFactory.getLogger( ValidateChecksumConsumer.class );
+
     private static final String NOT_VALID_CHECKSUM = "checksum-not-valid";
 
     private static final String CHECKSUM_NOT_FOUND = "checksum-not-found";
@@ -60,24 +64,12 @@ public class ValidateChecksumConsumer
 
     private static final String CHECKSUM_IO_ERROR = "checksum-io-error";
 
-    /**
-     * default-value="validate-checksums"
-     */
     private String id = "validate-checksums";
 
-    /**
-     * default-value="Validate checksums against file."
-     */
     private String description = "Validate checksums against file.";
 
-    /**
-     *
-     */
     private ChecksumFile checksum;
 
-    /**
-     *
-     */
     private List<Digester> allDigesters;
 
     @Inject
@@ -90,53 +82,57 @@ public class ValidateChecksumConsumer
 
     private List<String> includes;
 
+    @Override
     public String getId()
     {
         return this.id;
     }
 
+    @Override
     public String getDescription()
     {
         return this.description;
     }
 
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         this.repositoryDir = new File( repository.getLocation() );
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void completeScan()
     {
         /* nothing to do */
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return null;
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return this.includes;
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -145,24 +141,29 @@ public class ValidateChecksumConsumer
         {
             if ( !checksum.isValidChecksum( checksumFile ) )
             {
+                log.warn( "The checksum for {} is invalid.", checksumFile );
                 triggerConsumerWarning( NOT_VALID_CHECKSUM, "The checksum for " + checksumFile + " is invalid." );
             }
         }
         catch ( FileNotFoundException e )
         {
+            log.error( "File not found during checksum validation: ", e );
             triggerConsumerError( CHECKSUM_NOT_FOUND, "File not found during checksum validation: " + e.getMessage() );
         }
         catch ( DigesterException e )
         {
+            log.error( "Digester failure during checksum validation on {}", checksumFile );
             triggerConsumerError( CHECKSUM_DIGESTER_FAILURE,
                                   "Digester failure during checksum validation on " + checksumFile );
         }
         catch ( IOException e )
         {
+            log.error( "Checksum I/O error during validation on {}", checksumFile );
             triggerConsumerError( CHECKSUM_IO_ERROR, "Checksum I/O error during validation on " + checksumFile );
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireReDpo )
         throws Exception
     {
@@ -174,8 +175,8 @@ public class ValidateChecksumConsumer
         throws PlexusSisuBridgeException
     {
         checksum = plexusSisuBridge.lookup( ChecksumFile.class );
-        List<Digester> allDigesters = new ArrayList<Digester>( digesterUtils.getAllDigesters() );
-        includes = new ArrayList<String>( allDigesters.size() );
+        List<Digester> allDigesters = new ArrayList<>( digesterUtils.getAllDigesters() );
+        includes = new ArrayList<>( allDigesters.size() );
         for ( Digester digester : allDigesters )
         {
             includes.add( "**/*" + digester.getFilenameExtension() );

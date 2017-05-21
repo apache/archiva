@@ -44,6 +44,7 @@ public class ArchivaRepositoryConnectorFactory
         // no op but empty constructor needed by aether
     }
 
+    @Override
     public RepositoryConnector newInstance( RepositorySystemSession session, RemoteRepository repository )
         throws NoRepositoryConnectorException
     {
@@ -61,18 +62,21 @@ public class ArchivaRepositoryConnectorFactory
 
             private Logger log = LoggerFactory.getLogger( getClass() );
 
+            @Override
             public void get( Collection<? extends ArtifactDownload> artifactDownloads,
                              Collection<? extends MetadataDownload> metadataDownloads )
             {
                 log.debug( "get" );
             }
 
+            @Override
             public void put( Collection<? extends ArtifactUpload> artifactUploads,
                              Collection<? extends MetadataUpload> metadataUploads )
             {
                 log.debug( "put" );
             }
 
+            @Override
             public void close()
             {
                 log.debug( "close" );

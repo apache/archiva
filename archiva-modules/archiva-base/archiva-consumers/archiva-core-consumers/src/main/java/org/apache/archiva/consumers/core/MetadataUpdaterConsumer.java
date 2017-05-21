@@ -61,7 +61,9 @@ import java.util.List;
 @Scope( "prototype" )
 public class MetadataUpdaterConsumer
     extends AbstractMonitoredConsumer
-    implements KnownRepositoryContentConsumer, RegistryListener
+    implements KnownRepositoryContentConsumer
+    // it's prototype bean so we assume configuration won't change during a run
+    //, RegistryListener
 {
     private Logger log = LoggerFactory.getLogger( MetadataUpdaterConsumer.class );
 
@@ -70,32 +72,17 @@ public class MetadataUpdaterConsumer
      */
     private String id = "metadata-updater";
 
-    /**
-     * default-value="Update / Create maven-metadata.xml files"
-     */
     private String description = "Update / Create maven-metadata.xml files";
 
-    /**
-     *
-     */
     @Inject
     private RepositoryContentFactory repositoryFactory;
 
-    /**
-     *
-     */
     @Inject
     private MetadataTools metadataTools;
 
-    /**
-     *
-     */
     @Inject
     private ArchivaConfiguration configuration;
 
-    /**
-     *
-     */
     @Inject
     private FileTypes filetypes;
 
@@ -109,15 +96,17 @@ public class MetadataUpdaterConsumer
 
     private File repositoryDir;
 
-    private List<String> includes = new ArrayList<String>( 0 );
+    private List<String> includes = new ArrayList<>( 0 );
 
     private long scanStartTimestamp = 0;
 
+    @Override
     public String getDescription()
     {
         return description;
     }
 
+    @Override
     public String getId()
     {
         return id;
@@ -128,6 +117,7 @@ public class MetadataUpdaterConsumer
         this.includes = includes;
     }
 
+    @Override
     public void beginScan( ManagedRepository repoConfig, Date whenGathered )
         throws ConsumerException
     {
@@ -147,32 +137,38 @@ public class MetadataUpdaterConsumer
         }
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void completeScan()
     {
         /* do nothing here */
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return getDefaultArtifactExclusions();
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return this.includes;
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -192,6 +188,7 @@ public class MetadataUpdaterConsumer
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {
@@ -222,22 +219,26 @@ public class MetadataUpdaterConsumer
         }
         catch ( LayoutException e )
         {
+            log.warn( "Unable to convert path [{}] to an internal project reference: ", path, e );
             triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF,
                                     "Unable to convert path [" + path + "] to an internal project reference: "
                                         + e.getMessage() );
         }
         catch ( RepositoryMetadataException e )
         {
+            log.error( "Unable to write project metadat for artifact [{}]:", path, e );
             triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
                                   "Unable to write project metadata for artifact [" + path + "]: " + e.getMessage() );
         }
         catch ( IOException e )
         {
+            log.warn( "Project metadata not written due to IO warning: ", e );
             triggerConsumerWarning( TYPE_METADATA_IO,
                                     "Project metadata not written due to IO warning: " + e.getMessage() );
         }
         catch ( ContentNotFoundException e )
         {
+            log.warn( "Project metadata not written because no versions were found to update: ", e );
             triggerConsumerWarning( TYPE_METADATA_IO,
                                     "Project metadata not written because no versions were found to update: "
                                         + e.getMessage() );
@@ -269,33 +270,34 @@ public class MetadataUpdaterConsumer
         }
         catch ( LayoutException e )
         {
+            log.warn( "Unable to convert path [{}] to an internal version reference: ", path, e );
             triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF,
                                     "Unable to convert path [" + path + "] to an internal version reference: "
                                         + e.getMessage() );
         }
         catch ( RepositoryMetadataException e )
         {
+            log.error( "Unable to write version metadata for artifact [{}]: ", path, e ); 
             triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
                                   "Unable to write version metadata for artifact [" + path + "]: " + e.getMessage() );
         }
         catch ( IOException e )
         {
+            log.warn( "Version metadata not written due to IO warning: ", e );
             triggerConsumerWarning( TYPE_METADATA_IO,
                                     "Version metadata not written due to IO warning: " + e.getMessage() );
         }
         catch ( ContentNotFoundException e )
         {
+            log.warn( "Version metadata not written because no versions were found to update: ", e ); 
             triggerConsumerWarning( TYPE_METADATA_IO,
                                     "Version metadata not written because no versions were found to update: "
                                         + e.getMessage() );
         }
     }
 
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
+    /*
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
@@ -304,20 +306,22 @@ public class MetadataUpdaterConsumer
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        /* do nothing here */
+        // do nothing here
     }
+    */
 
     private void initIncludes()
     {
-        includes = new ArrayList<String>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
+        includes = new ArrayList<>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     @PostConstruct
     public void initialize()
     {
-        configuration.addChangeListener( this );
+        //configuration.addChangeListener( this );
 
         initIncludes();
     }

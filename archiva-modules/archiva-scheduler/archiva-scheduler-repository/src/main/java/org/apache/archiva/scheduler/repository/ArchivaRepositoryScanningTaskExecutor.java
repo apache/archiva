@@ -53,33 +53,21 @@ import java.util.Date;
  */
 @Service( "taskExecutor#repository-scanning" )
 public class ArchivaRepositoryScanningTaskExecutor
-    implements TaskExecutor
+    implements TaskExecutor<RepositoryTask>
 {
     private Logger log = LoggerFactory.getLogger( ArchivaRepositoryScanningTaskExecutor.class );
 
-    /**
-     *
-     */
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
-    /**
-     * The repository scanner component.
-     */
     @Inject
     private RepositoryScanner repoScanner;
 
-    /**
-     *
-     */
     @Inject
     private RepositoryContentConsumers consumers;
 
     private Task task;
 
-    /**
-     *
-     */
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
@@ -97,7 +85,8 @@ public class ArchivaRepositoryScanningTaskExecutor
     }
 
     @SuppressWarnings( "unchecked" )
-    public void executeTask( Task task )
+    @Override
+    public void executeTask( RepositoryTask task )
         throws TaskExecutionException
     {
         try
@@ -112,9 +101,7 @@ public class ArchivaRepositoryScanningTaskExecutor
 
             this.task = task;
 
-            RepositoryTask repoTask = (RepositoryTask) task;
-
-            String repoId = repoTask.getRepositoryId();
+            String repoId = task.getRepositoryId();
             if ( StringUtils.isBlank( repoId ) )
             {
                 throw new TaskExecutionException( "Unable to execute RepositoryTask with blank repository Id." );
@@ -123,14 +110,14 @@ public class ArchivaRepositoryScanningTaskExecutor
             ManagedRepository arepo = managedRepositoryAdmin.getManagedRepository( repoId );
 
             // execute consumers on resource file if set
-            if ( repoTask.getResourceFile() != null )
+            if ( task.getResourceFile() != null )
             {
-                log.debug( "Executing task from queue with job name: {}", repoTask );
-                consumers.executeConsumers( arepo, repoTask.getResourceFile(), repoTask.isUpdateRelatedArtifacts() );
+                log.debug( "Executing task from queue with job name: {}", task );
+                consumers.executeConsumers( arepo, task.getResourceFile(), task.isUpdateRelatedArtifacts() );
             }
             else
             {
-                log.info( "Executing task from queue with job name: {}", repoTask );
+                log.info( "Executing task from queue with job name: {}", task );
 
                 // otherwise, execute consumers on whole repository
                 if ( arepo == null )
@@ -146,7 +133,7 @@ public class ArchivaRepositoryScanningTaskExecutor
                 MetadataRepository metadataRepository = repositorySession.getRepository();
                 try
                 {
-                    if ( !repoTask.isScanAll() )
+                    if ( !task.isScanAll() )
                     {
                         RepositoryStatistics previousStats =
                             repositoryStatisticsManager.getLastStatistics( metadataRepository, repoId );
@@ -194,7 +181,7 @@ public class ArchivaRepositoryScanningTaskExecutor
 //                metadataRepository.findAllProjects();
                 // FIXME: do something
 
-                log.info( "Finished repository task: {}", repoTask );
+                log.info( "Finished repository task: {}", task );
 
                 this.task = null;
             }

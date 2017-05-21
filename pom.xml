@@ -20,18 +20,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <prerequisites>
-    <maven>3.0</maven>
+    <maven>3.0.5</maven>
   </prerequisites>
 
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-parent</artifactId>
-    <version>10</version>
-    <relativePath />
+    <version>17-SNAPSHOT</version>
   </parent>
 
   <artifactId>archiva</artifactId>
-  <version>1.4-M5-SNAPSHOT</version>
+  <version>2.2.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Apache Archiva</name>
@@ -42,18 +41,16 @@
     <module>archiva-modules</module>
     <module>archiva-docs</module>
     <module>archiva-jetty</module>
-    <!--module>archiva-tomcat-js</module-->
   </modules>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/archiva/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/archiva/trunk</developerConnection>
-    <url>http://svn.apache.org/viewvc/archiva/trunk</url>
+    <connection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva.git</connection>
+    <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva.git</developerConnection>
+    <url>https://github.com/apache/archiva</url>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
-    <!-- Note: when upgrading to 2.3.1+, template/xhtml can be removed from the
-         webapp resources -->
     <commons-codec.version>1.6</commons-codec.version>
     <commons-collections.version>3.2.1</commons-collections.version>
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
@@ -66,64 +63,97 @@
 
     <maven-model-converter.version>2.1</maven-model-converter.version>
     <maven.indexer.version>5.1.1</maven.indexer.version>
-    <wagon.version>2.4</wagon.version>
-    <redback.version>2.1</redback.version>
-    <redback.cache.version>2.1</redback.cache.version>
-    <redback.quartz.version>2.0</redback.quartz.version>
-    <redback.registry.version>2.1</redback.registry.version>
-    <redback.spring-utils.version>2.0</redback.spring-utils.version>
-    <redback.taskqueue.version>2.0</redback.taskqueue.version>
-    <slf4j.version>1.7.5</slf4j.version>
-    <log4j.version>2.0-beta6</log4j.version>
+    <wagon.version>2.9</wagon.version>
+    <redback.version>2.5-SNAPSHOT</redback.version>
+    <redback.cache.version>2.2</redback.cache.version>
+    <redback.quartz.version>2.1</redback.quartz.version>
+    <redback.registry.version>2.4</redback.registry.version>
+    <redback.spring-utils.version>2.1</redback.spring-utils.version>
+    <redback.taskqueue.version>2.1</redback.taskqueue.version>
+    <slf4j.version>1.7.12</slf4j.version>
+    <log4j.version>2.5</log4j.version>
 
-    <spring.version>3.2.3.RELEASE</spring.version>
+    <spring.version>4.2.1.RELEASE</spring.version>
 
     <javax.jcr.version>2.0</javax.jcr.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
-
+    <jacocoagent />
     <lucene.version>3.6.2</lucene.version>
-    <jackrabbit.version>2.6.1</jackrabbit.version>
+    <jackrabbit.version>2.9.1</jackrabbit.version>
 
-    <cxfVersion>2.6.6</cxfVersion>
+    <sirona.version>0.1-incubating</sirona.version>
+
+    <cxf.version>3.0.3</cxf.version>
     <derbyVersion>10.10.1.1</derbyVersion>
-    <httpclient.version>4.2.5</httpclient.version>
-    <httpclient.core.version>4.2.4</httpclient.core.version>
+    <httpclient.version>4.5.2</httpclient.version>
+    <httpclient.core.version>4.4.4</httpclient.core.version>
     <javaxMailVersion>1.4</javaxMailVersion>
-    <jettyVersion>8.1.9.v20130131</jettyVersion>
+    <jettyVersion>8.1.14.v20131031</jettyVersion>
+    <guava.version>16.0.1</guava.version>
 
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
     <sisu-inject-plexus.version>0.0.0.M2a</sisu-inject-plexus.version>
-    <sisu-guice.version>3.1.4</sisu-guice.version>
     <plexus-digest.version>1.1</plexus-digest.version>
-    <plexus-expression-evaluator.version>2.0</plexus-expression-evaluator.version>
-    <plexus-utils.version>3.0.8</plexus-utils.version>
-    <asfTomcatMavenPluginVersion>2.1</asfTomcatMavenPluginVersion>
-    <tomcat7Version>7.0.39</tomcat7Version>
+    <plexus-expression-evaluator.version>2.1</plexus-expression-evaluator.version>
+    <plexus-utils.version>3.0.15</plexus-utils.version>
+    <asfTomcatMavenPluginVersion>2.2</asfTomcatMavenPluginVersion>
+    <tomcat7Version>7.0.54</tomcat7Version>
 
     <release.preparationGoals>clean install</release.preparationGoals>
+    <springockito.version>1.0.9</springockito.version>
+    <mockito.version>1.9.5</mockito.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>xalan</artifactId>
+        <version>2.7.1</version>
+      </dependency>
+      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.11</version>
+        <version>4.12</version>
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.easytesting</groupId>
-        <artifactId>fest-assert-core</artifactId>
-        <version>2.0M8</version>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>1.7.1</version>
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>httpunit</groupId>
-        <artifactId>httpunit</artifactId>
-        <version>1.6.2</version>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-core</artifactId>
+        <version>${tomcat7Version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-juli</artifactId>
+        <version>${tomcat7Version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-servlet-api</artifactId>
+        <version>${tomcat7Version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jsp-api</artifactId>
+        <version>${tomcat7Version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-logging-juli</artifactId>
+        <version>${tomcat7Version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -140,7 +170,7 @@
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
-        <version>2.8.1</version>
+        <version>2.11.0</version>
       </dependency>
 
       <dependency>
@@ -211,6 +241,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>metadata-store-cassandra</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>repository-statistics</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -218,6 +253,7 @@
         <groupId>org.apache.archiva</groupId>
         <artifactId>problem-reports</artifactId>
         <version>${project.version}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
@@ -236,22 +272,22 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-artifact-converter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-checksum</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>npanday-support</artifactId>
+        <artifactId>archiva-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-common</artifactId>
+        <artifactId>archiva-mock</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-filelock</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -452,13 +488,19 @@
       <dependency>
         <groupId>org.apache.archiva.redback.components</groupId>
         <artifactId>spring-jdo2</artifactId>
-        <version>2.1</version>
+        <version>2.2</version>
+        <exclusions>
+          <exclusion>
+            <groupId>geronimo-spec</groupId>
+            <artifactId>geronimo-spec-jta</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
         <groupId>com.lmax</groupId>
         <artifactId>disruptor</artifactId>
-        <version>3.0.1</version>
+        <version>3.2.1</version>
       </dependency>
 
       <!--
@@ -470,57 +512,69 @@
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>org.eclipse.sisu.plexus</artifactId>
         <version>${sisu-inject-plexus.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>sisu-guice</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.sonatype.sisu</groupId>
-        <artifactId>sisu-guice</artifactId>
-        <version>${sisu-guice.version}</version>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
+        <version>4.0</version>
+        <classifier>no_aop</classifier>
       </dependency>
 
       <dependency>
         <groupId>javax.ws.rs</groupId>
-        <artifactId>jsr311-api</artifactId>
-        <version>1.1.1</version>
+        <artifactId>javax.ws.rs-api</artifactId>
+        <version>2.0</version>
       </dependency>
+
+      <!-- normally not needed as we are 1.6 required
+        but due to http://jira.codehaus.org/browse/MODELLO-266
+        and we use stax reader produced by modello
+        ibm jdk stax impl won't work with
+       -->
+      <dependency>
+        <groupId>org.codehaus.woodstox</groupId>
+        <artifactId>woodstox-core-asl</artifactId>
+        <version>4.2.0</version>
+      </dependency>
+
       <!-- START SNIPPET: rest-dependencies -->
       <dependency>
-        <groupId>org.codehaus.jackson</groupId>
-        <artifactId>jackson-jaxrs</artifactId>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-json-provider</artifactId>
         <version>${jacksonVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.jackson</groupId>
-        <artifactId>jackson-xc</artifactId>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-xml-provider</artifactId>
         <version>${jacksonVersion}</version>
       </dependency>
       <dependency>
-        <groupId>org.codehaus.jackson</groupId>
-        <artifactId>jackson-core-asl</artifactId>
-        <version>${jacksonVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.jackson</groupId>
-        <artifactId>jackson-mapper-asl</artifactId>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
         <version>${jacksonVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-bundle-jaxrs</artifactId>
-        <version>${cxfVersion}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.codehaus.jettison</groupId>
-            <artifactId>jettison</artifactId>
-          </exclusion>
-        </exclusions>
+        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-rs-client</artifactId>
+        <version>${cxf.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-rs-extension-providers</artifactId>
+        <version>${cxf.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
@@ -536,7 +590,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>14.0.1</version>
+        <version>${guava.version}</version>
       </dependency>
       <dependency>
         <groupId>stax</groupId>
@@ -550,20 +604,11 @@
       </dependency>
 
       <dependency>
-        <groupId>net.sf.beanlib</groupId>
-        <artifactId>beanlib</artifactId>
-        <version>5.0.2beta</version>
-        <exclusions>
-          <exclusion>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>aopalliance</groupId>
-            <artifactId>aopalliance</artifactId>
-          </exclusion>
-        </exclusions>
+        <groupId>org.modelmapper</groupId>
+        <artifactId>modelmapper</artifactId>
+        <version>0.7.3</version>
       </dependency>
+
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
@@ -572,7 +617,7 @@
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
-        <version>1.9</version>
+        <version>1.10</version>
         <exclusions>
           <exclusion>
             <groupId>commons-beanutils</groupId>
@@ -586,10 +631,6 @@
           <exclusion>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>xalan</groupId>
-            <artifactId>xalan</artifactId>
           </exclusion>
           <exclusion>
             <groupId>xml-apis</groupId>
@@ -644,21 +685,9 @@
         <version>${commons-lang.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-pool</groupId>
-        <artifactId>commons-pool</artifactId>
-        <version>1.6</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
         <groupId>org.apache.tomcat</groupId>
         <artifactId>tomcat-jdbc</artifactId>
         <version>${tomcat7Version}</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-dbcp</groupId>
-        <artifactId>commons-dbcp</artifactId>
-        <version>1.4</version>
-        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -695,6 +724,10 @@
             <groupId>xom</groupId>
             <artifactId>xom</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -706,23 +739,16 @@
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>geronimo-spec</groupId>
+            <artifactId>geronimo-spec-jta</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
         <groupId>jpox</groupId>
         <artifactId>jpox-ehcache</artifactId>
         <version>1.1.9</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>jsp-api</artifactId>
-        <version>2.0</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>jstl</artifactId>
-        <version>1.1.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
@@ -875,7 +901,7 @@
       <dependency>
         <groupId>org.quartz-scheduler</groupId>
         <artifactId>quartz</artifactId>
-        <version>2.1.7</version>
+        <version>2.2.1</version>
         <exclusions>
           <exclusion>
             <groupId>c3p0</groupId>
@@ -892,6 +918,47 @@
         <artifactId>ant</artifactId>
         <version>1.8.3</version>
       </dependency>
+
+
+      <!-- sirona -->
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-core</artifactId>
+        <version>${sirona.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-jdbc</artifactId>
+        <version>${sirona.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-spring</artifactId>
+        <version>${sirona.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-web</artifactId>
+        <version>${sirona.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-reporting</artifactId>
+        <version>${sirona.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-cassandra</artifactId>
+        <version>${sirona.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sirona</groupId>
+        <artifactId>sirona-ehcache-agent</artifactId>
+        <version>${sirona.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
@@ -1147,11 +1214,6 @@
         <version>3.0.1</version>
       </dependency>
       <dependency>
-        <groupId>opensymphony</groupId>
-        <artifactId>sitemesh</artifactId>
-        <version>2.4.2</version>
-      </dependency>
-      <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
@@ -1184,11 +1246,17 @@
         <version>${slf4j.version}</version>
         <scope>runtime</scope>
       </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+        <scope>test</scope>
+      </dependency>
 
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
-        <version>1.1.1</version>
+        <version>1.2</version>
       </dependency>
 
       <dependency>
@@ -1270,6 +1338,7 @@
           </exclusion>
         </exclusions>
       </dependency>
+
       <dependency>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-provider-api</artifactId>
@@ -1436,8 +1505,8 @@
 
       <dependency>
         <groupId>net.sf.ehcache</groupId>
-        <artifactId>ehcache-core</artifactId>
-        <version>2.6.5</version>
+        <artifactId>ehcache</artifactId>
+        <version>2.7.5</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -1448,19 +1517,25 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-all</artifactId>
-        <version>1.8.5</version>
+        <version>${mockito.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>1.8.5</version>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.kubek2k</groupId>
+        <artifactId>springockito</artifactId>
+        <version>${springockito.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.jsoup</groupId>
         <artifactId>jsoup</artifactId>
-        <version>1.7.1</version>
+        <version>1.7.2</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -1474,13 +1549,13 @@
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
-      <version>2.5.2</version>
+      <version>3.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymockclassextension</artifactId>
-      <version>2.5</version>
+      <version>3.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -1527,6 +1602,7 @@
                     <exclude>velocity:velocity</exclude>
                     <exclude>classworlds:classworlds</exclude>
                     <exclude>javax.transaction:jta</exclude>
+                    <exclude>*:geronimo-spec-jta</exclude>
                     <exclude>javax.sql:jdbc-stdext</exclude>
                     <exclude>ant:ant-optional</exclude>
                     <exclude>xom:xom</exclude>
@@ -1539,16 +1615,16 @@
                     <exclude>com.google.code.atinject:atinject</exclude>
                     <exclude>org.codehaus.plexus.cache:plexus-cache-api</exclude>
                     <exclude>org.codehaus.plexus.cache:plexus-cache-ehcache</exclude>
-                    <exclude>net.sf.ehcache:ehcache</exclude>
+                    <exclude>net.sf.ehcache:ehcache-core</exclude>
                     <exclude>org.codehaus.plexus.registry:plexus-registry-api</exclude>
                     <exclude>org.codehaus.plexus.registry:plexus-registry-commons</exclude>
                     <exclude>org.codehaus.plexus:plexus-taskqueue</exclude>
-
 
                     <exclude>commons-logging:commons-logging-api</exclude>
                     <exclude>log4j:log4j</exclude>
 
                     <exclude>org.sonatype.sisu:sisu-guava</exclude>
+                    <exclude>org.sonatype.sisu:sisu-guice</exclude>
 
                     <!--
                     <exclude>org.slf4j:jcl-over-slf4j</exclude>
@@ -1575,10 +1651,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat6-maven-plugin</artifactId>
-       </plugin>
       <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
         <artifactId>tomcat7-maven-plugin</artifactId>
@@ -1694,7 +1766,7 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>appassembler-maven-plugin</artifactId>
-          <version>1.3</version>
+          <version>1.7</version>
           <dependencies>
             <dependency>
               <groupId>org.codehaus.plexus</groupId>
@@ -1702,21 +1774,6 @@
               <version>${plexusUtilsPluginsVersion}</version>
             </dependency>
           </dependencies>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>build-helper-maven-plugin</artifactId>
-          <version>1.8</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>exec-maven-plugin</artifactId>
-          <version>1.2</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>buildnumber-maven-plugin</artifactId>
-          <version>1.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.modello</groupId>
@@ -1735,22 +1792,9 @@
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.6</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.5.1</version>
-          <configuration>
-            <useJvmChmod>true</useJvmChmod>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <configuration>
-            <tagBase>https://svn.apache.org/repos/asf/archiva/tags</tagBase>
+            <localCheckout>true</localCheckout>
             <useReleaseProfile>false</useReleaseProfile>
             <autoVersionSubmodules>true</autoVersionSubmodules>
             <goals>deploy</goals>
@@ -1762,25 +1806,13 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
+            <argLine>${jacocoagent}</argLine>
             <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
             <runOrder>alphabetical</runOrder>
             <systemPropertyVariables>
               <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
             </systemPropertyVariables>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-idea-plugin</artifactId>
-          <version>2.2</version>
-          <configuration>
-            <jdkLevel>1.5</jdkLevel>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.tomcat.maven</groupId>
-          <artifactId>tomcat6-maven-plugin</artifactId>
-          <version>${asfTomcatMavenPluginVersion}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.tomcat.maven</groupId>
@@ -1794,7 +1826,7 @@
             <excludes>
               <exclude>.gitignore</exclude>
               <exclude>DEPENDENCIES</exclude>
-              <exclude>README.txt</exclude>
+              <exclude>README.*</exclude>
               <exclude>*.sh</exclude>
               <exclude>.git/**</exclude>
               <exclude>src/test/resources/projects/compile/goal.txt</exclude>
@@ -1804,7 +1836,13 @@
               <exclude>.repository/**</exclude>
               <exclude>*.patch</exclude>
               <exclude>**/target/**</exclude>
-              <exclude>.java-version</exclude>
+              <exclude>**/.java-version</exclude>
+              <exclude>patch.diff</exclude>
+              <exclude>**/overlays/**</exclude>
+              <exclude>nbactions.xml</exclude>
+              <exclude>nb-configuration.xml</exclude>
+              <exclude>.travis.yml</exclude>
+              <exclude>out/**</exclude>
             </excludes>
           </configuration>
         </plugin>
@@ -1822,8 +1860,26 @@
               <artifactId>maven-assembly-plugin</artifactId>
               <inherited>false</inherited>
               <configuration>
+                <appendAssemblyId>false</appendAssemblyId>
                 <finalName>apache-archiva-${project.version}-src</finalName>
+                <descriptors>
+                  <descriptor>${basedir}/src/main/assembly/src.xml</descriptor>
+                </descriptors>
               </configuration>
+              <executions>
+                <execution>
+                  <inherited>false</inherited>
+                  <id>source-release-assembly</id>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>single</goal>
+                  </goals>
+                  <configuration>
+                    <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
+                    <tarLongFileFormat>gnu</tarLongFileFormat>
+                  </configuration>
+                </execution>
+              </executions>
             </plugin>
           </plugins>
         </pluginManagement>
@@ -1837,7 +1893,65 @@
         <module>archiva-modules/archiva-web/archiva-webapp-test</module>
       </modules>
     </profile>
-
+    <profile>
+      <id>jacoco-coverage</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.7.2.201409121644</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+                <configuration>
+                  <propertyName>jacocoproperty</propertyName>
+                </configuration>
+              </execution>
+              <execution>
+                <id>report</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <properties>
+        <jacocoagent>${jacocoproperty}</jacocoagent>
+      </properties>
+    </profile>
+    <profile>
+      <id>modernizer</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.gaul</groupId>
+            <artifactId>modernizer-maven-plugin</artifactId>
+            <version>1.1.0</version>
+            <configuration>
+              <javaVersion>1.7</javaVersion>
+            </configuration>
+            <executions>
+              <execution>
+                <id>modernizer</id>
+                <goals>
+                  <goal>modernizer</goal>
+                </goals>
+                <phase>process-test-classes</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
   <repositories>
@@ -1845,17 +1959,6 @@
       <id>archiva.snapshots</id>
       <name>Archiva VM Snapshots Repository</name>
       <url>https://archiva-repository.apache.org/archiva/repository/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>apache.snapshots</id>
-      <name>Apache Snapshots</name>
-      <url>https://repository.apache.org/content/groups/snapshots/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -1876,17 +1979,5 @@
         <enabled>true</enabled>
       </snapshots>
     </pluginRepository>
-    <pluginRepository>
-      <id>apache.snapshots</id>
-      <name>Apache Snapshots</name>
-      <url>https://repository.apache.org/content/groups/snapshots/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
   </pluginRepositories>
-
 </project>

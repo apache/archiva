@@ -20,8 +20,12 @@ package org.apache.archiva.webdav;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.audit.AuditEvent;
-import org.apache.archiva.audit.AuditListener;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.archiva.repository.events.AuditListener;
+import org.apache.archiva.common.filelock.FileLockException;
+import org.apache.archiva.common.filelock.FileLockManager;
+import org.apache.archiva.common.filelock.FileLockTimeoutException;
+import org.apache.archiva.common.filelock.Lock;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
@@ -61,9 +65,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,14 +105,16 @@ public class ArchivaDavResource
 
     public static final String COMPLIANCE_CLASS = "1, 2";
 
-    private ArchivaTaskScheduler scheduler;
+    private final ArchivaTaskScheduler scheduler;
+
+    private final FileLockManager fileLockManager;
 
     private Logger log = LoggerFactory.getLogger( ArchivaDavResource.class );
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepository repository,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               RepositoryArchivaTaskScheduler scheduler )
+                               RepositoryArchivaTaskScheduler scheduler, FileLockManager fileLockManager )
     {
         this.localResource = new File( localResource );
         this.logicalResource = logicalResource;
@@ -122,46 +129,54 @@ public class ArchivaDavResource
         this.mimeTypes = mimeTypes;
         this.auditListeners = auditListeners;
         this.scheduler = scheduler;
+        this.fileLockManager = fileLockManager;
     }
 
     public ArchivaDavResource( String localResource, String logicalResource, ManagedRepository repository,
                                String remoteAddr, String principal, DavSession session,
                                ArchivaDavResourceLocator locator, DavResourceFactory factory, MimeTypes mimeTypes,
-                               List<AuditListener> auditListeners, RepositoryArchivaTaskScheduler scheduler )
+                               List<AuditListener> auditListeners, RepositoryArchivaTaskScheduler scheduler,
+                               FileLockManager fileLockManager )
     {
         this( localResource, logicalResource, repository, session, locator, factory, mimeTypes, auditListeners,
-              scheduler );
+              scheduler, fileLockManager );
 
         this.remoteAddr = remoteAddr;
         this.principal = principal;
     }
 
+    @Override
     public String getComplianceClass()
     {
         return COMPLIANCE_CLASS;
     }
 
+    @Override
     public String getSupportedMethods()
     {
         return METHODS;
     }
 
+    @Override
     public boolean exists()
     {
         return localResource.exists();
     }
 
+    @Override
     public boolean isCollection()
     {
         return localResource.isDirectory();
     }
 
+    @Override
     public String getDisplayName()
     {
         String resPath = getResourcePath();
         return ( resPath != null ) ? Text.getName( resPath ) : resPath;
     }
 
+    @Override
     public DavResourceLocator getLocator()
     {
         return locator;
@@ -172,21 +187,25 @@ public class ArchivaDavResource
         return localResource;
     }
 
+    @Override
     public String getResourcePath()
     {
         return locator.getResourcePath();
     }
 
+    @Override
     public String getHref()
     {
         return locator.getHref( isCollection() );
     }
 
+    @Override
     public long getModificationTime()
     {
         return localResource.lastModified();
     }
 
+    @Override
     public void spool( OutputContext outputContext )
         throws IOException
     {
@@ -196,47 +215,57 @@ public class ArchivaDavResource
             outputContext.setContentType( mimeTypes.getMimeType( localResource.getName() ) );
         }
 
-        if ( !isCollection() && outputContext.hasStream() )
+        try
         {
-            FileInputStream is = null;
-            try
+            if ( !isCollection() && outputContext.hasStream() )
             {
-                // Write content to stream
-                is = new FileInputStream( localResource );
-                IOUtils.copy( is, outputContext.getOutputStream() );
+                Lock lock = fileLockManager.readFileLock( localResource );
+                try (InputStream is = Files.newInputStream( lock.getFile().toPath() ))
+                {
+                    IOUtils.copy( is, outputContext.getOutputStream() );
+                }
             }
-            finally
+            else if ( outputContext.hasStream() )
             {
-                IOUtils.closeQuietly( is );
+                IndexWriter writer = new IndexWriter( this, localResource, logicalResource );
+                writer.write( outputContext );
             }
         }
-        else if ( outputContext.hasStream() )
+        catch ( FileLockException e )
         {
-            IndexWriter writer = new IndexWriter( this, localResource, logicalResource );
-            writer.write( outputContext );
+            throw new IOException( e.getMessage(), e );
+        }
+        catch ( FileLockTimeoutException e )
+        {
+            throw new IOException( e.getMessage(), e );
         }
     }
 
+    @Override
     public DavPropertyName[] getPropertyNames()
     {
         return getProperties().getPropertyNames();
     }
 
+    @Override
     public DavProperty getProperty( DavPropertyName name )
     {
         return getProperties().get( name );
     }
 
+    @Override
     public DavPropertySet getProperties()
     {
         return initProperties();
     }
 
+    @Override
     public void setProperty( DavProperty property )
         throws DavException
     {
     }
 
+    @Override
     public void removeProperty( DavPropertyName propertyName )
         throws DavException
     {
@@ -248,13 +277,15 @@ public class ArchivaDavResource
         return null;
     }
 
-    @SuppressWarnings ("unchecked")
+    @SuppressWarnings("unchecked")
+    @Override
     public MultiStatusResponse alterProperties( List changeList )
         throws DavException
     {
         return null;
     }
 
+    @Override
     public DavResource getCollection()
     {
         DavResource parent = null;
@@ -279,6 +310,7 @@ public class ArchivaDavResource
         return parent;
     }
 
+    @Override
     public void addMember( DavResource resource, InputContext inputContext )
         throws DavException
     {
@@ -287,19 +319,13 @@ public class ArchivaDavResource
 
         if ( isCollection() && inputContext.hasStream() ) // New File
         {
-            FileOutputStream stream = null;
-            try
+            try (OutputStream stream = Files.newOutputStream( localFile.toPath() ))
             {
-                stream = new FileOutputStream( localFile );
                 IOUtils.copy( inputContext.getInputStream(), stream );
             }
             catch ( IOException e )
             {
                 throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
-            }
-            finally
-            {
-                IOUtils.closeQuietly( stream );
             }
 
             // TODO: a bad deployment shouldn't delete an existing file - do we need to write to a temporary location first?
@@ -339,9 +365,10 @@ public class ArchivaDavResource
         }
     }
 
+    @Override
     public DavResourceIterator getMembers()
     {
-        List<DavResource> list = new ArrayList<DavResource>();
+        List<DavResource> list = new ArrayList<>();
         if ( exists() && isCollection() )
         {
             for ( String item : localResource.list() )
@@ -371,6 +398,7 @@ public class ArchivaDavResource
         return new DavResourceIteratorImpl( list );
     }
 
+    @Override
     public void removeMember( DavResource member )
         throws DavException
     {
@@ -414,13 +442,13 @@ public class ArchivaDavResource
         }
     }
 
-    private void triggerAuditEvent( DavResource member, String event )
+    private void triggerAuditEvent( DavResource member, String action )
         throws DavException
     {
         String path = logicalResource + "/" + member.getDisplayName();
 
         ArchivaDavResource resource = checkDavResourceIsArchivaDavResource( member );
-        AuditEvent auditEvent = new AuditEvent( locator.getRepositoryId(), resource.principal, path, event );
+        AuditEvent auditEvent = new AuditEvent( locator.getRepositoryId(), resource.principal, path, action );
         auditEvent.setRemoteIP( resource.remoteAddr );
 
         for ( AuditListener listener : auditListeners )
@@ -429,6 +457,7 @@ public class ArchivaDavResource
         }
     }
 
+    @Override
     public void move( DavResource destination )
         throws DavException
     {
@@ -463,6 +492,7 @@ public class ArchivaDavResource
         }
     }
 
+    @Override
     public void copy( DavResource destination, boolean shallow )
         throws DavException
     {
@@ -502,16 +532,19 @@ public class ArchivaDavResource
         }
     }
 
+    @Override
     public boolean isLockable( Type type, Scope scope )
     {
         return Type.WRITE.equals( type ) && Scope.EXCLUSIVE.equals( scope );
     }
 
+    @Override
     public boolean hasLock( Type type, Scope scope )
     {
         return getLock( type, scope ) != null;
     }
 
+    @Override
     public ActiveLock getLock( Type type, Scope scope )
     {
         ActiveLock lock = null;
@@ -522,12 +555,14 @@ public class ArchivaDavResource
         return lock;
     }
 
+    @Override
     public ActiveLock[] getLocks()
     {
         ActiveLock writeLock = getLock( Type.WRITE, Scope.EXCLUSIVE );
         return ( writeLock != null ) ? new ActiveLock[]{ writeLock } : new ActiveLock[0];
     }
 
+    @Override
     public ActiveLock lock( LockInfo lockInfo )
         throws DavException
     {
@@ -543,6 +578,7 @@ public class ArchivaDavResource
         return lock;
     }
 
+    @Override
     public ActiveLock refreshLock( LockInfo lockInfo, String lockToken )
         throws DavException
     {
@@ -562,6 +598,7 @@ public class ArchivaDavResource
         return lock;
     }
 
+    @Override
     public void unlock( String lockToken )
         throws DavException
     {
@@ -580,16 +617,19 @@ public class ArchivaDavResource
         }
     }
 
+    @Override
     public void addLockManager( LockManager lockManager )
     {
         this.lockManager = lockManager;
     }
 
+    @Override
     public DavResourceFactory getFactory()
     {
         return factory;
     }
 
+    @Override
     public DavSession getSession()
     {
         return session;

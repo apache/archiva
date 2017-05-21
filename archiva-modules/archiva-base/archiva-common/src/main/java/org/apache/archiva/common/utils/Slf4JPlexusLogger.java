@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class Slf4JPlexusLogger
     implements org.codehaus.plexus.logging.Logger
 {
-    private Logger log;
+    private final Logger log;
 
     public Slf4JPlexusLogger( Class<?> clazz )
     {
@@ -43,46 +43,55 @@ public class Slf4JPlexusLogger
         log = LoggerFactory.getLogger( name );
     }
 
+    @Override
     public void debug( String message )
     {
         log.debug( message );
     }
 
+    @Override
     public void debug( String message, Throwable throwable )
     {
         log.debug( message, throwable );
     }
 
+    @Override
     public void error( String message )
     {
         log.error( message );
     }
 
+    @Override
     public void error( String message, Throwable throwable )
     {
         log.error( message, throwable );
     }
 
+    @Override
     public void fatalError( String message )
     {
         log.error( message );
     }
 
+    @Override
     public void fatalError( String message, Throwable throwable )
     {
         log.error( message, throwable );
     }
 
+    @Override
     public org.codehaus.plexus.logging.Logger getChildLogger( String name )
     {
         return new Slf4JPlexusLogger( log.getName() + "." + name );
     }
 
+    @Override
     public String getName()
     {
         return log.getName();
     }
 
+    @Override
     public int getThreshold()
     {
         if ( log.isTraceEnabled() )
@@ -109,51 +118,61 @@ public class Slf4JPlexusLogger
         return org.codehaus.plexus.logging.Logger.LEVEL_DISABLED;
     }
 
+    @Override
     public void info( String message )
     {
         log.info( message );
     }
 
+    @Override
     public void info( String message, Throwable throwable )
     {
         log.info( message, throwable );
     }
 
+    @Override
     public boolean isDebugEnabled()
     {
         return log.isDebugEnabled();
     }
 
+    @Override
     public boolean isErrorEnabled()
     {
         return log.isErrorEnabled();
     }
 
+    @Override
     public boolean isFatalErrorEnabled()
     {
         return log.isErrorEnabled();
     }
 
+    @Override
     public boolean isInfoEnabled()
     {
         return log.isInfoEnabled();
     }
 
+    @Override
     public boolean isWarnEnabled()
     {
         return log.isWarnEnabled();
     }
 
+    @Override
     public void setThreshold( int threshold )
     {
         /* do nothing */
     }
 
+    @Override
     public void warn( String message )
     {
         log.warn( message );
     }
 
+    @Override
     public void warn( String message, Throwable throwable )
     {
         log.warn( message, throwable );

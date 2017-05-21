@@ -25,8 +25,6 @@ import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
 import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
-import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
@@ -38,8 +36,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -56,13 +52,11 @@ public class DefaultArchivaAdministrationService
     @Inject
     private ArchivaAdministration archivaAdministration;
 
-    @Inject
-    @Named ( value = "managedRepositoryContent#legacy" )
-    private ManagedRepositoryContent repositoryContent;
 
     @Inject
     private RepositoryContentConsumers repoConsumerUtil;
 
+    @Override
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws ArchivaRestServiceException
     {
@@ -76,37 +70,8 @@ public class DefaultArchivaAdministrationService
         }
     }
 
-    public void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath )
-        throws ArchivaRestServiceException
-    {
 
-        // Check the proposed Artifact matches the path
-        ArtifactReference artifact = new ArtifactReference();
-
-        artifact.setGroupId( legacyArtifactPath.getGroupId() );
-        artifact.setArtifactId( legacyArtifactPath.getArtifactId() );
-        artifact.setClassifier( legacyArtifactPath.getClassifier() );
-        artifact.setVersion( legacyArtifactPath.getVersion() );
-        artifact.setType( legacyArtifactPath.getType() );
-        String path = repositoryContent.toPath( artifact );
-        if ( !StringUtils.equals( path, legacyArtifactPath.getPath() ) )
-        {
-            throw new ArchivaRestServiceException(
-                "artifact path reference '" + legacyArtifactPath.getPath() + "' does not match the initial path: '"
-                    + path + "'", Response.Status.BAD_REQUEST.getStatusCode(), null );
-        }
-
-        try
-        {
-
-            archivaAdministration.addLegacyArtifactPath( legacyArtifactPath, getAuditInformation() );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(), e );
-        }
-    }
-
+    @Override
     public Boolean deleteLegacyArtifactPath( String path )
         throws ArchivaRestServiceException
     {
@@ -122,6 +87,7 @@ public class DefaultArchivaAdministrationService
     }
 
 
+    @Override
     public Boolean addFileTypePattern( String fileTypeId, String pattern )
         throws ArchivaRestServiceException
     {
@@ -136,6 +102,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean removeFileTypePattern( String fileTypeId, String pattern )
         throws ArchivaRestServiceException
     {
@@ -150,6 +117,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public FileType getFileType( String fileTypeId )
         throws ArchivaRestServiceException
     {
@@ -163,6 +131,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public void addFileType( FileType fileType )
         throws ArchivaRestServiceException
     {
@@ -176,6 +145,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean removeFileType( String fileTypeId )
         throws ArchivaRestServiceException
     {
@@ -190,6 +160,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean enabledKnownContentConsumer( String knownContentConsumer )
         throws ArchivaRestServiceException
     {
@@ -204,6 +175,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public void enabledKnownContentConsumers( List<String> knownContentConsumers )
         throws ArchivaRestServiceException
     {
@@ -217,6 +189,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean disabledKnownContentConsumer( String knownContentConsumer )
         throws ArchivaRestServiceException
     {
@@ -231,6 +204,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean enabledInvalidContentConsumer( String invalidContentConsumer )
         throws ArchivaRestServiceException
     {
@@ -245,6 +219,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public void enabledInvalidContentConsumers( List<String> invalidContentConsumers )
         throws ArchivaRestServiceException
     {
@@ -258,6 +233,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean disabledInvalidContentConsumer( String invalidContentConsumer )
         throws ArchivaRestServiceException
     {
@@ -272,6 +248,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public List<FileType> getFileTypes()
         throws ArchivaRestServiceException
     {
@@ -290,6 +267,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public List<String> getKnownContentConsumers()
         throws ArchivaRestServiceException
     {
@@ -303,6 +281,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public List<String> getInvalidContentConsumers()
         throws ArchivaRestServiceException
     {
@@ -316,6 +295,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public OrganisationInformation getOrganisationInformation()
         throws ArchivaRestServiceException
     {
@@ -329,6 +309,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public void setOrganisationInformation( OrganisationInformation organisationInformation )
         throws ArchivaRestServiceException
     {
@@ -342,12 +323,14 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public Boolean registrationDisabled()
         throws ArchivaRestServiceException
     {
         return getUiConfiguration().isDisableRegistration();
     }
 
+    @Override
     public UiConfiguration getUiConfiguration()
         throws ArchivaRestServiceException
     {
@@ -361,6 +344,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public void setUiConfiguration( UiConfiguration uiConfiguration )
         throws ArchivaRestServiceException
     {
@@ -378,6 +362,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public String getApplicationUrl()
         throws ArchivaRestServiceException
     {
@@ -391,6 +376,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public NetworkConfiguration getNetworkConfiguration()
         throws ArchivaRestServiceException
     {
@@ -404,6 +390,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public void setNetworkConfiguration( NetworkConfiguration networkConfiguration )
         throws ArchivaRestServiceException
     {
@@ -417,6 +404,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public List<AdminRepositoryConsumer> getKnownContentAdminRepositoryConsumers()
         throws ArchivaRestServiceException
     {
@@ -435,6 +423,7 @@ public class DefaultArchivaAdministrationService
         }
     }
 
+    @Override
     public List<AdminRepositoryConsumer> getInvalidContentAdminRepositoryConsumers()
         throws ArchivaRestServiceException
     {

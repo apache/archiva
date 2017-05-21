@@ -35,14 +35,16 @@ import java.util.Map;
 public class TestRepositoryStatisticsManager
     implements RepositoryStatisticsManager
 {
-    private Map<String, List<RepositoryStatistics>> repoStats = new HashMap<String, List<RepositoryStatistics>>();
+    private Map<String, List<RepositoryStatistics>> repoStats = new HashMap<>();
 
+    @Override
     public boolean hasStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
         return !repoStats.isEmpty();
     }
 
+    @Override
     public RepositoryStatistics getLastStatistics( MetadataRepository metadataRepository, String repositoryId )
     {
         List<RepositoryStatistics> repositoryStatisticsList = getStatsList( repositoryId );
@@ -51,6 +53,7 @@ public class TestRepositoryStatisticsManager
             : null;
     }
 
+    @Override
     public void addStatisticsAfterScan( MetadataRepository metadataRepository, String repositoryId, Date startTime,
                                         Date endTime, long totalFiles, long newFiles )
     {
@@ -66,11 +69,13 @@ public class TestRepositoryStatisticsManager
         stats.add( repositoryStatistics );
     }
 
+    @Override
     public void deleteStatistics( MetadataRepository metadataRepository, String repositoryId )
     {
         repoStats.remove( repositoryId );
     }
 
+    @Override
     public List<RepositoryStatistics> getStatisticsInRange( MetadataRepository metadataRepository, String repositoryId,
                                                             Date startDate, Date endDate )
     {
@@ -82,7 +87,7 @@ public class TestRepositoryStatisticsManager
         List<RepositoryStatistics> stats = repoStats.get( repositoryId );
         if ( stats == null )
         {
-            stats = new ArrayList<RepositoryStatistics>();
+            stats = new ArrayList<>();
             repoStats.put( repositoryId, stats );
         }
         return stats;

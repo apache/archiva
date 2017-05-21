@@ -18,7 +18,6 @@ package org.apache.archiva.admin.repository.admin;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
@@ -28,12 +27,13 @@ import org.apache.archiva.admin.model.beans.NetworkConfiguration;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
-import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.UserInterfaceOptions;
 import org.apache.archiva.configuration.WebappConfiguration;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.springframework.stereotype.Service;
 
@@ -52,7 +52,7 @@ public class DefaultArchivaAdministration
     implements ArchivaAdministration
 {
 
-    private PoolingClientConnectionManager poolingClientConnectionManager;
+    private PoolingHttpClientConnectionManager poolingClientConnectionManager;
 
     @PostConstruct
     public void initialize()
@@ -73,31 +73,34 @@ public class DefaultArchivaAdministration
     }
 
 
+    @Override
     public List<LegacyArtifactPath> getLegacyArtifactPaths()
         throws RepositoryAdminException
     {
-        List<LegacyArtifactPath> legacyArtifactPaths = new ArrayList<LegacyArtifactPath>(
+        List<LegacyArtifactPath> legacyArtifactPaths = new ArrayList<>(
             getArchivaConfiguration().getConfiguration().getLegacyArtifactPaths().size() );
         for ( org.apache.archiva.configuration.LegacyArtifactPath legacyArtifactPath : getArchivaConfiguration().getConfiguration().getLegacyArtifactPaths() )
         {
             legacyArtifactPaths.add(
-                new BeanReplicator().replicateBean( legacyArtifactPath, LegacyArtifactPath.class ) );
+                getModelMapper().map( legacyArtifactPath, LegacyArtifactPath.class ) );
         }
         return legacyArtifactPaths;
     }
 
+    @Override
     public void addLegacyArtifactPath( LegacyArtifactPath legacyArtifactPath, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
-        configuration.addLegacyArtifactPath( new BeanReplicator().replicateBean( legacyArtifactPath,
-                                                                                 org.apache.archiva.configuration.LegacyArtifactPath.class ) );
+        configuration.addLegacyArtifactPath( getModelMapper().map( legacyArtifactPath,
+                                                                   org.apache.archiva.configuration.LegacyArtifactPath.class ) );
 
         saveConfiguration( configuration );
         triggerAuditEvent( "", "", AuditEvent.ADD_LEGACY_PATH, auditInformation );
     }
 
+    @Override
     public void deleteLegacyArtifactPath( String path, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -113,6 +116,7 @@ public class DefaultArchivaAdministration
     }
 
 
+    @Override
     public void addFileTypePattern( String fileTypeId, String pattern, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -135,6 +139,7 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.ADD_PATTERN, auditInformation );
     }
 
+    @Override
     public void removeFileTypePattern( String fileTypeId, String pattern, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -151,6 +156,7 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.REMOVE_PATTERN, auditInformation );
     }
 
+    @Override
     public FileType getFileType( String fileTypeId )
         throws RepositoryAdminException
     {
@@ -160,9 +166,10 @@ public class DefaultArchivaAdministration
         {
             return null;
         }
-        return new BeanReplicator().replicateBean( fileType, FileType.class );
+        return getModelMapper().map( fileType, FileType.class );
     }
 
+    @Override
     public void addFileType( FileType fileType, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -174,10 +181,11 @@ public class DefaultArchivaAdministration
         }
 
         configuration.getRepositoryScanning().addFileType(
-            new BeanReplicator().replicateBean( fileType, org.apache.archiva.configuration.FileType.class ) );
+            getModelMapper().map( fileType, org.apache.archiva.configuration.FileType.class ) );
         saveConfiguration( configuration );
     }
 
+    @Override
     public void removeFileType( String fileTypeId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -188,6 +196,7 @@ public class DefaultArchivaAdministration
         saveConfiguration( configuration );
     }
 
+    @Override
     public void addKnownContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -202,6 +211,7 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.ENABLE_REPO_CONSUMER, auditInformation );
     }
 
+    @Override
     public void removeKnownContentConsumer( String knownContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -211,6 +221,7 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.DISABLE_REPO_CONSUMER, auditInformation );
     }
 
+    @Override
     public void addInvalidContentConsumer( String invalidContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -225,6 +236,7 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.ENABLE_REPO_CONSUMER, auditInformation );
     }
 
+    @Override
     public void removeInvalidContentConsumer( String invalidContentConsumer, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -234,6 +246,7 @@ public class DefaultArchivaAdministration
         triggerAuditEvent( "", "", AuditEvent.DISABLE_REPO_CONSUMER, auditInformation );
     }
 
+    @Override
     public void setKnownContentConsumers( List<String> knownContentConsumers, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -247,6 +260,7 @@ public class DefaultArchivaAdministration
         }
     }
 
+    @Override
     public void setInvalidContentConsumers( List<String> invalidContentConsumers, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -260,6 +274,7 @@ public class DefaultArchivaAdministration
         }
     }
 
+    @Override
     public List<FileType> getFileTypes()
         throws RepositoryAdminException
     {
@@ -269,28 +284,31 @@ public class DefaultArchivaAdministration
         {
             return Collections.emptyList();
         }
-        List<FileType> fileTypes = new ArrayList<FileType>( configFileTypes.size() );
+        List<FileType> fileTypes = new ArrayList<>( configFileTypes.size() );
         for ( org.apache.archiva.configuration.FileType fileType : configFileTypes )
         {
-            fileTypes.add( new BeanReplicator().replicateBean( fileType, FileType.class ) );
+            fileTypes.add( getModelMapper().map( fileType, FileType.class ) );
         }
         return fileTypes;
     }
 
+    @Override
     public List<String> getKnownContentConsumers()
         throws RepositoryAdminException
     {
-        return new ArrayList<String>(
+        return new ArrayList<>(
             getArchivaConfiguration().getConfiguration().getRepositoryScanning().getKnownContentConsumers() );
     }
 
+    @Override
     public List<String> getInvalidContentConsumers()
         throws RepositoryAdminException
     {
-        return new ArrayList<String>(
+        return new ArrayList<>(
             getArchivaConfiguration().getConfiguration().getRepositoryScanning().getInvalidContentConsumers() );
     }
 
+    @Override
     public OrganisationInformation getOrganisationInformation()
         throws RepositoryAdminException
     {
@@ -300,9 +318,10 @@ public class DefaultArchivaAdministration
         {
             return null;
         }
-        return new BeanReplicator().replicateBean( organisationInformation, OrganisationInformation.class );
+        return getModelMapper().map( organisationInformation, OrganisationInformation.class );
     }
 
+    @Override
     public void setOrganisationInformation( OrganisationInformation organisationInformation )
         throws RepositoryAdminException
     {
@@ -310,8 +329,8 @@ public class DefaultArchivaAdministration
         if ( organisationInformation != null )
         {
             org.apache.archiva.configuration.OrganisationInformation organisationInformationModel =
-                new BeanReplicator().replicateBean( organisationInformation,
-                                                    org.apache.archiva.configuration.OrganisationInformation.class );
+                getModelMapper().map( organisationInformation,
+                                      org.apache.archiva.configuration.OrganisationInformation.class );
             configuration.setOrganisationInfo( organisationInformationModel );
         }
         else
@@ -321,6 +340,7 @@ public class DefaultArchivaAdministration
         saveConfiguration( configuration );
     }
 
+    @Override
     public UiConfiguration getUiConfiguration()
         throws RepositoryAdminException
     {
@@ -334,9 +354,10 @@ public class DefaultArchivaAdministration
         {
             return null;
         }
-        return new BeanReplicator().replicateBean( userInterfaceOptions, UiConfiguration.class );
+        return getModelMapper().map( userInterfaceOptions, UiConfiguration.class );
     }
 
+    @Override
     public void updateUiConfiguration( UiConfiguration uiConfiguration )
         throws RepositoryAdminException
     {
@@ -345,7 +366,7 @@ public class DefaultArchivaAdministration
         {
 
             UserInterfaceOptions userInterfaceOptions =
-                new BeanReplicator().replicateBean( uiConfiguration, UserInterfaceOptions.class );
+                getModelMapper().map( uiConfiguration, UserInterfaceOptions.class );
             configuration.getWebapp().setUi( userInterfaceOptions );
         }
         else
@@ -356,6 +377,7 @@ public class DefaultArchivaAdministration
 
     }
 
+    @Override
     public NetworkConfiguration getNetworkConfiguration()
         throws RepositoryAdminException
     {
@@ -366,9 +388,10 @@ public class DefaultArchivaAdministration
         {
             return null;
         }
-        return new BeanReplicator().replicateBean( networkConfiguration, NetworkConfiguration.class );
+        return getModelMapper().map( networkConfiguration, NetworkConfiguration.class );
     }
 
+    @Override
     public void setNetworkConfiguration( NetworkConfiguration networkConfiguration )
         throws RepositoryAdminException
     {
@@ -379,8 +402,8 @@ public class DefaultArchivaAdministration
         }
         else
         {
-            configuration.setNetworkConfiguration( new BeanReplicator().replicateBean( networkConfiguration,
-                                                                                       org.apache.archiva.configuration.NetworkConfiguration.class ) );
+            configuration.setNetworkConfiguration( getModelMapper().map( networkConfiguration,
+                                                                         org.apache.archiva.configuration.NetworkConfiguration.class ) );
         }
         setupWagon( networkConfiguration );
         saveConfiguration( configuration );
@@ -391,20 +414,20 @@ public class DefaultArchivaAdministration
         if ( networkConfiguration == null )
         {
             // back to default values
-            HttpWagon.setUseClientManagerPooled( true );
-            poolingClientConnectionManager = new PoolingClientConnectionManager();
+            HttpWagon.setPersistentPool( true );
+            poolingClientConnectionManager = new PoolingHttpClientConnectionManager();
             poolingClientConnectionManager.setDefaultMaxPerRoute( 30 );
             poolingClientConnectionManager.setMaxTotal( 30 );
-            HttpWagon.setConnectionManagerPooled( poolingClientConnectionManager );
+            HttpWagon.setPoolingHttpClientConnectionManager( poolingClientConnectionManager );
 
         }
         else
         {
-            HttpWagon.setUseClientManagerPooled( networkConfiguration.isUsePooling() );
-            poolingClientConnectionManager = new PoolingClientConnectionManager();
+            HttpWagon.setPersistentPool( networkConfiguration.isUsePooling() );
+            poolingClientConnectionManager = new PoolingHttpClientConnectionManager();
             poolingClientConnectionManager.setDefaultMaxPerRoute( networkConfiguration.getMaxTotalPerHost() );
             poolingClientConnectionManager.setMaxTotal( networkConfiguration.getMaxTotal() );
-            HttpWagon.setConnectionManagerPooled( poolingClientConnectionManager );
+            HttpWagon.setPoolingHttpClientConnectionManager( poolingClientConnectionManager );
         }
     }
 

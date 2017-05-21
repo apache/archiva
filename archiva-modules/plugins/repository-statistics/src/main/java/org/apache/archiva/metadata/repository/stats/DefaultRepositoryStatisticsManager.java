@@ -59,12 +59,14 @@ public class DefaultRepositoryStatisticsManager
 
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
+    @Override
     public boolean hasStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
         return metadataRepository.hasMetadataFacet( repositoryId, RepositoryStatistics.FACET_ID );
     }
 
+    @Override
     public RepositoryStatistics getLastStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
@@ -81,8 +83,8 @@ public class DefaultRepositoryStatisticsManager
         {
             String name = scans.get( scans.size() - 1 );
             RepositoryStatistics repositoryStatistics =
-                (RepositoryStatistics) metadataRepository.getMetadataFacet( repositoryId, RepositoryStatistics.FACET_ID,
-                                                                            name );
+                RepositoryStatistics.class.cast( metadataRepository.getMetadataFacet( repositoryId, RepositoryStatistics.FACET_ID,
+                                                                            name ));
             stopWatch.stop();
             log.debug( "time to find last RepositoryStatistics: {} ms", stopWatch.getTime() );
             return repositoryStatistics;
@@ -131,6 +133,7 @@ public class DefaultRepositoryStatisticsManager
         }
     }
 
+    @Override
     public void addStatisticsAfterScan( MetadataRepository metadataRepository, String repositoryId, Date startTime,
                                         Date endTime, long totalFiles, long newFiles )
         throws MetadataRepositoryException
@@ -196,7 +199,7 @@ public class DefaultRepositoryStatisticsManager
 
             QueryResult queryResult = query.execute();
 
-            Map<String, Integer> totalByType = new HashMap<String, Integer>();
+            Map<String, Integer> totalByType = new HashMap<>();
             long totalSize = 0, totalArtifacts = 0;
             for ( Row row : JcrUtils.getRows( queryResult ) )
             {
@@ -262,17 +265,19 @@ public class DefaultRepositoryStatisticsManager
         }
     }
 
+    @Override
     public void deleteStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
         metadataRepository.removeMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
     }
 
+    @Override
     public List<RepositoryStatistics> getStatisticsInRange( MetadataRepository metadataRepository, String repositoryId,
                                                             Date startTime, Date endTime )
         throws MetadataRepositoryException
     {
-        List<RepositoryStatistics> results = new ArrayList<RepositoryStatistics>();
+        List<RepositoryStatistics> results = new ArrayList<>();
         List<String> list = metadataRepository.getMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
         Collections.sort( list, Collections.reverseOrder() );
         for ( String name : list )

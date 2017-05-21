@@ -81,7 +81,7 @@ public abstract class AbstractUpdatePolicy
      */
     public static final String ONCE = "once";
 
-    private List<String> options = new ArrayList<String>( 5 );
+    private List<String> options = new ArrayList<>( 5 );
 
     public AbstractUpdatePolicy()
     {
@@ -96,11 +96,13 @@ public abstract class AbstractUpdatePolicy
 
     protected abstract String getUpdateMode();
 
+    @Override
     public List<String> getOptions()
     {
         return options;
     }
 
+    @Override
     public void applyPolicy( String policySetting, Properties request, File localFile )
         throws PolicyViolationException, PolicyConfigurationException
     {

@@ -60,9 +60,6 @@ public class ArchivaIndexingTaskExecutor
 {
     private Logger log = LoggerFactory.getLogger( ArchivaIndexingTaskExecutor.class );
 
-    /**
-     *
-     */
     private IndexPacker indexPacker;
 
     private ArtifactContextProducer artifactContextProducer;
@@ -91,12 +88,13 @@ public class ArchivaIndexingTaskExecutor
 
     /**
      * depending on current {@link Task} you have.
-     * If {@link org.apache.archiva.scheduler.indexing.ArtifactIndexingTask.Action.FINISH} && isExecuteOnEntireRepo:
+     * If {@link org.apache.archiva.scheduler.indexing.ArtifactIndexingTask.Action#FINISH} &amp;&amp; isExecuteOnEntireRepo:
      * repository will be scanned.
      *
      * @param task
      * @throws TaskExecutionException
      */
+    @Override
     public void executeTask( Task task )
         throws TaskExecutionException
     {
@@ -160,6 +158,14 @@ public class ArchivaIndexingTaskExecutor
 
                     if ( ac != null )
                     {
+                        // MRM-1779 pom must be indexed too
+                        // TODO make that configurable?
+                        if ( artifactFile.getPath().endsWith( ".pom" ) )
+                        {
+                            ac.getArtifactInfo().fextension = "pom";
+                            ac.getArtifactInfo().packaging = "pom";
+                            ac.getArtifactInfo().classifier = "pom";
+                        }
                         if ( indexingTask.getAction().equals( ArtifactIndexingTask.Action.ADD ) )
                         {
                             //IndexSearcher s = context.getIndexSearcher();

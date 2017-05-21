@@ -1,4 +1,5 @@
 package org.apache.archiva.rest.services;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,14 +20,27 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
+import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
+import org.apache.archiva.proxy.common.WagonFactory;
+import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.wagon.TransferFailedException;
+import org.apache.maven.wagon.Wagon;
+import org.apache.maven.wagon.providers.http.AbstractHttpClientWagon;
+import org.apache.maven.wagon.providers.http.HttpConfiguration;
+import org.apache.maven.wagon.providers.http.HttpMethodConfiguration;
+import org.apache.maven.wagon.proxy.ProxyInfo;
+import org.apache.maven.wagon.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +48,7 @@ import java.util.List;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Service ("remoteRepositoriesService#rest")
+@Service( "remoteRepositoriesService#rest" )
 public class DefaultRemoteRepositoriesService
     extends AbstractRestService
     implements RemoteRepositoriesService
@@ -43,6 +57,17 @@ public class DefaultRemoteRepositoriesService
     @Inject
     private RemoteRepositoryAdmin remoteRepositoryAdmin;
 
+    @Inject
+    private WagonFactory wagonFactory;
+
+
+    @Inject
+    private NetworkProxyAdmin networkProxyAdmin;
+
+    int checkReadTimeout = 10000;
+    int checkTimeout = 9000;
+
+    @Override
     public List<RemoteRepository> getRemoteRepositories()
         throws ArchivaRestServiceException
     {
@@ -58,6 +83,7 @@ public class DefaultRemoteRepositoriesService
         }
     }
 
+    @Override
     public RemoteRepository getRemoteRepository( String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -73,8 +99,9 @@ public class DefaultRemoteRepositoriesService
         return null;
     }
 
+    @Override
     public Boolean deleteRemoteRepository( String repositoryId )
-        throws Exception
+        throws ArchivaRestServiceException
     {
         try
         {
@@ -87,8 +114,9 @@ public class DefaultRemoteRepositoriesService
         }
     }
 
+    @Override
     public Boolean addRemoteRepository( RemoteRepository remoteRepository )
-        throws Exception
+        throws ArchivaRestServiceException
     {
         try
         {
@@ -101,8 +129,9 @@ public class DefaultRemoteRepositoriesService
         }
     }
 
+    @Override
     public Boolean updateRemoteRepository( RemoteRepository remoteRepository )
-        throws Exception
+        throws ArchivaRestServiceException
     {
         try
         {
@@ -115,5 +144,94 @@ public class DefaultRemoteRepositoriesService
         }
     }
 
+    @Override
+    public Boolean checkRemoteConnectivity( String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        try
+        {
+            RemoteRepository remoteRepository = remoteRepositoryAdmin.getRemoteRepository( repositoryId );
+            if ( remoteRepository == null )
+            {
+                log.warn( "ignore scheduleDownloadRemote for repo with id {} as not exists", repositoryId );
+                return Boolean.FALSE;
+            }
+            NetworkProxy networkProxy = null;
+            if ( StringUtils.isNotBlank( remoteRepository.getRemoteDownloadNetworkProxyId() ) )
+            {
+                networkProxy = networkProxyAdmin.getNetworkProxy( remoteRepository.getRemoteDownloadNetworkProxyId() );
+                if ( networkProxy == null )
+                {
+                    log.warn(
+                        "your remote repository is configured to download remote index trought a proxy we cannot find id:{}",
+                        remoteRepository.getRemoteDownloadNetworkProxyId() );
+                }
+            }
 
+            String wagonProtocol = new URL( remoteRepository.getUrl() ).getProtocol();
+
+            final Wagon wagon =
+                wagonFactory.getWagon( new WagonFactoryRequest( wagonProtocol, remoteRepository.getExtraHeaders() ) //
+                                           .networkProxy( networkProxy ) );
+
+            // hardcoded value as it's a check of the remote repo connectivity
+            wagon.setReadTimeout( checkReadTimeout );
+            wagon.setTimeout( checkTimeout );
+
+            if ( wagon instanceof AbstractHttpClientWagon )
+            {
+                HttpMethodConfiguration httpMethodConfiguration = new HttpMethodConfiguration() //
+                    .setUsePreemptive( true ) //
+                    .setReadTimeout( checkReadTimeout );
+                HttpConfiguration httpConfiguration = new HttpConfiguration().setGet( httpMethodConfiguration );
+                AbstractHttpClientWagon.class.cast( wagon ).setHttpConfiguration( httpConfiguration );
+            }
+            
+            ProxyInfo proxyInfo = null;
+            if ( networkProxy != null )
+            {
+                proxyInfo = new ProxyInfo();
+                proxyInfo.setType( networkProxy.getProtocol() );
+                proxyInfo.setHost( networkProxy.getHost() );
+                proxyInfo.setPort( networkProxy.getPort() );
+                proxyInfo.setUserName( networkProxy.getUsername() );
+                proxyInfo.setPassword( networkProxy.getPassword() );
+            }            
+
+            wagon.connect( new Repository( remoteRepository.getId(), remoteRepository.getUrl() ), proxyInfo );
+
+            // we only check connectivity as remote repo can be empty
+            // MRM-1909: Wagon implementation appends a slash already
+            wagon.getFileList( "" );
+
+            return Boolean.TRUE;
+        }
+        catch ( TransferFailedException e )
+        {
+            log.info( "TransferFailedException :{}", e.getMessage() );
+            return Boolean.FALSE;
+        }
+        catch ( Exception e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(),
+                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
+        }
+
+    }
+
+    public int getCheckReadTimeout() {
+        return checkReadTimeout;
+    }
+
+    public void setCheckReadTimeout(int checkReadTimeout) {
+        this.checkReadTimeout = checkReadTimeout;
+    }
+
+    public int getCheckTimeout() {
+        return checkTimeout;
+    }
+
+    public void setCheckTimeout(int checkTimeout) {
+        this.checkTimeout = checkTimeout;
+    }
 }

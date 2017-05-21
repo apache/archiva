@@ -36,6 +36,12 @@ public class ReadMetadataRequest
 
     private Filter<String> filter;
 
+    /**
+     * define this request as a ui request to remove some constraints added for optimisations
+     * @since 2.0.0
+     */
+    private boolean browsingRequest;
+
     public ReadMetadataRequest()
     {
         // no op
@@ -134,5 +140,35 @@ public class ReadMetadataRequest
     {
         this.filter = filter;
         return this;
+    }
+
+    public boolean isBrowsingRequest()
+    {
+        return browsingRequest;
+    }
+
+    public void setBrowsingRequest( boolean browsingRequest )
+    {
+        this.browsingRequest = browsingRequest;
+    }
+
+    public ReadMetadataRequest browsingRequest( boolean browsingRequest )
+    {
+        this.browsingRequest = browsingRequest;
+        return this;
+    }
+
+    @Override
+    public String toString()
+    {
+        final StringBuilder sb = new StringBuilder( "ReadMetadataRequest{" );
+        sb.append( "repositoryId='" ).append( repositoryId ).append( '\'' );
+        sb.append( ", namespace='" ).append( namespace ).append( '\'' );
+        sb.append( ", projectId='" ).append( projectId ).append( '\'' );
+        sb.append( ", projectVersion='" ).append( projectVersion ).append( '\'' );
+        sb.append( ", filter=" ).append( filter );
+        sb.append( ", browsingRequest=" ).append( browsingRequest );
+        sb.append( '}' );
+        return sb.toString();
     }
 }

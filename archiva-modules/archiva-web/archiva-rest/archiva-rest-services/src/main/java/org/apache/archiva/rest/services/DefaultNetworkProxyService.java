@@ -40,6 +40,7 @@ public class DefaultNetworkProxyService
     @Inject
     private NetworkProxyAdmin networkProxyAdmin;
 
+    @Override
     public List<NetworkProxy> getNetworkProxies()
         throws ArchivaRestServiceException
     {
@@ -54,6 +55,7 @@ public class DefaultNetworkProxyService
         }
     }
 
+    @Override
     public NetworkProxy getNetworkProxy( String networkProxyId )
         throws ArchivaRestServiceException
     {
@@ -67,6 +69,7 @@ public class DefaultNetworkProxyService
         }
     }
 
+    @Override
     public void addNetworkProxy( NetworkProxy networkProxy )
         throws ArchivaRestServiceException
     {
@@ -84,6 +87,7 @@ public class DefaultNetworkProxyService
         }
     }
 
+    @Override
     public void updateNetworkProxy( NetworkProxy networkProxy )
         throws ArchivaRestServiceException
     {
@@ -101,6 +105,7 @@ public class DefaultNetworkProxyService
         }
     }
 
+    @Override
     public Boolean deleteNetworkProxy( String networkProxyId )
         throws ArchivaRestServiceException
     {

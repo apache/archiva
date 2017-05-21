@@ -19,18 +19,27 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 @XmlRootElement(name = "organization")
-@Entity
 public class Organization
     implements Serializable
 {
     private String name;
 
     private String url;
+
+    public Organization()
+    {
+        // no op
+    }
+
+    public Organization( String name, String url )
+    {
+        this.name = name;
+        this.url = url;
+    }
 
     public String getUrl()
     {
@@ -50,5 +59,14 @@ public class Organization
     public void setName( String name )
     {
         this.name = name;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Organization{" +
+            "name='" + name + '\'' +
+            ", url='" + url + '\'' +
+            '}';
     }
 }

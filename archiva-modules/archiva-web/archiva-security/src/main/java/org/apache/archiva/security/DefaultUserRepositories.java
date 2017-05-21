@@ -60,6 +60,7 @@ public class DefaultUserRepositories
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
+    @Override
     public List<String> getObservableRepositoryIds( String principal )
         throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
     {
@@ -68,6 +69,7 @@ public class DefaultUserRepositories
         return getAccessibleRepositoryIds( principal, operation );
     }
 
+    @Override
     public List<String> getManagableRepositoryIds( String principal )
         throws PrincipalNotFoundException, AccessDeniedException, ArchivaSecurityException
     {
@@ -81,7 +83,7 @@ public class DefaultUserRepositories
     {
 
         List<ManagedRepository> managedRepositories = getAccessibleRepositories( principal, operation );
-        List<String> repoIds = new ArrayList<String>( managedRepositories.size() );
+        List<String> repoIds = new ArrayList<>( managedRepositories.size() );
         for ( ManagedRepository managedRepository : managedRepositories )
         {
             repoIds.add( managedRepository.getId() );
@@ -90,10 +92,16 @@ public class DefaultUserRepositories
         return repoIds;
     }
 
+    @Override
     public List<ManagedRepository> getAccessibleRepositories( String principal )
         throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException
     {
         return getAccessibleRepositories( principal, ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS );
+    }
+
+    @Override
+    public List<ManagedRepository> getManagableRepositories(String principal) throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException {
+        return getAccessibleRepositories( principal, ArchivaRoleConstants.OPERATION_REPOSITORY_UPLOAD );
     }
 
     private List<ManagedRepository> getAccessibleRepositories( String principal, String operation )
@@ -101,7 +109,7 @@ public class DefaultUserRepositories
     {
         SecuritySession securitySession = createSession( principal );
 
-        List<ManagedRepository> managedRepositories = new ArrayList<ManagedRepository>();
+        List<ManagedRepository> managedRepositories = new ArrayList<>();
 
         try
         {
@@ -167,6 +175,7 @@ public class DefaultUserRepositories
         return new DefaultSecuritySession( authn, user );
     }
 
+    @Override
     public void createMissingRepositoryRoles( String repoId )
         throws ArchivaSecurityException
     {
@@ -189,6 +198,7 @@ public class DefaultUserRepositories
         }
     }
 
+    @Override
     public boolean isAuthorizedToUploadArtifacts( String principal, String repoId )
         throws PrincipalNotFoundException, ArchivaSecurityException
     {
@@ -206,6 +216,7 @@ public class DefaultUserRepositories
         }
     }
 
+    @Override
     public boolean isAuthorizedToDeleteArtifacts( String principal, String repoId )
         throws ArchivaSecurityException
     {

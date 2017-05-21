@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository.storage;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
@@ -26,6 +27,7 @@ import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.xml.XMLException;
 
 import java.util.Collection;
 
@@ -56,7 +58,33 @@ public interface RepositoryStorage
     // FIXME: reconsider this API, do we want to expose storage format in the form of a path?
     ArtifactMetadata readArtifactMetadataFromPath( String repoId, String path )
         throws RepositoryStorageRuntimeException;
-
+    
+    /**
+     * A relocation capable client will request the POM prior to the artifact, and will then read meta-data and do
+     * client side relocation. A simplier client (like maven 1) will only request the artifact and not use the
+     * metadatas.
+     * <p>
+     * For such clients, archiva does server-side relocation by reading itself the &lt;relocation&gt; element in
+     * metadatas and serving the expected artifact.
+     * @param managedRepository the used managed repository
+     * @param artifact the artifact reference
+     * @throws org.apache.archiva.policies.ProxyDownloadException
+     */    
     void applyServerSideRelocation( ManagedRepositoryContent managedRepository, ArtifactReference artifact )
         throws ProxyDownloadException;
+
+    /**
+     * add an other method to evaluate real path as when receiving -SNAPSHOT (for maven storage)
+     * request redirect to the last build
+     * @param requestPath the web uri request
+     * @param managedRepository the used managed repository can be <code>null</code> so last version won't be resolved
+     * @return the file path
+     * @since 2.0.0
+     */
+    String getFilePath( String requestPath, ManagedRepository managedRepository );
+
+    String getFilePathWithVersion( final String requestPath, ManagedRepositoryContent managedRepositoryContent )
+        throws RelocationException, XMLException;
+
+
 }

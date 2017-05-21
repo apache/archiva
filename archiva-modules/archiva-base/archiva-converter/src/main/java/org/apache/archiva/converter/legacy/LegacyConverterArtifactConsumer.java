@@ -40,6 +40,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,15 +59,10 @@ public class LegacyConverterArtifactConsumer
 {
     private Logger log = LoggerFactory.getLogger( LegacyConverterArtifactConsumer.class );
 
-    /**
-     *
-     */
     @Inject
+    @Named("artifactConverter#legacy-to-default")
     private ArtifactConverter artifactConverter;
 
-    /**
-     *
-     */
     private ArtifactFactory artifactFactory;
 
     private ManagedRepositoryContent managedRepository;
@@ -81,13 +77,14 @@ public class LegacyConverterArtifactConsumer
     public LegacyConverterArtifactConsumer( PlexusSisuBridge plexusSisuBridge )
         throws PlexusSisuBridgeException
     {
-        includes = new ArrayList<String>( 3 );
+        includes = new ArrayList<>( 3 );
         includes.add( "**/*.jar" );
         includes.add( "**/*.ear" );
         includes.add( "**/*.war" );
         artifactFactory = plexusSisuBridge.lookup( ArtifactFactory.class );
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
@@ -95,32 +92,38 @@ public class LegacyConverterArtifactConsumer
         this.managedRepository.setRepository( repository );
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void completeScan()
     {
         // no op
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return excludes;
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return includes;
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -134,33 +137,31 @@ public class LegacyConverterArtifactConsumer
         }
         catch ( LayoutException e )
         {
-            log.warn( "Unable to convert artifact: " + path + " : " + e.getMessage(), e );
+            log.warn( "Unable to convert artifact: {} : {}",path , e.getMessage(), e );
         }
         catch ( ArtifactConversionException e )
         {
-            log.warn( "Unable to convert artifact: " + path + " : " + e.getMessage(), e );
+            log.warn( "Unable to convert artifact: {} : {}",path , e.getMessage(), e );
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {
         processFile( path );
     }
 
+    @Override
     public String getDescription()
     {
         return "Legacy Artifact to Default Artifact Converter";
     }
 
+    @Override
     public String getId()
     {
         return "artifact-legacy-to-default-converter";
-    }
-
-    public boolean isPermanent()
-    {
-        return false;
     }
 
     public void setExcludes( List<String> excludes )

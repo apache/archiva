@@ -23,6 +23,7 @@ import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
+import org.apache.archiva.rest.api.model.StringList;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 
 import javax.ws.rs.Consumes;
@@ -34,6 +35,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * @author Olivier Lamy
@@ -166,5 +168,13 @@ public interface RepositoriesService
                            @PathParam ("repositoryId") String repositoryId )
         throws ArchivaRestServiceException;
 
+    /**
+     * @since 2.0
+     */
+    @Path ("runningRemoteDownloadIds")
+    @GET
+    @Produces ({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+    @RedbackAuthorization (noPermission = true)
+    StringList getRunningRemoteDownloadIds();
 
 }

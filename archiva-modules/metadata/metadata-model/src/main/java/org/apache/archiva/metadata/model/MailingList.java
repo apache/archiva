@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Information about the available mailing lists for communicating with the project.
  *
- * @todo considering moving this to a facet - avoid referring to it externally
+ * TODO considering moving this to a facet - avoid referring to it externally
  */
 @XmlRootElement(name = "mailingList")
 public class MailingList
@@ -120,5 +120,18 @@ public class MailingList
     public String getName()
     {
         return name;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "MailingList{" +
+            "mainArchiveUrl='" + mainArchiveUrl + '\'' +
+            ", otherArchives=" + otherArchives +
+            ", name='" + name + '\'' +
+            ", postAddress='" + postAddress + '\'' +
+            ", subscribeAddress='" + subscribeAddress + '\'' +
+            ", unsubscribeAddress='" + unsubscribeAddress + '\'' +
+            '}';
     }
 }

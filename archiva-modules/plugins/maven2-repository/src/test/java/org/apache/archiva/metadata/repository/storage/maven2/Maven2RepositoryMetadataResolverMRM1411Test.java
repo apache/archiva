@@ -58,14 +58,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@ContextConfiguration ( { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class Maven2RepositoryMetadataResolverMRM1411Test
     extends TestCase
 {
     private static final Filter<String> ALL = new AllFilter<String>();
 
     @Inject
-    @Named (value = "repositoryStorage#maven2")
+    @Named ( "repositoryStorage#maven2")
     private Maven2RepositoryStorage storage;
 
     private static final String TEST_REPO_ID = "test";
@@ -89,7 +89,7 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
     private static final String EMPTY_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
     @Inject
-    @Named (value = "archivaConfiguration#default")
+    @Named ( "archivaConfiguration#default" )
     private ArchivaConfiguration configuration;
 
     private WagonFactory wagonFactory;
@@ -177,7 +177,7 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
         assertDependency( dependencies.get( 0 ), "commons-io", "commons-io", "1.4" );
         assertDependency( dependencies.get( 1 ), "junit", "junit", "3.8.1", "test" );
 
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
         paths.add( "target/test-repository/com/example/test/test-artifact-module-a" );
         paths.add( "target/test-repository/com/example/test/test-artifact-parent" );
         paths.add( "target/test-repository/com/example/test/test-artifact-root" );
@@ -209,7 +209,7 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
         assertEquals( "test-artifact-module-a", facet.getArtifactId() );
         assertEquals( "jar", facet.getPackaging() );
 
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
         paths.add( "target/test-repository/com/example/test/test-artifact-module-a" );
         paths.add( "target/test-repository/com/example/test/test-artifact-parent" );
         paths.add( "target/test-repository/com/example/test/test-artifact-root" );
@@ -235,7 +235,7 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
         assertEquals( "missing-parent", facet.getArtifactId() );
         assertEquals( "jar", facet.getPackaging() );
 
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
         paths.add( "target/test-repository/com/example/test/test-artifact-module-a" );
         paths.add( "target/test-repository/com/example/test/test-artifact-parent" );
         paths.add( "target/test-repository/com/example/test/test-artifact-root" );
@@ -282,7 +282,7 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
         assertDependency( dependencies.get( 0 ), "commons-io", "commons-io", "1.4" );
         assertDependency( dependencies.get( 1 ), "junit", "junit", "3.8.1", "test" );
 
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
         paths.add( "target/test-repository/com/example/test/test-snapshot-artifact-module-a" );
         paths.add( "target/test-repository/com/example/test/test-snapshot-artifact-root" );
 
@@ -310,7 +310,7 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
         {
         }
 
-        List<String> paths = new ArrayList<String>();
+        List<String> paths = new ArrayList<>();
         paths.add( "target/test-repository/com/example/test/test-snapshot-artifact-module-a" );
         paths.add( "target/test-repository/com/example/test/test-snapshot-artifact-root" );
 
@@ -368,7 +368,7 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
     private void assertMailingList( String prefix, MailingList mailingList, String name, boolean allowPost,
                                     String nabbleUrl )
     {
-        List<String> otherArchives = new ArrayList<String>();
+        List<String> otherArchives = new ArrayList<>();
         otherArchives.add( "http://www.mail-archive.com/" + prefix + "@archiva.apache.org" );
         if ( nabbleUrl != null )
         {

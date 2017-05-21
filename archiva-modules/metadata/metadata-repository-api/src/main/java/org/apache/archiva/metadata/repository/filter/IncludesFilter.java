@@ -31,6 +31,7 @@ public class IncludesFilter<T>
         this.includes = includes;
     }
 
+    @Override
     public boolean accept( T value )
     {
         return includes.contains( value );

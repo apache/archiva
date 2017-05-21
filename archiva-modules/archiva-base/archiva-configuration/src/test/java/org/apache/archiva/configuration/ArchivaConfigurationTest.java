@@ -19,18 +19,11 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import java.io.File;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.Map;
-import javax.inject.Inject;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
-import org.easymock.MockControl;
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -40,11 +33,20 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
+import javax.inject.Inject;
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.*;
+
 /**
  * Test the configuration store.
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@RunWith(ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" })
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class ArchivaConfigurationTest
 {
@@ -73,7 +75,7 @@ public class ArchivaConfigurationTest
     {
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-defaults" );
         Configuration configuration = archivaConfiguration.getConfiguration();
-        
+
         assertConfiguration( configuration, 2, 1, 1 );
         assertEquals( "check network proxies", 0, configuration.getNetworkProxies().size() );
 
@@ -86,7 +88,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "default", repository.getLayout() );
         assertTrue( "check managed repositories", repository.isScanned() );
     }
- 
+
     @Test
     public void testGetConfigurationFromRegistryWithASingleNamedConfigurationResource()
         throws Exception
@@ -215,18 +217,16 @@ public class ArchivaConfigurationTest
         configuration.getWebapp().getUi().setAppletFindEnabled( false );
 
         // add a change listener
-        MockControl control = createConfigurationListenerMockControl();
-        ConfigurationListener listener = (ConfigurationListener) control.getMock();
+        ConfigurationListener listener = createMock( ConfigurationListener.class );
         archivaConfiguration.addListener( listener );
 
         listener.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED ) );
-        control.setVoidCallable();
 
-        control.replay();
+        replay( listener );
 
         archivaConfiguration.save( configuration );
 
-        control.verify();
+        verify( listener );
 
         assertTrue( "Check file exists", file.exists() );
 
@@ -242,9 +242,9 @@ public class ArchivaConfigurationTest
         assertFalse( "check value", configuration.getWebapp().getUi().isAppletFindEnabled() );
     }
 
-    private static MockControl createConfigurationListenerMockControl()
+    private static ConfigurationListener createConfigurationListenerMockControl()
     {
-        return MockControl.createControl( ConfigurationListener.class );
+        return createMock( ConfigurationListener.class );// MockControl.createControl( ConfigurationListener.class );
     }
 
     @Test
@@ -260,7 +260,7 @@ public class ArchivaConfigurationTest
         assertFalse( userFile.exists() );
 
         userFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.forName("UTF-8") );
+        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.forName( "UTF-8" ) );
 
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-save-user" );
 
@@ -301,19 +301,16 @@ public class ArchivaConfigurationTest
         configuration.getWebapp().getUi().setAppletFindEnabled( false );
 
         // add a change listener
-        MockControl control = createConfigurationListenerMockControl();
-        ConfigurationListener listener = (ConfigurationListener) control.getMock();
+        ConfigurationListener listener = createConfigurationListenerMockControl();
         archivaConfiguration.addListener( listener );
 
         listener.configurationEvent( new ConfigurationEvent( ConfigurationEvent.SAVED ) );
 
-        control.setVoidCallable( 1 );
-
-        control.replay();
+        replay( listener );
 
         archivaConfiguration.save( configuration );
 
-        control.verify();
+        verify( listener );
 
         assertTrue( "Check file exists", userFile.exists() );
         assertFalse( "Check file not created", baseFile.exists() );
@@ -351,7 +348,7 @@ public class ArchivaConfigurationTest
         assertFalse( userFile.exists() );
 
         baseFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( baseFile, "<configuration/>", Charset.forName("UTF-8") );
+        FileUtils.writeStringToFile( baseFile, "<configuration/>", Charset.forName( "UTF-8" ) );
 
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user-fallback" );
@@ -386,13 +383,12 @@ public class ArchivaConfigurationTest
         assertFalse( userFile.exists() );
 
         baseFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( baseFile, "<configuration/>", Charset.forName("UTF-8") );
+        FileUtils.writeStringToFile( baseFile, "<configuration/>", Charset.forName( "UTF-8" ) );
 
         userFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.forName("UTF-8") );
+        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.forName( "UTF-8" ) );
 
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-save-user" );
 
         archivaConfiguration.reload();
 
@@ -405,10 +401,10 @@ public class ArchivaConfigurationTest
 
         assertTrue( "Check file exists", baseFile.exists() );
         assertEquals( "Check base file is unchanged", "<configuration/>",
-                      FileUtils.readFileToString( baseFile, Charset.forName("UTF-8") ) );
+                      FileUtils.readFileToString( baseFile, Charset.forName( "UTF-8" ) ) );
         assertTrue( "Check file exists", userFile.exists() );
         assertFalse( "Check base file is changed",
-                     "<configuration/>".equals( FileUtils.readFileToString( userFile, Charset.forName("UTF-8") ) ) );
+                     "<configuration/>".equals( FileUtils.readFileToString( userFile, Charset.forName( "UTF-8" ) ) ) );
 
         // check it
         configuration = archivaConfiguration.getConfiguration();
@@ -431,10 +427,9 @@ public class ArchivaConfigurationTest
         FileUtils.copyFile( getTestFile( "src/test/conf/conf-user.xml" ), userFile );
 
         baseFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( baseFile, "<configuration/>", Charset.forName("UTF-8") );
+        FileUtils.writeStringToFile( baseFile, "<configuration/>", Charset.forName( "UTF-8" ) );
 
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-save-user" );
 
         archivaConfiguration.reload();
 
@@ -447,10 +442,10 @@ public class ArchivaConfigurationTest
 
         assertTrue( "Check file exists", baseFile.exists() );
         assertEquals( "Check base file is unchanged", "<configuration/>",
-                      FileUtils.readFileToString( baseFile, Charset.forName("UTF-8") ) );
+                      FileUtils.readFileToString( baseFile, Charset.forName( "UTF-8" ) ) );
         assertTrue( "Check file exists", userFile.exists() );
         assertFalse( "Check base file is changed",
-                     "<configuration/>".equals( FileUtils.readFileToString( userFile, Charset.forName("UTF-8") ) ) );
+                     "<configuration/>".equals( FileUtils.readFileToString( userFile, Charset.forName( "UTF-8" ) ) ) );
 
         // check it
         configuration = archivaConfiguration.getConfiguration();
@@ -473,10 +468,9 @@ public class ArchivaConfigurationTest
         FileUtils.copyFile( getTestFile( "src/test/conf/conf-base.xml" ), baseFile );
 
         userFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.forName("UTF-8") );
+        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.forName( "UTF-8" ) );
 
-        ArchivaConfiguration archivaConfiguration =
-            (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user" );
+        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-save-user" );
 
         archivaConfiguration.reload();
 
@@ -574,7 +568,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check managed repositories", "default", repository.getLayout() );
         assertTrue( "check managed repositories", repository.isScanned() );
 
-        log.info( "knowContentConsumers " + configuration.getRepositoryScanning().getKnownContentConsumers() );
+        log.info( "knowContentConsumers {}", configuration.getRepositoryScanning().getKnownContentConsumers() );
 
         assertFalse(
             configuration.getRepositoryScanning().getKnownContentConsumers().contains( "update-db-artifact" ) );
@@ -626,9 +620,6 @@ public class ArchivaConfigurationTest
         // Save the file.
         archivaConfiguration.save( configuration );
 
-        // Release existing
-        //release( archivaConfiguration );
-
         // Reload.
         archivaConfiguration = lookup( ArchivaConfiguration.class, "test-autodetect-v1" );
         configuration = archivaConfiguration.getConfiguration();
@@ -640,7 +631,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositoriesAsMap().size() );
         assertEquals( "check v1 repositories size.", 0, configuration.getRepositories().size() );
 
-        String actualXML = FileUtils.readFileToString( userFile, Charset.forName("UTF-8") );
+        String actualXML = FileUtils.readFileToString( userFile, Charset.forName( "UTF-8" ) );
         XMLAssert.assertXpathNotExists( "//configuration/repositories/repository", actualXML );
         XMLAssert.assertXpathNotExists( "//configuration/repositories", actualXML );
     }
@@ -711,6 +702,7 @@ public class ArchivaConfigurationTest
         // etc. as it's done in other tests
         archivaConfiguration.addListener( new ConfigurationListener()
         {
+            @Override
             public void configurationEvent( ConfigurationEvent event )
             {
                 assertEquals( ConfigurationEvent.SAVED, event.getType() );
@@ -748,7 +740,7 @@ public class ArchivaConfigurationTest
         FileUtils.copyFile( getTestFile( "src/test/conf/conf-single-list-elements.xml" ), baseFile );
 
         userFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.forName("UTF-8") );
+        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.forName( "UTF-8" ) );
 
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-remove-central" );
 

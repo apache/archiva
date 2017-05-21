@@ -31,6 +31,7 @@ import java.util.Collection;
 public class TestMetadataResolver
     implements MetadataResolver
 {
+    @Override
     public ProjectVersionMetadata resolveProjectVersion( RepositorySession session, String repoId, String namespace,
                                                          String projectId, String projectVersion )
         throws MetadataResolutionException
@@ -38,6 +39,7 @@ public class TestMetadataResolver
         return null;
     }
 
+    @Override
     public Collection<ProjectVersionReference> resolveProjectReferences( RepositorySession session, String repoId,
                                                                          String namespace, String projectId,
                                                                          String projectVersion )
@@ -46,24 +48,28 @@ public class TestMetadataResolver
         return null;
     }
 
+    @Override
     public Collection<String> resolveRootNamespaces( RepositorySession session, String repoId )
         throws MetadataResolutionException
     {
         return null;
     }
 
+    @Override
     public Collection<String> resolveNamespaces( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
         return null;
     }
 
+    @Override
     public Collection<String> resolveProjects( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
         return null;
     }
 
+    @Override
     public Collection<String> resolveProjectVersions( RepositorySession session, String repoId, String namespace,
                                                       String projectId )
         throws MetadataResolutionException
@@ -71,6 +77,7 @@ public class TestMetadataResolver
         return null;
     }
 
+    @Override
     public Collection<ArtifactMetadata> resolveArtifacts( RepositorySession session, String repoId, String namespace,
                                                           String projectId, String projectVersion )
         throws MetadataResolutionException

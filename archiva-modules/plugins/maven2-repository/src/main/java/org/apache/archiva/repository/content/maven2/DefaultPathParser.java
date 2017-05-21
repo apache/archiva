@@ -55,6 +55,7 @@ public class DefaultPathParser
      *
      * @see org.apache.archiva.repository.content.PathParser#toArtifactReference(String)
      */
+    @Override
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {

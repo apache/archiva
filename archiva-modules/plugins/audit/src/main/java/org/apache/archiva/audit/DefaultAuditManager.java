@@ -19,6 +19,7 @@ package org.apache.archiva.audit;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.slf4j.Logger;
@@ -48,12 +49,13 @@ public class DefaultAuditManager
 
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
+    @Override
     public List<AuditEvent> getMostRecentAuditEvents( MetadataRepository metadataRepository,
                                                       List<String> repositoryIds )
         throws MetadataRepositoryException
     {
         // TODO: consider a more efficient implementation that directly gets the last ten from the content repository
-        List<AuditRecord> records = new ArrayList<AuditRecord>();
+        List<AuditRecord> records = new ArrayList<>();
         for ( String repositoryId : repositoryIds )
         {
             List<String> names = metadataRepository.getMetadataFacets( repositoryId, AuditEvent.FACET_ID );
@@ -65,7 +67,7 @@ public class DefaultAuditManager
         Collections.sort( records );
         records = records.subList( 0, records.size() < NUM_RECENT_EVENTS ? records.size() : NUM_RECENT_EVENTS );
 
-        List<AuditEvent> events = new ArrayList<AuditEvent>( records.size() );
+        List<AuditEvent> events = new ArrayList<>( records.size() );
         for ( AuditRecord record : records )
         {
             AuditEvent auditEvent = (AuditEvent) metadataRepository.getMetadataFacet( record.repositoryId,
@@ -76,6 +78,7 @@ public class DefaultAuditManager
         return events;
     }
 
+    @Override
     public void addAuditEvent( MetadataRepository repository, AuditEvent event )
         throws MetadataRepositoryException
     {
@@ -86,12 +89,14 @@ public class DefaultAuditManager
         }
     }
 
+    @Override
     public void deleteAuditEvents( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
         metadataRepository.removeMetadataFacets( repositoryId, AuditEvent.FACET_ID );
     }
 
+    @Override
     public List<AuditEvent> getAuditEventsInRange( MetadataRepository metadataRepository,
                                                    Collection<String> repositoryIds, Date startTime, Date endTime )
         throws MetadataRepositoryException
@@ -99,12 +104,13 @@ public class DefaultAuditManager
         return getAuditEventsInRange( metadataRepository, repositoryIds, null, startTime, endTime );
     }
 
+    @Override
     public List<AuditEvent> getAuditEventsInRange( MetadataRepository metadataRepository,
                                                    Collection<String> repositoryIds, String resource, Date startTime,
                                                    Date endTime )
         throws MetadataRepositoryException
     {
-        List<AuditEvent> results = new ArrayList<AuditEvent>();
+        List<AuditEvent> results = new ArrayList<>();
         for ( String repositoryId : repositoryIds )
         {
             List<String> list = metadataRepository.getMetadataFacets( repositoryId, AuditEvent.FACET_ID );
@@ -135,6 +141,7 @@ public class DefaultAuditManager
         }
         Collections.sort( results, new Comparator<AuditEvent>()
         {
+            @Override
             public int compare( AuditEvent o1, AuditEvent o2 )
             {
                 return o2.getTimestamp().compareTo( o1.getTimestamp() );
@@ -163,6 +170,7 @@ public class DefaultAuditManager
             this.name = name;
         }
 
+        @Override
         public int compareTo( AuditRecord other )
         {
             // reverse ordering

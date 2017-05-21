@@ -36,14 +36,14 @@ public interface RepositoryContentConsumer
     /**
      * Get the list of included file patterns for this consumer.
      *
-     * @return the list of {@link String} patterns. (example: <code>"**<span />/*.pom"</code>)
+     * @return the list of {@link String} patterns. (example: <code>&quot;**&#47;*.pom&quot;</code>)
      */
     List<String> getIncludes();
 
     /**
      * Get the list of excluded file patterns for this consumer.
      *
-     * @return the list of {@link String} patterns. (example: <code>"**<span />/*.pom"</code>) - (can be null for no exclusions)
+     * @return the list of {@link String} patterns. (example: <code>&quot;**&#47;*.pom&quot;</code>) - (can be null for no exclusions)
      */
     List<String> getExcludes();
 
@@ -51,7 +51,6 @@ public interface RepositoryContentConsumer
      * <p>
      * Event that triggers at the beginning of a scan.
      * </p>
-     * <p/>
      * <p>
      * NOTE: This would be a good place to initialize the consumer, to lock any resources, and to
      * generally start tracking the scan as a whole.
@@ -83,7 +82,6 @@ public interface RepositoryContentConsumer
      * <p>
      * Event indicating a file is to be processed by this consumer.
      * </p>
-     * <p/>
      * <p>
      * NOTE: The consumer does not need to process the file immediately, can can opt to queue and/or track
      * the files to be processed in batch.  Just be sure to complete the processing by the {@link #completeScan()}
@@ -97,9 +95,9 @@ public interface RepositoryContentConsumer
         throws ConsumerException;
 
     /**
-     * @param path
-     * @param executeOnEntireRepo
-     * @throws Exception
+     * @param path the relative file path (in the repository) to process.
+     * @param executeOnEntireRepo flags whether the consumer will be executed on an entire repository or just on a specific resource
+     * @throws Exception if there was a problem processing this file.
      */
     void processFile( String path, boolean executeOnEntireRepo )
         throws Exception;
@@ -108,7 +106,6 @@ public interface RepositoryContentConsumer
      * <p>
      * Event that triggers on the completion of a scan.
      * </p>
-     * <p/>
      * <p>
      * NOTE: If the consumer opted to batch up processing requests in the {@link #processFile(String)} event
      * this would be the last opportunity to drain any processing queue's.
@@ -117,8 +114,7 @@ public interface RepositoryContentConsumer
     void completeScan();
 
     /**
-     * @param executeOnEntireRepo
-     * @throws Exception
+     * @param executeOnEntireRepo flags whether the consumer will be executed on an entire repository or just on a specific resource
      */
     void completeScan( boolean executeOnEntireRepo );
 

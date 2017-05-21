@@ -26,6 +26,8 @@ import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.commons.io.FileUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,23 +49,19 @@ public class AutoRenameConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer
 {
-    /**
-     * default-value="auto-rename"
-     */
+    private Logger log = LoggerFactory.getLogger( AutoRenameConsumer.class ); 
+
     private String id = "auto-rename";
 
-    /**
-     * default-value="Automatically rename common artifact mistakes."
-     */
     private String description = "Automatically rename common artifact mistakes.";
 
     private static final String RENAME_FAILURE = "rename_failure";
 
     private File repositoryDir;
 
-    private List<String> includes = new ArrayList<String>( 3 );
+    private List<String> includes = new ArrayList<>( 3 );
 
-    private Map<String, String> extensionRenameMap = new HashMap<String, String>();
+    private Map<String, String> extensionRenameMap = new HashMap<>();
 
     public AutoRenameConsumer()
     {
@@ -76,53 +74,57 @@ public class AutoRenameConsumer
         extensionRenameMap.put( ".plugin", ".jar" );
     }
 
+    @Override
     public String getId()
     {
         return this.id;
     }
 
+    @Override
     public String getDescription()
     {
         return this.description;
     }
 
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         this.repositoryDir = new File( repository.getLocation() );
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void completeScan()
     {
         /* do nothing */
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return null;
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return includes;
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -145,17 +147,20 @@ public class AutoRenameConsumer
                     }
                     catch ( IOException e )
                     {
+                        log.warn( "Unable to rename {} to {} :", path, correctedPath, e );
                         triggerConsumerWarning( RENAME_FAILURE, "Unable to rename " + path + " to " + correctedPath +
                             ": " + e.getMessage() );
                     }
                 }
             }
 
+            log.info( "(Auto) Removing File: {} ", file.getAbsolutePath() );
             triggerConsumerInfo( "(Auto) Removing File: " + file.getAbsolutePath() );
             file.delete();
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {

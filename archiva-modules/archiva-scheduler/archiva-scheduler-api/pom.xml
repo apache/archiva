@@ -22,7 +22,7 @@
   <parent>
     <artifactId>archiva-scheduler</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M5-SNAPSHOT</version>
+    <version>2.2.2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-scheduler-api</artifactId>
   <packaging>bundle</packaging>
@@ -51,6 +51,7 @@
             </Export-Package>
             <Import-Package>
               org.apache.archiva.redback.components.taskqueue,
+              org.apache.archiva.admin.model.beans
             </Import-Package>
           </instructions>
         </configuration>

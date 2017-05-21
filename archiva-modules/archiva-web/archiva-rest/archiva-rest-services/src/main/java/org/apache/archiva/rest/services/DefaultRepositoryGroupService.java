@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * @author Olivier Lamy
  */
-@Service( "repositoryGroupService#rest" )
+@Service("repositoryGroupService#rest")
 public class DefaultRepositoryGroupService
     extends AbstractRestService
     implements RepositoryGroupService
@@ -42,18 +42,19 @@ public class DefaultRepositoryGroupService
     @Inject
     private RepositoryGroupAdmin repositoryGroupAdmin;
 
+    @Override
     public List<RepositoryGroup> getRepositoriesGroups()
         throws ArchivaRestServiceException
     {
         try
         {
             List<RepositoryGroup> repositoriesGroups =
-                new ArrayList<RepositoryGroup>( repositoryGroupAdmin.getRepositoriesGroups().size() );
+                new ArrayList<>( repositoryGroupAdmin.getRepositoriesGroups().size() );
             for ( org.apache.archiva.admin.model.beans.RepositoryGroup repoGroup : repositoryGroupAdmin.getRepositoriesGroups() )
             {
-                repositoriesGroups.add( new RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
-                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() )
-                        .mergedIndexTtl( repoGroup.getMergedIndexTtl() ) );
+                repositoriesGroups.add( new RepositoryGroup( repoGroup.getId(), new ArrayList<>(
+                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() ).mergedIndexTtl(
+                    repoGroup.getMergedIndexTtl() ).cronExpression( repoGroup.getCronExpression() ) );
             }
             return repositoriesGroups;
         }
@@ -63,6 +64,7 @@ public class DefaultRepositoryGroupService
         }
     }
 
+    @Override
     public RepositoryGroup getRepositoryGroup( String repositoryGroupId )
         throws ArchivaRestServiceException
     {
@@ -76,15 +78,17 @@ public class DefaultRepositoryGroupService
         return null;
     }
 
+    @Override
     public Boolean addRepositoryGroup( RepositoryGroup repoGroup )
         throws ArchivaRestServiceException
     {
         try
         {
             return repositoryGroupAdmin.addRepositoryGroup(
-                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
-                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() )
-                    .mergedIndexTtl( repoGroup.getMergedIndexTtl() ), getAuditInformation() );
+                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<>(
+                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() ).mergedIndexTtl(
+                    repoGroup.getMergedIndexTtl() ).cronExpression( repoGroup.getCronExpression() ),
+                getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -92,15 +96,17 @@ public class DefaultRepositoryGroupService
         }
     }
 
+    @Override
     public Boolean updateRepositoryGroup( RepositoryGroup repoGroup )
         throws ArchivaRestServiceException
     {
         try
         {
             return repositoryGroupAdmin.updateRepositoryGroup(
-                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<String>(
-                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() )
-                    .mergedIndexTtl( repoGroup.getMergedIndexTtl() ), getAuditInformation() );
+                new org.apache.archiva.admin.model.beans.RepositoryGroup( repoGroup.getId(), new ArrayList<>(
+                    repoGroup.getRepositories() ) ).mergedIndexPath( repoGroup.getMergedIndexPath() ).mergedIndexTtl(
+                    repoGroup.getMergedIndexTtl() ).cronExpression( repoGroup.getCronExpression() ),
+                getAuditInformation() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -108,6 +114,7 @@ public class DefaultRepositoryGroupService
         }
     }
 
+    @Override
     public Boolean deleteRepositoryGroup( String repositoryGroupId )
         throws ArchivaRestServiceException
     {
@@ -121,6 +128,7 @@ public class DefaultRepositoryGroupService
         }
     }
 
+    @Override
     public Boolean addRepositoryToGroup( String repositoryGroupId, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -134,6 +142,7 @@ public class DefaultRepositoryGroupService
         }
     }
 
+    @Override
     public Boolean deleteRepositoryFromGroup( String repositoryGroupId, String repositoryId )
         throws ArchivaRestServiceException
     {

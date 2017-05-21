@@ -41,17 +41,16 @@ public class DefaultProxyConnectorService
     extends AbstractRestService
     implements ProxyConnectorService
 {
-    @Inject
-    private ProxyConnectorAdmin proxyConnectorAdmin;
 
     private List<Policy> allPolicies;
 
     @Inject
     public DefaultProxyConnectorService( ApplicationContext applicationContext )
     {
-        allPolicies = new ArrayList<Policy>( getBeansOfType( applicationContext, Policy.class ).values() );
+        allPolicies = new ArrayList<>( getBeansOfType( applicationContext, Policy.class ).values() );
     }
 
+    @Override
     public List<ProxyConnector> getProxyConnectors()
         throws ArchivaRestServiceException
     {
@@ -66,6 +65,7 @@ public class DefaultProxyConnectorService
         }
     }
 
+    @Override
     public ProxyConnector getProxyConnector( String sourceRepoId, String targetRepoId )
         throws ArchivaRestServiceException
     {
@@ -79,6 +79,7 @@ public class DefaultProxyConnectorService
         }
     }
 
+    @Override
     public Boolean addProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException
     {
@@ -96,6 +97,7 @@ public class DefaultProxyConnectorService
         }
     }
 
+    @Override
     public Boolean deleteProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException
     {
@@ -113,6 +115,7 @@ public class DefaultProxyConnectorService
         }
     }
 
+    @Override
     public Boolean removeProxyConnector( String sourceRepoId, String targetRepoId )
         throws ArchivaRestServiceException
     {
@@ -126,6 +129,7 @@ public class DefaultProxyConnectorService
         return deleteProxyConnector( proxyConnector );
     }
 
+    @Override
     public Boolean updateProxyConnector( ProxyConnector proxyConnector )
         throws ArchivaRestServiceException
     {
@@ -143,10 +147,11 @@ public class DefaultProxyConnectorService
         }
     }
 
+    @Override
     public List<PolicyInformation> getAllPolicyInformations()
         throws ArchivaRestServiceException
     {
-        List<PolicyInformation> policyInformations = new ArrayList<PolicyInformation>( allPolicies.size() );
+        List<PolicyInformation> policyInformations = new ArrayList<>( allPolicies.size() );
 
         for ( Policy policy : allPolicies )
         {

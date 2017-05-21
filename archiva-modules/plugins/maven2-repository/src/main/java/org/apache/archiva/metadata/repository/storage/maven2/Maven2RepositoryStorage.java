@@ -35,8 +35,10 @@ import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
+import org.apache.archiva.metadata.repository.storage.RelocationException;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
@@ -48,9 +50,11 @@ import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
-import org.apache.archiva.reports.RepositoryProblemFacet;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.PathParser;
+import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.xml.XMLException;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.CiManagement;
 import org.apache.maven.model.Dependency;
@@ -80,9 +84,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -93,26 +99,25 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * <p>
  * Maven 2 repository format storage implementation. This class currently takes parameters to indicate the repository to
  * deal with rather than being instantiated per-repository.
  * FIXME: instantiate one per repository and allocate permanently from a factory (which can be obtained within the session).
- * <p/>
+ * </p>
+ * <p>
  * The session is passed in as an argument to obtain any necessary resources, rather than the class being instantiated
  * within the session in the context of a single managed repository's resolution needs.
- * <p/>
+ * </p>
  */
-@Service ( "repositoryStorage#maven2" )
+@Service( "repositoryStorage#maven2" )
 public class Maven2RepositoryStorage
     implements RepositoryStorage
 {
-    /**
-     *
-     */
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
+
     private ModelBuilder builder;
 
-    /**
-     *
-     */
     @Inject
     private RemoteRepositoryAdmin remoteRepositoryAdmin;
 
@@ -125,11 +130,8 @@ public class Maven2RepositoryStorage
     @Inject
     private NetworkProxyAdmin networkProxyAdmin;
 
-    /**
-     *
-     */
     @Inject
-    @Named ( value = "repositoryPathTranslator#maven2" )
+    @Named( "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
     @Inject
@@ -138,7 +140,9 @@ public class Maven2RepositoryStorage
     @Inject
     private ApplicationContext applicationContext;
 
-    private static final Logger log = LoggerFactory.getLogger( Maven2RepositoryStorage.class );
+    @Inject
+    @Named( "pathParser#default" )
+    private PathParser pathParser;
 
     private static final String METADATA_FILENAME_START = "maven-metadata";
 
@@ -150,17 +154,18 @@ public class Maven2RepositoryStorage
     @PostConstruct
     public void initialize()
     {
-        DefaultModelBuilderFactory defaultModelBuilderFactory = new DefaultModelBuilderFactory();
-        builder = defaultModelBuilderFactory.newInstance();
+        builder = new DefaultModelBuilderFactory().newInstance();
 
     }
 
+    @Override
     public ProjectMetadata readProjectMetadata( String repoId, String namespace, String projectId )
     {
         // TODO: could natively implement the "shared model" concept from the browse action to avoid needing it there?
         return null;
     }
 
+    @Override
     public ProjectVersionMetadata readProjectVersionMetadata( ReadMetadataRequest readMetadataRequest )
         throws RepositoryStorageMetadataNotFoundException, RepositoryStorageMetadataInvalidException,
         RepositoryStorageRuntimeException
@@ -169,31 +174,34 @@ public class Maven2RepositoryStorage
         {
             ManagedRepository managedRepository =
                 managedRepositoryAdmin.getManagedRepository( readMetadataRequest.getRepositoryId() );
-
             String artifactVersion = readMetadataRequest.getProjectVersion();
-            if ( VersionUtil.isSnapshot(
-                readMetadataRequest.getProjectVersion() ) ) // skygo trying to improve speed by honoring managed configuration MRM-1658
+            // olamy: in case of browsing via the ui we can mix repos (parent of a SNAPSHOT can come from release repo)
+            if ( !readMetadataRequest.isBrowsingRequest() )
             {
-                if ( managedRepository.isReleases() && !managedRepository.isSnapshots() )
+                if ( VersionUtil.isSnapshot( artifactVersion ) )
                 {
-                    throw new RepositoryStorageRuntimeException( "lookforsnaponreleaseonly",
-                                                                 "managed repo is configured for release only" );
+                    // skygo trying to improve speed by honoring managed configuration MRM-1658
+                    if ( managedRepository.isReleases() && !managedRepository.isSnapshots() )
+                    {
+                        throw new RepositoryStorageRuntimeException( "lookforsnaponreleaseonly",
+                                                                     "managed repo is configured for release only" );
+                    }
                 }
-            }
-            else
-            {
-                if ( !managedRepository.isReleases() && managedRepository.isSnapshots() )
+                else
                 {
-                    throw new RepositoryStorageRuntimeException( "lookforsreleaseonsneponly",
-                                                                 "managed repo is configured for snapshot only" );
+                    if ( !managedRepository.isReleases() && managedRepository.isSnapshots() )
+                    {
+                        throw new RepositoryStorageRuntimeException( "lookforsreleaseonsneponly",
+                                                                     "managed repo is configured for snapshot only" );
+                    }
                 }
             }
             File basedir = new File( managedRepository.getLocation() );
-            if ( VersionUtil.isSnapshot( readMetadataRequest.getProjectVersion() ) )
+            if ( VersionUtil.isSnapshot( artifactVersion ) )
             {
                 File metadataFile = pathTranslator.toFile( basedir, readMetadataRequest.getNamespace(),
-                                                           readMetadataRequest.getProjectId(),
-                                                           readMetadataRequest.getProjectVersion(), METADATA_FILENAME );
+                                                           readMetadataRequest.getProjectId(), artifactVersion,
+                                                           METADATA_FILENAME );
                 try
                 {
                     ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
@@ -210,8 +218,8 @@ public class Maven2RepositoryStorage
                 }
                 catch ( XMLException e )
                 {
-                    // unable to parse metadata - log it, and continue with the version as the original SNAPSHOT version
-                    log.warn( "Invalid metadata: " + metadataFile + " - " + e.getMessage() );
+                    // unable to parse metadata - LOGGER it, and continue with the version as the original SNAPSHOT version
+                    LOGGER.warn( "Invalid metadata: {} - {}", metadataFile, e.getMessage() );
                 }
             }
 
@@ -230,8 +238,8 @@ public class Maven2RepositoryStorage
 
             // TODO: this is a workaround until we can properly resolve using proxies as well - this doesn't cache
             //       anything locally!
-            List<RemoteRepository> remoteRepositories = new ArrayList<RemoteRepository>();
-            Map<String, NetworkProxy> networkProxies = new HashMap<String, NetworkProxy>();
+            List<RemoteRepository> remoteRepositories = new ArrayList<>();
+            Map<String, NetworkProxy> networkProxies = new HashMap<>();
 
             Map<String, List<ProxyConnector>> proxyConnectorsMap = proxyConnectorAdmin.getProxyConnectorAsMap();
             List<ProxyConnector> proxyConnectors = proxyConnectorsMap.get( readMetadataRequest.getRepositoryId() );
@@ -256,6 +264,13 @@ public class Maven2RepositoryStorage
                         }
                     }
                 }
+            }
+
+            // That's a browsing request so we can a mix of SNAPSHOT and release artifacts (especially with snapshots which
+            // can have released parent pom
+            if ( readMetadataRequest.isBrowsingRequest() )
+            {
+                remoteRepositories.addAll( remoteRepositoryAdmin.getRemoteRepositories() );
             }
 
             ModelBuildingRequest req =
@@ -290,8 +305,8 @@ public class Maven2RepositoryStorage
                     if ( ( problem.getException() instanceof FileNotFoundException && e.getModelId() != null &&
                         !e.getModelId().equals( problem.getModelId() ) ) )
                     {
-                        log.warn( "The artifact's parent POM file '" + file + "' cannot be resolved. " +
-                                      "Using defaults for project version metadata.." );
+                        LOGGER.warn( "The artifact's parent POM file '{}' cannot be resolved. "
+                                         + "Using defaults for project version metadata..", file );
 
                         ProjectVersionMetadata metadata = new ProjectVersionMetadata();
                         metadata.setId( readMetadataRequest.getProjectVersion() );
@@ -359,6 +374,7 @@ public class Maven2RepositoryStorage
             metadata.setOrganization( convertOrganization( model.getOrganization() ) );
             metadata.setScm( convertScm( model.getScm() ) );
             metadata.setUrl( model.getUrl() );
+            metadata.setProperties( model.getProperties() );
 
             MavenProjectFacet facet = new MavenProjectFacet();
             facet.setGroupId( model.getGroupId() != null ? model.getGroupId() : model.getParent().getGroupId() );
@@ -378,7 +394,7 @@ public class Maven2RepositoryStorage
         }
         catch ( RepositoryAdminException e )
         {
-            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage(), e);
+            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage(), e );
         }
     }
 
@@ -389,8 +405,7 @@ public class Maven2RepositoryStorage
 
     private List<org.apache.archiva.metadata.model.Dependency> convertDependencies( List<Dependency> dependencies )
     {
-        List<org.apache.archiva.metadata.model.Dependency> l =
-            new ArrayList<org.apache.archiva.metadata.model.Dependency>();
+        List<org.apache.archiva.metadata.model.Dependency> l = new ArrayList<>();
         for ( Dependency dependency : dependencies )
         {
             org.apache.archiva.metadata.model.Dependency newDependency =
@@ -435,7 +450,7 @@ public class Maven2RepositoryStorage
 
     private List<org.apache.archiva.metadata.model.License> convertLicenses( List<License> licenses )
     {
-        List<org.apache.archiva.metadata.model.License> l = new ArrayList<org.apache.archiva.metadata.model.License>();
+        List<org.apache.archiva.metadata.model.License> l = new ArrayList<>();
         for ( License license : licenses )
         {
             org.apache.archiva.metadata.model.License newLicense = new org.apache.archiva.metadata.model.License();
@@ -448,8 +463,7 @@ public class Maven2RepositoryStorage
 
     private List<org.apache.archiva.metadata.model.MailingList> convertMailingLists( List<MailingList> mailingLists )
     {
-        List<org.apache.archiva.metadata.model.MailingList> l =
-            new ArrayList<org.apache.archiva.metadata.model.MailingList>();
+        List<org.apache.archiva.metadata.model.MailingList> l = new ArrayList<>();
         for ( MailingList mailingList : mailingLists )
         {
             org.apache.archiva.metadata.model.MailingList newMailingList =
@@ -489,6 +503,7 @@ public class Maven2RepositoryStorage
         return ci;
     }
 
+    @Override
     public Collection<String> listRootNamespaces( String repoId, Filter<String> filter )
         throws RepositoryStorageRuntimeException
     {
@@ -503,7 +518,7 @@ public class Maven2RepositoryStorage
         String[] files = dir.list( new DirectoryFilter( filter ) );
         if ( files != null )
         {
-            fileNames = new ArrayList<String>( Arrays.asList( files ) );
+            fileNames = new ArrayList<>( Arrays.asList( files ) );
             Collections.sort( fileNames );
         }
         else
@@ -524,17 +539,18 @@ public class Maven2RepositoryStorage
         }
         catch ( RepositoryAdminException e )
         {
-            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage(), e);
+            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage(), e );
         }
     }
 
+    @Override
     public Collection<String> listNamespaces( String repoId, String namespace, Filter<String> filter )
         throws RepositoryStorageRuntimeException
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
         // scan all the directories which are potential namespaces. Any directories known to be projects are excluded
-        List<String> namespaces = new ArrayList<String>();
+        List<String> namespaces = new ArrayList<>();
         File[] files = dir.listFiles( new DirectoryFilter( filter ) );
         if ( files != null )
         {
@@ -550,13 +566,15 @@ public class Maven2RepositoryStorage
         return namespaces;
     }
 
+    @Override
     public Collection<String> listProjects( String repoId, String namespace, Filter<String> filter )
         throws RepositoryStorageRuntimeException
     {
         File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
 
         // scan all directories in the namespace, and only include those that are known to be projects
-        List<String> projects = new ArrayList<String>();
+        List<String> projects = new ArrayList<>();
+
         File[] files = dir.listFiles( new DirectoryFilter( filter ) );
         if ( files != null )
         {
@@ -572,6 +590,7 @@ public class Maven2RepositoryStorage
         return projects;
     }
 
+    @Override
     public Collection<String> listProjectVersions( String repoId, String namespace, String projectId,
                                                    Filter<String> filter )
         throws RepositoryStorageRuntimeException
@@ -582,6 +601,7 @@ public class Maven2RepositoryStorage
         return getSortedFiles( dir, filter );
     }
 
+    @Override
     public Collection<ArtifactMetadata> readArtifactsMetadata( ReadMetadataRequest readMetadataRequest )
         throws RepositoryStorageRuntimeException
     {
@@ -592,7 +612,7 @@ public class Maven2RepositoryStorage
         // all files that are not metadata and not a checksum / signature are considered artifacts
         File[] files = dir.listFiles( new ArtifactDirectoryFilter( readMetadataRequest.getFilter() ) );
 
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
+        List<ArtifactMetadata> artifacts = new ArrayList<>();
         if ( files != null )
         {
             for ( File file : files )
@@ -607,6 +627,7 @@ public class Maven2RepositoryStorage
         return artifacts;
     }
 
+    @Override
     public ArtifactMetadata readArtifactMetadataFromPath( String repoId, String path )
         throws RepositoryStorageRuntimeException
     {
@@ -628,14 +649,7 @@ public class Maven2RepositoryStorage
         return metadata;
     }
 
-    /**
-     * A relocation capable client will request the POM prior to the artifact, and will then read meta-data and do
-     * client side relocation. A simplier client (like maven 1) will only request the artifact and not use the
-     * metadatas.
-     * <p/>
-     * For such clients, archiva does server-side relocation by reading itself the &lt;relocation&gt; element in
-     * metadatas and serving the expected artifact.
-     */
+    @Override
     public void applyServerSideRelocation( ManagedRepositoryContent managedRepository, ArtifactReference artifact )
         throws ProxyDownloadException
     {
@@ -668,18 +682,11 @@ public class Maven2RepositoryStorage
         try
         {
             // MavenXpp3Reader leaves the file open, so we need to close it ourselves.
-            FileReader reader = new FileReader( pom );
+
             Model model = null;
-            try
+            try (Reader reader = Files.newBufferedReader( pom.toPath(), Charset.defaultCharset() ))
             {
                 model = MAVEN_XPP_3_READER.read( reader );
-            }
-            finally
-            {
-                if ( reader != null )
-                {
-                    reader.close();
-                }
             }
 
             DistributionManagement dist = model.getDistributionManagement();
@@ -704,10 +711,6 @@ public class Maven2RepositoryStorage
                 }
             }
         }
-        catch ( FileNotFoundException e )
-        {
-            // Artifact has no POM in repo : ignore
-        }
         catch ( IOException e )
         {
             // Unable to read POM : ignore.
@@ -718,9 +721,148 @@ public class Maven2RepositoryStorage
         }
     }
 
+
+    @Override
+    public String getFilePath( String requestPath, ManagedRepository managedRepository )
+    {
+        // managedRepository can be null
+        // extract artifact reference from url
+        // groupId:artifactId:version:packaging:classifier
+        //org/apache/archiva/archiva-checksum/1.4-M4-SNAPSHOT/archiva-checksum-1.4-M4-SNAPSHOT.jar
+        String logicalResource = null;
+        String requestPathInfo = StringUtils.defaultString( requestPath );
+
+        //remove prefix ie /repository/blah becomes /blah
+        requestPathInfo = removePrefix( requestPathInfo );
+
+        // Remove prefixing slash as the repository id doesn't contain it;
+        if ( requestPathInfo.startsWith( "/" ) )
+        {
+            requestPathInfo = requestPathInfo.substring( 1 );
+        }
+
+        int slash = requestPathInfo.indexOf( '/' );
+        if ( slash > 0 )
+        {
+            logicalResource = requestPathInfo.substring( slash );
+
+            if ( logicalResource.endsWith( "/.." ) )
+            {
+                logicalResource += "/";
+            }
+
+            if ( logicalResource != null && logicalResource.startsWith( "//" ) )
+            {
+                logicalResource = logicalResource.substring( 1 );
+            }
+
+            if ( logicalResource == null )
+            {
+                logicalResource = "/";
+            }
+        }
+        else
+        {
+            logicalResource = "/";
+        }
+        return logicalResource;
+
+    }
+
+    @Override
+    public String getFilePathWithVersion( final String requestPath, ManagedRepositoryContent managedRepositoryContent )
+        throws XMLException, RelocationException
+    {
+
+        if ( StringUtils.endsWith( requestPath, METADATA_FILENAME ) )
+        {
+            return getFilePath( requestPath, managedRepositoryContent.getRepository() );
+        }
+
+        String filePath = getFilePath( requestPath, managedRepositoryContent.getRepository() );
+
+        ArtifactReference artifactReference = null;
+        try
+        {
+            artifactReference = pathParser.toArtifactReference( filePath );
+        }
+        catch ( LayoutException e )
+        {
+            return filePath;
+        }
+
+        if ( StringUtils.endsWith( artifactReference.getVersion(), VersionUtil.SNAPSHOT ) )
+        {
+            // read maven metadata to get last timestamp
+            File metadataDir = new File( managedRepositoryContent.getRepoRoot(), filePath ).getParentFile();
+            if ( !metadataDir.exists() )
+            {
+                return filePath;
+            }
+            File metadataFile = new File( metadataDir, METADATA_FILENAME );
+            if ( !metadataFile.exists() )
+            {
+                return filePath;
+            }
+            ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( metadataFile );
+            int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
+            String timestamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
+
+            // MRM-1846
+            if ( buildNumber < 1 && timestamp == null )
+            {
+                return filePath;
+            }
+
+            // org/apache/archiva/archiva-checksum/1.4-M4-SNAPSHOT/archiva-checksum-1.4-M4-SNAPSHOT.jar
+            // ->  archiva-checksum-1.4-M4-20130425.081822-1.jar
+
+            filePath = StringUtils.replace( filePath, //
+                                            artifactReference.getArtifactId() //
+                                                + "-" + artifactReference.getVersion(), //
+                                            artifactReference.getArtifactId() //
+                                                + "-" + StringUtils.remove( artifactReference.getVersion(),
+                                                                            "-" + VersionUtil.SNAPSHOT ) //
+                                                + "-" + timestamp //
+                                                + "-" + buildNumber );
+
+            throw new RelocationException( "/repository/" + managedRepositoryContent.getRepository().getId() +
+                                               ( StringUtils.startsWith( filePath, "/" ) ? "" : "/" ) + filePath,
+                                           RelocationException.RelocationType.TEMPORARY );
+
+        }
+
+        return filePath;
+    }
+
     //-----------------------------
     // internal
     //-----------------------------
+
+    /**
+     * FIXME remove
+     *
+     * @param href
+     * @return
+     */
+    private static String removePrefix( final String href )
+    {
+        String[] parts = StringUtils.split( href, '/' );
+        parts = (String[]) ArrayUtils.subarray( parts, 1, parts.length );
+        if ( parts == null || parts.length == 0 )
+        {
+            return "/";
+        }
+
+        String joinedString = StringUtils.join( parts, '/' );
+        if ( href.endsWith( "/" ) )
+        {
+            joinedString = joinedString + "/";
+        }
+
+        return joinedString;
+    }
+
     private static void populateArtifactMetadataFromFile( ArtifactMetadata metadata, File file )
     {
         metadata.setWhenGathered( new Date() );
@@ -732,7 +874,7 @@ public class Maven2RepositoryStorage
         }
         catch ( IOException e )
         {
-            log.error( "Unable to checksum file {}: {},MD5", file, e.getMessage() );
+            LOGGER.error( "Unable to checksum file {}: {},MD5", file, e.getMessage() );
         }
         try
         {
@@ -740,7 +882,7 @@ public class Maven2RepositoryStorage
         }
         catch ( IOException e )
         {
-            log.error( "Unable to checksum file {}: {},SHA1", file, e.getMessage() );
+            LOGGER.error( "Unable to checksum file {}: {},SHA1", file, e.getMessage() );
         }
         metadata.setSize( file.length() );
     }
@@ -829,6 +971,7 @@ public class Maven2RepositoryStorage
             this.filter = filter;
         }
 
+        @Override
         public boolean accept( File dir, String name )
         {
             if ( !filter.accept( name ) )
@@ -857,6 +1000,7 @@ public class Maven2RepositoryStorage
             this.filter = filter;
         }
 
+        @Override
         public boolean accept( File dir, String name )
         {
             // TODO compare to logic in maven-repository-layer
@@ -891,6 +1035,7 @@ public class Maven2RepositoryStorage
         }
     }
 
+
     private static final class PomFilenameFilter
         implements FilenameFilter
     {
@@ -903,6 +1048,7 @@ public class Maven2RepositoryStorage
             this.projectVersion = projectVersion;
         }
 
+        @Override
         public boolean accept( File dir, String name )
         {
             if ( name.startsWith( artifactId + "-" ) && name.endsWith( ".pom" ) )
@@ -928,9 +1074,21 @@ public class Maven2RepositoryStorage
             this.pomFile = pomFile;
         }
 
+        @Override
         public boolean accept( File dir, String name )
         {
             return pomFile.equals( name );
         }
+    }
+
+
+    public PathParser getPathParser()
+    {
+        return pathParser;
+    }
+
+    public void setPathParser( PathParser pathParser )
+    {
+        this.pathParser = pathParser;
     }
 }

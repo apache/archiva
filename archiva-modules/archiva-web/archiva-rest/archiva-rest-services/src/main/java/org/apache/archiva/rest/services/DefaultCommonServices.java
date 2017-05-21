@@ -23,7 +23,6 @@ import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.redback.rest.api.services.UtilServices;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.CommonServices;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Olivier Lamy
  */
-@Service( "commonServices#rest" )
+@Service("commonServices#rest")
 public class DefaultCommonServices
     implements CommonServices
 {
@@ -69,6 +68,7 @@ public class DefaultCommonServices
         getAllI18nResources( "fr" );
     }
 
+    @Override
     public String getI18nResources( String locale )
         throws ArchivaRestServiceException
     {
@@ -120,11 +120,9 @@ public class DefaultCommonServices
     private void loadResource( final Properties finalProperties, String resourceName, String locale )
         throws IOException
     {
-        InputStream is = null;
         Properties properties = new Properties();
-        try
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream( resourceName ))
         {
-            is = Thread.currentThread().getContextClassLoader().getResourceAsStream( resourceName );
             if ( is != null )
             {
                 properties.load( is );
@@ -138,12 +136,9 @@ public class DefaultCommonServices
                 }
             }
         }
-        finally
-        {
-            IOUtils.closeQuietly( is );
-        }
     }
 
+    @Override
     public String getAllI18nResources( String locale )
         throws ArchivaRestServiceException
     {
@@ -179,10 +174,8 @@ public class DefaultCommonServices
     private void loadFromString( String propsStr, Properties properties )
         throws ArchivaRestServiceException
     {
-        InputStream inputStream = null;
-        try
+        try (InputStream inputStream = new ByteArrayInputStream( propsStr.getBytes() ))
         {
-            inputStream = new ByteArrayInputStream( propsStr.getBytes() );
             properties.load( inputStream );
         }
         catch ( IOException e )
@@ -190,13 +183,10 @@ public class DefaultCommonServices
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
-        finally
-        {
-            IOUtils.closeQuietly( inputStream );
-        }
     }
 
 
+    @Override
     public Boolean validateCronExpression( String cronExpression )
         throws ArchivaRestServiceException
     {

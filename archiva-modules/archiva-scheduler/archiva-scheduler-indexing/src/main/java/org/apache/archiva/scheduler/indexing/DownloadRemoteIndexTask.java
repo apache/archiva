@@ -41,21 +41,21 @@ import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.events.TransferEvent;
 import org.apache.maven.wagon.events.TransferListener;
+import org.apache.maven.wagon.providers.http.AbstractHttpClientWagon;
+import org.apache.maven.wagon.providers.http.HttpConfiguration;
+import org.apache.maven.wagon.providers.http.HttpMethodConfiguration;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
-import org.apache.maven.wagon.shared.http4.AbstractHttpClientWagon;
-import org.apache.maven.wagon.shared.http4.HttpConfiguration;
-import org.apache.maven.wagon.shared.http4.HttpMethodConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -95,6 +95,7 @@ public class DownloadRemoteIndexTask
         this.remoteRepositoryAdmin = downloadRemoteIndexTaskRequest.getRemoteRepositoryAdmin();
     }
 
+    @Override
     public void run()
     {
 
@@ -134,20 +135,20 @@ public class DownloadRemoteIndexTask
 
             final StreamWagon wagon = (StreamWagon) wagonFactory.getWagon(
                 new WagonFactoryRequest( wagonProtocol, this.remoteRepository.getExtraHeaders() ).networkProxy(
-                    this.networkProxy ) );
-            int timeoutInMilliseconds = remoteRepository.getTimeout() * 1000;
+                    this.networkProxy )
+            );
             // FIXME olamy having 2 config values
-            wagon.setReadTimeout( timeoutInMilliseconds );
-            wagon.setTimeout( timeoutInMilliseconds );
+            wagon.setReadTimeout( remoteRepository.getRemoteDownloadTimeout() * 1000 );
+            wagon.setTimeout( remoteRepository.getTimeout() * 1000 );
 
             if ( wagon instanceof AbstractHttpClientWagon )
             {
                 HttpConfiguration httpConfiguration = new HttpConfiguration();
                 HttpMethodConfiguration httpMethodConfiguration = new HttpMethodConfiguration();
                 httpMethodConfiguration.setUsePreemptive( true );
-                httpMethodConfiguration.setReadTimeout( timeoutInMilliseconds );
+                httpMethodConfiguration.setReadTimeout( remoteRepository.getRemoteDownloadTimeout() * 1000 );
                 httpConfiguration.setGet( httpMethodConfiguration );
-                ( (AbstractHttpClientWagon) wagon ).setHttpConfiguration( httpConfiguration );
+                AbstractHttpClientWagon.class.cast( wagon ).setHttpConfiguration( httpConfiguration );
             }
 
             wagon.addTransferListener( new DownloadListener() );
@@ -155,6 +156,7 @@ public class DownloadRemoteIndexTask
             if ( this.networkProxy != null )
             {
                 proxyInfo = new ProxyInfo();
+                proxyInfo.setType( this.networkProxy.getProtocol() );
                 proxyInfo.setHost( this.networkProxy.getHost() );
                 proxyInfo.setPort( this.networkProxy.getPort() );
                 proxyInfo.setUserName( this.networkProxy.getUsername() );
@@ -229,7 +231,7 @@ public class DownloadRemoteIndexTask
             deleteDirectoryQuiet( tempIndexDirectory );
             this.runningRemoteDownloadIds.remove( this.remoteRepository.getId() );
         }
-        log.info( "end download remote index for remote repository " + this.remoteRepository.getId() );
+        log.info( "end download remote index for remote repository {}", this.remoteRepository.getId() );
     }
 
     private void deleteDirectoryQuiet( File f )
@@ -256,6 +258,7 @@ public class DownloadRemoteIndexTask
 
         private int totalLength = 0;
 
+        @Override
         public void transferInitiated( TransferEvent transferEvent )
         {
             startTime = System.currentTimeMillis();
@@ -263,6 +266,7 @@ public class DownloadRemoteIndexTask
             log.debug( "initiate transfer of {}", resourceName );
         }
 
+        @Override
         public void transferStarted( TransferEvent transferEvent )
         {
             this.totalLength = 0;
@@ -270,12 +274,14 @@ public class DownloadRemoteIndexTask
             log.info( "start transfer of {}", transferEvent.getResource().getName() );
         }
 
+        @Override
         public void transferProgress( TransferEvent transferEvent, byte[] buffer, int length )
         {
             log.debug( "transfer of {} : {}/{}", transferEvent.getResource().getName(), buffer.length, length );
             this.totalLength += length;
         }
 
+        @Override
         public void transferCompleted( TransferEvent transferEvent )
         {
             resourceName = transferEvent.getResource().getName();
@@ -284,12 +290,14 @@ public class DownloadRemoteIndexTask
                       this.totalLength / 1024, ( endTime - startTime ) / 1000 );
         }
 
+        @Override
         public void transferError( TransferEvent transferEvent )
         {
             log.info( "error of transfer file {}: {}", transferEvent.getResource().getName(),
                       transferEvent.getException().getMessage(), transferEvent.getException() );
         }
 
+        @Override
         public void debug( String message )
         {
             log.debug( "transfer debug {}", message );
@@ -317,18 +325,21 @@ public class DownloadRemoteIndexTask
             this.remoteRepository = remoteRepository;
         }
 
+        @Override
         public void connect( String id, String url )
             throws IOException
         {
             //no op  
         }
 
+        @Override
         public void disconnect()
             throws IOException
         {
             // no op
         }
 
+        @Override
         public InputStream retrieve( String name )
             throws IOException, FileNotFoundException
         {
@@ -336,19 +347,12 @@ public class DownloadRemoteIndexTask
             {
                 log.info( "index update retrieve file, name:{}", name );
                 File file = new File( tempIndexDirectory, name );
-                if ( file.exists() )
-                {
-                    file.delete();
-                }
+                Files.deleteIfExists( file.toPath() );
                 file.deleteOnExit();
                 wagon.get( addParameters( name, this.remoteRepository ), file );
-                return new FileInputStream( file );
+                return Files.newInputStream( file.toPath() );
             }
-            catch ( AuthorizationException e )
-            {
-                throw new IOException( e.getMessage(), e );
-            }
-            catch ( TransferFailedException e )
+            catch ( AuthorizationException | TransferFailedException e )
             {
                 throw new IOException( e.getMessage(), e );
             }
@@ -387,5 +391,4 @@ public class DownloadRemoteIndexTask
 
 
 }
-
 

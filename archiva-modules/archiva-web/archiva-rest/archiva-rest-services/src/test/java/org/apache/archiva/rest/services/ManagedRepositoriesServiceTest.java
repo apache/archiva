@@ -160,11 +160,13 @@ public class ManagedRepositoriesServiceTest
 
         assertNotNull( archivaRepositoryStatistics );
 
-        log.info( "archivaRepositoryStatistics:" + archivaRepositoryStatistics.toString() );
+        log.info( "archivaRepositoryStatistics: {}", archivaRepositoryStatistics.toString() );
 
         assertEquals( 92, archivaRepositoryStatistics.getNewFileCount() );
         assertEquals( 92, archivaRepositoryStatistics.getTotalFileCount() );
 
         deleteTestRepo( testRepoId );
     }
+
+
 }

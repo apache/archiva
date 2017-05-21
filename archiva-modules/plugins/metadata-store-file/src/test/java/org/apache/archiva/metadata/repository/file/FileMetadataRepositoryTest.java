@@ -26,6 +26,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.junit.Before;
+import org.junit.Ignore;
 
 import java.io.File;
 import java.util.Map;
@@ -38,6 +39,7 @@ public class FileMetadataRepositoryTest
 {
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -52,6 +54,102 @@ public class FileMetadataRepositoryTest
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
 
         this.repository = new FileMetadataRepository( factories, config );
+    }
+
+    @Override
+    @Ignore
+    public void testGetArtifactsByProjectVersionMetadata()
+        throws Exception
+    {
+        // TODO not implemented
+    }
+
+    @Override
+    @Ignore
+    public void testGetArtifactsByProjectVersionMetadataNoRepository()
+        throws Exception
+    {
+        // TODO not implemented
+    }
+
+    @Override
+    @Ignore
+    public void testGetArtifactsByProjectVersionMetadataAllRepositories()
+        throws Exception
+    {
+        // TODO not implemented
+    }
+
+    @Override
+    @Ignore
+    public void testGetArtifactsByMetadataAllRepositories()
+        throws Exception
+    {
+        // TODO not implemented
+    }
+
+    @Override
+    @Ignore
+    public void testGetArtifactsByPropertySingleResult()
+        throws Exception
+    {
+        // TODO not implemented
+    }
+
+    @Override
+    @Ignore
+    public void testSearchArtifactsByKey()
+        throws Exception
+    {
+        // TODO not implemented
+    }
+
+    @Override
+    @Ignore
+    public void testSearchArtifactsByKeyExact()
+        throws Exception
+    {
+        // TODO not implemented
+    }
+
+    @Override
+    @Ignore
+    public void testSearchArtifactsFullText()
+        throws Exception
+    {
+        // TODO not implemented
+    }
+
+    @Override
+    @Ignore
+    public void testSearchArtifactsFullTextExact()
+        throws Exception
+    {
+        // TODO not implemented
+    }
+
+    @Override
+    @Ignore
+    public void testSearchArtifactsByFacetKeyAllRepos()
+        throws Exception
+    {
+        // TODO not implemented
+    }
+
+    @Override
+    @Ignore
+    public void testSearchArtifactsByFacetKey()
+        throws Exception
+    {
+        // TODO not implemented
+    }
+
+    @Override
+    @Ignore
+    public void testSearchArtifactsFullTextByFacet()
+        throws Exception
+    {
+        // TODO not implemented
     }
 
     protected static ArchivaConfiguration createTestConfiguration( File directory )

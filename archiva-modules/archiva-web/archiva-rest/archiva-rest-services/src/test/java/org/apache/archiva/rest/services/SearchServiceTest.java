@@ -20,14 +20,19 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.rest.api.model.ChecksumSearch;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.services.SearchService;
-import org.fest.assertions.api.Assertions;
+import org.assertj.core.api.Assertions;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -35,22 +40,12 @@ import java.util.List;
 public class SearchServiceTest
     extends AbstractArchivaRestTest
 {
-
+    private static final String TEST_REPO = "test-repo";
 
     @Test
     public void quickSearchOnArtifactId()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
-
         SearchService searchService = getSearchService( authorizationHeader );
 
         // START SNIPPET: quick-search
@@ -63,8 +58,6 @@ public class SearchServiceTest
         assertTrue( " not 6 results for commons-logging search but " + artifacts.size() + ":" + artifacts,
                     artifacts.size() == 6 );
         log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
-
-        deleteTestRepo( testRepoId );
     }
 
     /**
@@ -76,16 +69,6 @@ public class SearchServiceTest
     public void quickSearchOnArtifactIdGuest()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
-
         SearchService searchService = getSearchService( null );
 
         // START SNIPPET: quick-search
@@ -98,24 +81,12 @@ public class SearchServiceTest
         assertTrue( " not 6 results for commons-logging search but " + artifacts.size() + ":" + artifacts,
                     artifacts.size() == 6 );
         log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
-
-        deleteTestRepo( testRepoId );
     }
 
     @Test
     public void searchArtifactVersions()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
-
         // START SNIPPET: searchservice-artifact-versions
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -130,30 +101,18 @@ public class SearchServiceTest
 
         for ( Artifact artifact : artifacts )
         {
-            log.info( "url:" + artifact.getUrl() );
+            log.info( "url: {}", artifact.getUrl() );
             String version = artifact.getVersion();
             assertTrue( artifact.getUrl().contains( version ) );
 
 
         }
-
-        deleteTestRepo( testRepoId );
     }
 
     @Test
     public void searchWithSearchRequestGroupIdAndArtifactIdAndClassifier()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
-
         SearchService searchService = getSearchService( authorizationHeader );
 
         // START SNIPPET: searchservice-with-classifier
@@ -169,24 +128,12 @@ public class SearchServiceTest
         assertTrue( " not 2 results for commons-logging search but " + artifacts.size() + ":" + artifacts,
                     artifacts.size() == 2 );
         log.info( "artifacts for commons-logging size {} search {}", artifacts.size(), artifacts );
-
-        deleteTestRepo( testRepoId );
     }
 
     @Test
     public void searchWithSearchRequestBundleSymbolicNameOneVersion()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
-
         SearchService searchService = getSearchService( authorizationHeader );
 
         // START SNIPPET: searchservice-with-osgi
@@ -200,25 +147,15 @@ public class SearchServiceTest
         assertTrue(
             " not 1 results for Bundle Symbolic Name org.apache.karaf.features.command but " + artifacts.size() + ":"
                 + artifacts, artifacts.size() == 1 );
-
-        deleteTestRepo( testRepoId );
     }
 
     @Test
     public void searchWithSearchRequestBundleSymbolicNameTwoVersion()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
         UiConfiguration uiConfiguration = new UiConfiguration();
         uiConfiguration.setApplicationUrl( null );
         getArchivaAdministrationService().setUiConfiguration( uiConfiguration );
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -227,41 +164,30 @@ public class SearchServiceTest
 
         List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
 
-        Assertions.assertThat( artifacts ).isNotNull().hasSize( 2 );
+        assertThat( artifacts ).isNotNull().hasSize( 2 );
 
         for ( Artifact artifact : artifacts )
         {
-            log.info( "url:" + artifact.getUrl() );
+            log.info( "url: {}", artifact.getUrl() );
             String version = artifact.getVersion();
-            assertEquals( "http://localhost:" + port
-                              + "/repository/test-repo/org/apache/karaf/features/org.apache.karaf.features.core/"
-                              + version + "/org.apache.karaf.features.core-" + version + ".jar", artifact.getUrl() );
+            Assertions.assertThat( artifact.getUrl() ) //
+                .isEqualTo( "http://localhost:" + port
+                                + "/repository/test-repo/org/apache/karaf/features/org.apache.karaf.features.core/"
+                                + version + "/org.apache.karaf.features.core-" + version + ".jar" );
 
 
         }
-
-        deleteTestRepo( testRepoId );
     }
 
     @Test
     public void searchWithSearchRequestExportPackageOneVersion()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, getBasedir() + "/src/test/repo-with-osgi" );
-
         SearchService searchService = getSearchService( authorizationHeader );
 
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setBundleExportPackage( "org.apache.karaf.features.command.completers" );
-        searchRequest.setRepositories( Arrays.asList( testRepoId ) );
+        searchRequest.setRepositories( Arrays.asList( TEST_REPO ) );
 
         List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
 
@@ -269,27 +195,15 @@ public class SearchServiceTest
         assertTrue( " not 1 results for Bundle ExportPackage org.apache.karaf.features.command.completers but "
                         + artifacts.size() + ":" + artifacts, artifacts.size() == 1 );
 
-        log.info( "artifact url " + artifacts.get( 0 ).getUrl() );
-        deleteTestRepo( testRepoId );
+        log.info( "artifact url {}", artifacts.get( 0 ).getUrl() );
     }
 
     @Test
     /**
      * ensure we don't return response for an unknown repo
-     */
-    public void searchWithSearchUnknwownRepoId()
+     */ public void searchWithSearchUnknwownRepoId()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
-
         SearchService searchService = getSearchService( authorizationHeader );
 
         SearchRequest searchRequest = new SearchRequest();
@@ -299,29 +213,16 @@ public class SearchServiceTest
         List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
 
         assertNotNull( artifacts );
-        assertTrue( " not 0 results for Bundle ExportPackage org.apache.karaf.features.command.completers but "
-                        + artifacts.size() + ":" + artifacts, artifacts.size() == 0 );
-
-        deleteTestRepo( testRepoId );
+        assertTrue( " not 0 results for Bundle ExportPackage org.apache.karaf.features.command.completers but " +
+                        artifacts.size() + ":" + artifacts, artifacts.size() == 0 );
     }
 
     @Test
     /**
      * ensure we revert to all observable repos in case of no repo in the request
-     */
-    public void searchWithSearchNoRepos()
+     */ public void searchWithSearchNoRepos()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
-
         SearchService searchService = getSearchService( authorizationHeader );
 
         SearchRequest searchRequest = new SearchRequest();
@@ -333,60 +234,99 @@ public class SearchServiceTest
         assertTrue( " not 0 results for Bundle ExportPackage org.apache.karaf.features.command.completers but "
                         + artifacts.size() + ":" + artifacts, artifacts.size() == 1 );
 
-        log.info( "artifact url " + artifacts.get( 0 ).getUrl() );
-        deleteTestRepo( testRepoId );
+        log.info( "artifact url {}", artifacts.get( 0 ).getUrl() );
     }
 
     @Test
     public void getAllGroupIds()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
-        // force guest user creation if not exists
-        if ( getUserService( authorizationHeader ).getGuestUser() == null )
-        {
-            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
-        }
-
-        createAndIndexRepo( testRepoId, "src/test/repo-with-osgi" );
-
         SearchService searchService = getSearchService( authorizationHeader );
 
-        Collection<String> groupIds = searchService.getAllGroupIds( Arrays.asList( testRepoId ) ).getGroupIds();
-        log.info( "groupIds  " + groupIds );
+        Collection<String> groupIds = searchService.getAllGroupIds( Arrays.asList( TEST_REPO ) ).getGroupIds();
+        log.info( "groupIds  {}", groupIds );
         assertFalse( groupIds.isEmpty() );
         assertTrue( groupIds.contains( "commons-cli" ) );
         assertTrue( groupIds.contains( "org.apache.felix" ) );
-        deleteTestRepo( testRepoId );
     }
 
     @Test
     /**
      * test we don't return 2 artifacts pom + zip one
-     */
-    public void getSearchArtifactsWithOnlyClassifier()
+     */ public void getSearchArtifactsWithOnlyClassifier()
         throws Exception
     {
-
-        String testRepoId = "test-repo";
         // force guest user creation if not exists
         if ( getUserService( authorizationHeader ).getGuestUser() == null )
         {
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( testRepoId, "src/test/repo-with-classifier-only" );
+        createAndIndexRepo( TEST_REPO, "src/test/repo-with-classifier-only" );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
         SearchRequest searchRequest =
-            new SearchRequest( "org.foo", "studio-all-update-site", null, null, null, Arrays.asList( "test-repo" ) );
+            new SearchRequest( "org.foo", "studio-all-update-site", null, null, null, Arrays.asList( TEST_REPO ) );
 
         List<Artifact> artifacts = searchService.searchArtifacts( searchRequest );
-        log.info( "artifacts:" + artifacts );
+        log.info( "artifacts: {}", artifacts );
         assertEquals( 1, artifacts.size() );
-        deleteTestRepo( testRepoId );
+    }
+
+    /**
+     * sha1 commons-logging 1.1 ba24d5de831911b684c92cd289ed5ff826271824
+     */
+    @Test
+    public void search_with_sha1()
+        throws Exception
+    {
+        SearchService searchService = getSearchService( authorizationHeader );
+
+        List<Artifact> artifacts = searchService.getArtifactByChecksum(
+            new ChecksumSearch( null, "ba24d5de831911b684c92cd289ed5ff826271824" ) );
+
+        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 1 );
+
+    }
+
+
+    /**
+     * md5 commons-logging 1.1 6b62417e77b000a87de66ee3935edbf5
+     */
+    @Test
+    public void search_with_md5()
+        throws Exception
+    {
+        SearchService searchService = getSearchService( authorizationHeader );
+
+        List<Artifact> artifacts = searchService.getArtifactByChecksum(
+            new ChecksumSearch( null, "6b62417e77b000a87de66ee3935edbf5" ) );
+
+        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 1 );
+
+    }
+
+    @Before
+    public void createRepo()
+        throws Exception
+    {
+        // force guest user creation if not exists
+        if ( getUserService( authorizationHeader ).getGuestUser() == null )
+        {
+            assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
+        }
+
+        createAndIndexRepo( TEST_REPO, "src/test/repo-with-osgi" );
+
+        waitForScanToComplete( TEST_REPO );
+    }
+
+    @After
+    public void deleteRepo()
+        throws Exception
+    {
+        deleteTestRepo( TEST_REPO );
     }
 
 }

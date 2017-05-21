@@ -33,7 +33,7 @@
     <remoteRepository>
       <id>central</id>
       <name>Central Repository</name>
-      <url>http://repo.maven.apache.org/maven2</url>
+      <url>https://repo.maven.apache.org/maven2</url>
       <layout>default</layout>
     </remoteRepository>
   </remoteRepositories>
@@ -141,5 +141,15 @@
       <appletFindEnabled>true</appletFindEnabled>
     </ui>
   </webapp>
+
+  <redbackRuntimeConfiguration>
+    <userManagerImpls>
+      <userManagerImpl>jdo</userManagerImpl>
+    </userManagerImpls>
+    <rbacManagerImpls>
+      <rbacManagerImpl>cached</rbacManagerImpl>
+    </rbacManagerImpls>
+  </redbackRuntimeConfiguration>
+
 
 </configuration>

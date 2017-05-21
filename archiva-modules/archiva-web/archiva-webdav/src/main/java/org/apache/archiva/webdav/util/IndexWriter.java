@@ -47,7 +47,7 @@ public class IndexWriter
 
     public IndexWriter( DavResource resource, File localResource, String logicalResource )
     {
-        this.localResources = new ArrayList<File>();
+        this.localResources = new ArrayList<>();
         this.localResources.add( localResource );
         this.logicalResource = logicalResource;
         this.isVirtual = false;
@@ -86,7 +86,7 @@ public class IndexWriter
         writer.println( "ul{list-style:none;}" ); 
         
         StringBuilder relative = new StringBuilder("../../");
-        if ( logicalResource.length() > 0 ) 
+        if ( logicalResource != null && logicalResource.length() > 0 )
         {
             String tmpRelative = StringUtils.replace( logicalResource, "\\", "/" );
             for (int i=0;i<tmpRelative.split("/").length;i++) 
@@ -109,7 +109,7 @@ public class IndexWriter
         writer.println( "<h3>Collection: /" + logicalResource + "</h3>" );
 
         //Check if not root
-        if ( logicalResource.length() > 0 )
+        if ( logicalResource != null && logicalResource.length() > 0 )
         {
             File file = new File( logicalResource );
             String parentName = file.getParent() == null ? "/" : file.getParent();
@@ -139,7 +139,7 @@ public class IndexWriter
         {
             for ( File localResource : localResources )
             {
-                List<File> files = new ArrayList<File>( Arrays.asList( localResource.listFiles() ) );
+                List<File> files = new ArrayList<>( Arrays.asList( localResource.listFiles() ) );
                 Collections.sort( files );
 
                 for ( File file : files )
@@ -151,14 +151,14 @@ public class IndexWriter
         else
         {
             // virtual repository - filter unique directories
-            Map<String, List<String>> uniqueChildFiles = new HashMap<String, List<String>>();
-            List<String> sortedList = new ArrayList<String>();
+            Map<String, List<String>> uniqueChildFiles = new HashMap<>();
+            List<String> sortedList = new ArrayList<>();
             for ( File resource : localResources )
             {
-                List<File> files = new ArrayList<File>( Arrays.asList( resource.listFiles() ) );
+                List<File> files = new ArrayList<>( Arrays.asList( resource.listFiles() ) );
                 for ( File file : files )
                 {
-                    List<String> mergedChildFiles = new ArrayList<String>();
+                    List<String> mergedChildFiles = new ArrayList<>();
                     if ( uniqueChildFiles.get( file.getName() ) == null )
                     {
                         mergedChildFiles.add( file.getAbsolutePath() );
@@ -177,7 +177,7 @@ public class IndexWriter
             }
 
             Collections.sort( sortedList );
-            List<String> written = new ArrayList<String>();
+            List<String> written = new ArrayList<>();
             for ( String fileName : sortedList )
             {
                 List<String> childFilesFromMap = uniqueChildFiles.get( fileName );

@@ -25,10 +25,10 @@
   </properties>
   <!-- move js and css to head -->
   <head>
-    <link rel="stylesheet" href="css/jquery.fancybox-2.1.0.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="css/jquery.fancybox.2.1.5.css" type="text/css" media="screen" />
 
     <script src="js/index.js" type="text/javascript" ></script>
-    <script src="js/jquery.fancybox.pack-2.1.0.js" type="text/javascript"></script>
+    <script src="js/jquery.fancybox.pack.2.1.5.js" type="text/javascript"></script>
     <script src="js/jquery.mousewheel-3.0.6.pack.js" type="text/javascript"></script>
 
   </head>

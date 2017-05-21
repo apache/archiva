@@ -42,42 +42,75 @@ Using REST Services
 
    Authentication headers for connect to your Archiva instance :
 
-%{snippet|id=authz-header|ignoreDownloadError=true|url=https://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/AbstractArchivaRestTest.java}
+%{snippet|id=authz-header|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/AbstractArchivaRestTest.java}
 
 
    Get a Search Service Client :
 
-%{snippet|id=cxf-searchservice-creation|ignoreDownloadError=true|url=https://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/AbstractArchivaRestTest.java}
+%{snippet|id=cxf-searchservice-creation|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/AbstractArchivaRestTest.java}
 
    Quick Search
 
-%{snippet|id=quick-search|ignoreDownloadError=true|url=https://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
+%{snippet|id=quick-search|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
 
    Search Artifacts Version : to search all availables version with a groupId and artifactId and packaging (if empty jar is used)
 
-%{snippet|id=searchservice-artifact-versions|ignoreDownloadError=true|url=https://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
+%{snippet|id=searchservice-artifact-versions|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
 
   Search Service with a classifier :
 
-%{snippet|id=searchservice-with-classifier|ignoreDownloadError=true|url=https://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
+%{snippet|id=searchservice-with-classifier|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
 
   Search Service with a classifier :
 
-%{snippet|id=searchservice-with-classifier|ignoreDownloadError=true|url=https://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
+%{snippet|id=searchservice-with-classifier|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
 
   Copy Artifact from a repository to an other one :
 
   For some reasons you want to use a test repository before moving your artifacts to a repository used by final users.
   To achieve this, you can use a service which can copy an artifact from a repository to an other one
 
-%{snippet|id=copy-artifact|ignoreDownloadError=true|url=https://svn.apache.org/repos/asf/archiva/trunk/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/CopyArtifactTest.java}
+%{snippet|id=copy-artifact|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/CopyArtifactTest.java}
 
 
   To know all the possible options, you can refer to the javadoc of SearchRequest class.
 
+* Browse Service
+
+   Get a Browse Service Client :
+
+%{snippet|id=cxf-browseservice-creation|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/AbstractArchivaRestTest.java}
+
+  Get artifacts based on project version metadata, generic metadata added previously in Archiva :
+
+%{snippet|id=get-artifacts-by-project-version-metadata|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/BrowseServiceTest.java}
+
+  Get artifacts based on the artifact properties :
+
+%{snippet|id=get-artifacts-by-metadata|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/BrowseServiceTest.java}
+
+
+  Get artifacts based on the project properties from POM :
+
+%{snippet|id=get-artifacts-by-property|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/BrowseServiceTest.java}
+
+
+  Searching by properties and metadata :
+
+%{snippet|id=search-artifacts-by-field|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/BrowseServiceTest.java}
+
+%{snippet|id=search-artifacts|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/BrowseServiceTest.java}
+
+
+
+   Get  Search
+
+%{snippet|id=quick-search|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/archiva-modules/archiva-web/archiva-rest/archiva-rest-services/src/test/java/org/apache/archiva/rest/services/SearchServiceTest.java}
+
+
   Dependencies to add in order to use those REST Services
 
-%{snippet|id=rest-dependencies|ignoreDownloadError=true|url=https://svn.apache.org/repos/asf/archiva/trunk/pom.xml}
+%{snippet|id=rest-dependencies|ignoreDownloadError=true|url=https://raw.githubusercontent.com/apache/archiva/master/pom.xml}
 
   Current versions use in Apache Archiva:
 

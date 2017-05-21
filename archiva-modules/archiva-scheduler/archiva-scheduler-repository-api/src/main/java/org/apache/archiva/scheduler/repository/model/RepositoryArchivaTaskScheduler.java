@@ -29,12 +29,11 @@ public interface RepositoryArchivaTaskScheduler
     extends ArchivaTaskScheduler<RepositoryTask>
 {
 
-
     boolean isProcessingRepositoryTask( String repositoryId );
-
 
     boolean isProcessingRepositoryTask( RepositoryTask task );
 
+    @Override
     void queueTask( RepositoryTask task )
         throws TaskQueueException;
 

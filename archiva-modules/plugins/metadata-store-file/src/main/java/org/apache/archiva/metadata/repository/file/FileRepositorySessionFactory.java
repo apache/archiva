@@ -70,7 +70,7 @@ public class FileRepositorySessionFactory
             applicationContext.getBeansOfType( MetadataFacetFactory.class );
         // olamy with spring the "id" is now "metadataFacetFactory#hint"
         // whereas was only hint with plexus so let remove  metadataFacetFactory#
-        metadataFacetFactories = new HashMap<String, MetadataFacetFactory>( tmpMetadataFacetFactories.size() );
+        metadataFacetFactories = new HashMap<>( tmpMetadataFacetFactories.size() );
 
         for ( Map.Entry<String, MetadataFacetFactory> entry : tmpMetadataFacetFactories.entrySet() )
         {
@@ -80,6 +80,7 @@ public class FileRepositorySessionFactory
 
     }
 
+    @Override
     public RepositorySession createSession()
     {
         MetadataRepository metadataRepository = new FileMetadataRepository( metadataFacetFactories, configuration );

@@ -27,6 +27,7 @@ import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
+import org.easymock.EasyMock;
 import org.junit.Test;
 
 import java.io.File;
@@ -373,7 +374,6 @@ public class ManagedDefaultTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false );
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
-        saveConnector( ID_DEFAULT_MANAGED, ID_LEGACY_PROXIED, false );
 
         // Attempt the proxy fetch.
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
@@ -398,9 +398,8 @@ public class ManagedDefaultTransferTest
         // Configure Repository (usually done within archiva.xml configuration)
         saveRemoteRepositoryConfig( "badproxied", "Bad Proxied", "test://bad.machine.com/repo/", "default" );
 
-        wagonMock.get( path, new File( expectedFile.getAbsolutePath() + ".tmp" ) );
-        wagonMockControl.setMatcher( customWagonGetMatcher );
-        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "transfer failed" ) );
+        wagonMock.get( EasyMock.eq( path), EasyMock.anyObject( File.class ) );
+        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "transfer failed" )  );
         wagonMockControl.replay();
 
         // Configure Connector (usually done within archiva.xml configuration)
@@ -438,15 +437,12 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", false );
 
         File tmpFile = new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" );
-        wagonMock.get( path, tmpFile );
 
-        wagonMockControl.setMatcher( customWagonGetMatcher );
-        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Can't find resource." ) );
+        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
+        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "Can't find resource." ) );
 
-        wagonMock.get( path, tmpFile );
-
-        wagonMockControl.setMatcher( customWagonGetMatcher );
-        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Can't find resource." ) );
+        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
+        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "Can't find resource." ) );
 
         wagonMockControl.replay();
 
@@ -461,106 +457,5 @@ public class ManagedDefaultTransferTest
         // TODO: How much information on each failure should we pass back to the user vs. logging in the proxy? 
     }
 
-    @Test
-    public void testGetFromLegacyProxyAlreadyPresentInManaged_NewerThanRemote()
-        throws Exception
-    {
-        String legacyPath = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
-        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
-        setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
-        File remoteFile = new File( REPOPATH_PROXIED_LEGACY, legacyPath );
-
-        // Set the managed file to be newer than remote.
-        setManagedNewerThanRemote( expectedFile, remoteFile );
-        long expectedTimestamp = expectedFile.lastModified();
-
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
-
-        assertTrue( expectedFile.exists() );
-
-        // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_LEGACY_PROXIED, false );
-
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
-
-        assertNotDownloaded( downloadedFile );
-        assertNotModified( expectedFile, expectedTimestamp );
-        assertNoTempFiles( expectedFile );
-    }
-
-    @Test
-    public void testGetFromLegacyProxyAlreadyPresentInManaged_OlderThanRemote()
-        throws Exception
-    {
-        String legacyPath = "org.apache.maven.test/jars/get-default-layout-present-1.0.jar";
-        String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
-        setupTestableManagedRepository( path );
-
-        File expectedFile = new File( managedDefaultDir, path );
-        File remoteFile = new File( REPOPATH_PROXIED_LEGACY, legacyPath );
-
-        // Set the managed file to be older than remote.
-        setManagedOlderThanRemote( expectedFile, remoteFile );
-
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
-
-        assertTrue( expectedFile.exists() );
-
-        // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_LEGACY_PROXIED, false );
-
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
-
-        File proxiedFile = new File( REPOPATH_PROXIED_LEGACY, legacyPath );
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
-        assertNoTempFiles( expectedFile );
-    }
-
-    @Test
-    public void testGetFromLegacyProxyNotPresentInManaged()
-        throws Exception
-    {
-        String legacyPath = "org.apache.maven.test/jars/example-lib-2.2.jar";
-        String path = "org/apache/maven/test/example-lib/2.2/example-lib-2.2.jar";
-        setupTestableManagedRepository( path );
-
-        File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
-
-        assertNotExistsInManagedDefaultRepo( expectedFile );
-
-        // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_LEGACY_PROXIED, false );
-
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
-
-        File proxiedFile = new File( REPOPATH_PROXIED_LEGACY, legacyPath );
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
-        assertNoTempFiles( expectedFile );
-    }
-
-    @Test
-    public void testGetFromLegacyProxyPluginNotPresentInManaged()
-        throws Exception
-    {
-        String legacyPath = "org.apache.maven.test/maven-plugins/example-maven-plugin-0.42.jar";
-        String path = "org/apache/maven/test/example-maven-plugin/0.42/example-maven-plugin-0.42.jar";
-        setupTestableManagedRepository( path );
-
-        File expectedFile = new File( managedDefaultDir, path );
-        ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
-
-        assertNotExistsInManagedDefaultRepo( expectedFile );
-
-        // Configure Connector (usually done within archiva.xml configuration)
-        saveConnector( ID_DEFAULT_MANAGED, ID_LEGACY_PROXIED, false );
-
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
-
-        File proxiedFile = new File( REPOPATH_PROXIED_LEGACY, legacyPath );
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
-        assertNoTempFiles( expectedFile );
-    }
 }

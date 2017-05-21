@@ -61,6 +61,7 @@ public class TriggerBeginScanClosure
         this.executeOnEntireRepo = executeOnEntireRepo;
     }
 
+    @Override
     public void execute( Object input )
     {
         if ( input instanceof RepositoryContentConsumer )
@@ -73,7 +74,7 @@ public class TriggerBeginScanClosure
             }
             catch ( ConsumerException e )
             {
-                log.warn( "Consumer [" + consumer.getId() + "] cannot begin: " + e.getMessage(), e );
+                log.warn( "Consumer [{}] cannot begin: {}",consumer.getId(), e.getMessage(), e );
             }
         }
     }

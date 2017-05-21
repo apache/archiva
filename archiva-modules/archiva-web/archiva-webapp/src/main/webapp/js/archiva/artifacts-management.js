@@ -20,9 +20,10 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
   "knockout.simpleGrid","jquery.validate","bootstrap","jquery.fileupload","jquery.fileupload.ui"]
     , function(jquery,i18n,utils,jqueryTmpl,ko) {
 
-  ArtifactUpload=function(classifier,pomFile){
+  ArtifactUpload=function(classifier,pomFile,packaging){
     this.classifier=classifier;
     this.pomFile=pomFile;
+    this.packaging=packaging;
   }
 
   ArtifactUploadViewModel=function(managedRepositories){
@@ -48,14 +49,16 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
       }
       var url="restServices/archivaUiServices/fileUploadService/save/"+this.repositoryId()+"/"+this.groupId()+"/"+this.artifactId();
       url+="/"+this.version()+"/"+this.packaging();
-      if (this.generatePom()){
+      $.log("this.generatePom():'"+this.generatePom()+"'");
+      if (this.generatePom()==true){
         url+="?generatePom=true";
       }
       $.ajax(url, {
           type: "GET",
           dataType: 'json',
           success: function(data) {
-            displaySuccessMessage($.i18n.prop("fileupload.artifacts.saved"));
+            displaySuccessMessage($.i18n.prop("fileupload.artifacts.saved",
+            		self.groupId(),self.artifactId(),self.version(),self.packaging(),(self.generatePom()) ? 'a':'no',self.repositoryId()));
             self.artifactUploads=[];
             $("#main-content" ).find("#uploaded-files-list" ).empty();
             $.ajax("restServices/archivaUiServices/fileUploadService/clearUploadedFiles", {type: "GET", dataType: 'json'});
@@ -82,8 +85,8 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
         type: "GET",
         dataType: 'json',
         success: function(data) {
-          mainContent.html($("#file-upload-screen" ).html());
-          $.ajax("restServices/archivaServices/browseService/userRepositories", {
+          mainContent.html($("#file-upload-screen").html());
+          $.ajax("restServices/archivaServices/browseService/userManagableRepositories", {
               type: "GET",
               dataType: 'json',
               success: function(data) {
@@ -101,19 +104,22 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
                     submit: function (e, data) {
                       var $this = $(this);
                       $this.fileupload('send', data);
-                      artifactUploadViewModel.artifactUploads.push(new ArtifactUpload(data.formData.classifier,data.formData.pomFile));
+                      artifactUploadViewModel.artifactUploads.push(new ArtifactUpload(data.formData.classifier,data.formData.pomFile,data.formData.packaging));
                       return false;
                     }
                   }
                 );
                 fileUpload.bind('fileuploadsubmit', function (e, data) {
                   var pomFile = data.context.find('#pomFile' ).is(":checked");
-                  var classifier = data.context.find('#classifier' ).val();
+                  var classifier = data.context.find('#classifier').val();
+                  var packaging = data.context.find('#packaging' ).val();
+                  $.log("packaging:"+packaging);
                   if (!data.formData){
                     data.formData={};
                   }
                   data.formData.pomFile = pomFile;
                   data.formData.classifier = classifier;
+                  data.formData.packaging = packaging;
                 });
               }
           });

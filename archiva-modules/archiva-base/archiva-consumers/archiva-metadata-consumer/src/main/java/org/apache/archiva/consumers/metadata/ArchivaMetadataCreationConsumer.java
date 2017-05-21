@@ -62,29 +62,19 @@ public class ArchivaMetadataCreationConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
 {
-    /**
-     * default-value="create-archiva-metadata"
-     */
     private String id = "create-archiva-metadata";
 
-    /**
-     * default-value="Create basic metadata for Archiva to be able to reference the artifact"
-     */
     private String description = "Create basic metadata for Archiva to be able to reference the artifact";
 
-    /**
-     */
     @Inject
     private ArchivaConfiguration configuration;
 
-    /**
-     */
     @Inject
     private FileTypes filetypes;
 
     private Date whenGathered;
 
-    private List<String> includes = new ArrayList<String>( 0 );
+    private List<String> includes = new ArrayList<>( 0 );
 
     /**
      * FIXME: this could be multiple implementations and needs to be configured.
@@ -104,31 +94,31 @@ public class ArchivaMetadataCreationConsumer
 
     private String repoId;
 
+    @Override
     public String getId()
     {
         return this.id;
     }
 
+    @Override
     public String getDescription()
     {
         return this.description;
     }
 
-    public boolean isPermanent()
-    {
-        return true;
-    }
-
+    @Override
     public List<String> getExcludes()
     {
         return getDefaultArtifactExclusions();
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return this.includes;
     }
 
+    @Override
     public void beginScan( ManagedRepository repo, Date whenGathered )
         throws ConsumerException
     {
@@ -136,12 +126,14 @@ public class ArchivaMetadataCreationConsumer
         this.whenGathered = whenGathered;
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -206,15 +198,15 @@ public class ArchivaMetadataCreationConsumer
         catch ( MetadataRepositoryException e )
         {
             log.warn(
-                "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}" + e.getMessage(),
-                new Object[]{ path, repoId, e.getMessage() }, e );
+                "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}" ,
+                path, repoId, e.getMessage(), e );
             repositorySession.revert();
         }
         catch ( RepositoryStorageRuntimeException e )
         {
             log.warn(
-                "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}" + e.getMessage(),
-                new Object[]{ path, repoId, e.getMessage() }, e );
+                "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}",
+                path, repoId, e.getMessage(), e );
             repositorySession.revert();
         }
         finally
@@ -223,22 +215,26 @@ public class ArchivaMetadataCreationConsumer
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         processFile( path );
     }
 
+    @Override
     public void completeScan()
     {
         /* do nothing */
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
@@ -247,6 +243,7 @@ public class ArchivaMetadataCreationConsumer
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* do nothing */

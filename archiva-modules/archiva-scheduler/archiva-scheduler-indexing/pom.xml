@@ -22,7 +22,7 @@
   <parent>
     <artifactId>archiva-scheduler</artifactId>
     <groupId>org.apache.archiva</groupId>
-    <version>1.4-M5-SNAPSHOT</version>
+    <version>2.2.2-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-scheduler-indexing</artifactId>
   <packaging>bundle</packaging>
@@ -79,6 +79,7 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
@@ -113,6 +114,12 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-admin-default</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-mock</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -158,6 +165,18 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -199,7 +218,14 @@
               org.springframework*;version="[3,4)",
               org.apache.archiva.redback.components.taskqueue*,
               org.apache.maven.index*,
-              org.apache.maven.wagon*,
+              org.apache.maven.wagon,
+              org.apache.maven.wagon.authentication,
+              org.apache.maven.wagon.authorization,
+              org.apache.maven.wagon.events,
+              org.apache.maven.wagon.providers.http,
+              org.apache.maven.wagon.proxy,
+              org.apache.maven.wagon.repository,
+              org.apache.maven.wagon.resource,
               org.slf4j;resolution:=optional
             </Import-Package>
           </instructions>
@@ -216,6 +242,7 @@
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
             <basedir>${basedir}</basedir>
+            <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
           </systemPropertyVariables>
         </configuration>
       </plugin>

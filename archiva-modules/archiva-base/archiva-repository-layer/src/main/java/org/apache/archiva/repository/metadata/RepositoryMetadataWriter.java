@@ -25,7 +25,6 @@ import org.apache.archiva.xml.XMLException;
 import org.apache.archiva.xml.XMLWriter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -35,12 +34,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * RepositoryMetadataWriter
- *
- *
  */
 public class RepositoryMetadataWriter
 {
@@ -48,10 +48,8 @@ public class RepositoryMetadataWriter
         throws RepositoryMetadataException
     {
         boolean thrown = false;
-        FileWriter writer = null;
-        try
+        try (FileWriter writer = new FileWriter( outputFile ))
         {
-            writer = new FileWriter( outputFile );
             write( metadata, writer );
             writer.flush();
         }
@@ -63,7 +61,6 @@ public class RepositoryMetadataWriter
         }
         finally
         {
-            IOUtils.closeQuietly( writer );
             if ( thrown )
             {
                 FileUtils.deleteQuietly( outputFile );
@@ -86,6 +83,10 @@ public class RepositoryMetadataWriter
         if ( CollectionUtils.isNotEmpty( metadata.getPlugins() ) )
         {
             Element plugins = root.addElement( "plugins" );
+
+            List<Plugin> pluginList = metadata.getPlugins();
+            Collections.sort( pluginList, PluginComparator.INSTANCE );
+
             for ( Plugin plugin : metadata.getPlugins() )
             {
                 Element p = plugins.addElement( "plugin" );
@@ -95,9 +96,11 @@ public class RepositoryMetadataWriter
             }
         }
 
-        if ( CollectionUtils.isNotEmpty( metadata.getAvailableVersions() ) || StringUtils.isNotBlank(
-            metadata.getReleasedVersion() ) || StringUtils.isNotBlank( metadata.getLatestVersion() )
-            || StringUtils.isNotBlank( metadata.getLastUpdated() ) || ( metadata.getSnapshotVersion() != null ) )
+        if ( CollectionUtils.isNotEmpty( metadata.getAvailableVersions() ) //
+            || StringUtils.isNotBlank( metadata.getReleasedVersion() ) //
+            || StringUtils.isNotBlank( metadata.getLatestVersion() ) //
+            || StringUtils.isNotBlank( metadata.getLastUpdated() ) //
+            || ( metadata.getSnapshotVersion() != null ) )
         {
             Element versioning = root.addElement( "versioning" );
 
@@ -144,5 +147,26 @@ public class RepositoryMetadataWriter
         }
 
         elem.addElement( elemName ).setText( text );
+    }
+
+    private static class PluginComparator
+        implements Comparator<Plugin>
+    {
+        private static final PluginComparator INSTANCE = new PluginComparator();
+
+        @Override
+        public int compare( Plugin plugin, Plugin plugin2 )
+        {
+            if ( plugin.getPrefix() != null && plugin2.getPrefix() != null )
+            {
+                return plugin.getPrefix().compareTo( plugin2.getPrefix() );
+            }
+            if ( plugin.getName() != null && plugin2.getName() != null )
+            {
+                return plugin.getName().compareTo( plugin2.getName() );
+            }
+            // we assume artifactId is not null which sounds good :-)
+            return plugin.getArtifactId().compareTo( plugin2.getArtifactId() );
+        }
     }
 }

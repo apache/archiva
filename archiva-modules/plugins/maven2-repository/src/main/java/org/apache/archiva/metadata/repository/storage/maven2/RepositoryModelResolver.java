@@ -19,7 +19,6 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import com.google.common.io.Files;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
@@ -53,6 +52,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 
@@ -102,6 +102,7 @@ public class RepositoryModelResolver
         this.targetRepository = targetRepository;
     }
 
+    @Override
     public ModelSource resolveModel( String groupId, String artifactId, String version )
         throws UnresolvableModelException
     {
@@ -142,13 +143,13 @@ public class RepositoryModelResolver
                 {
                     log.info(
                         "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
-                        new Object[]{ model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() } );
+                        model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() );
                 }
                 catch ( Exception e )
                 {
                     log.warn(
                         "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
-                        new Object[]{ model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() } );
+                        model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() );
 
                     continue;
                 }
@@ -176,8 +177,8 @@ public class RepositoryModelResolver
                     int buildNumber = snapshotVersion.getBuildNumber();
                     String snapshotPath =
                         StringUtils.replaceChars( groupId, '.', '/' ) + '/' + artifactId + '/' + version + '/'
-                            + artifactId + '-' + StringUtils.remove( version, "-SNAPSHOT" ) + '-' + lastVersion + '-'
-                            + buildNumber + ".pom";
+                            + artifactId + '-' + StringUtils.remove( version, "-" + VersionUtil.SNAPSHOT ) + '-'
+                            + lastVersion + '-' + buildNumber + ".pom";
 
                     log.debug( "use snapshot path {} for maven coordinate {}:{}:{}", snapshotPath, groupId, artifactId,
                                version );
@@ -199,6 +200,7 @@ public class RepositoryModelResolver
         return null;
     }
 
+    @Override
     public void addRepository( Repository repository )
         throws InvalidRepositoryException
     {
@@ -207,9 +209,11 @@ public class RepositoryModelResolver
         //       ID since they will rarely match
     }
 
+    @Override
     public ModelResolver newCopy()
     {
-        return new RepositoryModelResolver( basedir, pathTranslator );
+        return new RepositoryModelResolver( managedRepository,  pathTranslator, wagonFactory, remoteRepositories, 
+                                            networkProxyMap, targetRepository );
     }
 
     // FIXME: we need to do some refactoring, we cannot re-use the proxy components of archiva-proxy in maven2-repository
@@ -217,7 +221,7 @@ public class RepositoryModelResolver
     private boolean getModelFromProxy( RemoteRepository remoteRepository, String groupId, String artifactId,
                                        String version, String filename )
         throws AuthorizationException, TransferFailedException, ResourceDoesNotExistException, WagonFactoryException,
-        XMLException
+        XMLException, IOException
     {
         boolean success = false;
         File tmpMd5 = null;
@@ -237,7 +241,8 @@ public class RepositoryModelResolver
 
                 wagon = wagonFactory.getWagon(
                     new WagonFactoryRequest( "wagon#" + protocol, remoteRepository.getExtraHeaders() ).networkProxy(
-                        networkProxy ) );
+                        networkProxy )
+                );
 
                 if ( wagon == null )
                 {
@@ -399,12 +404,7 @@ public class RepositoryModelResolver
             }
             connected = true;
         }
-        catch ( ConnectionException e )
-        {
-            log.error( "Could not connect to {}:{} ", remoteRepository.getName(), e.getMessage() );
-            connected = false;
-        }
-        catch ( AuthenticationException e )
+        catch ( ConnectionException | AuthenticationException e )
         {
             log.error( "Could not connect to {}:{} ", remoteRepository.getName(), e.getMessage() );
             connected = false;
@@ -413,15 +413,30 @@ public class RepositoryModelResolver
         return connected;
     }
 
-    private File transferChecksum( Wagon wagon, RemoteRepository remoteRepository, String remotePath, File resource,
-                                   File tmpDirectory, String ext )
+    /**
+     *
+     * @param wagon The wagon instance that should be connected.
+     * @param remoteRepository The repository from where the checksum file should be retrieved
+     * @param remotePath The remote path of the artifact (without extension)
+     * @param resource The local artifact (without extension)
+     * @param workingDir The working directory where the downloaded file should be placed to
+     * @param ext The extension of th checksum file
+     * @return The file where the data has been downloaded to.
+     * @throws AuthorizationException
+     * @throws TransferFailedException
+     * @throws ResourceDoesNotExistException
+     */
+    private File transferChecksum( final Wagon wagon, final RemoteRepository remoteRepository,
+                                   final String remotePath, final File resource,
+                                   final File workingDir, final String ext )
         throws AuthorizationException, TransferFailedException, ResourceDoesNotExistException
     {
-        File destFile = new File( tmpDirectory, resource.getName() + ext );
+        File destFile = new File( workingDir, resource.getName() + ext );
+        String remoteChecksumPath = remotePath + ext;
 
-        log.info( "Retrieving {} from {}", remotePath, remoteRepository.getName() );
+        log.info( "Retrieving {} from {}", remoteChecksumPath, remoteRepository.getName() );
 
-        wagon.get( addParameters( remotePath, remoteRepository ), destFile );
+        wagon.get( addParameters( remoteChecksumPath, remoteRepository ), destFile );
 
         log.debug( "Downloaded successfully." );
 
@@ -436,8 +451,9 @@ public class RepositoryModelResolver
     }
 
     private File createWorkingDirectory( String targetRepository )
+        throws IOException
     {
-        return Files.createTempDir();
+        return Files.createTempDirectory( "temp" ).toFile();
     }
 
     private void moveFileIfExists( File fileToMove, File directory )

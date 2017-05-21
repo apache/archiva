@@ -27,6 +27,7 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
+import org.easymock.EasyMock;
 import org.junit.Test;
 
 import java.io.File;
@@ -45,6 +46,9 @@ public class CacheFailuresTransferTest
 {
     // TODO: test some hard failures (eg TransferFailedException)
     // TODO: test the various combinations of fetchFrom* (note: need only test when caching is enabled)
+
+    @Inject
+    UrlFailureCache urlFailureCache;
 
     @Test
     public void testGetWithCacheFailuresOn()
@@ -68,11 +72,10 @@ public class CacheFailuresTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES, false );
 
-        wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
+        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
 
-        wagonMockControl.setMatcher( customWagonGetMatcher );
+        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
 
-        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
 
         wagonMockControl.replay();
 
@@ -112,10 +115,8 @@ public class CacheFailuresTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
-
-        wagonMockControl.setMatcher( customWagonGetMatcher );
-        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
+        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
+        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
 
         wagonMockControl.replay();
 
@@ -125,10 +126,10 @@ public class CacheFailuresTransferTest
 
         // Second attempt to download same artifact DOES NOT use cache
         wagonMockControl.reset();
-        wagonMock.get( path, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
 
-        wagonMockControl.setMatcher( customWagonGetMatcher );
-        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "resource does not exist." ), 2 );
+        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
+        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "resource does not exist." ) ).times( 2 );
+
         wagonMockControl.replay();
 
         downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
@@ -171,13 +172,9 @@ public class CacheFailuresTransferTest
         assertNoTempFiles( expectedFile );
     }
 
-    @Inject
-    UrlFailureCache urlFailureCache;
-
     protected UrlFailureCache lookupUrlFailureCache()
         throws Exception
     {
-        //UrlFailureCache urlFailureCache = (UrlFailureCache) lookup( "urlFailureCache" );
         assertNotNull( "URL Failure Cache cannot be null.", urlFailureCache );
         return urlFailureCache;
     }

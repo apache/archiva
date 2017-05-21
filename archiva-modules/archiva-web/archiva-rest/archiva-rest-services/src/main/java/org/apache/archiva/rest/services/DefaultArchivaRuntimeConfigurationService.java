@@ -21,7 +21,9 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ArchivaRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.CacheConfiguration;
+import org.apache.archiva.admin.model.beans.FileLockConfiguration;
 import org.apache.archiva.admin.model.runtime.ArchivaRuntimeConfigurationAdmin;
+import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.ArchivaRuntimeConfigurationService;
@@ -46,6 +48,11 @@ public class DefaultArchivaRuntimeConfigurationService
     @Named( value = "cache#url-failures-cache" )
     private Cache usersCache;
 
+    @Inject
+    @Named( value = "fileLockManager#default" )
+    private FileLockManager fileLockManager;
+
+    @Override
     public ArchivaRuntimeConfiguration getArchivaRuntimeConfiguration()
         throws ArchivaRestServiceException
     {
@@ -59,6 +66,7 @@ public class DefaultArchivaRuntimeConfigurationService
         }
     }
 
+    @Override
     public Boolean updateArchivaRuntimeConfiguration( ArchivaRuntimeConfiguration archivaRuntimeConfiguration )
         throws ArchivaRestServiceException
     {
@@ -73,6 +81,15 @@ public class DefaultArchivaRuntimeConfigurationService
                 usersCache.setMaxElementsOnDisk( cacheConfiguration.getMaxElementsOnDisk() );
                 usersCache.setMaxElementsInMemory( cacheConfiguration.getMaxElementsInMemory() );
             }
+
+            FileLockConfiguration fileLockConfiguration = archivaRuntimeConfiguration.getFileLockConfiguration();
+            if ( fileLockConfiguration != null )
+            {
+                fileLockManager.setTimeout( fileLockConfiguration.getLockingTimeout() );
+                fileLockManager.setSkipLocking( fileLockConfiguration.isSkipLocking() );
+            }
+
+
         }
         catch ( RepositoryAdminException e )
         {

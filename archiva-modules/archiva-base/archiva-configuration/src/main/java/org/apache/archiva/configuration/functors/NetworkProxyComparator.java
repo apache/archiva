@@ -31,6 +31,7 @@ import java.util.Comparator;
 public class NetworkProxyComparator
     implements Comparator<NetworkProxyConfiguration>
 {
+    @Override
     public int compare( NetworkProxyConfiguration o1, NetworkProxyConfiguration o2 )
     {
         if ( o1 == null && o2 == null )

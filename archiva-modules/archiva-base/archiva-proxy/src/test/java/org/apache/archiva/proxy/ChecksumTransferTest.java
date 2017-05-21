@@ -26,6 +26,7 @@ import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
+import org.easymock.EasyMock;
 import org.junit.Test;
 
 import java.io.File;
@@ -435,15 +436,15 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        wagonMock.get( path, new File( expectedFile.getAbsolutePath() + ".tmp" ) );
-        wagonMockControl.setMatcher( customWagonGetMatcher );
-        wagonMockControl.setVoidCallable();
-        wagonMock.get( path + ".sha1", new File( expectedFile.getAbsolutePath() + ".sha1.tmp" ) );
-        wagonMockControl.setMatcher( customWagonGetMatcher );
-        wagonMockControl.setVoidCallable();
-        wagonMock.get( path + ".md5", new File( expectedFile.getAbsolutePath() + ".md5.tmp" ) );
-        wagonMockControl.setMatcher( customWagonGetMatcher );
-        wagonMockControl.setThrowable( new ResourceDoesNotExistException( "Resource does not exist." ) );
+        wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
+        EasyMock.expectLastCall().once();
+
+        wagonMock.get( EasyMock.eq( path + ".sha1" ), EasyMock.anyObject( File.class ));
+        EasyMock.expectLastCall().once();
+
+        wagonMock.get( EasyMock.eq( path + ".md5" ), EasyMock.anyObject( File.class ));
+        EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "Resource does not exist." ) ).once();
+
         wagonMockControl.replay();
 
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );

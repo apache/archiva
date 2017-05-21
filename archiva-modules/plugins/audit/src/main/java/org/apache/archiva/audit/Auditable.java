@@ -19,6 +19,8 @@ package org.apache.archiva.audit;
  * under the License.
  */
 
+import org.apache.archiva.repository.events.AuditListener;
+
 /**
  * Auditable 
  *
@@ -29,14 +31,14 @@ public interface Auditable
     /**
      * Add an AuditListener.
      * 
-     * @param the listener to add.
+     * @param auditListener the listener to add.
      */
     void addAuditListener( AuditListener auditListener );
 
     /**
      * Remove an AuditListener.
      * 
-     * @param the listener to remove.
+     * @param auditListener the listener to remove.
      */
     void removeAuditListener( AuditListener auditListener );
 

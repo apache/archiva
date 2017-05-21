@@ -36,9 +36,13 @@ import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.lang.time.StopWatch;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
+import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
-import org.quartz.impl.JobDetailImpl;
-import org.quartz.impl.triggers.CronTriggerImpl;
+import org.quartz.TriggerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -47,7 +51,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -62,31 +65,19 @@ public class DefaultRepositoryArchivaTaskScheduler
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
-    /**
-     *
-     */
     @Inject
     private Scheduler scheduler;
 
     @Inject
     private CronExpressionValidator cronValidator;
 
-    /**
-     *
-     */
     @Inject
     @Named( value = "taskQueue#repository-scanning" )
     private TaskQueue repositoryScanningQueue;
 
-    /**
-     *
-     */
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 
-    /**
-     *
-     */
     @Inject
     @Named( value = "repositoryStatisticsManager#default" )
     private RepositoryStatisticsManager repositoryStatisticsManager;
@@ -109,9 +100,9 @@ public class DefaultRepositoryArchivaTaskScheduler
 
     public static final String CRON_HOURLY = "0 0 * * * ?";
 
-    private Set<String> jobs = new HashSet<String>();
+    private Set<String> jobs = new HashSet<>();
 
-    private List<String> queuedRepos = new ArrayList<String>();
+    private List<String> queuedRepos = new ArrayList<>();
 
     @PostConstruct
     public void startup()
@@ -152,8 +143,8 @@ public class DefaultRepositoryArchivaTaskScheduler
                     }
                     catch ( MetadataRepositoryException e )
                     {
-                        log.warn( "Unable to determine if a repository is already scanned, skipping initial scan: "
-                                      + e.getMessage(), e );
+                        log.warn( "Unable to determine if a repository is already scanned, skipping initial scan: {}",
+                                  e.getMessage(), e );
                     }
                 }
             }
@@ -182,6 +173,7 @@ public class DefaultRepositoryArchivaTaskScheduler
     }
 
     @SuppressWarnings( "unchecked" )
+    @Override
     public boolean isProcessingRepositoryTask( String repositoryId )
     {
         synchronized ( repositoryScanningQueue )
@@ -208,6 +200,7 @@ public class DefaultRepositoryArchivaTaskScheduler
         }
     }
 
+    @Override
     public boolean isProcessingRepositoryTask( RepositoryTask task )
     {
         synchronized ( repositoryScanningQueue )
@@ -234,6 +227,7 @@ public class DefaultRepositoryArchivaTaskScheduler
         }
     }
 
+    @Override
     public void queueTask( RepositoryTask task )
         throws TaskQueueException
     {
@@ -251,6 +245,7 @@ public class DefaultRepositoryArchivaTaskScheduler
         }
     }
 
+    @Override
     public boolean unQueueTask( RepositoryTask task )
         throws TaskQueueException
     {
@@ -268,6 +263,7 @@ public class DefaultRepositoryArchivaTaskScheduler
         }
     }
 
+    @Override
     public void configurationEvent( ConfigurationEvent event )
     {
         if ( event.getType() == ConfigurationEvent.SAVED )
@@ -298,7 +294,7 @@ public class DefaultRepositoryArchivaTaskScheduler
                     }
                     catch ( SchedulerException e )
                     {
-                        log.error( "error restarting job: " + REPOSITORY_JOB + ":" + repoConfig.getId() );
+                        log.error( "error restarting job: '{}' : '{}'", REPOSITORY_JOB, repoConfig.getId() );
                     }
                 }
             }
@@ -329,7 +325,7 @@ public class DefaultRepositoryArchivaTaskScheduler
 
         if ( !queuedRepos.contains( repoId ) )
         {
-            log.info( "Repository [" + repoId + "] is queued to be scanned as it hasn't been previously." );
+            log.info( "Repository [{}] is queued to be scanned as it hasn't been previously.", repoId );
 
             try
             {
@@ -338,7 +334,7 @@ public class DefaultRepositoryArchivaTaskScheduler
             }
             catch ( TaskQueueException e )
             {
-                log.error( "Error occurred while queueing repository [" + repoId + "] task : " + e.getMessage() );
+                log.error( "Error occurred while queueing repository [{}] task : {}", e.getMessage(), repoId );
             }
         }
     }
@@ -368,27 +364,31 @@ public class DefaultRepositoryArchivaTaskScheduler
             cronString = CRON_HOURLY;
         }
 
-        // setup the unprocessed artifact job
-        JobDetailImpl repositoryJob =
-            new JobDetailImpl( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP,
-                               RepositoryTaskJob.class );
+        JobDataMap jobDataMap = new JobDataMap( );
+        jobDataMap.put( TASK_QUEUE, repositoryScanningQueue );
+        jobDataMap.put( TASK_REPOSITORY, repoConfig.getId() );
 
-        repositoryJob.getJobDataMap().put( TASK_QUEUE, repositoryScanningQueue );
-        repositoryJob.getJobDataMap().put( TASK_REPOSITORY, repoConfig.getId() );
+        // setup the unprocessed artifact job
+        JobDetail repositoryJob = JobBuilder.newJob( RepositoryTaskJob.class )
+                                        .withIdentity( REPOSITORY_JOB + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP )
+                                        .setJobData( jobDataMap )
+                                        .build();
 
         try
         {
-            CronTriggerImpl trigger =
-                new CronTriggerImpl( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP,
-                                     cronString );
+            CronTrigger trigger = TriggerBuilder.newTrigger()
+                    .withIdentity( REPOSITORY_JOB_TRIGGER + ":" + repoConfig.getId(), REPOSITORY_SCAN_GROUP )
+                    .withSchedule( CronScheduleBuilder.cronSchedule( cronString ) )
+                    .build();
 
             jobs.add( REPOSITORY_JOB + ":" + repoConfig.getId() );
             scheduler.scheduleJob( repositoryJob, trigger );
         }
-        catch ( ParseException e )
+        catch ( RuntimeException e )
         {
-            log.error( "ParseException in repository scanning cron expression, disabling repository scanning for '"
-                           + repoConfig.getId() + "': " + e.getMessage() );
+            log.error(
+                "ParseException in repository scanning cron expression, disabling repository scanning for '': {}",
+                repoConfig.getId(), e.getMessage() );
         }
 
     }

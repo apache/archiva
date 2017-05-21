@@ -52,6 +52,7 @@ public class ArchivaLdapRoleMapperConfiguration
     @Named( value = "redbackRuntimeConfigurationAdmin#default" )
     private RedbackRuntimeConfigurationAdmin redbackRuntimeConfigurationAdmin;
 
+    @Override
     public void addLdapMapping( String ldapGroup, List<String> roles )
         throws MappingException
     {
@@ -73,6 +74,7 @@ public class ArchivaLdapRoleMapperConfiguration
 
     }
 
+    @Override
     public void updateLdapMapping( String ldapGroup, List<String> roles )
         throws MappingException
     {
@@ -98,6 +100,7 @@ public class ArchivaLdapRoleMapperConfiguration
         }
     }
 
+    @Override
     public void removeLdapMapping( String group )
         throws MappingException
     {
@@ -117,6 +120,7 @@ public class ArchivaLdapRoleMapperConfiguration
 
     }
 
+    @Override
     public Map<String, Collection<String>> getLdapGroupMappings()
         throws MappingException
     {
@@ -132,7 +136,7 @@ public class ArchivaLdapRoleMapperConfiguration
                 return Collections.emptyMap();
             }
 
-            Map<String, Collection<String>> res = new HashMap<String, Collection<String>>( ldapGroupMappings.size() );
+            Map<String, Collection<String>> res = new HashMap<>( ldapGroupMappings.size() );
 
             for ( LdapGroupMapping ldapGroupMapping : ldapGroupMappings )
             {
@@ -147,6 +151,7 @@ public class ArchivaLdapRoleMapperConfiguration
         }
     }
 
+    @Override
     public void setLdapGroupMappings( Map<String, List<String>> mappings )
         throws MappingException
     {
@@ -155,7 +160,7 @@ public class ArchivaLdapRoleMapperConfiguration
             RedbackRuntimeConfiguration redbackRuntimeConfiguration =
                 redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration();
 
-            List<LdapGroupMapping> ldapGroupMappings = new ArrayList<LdapGroupMapping>( mappings.size() );
+            List<LdapGroupMapping> ldapGroupMappings = new ArrayList<>( mappings.size() );
 
             for ( Map.Entry<String, List<String>> entry : mappings.entrySet() )
             {

@@ -1,4 +1,5 @@
 package org.apache.archiva.admin.model.beans;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -24,10 +25,15 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Olivier Lamy
  * @since 1.4-M4
  */
-@XmlRootElement( name = "archivaRuntimeConfiguration" )
+@XmlRootElement(name = "archivaRuntimeConfiguration")
 public class ArchivaRuntimeConfiguration
 {
     private CacheConfiguration urlFailureCacheConfiguration;
+
+    /**
+     * @since 2.0.0
+     */
+    private FileLockConfiguration fileLockConfiguration;
 
     public ArchivaRuntimeConfiguration()
     {
@@ -44,13 +50,24 @@ public class ArchivaRuntimeConfiguration
         this.urlFailureCacheConfiguration = urlFailureCacheConfiguration;
     }
 
+    public FileLockConfiguration getFileLockConfiguration()
+    {
+        return fileLockConfiguration;
+    }
+
+    public void setFileLockConfiguration( FileLockConfiguration fileLockConfiguration )
+    {
+        this.fileLockConfiguration = fileLockConfiguration;
+    }
+
     @Override
     public String toString()
     {
-        final StringBuilder sb = new StringBuilder();
-        sb.append( "ArchivaRuntimeConfiguration" );
-        sb.append( "{urlFailureCacheConfiguration=" ).append( urlFailureCacheConfiguration );
+        final StringBuilder sb = new StringBuilder( "ArchivaRuntimeConfiguration{" );
+        sb.append( "urlFailureCacheConfiguration=" ).append( urlFailureCacheConfiguration );
+        sb.append( ", fileLockConfiguration=" ).append( fileLockConfiguration );
         sb.append( '}' );
         return sb.toString();
     }
+
 }

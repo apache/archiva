@@ -54,6 +54,7 @@ public class WagonDelegate
 
     private String contentToGet;
 
+    @Override
     public void get( String resourceName, File destination )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
@@ -62,28 +63,32 @@ public class WagonDelegate
         create( destination );
     }
 
+    @Override
     public boolean getIfNewer( String resourceName, File destination, long timestamp )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
-        log.info( ".getIfNewer(" + resourceName + ", " + destination + ", " + timestamp + ")" );
+        log.info( ".getIfNewer({}, {}, {})", resourceName, destination, timestamp );
 
         boolean result = delegate.getIfNewer( resourceName, destination, timestamp );
         createIfMissing( destination );
         return result;
     }
 
+    @Override
     public void put( File source, String destination )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
         delegate.put( source, destination );
     }
 
+    @Override
     public void putDirectory( File sourceDirectory, String destinationDirectory )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
         delegate.putDirectory( sourceDirectory, destinationDirectory );
     }
 
+    @Override
     public boolean resourceExists( String resourceName )
         throws TransferFailedException, AuthorizationException
     {
@@ -91,72 +96,85 @@ public class WagonDelegate
     }
 
     @SuppressWarnings ("unchecked")
+    @Override
     public List<String> getFileList( String destinationDirectory )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
         return delegate.getFileList( destinationDirectory );
     }
 
+    @Override
     public boolean supportsDirectoryCopy()
     {
         return delegate.supportsDirectoryCopy();
     }
 
+    @Override
     public void setTimeout( int val )
     {
         // ignore
     }
 
+    @Override
     public int getTimeout()
     {
         return 0;
     }
 
+    @Override
     public void setReadTimeout( int timeoutValue )
     {
         // ignore
     }
 
+    @Override
     public int getReadTimeout()
     {
         return 0;
     }
 
+    @Override
     public Repository getRepository()
     {
         return delegate.getRepository();
     }
 
+    @Override
     public void connect( Repository source )
         throws ConnectionException, AuthenticationException
     {
         delegate.connect( source );
     }
 
+    @Override
     public void connect( Repository source, ProxyInfo proxyInfo )
         throws ConnectionException, AuthenticationException
     {
         delegate.connect( source, proxyInfo );
     }
 
+    @Override
     public void connect( Repository source, ProxyInfoProvider proxyInfoProvider )
         throws ConnectionException, AuthenticationException
     {
         delegate.connect( source, proxyInfoProvider );
     }
 
+    @Override
     public void connect( Repository source, AuthenticationInfo authenticationInfo )
         throws ConnectionException, AuthenticationException
     {
         delegate.connect( source, authenticationInfo );
     }
 
+    @Override
     public void connect( Repository source, AuthenticationInfo authenticationInfo, ProxyInfo proxyInfo )
         throws ConnectionException, AuthenticationException
     {
         delegate.connect( source, authenticationInfo, proxyInfo );
     }
 
+    @Override
     public void connect( Repository source, AuthenticationInfo authenticationInfo, ProxyInfoProvider proxyInfoProvider )
         throws ConnectionException, AuthenticationException
     {
@@ -164,53 +182,63 @@ public class WagonDelegate
     }
 
     @SuppressWarnings ("deprecation")
+    @Override
     public void openConnection()
         throws ConnectionException, AuthenticationException
     {
         delegate.openConnection();
     }
 
+    @Override
     public void disconnect()
         throws ConnectionException
     {
         delegate.disconnect();
     }
 
+    @Override
     public void addSessionListener( SessionListener listener )
     {
         delegate.addSessionListener( listener );
     }
 
+    @Override
     public void removeSessionListener( SessionListener listener )
     {
         delegate.removeSessionListener( listener );
     }
 
+    @Override
     public boolean hasSessionListener( SessionListener listener )
     {
         return delegate.hasSessionListener( listener );
     }
 
+    @Override
     public void addTransferListener( TransferListener listener )
     {
         delegate.addTransferListener( listener );
     }
 
+    @Override
     public void removeTransferListener( TransferListener listener )
     {
         delegate.removeTransferListener( listener );
     }
 
+    @Override
     public boolean hasTransferListener( TransferListener listener )
     {
         return delegate.hasTransferListener( listener );
     }
 
+    @Override
     public boolean isInteractive()
     {
         return delegate.isInteractive();
     }
 
+    @Override
     public void setInteractive( boolean interactive )
     {
         delegate.setInteractive( interactive );

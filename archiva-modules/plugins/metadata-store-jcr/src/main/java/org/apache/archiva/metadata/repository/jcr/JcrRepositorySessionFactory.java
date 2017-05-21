@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.RepositorySessionFactoryBean;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
@@ -51,23 +52,18 @@ public class JcrRepositorySessionFactory
     @Inject
     private ApplicationContext applicationContext;
 
-    /**
-     *
-     */
     private Map<String, MetadataFacetFactory> metadataFacetFactories;
 
-    /**
-     *
-     */
     @Inject
     private Repository repository;
 
-    /**
-     *
-     */
     @Inject
     private MetadataResolver metadataResolver;
 
+    @Inject
+    private RepositorySessionFactoryBean repositorySessionFactoryBean;
+
+    @Override
     public RepositorySession createSession()
     {
         try
@@ -92,6 +88,13 @@ public class JcrRepositorySessionFactory
     public void initialize()
         throws Exception
     {
+
+        // skip initialisation if not cassandra
+        if ( !StringUtils.equals( repositorySessionFactoryBean.getId(), "jcr" ) )
+        {
+            return;
+        }
+
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
@@ -99,7 +102,7 @@ public class JcrRepositorySessionFactory
         // olamy with spring the "id" is now "metadataFacetFactory#hint"
         // whereas was only hint with plexus so let remove  metadataFacetFactory#
         Map<String, MetadataFacetFactory> cleanedMetadataFacetFactories =
-            new HashMap<String, MetadataFacetFactory>( metadataFacetFactories.size() );
+            new HashMap<>( metadataFacetFactories.size() );
 
         for ( Map.Entry<String, MetadataFacetFactory> entry : metadataFacetFactories.entrySet() )
         {

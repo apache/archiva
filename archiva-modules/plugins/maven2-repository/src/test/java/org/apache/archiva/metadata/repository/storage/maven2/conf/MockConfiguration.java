@@ -25,11 +25,13 @@ import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
-import org.easymock.MockControl;
+import org.easymock.IMocksControl;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.easymock.EasyMock.createNiceControl;
 
 /**
  * MockConfiguration 
@@ -46,26 +48,35 @@ public class MockConfiguration
     private Set<RegistryListener> registryListeners = new HashSet<RegistryListener>();
     private Set<ConfigurationListener> configListeners = new HashSet<ConfigurationListener>();
 
-    private MockControl registryControl;
+    private IMocksControl registryControl;
 
     private Registry registryMock;
 
     public MockConfiguration()
     {
-        registryControl = MockControl.createNiceControl( Registry.class );
-        registryMock = (Registry) registryControl.getMock();
+        registryControl = createNiceControl();
+        registryMock = registryControl.createMock( Registry.class );
     }
 
+    @Override
     public void addChangeListener( RegistryListener listener )
     {
         registryListeners.add( listener );
     }
 
+    @Override
+    public void removeChangeListener( RegistryListener listener )
+    {
+        registryListeners.remove( listener );
+    }
+
+    @Override
     public Configuration getConfiguration()
     {
         return configuration;
     }
 
+    @Override
     public void save( Configuration configuration )
         throws RegistryException
     {
@@ -87,21 +98,25 @@ public class MockConfiguration
         }
     }
 
+    @Override
     public void addListener( ConfigurationListener listener )
     {
         configListeners.add(listener);
     }
 
+    @Override
     public void removeListener( ConfigurationListener listener )
     {
         configListeners.remove( listener );
     }
     
+    @Override
     public boolean isDefaulted()
     {
         return false;
     }
 
+    @Override
     public void reload()
     {
         // no op

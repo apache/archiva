@@ -20,6 +20,7 @@ package org.apache.archiva.reports;
  */
 
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -40,6 +41,7 @@ public class RepositoryProblemEventListener
     private Logger log = LoggerFactory.getLogger( RepositoryProblemEventListener.class );
 
     // FIXME: move to session
+    @Override
     public void deleteArtifact( MetadataRepository metadataRepository, String repositoryId, String namespace,
                                 String project, String version, String id )
     {
@@ -51,10 +53,11 @@ public class RepositoryProblemEventListener
         }
         catch ( MetadataRepositoryException e )
         {
-            log.warn( "Unable to remove metadata facet as part of delete event: " + e.getMessage(), e );
+            log.warn( "Unable to remove metadata facet as part of delete event: {}", e.getMessage(), e );
         }
     }
 
+    @Override
     public void addArtifact( RepositorySession session, String repoId, String namespace, String projectId,
                              ProjectVersionMetadata metadata )
     {
@@ -69,11 +72,12 @@ public class RepositoryProblemEventListener
         }
         catch ( MetadataRepositoryException e )
         {
-            log.warn( "Unable to remove repository problem facets for the version being corrected in the repository: "
-                          + e.getMessage(), e );
+            log.warn( "Unable to remove repository problem facets for the version being corrected in the repository: {}",
+                          e.getMessage(), e );
         }
     }
 
+    @Override
     public void addArtifactProblem( RepositorySession session, String repoId, String namespace, String projectId,
                                     String projectVersion, RepositoryStorageMetadataException exception )
     {
@@ -92,7 +96,7 @@ public class RepositoryProblemEventListener
         }
         catch ( MetadataRepositoryException e )
         {
-            log.warn( "Unable to add repository problem facets for the version being removed: " + e.getMessage(), e );
+            log.warn( "Unable to add repository problem facets for the version being removed: {}", e.getMessage(), e );
         }
     }
 

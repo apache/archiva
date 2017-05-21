@@ -30,11 +30,13 @@ import org.springframework.stereotype.Service;
 public class MavenProjectFacetFactory
     implements MetadataFacetFactory
 {
+    @Override
     public MetadataFacet createMetadataFacet()
     {
         return new MavenProjectFacet();
     }
 
+    @Override
     public MetadataFacet createMetadataFacet( String repositoryId, String name )
     {
         throw new UnsupportedOperationException( "There is no valid name for project version facets" );

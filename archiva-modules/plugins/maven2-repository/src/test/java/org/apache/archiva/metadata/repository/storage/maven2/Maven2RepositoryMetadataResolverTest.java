@@ -63,14 +63,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith ( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration ( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@ContextConfiguration ( { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class Maven2RepositoryMetadataResolverTest
     extends TestCase
 {
     private static final Filter<String> ALL = new AllFilter<String>();
 
     @Inject
-    @Named (value = "repositoryStorage#maven2")
+    @Named ( "repositoryStorage#maven2" )
     private Maven2RepositoryStorage storage;
 
     private static final String TEST_REPO_ID = "test";
@@ -94,7 +94,7 @@ public class Maven2RepositoryMetadataResolverTest
     private static final String EMPTY_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
 
     @Inject
-    @Named ( value = "archivaConfiguration#default" )
+    @Named ( "archivaConfiguration#default" )
     protected ArchivaConfiguration configuration;
 
     private WagonFactory wagonFactory;
@@ -209,6 +209,9 @@ public class Maven2RepositoryMetadataResolverTest
         assertDependency( dependencies.get( 7 ), "junit", "junit", "3.8.1", "test" );
         assertDependency( dependencies.get( 8 ), "easymock", "easymock", "1.2_Java1.3", "test" );
         assertDependency( dependencies.get( 9 ), "easymock", "easymockclassextension", "1.2", "test" );
+
+        assertEquals( 8, metadata.getProperties().size() );
+        assertEquals( "http://www.apache.org/images/asf_logo_wide.gif", metadata.getProperties().get("organization.logo") );
     }
 
     @Test
@@ -217,9 +220,10 @@ public class Maven2RepositoryMetadataResolverTest
     {
         Collection<ArtifactMetadata> springArtifacts = storage.readArtifactsMetadata(
             new ReadMetadataRequest( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", ALL ) );
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( springArtifacts );
+        List<ArtifactMetadata> artifacts = new ArrayList<>( springArtifacts );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
+            @Override
             public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
             {
                 return o1.getId().compareTo( o2.getId() );
@@ -259,9 +263,10 @@ public class Maven2RepositoryMetadataResolverTest
     {
         Collection<ArtifactMetadata> testArtifacts = storage.readArtifactsMetadata(
             new ReadMetadataRequest( TEST_REPO_ID, "com.example.test", "test-artifact", "1.0-SNAPSHOT", ALL ) );
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( testArtifacts );
+        List<ArtifactMetadata> artifacts = new ArrayList<>( testArtifacts );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
+            @Override
             public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
             {
                 return o1.getId().compareTo( o2.getId() );
@@ -342,7 +347,7 @@ public class Maven2RepositoryMetadataResolverTest
     {
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata(
             new ReadMetadataRequest( TEST_REPO_ID, "org.apache", "apache", "5-SNAPSHOT" ) );
-        MavenProjectFacet facet = (MavenProjectFacet) metadata.getFacet( MavenProjectFacet.FACET_ID );
+        MavenProjectFacet facet = MavenProjectFacet.class.cast( metadata.getFacet( MavenProjectFacet.FACET_ID ) );
         assertEquals( "pom", facet.getPackaging() );
         assertEquals( "http://www.apache.org/", metadata.getUrl() );
         assertNull( facet.getParent() );
@@ -559,11 +564,12 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetArtifacts()
         throws Exception
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata(
+        List<ArtifactMetadata> artifacts = new ArrayList<>( storage.readArtifactsMetadata(
             new ReadMetadataRequest( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", ALL ) ) );
         assertEquals( 3, artifacts.size() );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
+            @Override
             public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
             {
                 return o1.getId().compareTo( o2.getId() );
@@ -582,11 +588,12 @@ public class Maven2RepositoryMetadataResolverTest
     {
         ExcludesFilter<String> filter =
             new ExcludesFilter<String>( Collections.singletonList( "plexus-spring-1.2.pom" ) );
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>( storage.readArtifactsMetadata(
+        List<ArtifactMetadata> artifacts = new ArrayList<>( storage.readArtifactsMetadata(
             new ReadMetadataRequest( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2", filter ) ) );
         assertEquals( 2, artifacts.size() );
         Collections.sort( artifacts, new Comparator<ArtifactMetadata>()
         {
+            @Override
             public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
             {
                 return o1.getId().compareTo( o2.getId() );
@@ -646,7 +653,7 @@ public class Maven2RepositoryMetadataResolverTest
     private void assertMailingList( String prefix, MailingList mailingList, String name, boolean allowPost,
                                     String nabbleUrl )
     {
-        List<String> otherArchives = new ArrayList<String>();
+        List<String> otherArchives = new ArrayList<>();
         otherArchives.add( "http://www.mail-archive.com/" + prefix + "@archiva.apache.org" );
         if ( nabbleUrl != null )
         {

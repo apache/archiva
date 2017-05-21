@@ -54,7 +54,7 @@ public class PropagateErrorsDownloadPolicy
      */
     public static final String IGNORE = "ignore";
 
-    private List<String> options = new ArrayList<String>( 3 );
+    private List<String> options = new ArrayList<>( 3 );
 
     public PropagateErrorsDownloadPolicy()
     {
@@ -63,6 +63,7 @@ public class PropagateErrorsDownloadPolicy
         options.add( IGNORE );
     }
 
+    @Override
     public boolean applyPolicy( String policySetting, Properties request, File localFile, Exception exception,
                                 Map<String, Exception> previousExceptions )
         throws PolicyConfigurationException
@@ -98,21 +99,25 @@ public class PropagateErrorsDownloadPolicy
             "Unable to process checksum policy of [" + policySetting + "], please file a bug report." );
     }
 
+    @Override
     public String getDefaultOption()
     {
         return QUEUE;
     }
 
+    @Override
     public String getId()
     {
         return "propagate-errors";
     }
 
+    @Override
     public String getName()
     {
         return "On remote error";
     }
 
+    @Override
     public List<String> getOptions()
     {
         return options;

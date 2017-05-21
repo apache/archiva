@@ -54,16 +54,19 @@ public class ProxyConnector
         // no op
     }
 
+    @Override
     public boolean isDisabled()
     {
         return disabled;
     }
 
+    @Override
     public void setDisabled( boolean disabled )
     {
         this.disabled = disabled;
     }
 
+    @Override
     public List<String> getBlacklist()
     {
         return blacklist;
@@ -74,6 +77,7 @@ public class ProxyConnector
         this.blacklist = blacklist;
     }
 
+    @Override
     public ManagedRepositoryContent getSourceRepository()
     {
         return sourceRepository;
@@ -84,6 +88,7 @@ public class ProxyConnector
         this.sourceRepository = sourceRepository;
     }
 
+    @Override
     public RemoteRepositoryContent getTargetRepository()
     {
         return targetRepository;
@@ -94,6 +99,7 @@ public class ProxyConnector
         this.targetRepository = targetRepository;
     }
 
+    @Override
     public List<String> getWhitelist()
     {
         return whitelist;

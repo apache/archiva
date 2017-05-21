@@ -33,8 +33,9 @@ import java.util.List;
 public class ElementTextListClosure
     implements Closure
 {
-    private List<String> list = new ArrayList<String>();
+    private List<String> list = new ArrayList<>();
 
+    @Override
     public void execute( Object input )
     {
         if ( input instanceof Element )

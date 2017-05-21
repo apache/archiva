@@ -32,6 +32,7 @@ import org.quartz.SchedulerException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.lang.reflect.Field;
@@ -40,8 +41,6 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * ArchivaStartup - the startup of all archiva features in a deterministic order.
- *
- *
  */
 public class ArchivaStartup
     implements ServletContextListener
@@ -58,6 +57,7 @@ public class ArchivaStartup
 
     private NexusIndexer nexusIndexer;
 
+    @Override
     public void contextInitialized( ServletContextEvent contextEvent )
     {
         WebApplicationContext wac =
@@ -96,10 +96,15 @@ public class ArchivaStartup
         }
     }
 
+    @Override
     public void contextDestroyed( ServletContextEvent contextEvent )
     {
         WebApplicationContext applicationContext =
             WebApplicationContextUtils.getRequiredWebApplicationContext( contextEvent.getServletContext() );
+
+        // we log using servlet mechanism as due to some possible problem with slf4j when container shutdown
+        // so servletContext.log
+        ServletContext servletContext = contextEvent.getServletContext();
 
         // TODO check this stop
 
@@ -112,9 +117,9 @@ public class ArchivaStartup
         if ( applicationContext != null ) //&& applicationContext instanceof PlexusWebApplicationContext )
         {
             // stop task queue executors
-            stopTaskQueueExecutor( tqeDbScanning );
-            stopTaskQueueExecutor( tqeRepoScanning );
-            stopTaskQueueExecutor( tqeIndexing );
+            stopTaskQueueExecutor( tqeDbScanning, servletContext );
+            stopTaskQueueExecutor( tqeRepoScanning, servletContext );
+            stopTaskQueueExecutor( tqeIndexing, servletContext );
 
             // stop the DefaultArchivaTaskScheduler and its scheduler
             if ( repositoryTaskScheduler != null )
@@ -125,7 +130,7 @@ public class ArchivaStartup
                 }
                 catch ( SchedulerException e )
                 {
-                    e.printStackTrace();
+                    servletContext.log( e.getMessage(), e );
                 }
 
                 try
@@ -139,7 +144,7 @@ public class ArchivaStartup
                 }
                 catch ( Exception e )
                 {
-                    e.printStackTrace();
+                    servletContext.log( e.getMessage(), e );
                 }
             }
 
@@ -158,13 +163,13 @@ public class ArchivaStartup
             }
             catch ( Exception e )
             {
-                contextEvent.getServletContext().log( "skip error closing indexingContext " + e.getMessage() );
+                servletContext.log( "skip error closing indexingContext " + e.getMessage(), e );
             }
         }
 
     }
 
-    private void stopTaskQueueExecutor( ThreadedTaskQueueExecutor taskQueueExecutor )
+    private void stopTaskQueueExecutor( ThreadedTaskQueueExecutor taskQueueExecutor, ServletContext servletContext )
     {
         if ( taskQueueExecutor != null )
         {
@@ -177,7 +182,7 @@ public class ArchivaStartup
             try
             {
                 taskQueueExecutor.stop();
-                ExecutorService service = getExecutorServiceForTTQE( taskQueueExecutor );
+                ExecutorService service = getExecutorServiceForTTQE( taskQueueExecutor, servletContext );
                 if ( service != null )
                 {
                     service.shutdown();
@@ -185,12 +190,12 @@ public class ArchivaStartup
             }
             catch ( Exception e )
             {
-                e.printStackTrace();
+                servletContext.log( e.getMessage(), e );
             }
         }
     }
 
-    private ExecutorService getExecutorServiceForTTQE( ThreadedTaskQueueExecutor ttqe )
+    private ExecutorService getExecutorServiceForTTQE( ThreadedTaskQueueExecutor ttqe, ServletContext servletContext )
     {
         ExecutorService service = null;
         try
@@ -201,7 +206,7 @@ public class ArchivaStartup
         }
         catch ( Exception e )
         {
-            e.printStackTrace();
+            servletContext.log( e.getMessage(), e );
         }
         return service;
     }

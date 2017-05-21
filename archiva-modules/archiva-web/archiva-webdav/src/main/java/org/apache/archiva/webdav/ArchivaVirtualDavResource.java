@@ -84,13 +84,14 @@ public class ArchivaVirtualDavResource
         this.properties = new DavPropertySet();
     }
 
+    @Override
     public void spool( OutputContext outputContext )
         throws IOException
     {
         if ( outputContext.hasStream() )
         {
             Collections.sort( localResources );
-            List<File> localResourceFiles = new ArrayList<File>();
+            List<File> localResourceFiles = new ArrayList<>();
 
             for ( File resourceFile : localResources )
             {
@@ -105,11 +106,13 @@ public class ArchivaVirtualDavResource
         }
     }
 
+    @Override
     public void addLockManager( LockManager arg0 )
     {
 
     }
 
+    @Override
     public void addMember( DavResource arg0, InputContext arg1 )
         throws DavException
     {
@@ -117,6 +120,7 @@ public class ArchivaVirtualDavResource
     }
 
     @SuppressWarnings( "unchecked" )
+    @Override
     public MultiStatusResponse alterProperties( List arg0 )
         throws DavException
     {
@@ -129,113 +133,134 @@ public class ArchivaVirtualDavResource
         return null;
     }
 
+    @Override
     public void copy( DavResource arg0, boolean arg1 )
         throws DavException
     {
 
     }
 
+    @Override
     public boolean exists()
     {
         // localResources are already filtered (all files in the list are already existing)
         return true;
     }
 
+    @Override
     public ActiveLock getLock( Type arg0, Scope arg1 )
     {
         return null;
     }
 
+    @Override
     public ActiveLock[] getLocks()
     {
         return null;
     }
 
+    @Override
     public DavResourceIterator getMembers()
     {
         return null;
     }
 
+    @Override
     public String getSupportedMethods()
     {
         return METHODS;
     }
 
+    @Override
     public long getModificationTime()
     {
         return 0;
     }
 
+    @Override
     public boolean hasLock( Type arg0, Scope arg1 )
     {
         return false;
     }
 
+    @Override
     public boolean isCollection()
     {
         return true;
     }
 
+    @Override
     public boolean isLockable( Type arg0, Scope arg1 )
     {
         return false;
     }
 
+    @Override
     public ActiveLock lock( LockInfo arg0 )
         throws DavException
     {
         return null;
     }
 
+    @Override
     public void move( DavResource arg0 )
         throws DavException
     {
 
     }
 
+    @Override
     public ActiveLock refreshLock( LockInfo arg0, String arg1 )
         throws DavException
     {
         return null;
     }
 
+    @Override
     public void removeMember( DavResource arg0 )
         throws DavException
     {
 
     }
 
+    @Override
     public void unlock( String arg0 )
         throws DavException
     {
 
     }
 
+    @Override
     public String getComplianceClass()
     {
         return COMPLIANCE_CLASS;
     }
 
+    @Override
     public DavResourceLocator getLocator()
     {
         return locator;
     }
 
+    @Override
     public String getResourcePath()
     {
         return locator.getResourcePath();
     }
 
+    @Override
     public String getHref()
     {
         return locator.getHref( isCollection() );
     }
 
+    @Override
     public DavResourceFactory getFactory()
     {
         return factory;
     }
 
+    @Override
     public String getDisplayName()
     {
         String resPath = getResourcePath();
@@ -243,38 +268,45 @@ public class ArchivaVirtualDavResource
         return ( resPath != null ) ? Text.getName( resPath ) : resPath;
     }
 
+    @Override
     public DavSession getSession()
     {
         return null;
     }
 
+    @Override
     public DavPropertyName[] getPropertyNames()
     {
         return getProperties().getPropertyNames();
     }
 
+    @Override
     public DavProperty getProperty( DavPropertyName name )
     {
         initProperties();
         return properties.get( name );
     }
 
+    @Override
     public DavPropertySet getProperties()
     {
         initProperties();
         return properties;
     }
 
+    @Override
     public void setProperty( DavProperty property )
         throws DavException
     {
     }
 
+    @Override
     public void removeProperty( DavPropertyName propertyName )
         throws DavException
     {
     }
 
+    @Override
     public DavResource getCollection()
     {
         DavResource parent = null;
@@ -343,4 +375,13 @@ public class ArchivaVirtualDavResource
         propsInitialized = true;
     }
 
+    public String getLogicalResource()
+    {
+        return logicalResource;
+    }
+
+    public void setLogicalResource( String logicalResource )
+    {
+        this.logicalResource = logicalResource;
+    }
 }

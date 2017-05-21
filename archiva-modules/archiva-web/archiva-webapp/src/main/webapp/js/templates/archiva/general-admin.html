@@ -16,128 +16,6 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
 -->
-<script id="legacy-artifact-path-main" type="text/html">
- <div id="legacy-artifact-path-screen">
-     <div class="page-header">
-       <h2>${$.i18n.prop('legacy-artifact-paths.list')}</h2>
-     </div>
-
-     <ul id="legacy-artifact-paths-view-tabs" class="nav nav-tabs">
-       <li id="legacy-artifact-paths-view-tabs-li-grid">
-         <a data-toggle="tab" href="#legacy-artifact-paths-view" id="legacy-artifact-paths-view-tabs-a-grid">${$.i18n.prop('legacy-artifact-paths.grid.tab.title')}</a>
-       </li>
-       <li id="legacy-artifact-paths-view-tabs-li-edit">
-         <a data-toggle="tab" href="#legacy-artifact-paths-edit">${$.i18n.prop('add')}</a>
-       </li>
-     </ul>
-     <div id="legacy-artifact-paths-view-tabs-content" class="tab-content">
-       <div id="legacy-artifact-paths-view" class="tab-pane">
-           <table class="table table-striped table-bordered" id="legacy-artifact-paths-table"
-                  data-bind="simpleGrid: gridViewModel,simpleGridTemplate:'ko-legacy-artifact-paths-grid',pageLinksId:'legacy-artifact-pathsPagination'">
-           </table>
-           <div id="legacy-artifact-pathsPagination"></div>
-       </div>
-       <div id="legacy-artifact-paths-edit" class="tab-pane" data-bind='template: {name:"legacy-artifact-paths-edit-tmpl"}'></div>
-     </div>
- </div>
-</script>
-
-<script id='ko-legacy-artifact-paths-grid' type='text/html'>
-    <thead>
-    <tr>
-        {{each(i, columnDefinition) columns}}
-        <th>${ columnDefinition.headerText }</th>
-        {{/each}}
-        <th>${$.i18n.prop('delete')}</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{each(i, row) itemsOnCurrentPage()}}
-      <tr data-bind="css:{ 'modified': row.modified()}">
-        {{each(j, columnDefinition) columns}}
-        {{var val = (typeof columnDefinition.rowText == 'function' ? columnDefinition.rowText(row) : row[columnDefinition.rowText])}}
-          <td>
-              ${val}
-          </td>
-        {{/each}}
-          <td>
-            <a href="#" data-bind="click: function(){ removeLegacyArtifactPath(row) }">
-              <span class="btn btn-danger">
-                <i class="icon-trash icon-white"/>
-              </span>
-            </a>
-          </td>
-    </tr>
-    {{/each}}
-    </tbody>
-
-</script>
-
-<script id="legacy-artifact-paths-edit-tmpl" type="text/html">
-    <form id="legacy-artifact-paths-edit-form" class="well form-horizontal">
-      <fieldset id="legacy-artifact-paths-edit-fieldset">
-        <div class="control-group">
-          <label class="control-label" for="groupId">${$.i18n.prop('legacy-artifact-paths.groupId')}</label>
-          <div class="controls">
-            <input type="text" class="xlarge required" id="groupId" name="groupId" size="8"
-                   data-bind="value: legacyArtifactPath.groupId"/>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="artifactId">${$.i18n.prop('legacy-artifact-paths.artifactId')}</label>
-          <div class="controls">
-            <input type="text" class="xlarge required" id="artifactId" name="artifactId" size="8"
-                   data-bind="value: legacyArtifactPath.artifactId"/>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="version">${$.i18n.prop('legacy-artifact-paths.version')}</label>
-          <div class="controls">
-            <input type="text" class="xlarge required" id="version" name="version" size="8"
-                   data-bind="value: legacyArtifactPath.version"/>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="classifier">${$.i18n.prop('legacy-artifact-paths.classifier')}</label>
-          <div class="controls">
-            <input type="text" class="xlarge" id="classifier" name="classifier" size="8"
-                   data-bind="value: legacyArtifactPath.classifier"/>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="type">${$.i18n.prop('legacy-artifact-paths.type')}</label>
-          <div class="controls">
-            <input type="text" class="xlarge required" id="type" name="type" size="8"
-                   data-bind="value: legacyArtifactPath.type"/>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="path">${$.i18n.prop('legacy-artifact-paths.path')}</label>
-          <div class="controls">
-            <input type="text" class="xlarge required" id="path" name="path" size="8"
-                   data-bind="value: legacyArtifactPath.path"/>
-          </div>
-        </div>
-        <div class="control-group">
-          <label class="control-label" for="artifact">${$.i18n.prop('legacy-artifact-paths.artifact')}</label>
-          <div class="controls">
-            <span title="calculated from values" class="uneditable-input"
-                  id="artifact" data-bind="text: legacyArtifactPath.artifact"></span>
-          </div>
-        </div>
-
-      </fieldset>
-      <button id="network-proxy-btn-save" data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
-      <button id="network-proxy-btn-cancel" data-bind="click: displayGrid" class="btn">${$.i18n.prop('cancel')}</button>
-      <button id="network-proxy-btn-calculate-path" data-bind="click: calculatePath" class="btn btn-success">${$.i18n.prop('legacy-artifact-paths.calculatePath')}</button>
-    </form>
-</script>
-
-<script id="legacy-artifact-path-delete-warning-tmpl" type="text/html">
-    <div>
-      <span class="label label-warning">${$.i18n.prop('warning.not.undone.operation')}</span>
-    </div>
-</script>
 
 <script id="repository-scanning-main" type="text/html">
   <div id="repository-scanning-screen">
@@ -287,6 +165,7 @@
   <ul class="nav nav-tabs">
     <li class="active" id="network-configuration-form-li"><a href="#network-configuration-form-content" data-toggle="tab">${$.i18n.prop('runtime-configuration.maven.network.title')}</a></li>
     <li id="cache-failure-form-li"><a href="#cache-failure-form-content" data-toggle="tab">${$.i18n.prop('runtime-configuration.cache.failure.title')}</a></li>
+    <li id="filelocking-form-li"><a href="#filelocking-form-content" data-toggle="tab">${$.i18n.prop('runtime-configuration.filelocking.title')}</a></li>
   </ul>
 
   <div class="tab-content">
@@ -297,8 +176,10 @@
       <div id="network-configuration-form" data-bind='template: {name:"network-configuration-form-tmpl"}'></div>
     </div>
     <div class="tab-pane" id="cache-failure-form-content">
-
       <div id="cache-failure-form" data-bind='template: {name:"cache-failure-form-tmpl"}'></div>
+    </div>
+    <div class="tab-pane" id="filelocking-form-content">
+      <div id="filelocking-form" data-bind='template: {name:"filelocking-form-tmpl"}'></div>
     </div>
   </div>
 </script>
@@ -369,12 +250,43 @@
       </div>
     </div>
 
+
+
     <button id="cache-failure-form-btn-save" data-loading-text="${$.i18n.prop('common.loading')}"
             data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
 
   </form>
 
 </script>
+
+
+<script id="filelocking-form-tmpl" type="text/html">
+
+  <form class="well form-horizontal" id="filelocking-form-id">
+
+    <div class="control-group">
+      <label class="control-label" for="skipLocking">${$.i18n.prop('runtime.fileLockConfiguration.skipLocking.label')}</label>
+      <div class="controls">
+        <input type="checkbox" class="xlarge" data-bind="checked: archivaRuntimeConfiguration().fileLockConfiguration().skipLocking"
+               id="skipLocking" name="skipLocking" />
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label class="control-label" for="lockingTimeout">${$.i18n.prop('runtime.fileLockConfiguration.lockingTimeout.label')}</label>
+      <div class="controls">
+        <input type="text" class="xlarge required digits" data-bind="value: archivaRuntimeConfiguration().fileLockConfiguration().lockingTimeout"
+               id="lockingTimeout" name="lockingTimeout" />
+      </div>
+    </div>
+
+    <button id="filelocking-form-btn-save" data-loading-text="${$.i18n.prop('common.loading')}"
+            data-bind="click: save" class="btn">${$.i18n.prop('save')}</button>
+
+  </form>
+
+</script>
+
 
 <script id="system-status-main" type="text/html">
   <div class="page-header">
@@ -383,6 +295,14 @@
   <div id="status_version_info">
     <img src="images/small-spinner.gif"/>
   </div>
+
+  <div class="page-header">
+    <h4>${$.i18n.prop('system-status.header.memory')}&nbsp;<a class="cursor-hand" onclick="displayMemoryUsage()"><img src="images/view-refresh.png"/></a></h4>
+  </div>
+  <div id="status_memory_info">
+    <img src="images/small-spinner.gif"/>
+  </div>
+
   <div class="page-header">
     <h3>${$.i18n.prop('system-status.header.main')}&nbsp;<a class="cursor-hand" onclick="refreshSystemStatus()"><img src="images/view-refresh-22-22.png"/></a></h3>
   </div>
@@ -405,13 +325,6 @@
   </div>
   <div id="status_caches">
       <img src="images/small-spinner.gif"/>
-  </div>
-
-  <div class="page-header">
-    <h4>${$.i18n.prop('system-status.header.memory')}&nbsp;<a class="cursor-hand" onclick="displayMemoryUsage()"><img src="images/view-refresh.png"/></a></h4>
-  </div>
-  <div id="status_memory_info">
-    <img src="images/small-spinner.gif"/>
   </div>
 
   <div class="page-header">
@@ -673,7 +586,7 @@
       <div class="control-group">
         <label class="control-label" for="generatePom">${$.i18n.prop('fileupload.generatePom')}</label>
         <div class="controls">
-          <input type="checkbox" class="xlarge" data-bind="value: generatePom" id="generatePom" name="generatePom" />
+          <input type="checkbox" class="xlarge" data-bind="checked: generatePom" id="generatePom" name="generatePom" />
           </div>
         </div>
       </div>
@@ -698,7 +611,7 @@
           <i class="icon-trash icon-white"></i>
           <span>${$.i18n.prop('fileupload.delete')}</span>
         </button>
-        <input type="checkbox" class="toggle">
+        <input type="checkbox" class="toggle" title="${$.i18n.prop('fileupload.deleteAll')}">
       </div>
       <div class="span5">
         <div class="progress progress-success progress-striped active">
@@ -716,6 +629,11 @@
     </div>
     <div class="fileupload-loading"></div>
     <br>
+    <div>
+        <img src="images/media-floppy-22-22.png"/>
+        <span class="label">Drag &amp; Drop files</span>
+    </div>
+    <br>
     <table class="table table-striped">
       <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery" id="uploaded-files-list"></tbody>
     </table>
@@ -728,7 +646,8 @@
   {% for (var i=0, file; file=o.files[i]; i++) { %}
     <tr class="template-upload">
       <td class="name"><span>{%=file.name%}</span></td>
-      <td><input type="text" id="classifier" name="classifier" placeholder="classifier" value=""/></td>
+      <td><input type="text" class="input-small" id="classifier" name="classifier" placeholder="classifier" value=""/></td>
+      <td><input type="text" class="input-small" id="packaging" name="packaging" placeholder="packaging" value=""></td>
       <td><span>pomFile:</span><input type="checkbox" id="pomFile" name="pomFile"/></td>
       <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
       {% if (file.error) { %}
@@ -986,8 +905,8 @@
       <div class="well">
         <div class="row-fluid">
           <div class="span4 dotted">
-            <h5>${$.i18n.prop('redback.runtime.user-managers.impls.choosed')}</h5>
-            <div style="min-height: 40px" id="user-mananagers-sortables-choosed"
+            <h5>${$.i18n.prop('redback.runtime.user-managers.impls.chose')}</h5>
+            <div style="min-height: 40px" id="user-mananagers-sortables-chose"
                  data-bind="sortable: { template: 'redback-runtime-general-content-impl-informations', data:usedUserManagerImpls,afterMove: userManagerImplMoved}">
             </div>
           </div>
@@ -1003,8 +922,8 @@
       <div class="well">
         <div class="row-fluid">
           <div class="span4 dotted">
-            <h5>${$.i18n.prop('redback.runtime.rbac-managers.impls.choosed')}</h5>
-            <div style="min-height: 40px" id="rbac-mananagers-sortables-choosed"
+            <h5>${$.i18n.prop('redback.runtime.rbac-managers.impls.chose')}</h5>
+            <div style="min-height: 40px" id="rbac-mananagers-sortables-chose"
                  data-bind="sortable: { template: 'redback-runtime-general-content-impl-informations', data:usedRbacManagerImpls,afterMove: rbacManagerImplMoved}">
             </div>
           </div>
@@ -1228,8 +1147,6 @@
   <tbody>
   {{each(i, row) itemsOnCurrentPage()}}
     {{var key = row.key}}
-    <!-- do not display mapped ldap groups as keys -->
-    {{if !key.startsWith('ldap.config.groups.')}}
     <tr>
       <td>
         <a class="popover-doc"
@@ -1241,7 +1158,6 @@
       <td>${row.key}</td>
       <td><input type="text" class="input-xxlarge" data-bind="value: row.value"></td>
     </tr>
-    {{/if}}
   {{/each}}
   </tbody>
 

@@ -63,6 +63,7 @@ public class DaysOldRepositoryPurge
         timestampParser.setTimeZone( DateUtils.UTC_TIME_ZONE );
     }
 
+    @Override
     public void process( String path )
         throws RepositoryPurgeException
     {
@@ -86,7 +87,7 @@ public class DaysOldRepositoryPurge
             reference.setArtifactId( artifact.getArtifactId() );
             reference.setVersion( artifact.getVersion() );
 
-            List<String> versions = new ArrayList<String>( repository.getVersions( reference ) );
+            List<String> versions = new ArrayList<>( repository.getVersions( reference ) );
 
             Collections.sort( versions, VersionComparator.getInstance() );
 

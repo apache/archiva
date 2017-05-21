@@ -36,7 +36,7 @@ import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
-import org.apache.archiva.reports.RepositoryProblemFacet;
+import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,13 +49,14 @@ import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Search the artifact repository of known SHA1 Checksums for potential duplicate artifacts.
- * <p/>
+ * <p>
  * TODO: no need for this to be a scanner - we can just query the database / content repository to get a full list
  */
 @Service ( "knownRepositoryContentConsumer#duplicate-artifacts" )
@@ -82,7 +83,7 @@ public class DuplicateArtifactsConsumer
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
-    private List<String> includes = new ArrayList<String>();
+    private List<String> includes = new ArrayList<>();
 
     private File repositoryDir;
 
@@ -97,31 +98,31 @@ public class DuplicateArtifactsConsumer
 
     private RepositorySession repositorySession;
 
+    @Override
     public String getId()
     {
         return id;
     }
 
+    @Override
     public String getDescription()
     {
         return description;
     }
 
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
+    @Override
     public List<String> getIncludes()
     {
         return includes;
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return Collections.emptyList();
     }
 
+    @Override
     public void beginScan( ManagedRepository repo, Date whenGathered )
         throws ConsumerException
     {
@@ -130,12 +131,14 @@ public class DuplicateArtifactsConsumer
         repositorySession = repositorySessionFactory.createSession();
     }
 
+    @Override
     public void beginScan( ManagedRepository repo, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repo, whenGathered );
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -158,7 +161,7 @@ public class DuplicateArtifactsConsumer
 
         MetadataRepository metadataRepository = repositorySession.getRepository();
 
-        List<ArtifactMetadata> results;
+        Collection<ArtifactMetadata> results;
         try
         {
             results = metadataRepository.getArtifactsByChecksum( repoId, checksumSha1 );
@@ -178,7 +181,7 @@ public class DuplicateArtifactsConsumer
             }
             catch ( Exception e )
             {
-                log.warn( "Not reporting problem for invalid artifact in checksum check: " + e.getMessage() );
+                log.warn( "Not reporting problem for invalid artifact in checksum check: {}", e.getMessage() );
                 return;
             }
 
@@ -223,22 +226,26 @@ public class DuplicateArtifactsConsumer
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         processFile( path );
     }
 
+    @Override
     public void completeScan()
     {
         repositorySession.close();
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
@@ -247,6 +254,7 @@ public class DuplicateArtifactsConsumer
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* do nothing */

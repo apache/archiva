@@ -49,6 +49,12 @@
 
   <alias name="archivaConfiguration#default" alias="archivaConfiguration"/>
 
+  <bean name="TestRepositorySessionFactoryBean" class="org.apache.archiva.TestRepositorySessionFactoryBean">
+    <constructor-arg>
+      <value>jcr</value>
+    </constructor-arg>
+  </bean>
+
   <bean name="registry#default" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>

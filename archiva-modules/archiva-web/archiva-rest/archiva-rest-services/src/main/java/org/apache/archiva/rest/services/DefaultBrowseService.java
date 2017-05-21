@@ -41,6 +41,7 @@ import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
@@ -103,6 +104,11 @@ public class DefaultBrowseService
     @Named( value = "repositoryProxyConnectors#default" )
     private RepositoryProxyConnectors connectors;
 
+    @Inject
+    @Named( value = "browse#versionMetadata" )
+    private Cache<String, ProjectVersionMetadata> versionMetadataCache;
+
+    @Override
     public BrowseResult getRootGroups( String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -113,12 +119,11 @@ public class DefaultBrowseService
         // TODO: this logic should be optional, particularly remembering we want to keep this code simple
         //       it is located here to avoid the content repository implementation needing to do too much for what
         //       is essentially presentation code
-        Set<String> namespacesToCollapse;
+        Set<String> namespacesToCollapse = new LinkedHashSet<String>();
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
         {
             MetadataResolver metadataResolver = repositorySession.getResolver();
-            namespacesToCollapse = new LinkedHashSet<String>();
 
             for ( String repoId : selectedRepos )
             {
@@ -140,7 +145,7 @@ public class DefaultBrowseService
             repositorySession.close();
         }
 
-        List<BrowseResultEntry> browseGroupResultEntries = new ArrayList<BrowseResultEntry>( namespaces.size() );
+        List<BrowseResultEntry> browseGroupResultEntries = new ArrayList<>( namespaces.size() );
         for ( String namespace : namespaces )
         {
             browseGroupResultEntries.add( new BrowseResultEntry( namespace, false ) );
@@ -150,12 +155,13 @@ public class DefaultBrowseService
         return new BrowseResult( browseGroupResultEntries );
     }
 
+    @Override
     public BrowseResult browseGroupId( String groupId, String repositoryId )
         throws ArchivaRestServiceException
     {
         List<String> selectedRepos = getSelectedRepos( repositoryId );
 
-        Set<String> projects = new LinkedHashSet<String>();
+        Set<String> projects = new LinkedHashSet<>();
 
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         Set<String> namespaces;
@@ -163,7 +169,7 @@ public class DefaultBrowseService
         {
             MetadataResolver metadataResolver = repositorySession.getResolver();
 
-            Set<String> namespacesToCollapse = new LinkedHashSet<String>();
+            Set<String> namespacesToCollapse = new LinkedHashSet<>();
             for ( String repoId : selectedRepos )
             {
                 namespacesToCollapse.addAll( metadataResolver.resolveNamespaces( repositorySession, repoId, groupId ) );
@@ -174,7 +180,7 @@ public class DefaultBrowseService
             // TODO: this logic should be optional, particularly remembering we want to keep this code simple
             // it is located here to avoid the content repository implementation needing to do too much for what
             // is essentially presentation code
-            namespaces = new LinkedHashSet<String>();
+            namespaces = new LinkedHashSet<>();
             for ( String n : namespacesToCollapse )
             {
                 // TODO: check performance of this
@@ -191,21 +197,22 @@ public class DefaultBrowseService
         {
             repositorySession.close();
         }
-        List<BrowseResultEntry> browseGroupResultEntries =
-            new ArrayList<BrowseResultEntry>( namespaces.size() + projects.size() );
+        List<BrowseResultEntry> browseGroupResultEntries = new ArrayList<>( namespaces.size() + projects.size() );
         for ( String namespace : namespaces )
         {
-            browseGroupResultEntries.add( new BrowseResultEntry( namespace, false ) );
+            browseGroupResultEntries.add( new BrowseResultEntry( namespace, false ).groupId( namespace ) );
         }
         for ( String project : projects )
         {
-            browseGroupResultEntries.add( new BrowseResultEntry( groupId + '.' + project, true ) );
+            browseGroupResultEntries.add(
+                new BrowseResultEntry( groupId + '.' + project, true ).groupId( groupId ).artifactId( project ) );
         }
         Collections.sort( browseGroupResultEntries );
         return new BrowseResult( browseGroupResultEntries );
 
     }
 
+    @Override
     public VersionsList getVersionsList( String groupId, String artifactId, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -214,7 +221,7 @@ public class DefaultBrowseService
         try
         {
             Collection<String> versions = getVersions( selectedRepos, groupId, artifactId );
-            return new VersionsList( new ArrayList<String>( versions ) );
+            return new VersionsList( new ArrayList<>( versions ) );
         }
         catch ( MetadataResolutionException e )
         {
@@ -242,7 +249,7 @@ public class DefaultBrowseService
                 versions.addAll( projectVersions );
             }
 
-            List<String> sortedVersions = new ArrayList<String>( versions );
+            List<String> sortedVersions = new ArrayList<>( versions );
 
             Collections.sort( sortedVersions, VersionComparator.getInstance() );
 
@@ -254,6 +261,7 @@ public class DefaultBrowseService
         }
     }
 
+    @Override
     public ProjectVersionMetadata getProjectMetadata( String groupId, String artifactId, String version,
                                                       String repositoryId )
         throws ArchivaRestServiceException
@@ -274,15 +282,21 @@ public class DefaultBrowseService
                 {
                     try
                     {
-                        versionMetadata =
+                        ProjectVersionMetadata versionMetadataTmp =
                             metadataResolver.resolveProjectVersion( repositorySession, repoId, groupId, artifactId,
                                                                     version );
+
+                        if ( versionMetadata == null && versionMetadataTmp != null )
+                        {
+                            versionMetadata = versionMetadataTmp;
+                        }
+
+
                     }
                     catch ( MetadataResolutionException e )
                     {
-                        log.warn(
-                            "Skipping invalid metadata while compiling shared model for " + groupId + ":" + artifactId
-                                + " in repo " + repoId + ": " + e.getMessage() );
+                        log.warn( "Skipping invalid metadata while compiling shared model for {}:{} in repo {}: {}",
+                                  groupId, artifactId, repoId, e.getMessage() );
                     }
                 }
             }
@@ -299,6 +313,7 @@ public class DefaultBrowseService
 
     }
 
+    @Override
     public ProjectVersionMetadata getProjectVersionMetadata( String groupId, String artifactId, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -333,9 +348,35 @@ public class DefaultBrowseService
                     {
                         try
                         {
-                            versionMetadata =
-                                metadataResolver.resolveProjectVersion( repositorySession, repoId, groupId, artifactId,
-                                                                        version );
+                            ProjectVersionMetadata projectVersionMetadataResolved = null;
+                            boolean useCache = !StringUtils.endsWith( version, VersionUtil.SNAPSHOT );
+                            String cacheKey = null;
+                            boolean cacheToUpdate = false;
+                            // FIXME a bit maven centric!!!
+                            // not a snapshot so get it from cache
+                            if ( useCache )
+                            {
+                                cacheKey = repoId + groupId + artifactId + version;
+                                projectVersionMetadataResolved = versionMetadataCache.get( cacheKey );
+                            }
+                            if ( useCache && projectVersionMetadataResolved != null )
+                            {
+                                versionMetadata = projectVersionMetadataResolved;
+                            }
+                            else
+                            {
+                                projectVersionMetadataResolved =
+                                    metadataResolver.resolveProjectVersion( repositorySession, repoId, groupId,
+                                                                            artifactId, version );
+                                versionMetadata = projectVersionMetadataResolved;
+                                cacheToUpdate = true;
+                            }
+
+                            if ( useCache && cacheToUpdate )
+                            {
+                                versionMetadataCache.put( cacheKey, projectVersionMetadataResolved );
+                            }
+
                         }
                         catch ( MetadataResolutionException e )
                         {
@@ -361,50 +402,55 @@ public class DefaultBrowseService
                         (MavenProjectFacet) versionMetadata.getFacet( MavenProjectFacet.FACET_ID );
                     if ( versionMetadataMavenFacet != null )
                     {
-                        if ( mavenFacet.getPackaging() != null && !StringUtils.equalsIgnoreCase(
-                            mavenFacet.getPackaging(), versionMetadataMavenFacet.getPackaging() ) )
+                        if ( mavenFacet.getPackaging() != null //
+                            && !StringUtils.equalsIgnoreCase( mavenFacet.getPackaging(),
+                                                              versionMetadataMavenFacet.getPackaging() ) )
                         {
                             mavenFacet.setPackaging( null );
                         }
                     }
 
-                    if ( StringUtils.isEmpty( sharedModel.getName() ) && !StringUtils.isEmpty(
-                        versionMetadata.getName() ) )
+                    if ( StringUtils.isEmpty( sharedModel.getName() ) //
+                        && !StringUtils.isEmpty( versionMetadata.getName() ) )
                     {
                         sharedModel.setName( versionMetadata.getName() );
                     }
 
-                    if ( sharedModel.getDescription() != null && !StringUtils.equalsIgnoreCase(
-                        sharedModel.getDescription(), versionMetadata.getDescription() ) )
+                    if ( sharedModel.getDescription() != null //
+                        && !StringUtils.equalsIgnoreCase( sharedModel.getDescription(),
+                                                          versionMetadata.getDescription() ) )
                     {
                         sharedModel.setDescription( StringUtils.isNotEmpty( versionMetadata.getDescription() )
                                                         ? versionMetadata.getDescription()
                                                         : "" );
                     }
 
-                    if ( sharedModel.getIssueManagement() != null && versionMetadata.getIssueManagement() != null
+                    if ( sharedModel.getIssueManagement() != null //
+                        && versionMetadata.getIssueManagement() != null //
                         && !StringUtils.equalsIgnoreCase( sharedModel.getIssueManagement().getUrl(),
                                                           versionMetadata.getIssueManagement().getUrl() ) )
                     {
                         sharedModel.setIssueManagement( versionMetadata.getIssueManagement() );
                     }
 
-                    if ( sharedModel.getCiManagement() != null && versionMetadata.getCiManagement() != null
+                    if ( sharedModel.getCiManagement() != null //
+                        && versionMetadata.getCiManagement() != null //
                         && !StringUtils.equalsIgnoreCase( sharedModel.getCiManagement().getUrl(),
                                                           versionMetadata.getCiManagement().getUrl() ) )
                     {
                         sharedModel.setCiManagement( versionMetadata.getCiManagement() );
                     }
 
-                    if ( sharedModel.getOrganization() != null && versionMetadata.getOrganization() != null
+                    if ( sharedModel.getOrganization() != null //
+                        && versionMetadata.getOrganization() != null //
                         && !StringUtils.equalsIgnoreCase( sharedModel.getOrganization().getName(),
                                                           versionMetadata.getOrganization().getName() ) )
                     {
                         sharedModel.setOrganization( versionMetadata.getOrganization() );
                     }
 
-                    if ( sharedModel.getUrl() != null && !StringUtils.equalsIgnoreCase( sharedModel.getUrl(),
-                                                                                        versionMetadata.getUrl() ) )
+                    if ( sharedModel.getUrl() != null //
+                        && !StringUtils.equalsIgnoreCase( sharedModel.getUrl(), versionMetadata.getUrl() ) )
                     {
                         sharedModel.setUrl( versionMetadata.getUrl() );
                     }
@@ -428,6 +474,7 @@ public class DefaultBrowseService
         }
     }
 
+    @Override
     public List<TreeEntry> getTreeEntries( String groupId, String artifactId, String version, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -435,9 +482,7 @@ public class DefaultBrowseService
 
         try
         {
-
             return dependencyTreeBuilder.buildDependencyTree( selectedRepos, groupId, artifactId, version );
-
         }
         catch ( Exception e )
         {
@@ -447,6 +492,7 @@ public class DefaultBrowseService
         return Collections.emptyList();
     }
 
+    @Override
     public List<ManagedRepository> getUserRepositories()
         throws ArchivaRestServiceException
     {
@@ -461,10 +507,24 @@ public class DefaultBrowseService
         }
     }
 
+    @Override
+    public List<ManagedRepository> getUserManagableRepositories() throws ArchivaRestServiceException {
+        try
+        {
+            return userRepositories.getManagableRepositories( getPrincipal() );
+        }
+        catch ( ArchivaSecurityException e )
+        {
+            throw new ArchivaRestServiceException( "repositories.read.managable.error",
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
+        }
+    }
+
+    @Override
     public List<Artifact> getDependees( String groupId, String artifactId, String version, String repositoryId )
         throws ArchivaRestServiceException
     {
-        List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
+        List<ProjectVersionReference> references = new ArrayList<>();
         // TODO: what if we get duplicates across repositories?
         RepositorySession repositorySession = repositorySessionFactory.createSession();
         try
@@ -488,7 +548,7 @@ public class DefaultBrowseService
             repositorySession.close();
         }
 
-        List<Artifact> artifacts = new ArrayList<Artifact>( references.size() );
+        List<Artifact> artifacts = new ArrayList<>( references.size() );
 
         for ( ProjectVersionReference projectVersionReference : references )
         {
@@ -498,6 +558,7 @@ public class DefaultBrowseService
         return artifacts;
     }
 
+    @Override
     public List<Entry> getMetadatas( String groupId, String artifactId, String version, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -514,7 +575,7 @@ public class DefaultBrowseService
             return Collections.emptyList();
         }
         Map<String, String> map = metadataFacet.toProperties();
-        List<Entry> entries = new ArrayList<Entry>( map.size() );
+        List<Entry> entries = new ArrayList<>( map.size() );
 
         for ( Map.Entry<String, String> entry : map.entrySet() )
         {
@@ -524,6 +585,7 @@ public class DefaultBrowseService
         return entries;
     }
 
+    @Override
     public Boolean addMetadata( String groupId, String artifactId, String version, String key, String value,
                                 String repositoryId )
         throws ArchivaRestServiceException
@@ -536,7 +598,7 @@ public class DefaultBrowseService
             return Boolean.FALSE;
         }
 
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
 
         MetadataFacet metadataFacet = projectVersionMetadata.getFacet( GenericMetadataFacet.FACET_ID );
 
@@ -578,6 +640,7 @@ public class DefaultBrowseService
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean deleteMetadata( String groupId, String artifactId, String version, String key, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -626,6 +689,7 @@ public class DefaultBrowseService
         return Boolean.TRUE;
     }
 
+    @Override
     public List<ArtifactContentEntry> getArtifactContentEntries( String groupId, String artifactId, String version,
                                                                  String classifier, String type, String path,
                                                                  String repositoryId )
@@ -670,23 +734,21 @@ public class DefaultBrowseService
         return Collections.emptyList();
     }
 
+    @Override
     public List<Artifact> getArtifactDownloadInfos( String groupId, String artifactId, String version,
                                                     String repositoryId )
         throws ArchivaRestServiceException
     {
         List<String> selectedRepos = getSelectedRepos( repositoryId );
 
-        List<Artifact> artifactDownloadInfos = new ArrayList<Artifact>();
+        List<Artifact> artifactDownloadInfos = new ArrayList<>();
 
-        RepositorySession session = repositorySessionFactory.createSession();
-
-        MetadataResolver metadataResolver = session.getResolver();
-
-        try
+        try (RepositorySession session = repositorySessionFactory.createSession())
         {
+            MetadataResolver metadataResolver = session.getResolver();
             for ( String repoId : selectedRepos )
             {
-                List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>(
+                List<ArtifactMetadata> artifacts = new ArrayList<>(
                     metadataResolver.resolveArtifacts( session, repoId, groupId, artifactId, version ) );
                 Collections.sort( artifacts, ArtifactMetadataVersionComparator.INSTANCE );
                 if ( artifacts != null && !artifacts.isEmpty() )
@@ -701,17 +763,11 @@ public class DefaultBrowseService
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
-        finally
-        {
-            if ( session != null )
-            {
-                session.closeQuietly();
-            }
-        }
 
         return artifactDownloadInfos;
     }
 
+    @Override
     public ArtifactContent getArtifactContentText( String groupId, String artifactId, String version, String classifier,
                                                    String type, String path, String repositoryId )
         throws ArchivaRestServiceException
@@ -738,15 +794,13 @@ public class DefaultBrowseService
                     // zip entry of the path -> path must a real file entry of the archive
                     JarFile jarFile = new JarFile( file );
                     ZipEntry zipEntry = jarFile.getEntry( path );
-                    InputStream inputStream = jarFile.getInputStream( zipEntry );
-                    try
+                    try (InputStream inputStream = jarFile.getInputStream( zipEntry ))
                     {
                         return new ArtifactContent( IOUtils.toString( inputStream ), repoId );
                     }
                     finally
                     {
                         closeQuietly( jarFile );
-                        IOUtils.closeQuietly( inputStream );
                     }
                 }
                 return new ArtifactContent( FileUtils.readFileToString( file ), repoId );
@@ -775,6 +829,7 @@ public class DefaultBrowseService
         return new ArtifactContent();
     }
 
+    @Override
     public Boolean artifactAvailable( String groupId, String artifactId, String version, String classifier,
                                       String repositoryId )
         throws ArchivaRestServiceException
@@ -822,18 +877,13 @@ public class DefaultBrowseService
                             int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
                             String timeStamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
                             // rebuild file name with timestamped version and build number
-                            String timeStampFileName = new StringBuilder( artifactId ).append( '-' ).append(
-                                StringUtils.remove( version, "-" + VersionUtil.SNAPSHOT ) ).append( '-' ).append(
-                                timeStamp ).append( '-' ).append( Integer.toString( buildNumber ) ).append(
-                                ( StringUtils.isEmpty( classifier ) ? "" : "-" + classifier ) ).append(
-                                ".jar" ).toString();
-                            /*File timeStampFile = new File( file.getParent(),
-                                                           artifactId + "-" + StringUtils.remove( version, "-"
-                                                               + VersionUtil.SNAPSHOT ) + "-" + timeStamp + "-"
-                                                               + Integer.toString( buildNumber )
-                                                               + ( StringUtils.isEmpty( classifier )
-                                                               ? ""
-                                                               : "-" + classifier ) + ".jar" );*/
+                            String timeStampFileName = new StringBuilder( artifactId ).append( '-' ) //
+                                .append( StringUtils.remove( version, "-" + VersionUtil.SNAPSHOT ) ) //
+                                .append( '-' ).append( timeStamp ) //
+                                .append( '-' ).append( Integer.toString( buildNumber ) ) //
+                                .append( ( StringUtils.isEmpty( classifier ) ? "" : "-" + classifier ) ) //
+                                .append( ".jar" ).toString();
+
                             File timeStampFile = new File( file.getParent(), timeStampFileName );
                             log.debug( "try to find timestamped snapshot version file: {}", timeStampFile.getPath() );
                             if ( timeStampFile.exists() )
@@ -877,12 +927,14 @@ public class DefaultBrowseService
         return false;
     }
 
+    @Override
     public Boolean artifactAvailable( String groupId, String artifactId, String version, String repositoryId )
         throws ArchivaRestServiceException
     {
         return artifactAvailable( groupId, artifactId, version, null, repositoryId );
     }
 
+    @Override
     public List<Artifact> getArtifacts( String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -902,6 +954,67 @@ public class DefaultBrowseService
         }
     }
 
+    @Override
+    public List<Artifact> getArtifactsByProjectVersionMetadata( String key, String value, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByProjectVersionMetadata( key, value, repositoryId );
+            return buildArtifacts( artifactMetadatas, repositoryId );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+    }
+
+    @Override
+    public List<Artifact> getArtifactsByMetadata( String key, String value, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByMetadata( key, value, repositoryId );
+            return buildArtifacts( artifactMetadatas, repositoryId );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+    }
+
+    @Override
+    public List<Artifact> getArtifactsByProperty( String key, String value, String repositoryId )
+        throws ArchivaRestServiceException
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByProperty( key, value, repositoryId );
+            return buildArtifacts( artifactMetadatas, repositoryId );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+    }
+
+    @Override
     public Boolean importMetadata( MetadataAddRequest metadataAddRequest, String repositoryId )
         throws ArchivaRestServiceException
     {
@@ -917,6 +1030,48 @@ public class DefaultBrowseService
             }
         }
         return result;
+    }
+
+    @Override
+    public List<Artifact> searchArtifacts( String text, String repositoryId, Boolean exact )
+        throws ArchivaRestServiceException
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            List<ArtifactMetadata> artifactMetadatas =
+                repositorySession.getRepository().searchArtifacts( text, repositoryId, exact == null ? false : exact );
+            return buildArtifacts( artifactMetadatas, repositoryId );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
+    }
+
+    @Override
+    public List<Artifact> searchArtifacts( String key, String text, String repositoryId, Boolean exact )
+        throws ArchivaRestServiceException
+    {
+        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            List<ArtifactMetadata> artifactMetadatas =
+                repositorySession.getRepository().searchArtifacts( key, text, repositoryId, exact == null ? false : exact );
+            return buildArtifacts( artifactMetadatas, repositoryId );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            throw new ArchivaRestServiceException( e.getMessage(), e );
+        }
+        finally
+        {
+            repositorySession.close();
+        }
     }
 
     //---------------------------
@@ -941,7 +1096,7 @@ public class DefaultBrowseService
     protected List<ArtifactContentEntry> readFileEntries( File file, String filterPath, String repoId )
         throws IOException
     {
-        Map<String, ArtifactContentEntry> artifactContentEntryMap = new HashMap<String, ArtifactContentEntry>();
+        Map<String, ArtifactContentEntry> artifactContentEntryMap = new HashMap<>();
         int filterDepth = StringUtils.countMatches( filterPath, "/" );
         /*if ( filterDepth == 0 )
         {
@@ -954,12 +1109,12 @@ public class DefaultBrowseService
             while ( jarEntryEnumeration.hasMoreElements() )
             {
                 JarEntry currentEntry = jarEntryEnumeration.nextElement();
-                String cleanedEntryName =
-                    StringUtils.endsWith( currentEntry.getName(), "/" ) ? StringUtils.substringBeforeLast(
-                        currentEntry.getName(), "/" ) : currentEntry.getName();
+                String cleanedEntryName = StringUtils.endsWith( currentEntry.getName(), "/" ) ? //
+                    StringUtils.substringBeforeLast( currentEntry.getName(), "/" ) : currentEntry.getName();
                 String entryRootPath = getRootPath( cleanedEntryName );
                 int depth = StringUtils.countMatches( cleanedEntryName, "/" );
-                if ( StringUtils.isEmpty( filterPath ) && !artifactContentEntryMap.containsKey( entryRootPath )
+                if ( StringUtils.isEmpty( filterPath ) //
+                    && !artifactContentEntryMap.containsKey( entryRootPath ) //
                     && depth == filterDepth )
                 {
 
@@ -969,8 +1124,8 @@ public class DefaultBrowseService
                 }
                 else
                 {
-                    if ( StringUtils.startsWith( cleanedEntryName, filterPath ) && ( depth == filterDepth || (
-                        !currentEntry.isDirectory() && depth == filterDepth ) ) )
+                    if ( StringUtils.startsWith( cleanedEntryName, filterPath ) //
+                        && ( depth == filterDepth || ( !currentEntry.isDirectory() && depth == filterDepth ) ) )
                     {
                         artifactContentEntryMap.put( cleanedEntryName, new ArtifactContentEntry( cleanedEntryName,
                                                                                                  !currentEntry.isDirectory(),
@@ -981,8 +1136,7 @@ public class DefaultBrowseService
 
             if ( StringUtils.isNotEmpty( filterPath ) )
             {
-                Map<String, ArtifactContentEntry> filteredArtifactContentEntryMap =
-                    new HashMap<String, ArtifactContentEntry>();
+                Map<String, ArtifactContentEntry> filteredArtifactContentEntryMap = new HashMap<>();
 
                 for ( Map.Entry<String, ArtifactContentEntry> entry : artifactContentEntryMap.entrySet() )
                 {
@@ -1005,7 +1159,7 @@ public class DefaultBrowseService
                 jarFile.close();
             }
         }
-        List<ArtifactContentEntry> sorted = new ArrayList<ArtifactContentEntry>( artifactContentEntryMap.values() );
+        List<ArtifactContentEntry> sorted = new ArrayList<>( artifactContentEntryMap.values() );
         Collections.sort( sorted, ArtifactContentEntryComparator.INSTANCE );
         return sorted;
     }
@@ -1013,7 +1167,7 @@ public class DefaultBrowseService
     private List<ArtifactContentEntry> getSmallerDepthEntries( Map<String, ArtifactContentEntry> entries )
     {
         int smallestDepth = Integer.MAX_VALUE;
-        Map<Integer, List<ArtifactContentEntry>> perDepthList = new HashMap<Integer, List<ArtifactContentEntry>>();
+        Map<Integer, List<ArtifactContentEntry>> perDepthList = new HashMap<>();
         for ( Map.Entry<String, ArtifactContentEntry> entry : entries.entrySet() )
         {
 
@@ -1028,7 +1182,7 @@ public class DefaultBrowseService
 
             if ( currentList == null )
             {
-                currentList = new ArrayList<ArtifactContentEntry>();
+                currentList = new ArrayList<>();
                 currentList.add( current );
                 perDepthList.put( current.getDepth(), currentList );
             }
@@ -1044,7 +1198,7 @@ public class DefaultBrowseService
 
     /**
      * @param path
-     * @return org/apache -> org , org -> org
+     * @return org/apache -&gt; org , org -&gt; org
      */
     private String getRootPath( String path )
     {
@@ -1108,5 +1262,15 @@ public class DefaultBrowseService
             return collapseNamespaces( repositorySession, metadataResolver, repoIds,
                                        n + "." + subNamespaces.iterator().next() );
         }
+    }
+
+    public Cache getVersionMetadataCache()
+    {
+        return versionMetadataCache;
+    }
+
+    public void setVersionMetadataCache( Cache versionMetadataCache )
+    {
+        this.versionMetadataCache = versionMetadataCache;
     }
 }

@@ -31,16 +31,19 @@ public class GenericMetadataFacet
 
     public static final String FACET_ID = "org.apache.archiva.metadata.generic";
 
+    @Override
     public String getFacetId()
     {
         return FACET_ID;
     }
 
+    @Override
     public String getName()
     {
         return "";
     }
 
+    @Override
     public void fromProperties( Map<String, String> properties )
     {
         if ( additionalProperties == null )
@@ -51,6 +54,7 @@ public class GenericMetadataFacet
         additionalProperties.putAll( properties );
     }
 
+    @Override
     public Map<String, String> toProperties()
     {
         Map<String, String> properties = new TreeMap<String, String>();

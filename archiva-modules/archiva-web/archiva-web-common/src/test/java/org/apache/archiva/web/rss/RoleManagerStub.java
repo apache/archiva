@@ -32,89 +32,104 @@ import java.net.URL;
 public class RoleManagerStub
     implements RoleManager
 {
+    @Override
     public void loadRoleModel( URL resourceLocation )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void loadRoleModel( RedbackRoleModel model )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void createTemplatedRole( String templateId, String resource )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void removeTemplatedRole( String templateId, String resource )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void updateRole( String templateId, String oldResource, String newResource )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void assignRole( String roleId, String principal )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void assignRoleByName( String roleName, String principal )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void assignTemplatedRole( String templateId, String resource, String principal )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void unassignRole( String roleId, String principal )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void unassignRoleByName( String roleName, String principal )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public boolean roleExists( String roleId )
         throws RoleManagerException
     {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public boolean templatedRoleExists( String templateId, String resource )
         throws RoleManagerException
     {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public RedbackRoleModel getModel()
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void verifyTemplatedRole( String templateID, String resource )
         throws RoleManagerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void initialize()
     {
         //To change body of implemented methods use File | Settings | File Templates.

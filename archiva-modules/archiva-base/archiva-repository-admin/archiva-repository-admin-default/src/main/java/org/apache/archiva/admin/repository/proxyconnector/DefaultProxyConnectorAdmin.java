@@ -18,7 +18,6 @@ package org.apache.archiva.admin.repository.proxyconnector;
  * under the License.
  */
 
-import net.sf.beanlib.provider.replicator.BeanReplicator;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
@@ -27,10 +26,10 @@ import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorOrderComparator;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
-import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.functors.ProxyConnectorSelectionPredicate;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -59,12 +58,13 @@ public class DefaultProxyConnectorAdmin
     @Inject
     private RemoteRepositoryAdmin remoteRepositoryAdmin;
 
+    @Override
     public List<ProxyConnector> getProxyConnectors()
         throws RepositoryAdminException
     {
         List<ProxyConnectorConfiguration> proxyConnectorConfigurations =
             getArchivaConfiguration().getConfiguration().getProxyConnectors();
-        List<ProxyConnector> proxyConnectors = new ArrayList<ProxyConnector>( proxyConnectorConfigurations.size() );
+        List<ProxyConnector> proxyConnectors = new ArrayList<>( proxyConnectorConfigurations.size() );
         for ( ProxyConnectorConfiguration configuration : proxyConnectorConfigurations )
         {
             proxyConnectors.add( getProxyConnector( configuration ) );
@@ -73,6 +73,7 @@ public class DefaultProxyConnectorAdmin
         return proxyConnectors;
     }
 
+    @Override
     public ProxyConnector getProxyConnector( String sourceRepoId, String targetRepoId )
         throws RepositoryAdminException
     {
@@ -87,6 +88,7 @@ public class DefaultProxyConnectorAdmin
         return null;
     }
 
+    @Override
     public Boolean addProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -115,6 +117,7 @@ public class DefaultProxyConnectorAdmin
     }
 
     // FIXME take care of proxyConnectorRules !
+    @Override
     public Boolean deleteProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -135,6 +138,7 @@ public class DefaultProxyConnectorAdmin
     }
 
     // FIXME care take of proxyConnectorRules !
+    @Override
     public Boolean updateProxyConnector( ProxyConnector proxyConnector, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -153,7 +157,7 @@ public class DefaultProxyConnectorAdmin
     {
         if ( patterns != null )
         {
-            List<String> rawPatterns = new ArrayList<String>( patterns.size() );
+            List<String> rawPatterns = new ArrayList<>( patterns.size() );
             for ( String pattern : patterns )
             {
                 rawPatterns.add( StringUtils.replace( pattern, "\\\\", "\\" ) );
@@ -164,10 +168,11 @@ public class DefaultProxyConnectorAdmin
         return Collections.emptyList();
     }
 
+    @Override
     public Map<String, List<ProxyConnector>> getProxyConnectorAsMap()
         throws RepositoryAdminException
     {
-        Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<String, java.util.List<ProxyConnector>>();
+        Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<>();
 
         Iterator<ProxyConnector> it = getProxyConnectors().iterator();
         while ( it.hasNext() )
@@ -178,7 +183,7 @@ public class DefaultProxyConnectorAdmin
             List<ProxyConnector> connectors = proxyConnectorMap.get( key );
             if ( connectors == null )
             {
-                connectors = new ArrayList<ProxyConnector>( 1 );
+                connectors = new ArrayList<>( 1 );
                 proxyConnectorMap.put( key, connectors );
             }
 
@@ -211,14 +216,14 @@ public class DefaultProxyConnectorAdmin
     {
         return proxyConnector == null
             ? null
-            : new BeanReplicator().replicateBean( proxyConnector, ProxyConnectorConfiguration.class );
+            : getModelMapper().map( proxyConnector, ProxyConnectorConfiguration.class );
     }
 
     protected ProxyConnector getProxyConnector( ProxyConnectorConfiguration proxyConnectorConfiguration )
     {
         return proxyConnectorConfiguration == null
             ? null
-            : new BeanReplicator().replicateBean( proxyConnectorConfiguration, ProxyConnector.class );
+            : getModelMapper().map( proxyConnectorConfiguration, ProxyConnector.class );
     }
 
     protected void validateProxyConnector( ProxyConnector proxyConnector )

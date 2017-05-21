@@ -98,5 +98,19 @@ public interface UserRepositories
      */
     List<ManagedRepository> getAccessibleRepositories( String principal )
             throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException;
+
+    /**
+     *
+     * Returns a list of repositories for which the user has the manager role.
+     *
+     * @param principal
+     * @since 2.2.2
+     * @return
+     * @throws ArchivaSecurityException
+     * @throws AccessDeniedException
+     * @throws PrincipalNotFoundException
+     */
+    List<ManagedRepository> getManagableRepositories( String principal )
+            throws ArchivaSecurityException, AccessDeniedException, PrincipalNotFoundException;
     
 }

@@ -75,7 +75,7 @@ public interface RemoteRepositoryContent
     void setRepository( RemoteRepository repo );
 
     /**
-     * Given a repository relative path to a filename, return the {@link VersionedReference} object suitable for the path.
+     * Given a repository relative path to a filename, return the {@link org.apache.archiva.model.VersionedReference} object suitable for the path.
      *
      * @param path the path relative to the repository base dir for the artifact.
      * @return the {@link ArtifactReference} representing the path.  (or null if path cannot be converted to

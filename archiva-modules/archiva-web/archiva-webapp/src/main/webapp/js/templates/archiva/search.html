@@ -45,8 +45,8 @@
 
       <!-- if null we are on root level -->
       {{if $root.parentBrowseViewModel}}
-      <li class="browse-list" data-bind="click:function(){displayParentGroupId()}">
-        <a href="#">..</a>
+      <li class="browse-list">
+        <a data-bind="click:function(){displayParentGroupId()}" href="#">..</a>
       </li>
       {{/if}}
       {{each(i,browseResultEntry) browseResultEntries}}
@@ -118,7 +118,7 @@
       {{if number>0}}
       <span class="divider" id="browse-autocomplete-divider">/</span>
       {{/if}}
-      <input type="text" class="input-large" size="50" id="browse-autocomplete"/>
+      <input type="text" class="twitter-typeahead" size="50" id="browse-autocomplete"/>
     </li>
   </ul>
 
@@ -333,6 +333,15 @@
                                data-bind="value: searchRequest().className"/>
                       </div>
                     </div>
+                    <div class="control-group">
+                      <label class="control-label" for="pageSize">${$.i18n.prop('search.artifact.search.form.query.pageSize')}</label>
+
+                      <div class="controls">
+                        <input type="text" class="defaults" id="pageSize" name="pageSize" size="50"
+                               placeholder="my.pageSize"
+                               data-bind="value: searchRequest().pageSize"/>
+                      </div>
+                    </div>
 
                   </fieldset>
                   <button type="submit" id="btn-advanced-search" class="btn btn-primary"
@@ -452,6 +461,9 @@
     <th title="${$.i18n.prop('search.artifact.results.classifier')}">
       ${$.i18n.prop('search.artifact.results.classifier')}
     </th>
+    <th title="${$.i18n.prop('search.artifact.results.classifier')}">
+      ${$.i18n.prop('search.artifact.results.fileExtension')}
+    </th>
   </tr>
   <tr>
 
@@ -471,6 +483,10 @@
       <input type="text" class="form-search" id="search-filter-auto-classifier"
              placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
     </th>
+    <th title="${$.i18n.prop('search.artifact.results.fileExtension')}">
+      <input type="text" class="form-search" id="search-filter-auto-fileExtension"
+             placeholder="${$.i18n.prop('search.artifact.result.grid.filter')}"/>
+    </th>
 
   </tr>
   </thead>
@@ -481,6 +497,7 @@
     <td><a href="#" data-bind="click: function(){artifactIdView(row)}">${row.artifactId}</a></td>
     <td><a href="#" data-bind="click: function(){artifactDetailView(row)}">${row.version}</a></td>
     <td>${row.classifier}</td>
+    <td>${row.fileExtension}</td>
   </tr>
   {{/each}}
   </tbody>
@@ -771,7 +788,7 @@
 
   <div id="artifact-details-metadatas-content" class="tab-pane">
     <table class="table table-striped table-bordered" id="artifact-details-metadatas-content-table"
-           data-bind="simpleGrid: gridMetatadasViewModel,simpleGridTemplate:'artifact_metadata_properties_tmpl',pageLinksId:'artifactMetadata_Pagination'">
+           data-bind="simpleGrid: gridMetadataViewModel,simpleGridTemplate:'artifact_metadata_properties_tmpl',pageLinksId:'artifactMetadata_Pagination'">
 
     </table>
     <div id="artifactMetadata_Pagination"></div>
@@ -836,6 +853,7 @@
       &nbsp;|&nbsp;<b>${$.i18n.prop('browse.artifact.version')}:</b>&nbsp;
       <a class="cursor-hand"
          onclick="generalDisplayArtifactVersionDetailViewModel(encodeURIComponent('${crumbEntry.groupId}'),encodeURIComponent('${crumbEntry.artifactId}'),encodeURIComponent('${crumbEntry.version}'))">${crumbEntry.version}</a>&nbsp;
+      |&nbsp;<b>${$.i18n.prop('browse.artifact.type')}:</b>&nbsp;${crumbEntry.fileExtension}
       {{/if}}
       {{if j < entries.length - 2}}
       &nbsp;/&nbsp;
@@ -935,32 +953,50 @@
 <script id="artifact-details-download-content_tmpl" type="text/html">
 
   <div class="row-fluid">
-    <div class="span5">
-      <ul id="artifact-download-list-files" class="package-list">
-        {{each(i, row) artifacts()}}
-        <li>
-          <img src="images/system-search-16-16.png" class="cursor-hand" id="${row.classifier}:${row.version}:${row.packaging}"
-                  title="${$.i18n.prop('browse.artifact.content.view.tooltip')}"/>
-          {{if deleteKarma}}
-            <a href="#" data-bind="click: function(){deleteArtifact(row)}">
-              <img src="images/trash.png" title="${$.i18n.prop('browse.artifact.content.delete.tooltip')}"/>
-            </a>
-            &nbsp;
-            <a href="${row.url}">
-              <img src="images/drive-removable-media-16-16.png" title="${$.i18n.prop('browse.artifact.content.download.tooltip')}"/>
-            </a>
-            &nbsp;
-            <span class="text-info">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</span>
-          {{else}}
-            <a href="${row.url}">
-              <img src="images/drive-removable-media-16-16.png" title="${$.i18n.prop('browse.artifact.content.download.tooltip')}"/>
-            </a>
-            &nbsp;
-            <span class="text-info">${row.packaging}:${row.version}&nbsp;-&nbsp;${row.size}</span>
-          {{/if}}
-        </li>
-        {{/each}}
-      </ul>
+    <div class="span12">
+      <table id="artifact-download-list-files" class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>&nbsp;</th>
+            {{if deleteKarma}}<th>&nbsp;</th>{{/if}}
+            <th>&nbsp;</th>
+            <th>${$.i18n.prop('browse.artifact.version')}</th>
+            <th>${$.i18n.prop('browse.artifact.packaging')}</th>            
+            <th>${$.i18n.prop('browse.artifact.classifier')}</th>               
+            <th>${$.i18n.prop('browse.artifact.size')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{each(i, row) artifacts()}}
+          <tr>
+            <td>
+              <img src="images/system-search-16-16.png" class="cursor-hand" id="${row.classifier}:${row.version}:${row.packaging}"
+                   title="${$.i18n.prop('browse.artifact.content.view.tooltip')}"/>
+            </td>
+            {{if deleteKarma}}
+            <td>
+              <a href="#" data-bind="click: function(){deleteArtifact(row)}">
+                <img src="images/trash.png" title="${$.i18n.prop('browse.artifact.content.delete.tooltip')}"/>
+              </a>
+            </td>
+            {{/if}}
+            <td>
+              <a href="${row.url}">
+                <img src="images/drive-removable-media-16-16.png" title="${$.i18n.prop('browse.artifact.content.download.tooltip')}"/>
+              </a>
+            </td>
+            <td>${row.version}</td>
+            <td>${row.packaging}</td>
+            {{if row.classifier }} 
+            <td>${row.classifier}</td>
+            {{else}}
+            <td>&nbsp;</td>
+            {{/if}}
+            <td>${row.size}</td>           
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
     </div>
     <div class="span7">
       <div id="artifact_content_tree">

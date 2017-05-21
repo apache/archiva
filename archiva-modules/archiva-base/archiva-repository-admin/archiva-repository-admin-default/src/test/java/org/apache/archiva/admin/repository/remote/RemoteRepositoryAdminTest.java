@@ -20,7 +20,7 @@ package org.apache.archiva.admin.repository.remote;
 
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
-import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.junit.Test;
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class RemoteRepositoryAdminTest
         List<RemoteRepository> remoteRepositories = remoteRepositoryAdmin.getRemoteRepositories();
         assertNotNull( remoteRepositories );
         assertTrue( remoteRepositories.size() > 0 );
-        log.info( "remote " + remoteRepositories );
+        log.info( "remote {}", remoteRepositories );
     }
 
     @Test
@@ -48,7 +48,7 @@ public class RemoteRepositoryAdminTest
     {
         RemoteRepository central = remoteRepositoryAdmin.getRemoteRepository( "central" );
         assertNotNull( central );
-        assertEquals( "http://repo.maven.apache.org/maven2", central.getUrl() );
+        assertEquals( "https://repo.maven.apache.org/maven2", central.getUrl() );
         assertEquals( 60, central.getTimeout() );
         assertNull( central.getUserName() );
         assertNull( central.getPassword() );

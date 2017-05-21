@@ -39,7 +39,7 @@ import java.util.Map;
 
 /**
  * Simple component which will initiate the plexus shim component
- * to see plexus components inside a guice container.<br/>
+ * to see plexus components inside a guice container.<br>
  * So move all of this here to be able to change quickly if needed.
  *
  * @author Olivier Lamy
@@ -52,7 +52,7 @@ public class PlexusSisuBridge
 
     private boolean containerAutoWiring = true;
 
-    private String containerClassPathScanning = PlexusConstants.SCANNING_ON;
+    private String containerClassPathScanning = PlexusConstants.SCANNING_INDEX;// PlexusConstants.SCANNING_ON;
 
     private String containerComponentVisibility = PlexusConstants.REALM_VISIBILITY;
 
@@ -122,7 +122,7 @@ public class PlexusSisuBridge
             Method method = classLoader.getClass().getMethod( "getURLs", new Class[]{ } );
             if ( method != null )
             {
-                return (URL[]) method.invoke( classLoader, null );
+                return (URL[]) method.invoke( classLoader );
             }
         }
         catch ( Exception e )

@@ -19,12 +19,15 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import com.google.common.io.Files;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.ProxyConnectorRuleType;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
+import org.apache.archiva.common.filelock.FileLockException;
+import org.apache.archiva.common.filelock.FileLockManager;
+import org.apache.archiva.common.filelock.FileLockTimeoutException;
+import org.apache.archiva.common.filelock.Lock;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ConfigurationNames;
@@ -46,6 +49,7 @@ import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.archiva.proxy.model.ProxyConnector;
+import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
@@ -83,20 +87,21 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * DefaultRepositoryProxyConnectors
- *
- * @todo exception handling needs work - "not modified" is not really an exceptional case, and it has more layers than
+ * TODO exception handling needs work - "not modified" is not really an exceptional case, and it has more layers than
  * your average brown onion
  */
 @Service("repositoryProxyConnectors#default")
@@ -105,70 +110,47 @@ public class DefaultRepositoryProxyConnectors
 {
     private Logger log = LoggerFactory.getLogger( DefaultRepositoryProxyConnectors.class );
 
-    /**
-     *
-     */
     @Inject
     @Named(value = "archivaConfiguration#default")
     private ArchivaConfiguration archivaConfiguration;
 
-    /**
-     *
-     */
     @Inject
     @Named(value = "repositoryContentFactory#default")
     private RepositoryContentFactory repositoryFactory;
 
-    /**
-     *
-     */
     @Inject
     @Named(value = "metadataTools#default")
     private MetadataTools metadataTools;
 
-    /**
-     *
-     */
     @Inject
     private Map<String, PreDownloadPolicy> preDownloadPolicies;
 
-    /**
-     *
-     */
     @Inject
     private Map<String, PostDownloadPolicy> postDownloadPolicies;
 
-    /**
-     *
-     */
     @Inject
     private Map<String, DownloadErrorPolicy> downloadErrorPolicies;
 
-    /**
-     *
-     */
     @Inject
     private UrlFailureCache urlFailureCache;
 
-    private Map<String, List<ProxyConnector>> proxyConnectorMap = new HashMap<String, List<ProxyConnector>>();
+    private ConcurrentMap<String, List<ProxyConnector>> proxyConnectorMap = new ConcurrentHashMap<>();
 
-    private Map<String, ProxyInfo> networkProxyMap = new ConcurrentHashMap<String, ProxyInfo>();
+    private ConcurrentMap<String, ProxyInfo> networkProxyMap = new ConcurrentHashMap<>();
 
-    /**
-     *
-     */
     @Inject
     private WagonFactory wagonFactory;
 
-    /**
-     *
-     */
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
     private ArchivaTaskScheduler scheduler;
 
     @Inject
     private NetworkProxyAdmin networkProxyAdmin;
+
+    @Inject
+    @Named(value = "fileLockManager#default")
+    private FileLockManager fileLockManager;
 
     @PostConstruct
     public void initialize()
@@ -211,7 +193,7 @@ public class DefaultRepositoryProxyConnectors
                 connector.setDisabled( proxyConfig.isDisabled() );
 
                 // Copy any blacklist patterns.
-                List<String> blacklist = new ArrayList<String>( 0 );
+                List<String> blacklist = new ArrayList<>( 0 );
                 if ( CollectionUtils.isNotEmpty( proxyConfig.getBlackListPatterns() ) )
                 {
                     blacklist.addAll( proxyConfig.getBlackListPatterns() );
@@ -219,7 +201,7 @@ public class DefaultRepositoryProxyConnectors
                 connector.setBlacklist( blacklist );
 
                 // Copy any whitelist patterns.
-                List<String> whitelist = new ArrayList<String>( 0 );
+                List<String> whitelist = new ArrayList<>( 0 );
                 if ( CollectionUtils.isNotEmpty( proxyConfig.getWhiteListPatterns() ) )
                 {
                     whitelist.addAll( proxyConfig.getWhiteListPatterns() );
@@ -254,7 +236,7 @@ public class DefaultRepositoryProxyConnectors
                 if ( connectors == null )
                 {
                     // Create if we are the first.
-                    connectors = new ArrayList<ProxyConnector>( 1 );
+                    connectors = new ArrayList<>( 1 );
                 }
 
                 // Add the connector.
@@ -268,11 +250,11 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( RepositoryNotFoundException e )
             {
-                log.warn( "Unable to use proxy connector: " + e.getMessage(), e );
+                log.warn( "Unable to use proxy connector: {}", e.getMessage(), e );
             }
             catch ( RepositoryException e )
             {
-                log.warn( "Unable to use proxy connector: " + e.getMessage(), e );
+                log.warn( "Unable to use proxy connector: {}", e.getMessage(), e );
             }
 
 
@@ -302,8 +284,7 @@ public class DefaultRepositoryProxyConnectors
                                                                            String targetRepository,
                                                                            List<ProxyConnectorRuleConfiguration> all )
     {
-        List<ProxyConnectorRuleConfiguration> proxyConnectorRuleConfigurations =
-            new ArrayList<ProxyConnectorRuleConfiguration>();
+        List<ProxyConnectorRuleConfiguration> proxyConnectorRuleConfigurations = new ArrayList<>();
 
         for ( ProxyConnectorRuleConfiguration proxyConnectorRuleConfiguration : all )
         {
@@ -320,6 +301,7 @@ public class DefaultRepositoryProxyConnectors
         return proxyConnectorRuleConfigurations;
     }
 
+    @Override
     public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
         throws ProxyDownloadException
     {
@@ -331,7 +313,7 @@ public class DefaultRepositoryProxyConnectors
         requestProperties.setProperty( "managedRepositoryId", repository.getId() );
 
         List<ProxyConnector> connectors = getProxyConnectors( repository );
-        Map<String, Exception> previousExceptions = new LinkedHashMap<String, Exception>();
+        Map<String, Exception> previousExceptions = new LinkedHashMap<>();
         for ( ProxyConnector connector : connectors )
         {
             if ( connector.isDisabled() )
@@ -372,12 +354,7 @@ public class DefaultRepositoryProxyConnectors
                 log.debug( "Artifact {} not updated on repository \"{}\".", Keys.toKey( artifact ),
                            targetRepository.getRepository().getId() );
             }
-            catch ( ProxyException e )
-            {
-                validatePolicies( this.downloadErrorPolicies, connector.getPolicies(), requestProperties, artifact,
-                                  targetRepository, localFile, e, previousExceptions );
-            }
-            catch ( RepositoryAdminException e )
+            catch ( ProxyException | RepositoryAdminException e )
             {
                 validatePolicies( this.downloadErrorPolicies, connector.getPolicies(), requestProperties, artifact,
                                   targetRepository, localFile, e, previousExceptions );
@@ -395,6 +372,7 @@ public class DefaultRepositoryProxyConnectors
         return null;
     }
 
+    @Override
     public File fetchFromProxies( ManagedRepositoryContent repository, String path )
     {
         File localFile = new File( repository.getRepoRoot(), path );
@@ -447,19 +425,19 @@ public class DefaultRepositoryProxyConnectors
             catch ( ProxyException e )
             {
                 log.warn(
-                    "Transfer error from repository \"" + targetRepository.getRepository().getId() + "\" for resource "
-                        + path + ", continuing to next repository. Error message: {}", e.getMessage() );
+                    "Transfer error from repository {} for resource {}, continuing to next repository. Error message: {}",
+                    targetRepository.getRepository().getId(), path, e.getMessage() );
                 log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ),
                            "Transfer error from repository \"" + targetRepository.getRepository().getId()
                                + "\" for resource " + path + ", continuing to next repository. Error message: {}",
-                           e.getMessage(), e );
+                           e.getMessage(), e
+                );
             }
             catch ( RepositoryAdminException e )
             {
                 log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ),
-                           "Transfer error from repository \"" + targetRepository.getRepository().getId()
-                               + "\" for resource " + path + ", continuing to next repository. Error message: {}",
-                           e.getMessage(), e );
+                           "Transfer error from repository {} for resource {}, continuing to next repository. Error message: {}",
+                           targetRepository.getRepository().getId(), path, e.getMessage(), e );
                 log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ), "Full stack trace", e );
             }
         }
@@ -469,7 +447,8 @@ public class DefaultRepositoryProxyConnectors
         return null;
     }
 
-    public File fetchMetatadaFromProxies( ManagedRepositoryContent repository, String logicalPath )
+    @Override
+    public ProxyFetchResult fetchMetadataFromProxies( ManagedRepositoryContent repository, String logicalPath )
     {
         File localFile = new File( repository.getRepoRoot(), logicalPath );
 
@@ -478,7 +457,7 @@ public class DefaultRepositoryProxyConnectors
         boolean metadataNeedsUpdating = false;
         long originalTimestamp = getLastModified( localFile );
 
-        List<ProxyConnector> connectors = getProxyConnectors( repository );
+        List<ProxyConnector> connectors = new ArrayList<>( getProxyConnectors( repository ) );
         for ( ProxyConnector connector : connectors )
         {
             if ( connector.isDisabled() )
@@ -515,18 +494,11 @@ public class DefaultRepositoryProxyConnectors
                            targetRepository.getRepository().getId(), e );
 
             }
-            catch ( ProxyException e )
+            catch ( ProxyException | RepositoryAdminException e )
             {
-                log.warn( "Transfer error from repository \"" + targetRepository.getRepository().getId()
-                              + "\" for versioned Metadata " + logicalPath
-                              + ", continuing to next repository. Error message: " + e.getMessage() );
-                log.debug( "Full stack trace", e );
-            }
-            catch ( RepositoryAdminException e )
-            {
-                log.warn( "Transfer error from repository \"" + targetRepository.getRepository().getId()
-                              + "\" for versioned Metadata " + logicalPath
-                              + ", continuing to next repository. Error message: " + e.getMessage() );
+                log.warn(
+                    "Transfer error from repository {} for versioned Metadata {}, continuing to next repository. Error message: {}",
+                    targetRepository.getRepository().getId(), logicalPath, e.getMessage() );
                 log.debug( "Full stack trace", e );
             }
         }
@@ -544,16 +516,17 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( RepositoryMetadataException e )
             {
-                log.warn( "Unable to update metadata " + localFile.getAbsolutePath() + ": " + e.getMessage(), e );
+                log.warn( "Unable to update metadata {}:{}", localFile.getAbsolutePath(), e.getMessage(), e );
             }
+
         }
 
         if ( fileExists( localFile ) )
         {
-            return localFile;
+            return new ProxyFetchResult( localFile, metadataNeedsUpdating );
         }
 
-        return null;
+        return new ProxyFetchResult( null, false );
     }
 
     /**
@@ -569,6 +542,7 @@ public class DefaultRepositoryProxyConnectors
      * @param repository
      * @throws ProxyException
      * @throws NotModifiedException
+     * @throws org.apache.archiva.admin.model.RepositoryAdminException
      */
     protected void transferResources( ProxyConnector connector, RemoteRepositoryContent remoteRepository, File tmpMd5,
                                       File tmpSha1, File tmpResource, String url, String remotePath, File resource,
@@ -688,6 +662,7 @@ public class DefaultRepositoryProxyConnectors
     /**
      * Test if the provided ManagedRepositoryContent has any proxies configured for it.
      */
+    @Override
     public boolean hasProxies( ManagedRepositoryContent repository )
     {
         synchronized ( this.proxyConnectorMap )
@@ -719,12 +694,7 @@ public class DefaultRepositoryProxyConnectors
             return false;
         }
 
-        if ( !file.isFile() )
-        {
-            return false;
-        }
-
-        return true;
+        return file.isFile();
     }
 
     /**
@@ -801,7 +771,6 @@ public class DefaultRepositoryProxyConnectors
 
         try
         {
-            Wagon wagon = null;
 
             transferResources( connector, remoteRepository, tmpMd5, tmpSha1, tmpResource, url, remotePath, resource,
                                workingDirectory, repository );
@@ -928,7 +897,7 @@ public class DefaultRepositoryProxyConnectors
         catch ( ProxyException e )
         {
             urlFailureCache.cacheFailure( url );
-            log.warn( "Transfer failed on checksum: " + url + " : " + e.getMessage(), e );
+            log.warn( "Transfer failed on checksum: {} : {}", url, e.getMessage(), e );
             // Critical issue, pass it on.
             throw e;
         }
@@ -942,9 +911,7 @@ public class DefaultRepositoryProxyConnectors
      * @param remotePath       the remote path to attempt to get
      * @param repository       the managed repository that will hold the file
      * @param origFile         the local file to save to
-     * @return The local file that was transfered.
      * @throws ProxyException if there was a problem moving the downloaded file into place.
-     * @throws WagonException if there was a problem tranfering the file.
      */
     private void transferSimpleFile( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
                                      ManagedRepositoryContent repository, File origFile, File destFile )
@@ -1012,6 +979,7 @@ public class DefaultRepositoryProxyConnectors
      * @param request   the request properties (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, File)}
      *                  )
      * @param localFile the local file (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, File)})
+     * @throws PolicyViolationException
      */
     private void validatePolicies( Map<String, ? extends DownloadPolicy> policies, Map<String, String> settings,
                                    Properties request, File localFile )
@@ -1088,8 +1056,8 @@ public class DefaultRepositoryProxyConnectors
         }
 
         log.warn(
-            "Transfer error from repository \"" + content.getRepository().getId() + "\" for artifact " + Keys.toKey(
-                artifact ) + ", continuing to next repository. Error message: " + exception.getMessage() );
+            "Transfer error from repository {} for artifact {} , continuing to next repository. Error message: {}",
+            content.getRepository().getId(), Keys.toKey( artifact ), exception.getMessage() );
         log.debug( "Full stack trace", exception );
     }
 
@@ -1098,11 +1066,18 @@ public class DefaultRepositoryProxyConnectors
      *
      * @param repository
      * @return file location of working directory
-     * @throws IOException
      */
     private File createWorkingDirectory( ManagedRepositoryContent repository )
     {
-        return Files.createTempDir();
+        try
+        {
+            return Files.createTempDirectory( "temp" ).toFile();
+        }
+        catch ( IOException e )
+        {
+            throw new RuntimeException( e.getMessage(), e );
+        }
+
     }
 
     /**
@@ -1116,37 +1091,48 @@ public class DefaultRepositoryProxyConnectors
     private void moveTempToTarget( File temp, File target )
         throws ProxyException
     {
-        if ( target.exists() && !target.delete() )
+
+        Lock lock;
+        try
         {
-            throw new ProxyException( "Unable to overwrite existing target file: " + target.getAbsolutePath() );
+            lock = fileLockManager.writeFileLock( target );
+            if ( lock.getFile().exists() && !lock.getFile().delete() )
+            {
+                throw new ProxyException( "Unable to overwrite existing target file: " + target.getAbsolutePath() );
+            }
+
+            lock.getFile().getParentFile().mkdirs();
+
+            if ( !temp.renameTo( lock.getFile() ) )
+            {
+                log.warn( "Unable to rename tmp file to its final name... resorting to copy command." );
+
+                try
+                {
+                    FileUtils.copyFile( temp, lock.getFile() );
+                }
+                catch ( IOException e )
+                {
+                    if ( lock.getFile().exists() )
+                    {
+                        log.debug( "Tried to copy file {} to {} but file with this name already exists.",
+                                   temp.getName(), lock.getFile().getAbsolutePath() );
+                    }
+                    else
+                    {
+                        throw new ProxyException(
+                            "Cannot copy tmp file " + temp.getAbsolutePath() + " to its final location", e );
+                    }
+                }
+                finally
+                {
+                    FileUtils.deleteQuietly( temp );
+                }
+            }
         }
-
-        target.getParentFile().mkdirs();
-        if ( !temp.renameTo( target ) )
+        catch ( FileLockException | FileLockTimeoutException e )
         {
-            log.warn( "Unable to rename tmp file to its final name... resorting to copy command." );
-
-            try
-            {
-                FileUtils.copyFile( temp, target );
-            }
-            catch ( IOException e )
-            {
-                if ( target.exists() )
-                {
-                    log.debug( "Tried to copy file {} to {} but file with this name already exists.", temp.getName(),
-                               target.getAbsolutePath() );
-                }
-                else
-                {
-                    throw new ProxyException(
-                        "Cannot copy tmp file " + temp.getAbsolutePath() + " to its final location", e );
-                }
-            }
-            finally
-            {
-                FileUtils.deleteQuietly( temp );
-            }
+            throw new ProxyException( e.getMessage(), e );
         }
     }
 
@@ -1198,12 +1184,13 @@ public class DefaultRepositoryProxyConnectors
         }
 
         // Convert seconds to milliseconds
-        int timeoutInMilliseconds = remoteRepository.getRepository().getTimeout() * 1000;
+        long timeoutInMilliseconds = TimeUnit.MILLISECONDS.convert( remoteRepository.getRepository().getTimeout(), //
+                                                                    TimeUnit.SECONDS );
 
         // Set timeout  read and connect
         // FIXME olamy having 2 config values
-        wagon.setReadTimeout( timeoutInMilliseconds );
-        wagon.setTimeout( timeoutInMilliseconds );
+        wagon.setReadTimeout( (int) timeoutInMilliseconds );
+        wagon.setTimeout( (int)  timeoutInMilliseconds );
 
         try
         {
@@ -1212,14 +1199,9 @@ public class DefaultRepositoryProxyConnectors
             wagon.connect( wagonRepository, authInfo, networkProxy );
             connected = true;
         }
-        catch ( ConnectionException e )
+        catch ( ConnectionException | AuthenticationException e )
         {
-            log.warn( "Could not connect to " + remoteRepository.getRepository().getName() + ": " + e.getMessage() );
-            connected = false;
-        }
-        catch ( AuthenticationException e )
-        {
-            log.warn( "Could not connect to " + remoteRepository.getRepository().getName() + ": " + e.getMessage() );
+            log.warn( "Could not connect to {}: {}", remoteRepository.getRepository().getName(), e.getMessage() );
             connected = false;
         }
 
@@ -1264,26 +1246,28 @@ public class DefaultRepositoryProxyConnectors
     /**
      * TODO: Ensure that list is correctly ordered based on configuration. See MRM-477
      */
+    @Override
     public List<ProxyConnector> getProxyConnectors( ManagedRepositoryContent repository )
     {
-        synchronized ( this.proxyConnectorMap )
-        {
-            List<ProxyConnector> ret = this.proxyConnectorMap.get( repository.getId() );
-            if ( ret == null )
-            {
-                return Collections.emptyList();
-            }
 
-            Collections.sort( ret, ProxyConnectorOrderComparator.getInstance() );
-            return ret;
+        if ( !this.proxyConnectorMap.containsKey( repository.getId() ) )
+        {
+            return Collections.emptyList();
         }
+        List<ProxyConnector> ret = new ArrayList<>( this.proxyConnectorMap.get( repository.getId() ) );
+
+        Collections.sort( ret, ProxyConnectorOrderComparator.getInstance() );
+        return ret;
+
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isNetworkProxy( propertyName ) || ConfigurationNames.isManagedRepositories(
-            propertyName ) || ConfigurationNames.isRemoteRepositories( propertyName )
-            || ConfigurationNames.isProxyConnector( propertyName ) )
+        if ( ConfigurationNames.isNetworkProxy( propertyName ) //
+            || ConfigurationNames.isManagedRepositories( propertyName ) //
+            || ConfigurationNames.isRemoteRepositories( propertyName ) //
+            || ConfigurationNames.isProxyConnector( propertyName ) ) //
         {
             initConnectorsAndNetworkProxies();
         }
@@ -1312,6 +1296,7 @@ public class DefaultRepositoryProxyConnectors
     }
 
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* do nothing */

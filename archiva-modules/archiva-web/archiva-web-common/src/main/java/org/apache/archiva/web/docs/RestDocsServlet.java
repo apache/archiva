@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 
 /**
  * @author Olivier Lamy
@@ -71,17 +70,19 @@ public class RestDocsServlet
 
         Elements links = body.select( "a[href]" );
 
-        for ( Iterator<Element> elementIterator = links.iterator(); elementIterator.hasNext(); )
-        {
-            Element link = elementIterator.next();
+        for ( Element link : links ) {
             link.attr( "href", "#" + startPath + "/" + link.attr( "href" ) );
+        }
+        
+        Elements datalinks = body.select( "[data-href]" );
+
+        for ( Element link : datalinks ) {
+            link.attr( "data-href", "#" + startPath + "/" + link.attr( "data-href" ) );
         }
 
         Elements codes = body.select( "code" );
 
-        for ( Iterator<Element> elementIterator = codes.iterator(); elementIterator.hasNext(); )
-        {
-            Element code = elementIterator.next();
+        for ( Element code : codes ) {
             code.attr( "class", code.attr( "class" ) + " nice-code" );
         }
 
@@ -89,31 +90,30 @@ public class RestDocsServlet
 
         Elements headers = body.select( "h1" );
 
-        for ( Iterator<Element> elementIterator = headers.iterator(); elementIterator.hasNext(); )
-        {
-            Element header = elementIterator.next();
+        for ( Element header : headers ) {
             header.tagName( "h3" );
         }
 
         headers = body.select( "h2" );
 
-        for ( Iterator<Element> elementIterator = headers.iterator(); elementIterator.hasNext(); )
-        {
-            Element header = elementIterator.next();
+        for ( Element header : headers ) {
             header.tagName( "h4" );
         }
 
         headers = body.select( "h3" );
 
-        for ( Iterator<Element> elementIterator = headers.iterator(); elementIterator.hasNext(); )
-        {
-            Element header = elementIterator.next();
+        for ( Element header : headers ) {
             header.tagName( "h5" );
         }
 
         Document res = new Document( "" );
         res.appendChild( body.select( "div[id=main]" ).first() );
-
+        
+        Elements scripts = body.select( "script" );
+        for ( Element script : scripts )
+        {
+             res.appendChild( script );
+        } 
         resp.getOutputStream().write( res.outerHtml().getBytes() );
 
     }

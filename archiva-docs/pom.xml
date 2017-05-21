@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva</artifactId>
-    <version>1.4-M5-SNAPSHOT</version>
+    <version>2.2.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-docs</artifactId>
@@ -31,7 +31,7 @@
 
   <properties>
     <siteFilePath>${user.home}/archiva-sites/archiva-docs-${project.version}/</siteFilePath>
-    <scmPubCheckoutDirectory>${user.home}/archiva-sites/archiva-docs-${project.version}-content</scmPubCheckoutDirectory>
+    <scmPubCheckoutDirectory>${basedir}/.site-content</scmPubCheckoutDirectory>
   </properties>
 
   <build>
@@ -45,6 +45,7 @@
               <exclude>src/site/resources/css/*.css</exclude>
               <exclude>src/site/resources/js/*.js</exclude>
               <exclude>*.sh</exclude>
+              <exclude>.site-content/**</exclude>
             </excludes>
           </configuration>
         </plugin>

@@ -128,7 +128,7 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
     var mainContent=$("#main-content");
     mainContent.empty();
     mainContent.removeAttr("data-bind");
-    $("#body_content" ).find(".popover" ).hide();
+    $("#body_content").find(".popover" ).hide();
     clearUserMessages();
     if(window.archivaModel.adminExists==false){
       displayErrorMessage($.i18n.prop("admin.creation.mandatory"));

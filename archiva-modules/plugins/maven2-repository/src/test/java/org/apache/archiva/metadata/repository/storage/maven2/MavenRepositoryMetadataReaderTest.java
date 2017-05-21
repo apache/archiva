@@ -117,6 +117,7 @@ public class MavenRepositoryMetadataReaderTest
     }
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {

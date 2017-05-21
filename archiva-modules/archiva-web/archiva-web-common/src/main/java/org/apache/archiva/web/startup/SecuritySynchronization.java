@@ -86,7 +86,7 @@ public class SecuritySynchronization
         // as per convention we named spring bean role#hint remove role# if exists
         Map<String, T> springBeans = applicationContext.getBeansOfType( clazz );
 
-        Map<String, T> beans = new HashMap<String, T>( springBeans.size() );
+        Map<String, T> beans = new HashMap<>( springBeans.size() );
 
         for ( Entry<String, T> entry : springBeans.entrySet() )
         {
@@ -96,6 +96,7 @@ public class SecuritySynchronization
         return beans;
     }
 
+    @Override
     public void afterConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry,
                                           String propertyName, Object propertyValue )
     {
@@ -108,6 +109,7 @@ public class SecuritySynchronization
         }
     }
 
+    @Override
     public void beforeConfigurationChange( org.apache.archiva.redback.components.registry.Registry registry,
                                            String propertyName, Object propertyValue )
     {
@@ -181,14 +183,14 @@ public class SecuritySynchronization
         stopWatch.reset();
         stopWatch.start();
 
-        List<String> violations = new ArrayList<String>();
+        List<String> violations = new ArrayList<>();
 
         for ( Entry<String, EnvironmentCheck> entry : checkers.entrySet() )
         {
             EnvironmentCheck check = entry.getValue();
-            List<String> v = new ArrayList<String>();
+            List<String> v = new ArrayList<>();
             check.validateEnvironment( v );
-            log.info( "Environment Check: " + entry.getKey() + " -> " + v.size() + " violation(s)" );
+            log.info( "Environment Check: {} -> {} violation(s)", entry.getKey(), v.size() );
             for ( String s : v )
             {
                 violations.add( "[" + entry.getKey() + "] " + s );
@@ -247,8 +249,7 @@ public class SecuritySynchronization
             }
             catch ( RbacManagerException e )
             {
-                log.warn( "Unable to add role [" + ArchivaRoleConstants.toRepositoryObserverRoleName( repoId ) + "] to "
-                              + principal + " user.", e );
+                log.warn( "Unable to add role [{}] to {} user.", ArchivaRoleConstants.toRepositoryObserverRoleName( repoId ), principal, e );
             }
         }
     }

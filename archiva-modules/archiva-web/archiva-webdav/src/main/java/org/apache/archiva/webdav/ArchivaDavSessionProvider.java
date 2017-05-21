@@ -49,6 +49,7 @@ public class ArchivaDavSessionProvider
         this.httpAuth = httpAuth;
     }
 
+    @Override
     public boolean attachSession( WebdavRequest request )
         throws DavException
     {
@@ -95,6 +96,7 @@ public class ArchivaDavSessionProvider
         }
     }
 
+    @Override
     public void releaseSession( WebdavRequest request )
     {
         request.setDavSession( null );

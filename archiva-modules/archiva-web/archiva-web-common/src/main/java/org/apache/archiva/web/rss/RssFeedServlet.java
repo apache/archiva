@@ -25,8 +25,13 @@ import com.sun.syndication.io.SyndFeedOutput;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authorization.AuthorizationException;
+import org.apache.archiva.redback.authorization.UnauthorizedException;
+import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.rss.processor.RssFeedProcessor;
@@ -40,16 +45,12 @@ import org.apache.commons.codec.Decoder;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
-import org.apache.archiva.redback.authentication.AuthenticationResult;
-import org.apache.archiva.redback.authorization.AuthorizationException;
-import org.apache.archiva.redback.authorization.UnauthorizedException;
-import org.apache.archiva.redback.system.SecuritySession;
-import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -77,8 +78,6 @@ public class RssFeedServlet
 
     private Logger log = LoggerFactory.getLogger( RssFeedServlet.class );
 
-    private RssFeedProcessor processor;
-
     private WebApplicationContext wac;
 
     private UserRepositories userRepositories;
@@ -87,12 +86,17 @@ public class RssFeedServlet
 
     private HttpAuthenticator httpAuth;
 
+    private RssFeedProcessor newArtifactsprocessor;
+
+    private RssFeedProcessor newVersionsprocessor;
+
     /**
      * FIXME: this could be multiple implementations and needs to be configured.
      */
     private RepositorySessionFactory repositorySessionFactory;
 
-    public void init( javax.servlet.ServletConfig servletConfig )
+    @Override
+    public void init( ServletConfig servletConfig )
         throws ServletException
     {
         super.init( servletConfig );
@@ -102,16 +106,23 @@ public class RssFeedServlet
         httpAuth = wac.getBean( "httpAuthenticator#basic", HttpAuthenticator.class );
         // TODO: what if there are other types?
         repositorySessionFactory = wac.getBean( "repositorySessionFactory", RepositorySessionFactory.class );
+
+        newArtifactsprocessor = wac.getBean( "rssFeedProcessor#new-artifacts", RssFeedProcessor.class );
+        newVersionsprocessor = wac.getBean( "rssFeedProcessor#new-versions", RssFeedProcessor.class );
     }
 
+    @Override
     public void doGet( HttpServletRequest req, HttpServletResponse res )
         throws ServletException, IOException
     {
+
+
         String repoId = null;
         String groupId = null;
         String artifactId = null;
 
         String url = StringUtils.removeEnd( req.getRequestURL().toString(), "/" );
+
         if ( StringUtils.countMatches( StringUtils.substringAfter( url, "feeds/" ), "/" ) > 0 )
         {
             artifactId = StringUtils.substringAfterLast( url, "/" );
@@ -120,6 +131,12 @@ public class RssFeedServlet
         }
         else if ( StringUtils.countMatches( StringUtils.substringAfter( url, "feeds/" ), "/" ) == 0 )
         {
+            // we receive feeds?babla=ded which is not correct
+            if ( StringUtils.countMatches( url, "feeds?" ) > 0 )
+            {
+                res.sendError( HttpServletResponse.SC_BAD_REQUEST, "Invalid request url." );
+                return;
+            }
             repoId = StringUtils.substringAfterLast( url, "/" );
         }
         else
@@ -128,9 +145,11 @@ public class RssFeedServlet
             return;
         }
 
+        RssFeedProcessor processor = null;
+
         try
         {
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<>();
             SyndFeed feed = null;
 
             if ( isAllowed( req, repoId, groupId, artifactId ) )
@@ -138,14 +157,14 @@ public class RssFeedServlet
                 if ( repoId != null )
                 {
                     // new artifacts in repo feed request
-                    processor = wac.getBean( "rssFeedProcessor#new-artifacts", RssFeedProcessor.class );
+                    processor = newArtifactsprocessor;
                     map.put( RssFeedProcessor.KEY_REPO_ID, repoId );
                 }
                 else if ( ( groupId != null ) && ( artifactId != null ) )
                 {
                     // TODO: this only works for guest - we could pass in the list of repos
                     // new versions of artifact feed request
-                    processor = wac.getBean( "rssFeedProcessor#new-versions", RssFeedProcessor.class );
+                    processor = newVersionsprocessor;
                     map.put( RssFeedProcessor.KEY_GROUP_ID, groupId );
                     map.put( RssFeedProcessor.KEY_ARTIFACT_ID, artifactId );
                 }
@@ -239,7 +258,7 @@ public class RssFeedServlet
         UnauthorizedException
     {
         String auth = req.getHeader( "Authorization" );
-        List<String> repoIds = new ArrayList<String>();
+        List<String> repoIds = new ArrayList<>();
 
         if ( repositoryId != null )
         {
@@ -263,7 +282,7 @@ public class RssFeedServlet
                 }
                 catch ( DecoderException ie )
                 {
-                    log.warn( "Error decoding username and password.", ie.getMessage() );
+                    log.warn( "Error decoding username and password: {}", ie.getMessage() );
                 }
 
                 if ( usernamePassword == null || usernamePassword.trim().equals( "" ) )
@@ -293,20 +312,22 @@ public class RssFeedServlet
                 AuthenticationResult result = httpAuth.getAuthenticationResult( req, null );
                 SecuritySession securitySession = httpAuth.getSecuritySession( req.getSession( true ) );
 
-                if ( servletAuth.isAuthenticated( req, result ) && servletAuth.isAuthorized( req, securitySession,
-                                                                                             repoId,
-                                                                                             ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ) )
+                if ( servletAuth.isAuthenticated( req, result ) //
+                    && servletAuth.isAuthorized( req, //
+                                                 securitySession, //
+                                                 repoId, //
+                                                 ArchivaRoleConstants.OPERATION_REPOSITORY_ACCESS ) )
                 {
                     return true;
                 }
             }
             catch ( AuthorizationException e )
             {
-
+                log.debug( "AuthorizationException for repoId: {}", repoId );
             }
             catch ( UnauthorizedException e )
             {
-
+                log.debug( "UnauthorizedException for repoId: {}", repoId );
             }
         }
 

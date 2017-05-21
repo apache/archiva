@@ -35,10 +35,34 @@ import javax.ws.rs.ext.Provider;
 public class ArchivaRestServiceExceptionMapper
     implements ExceptionMapper<ArchivaRestServiceException>
 {
-    public Response toResponse( ArchivaRestServiceException e )
+    @Override
+    public Response toResponse( final ArchivaRestServiceException e )
     {
         ArchivaRestError restError = new ArchivaRestError( e );
-        Response.ResponseBuilder responseBuilder = Response.status( e.getHttpErrorCode() ).entity( restError );
-        return responseBuilder.build();
+        Response response = //
+            Response.status( new Response.StatusType()
+            {
+                @Override
+                public int getStatusCode()
+                {
+                    return e.getHttpErrorCode();
+                }
+
+                @Override
+                public Response.Status.Family getFamily()
+                {
+                    return Response.Status.Family.familyOf( e.getHttpErrorCode() );
+                }
+
+                @Override
+                public String getReasonPhrase()
+                {
+                    return e.getMessage();
+                }
+            } )//
+                .entity( restError ) //
+                .build();
+
+        return response;
     }
 }

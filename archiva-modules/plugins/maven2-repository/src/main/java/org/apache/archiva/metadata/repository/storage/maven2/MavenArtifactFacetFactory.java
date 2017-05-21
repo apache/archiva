@@ -31,11 +31,13 @@ import org.springframework.stereotype.Service;
 public class MavenArtifactFacetFactory
     implements MetadataFacetFactory
 {
+    @Override
     public MetadataFacet createMetadataFacet()
     {
         return new MavenArtifactFacet();
     }
 
+    @Override
     public MetadataFacet createMetadataFacet( String repositoryId, String name )
     {
         throw new UnsupportedOperationException( "There is no valid name for artifact facets" );

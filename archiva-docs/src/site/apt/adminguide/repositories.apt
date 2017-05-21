@@ -101,7 +101,7 @@ Understanding Repository Configuration of Apache Archiva
   access the repository via http(s)/webdav. The url has the following format:
 
 +----+
-http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/archiva/repository/releases).
+http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/repository/releases).
 +----+
 
   A pom snippet is also available for each repository. The
@@ -170,7 +170,7 @@ http://[URL TO ARCHIVA]/repository/[REPOSITORY ID] (e.g. http://localhost:8080/a
 
   <<Since 1.4-M4>>:
   If you have configured download remote index, those files (Maven Indexer project format) will be available in the path
-  http://archiva/repository/id/.index (you can consume those files for IDE)
+  http://[URL TO ARCHIVA]/repository/id/.index (you can consume those files for IDE)
 
 * Scanning a Repository
 

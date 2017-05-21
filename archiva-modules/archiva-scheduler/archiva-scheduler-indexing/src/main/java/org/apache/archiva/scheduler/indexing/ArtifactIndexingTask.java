@@ -83,6 +83,7 @@ public class ArtifactIndexingTask
         this.executeOnEntireRepo = executeOnEntireRepo;
     }
 
+    @Override
     public long getMaxExecutionTime()
     {
         return 0;

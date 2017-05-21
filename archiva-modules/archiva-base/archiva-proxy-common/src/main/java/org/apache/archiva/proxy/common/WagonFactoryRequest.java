@@ -19,6 +19,7 @@ package org.apache.archiva.proxy.common;
  */
 
 import org.apache.archiva.admin.model.beans.NetworkProxy;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,15 +30,26 @@ import java.util.Map;
  */
 public class WagonFactoryRequest
 {
+
+    public static final String USER_AGENT_SYSTEM_PROPERTY = "archiva.userAgent";
+
+    private static String DEFAULT_USER_AGENT = "Java-Archiva";
+
     /**
      * the protocol to find the Wagon for, which must be prefixed with <code>wagon#</code>, for example
      * <code>wagon#http</code>. <b>to have a wagon supporting ntlm add -ntlm</b>
      */
     private String protocol;
 
-    private Map<String, String> headers = new HashMap<String, String>();
+    private Map<String, String> headers = new HashMap<>();
 
-    private String userAgent = "Java-Archiva";
+    private String userAgent = DEFAULT_USER_AGENT;
+
+    static {
+        if ( StringUtils.isNotBlank( System.getProperty( USER_AGENT_SYSTEM_PROPERTY))) {
+            DEFAULT_USER_AGENT=System.getProperty(USER_AGENT_SYSTEM_PROPERTY);
+        }
+    }
 
     private NetworkProxy networkProxy;
 
@@ -72,7 +84,7 @@ public class WagonFactoryRequest
     {
         if ( this.headers == null )
         {
-            this.headers = new HashMap<String, String>();
+            this.headers = new HashMap<>();
         }
         return headers;
     }
@@ -152,5 +164,16 @@ public class WagonFactoryRequest
         int result = protocol != null ? protocol.hashCode() : 0;
         result = 31 * result + ( userAgent != null ? userAgent.hashCode() : 0 );
         return result;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "WagonFactoryRequest{" +
+            "protocol='" + protocol + '\'' +
+            ", headers=" + headers +
+            ", userAgent='" + userAgent + '\'' +
+            ", networkProxy=" + networkProxy +
+            '}';
     }
 }

@@ -27,6 +27,7 @@ import org.junit.Rule;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import org.apache.commons.io.FileUtils;
 
 /**
  * @author <a href="mailto:evenisse@apache.org">Emmanuel Venisse</a>
@@ -142,7 +144,8 @@ public abstract class AbstractSeleniumTest
         {
             Assert.assertFalse( getSelenium().isVisible( "login-link-a" ) );
             Assert.assertFalse( getSelenium().isVisible( "register-link-a" ) );
-            clickLinkWithLocator( "create-admin-link-a", false );
+            // skygo need to set to true for passing is that work as expected ?
+            clickLinkWithLocator( "create-admin-link-a", true );
             assertCreateAdmin();
             String fullname = getProperty( "ADMIN_FULLNAME" );
             String username = getAdminUsername();
@@ -683,11 +686,23 @@ public abstract class AbstractSeleniumTest
         String fileBaseName = methodName + "_" + className + ".java_" + lineNumber + "-" + time;
 
         selenium.windowMaximize();
-
+        
+        try
+        {
+            // save html to have a minimum feedback if jenkins firefox not up
+            File fileNameHTML = new File( new File( "target", "errorshtmlsnap" ) , fileBaseName + ".html" );
+            FileUtils.writeStringToFile( fileNameHTML, selenium.getHtmlSource() );
+        }
+        catch ( IOException e )
+        {
+            System.out.print( e.getMessage() );
+            e.printStackTrace();
+        }
+        
         File fileName = new File( targetPath, fileBaseName + ".png" );
 
         selenium.captureEntirePageScreenshot( fileName.getAbsolutePath(), "background=#FFFFFF" );
-
+        
         return fileName.getAbsolutePath();
     }
 

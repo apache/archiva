@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","knockout.simpleGrid","purl"],
+define("redback.user",["jquery","utils","i18n","jquery.validate","knockout","knockout.simpleGrid","purl","archiva.main"],
 function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
 
   /**
@@ -208,7 +208,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
       } else {
         return this.update();
       }
-    }
+    };
 
     this.updateAssignedRoles=function(){
       $.log("user#updateAssignedRoles");
@@ -223,7 +223,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
             displaySuccessMessage($.i18n.prop("user.roles.updated",curUser.username()));
           }
         });
-    }
+    };
 
     this.lock=function(){
       this.locked(true);
@@ -236,7 +236,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
             curUser.modified(false);
           }
         });
-    }
+    };
 
     this.unlock=function(){
       this.locked(false);
@@ -249,7 +249,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
             curUser.modified(false);
           }
       });
-    }
+    };
 
     // value is boolean
     this.changePasswordChangeRequired=function(value){
@@ -385,95 +385,20 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
         customShowError("#user-login-form",validator,errorMap,errorMap);
       }
     });
+    $("#modal-login-ok").off();
     $("#modal-login-ok").on("click", function(e) {
       e.preventDefault();
       login();
     });
 
+    $("#modal-login-password-reset").off();
     $("#modal-login-password-reset").on("click", function(e) {
       e.preventDefault();
       $.log("password reset");
       passwordReset();
     });
 
-  }
-
-
-  /**
-   * callback success function on rest login call.
-   * modal close and hide/show some links (login,logout,register...)
-   * @param result
-   */
-  var successLoginCallbackFn=function(result){
-
-    var logged = false;
-    if (result == null) {
-      logged = false;
-    } else {
-      if (result.username) {
-        logged = true;
-      }
-    }
-    if (logged == true) {
-      var user = mapUser(result);
-
-      if (user.passwordChangeRequired()==true){
-        changePasswordBox(true,false,user);
-        return;
-      }
-      // not really needed as an exception is returned but "ceintures et bretelles" as we say in French :-)
-      if (user.locked()==true){
-        $.log("user locked");
-        displayErrorMessage($.i18n.prop("account.locked"));
-        return;
-      }
-
-      // FIXME check validated
-      user.rememberme(window.redbackModel.rememberme);
-      if(user.rememberme()){
-        user.password(window.redbackModel.password);
-      }
-      $.log("user.rememberme:"+(user.rememberme()));
-      reccordLoginCookie(user);
-      window.user=user;
-      $("#login-link").hide();
-      $("#logout-link").show();
-      $("#register-link").hide();
-      $("#change-password-link").show();
-      if (window.modalLoginWindow){
-        window.modalLoginWindow.modal('hide');
-      }
-      clearForm("#user-login-form");
-      decorateMenuWithKarma(user);
-      $("#login-welcome" ).show();
-      $("#welcome-label" ).html( $.i18n.prop("user.login.welcome",user.username()));
-      return;
-    }
-    var modalLoginErrMsg=$("#modal-login-err-message");
-    modalLoginErrMsg.html($.i18n.prop("incorrect.username.password"));
-    modalLoginErrMsg.show();
-  }
-
-  /**
-   * callback error function on rest login call. display error message
-   * @param result
-   */
-  var errorLoginCallbackFn= function(result) {
-   var obj = jQuery.parseJSON(result.responseText);
-   displayRedbackError(obj,"modal-login-err-message");
-   $("#modal-login-err-message").show();
-  }
-
-  /**
-   * callback complate function on rest login call. remove spinner from modal login box
-   * @param result
-   */
-  var completeLoginCallbackFn=function(){
-    $("#modal-login-ok").button("reset");
-    $("#small-spinner").remove();
-    // force current screen reload to consider user karma
-    window.sammyArchivaApplication.refresh();
-  }
+  };
 
   resetPasswordForm=function(key){
     $.log("resetPasswordForm:"+key);
@@ -586,7 +511,8 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
 
     $('#modal-login-footer').append(smallSpinnerImg());
 
-    var rememberme=($("#user-login-form-rememberme" ).attr('checked')=='checked');
+    var rememberme=$('#user-login-form-rememberme').is(':checked');
+    $.log("user.js#login, rememberme:"+rememberme);
     window.redbackModel.rememberme=rememberme;
     window.redbackModel.password=$("#user-login-form-password").val();
 
@@ -617,7 +543,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
       complete: completeCallbackFn
     });
 
-  }
+  };
 
   /**
    *
@@ -680,7 +606,7 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
       window.modalEditUserBox = $("#modal-user-edit").modal({backdrop:'static',show:false});
       window.modalEditUserBox.bind('hidden', function () {
         $("#modal-user-edit-err-message").hide();
-      })
+      });
       $("#modal-user-edit").find("#modal-user-edit-ok").on( "click keydown keypress", function(e) {
         e.preventDefault();
         $.log("user.js#editUserDetailsBox");
@@ -696,6 +622,10 @@ function(jquery,utils,i18n,jqueryValidate,ko,koSimpleGrid,purl) {
           password:$("#modal-user-edit").find("#userEditFormNewPassword").val(),
           confirmPassword:$("#modal-user-edit").find("#userEditFormNewPasswordConfirm").val()
         };
+        var kuser =getUserFromLoginCookie();
+        user.rememberme=function(){
+          return kuser.rememberme();
+        }
         editUserDetails(user);
       });
     }

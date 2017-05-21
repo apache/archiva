@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-modules</artifactId>
-    <version>1.4-M5-SNAPSHOT</version>
+    <version>2.2.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>archiva-base</artifactId>
@@ -32,6 +32,8 @@
   <modules>
     <module>archiva-test-utils</module>
     <module>archiva-common</module>
+    <module>archiva-mock</module>
+    <module>archiva-filelock</module>
     <module>archiva-model</module>
     <module>archiva-configuration</module>
     <module>archiva-checksum</module>
@@ -45,7 +47,6 @@
     <module>archiva-proxy-common</module>
     <module>archiva-proxy</module>
     <module>archiva-transaction</module>
-    <module>archiva-artifact-converter</module>
     <module>archiva-converter</module>
     <module>archiva-repository-scanner</module>
     <module>archiva-repository-admin</module>

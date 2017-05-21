@@ -18,6 +18,7 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
+import java.io.File;
 import java.util.Collection;
 
 /**
@@ -44,6 +45,10 @@ public class IndexMergerRequest
 
     private int mergedIndexTtl;
 
+    private File mergedIndexDirectory;
+
+    private boolean temporary;
+
     public IndexMergerRequest( Collection<String> repositoriesIds, boolean packIndex, String groupId )
     {
         this.repositoriesIds = repositoriesIds;
@@ -54,8 +59,8 @@ public class IndexMergerRequest
     /**
      * @since 1.4-M4
      */
-    public IndexMergerRequest(Collection<String> repositoriesIds, boolean packIndex, String groupId,
-                              String mergedIndexPath, int mergedIndexTtl)
+    public IndexMergerRequest( Collection<String> repositoriesIds, boolean packIndex, String groupId,
+                               String mergedIndexPath, int mergedIndexTtl )
     {
         this.repositoriesIds = repositoriesIds;
         this.packIndex = packIndex;
@@ -104,12 +109,47 @@ public class IndexMergerRequest
         this.mergedIndexPath = mergedIndexPath;
     }
 
-    public int getMergedIndexTtl() {
+    public int getMergedIndexTtl()
+    {
         return mergedIndexTtl;
     }
 
-    public void setMergedIndexTtl(int mergedIndexTtl) {
+    public void setMergedIndexTtl( int mergedIndexTtl )
+    {
         this.mergedIndexTtl = mergedIndexTtl;
+    }
+
+    public File getMergedIndexDirectory()
+    {
+        return mergedIndexDirectory;
+    }
+
+    public void setMergedIndexDirectory( File mergedIndexDirectory )
+    {
+        this.mergedIndexDirectory = mergedIndexDirectory;
+    }
+
+    public IndexMergerRequest mergedIndexDirectory( File mergedIndexDirectory )
+    {
+        this.mergedIndexDirectory = mergedIndexDirectory;
+        return this;
+    }
+
+    public boolean isTemporary()
+    {
+        return temporary;
+    }
+
+    public void setTemporary( boolean temporary )
+    {
+        this.temporary = temporary;
+    }
+
+
+    public IndexMergerRequest temporary( boolean temporary )
+    {
+        this.temporary = temporary;
+        return this;
     }
 
     @Override
@@ -120,8 +160,33 @@ public class IndexMergerRequest
         sb.append( ", packIndex=" ).append( packIndex );
         sb.append( ", groupId='" ).append( groupId ).append( '\'' );
         sb.append( ", mergedIndexPath='" ).append( mergedIndexPath ).append( '\'' );
-        sb.append( ", mergedIndexTtl='" ).append( mergedIndexTtl ).append( '\'' );
+        sb.append( ", mergedIndexTtl=" ).append( mergedIndexTtl );
+        sb.append( ", mergedIndexDirectory=" ).append( mergedIndexDirectory );
+        sb.append( ", temporary=" ).append( temporary );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals( Object o )
+    {
+        if ( this == o )
+        {
+            return true;
+        }
+        if ( o == null || getClass() != o.getClass() )
+        {
+            return false;
+        }
+
+        IndexMergerRequest that = (IndexMergerRequest) o;
+
+        return groupId.equals( that.groupId );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return groupId.hashCode();
     }
 }

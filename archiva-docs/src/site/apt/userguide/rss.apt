@@ -34,7 +34,8 @@ RSS Feeds
 * New Artifacts In Repository
 
   For  versions 1.1 and 1.1.1, the default url for this feed is <<<http://[hostname]:[port]/archiva/rss/rss_feeds?repoId=[repositoryId]>>>.
-  But since version 1.1.2, this has been changed to <<<http://[hostname]:[port]/archiva/feeds/[repositoryId]>>>
+  But since version 1.1.2, this has been changed to <<<http://[hostname]:[port]/archiva/feeds/[repositoryId]>>>.
+  Since version 2.0.0 feed changed changed to <<<http://[hostname]:[port]/feeds/[repositoryId]>>>.
 
   There are two ways to subscribe to this feed:
 
@@ -49,7 +50,8 @@ RSS Feeds
 * New Versions of an Artifact
 
   The default url for this feed for versions 1.1 and 1.1.1 is <<<http://[hostname]:[port]/archiva/rss/rss_feeds?groupId=[groupId]&artifactId=[artifactId]>>>
-  but was changed to <<<http://[hostname]:[port]/archiva/feeds/[groupId]/[artifactId]>>> since version 1.1.2 for consistency purposes.
+  but was changed to <<<http://[hostname]:[port]/archiva/feeds/[groupId]/[artifactId]>>> since version 1.1.2 for consistency purposes. 
+  Since version 2.0.0 feed changed changed to <<<http://[hostname]:[port]/feeds/[groupId]/[artifactId]>>>
 
   You could subscribe to the feed the same way as specified in the New Artifacts In Repository section except that in #1, you
   need to specify the <<<groupId>>> and <<<artifactId>>> instead of the <<<repositoryId>>>. And in #2, you need to go to the

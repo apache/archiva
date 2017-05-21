@@ -50,31 +50,31 @@ public class TestConsumer
 
     private ManagedRepositoryContent repository;
 
+    @Override
     public String getId()
     {
         return "test-consumer";
     }
 
+    @Override
     public String getDescription()
     {
         return null;
     }
 
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
+    @Override
     public List<String> getIncludes()
     {
         return Collections.singletonList( "**/**" );
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return null;
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
@@ -90,12 +90,14 @@ public class TestConsumer
         }
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -112,16 +114,19 @@ public class TestConsumer
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {
         processFile( path );
     }
 
+    @Override
     public void completeScan()
     {
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();

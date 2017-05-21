@@ -151,11 +151,13 @@ public class RepositoryStatistics
         this.repositoryId = repositoryId;
     }
 
+    @Override
     public String getFacetId()
     {
         return FACET_ID;
     }
 
+    @Override
     public String getName()
     {
         return createNameFormat().format( scanStartTime );
@@ -168,9 +170,10 @@ public class RepositoryStatistics
         return fmt;
     }
 
+    @Override
     public Map<String, String> toProperties()
     {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put( "scanEndTime", String.valueOf( scanEndTime.getTime() ) );
         properties.put( "scanStartTime", String.valueOf( scanStartTime.getTime() ) );
         properties.put( "totalArtifactCount", String.valueOf( totalArtifactCount ) );
@@ -187,6 +190,7 @@ public class RepositoryStatistics
         return properties;
     }
 
+    @Override
     public void fromProperties( Map<String, String> properties )
     {
         scanEndTime = new Date( Long.parseLong( properties.get( "scanEndTime" ) ) );

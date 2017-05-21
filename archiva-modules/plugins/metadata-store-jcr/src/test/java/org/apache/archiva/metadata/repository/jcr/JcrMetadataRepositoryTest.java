@@ -43,6 +43,7 @@ public class JcrMetadataRepositoryTest
     private ApplicationContext applicationContext;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -80,6 +81,7 @@ public class JcrMetadataRepositoryTest
 
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

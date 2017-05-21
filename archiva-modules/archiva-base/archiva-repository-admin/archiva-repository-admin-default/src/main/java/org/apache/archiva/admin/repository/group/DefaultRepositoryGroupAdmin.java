@@ -25,17 +25,21 @@ import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
-import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.archiva.scheduler.MergedRemoteIndexesScheduler;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,22 +62,69 @@ public class DefaultRepositoryGroupAdmin
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
+    @Inject
+    private MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler;
+
+    private File groupsDirectory;
+
+    @PostConstruct
+    public void initialize()
+    {
+        String appServerBase = getRegistry().getString( "appserver.base" );
+        groupsDirectory = new File( appServerBase + File.separatorChar + "groups" );
+        if ( !groupsDirectory.exists() )
+        {
+            groupsDirectory.mkdirs();
+        }
+
+        try
+        {
+            for ( RepositoryGroup repositoryGroup : getRepositoriesGroups() )
+            {
+                mergedRemoteIndexesScheduler.schedule( repositoryGroup,
+                                                       getMergedIndexDirectory( repositoryGroup.getId() ) );
+                // create the directory for each group if not exists
+                File groupPath = new File( groupsDirectory, repositoryGroup.getId() );
+                if ( !groupPath.exists() )
+                {
+                    groupPath.mkdirs();
+                }
+            }
+        }
+        catch ( RepositoryAdminException e )
+        {
+            log.warn( "fail to getRepositoriesGroups {}", e.getMessage(), e );
+        }
+
+    }
+
+
+    @Override
+    public File getMergedIndexDirectory( String repositoryGroupId )
+    {
+        return new File( groupsDirectory, repositoryGroupId );
+    }
+
+    @Override
     public List<RepositoryGroup> getRepositoriesGroups()
         throws RepositoryAdminException
     {
         List<RepositoryGroup> repositoriesGroups =
-            new ArrayList<RepositoryGroup>( getArchivaConfiguration().getConfiguration().getRepositoryGroups().size() );
+            new ArrayList<>( getArchivaConfiguration().getConfiguration().getRepositoryGroups().size() );
 
         for ( RepositoryGroupConfiguration repositoryGroupConfiguration : getArchivaConfiguration().getConfiguration().getRepositoryGroups() )
         {
             repositoriesGroups.add( new RepositoryGroup( repositoryGroupConfiguration.getId(), new ArrayList<String>(
                 repositoryGroupConfiguration.getRepositories() ) ).mergedIndexPath(
-                repositoryGroupConfiguration.getMergedIndexPath() ).mergedIndexTtl( repositoryGroupConfiguration.getMergedIndexTtl() ) );
+                repositoryGroupConfiguration.getMergedIndexPath() ).mergedIndexTtl(
+                repositoryGroupConfiguration.getMergedIndexTtl() ).cronExpression(
+                repositoryGroupConfiguration.getCronExpression() ) );
         }
 
         return repositoriesGroups;
     }
 
+    @Override
     public RepositoryGroup getRepositoryGroup( String repositoryGroupId )
         throws RepositoryAdminException
     {
@@ -88,6 +139,7 @@ public class DefaultRepositoryGroupAdmin
         return null;
     }
 
+    @Override
     public Boolean addRepositoryGroup( RepositoryGroup repositoryGroup, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -99,19 +151,24 @@ public class DefaultRepositoryGroupAdmin
         repositoryGroupConfiguration.setRepositories( repositoryGroup.getRepositories() );
         repositoryGroupConfiguration.setMergedIndexPath( repositoryGroup.getMergedIndexPath() );
         repositoryGroupConfiguration.setMergedIndexTtl( repositoryGroup.getMergedIndexTtl() );
+        repositoryGroupConfiguration.setCronExpression( repositoryGroup.getCronExpression() );
         Configuration configuration = getArchivaConfiguration().getConfiguration();
         configuration.addRepositoryGroup( repositoryGroupConfiguration );
         saveConfiguration( configuration );
         triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.ADD_REPO_GROUP, auditInformation );
+        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ) );
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean deleteRepositoryGroup( String repositoryGroupId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         Configuration configuration = getArchivaConfiguration().getConfiguration();
         RepositoryGroupConfiguration repositoryGroupConfiguration =
             configuration.getRepositoryGroupsAsMap().get( repositoryGroupId );
+        mergedRemoteIndexesScheduler.unschedule(
+            new RepositoryGroup( repositoryGroupId, Collections.<String>emptyList() ) );
         if ( repositoryGroupConfiguration == null )
         {
             throw new RepositoryAdminException(
@@ -119,9 +176,11 @@ public class DefaultRepositoryGroupAdmin
         }
         configuration.removeRepositoryGroup( repositoryGroupConfiguration );
         triggerAuditEvent( repositoryGroupId, null, AuditEvent.DELETE_REPO_GROUP, auditInformation );
+
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean updateRepositoryGroup( RepositoryGroup repositoryGroup, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
@@ -144,6 +203,7 @@ public class DefaultRepositoryGroupAdmin
         repositoryGroupConfiguration.setRepositories( repositoryGroup.getRepositories() );
         repositoryGroupConfiguration.setMergedIndexPath( repositoryGroup.getMergedIndexPath() );
         repositoryGroupConfiguration.setMergedIndexTtl( repositoryGroup.getMergedIndexTtl() );
+        repositoryGroupConfiguration.setCronExpression( repositoryGroup.getCronExpression() );
         configuration.addRepositoryGroup( repositoryGroupConfiguration );
 
         saveConfiguration( configuration );
@@ -151,10 +211,13 @@ public class DefaultRepositoryGroupAdmin
         {
             triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.MODIFY_REPO_GROUP, auditInformation );
         }
+        mergedRemoteIndexesScheduler.unschedule( repositoryGroup );
+        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ) );
         return Boolean.TRUE;
     }
 
 
+    @Override
     public Boolean addRepositoryToGroup( String repositoryGroupId, String repositoryId,
                                          AuditInformation auditInformation )
         throws RepositoryAdminException
@@ -179,6 +242,7 @@ public class DefaultRepositoryGroupAdmin
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean deleteRepositoryFromGroup( String repositoryGroupId, String repositoryId,
                                               AuditInformation auditInformation )
         throws RepositoryAdminException
@@ -194,7 +258,8 @@ public class DefaultRepositoryGroupAdmin
         {
             throw new RepositoryAdminException(
                 "repositoryGroup with id " + repositoryGroupId + " doesn't not contains repository with id"
-                    + repositoryId );
+                    + repositoryId
+            );
         }
 
         repositoryGroup.removeRepository( repositoryId );
@@ -203,11 +268,12 @@ public class DefaultRepositoryGroupAdmin
         return Boolean.TRUE;
     }
 
+    @Override
     public Map<String, RepositoryGroup> getRepositoryGroupsAsMap()
         throws RepositoryAdminException
     {
         List<RepositoryGroup> repositoriesGroups = getRepositoriesGroups();
-        Map<String, RepositoryGroup> map = new HashMap<String, RepositoryGroup>( repositoriesGroups.size() );
+        Map<String, RepositoryGroup> map = new HashMap<>( repositoriesGroups.size() );
         for ( RepositoryGroup repositoryGroup : repositoriesGroups )
         {
             map.put( repositoryGroup.getId(), repositoryGroup );
@@ -215,11 +281,12 @@ public class DefaultRepositoryGroupAdmin
         return map;
     }
 
+    @Override
     public Map<String, List<String>> getGroupToRepositoryMap()
         throws RepositoryAdminException
     {
 
-        java.util.Map<String, java.util.List<String>> map = new java.util.HashMap<String, java.util.List<String>>();
+        Map<String, List<String>> map = new HashMap<>();
 
         for ( ManagedRepository repo : getManagedRepositoryAdmin().getManagedRepositories() )
         {
@@ -228,10 +295,10 @@ public class DefaultRepositoryGroupAdmin
                 if ( !group.getRepositories().contains( repo.getId() ) )
                 {
                     String groupId = group.getId();
-                    java.util.List<String> repos = map.get( groupId );
+                    List<String> repos = map.get( groupId );
                     if ( repos == null )
                     {
-                        repos = new ArrayList<String>();
+                        repos = new ArrayList<>();
                         map.put( groupId, repos );
                     }
                     repos.add( repo.getId() );
@@ -241,19 +308,20 @@ public class DefaultRepositoryGroupAdmin
         return map;
     }
 
+    @Override
     public Map<String, List<String>> getRepositoryToGroupMap()
         throws RepositoryAdminException
     {
-        java.util.Map<String, java.util.List<String>> map = new java.util.HashMap<String, java.util.List<String>>();
+        Map<String, List<String>> map = new HashMap<>();
 
         for ( RepositoryGroup group : getRepositoriesGroups() )
         {
             for ( String repositoryId : group.getRepositories() )
             {
-                java.util.List<String> groups = map.get( repositoryId );
+                List<String> groups = map.get( repositoryId );
                 if ( groups == null )
                 {
-                    groups = new ArrayList<String>();
+                    groups = new ArrayList<>();
                     map.put( repositoryId, groups );
                 }
                 groups.add( group.getId() );
@@ -285,7 +353,7 @@ public class DefaultRepositoryGroupAdmin
                 "Invalid character(s) found in identifier. Only the following characters are allowed: alphanumeric, '.', '-' and '_'" );
         }
 
-        if ( repositoryGroup.getMergedIndexTtl() <= 0)
+        if ( repositoryGroup.getMergedIndexTtl() <= 0 )
         {
             throw new RepositoryAdminException( "Merged Index TTL must be greater than 0." );
         }

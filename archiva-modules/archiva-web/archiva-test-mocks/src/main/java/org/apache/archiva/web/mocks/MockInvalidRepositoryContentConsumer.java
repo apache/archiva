@@ -34,75 +34,83 @@ import java.util.List;
 public class MockInvalidRepositoryContentConsumer
     implements InvalidRepositoryContentConsumer
 {
+    @Override
     public String getId()
     {
         return "foo";
     }
 
+    @Override
     public String getDescription()
     {
         return "the foo";
     }
 
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
+    @Override
     public void addConsumerMonitor( ConsumerMonitor monitor )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void removeConsumerMonitor( ConsumerMonitor monitor )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws Exception
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void completeScan()
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public boolean isProcessUnmodified()
     {
         return false;  //To change body of implemented methods use File | Settings | File Templates.

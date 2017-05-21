@@ -21,8 +21,6 @@ package org.apache.archiva.consumers;
 
 /**
  * Consumer for Known Repository Content.
- *
- *
  */
 public interface KnownRepositoryContentConsumer
     extends RepositoryContentConsumer

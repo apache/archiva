@@ -45,7 +45,7 @@ import java.util.Map;
 /**
  * FileTypes
  */
-@Service ("fileTypes")
+@Service("fileTypes")
 public class FileTypes
     implements RegistryListener
 {
@@ -57,17 +57,14 @@ public class FileTypes
 
     public static final String IGNORED = "ignored";
 
-    /**
-     *
-     */
     @Inject
-    @Named (value = "archivaConfiguration#default")
+    @Named(value = "archivaConfiguration#default")
     private ArchivaConfiguration archivaConfiguration;
 
     /**
      * Map of default values for the file types.
      */
-    private Map<String, List<String>> defaultTypeMap = new HashMap<String, List<String>>();
+    private Map<String, List<String>> defaultTypeMap = new HashMap<>();
 
     private List<String> artifactPatterns;
 
@@ -86,18 +83,13 @@ public class FileTypes
     }
 
     /**
-     * <p>
      * Get the list of patterns for a specified filetype.
-     * </p>
-     * <p/>
-     * <p>
      * You will always get a list.  In this order.
      * <ul>
      * <li>The Configured List</li>
      * <li>The Default List</li>
-     * <li>A single item list of <code>"**<span>/</span>*"</code></li>
+     * <li>A single item list of <code>&quot;**&#47;*&quot;</code></li>
      * </ul>
-     * </p>
      *
      * @param id the id to lookup.
      * @return the list of patterns.
@@ -228,7 +220,7 @@ public class FileTypes
             List<String> patterns = defaultTypeMap.get( filetype.getId() );
             if ( patterns == null )
             {
-                patterns = new ArrayList<String>( filetype.getPatterns().size() );
+                patterns = new ArrayList<>( filetype.getPatterns().size() );
             }
             patterns.addAll( filetype.getPatterns() );
 
@@ -236,6 +228,7 @@ public class FileTypes
         }
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( propertyName.contains( "fileType" ) )
@@ -246,6 +239,7 @@ public class FileTypes
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* nothing to do */

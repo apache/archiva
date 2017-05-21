@@ -21,10 +21,11 @@ package org.apache.archiva.rest.api.services;
 
 
 import org.apache.archiva.maven2.model.Artifact;
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.rest.api.model.ChecksumSearch;
 import org.apache.archiva.rest.api.model.GroupIdList;
 import org.apache.archiva.rest.api.model.SearchRequest;
 import org.apache.archiva.rest.api.model.StringList;
-import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -32,6 +33,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path( "/searchService/" )
@@ -60,8 +62,7 @@ public interface SearchService
     @POST
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
-
-   List<Artifact> quickSearchWithRepositories( SearchRequest searchRequest )
+    List<Artifact> quickSearchWithRepositories( SearchRequest searchRequest )
         throws ArchivaRestServiceException;
 
     /**
@@ -82,8 +83,8 @@ public interface SearchService
     @GET
     @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
     @RedbackAuthorization( noPermission = true, noRestriction = true )
-    List<Artifact> getArtifactVersions( @QueryParam( "groupId" ) String groupId,
-                                        @QueryParam( "artifactId" ) String artifactId,
+    List<Artifact> getArtifactVersions( @QueryParam( "groupId" ) String groupId, //
+                                        @QueryParam( "artifactId" ) String artifactId, //
                                         @QueryParam( "packaging" ) String packaging )
         throws ArchivaRestServiceException;
 
@@ -117,14 +118,32 @@ public interface SearchService
                                       @QueryParam( "artifactId" ) String artifactId,
                                       @QueryParam( "version" ) String version )
         throws ArchivaRestServiceException;
-
-
-    @Path( "getArtifactByChecksum" )
-    @GET
-    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN } )
-    @RedbackAuthorization( noPermission = true, noRestriction = true )
-    List<Artifact> getArtifactByChecksum( @QueryParam( "checksum" ) String checksum )
-        throws ArchivaRestServiceException;
     */
+
+
+    @GET
+    @Path( "/artifact" )
+    @Produces( "text/html" )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    Response redirectToArtifactFile( @QueryParam( "r" ) String repositoryId, //
+                                     @QueryParam( "g" ) String groupId, //
+                                     @QueryParam( "a" ) String artifactId, //
+                                     @QueryParam( "v" ) String version, //
+                                     @QueryParam( "p" ) String packaging, //
+                                     @QueryParam( "c" ) String classifier )
+        throws ArchivaRestServiceException;
+
+
+    /**
+     * If searchRequest contains repositories, the search will be done only on those repositories.
+     * <b>if no repositories, the search will be apply on all repositories the current user has karma</b>
+     */
+    @Path( "artifactsByChecksum" )
+    @POST
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML } )
+    @RedbackAuthorization( noPermission = true, noRestriction = true )
+    List<Artifact> getArtifactByChecksum( ChecksumSearch checksumSearch )
+        throws ArchivaRestServiceException;
+
 
 }

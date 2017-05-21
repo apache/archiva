@@ -37,18 +37,21 @@ public abstract class AbstractProgressConsumer
 {
     private int count = 0;
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         this.count = 0;
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
@@ -60,17 +63,20 @@ public abstract class AbstractProgressConsumer
 
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         processFile( path );
     }
 
+    @Override
     public void completeScan()
     {
         System.out.println( "Final Count of Artifacts processed by " + getId() + ": " + count );
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();

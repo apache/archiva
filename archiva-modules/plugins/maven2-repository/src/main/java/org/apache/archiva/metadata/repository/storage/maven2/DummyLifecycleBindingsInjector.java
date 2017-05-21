@@ -32,6 +32,7 @@ import org.apache.maven.model.plugin.LifecycleBindingsInjector;
 public class DummyLifecycleBindingsInjector
     implements LifecycleBindingsInjector
 {
+    @Override
     public void injectLifecycleBindings( Model model, ModelBuildingRequest modelBuildingRequest, ModelProblemCollector modelProblemCollector )
     {
         // left intentionally blank

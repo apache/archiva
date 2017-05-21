@@ -22,9 +22,9 @@ package org.apache.archiva.policies;
 
 /**
  * Policy to apply before the download is attempted.
- *
- *
  */
-public interface PreDownloadPolicy extends DownloadPolicy
+public interface PreDownloadPolicy
+    extends DownloadPolicy
 {
+    // no op
 }

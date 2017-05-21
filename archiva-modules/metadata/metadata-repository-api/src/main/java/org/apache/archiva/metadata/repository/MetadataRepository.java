@@ -50,6 +50,7 @@ public interface MetadataRepository
 
     /**
      * create the namespace in the repository. (if not exist)
+     *
      * @param repositoryId
      * @param namespace
      * @throws MetadataRepositoryException
@@ -61,12 +62,11 @@ public interface MetadataRepository
         throws MetadataRepositoryException;
 
     /**
-     *
      * @param repositoryId
      * @param facetId
      * @return true if the repository datas for this facetId
-     * @since 1.4-M4
      * @throws MetadataRepositoryException
+     * @since 1.4-M4
      */
     boolean hasMetadataFacet( String repositoryId, String facetId )
         throws MetadataRepositoryException;
@@ -85,9 +85,10 @@ public interface MetadataRepository
 
     /**
      * if startTime or endTime are <code>null</code> they are not used for search
+     *
      * @param repositoryId
-     * @param startTime can be <code>null</code>
-     * @param endTime can be <code>null</code>
+     * @param startTime    can be <code>null</code>
+     * @param endTime      can be <code>null</code>
      * @return
      * @throws MetadataRepositoryException
      */
@@ -98,7 +99,44 @@ public interface MetadataRepository
     Collection<String> getRepositories()
         throws MetadataRepositoryException;
 
-    List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
+    Collection<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
+        throws MetadataRepositoryException;
+
+    /**
+     * Get artifacts with a project version metadata key that matches the passed value.
+     *  
+     * @param key
+     * @param value
+     * @param repositoryId can be null, meaning search in all repositories
+     * @return a list of artifacts
+     * @throws MetadataRepositoryException
+     */
+    List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( String key, String value, String repositoryId )
+        throws MetadataRepositoryException;
+
+    /**
+     * Get artifacts with an artifact metadata key that matches the passed value.
+     *  
+     * @param key
+     * @param value
+     * @param repositoryId can be null, meaning search in all repositories
+     * @return a list of artifacts
+     * @throws MetadataRepositoryException
+     */
+    List<ArtifactMetadata> getArtifactsByMetadata( String key, String value, String repositoryId )
+        throws MetadataRepositoryException;
+
+    /**
+     * Get artifacts with a property key that matches the passed value.
+     * Possible keys are 'scm.url', 'org.name', 'url', 'mailingList.0.name', 'license.0.name',...
+     *  
+     * @param key
+     * @param value
+     * @param repositoryId can be null, meaning search in all repositories
+     * @return a list of artifacts
+     * @throws MetadataRepositoryException
+     */
+    List<ArtifactMetadata> getArtifactsByProperty( String key, String value, String repositoryId )
         throws MetadataRepositoryException;
 
     void removeArtifact( String repositoryId, String namespace, String project, String version, String id )
@@ -116,7 +154,9 @@ public interface MetadataRepository
         throws MetadataRepositoryException;
 
     /**
+     * FIXME need a unit test!!!
      * Only remove {@link MetadataFacet} for the artifact
+     *
      * @param repositoryId
      * @param namespace
      * @param project
@@ -151,6 +191,7 @@ public interface MetadataRepository
 
     /**
      * basically just checking it exists not complete data returned
+     *
      * @param repoId
      * @param namespace
      * @param projectId
@@ -184,12 +225,31 @@ public interface MetadataRepository
     Collection<String> getRootNamespaces( String repoId )
         throws MetadataResolutionException;
 
+    /**
+     * @param repoId
+     * @param namespace
+     * @return {@link Collection} of child namespaces of the namespace argument
+     * @throws MetadataResolutionException
+     */
     Collection<String> getNamespaces( String repoId, String namespace )
         throws MetadataResolutionException;
 
+    /**
+     * @param repoId
+     * @param namespace
+     * @return
+     * @throws MetadataResolutionException
+     */
     Collection<String> getProjects( String repoId, String namespace )
         throws MetadataResolutionException;
 
+    /**
+     * @param repoId
+     * @param namespace
+     * @param projectId
+     * @return
+     * @throws MetadataResolutionException
+     */
     Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
         throws MetadataResolutionException;
 
@@ -198,18 +258,27 @@ public interface MetadataRepository
      * @param namespace
      * @param projectId
      * @param projectVersion
-     * @throws MetadataResolutionException
+     * @throws MetadataRepositoryException
      * @since 1.4-M4
      */
     void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
         throws MetadataRepositoryException;
 
+    /**
+     * @param repoId
+     * @param namespace
+     * @param projectId
+     * @param projectVersion
+     * @return
+     * @throws MetadataResolutionException
+     */
     Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                String projectVersion )
         throws MetadataResolutionException;
 
     /**
      * remove a project
+     *
      * @param repositoryId
      * @param namespace
      * @param projectId
@@ -236,6 +305,32 @@ public interface MetadataRepository
 
     boolean canObtainAccess( Class<?> aClass );
 
-    <T>T obtainAccess( Class<T> aClass )
+    <T> T obtainAccess( Class<T> aClass )
         throws MetadataRepositoryException;
+
+    /**
+     * Full text artifacts search.
+     *  
+     * @param text
+     * @param repositoryId can be null to search in all repositories
+     * @param exact running an exact search, the value must exactly match the text.  
+     * @return a list of artifacts
+     * @throws MetadataRepositoryException
+     */
+    List<ArtifactMetadata> searchArtifacts( String text, String repositoryId, boolean exact )
+        throws MetadataRepositoryException;
+
+    /**
+     * Full text artifacts search inside the specified key.
+     *  
+     * @param key search only inside this key
+     * @param text
+     * @param repositoryId can be null to search in all repositories
+     * @param exact running an exact search, the value must exactly match the text.  
+     * @return a list of artifacts
+     * @throws MetadataRepositoryException
+     */
+    List<ArtifactMetadata> searchArtifacts( String key, String text, String repositoryId, boolean exact )
+        throws MetadataRepositoryException;
+
 }

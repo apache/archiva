@@ -38,6 +38,7 @@ public class DefaultUserRepositoriesTest
 
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -78,6 +79,7 @@ public class DefaultUserRepositoriesTest
     }
 
     @After
+    @Override
     public void tearDown()
         throws Exception
     {

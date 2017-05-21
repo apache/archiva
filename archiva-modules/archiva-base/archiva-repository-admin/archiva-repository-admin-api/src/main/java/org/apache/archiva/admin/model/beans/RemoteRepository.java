@@ -232,7 +232,7 @@ public class RemoteRepository
     {
         if ( this.extraParameters == null )
         {
-            this.extraParameters = new HashMap<String, String>();
+            this.extraParameters = new HashMap<>();
         }
         return extraParameters;
     }
@@ -249,7 +249,7 @@ public class RemoteRepository
 
     public List<PropertyEntry> getExtraParametersEntries()
     {
-        this.extraParametersEntries = new ArrayList<PropertyEntry>();
+        this.extraParametersEntries = new ArrayList<>();
         for ( Map.Entry<String, String> entry : getExtraParameters().entrySet() )
         {
             this.extraParametersEntries.add( new PropertyEntry( entry.getKey(), entry.getValue() ) );
@@ -275,7 +275,7 @@ public class RemoteRepository
     {
         if ( this.extraHeaders == null )
         {
-            this.extraHeaders = new HashMap<String, String>();
+            this.extraHeaders = new HashMap<>();
         }
         return extraHeaders;
     }
@@ -292,7 +292,7 @@ public class RemoteRepository
 
     public List<PropertyEntry> getExtraHeadersEntries()
     {
-        this.extraHeadersEntries = new ArrayList<PropertyEntry>();
+        this.extraHeadersEntries = new ArrayList<>();
         for ( Map.Entry<String, String> entry : getExtraHeaders().entrySet() )
         {
             this.extraHeadersEntries.add( new PropertyEntry( entry.getKey(), entry.getValue() ) );

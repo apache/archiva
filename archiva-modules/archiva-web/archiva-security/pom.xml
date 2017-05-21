@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
-    <version>1.4-M5-SNAPSHOT</version>
+    <version>2.2.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-security</artifactId>
@@ -192,6 +192,11 @@
       <artifactId>metadata-store-file</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -238,6 +243,7 @@
             <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
+            <archiva.repositorySessionFactory.id>file</archiva.repositorySessionFactory.id>
           </systemPropertyVariables>
         </configuration>
       </plugin>

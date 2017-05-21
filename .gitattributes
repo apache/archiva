@@ -1,0 +1,15 @@
+# Auto detect text files and perform LF normalization
+*        text=auto
+
+*.java   text diff=java
+*.html   text diff=html
+*.xml    text diff=xml
+*.css    text
+*.js     text
+*.sql    text
+
+*.jar    binary
+*.war    binary
+
+#  pom file are part of tests involving md5/sha1 (try to keep lf as eol) 
+*.pom    eol=lf

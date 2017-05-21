@@ -19,6 +19,8 @@ package org.apache.archiva.audit;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.archiva.repository.events.AuditListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,7 @@ public class AuditLog
      * Creates a log message in the following format ...
      * "{repository_id} {user_id} {remote_ip} \"{resource}\" \"{action}\""
      */
+    @Override
     public void auditEvent( AuditEvent event )
     {
         StringBuilder msg = new StringBuilder();

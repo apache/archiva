@@ -29,37 +29,50 @@ public class TestConfiguration
 {
     private Configuration configuration;
 
+    @Override
     public Configuration getConfiguration()
     {
         return configuration;
     }
 
+    @Override
     public void save( Configuration configuration )
         throws RegistryException, IndeterminateConfigurationException
     {
         this.configuration = configuration;
     }
 
+    @Override
     public boolean isDefaulted()
     {
         return false;
     }
 
+    @Override
     public void addListener( ConfigurationListener listener )
     {
         // no op
     }
 
+    @Override
     public void removeListener( ConfigurationListener listener )
     {
         // no op
     }
 
+    @Override
     public void addChangeListener( RegistryListener listener )
     {
         // no op
     }
 
+    @Override
+    public void removeChangeListener( RegistryListener listener )
+    {
+        // no op
+    }
+
+    @Override
     public void reload()
     {
         // no op

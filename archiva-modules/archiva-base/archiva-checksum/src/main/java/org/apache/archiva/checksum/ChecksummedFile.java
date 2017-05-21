@@ -20,14 +20,15 @@ package org.apache.archiva.checksum;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -35,9 +36,8 @@ import java.util.regex.Pattern;
 
 /**
  * ChecksummedFile
- * <p/>
+ * <p>Terminology:</p>
  * <dl>
- * <lh>Terminology:</lh>
  * <dt>Checksum File</dt>
  * <dd>The file that contains the previously calculated checksum value for the reference file.
  * This is a text file with the extension ".sha1" or ".md5", and contains a single entry
@@ -46,12 +46,12 @@ import java.util.regex.Pattern;
  * <dt>Reference File</dt>
  * <dd>The file that is being referenced in the checksum file.</dd>
  * </dl>
- *
- *
  */
 public class ChecksummedFile
 {
-    private Logger log = LoggerFactory.getLogger( ChecksummedFile.class );
+    private final Logger log = LoggerFactory.getLogger( ChecksummedFile.class );
+
+    private static final Pattern METADATA_PATTERN = Pattern.compile( "maven-metadata-\\S*.xml" );
 
     private final File referenceFile;
 
@@ -75,17 +75,12 @@ public class ChecksummedFile
     public String calculateChecksum( ChecksumAlgorithm checksumAlgorithm )
         throws IOException
     {
-        FileInputStream fis = null;
-        try
+
+        try (InputStream fis = Files.newInputStream( referenceFile.toPath() ))
         {
             Checksum checksum = new Checksum( checksumAlgorithm );
-            fis = new FileInputStream( referenceFile );
             checksum.update( fis );
             return checksum.getChecksum();
-        }
-        finally
-        {
-            IOUtils.closeQuietly( fis );
         }
     }
 
@@ -100,8 +95,11 @@ public class ChecksummedFile
         throws IOException
     {
         File checksumFile = new File( referenceFile.getAbsolutePath() + "." + checksumAlgorithm.getExt() );
+        Files.deleteIfExists( checksumFile.toPath() );
         String checksum = calculateChecksum( checksumAlgorithm );
-        FileUtils.writeStringToFile( checksumFile, checksum + "  " + referenceFile.getName() );
+        Files.write( checksumFile.toPath(), //
+                     ( checksum + "  " + referenceFile.getName() ).getBytes(), //
+                     StandardOpenOption.CREATE_NEW );
         return checksumFile;
     }
 
@@ -120,12 +118,11 @@ public class ChecksummedFile
      * <p>
      * Given a checksum file, check to see if the file it represents is valid according to the checksum.
      * </p>
-     * <p/>
      * <p>
      * NOTE: Only supports single file checksums of type MD5 or SHA1.
      * </p>
      *
-     * @param checksumFile the algorithms to check for.
+     * @param algorithm the algorithms to check for.
      * @return true if the checksum is valid for the file it represents. or if the checksum file does not exist.
      * @throws IOException if the reading of the checksumFile or the file it refers to fails.
      */
@@ -144,10 +141,10 @@ public class ChecksummedFile
      */
     public boolean isValidChecksums( ChecksumAlgorithm algorithms[] )
     {
-        FileInputStream fis = null;
-        try
+
+        try (InputStream fis = Files.newInputStream( referenceFile.toPath() ))
         {
-            List<Checksum> checksums = new ArrayList<Checksum>( algorithms.length );
+            List<Checksum> checksums = new ArrayList<>( algorithms.length );
             // Create checksum object for each algorithm.
             for ( ChecksumAlgorithm checksumAlgorithm : algorithms )
             {
@@ -170,12 +167,11 @@ public class ChecksummedFile
             // Parse file once, for all checksums.
             try
             {
-                fis = new FileInputStream( referenceFile );
                 Checksum.update( checksums, fis );
             }
             catch ( IOException e )
             {
-                log.warn( "Unable to update checksum:" + e.getMessage() );
+                log.warn( "Unable to update checksum:{}", e.getMessage() );
                 return false;
             }
 
@@ -200,15 +196,16 @@ public class ChecksummedFile
             }
             catch ( IOException e )
             {
-                log.warn( "Unable to read / parse checksum: " + e.getMessage() );
+                log.warn( "Unable to read / parse checksum: {}", e.getMessage() );
                 return false;
             }
 
             return valid;
         }
-        finally
+        catch ( IOException e )
         {
-            IOUtils.closeQuietly( fis );
+            log.warn( "Unable to read / parse checksum: {}", e.getMessage() );
+            return false;
         }
     }
 
@@ -220,7 +217,7 @@ public class ChecksummedFile
      */
     public boolean fixChecksums( ChecksumAlgorithm[] algorithms )
     {
-        List<Checksum> checksums = new ArrayList<Checksum>( algorithms.length );
+        List<Checksum> checksums = new ArrayList<>( algorithms.length );
         // Create checksum object for each algorithm.
         for ( ChecksumAlgorithm checksumAlgorithm : algorithms )
         {
@@ -234,21 +231,15 @@ public class ChecksummedFile
             return true;
         }
 
-        FileInputStream fis = null;
-        try
+        try (InputStream fis = Files.newInputStream( referenceFile.toPath() ))
         {
             // Parse file once, for all checksums.
-            fis = new FileInputStream( referenceFile );
             Checksum.update( checksums, fis );
         }
         catch ( IOException e )
         {
             log.warn( e.getMessage(), e );
             return false;
-        }
-        finally
-        {
-            IOUtils.closeQuietly( fis );
         }
 
         boolean valid = true;
@@ -292,8 +283,8 @@ public class ChecksummedFile
     private boolean isValidChecksumPattern( String filename, String path )
     {
         // check if it is a remote metadata file
-        Pattern pattern = Pattern.compile( "maven-metadata-\\S*.xml" );
-        Matcher m = pattern.matcher( path );
+
+        Matcher m = METADATA_PATTERN.matcher( path );
         if ( m.matches() )
         {
             return filename.endsWith( path ) || ( "-".equals( filename ) ) || filename.endsWith( "maven-metadata.xml" );
@@ -304,9 +295,10 @@ public class ChecksummedFile
 
     /**
      * Parse a checksum string.
-     * <p/>
+     * <p>
      * Validate the expected path, and expected checksum algorithm, then return
      * the trimmed checksum hex string.
+     * </p>
      *
      * @param rawChecksumString
      * @param expectedHash

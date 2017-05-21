@@ -41,6 +41,7 @@ public class ProxyConnectorSelectionPredicate
         this.targetId = targetId;
     }
 
+    @Override
     public boolean evaluate( Object object )
     {
         boolean satisfies = false;

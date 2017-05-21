@@ -50,6 +50,7 @@ public class RetentionCountRepositoryPurge
         this.retentionCount = retentionCount;
     }
 
+    @Override
     public void process( String path )
         throws RepositoryPurgeException
     {
@@ -71,7 +72,7 @@ public class RetentionCountRepositoryPurge
                 reference.setArtifactId( artifact.getArtifactId() );
                 reference.setVersion( artifact.getVersion() );
 
-                List<String> versions = new ArrayList<String>( repository.getVersions( reference ) );
+                List<String> versions = new ArrayList<>( repository.getVersions( reference ) );
 
                 Collections.sort( versions, VersionComparator.getInstance() );
 

@@ -19,17 +19,16 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.PutMethodWebRequest;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
+
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -96,7 +95,7 @@ public class RepositoryServletRepositoryGroupTest
         configuration.addManagedRepository(
             createManagedRepository( MANAGED_REPO_LAST, "Last Test Repo", repoRootLast, true ) );
 
-        List<String> managedRepoIds = new ArrayList<String>();
+        List<String> managedRepoIds = new ArrayList<>();
         managedRepoIds.add( MANAGED_REPO_FIRST );
         managedRepoIds.add( MANAGED_REPO_LAST );
 
@@ -113,7 +112,7 @@ public class RepositoryServletRepositoryGroupTest
         configuration.addManagedRepository(
             createManagedRepository( MANAGED_REPO_LAST, "Last Test Repo", repoRootLast, true ) );
 
-        List<String> invalidManagedRepoIds = new ArrayList<String>();
+        List<String> invalidManagedRepoIds = new ArrayList<>();
         invalidManagedRepoIds.add( MANAGED_REPO_FIRST );
         invalidManagedRepoIds.add( MANAGED_REPO_INVALID );
         invalidManagedRepoIds.add( MANAGED_REPO_LAST );
@@ -125,6 +124,8 @@ public class RepositoryServletRepositoryGroupTest
         FileUtils.deleteDirectory( repoRootInvalid );
 
         saveConfiguration( archivaConfiguration );
+
+        startRepository();
     }
 
     @Override
@@ -156,7 +157,7 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = getServletUnitClient().getResponse( request );
 
         assertResponseOK( response );
-        assertEquals( "Expected file contents", "first", response.getText() );
+        assertThat( response.getContentAsString() ).isEqualTo( "first" );
     }
 
     /*
@@ -177,7 +178,8 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = getServletUnitClient().getResponse( request );
 
         assertResponseOK( response );
-        assertEquals( "Expected file contents", "last", response.getText() );
+
+        assertThat( response.getContentAsString() ).isEqualTo( "last" );
     }
 
     /*
@@ -261,15 +263,14 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = getServletUnitClient().getResource( request );
 
         File returnedMetadata = new File( "target/test-classes/retrievedMetadataFile.xml" );
-        FileUtils.writeStringToFile( returnedMetadata, response.getText() );
+        FileUtils.writeStringToFile( returnedMetadata, response.getContentAsString() );
         ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( returnedMetadata );
 
         assertResponseOK( response );
-        assertEquals( "Versions list size", 4, metadata.getAvailableVersions().size() );
-        assertTrue( "Versions list contains version 1.0", metadata.getAvailableVersions().contains( "1.0" ) );
-        assertTrue( "Versions list contains version 1.5", metadata.getAvailableVersions().contains( "1.5" ) );
-        assertTrue( "Versions list contains version 2.0", metadata.getAvailableVersions().contains( "2.0" ) );
-        assertTrue( "Versions list contains version 2.5", metadata.getAvailableVersions().contains( "2.5" ) );
+
+        assertThat( metadata.getAvailableVersions() ).isNotNull()
+            .hasSize( 4 ).contains( "1.0", "1.5", "2.0", "2.5" );
+
 
         //check if the checksum files were generated
         File checksumFileSha1 = new File( repoRootFirst, resourceName + ".sha1" );
@@ -286,8 +287,9 @@ public class RepositoryServletRepositoryGroupTest
         response = getServletUnitClient().getResource( request );
 
         assertResponseOK( response );
-        assertEquals( "add113b0d7f8c6adb92a5015a7a3701081edf998  maven-metadata-group-with-valid-repos.xml",
-                      response.getText() );
+
+        assertThat( response.getContentAsString() )
+            .isEqualTo( "add113b0d7f8c6adb92a5015a7a3701081edf998  maven-metadata-group-with-valid-repos.xml" );
 
         // request the md5 checksum of the metadata
         request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/"
@@ -295,8 +297,9 @@ public class RepositoryServletRepositoryGroupTest
         response = getServletUnitClient().getResource( request );
 
         assertResponseOK( response );
-        assertEquals( "5b85ea4aa5f52bb76760041a52f98de8  maven-metadata-group-with-valid-repos.xml",
-                      response.getText().trim() );
+
+        assertThat( response.getContentAsString() )
+            .isEqualTo( "5b85ea4aa5f52bb76760041a52f98de8  maven-metadata-group-with-valid-repos.xml" );
     }
 
     // MRM-901
@@ -321,17 +324,20 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = getServletUnitClient().getResource( request );
 
         assertResponseOK( response );
-        assertTrue( StringUtils.contains( response.getText(), "Collection" ) );
-        assertTrue( StringUtils.contains( response.getText(), "dummy/dummy-artifact" ) );
-        assertTrue( StringUtils.contains( response.getText(), "1.0" ) );
-        assertTrue( StringUtils.contains( response.getText(), "2.0" ) );
+
+        assertThat( response.getContentAsString() ).contains( "Collection" )
+            .contains( "dummy/dummy-artifact" )
+            .contains( "1.0" )
+            .contains( "2.0" );
+
     }
 
     protected void assertResponseMethodNotAllowed( WebResponse response )
     {
-        assertNotNull( "Should have recieved a response", response );
-        assertEquals( "Should have been an 405/Method Not Allowed response code.",
-                      HttpServletResponse.SC_METHOD_NOT_ALLOWED, response.getResponseCode() );
+
+        assertThat( response ).isNotNull();
+
+        assertThat( response.getStatusCode() ).isEqualTo( HttpServletResponse.SC_METHOD_NOT_ALLOWED );
     }
 
     protected RepositoryGroupConfiguration createRepositoryGroup( String id, List<String> repositories )

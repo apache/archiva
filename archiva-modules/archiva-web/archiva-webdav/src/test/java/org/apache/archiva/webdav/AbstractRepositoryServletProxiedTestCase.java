@@ -19,8 +19,8 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.WebConversation;
-import com.meterware.httpunit.WebResponse;
+
+import com.gargoylesoftware.htmlunit.WebClient;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.policies.CachedFailuresPolicy;
@@ -29,22 +29,22 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.After;
 import org.junit.Before;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.nio.charset.Charset;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Rule;
+
 /**
  * AbstractRepositoryServletProxiedTestCase
- *
- *
  */
 public abstract class AbstractRepositoryServletProxiedTestCase
     extends AbstractRepositoryServletTestCase
@@ -94,11 +94,16 @@ public abstract class AbstractRepositoryServletProxiedTestCase
 
     protected RemoteRepoInfo remoteSnapshots;
 
+    @Rule
+    public ArchivaTemporaryFolderRule repoRootInternali = new ArchivaTemporaryFolderRule();
+    
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
         super.setUp();
+        startRepository();
     }
 
     @Override
@@ -117,7 +122,8 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         RemoteRepoInfo repo = new RemoteRepoInfo();
         repo.id = id;
         repo.context = "/" + id;
-        repo.root = new File( "target/remote-repos/" + id + "/" );
+        repo.root = repoRootInternali.getRoot();/*Files.createTempDirectory(
+            "temp" ).toFile();*/// new File( System.getProperty( "basedir" ) + "target/remote-repos/" + id + "/" );
 
         // Remove exising root contents.
         if ( repo.root.exists() )
@@ -150,7 +156,7 @@ public abstract class AbstractRepositoryServletProxiedTestCase
 
         int port = repo.server.getConnectors()[0].getLocalPort();
         repo.url = "http://localhost:" + port + repo.context;
-        log.info( "Remote HTTP Server started on " + repo.url );
+        log.info( "Remote HTTP Server started on {}", repo.url );
 
         repo.config = createRemoteRepository( repo.id, "Testable [" + repo.id + "] Remote Repo", repo.url );
 
@@ -160,9 +166,11 @@ public abstract class AbstractRepositoryServletProxiedTestCase
     protected void assertServerSetupCorrectly( RemoteRepoInfo remoteRepo )
         throws Exception
     {
-        WebConversation wc = new WebConversation();
-        WebResponse response = wc.getResponse( remoteRepo.url );
-        assertResponseOK( response );
+
+        WebClient client = newClient();
+        int status = client.getPage( remoteRepo.url ).getWebResponse().getStatusCode();
+        assertThat( status ).isEqualTo( HttpServletResponse.SC_OK );
+
     }
 
     private void setupConnector( String repoId, RemoteRepoInfo remoteRepo, String releasesPolicy,
@@ -207,12 +215,12 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         throws Exception
     {
         File destFile = new File( remoteRepo.root, path );
-        if (destFile.exists())
+        if ( destFile.exists() )
         {
             destFile.delete();
         }
         destFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( destFile, contents, Charset.defaultCharset()  );
+        FileUtils.writeStringToFile( destFile, contents, Charset.defaultCharset() );
         return destFile;
     }
 

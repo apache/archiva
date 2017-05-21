@@ -23,13 +23,15 @@ import junit.framework.TestCase;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.TestRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.mock.MockRepositorySessionFactory;
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
@@ -37,19 +39,15 @@ import javax.inject.Named;
 import java.io.File;
 import java.util.Calendar;
 import java.util.List;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.mockito.Mockito.mock;
-import org.springframework.test.annotation.DirtiesContext;
 
 /**
  * ArchivaRepositoryScanningTaskExecutorPhase1Test
- *
- *
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
-@DirtiesContext( classMode= DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
+@DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
 public abstract class ArchivaRepositoryScanningTaskExecutorAbstractTest
     extends TestCase
 {
@@ -70,8 +68,8 @@ public abstract class ArchivaRepositoryScanningTaskExecutorAbstractTest
     protected TestConsumer testConsumer;
 
     @Inject
-    @Named( value = "repositorySessionFactory#test" )
-    private TestRepositorySessionFactory factory;
+    @Named( value = "repositorySessionFactory#mock" )
+    private MockRepositorySessionFactory factory;
 
     protected File repoDir;
 

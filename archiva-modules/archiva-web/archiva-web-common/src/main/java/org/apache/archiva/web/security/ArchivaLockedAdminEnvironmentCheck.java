@@ -75,7 +75,7 @@ public class ArchivaLockedAdminEnvironmentCheck
         List<String> userManagerImpls =
             redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getUserManagerImpls();
 
-        userManagers = new ArrayList<UserManager>( userManagerImpls.size() );
+        userManagers = new ArrayList<>( userManagerImpls.size() );
 
         for ( String beanId : userManagerImpls )
         {
@@ -89,6 +89,7 @@ public class ArchivaLockedAdminEnvironmentCheck
      *
      * @param violations
      */
+    @Override
     public void validateEnvironment( List<String> violations )
     {
         if ( !checked )
@@ -100,7 +101,7 @@ public class ArchivaLockedAdminEnvironmentCheck
                 {
                     continue;
                 }
-                List<String> roles = new ArrayList<String>();
+                List<String> roles = new ArrayList<>();
                 roles.add( RedbackRoleConstants.SYSTEM_ADMINISTRATOR_ROLE );
 
                 List<UserAssignment> systemAdminstrators;
@@ -134,7 +135,7 @@ public class ArchivaLockedAdminEnvironmentCheck
                 }
                 catch ( RbacManagerException e )
                 {
-                    log.warn( "Exception when checking for locked admin user: " + e.getMessage(), e );
+                    log.warn( "Exception when checking for locked admin user: {}", e.getMessage(), e );
                 }
 
                 checked = true;

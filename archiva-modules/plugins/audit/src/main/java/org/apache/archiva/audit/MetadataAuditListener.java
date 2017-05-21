@@ -19,9 +19,11 @@ package org.apache.archiva.audit;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.repository.events.AuditListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -50,6 +52,7 @@ public class MetadataAuditListener
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
+    @Override
     public void auditEvent( AuditEvent event )
     {
         // for now we only log upload events, some of the others are quite noisy
@@ -64,7 +67,7 @@ public class MetadataAuditListener
             }
             catch ( MetadataRepositoryException e )
             {
-                log.warn( "Unable to write audit event to repository: " + e.getMessage(), e );
+                log.warn( "Unable to write audit event to repository: {}", e.getMessage(), e );
             }
             finally
             {

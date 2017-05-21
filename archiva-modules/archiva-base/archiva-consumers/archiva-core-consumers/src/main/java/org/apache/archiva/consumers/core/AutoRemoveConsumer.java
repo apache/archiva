@@ -30,6 +30,8 @@ import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -49,6 +51,9 @@ public class AutoRemoveConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
 {
+
+    private Logger log = LoggerFactory.getLogger( AutoRemoveConsumer.class );
+
     /**
      * default-value="auto-remove"
      */
@@ -73,72 +78,79 @@ public class AutoRemoveConsumer
 
     private File repositoryDir;
 
-    private List<String> includes = new ArrayList<String>( 0 );
+    private List<String> includes = new ArrayList<>( 0 );
 
+    @Override
     public String getId()
     {
         return this.id;
     }
 
+    @Override
     public String getDescription()
     {
         return this.description;
     }
 
-    public boolean isPermanent()
-    {
-        return false;
-    }
-
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         this.repositoryDir = new File( repository.getLocation() );
     }
 
+    @Override
     public void beginScan( ManagedRepository repository, Date whenGathered, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         beginScan( repository, whenGathered );
     }
 
+    @Override
     public void completeScan()
     {
         /* do nothing */
     }
 
+    @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
         completeScan();
     }
 
+    @Override
     public List<String> getExcludes()
     {
         return null;
     }
 
+    @Override
     public List<String> getIncludes()
     {
         return includes;
     }
 
+    @Override
     public void processFile( String path )
         throws ConsumerException
     {
         File file = new File( this.repositoryDir, path );
         if ( file.exists() )
         {
+            log.info( "(Auto) Removing File: {}", file.getAbsolutePath() );
             triggerConsumerInfo( "(Auto) Removing File: " + file.getAbsolutePath() );
             file.delete();
         }
     }
 
+    @Override
     public void processFile( String path, boolean executeOnEntireRepo )
         throws ConsumerException
     {
         processFile( path );
     }
 
+    @Override
     public void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
@@ -147,6 +159,7 @@ public class AutoRemoveConsumer
         }
     }
 
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         /* do nothing */
@@ -154,7 +167,7 @@ public class AutoRemoveConsumer
 
     private void initIncludes()
     {
-        includes = new ArrayList<String>( filetypes.getFileTypePatterns( FileTypes.AUTO_REMOVE ) );
+        includes = new ArrayList<>( filetypes.getFileTypePatterns( FileTypes.AUTO_REMOVE ) );
     }
 
     @PostConstruct

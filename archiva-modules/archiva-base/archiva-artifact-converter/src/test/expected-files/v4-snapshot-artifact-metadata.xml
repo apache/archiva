@@ -1,9 +1,0 @@
-<metadata>
-  <groupId>test</groupId>
-  <artifactId>v4artifact</artifactId>
-  <versioning>
-    <versions>
-      <version>1.0.0-SNAPSHOT</version>
-    </versions>
-  </versioning>
-</metadata>

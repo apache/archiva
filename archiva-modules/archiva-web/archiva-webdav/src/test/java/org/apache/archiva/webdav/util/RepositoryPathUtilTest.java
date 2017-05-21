@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  */
@@ -34,25 +35,11 @@ public class RepositoryPathUtilTest
     public void testGetRepositoryId()
     {
         String href = "/path/to/my/resource";
-        assertEquals( "to", RepositoryPathUtil.getRepositoryName( href ) );
+        assertThat( RepositoryPathUtil.getRepositoryName( href ) ).isEqualTo( "to" );
 
         href = "path/to/my/resource";
-        assertEquals( "to", RepositoryPathUtil.getRepositoryName( href ) );
+        assertThat( RepositoryPathUtil.getRepositoryName( href ) ).isEqualTo( "to" );
 
-        href = "mypath";
-        assertEquals( "/", RepositoryPathUtil.getLogicalResource( href ) );
     }
 
-    @Test
-    public void testGetLogicalPath()
-    {
-        String href = "/repository/internal/org/apache/maven/someartifact.jar";
-        assertEquals( "/org/apache/maven/someartifact.jar", RepositoryPathUtil.getLogicalResource( href ) );
-
-        href = "repository/internal/org/apache/maven/someartifact.jar";
-        assertEquals( "/org/apache/maven/someartifact.jar", RepositoryPathUtil.getLogicalResource( href ) );
-
-        href = "repository/internal/org/apache/maven/";
-        assertEquals( "/org/apache/maven/", RepositoryPathUtil.getLogicalResource( href ) );
-    }
 }

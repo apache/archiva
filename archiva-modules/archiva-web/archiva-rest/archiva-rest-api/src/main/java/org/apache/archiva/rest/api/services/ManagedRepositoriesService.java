@@ -103,7 +103,7 @@ public interface ManagedRepositoriesService
         throws ArchivaRestServiceException;
 
     /**
-     * return a pom snippet to use this repository with entities escaped (< > )
+     * return a pom snippet to use this repository with entities escaped (&lt; &gt;)
      * @since 1.4-M3
      */
     @Path( "getPomSnippet/{repositoryId}" )

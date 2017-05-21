@@ -27,7 +27,7 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.fest.assertions.api.Assertions;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,12 +40,12 @@ import java.util.Collections;
 import java.util.List;
 
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
+@ContextConfiguration( { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class DependencyTreeBuilderTestMaven3
     extends TestCase
 {
     @Inject
-    @Named( value = "dependencyTreeBuilder#maven3" )
+    @Named( "dependencyTreeBuilder#maven3" )
     private Maven3DependencyTreeBuilder builder;
 
     @Inject
@@ -61,10 +61,11 @@ public class DependencyTreeBuilderTestMaven3
 
 
     @Inject
-    @Named( value = "archivaConfiguration#test" )
+    @Named( "archivaConfiguration#test" )
     ArchivaConfiguration config;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -100,10 +101,10 @@ public class DependencyTreeBuilderTestMaven3
             builder.buildDependencyTree( Collections.singletonList( TEST_REPO_ID ), TEST_GROUP_ID, TEST_ARTIFACT_ID,
                                          TEST_VERSION );
 
-        Assertions.assertThat( treeEntries ).isNotNull().isNotEmpty().contains(
+        assertThat( treeEntries ).isNotNull().isNotEmpty().contains(
             new TreeEntry( new Artifact( TEST_GROUP_ID, TEST_ARTIFACT_ID, TEST_VERSION, "", "" ) ) );
 
-        Assertions.assertThat( treeEntries.get( 0 ).getChilds() ).isNotNull().isNotEmpty().contains(
+        assertThat( treeEntries.get( 0 ).getChilds() ).isNotNull().isNotEmpty().contains(
             new TreeEntry( new Artifact( "commons-lang", "commons-lang", "2.2", "compile", "" ) ) );
     }
 

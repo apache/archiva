@@ -23,7 +23,6 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
-import org.apache.archiva.audit.AuditEvent;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
@@ -31,11 +30,13 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.role.RoleManagerException;
@@ -60,6 +61,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +72,7 @@ import java.util.Map;
  *
  * @author Olivier Lamy
  */
-@Service( "managedRepositoryAdmin#default" )
+@Service("managedRepositoryAdmin#default")
 public class DefaultManagedRepositoryAdmin
     extends AbstractRepositoryAdmin
     implements ManagedRepositoryAdmin
@@ -81,7 +83,7 @@ public class DefaultManagedRepositoryAdmin
     public static final String STAGE_REPO_ID_END = "-stage";
 
     @Inject
-    @Named( value = "archivaTaskScheduler#repository" )
+    @Named(value = "archivaTaskScheduler#repository")
     private RepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
     /**
@@ -101,6 +103,10 @@ public class DefaultManagedRepositoryAdmin
 
     @Inject
     protected RoleManager roleManager;
+
+    @Inject
+    @Named(value = "cache#namespaces")
+    private Cache<String, Collection<String>> namespacesCache;
 
     // fields
     List<? extends IndexCreator> indexCreators;
@@ -151,6 +157,7 @@ public class DefaultManagedRepositoryAdmin
         }
     }
 
+    @Override
     public List<ManagedRepository> getManagedRepositories()
         throws RepositoryAdminException
     {
@@ -181,12 +188,12 @@ public class DefaultManagedRepositoryAdmin
         return managedRepos;
     }
 
+    @Override
     public Map<String, ManagedRepository> getManagedRepositoriesAsMap()
         throws RepositoryAdminException
     {
         List<ManagedRepository> managedRepositories = getManagedRepositories();
-        Map<String, ManagedRepository> repositoriesMap =
-            new HashMap<String, ManagedRepository>( managedRepositories.size() );
+        Map<String, ManagedRepository> repositoriesMap = new HashMap<>( managedRepositories.size() );
         for ( ManagedRepository managedRepository : managedRepositories )
         {
             repositoriesMap.put( managedRepository.getId(), managedRepository );
@@ -194,6 +201,7 @@ public class DefaultManagedRepositoryAdmin
         return repositoriesMap;
     }
 
+    @Override
     public ManagedRepository getManagedRepository( String repositoryId )
         throws RepositoryAdminException
     {
@@ -208,6 +216,7 @@ public class DefaultManagedRepositoryAdmin
         return null;
     }
 
+    @Override
     public Boolean addManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
                                          AuditInformation auditInformation )
         throws RepositoryAdminException
@@ -312,6 +321,7 @@ public class DefaultManagedRepositoryAdmin
         return repository;
     }
 
+    @Override
     public Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation,
                                             boolean deleteContent )
         throws RepositoryAdminException
@@ -382,6 +392,8 @@ public class DefaultManagedRepositoryAdmin
             {
                 MetadataRepository metadataRepository = repositorySession.getRepository();
                 metadataRepository.removeRepository( repository.getId() );
+                //invalidate cache
+                namespacesCache.remove( repository.getId() );
                 log.debug( "call repositoryStatisticsManager.deleteStatistics" );
                 getRepositoryStatisticsManager().deleteStatistics( metadataRepository, repository.getId() );
                 repositorySession.save();
@@ -389,7 +401,7 @@ public class DefaultManagedRepositoryAdmin
             catch ( MetadataRepositoryException e )
             {
                 //throw new RepositoryAdminException( e.getMessage(), e );
-                log.warn( "skip error during removing repository from MetadatRepository:" + e.getMessage(), e );
+                log.warn( "skip error during removing repository from MetadataRepository:{}", e.getMessage(), e );
             }
             finally
             {
@@ -409,8 +421,7 @@ public class DefaultManagedRepositoryAdmin
         }
 
         // olamy: copy list for reading as a unit test in webapp fail with ConcurrentModificationException
-        List<ProxyConnectorConfiguration> proxyConnectors =
-            new ArrayList<ProxyConnectorConfiguration>( config.getProxyConnectors() );
+        List<ProxyConnectorConfiguration> proxyConnectors = new ArrayList<>( config.getProxyConnectors() );
         for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
         {
             if ( StringUtils.equals( proxyConnector.getSourceRepoId(), repository.getId() ) )
@@ -430,7 +441,7 @@ public class DefaultManagedRepositoryAdmin
                     // copy to prevent UnsupportedOperationException
                     RepositoryGroupConfiguration repositoryGroupConfiguration =
                         config.findRepositoryGroupById( repoGroup );
-                    List<String> repos = new ArrayList<String>( repositoryGroupConfiguration.getRepositories() );
+                    List<String> repos = new ArrayList<>( repositoryGroupConfiguration.getRepositories() );
                     config.removeRepositoryGroup( repositoryGroupConfiguration );
                     repos.remove( repository.getId() );
                     repositoryGroupConfiguration.setRepositories( repos );
@@ -455,6 +466,7 @@ public class DefaultManagedRepositoryAdmin
     }
 
 
+    @Override
     public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
                                             AuditInformation auditInformation, boolean resetStats )
         throws RepositoryAdminException
@@ -584,6 +596,7 @@ public class DefaultManagedRepositoryAdmin
 
     }
 
+    @Override
     public IndexingContext createIndexContext( ManagedRepository repository )
         throws RepositoryAdminException
     {
@@ -727,26 +740,6 @@ public class DefaultManagedRepositoryAdmin
             return false;
         }
         return true;
-    }
-
-
-    private void addRepositoryRoles( ManagedRepository newRepository )
-        throws RoleManagerException
-    {
-        String repoId = newRepository.getId();
-
-        // TODO: double check these are configured on start up
-        // TODO: belongs in the business logic
-
-        if ( !getRoleManager().templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId ) )
-        {
-            getRoleManager().createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_OBSERVER, repoId );
-        }
-
-        if ( !getRoleManager().templatedRoleExists( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId ) )
-        {
-            getRoleManager().createTemplatedRole( ArchivaRoleConstants.TEMPLATE_REPOSITORY_MANAGER, repoId );
-        }
     }
 
 

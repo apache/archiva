@@ -29,12 +29,15 @@ import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.commons.io.FileUtils;
-import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
-import org.fest.assertions.api.Assertions;
 import org.junit.Test;
 
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -43,7 +46,7 @@ public class RepositoriesServiceTest
     extends AbstractArchivaRestTest
 {
 
-    @Test ( expected = ServerWebApplicationException.class )
+    @Test( expected = ForbiddenException.class )
     public void scanRepoKarmaFailed()
         throws Exception
     {
@@ -52,9 +55,9 @@ public class RepositoriesServiceTest
         {
             service.scanRepository( "id", true );
         }
-        catch ( ServerWebApplicationException e )
+        catch ( ForbiddenException e )
         {
-            assertEquals( 403, e.getStatus() );
+            assertEquals( 403, e.getResponse().getStatus() );
             throw e;
         }
     }
@@ -79,7 +82,7 @@ public class RepositoriesServiceTest
         assertTrue( service.scanRepository( repoId, true ) );
     }
 
-    @Test ( expected = ServerWebApplicationException.class )
+    @Test( expected = ForbiddenException.class )
     public void deleteArtifactKarmaFailed()
         throws Exception
     {
@@ -96,15 +99,15 @@ public class RepositoriesServiceTest
 
             repositoriesService.deleteArtifact( artifact );
         }
-        catch ( ServerWebApplicationException e )
+        catch ( ForbiddenException e )
         {
-            assertEquals( 403, e.getStatus() );
+            assertEquals( 403, e.getResponse().getStatus() );
             throw e;
 
         }
     }
 
-    @Test ( expected = ServerWebApplicationException.class )
+    @Test( expected = BadRequestException.class )
     public void deleteWithRepoNull()
         throws Exception
     {
@@ -121,9 +124,10 @@ public class RepositoriesServiceTest
 
             repositoriesService.deleteArtifact( artifact );
         }
-        catch ( ServerWebApplicationException e )
+        catch ( BadRequestException e )
         {
-            assertEquals( "not http 400 status", 400, e.getStatus() );
+            assertEquals( "not http " + Response.Status.BAD_REQUEST.getStatusCode() + " status",
+                          Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus() );
             throw e;
         }
     }
@@ -148,12 +152,12 @@ public class RepositoriesServiceTest
 
         log.info( "artifacts: {}", artifacts );
 
-        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 2 );
+        assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 2 );
 
         VersionsList versionsList =
             browseService.getVersionsList( "org.apache.karaf.features", "org.apache.karaf.features.core",
                                            SOURCE_REPO_ID );
-        Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 2 );
+        assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 2 );
 
         log.info( "artifacts.size: {}", artifacts.size() );
 
@@ -180,12 +184,12 @@ public class RepositoriesServiceTest
                 browseService.getArtifactDownloadInfos( "org.apache.karaf.features", "org.apache.karaf.features.core",
                                                         "2.2.2", SOURCE_REPO_ID );
 
-            Assertions.assertThat( artifacts ).isNotNull().isEmpty();
+            assertThat( artifacts ).isNotNull().isEmpty();
 
             versionsList = browseService.getVersionsList( "org.apache.karaf.features", "org.apache.karaf.features.core",
                                                           SOURCE_REPO_ID );
 
-            Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 1 );
+            assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 1 );
 
         }
         finally
@@ -209,12 +213,12 @@ public class RepositoriesServiceTest
 
         log.info( "artifacts: {}", artifacts );
 
-        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 2 );
+        assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 2 );
 
         VersionsList versionsList =
             browseService.getVersionsList( "org.apache.karaf.features", "org.apache.karaf.features.core",
                                            SOURCE_REPO_ID );
-        Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 2 );
+        assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 2 );
 
         log.info( "artifacts.size: {}", artifacts.size() );
 
@@ -242,12 +246,12 @@ public class RepositoriesServiceTest
                 browseService.getArtifactDownloadInfos( "org.apache.karaf.features", "org.apache.karaf.features.core",
                                                         "2.2.2", SOURCE_REPO_ID );
 
-            Assertions.assertThat( artifacts ).isNotNull().isEmpty();
+            assertThat( artifacts ).isNotNull().isEmpty();
 
             versionsList = browseService.getVersionsList( "org.apache.karaf.features", "org.apache.karaf.features.core",
                                                           SOURCE_REPO_ID );
 
-            Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 1 );
+            assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 1 );
 
         }
         finally
@@ -267,11 +271,11 @@ public class RepositoriesServiceTest
         List<Artifact> artifacts =
             browseService.getArtifactDownloadInfos( "commons-logging", "commons-logging", "1.0.1", SOURCE_REPO_ID );
 
-        Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 3 );
+        assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 3 );
 
         VersionsList versionsList =
             browseService.getVersionsList( "commons-logging", "commons-logging", SOURCE_REPO_ID );
-        Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 6 );
+        assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 6 );
 
         log.info( "artifacts.size: {}", artifacts.size() );
 
@@ -312,13 +316,13 @@ public class RepositoriesServiceTest
 
             log.info( "artifact: {}", artifacts );
 
-            Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 2 );
+            assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 2 );
 
             versionsList = browseService.getVersionsList( "commons-logging", "commons-logging", SOURCE_REPO_ID );
 
             log.info( "versionsList: {}", versionsList );
 
-            Assertions.assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 6 );
+            assertThat( versionsList.getVersions() ).isNotNull().isNotEmpty().hasSize( 6 );
 
         }
         finally
@@ -343,7 +347,7 @@ public class RepositoriesServiceTest
 
             log.info( "browseResult: {}", browseResult );
 
-            Assertions.assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isNotEmpty().contains(
+            assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isNotEmpty().contains(
                 new BrowseResultEntry( "org.apache.karaf.features.org.apache.karaf.features.command", true ),
                 new BrowseResultEntry( "org.apache.karaf.features.org.apache.karaf.features.core", true ) );
 
@@ -361,13 +365,13 @@ public class RepositoriesServiceTest
 
             assertNotNull( browseResult );
 
-            Assertions.assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isEmpty();
+            assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isEmpty();
 
             browseResult = browseService.browseGroupId( "org.apache.karaf", SOURCE_REPO_ID );
 
             assertNotNull( browseResult );
 
-            Assertions.assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isEmpty();
+            assertThat( browseResult.getBrowseResultEntries() ).isNotNull().isEmpty();
 
             log.info( "browseResult empty: {}", browseResult );
         }
@@ -441,7 +445,7 @@ public class RepositoriesServiceTest
 
             log.info( "artifacts: {}", artifacts );
 
-            Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 10 );
+            assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 10 );
 
             File artifactFile = new File( targetRepo,
                                           "org/apache/archiva/redback/components/spring-quartz/2.0-SNAPSHOT/spring-quartz-2.0-20120618.214127-1.jar" );
@@ -452,9 +456,9 @@ public class RepositoriesServiceTest
             File artifactFilepom = new File( targetRepo,
                                              "org/apache/archiva/redback/components/spring-quartz/2.0-SNAPSHOT/spring-quartz-2.0-20120618.214127-1.pom" );
 
-            Assertions.assertThat( artifactFile ).exists();
-            Assertions.assertThat( artifactFilemd5 ).exists();
-            Assertions.assertThat( artifactFilepom ).exists();
+            assertThat( artifactFile ).exists();
+            assertThat( artifactFilemd5 ).exists();
+            assertThat( artifactFilepom ).exists();
 
             // we delete only one snapshot
             Artifact artifact =
@@ -471,11 +475,11 @@ public class RepositoriesServiceTest
 
             log.info( "artifacts: {}", artifacts );
 
-            Assertions.assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 8 );
+            assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 8 );
 
-            Assertions.assertThat( artifactFile ).doesNotExist();
-            Assertions.assertThat( artifactFilemd5 ).doesNotExist();
-            Assertions.assertThat( artifactFilepom ).doesNotExist();
+            assertThat( artifactFile ).doesNotExist();
+            assertThat( artifactFilemd5 ).doesNotExist();
+            assertThat( artifactFilepom ).doesNotExist();
         }
         catch ( Exception e )
         {
@@ -543,6 +547,7 @@ public class RepositoriesServiceTest
                                       true, false );
     }
 
+    @Override
     protected ManagedRepository getTestManagedRepository()
     {
         return getTestManagedRepository( "TEST", "test-repo" );

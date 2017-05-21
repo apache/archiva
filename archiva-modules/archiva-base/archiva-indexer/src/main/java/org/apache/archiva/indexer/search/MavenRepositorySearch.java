@@ -29,16 +29,23 @@ import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.OSGI;
+import org.apache.maven.index.QueryCreator;
+import org.apache.maven.index.SearchType;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.expr.SearchExpression;
+import org.apache.maven.index.expr.SearchTyped;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.expr.UserInputSearchExpression;
 import org.slf4j.Logger;
@@ -58,13 +65,15 @@ import java.util.Set;
 /**
  * RepositorySearch implementation which uses the Maven Indexer for searching.
  */
-@Service("repositorySearch#maven")
+@Service( "repositorySearch#maven" )
 public class MavenRepositorySearch
     implements RepositorySearch
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     private NexusIndexer indexer;
+
+    private QueryCreator queryCreator;
 
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
@@ -83,6 +92,7 @@ public class MavenRepositorySearch
         throws PlexusSisuBridgeException
     {
         this.indexer = plexusSisuBridge.lookup( NexusIndexer.class );
+        this.queryCreator = plexusSisuBridge.lookup( QueryCreator.class );
         this.managedRepositoryAdmin = managedRepositoryAdmin;
         this.mavenIndexerUtils = mavenIndexerUtils;
         this.proxyConnectorAdmin = proxyConnectorAdmin;
@@ -91,6 +101,7 @@ public class MavenRepositorySearch
     /**
      * @see RepositorySearch#search(String, List, String, SearchResultLimits, List)
      */
+    @Override
     public SearchResults search( String principal, List<String> selectedRepos, String term, SearchResultLimits limits,
                                  List<String> previousSearchTerms )
         throws RepositorySearchException
@@ -123,13 +134,14 @@ public class MavenRepositorySearch
 
         // we retun only artifacts without classifier in quick search, olamy cannot find a way to say with this field empty
         // FIXME  cannot find a way currently to setup this in constructQuery !!!
-        return search( limits, q, indexingContextIds, NoClassifierArtifactInfoFilter.LIST, selectedRepos, false );
+        return search( limits, q, indexingContextIds, NoClassifierArtifactInfoFilter.LIST, selectedRepos, true );
 
     }
 
     /**
      * @see RepositorySearch#search(String, SearchFields, SearchResultLimits)
      */
+    @Override
     public SearchResults search( String principal, SearchFields searchFields, SearchResultLimits limits )
         throws RepositorySearchException
     {
@@ -151,28 +163,35 @@ public class MavenRepositorySearch
         BooleanQuery q = new BooleanQuery();
         if ( StringUtils.isNotBlank( searchFields.getGroupId() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.GROUP_ID, new UserInputSearchExpression( searchFields.getGroupId() ) ),
-                   Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.GROUP_ID, searchFields.isExactSearch()
+                                               ? new SourcedSearchExpression( searchFields.getGroupId() )
+                                               : new UserInputSearchExpression( searchFields.getGroupId() )
+                   ), Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getArtifactId() ) )
         {
             q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID,
-                                           new UserInputSearchExpression( searchFields.getArtifactId() ) ),
-                   Occur.MUST );
+                                           searchFields.isExactSearch()
+                                               ? new SourcedSearchExpression( searchFields.getArtifactId() )
+                                               : new UserInputSearchExpression( searchFields.getArtifactId() )
+                   ), Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getVersion() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.VERSION, new SourcedSearchExpression( searchFields.getVersion() ) ),
-                   Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.VERSION, searchFields.isExactSearch() ? new SourcedSearchExpression(
+                searchFields.getVersion() ) : new SourcedSearchExpression( searchFields.getVersion() ) ), Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getPackaging() ) )
         {
-            q.add(
-                indexer.constructQuery( MAVEN.PACKAGING, new UserInputSearchExpression( searchFields.getPackaging() ) ),
-                Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.PACKAGING, searchFields.isExactSearch() ? new SourcedSearchExpression(
+                       searchFields.getPackaging() ) : new UserInputSearchExpression( searchFields.getPackaging() ) ),
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getClassName() ) )
@@ -185,35 +204,40 @@ public class MavenRepositorySearch
         {
             q.add( indexer.constructQuery( OSGI.SYMBOLIC_NAME,
                                            new UserInputSearchExpression( searchFields.getBundleSymbolicName() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleVersion() ) )
         {
             q.add( indexer.constructQuery( OSGI.VERSION,
                                            new UserInputSearchExpression( searchFields.getBundleVersion() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleExportPackage() ) )
         {
             q.add( indexer.constructQuery( OSGI.EXPORT_PACKAGE,
                                            new UserInputSearchExpression( searchFields.getBundleExportPackage() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleExportService() ) )
         {
             q.add( indexer.constructQuery( OSGI.EXPORT_SERVICE,
                                            new UserInputSearchExpression( searchFields.getBundleExportService() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleImportPackage() ) )
         {
             q.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
                                            new UserInputSearchExpression( searchFields.getBundleImportPackage() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleName() ) )
@@ -226,21 +250,29 @@ public class MavenRepositorySearch
         {
             q.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
                                            new UserInputSearchExpression( searchFields.getBundleImportPackage() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleRequireBundle() ) )
         {
             q.add( indexer.constructQuery( OSGI.REQUIRE_BUNDLE,
                                            new UserInputSearchExpression( searchFields.getBundleRequireBundle() ) ),
-                   Occur.MUST );
+                   Occur.MUST
+            );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getClassifier() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.CLASSIFIER,
-                                           new UserInputSearchExpression( searchFields.getClassifier() ) ),
-                   Occur.MUST );
+            q.add( indexer.constructQuery( MAVEN.CLASSIFIER, searchFields.isExactSearch() ? new SourcedSearchExpression(
+                       searchFields.getClassifier() ) : new UserInputSearchExpression( searchFields.getClassifier() ) ),
+                   Occur.MUST
+            );
+        }
+        else if ( searchFields.isExactSearch() )
+        {
+            //TODO improvement in case of exact search and no classifier we must query for classifier with null value
+            // currently it's done in DefaultSearchService with some filtering
         }
 
         if ( q.getClauses() == null || q.getClauses().length <= 0 )
@@ -252,6 +284,23 @@ public class MavenRepositorySearch
                        searchFields.getRepositories(), searchFields.isIncludePomArtifacts() );
     }
 
+    private static class NullSearch implements SearchTyped, SearchExpression
+    {
+        private static final NullSearch INSTANCE = new NullSearch();
+
+        @Override
+        public String getStringValue()
+        {
+            return "[[NULL_VALUE]]";
+        }
+
+        @Override
+        public SearchType getSearchType()
+        {
+            return SearchType.EXACT;
+        }
+    }
+
     private SearchResults search( SearchResultLimits limits, BooleanQuery q, List<String> indexingContextIds,
                                   List<? extends ArtifactInfoFilter> filters, List<String> selectedRepos,
                                   boolean includePoms )
@@ -261,7 +310,16 @@ public class MavenRepositorySearch
         try
         {
             FlatSearchRequest request = new FlatSearchRequest( q );
+
             request.setContexts( getIndexingContexts( indexingContextIds ) );
+            if ( limits != null )
+            {
+                // we apply limits only when first page asked
+                if ( limits.getSelectedPage() == 0 )
+                {
+                    request.setCount( limits.getPageSize() * ( Math.max( 1, limits.getSelectedPage() ) ) );
+                }
+            }
 
             FlatSearchResponse response = indexer.searchFlat( request );
 
@@ -287,7 +345,7 @@ public class MavenRepositorySearch
 
     private List<IndexingContext> getIndexingContexts( List<String> ids )
     {
-        List<IndexingContext> contexts = new ArrayList<IndexingContext>( ids.size() );
+        List<IndexingContext> contexts = new ArrayList<>( ids.size() );
 
         for ( String id : ids )
         {
@@ -327,7 +385,7 @@ public class MavenRepositorySearch
      */
     private List<String> addIndexingContexts( List<String> selectedRepos )
     {
-        Set<String> indexingContextIds = new HashSet<String>();
+        Set<String> indexingContextIds = new HashSet<>();
         for ( String repo : selectedRepos )
         {
             try
@@ -362,14 +420,15 @@ public class MavenRepositorySearch
             }
         }
 
-        return new ArrayList<String>( indexingContextIds );
+        return new ArrayList<>( indexingContextIds );
     }
 
 
+    @Override
     public Set<String> getRemoteIndexingContextIds( String managedRepoId )
         throws RepositoryAdminException
     {
-        Set<String> ids = new HashSet<String>();
+        Set<String> ids = new HashSet<>();
 
         List<ProxyConnector> proxyConnectors = proxyConnectorAdmin.getProxyConnectorAsMap().get( managedRepoId );
 
@@ -391,6 +450,7 @@ public class MavenRepositorySearch
         return ids;
     }
 
+    @Override
     public Collection<String> getAllGroupIds( String principal, List<String> selectedRepos )
         throws RepositorySearchException
     {
@@ -403,7 +463,7 @@ public class MavenRepositorySearch
 
         try
         {
-            Set<String> allGroupIds = new HashSet<String>();
+            Set<String> allGroupIds = new HashSet<>();
             for ( IndexingContext indexingContext : indexContexts )
             {
                 allGroupIds.addAll( indexingContext.getAllGroups() );
@@ -620,6 +680,8 @@ public class MavenRepositorySearch
     {
         SearchResultLimits limits = results.getLimits();
         SearchResults paginated = new SearchResults();
+
+        // ( limits.getPageSize() * ( Math.max( 1, limits.getSelectedPage() ) ) );
 
         int fetchCount = limits.getPageSize();
         int offset = ( limits.getSelectedPage() * limits.getPageSize() );

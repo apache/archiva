@@ -16,16 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-define("archiva/admin/features/generaladmin/main",["jquery","i18n","utils","jquery.tmpl","knockout","knockout.simpleGrid",
-  "knockout.sortable","jquery.ui","jquery.validate","bootstrap","select2","knockout.select2"]
-    , function(jquery,i18n,utils,jqueryTmpl,ko,simpleGrid,sortable,jqueryUi,validate,bootstrap,select2) {
+define("archiva/admin/features/generaladmin/main",["jquery","jquery.ui","i18n","utils","jquery.tmpl","knockout","knockout.simpleGrid",
+  "knockout.sortable","jquery.validate","bootstrap","select2","knockout.select2"]
+    , function(jquery,jqueryUi,i18n,utils,jqueryTmpl,ko,simpleGrid,sortable,validate,bootstrap,select2) {
 
-  showMenu = function(          administrationMenuItems) {
+  showMenu = function( administrationMenuItems) {
         administrationMenuItems.push({  text : $.i18n.prop('menu.repository-scanning')      , order:2000, id: "menu-repository-scanning-list-a"    , href: "#scanningList"         , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRepositoryScanning();}});
         administrationMenuItems.push({  text : $.i18n.prop('menu.runtime-configuration')    , order:2010, id: "menu-runtime-configuration-list-a"  , href: "#runtimeconfig"        , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayRuntimeConfiguration();}});
         administrationMenuItems.push({  text : $.i18n.prop('menu.system-status')            , order:2020, id: "menu-system-status-list-a"          , href: "#status"               , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displaySystemStatus();}});
-        administrationMenuItems.push({  text : $.i18n.prop('menu.ui-configuration')         , order:2030, id: "menu-ui-configuration-list-a"       , href: "#uiconfig"             , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayUiConfiguration();}});
-        administrationMenuItems.push({  text : $.i18n.prop('menu.reports')                  , order:2040, id: "menu-report-list-a"                 , href: "#reports"              , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayReportsPage();}});
+        //administrationMenuItems.push({  text : $.i18n.prop('menu.sirona')                   , order:2030, id: "menu-system-sirona-list-a"          , href: "#sirona"               , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displaySirona();}});
+        administrationMenuItems.push({  text : $.i18n.prop('menu.ui-configuration')         , order:2040, id: "menu-ui-configuration-list-a"       , href: "#uiconfig"             , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayUiConfiguration();}});
+        administrationMenuItems.push({  text : $.i18n.prop('menu.reports')                  , order:2050, id: "menu-report-list-a"                 , href: "#reports"              , redback: "{permissions: ['archiva-manage-configuration']}", func: function(){displayReportsPage();}});
  
   };
  
@@ -316,7 +317,8 @@ define("archiva/admin/features/generaladmin/main",["jquery","i18n","utils","jque
         var archivaRuntimeConfiguration=mapArchivaRuntimeConfiguration(data);
         var archivaRuntimeConfigurationViewModel=new ArchivaRuntimeConfigurationViewModel(archivaRuntimeConfiguration);
         ko.applyBindings(archivaRuntimeConfigurationViewModel,mainContent.find("#cache-failure-form").get(0));
-        var validator = mainContent.find("#cache-failure-form-id")
+        ko.applyBindings(archivaRuntimeConfigurationViewModel,mainContent.find("#filelocking-form").get(0));
+        mainContent.find("#cache-failure-form-id")
                 .validate({
                             showErrors: function(validator, errorMap, errorList) {
                               customShowError(mainContent.find("#cache-failure-form-id" ),validator,errorMap,errorMap);
@@ -361,16 +363,31 @@ define("archiva/admin/features/generaladmin/main",["jquery","i18n","utils","jque
     }
   }
 
-  ArchivaRuntimeConfiguration=function(cacheConfiguration){
-    this.urlFailureCacheConfiguration=ko.observable(cacheConfiguration);
+  FileLockConfiguration=function(skipLocking,lockingTimeout){
+    //private boolean skipLocking = true;
+    this.skipLocking=ko.observable(skipLocking);
+    //private int lockingTimeout = 0;
+    this.lockingTimeout=ko.observable(lockingTimeout) ;
   }
 
+  ArchivaRuntimeConfiguration=function(cacheConfiguration,fileLockConfiguration){
+    this.urlFailureCacheConfiguration=ko.observable(cacheConfiguration);
+    this.fileLockConfiguration=ko.observable(fileLockConfiguration);
+  }
+
+  mapFileLockConfiguration=function(data){
+    if (!data){
+      return null;
+    }
+    return new FileLockConfiguration(data.skipLocking,data.lockingTimeout);
+  }
 
   mapArchivaRuntimeConfiguration=function(data){
     if(!data){
       return null;
     }
-    return new ArchivaRuntimeConfiguration(data.urlFailureCacheConfiguration?mapCacheConfiguration(data.urlFailureCacheConfiguration):null);
+    return new ArchivaRuntimeConfiguration(data.urlFailureCacheConfiguration?mapCacheConfiguration(data.urlFailureCacheConfiguration):null,
+                                           data.fileLockConfiguration?mapFileLockConfiguration(data.fileLockConfiguration):null);
   }
   //---------------------------
   // organisation/appearance configuration part
@@ -693,6 +710,11 @@ define("archiva/admin/features/generaladmin/main",["jquery","i18n","utils","jque
     displayScanningStats();
 
     displayCacheEntries();
+  }
+
+  displaySirona=function(){
+    window.open("sirona-monitoring/", '_blank');
+    window.focus();
   }
 
   refreshSystemStatus=function(){

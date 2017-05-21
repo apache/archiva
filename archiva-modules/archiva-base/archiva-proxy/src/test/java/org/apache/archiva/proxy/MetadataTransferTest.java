@@ -31,13 +31,16 @@ import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
+import org.easymock.EasyMock;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -122,9 +125,9 @@ public class MetadataTransferTest
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository,
+        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
-                                                                         metadata ) );
+                                                                         metadata ) ).getFile();
 
         assertNull( "Should not have downloaded a file.", downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -154,11 +157,10 @@ public class MetadataTransferTest
         // ensure that a hard failure in the first proxy connector is skipped and the second repository checked
         File expectedFile = new File( managedDefaultDir.getAbsoluteFile(),
                                       metadataTools.getRepositorySpecificName( "badproxied1", requestedResource ) );
-        wagonMock.get( requestedResource, new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" ) );
 
-        wagonMockControl.setMatcher( customWagonGetMatcher );
+        wagonMock.get( EasyMock.eq( requestedResource ), EasyMock.anyObject( File.class ));
+        EasyMock.expectLastCall().andThrow( new TransferFailedException( "can't connect" ) );
 
-        wagonMockControl.setThrowable( new TransferFailedException( "can't connect" ) );
 
         wagonMockControl.replay();
 
@@ -986,9 +988,9 @@ public class MetadataTransferTest
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository,
+        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
-                                                                         metadata ) );
+                                                                         metadata ) ).getFile();
 
         assertNotNull( "Should have downloaded a file.", downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -1012,9 +1014,9 @@ public class MetadataTransferTest
         File expectedFile = new File( managedDefaultDir, requestedResource );
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository,
+        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
-                                                                         metadata ) );
+                                                                         metadata ) ).getFile();
 
         assertNull( downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -1033,9 +1035,9 @@ public class MetadataTransferTest
 
         VersionedReference metadata = createVersionedReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository,
+        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
-                                                                         metadata ) );
+                                                                         metadata ) ).getFile();
 
         assertNotNull( "Should have downloaded a file.", downloadedFile );
         assertNoTempFiles( expectedFile );
@@ -1059,9 +1061,9 @@ public class MetadataTransferTest
         File expectedFile = new File( managedDefaultDir, requestedResource );
         VersionedReference metadata = createVersionedReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetatadaFromProxies( managedDefaultRepository,
+        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
-                                                                         metadata ) );
+                                                                         metadata ) ).getFile();
 
         assertNull( downloadedFile );
         assertNoTempFiles( expectedFile );

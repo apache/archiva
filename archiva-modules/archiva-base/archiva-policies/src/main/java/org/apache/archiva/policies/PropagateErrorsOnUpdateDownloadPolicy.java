@@ -45,7 +45,7 @@ public class PropagateErrorsOnUpdateDownloadPolicy
      */
     public static final String NOT_PRESENT = "artifact not already present";
 
-    private List<String> options = new ArrayList<String>( 2 );
+    private List<String> options = new ArrayList<>( 2 );
 
     public PropagateErrorsOnUpdateDownloadPolicy()
     {
@@ -53,6 +53,7 @@ public class PropagateErrorsOnUpdateDownloadPolicy
         options.add( NOT_PRESENT );
     }
 
+    @Override
     public boolean applyPolicy( String policySetting, Properties request, File localFile, Exception exception,
                                 Map<String, Exception> previousExceptions )
         throws PolicyConfigurationException
@@ -81,21 +82,25 @@ public class PropagateErrorsOnUpdateDownloadPolicy
             "Unable to process checksum policy of [" + policySetting + "], please file a bug report." );
     }
 
+    @Override
     public String getDefaultOption()
     {
         return NOT_PRESENT;
     }
 
+    @Override
     public String getId()
     {
         return "propagate-errors-on-update";
     }
 
+    @Override
     public String getName()
     {
         return "Return error when";
     }
 
+    @Override
     public List<String> getOptions()
     {
         return options;

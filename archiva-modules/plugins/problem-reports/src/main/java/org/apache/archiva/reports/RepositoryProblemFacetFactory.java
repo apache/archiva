@@ -21,6 +21,7 @@ package org.apache.archiva.reports;
 
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.springframework.stereotype.Service;
 
 /**
@@ -30,11 +31,13 @@ import org.springframework.stereotype.Service;
 public class RepositoryProblemFacetFactory
     implements MetadataFacetFactory
 {
+    @Override
     public MetadataFacet createMetadataFacet()
     {
         return new RepositoryProblemFacet();
     }
 
+    @Override
     public MetadataFacet createMetadataFacet( String repositoryId, String name )
     {
         return new RepositoryProblemFacet();

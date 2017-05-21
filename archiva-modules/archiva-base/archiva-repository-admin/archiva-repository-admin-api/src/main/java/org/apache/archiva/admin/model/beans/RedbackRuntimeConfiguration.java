@@ -38,12 +38,12 @@ public class RedbackRuntimeConfiguration
     /**
      * Field userManagerImpls.
      */
-    private List<String> userManagerImpls = new ArrayList<String>();
+    private List<String> userManagerImpls = new ArrayList<>();
 
     /**
      * Field rbacManagerImpls.
      */
-    private java.util.List<String> rbacManagerImpls = new ArrayList<String>();
+    private java.util.List<String> rbacManagerImpls = new ArrayList<>();
 
     private LdapConfiguration ldapConfiguration;
 
@@ -111,7 +111,7 @@ public class RedbackRuntimeConfiguration
     {
         if ( this.configurationProperties == null )
         {
-            this.configurationProperties = new HashMap<String, String>();
+            this.configurationProperties = new HashMap<>();
         }
         return configurationProperties;
     }
@@ -137,7 +137,7 @@ public class RedbackRuntimeConfiguration
         this.configurationPropertiesEntries = configurationPropertiesEntries;
         if ( configurationPropertiesEntries != null )
         {
-            this.configurationProperties = new HashMap<String, String>( configurationPropertiesEntries.size() );
+            this.configurationProperties = new HashMap<>( configurationPropertiesEntries.size() );
             for ( PropertyEntry propertyEntry : configurationPropertiesEntries )
             {
                 this.configurationProperties.put( propertyEntry.getKey(), propertyEntry.getValue() );

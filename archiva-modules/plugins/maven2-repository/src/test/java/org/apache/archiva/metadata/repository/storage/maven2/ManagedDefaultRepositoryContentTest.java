@@ -29,11 +29,8 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -54,14 +51,14 @@ public class ManagedDefaultRepositoryContentTest
     extends AbstractDefaultRepositoryContentTestCase
 {
     @Inject
-    @Named ( value = "managedRepositoryContent#default" )
+    @Named ( "managedRepositoryContent#default" )
     private ManagedRepositoryContent repoContent;
 
     @Inject
     FileTypes fileTypes;
 
     @Inject
-    @Named ( value = "archivaConfiguration#default" )
+    @Named ( "archivaConfiguration#default" )
     ArchivaConfiguration archivaConfiguration;
 
     @Before
@@ -150,6 +147,7 @@ public class ManagedDefaultRepositoryContentTest
     }
 
     @Test
+    @Override
     public void testToPathOnNullArtifactReference()
     {
         try
@@ -187,7 +185,7 @@ public class ManagedDefaultRepositoryContentTest
         Set<String> testedVersionSet = repoContent.getVersions( reference );
 
         // Sort the list (for asserts)
-        List<String> testedVersions = new ArrayList<String>();
+        List<String> testedVersions = new ArrayList<>();
         testedVersions.addAll( testedVersionSet );
         Collections.sort( testedVersions, new VersionComparator() );
 
@@ -212,7 +210,7 @@ public class ManagedDefaultRepositoryContentTest
         Set<String> testedVersionSet = repoContent.getVersions( reference );
 
         // Sort the list (for asserts later)
-        List<String> testedVersions = new ArrayList<String>();
+        List<String> testedVersions = new ArrayList<>();
         testedVersions.addAll( testedVersionSet );
         Collections.sort( testedVersions, new VersionComparator() );
 

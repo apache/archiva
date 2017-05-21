@@ -21,7 +21,7 @@ package org.apache.archiva.admin.repository.proxyconnector;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
-import org.apache.archiva.audit.AuditEvent;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.junit.Test;
 
 import java.util.Arrays;

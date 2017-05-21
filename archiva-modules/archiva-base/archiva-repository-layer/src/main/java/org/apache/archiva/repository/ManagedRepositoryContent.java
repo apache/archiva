@@ -75,7 +75,6 @@ public interface ManagedRepositoryContent
      * <p>
      * Convenience method to get the repository id.
      * </p>
-     * <p/>
      * <p>
      * Equivalent to calling <code>.getRepository().getId()</code>
      * </p>
@@ -90,7 +89,6 @@ public interface ManagedRepositoryContent
      * This typically inclues the pom files, and those things with
      * classifiers (such as doc, source code, test libs, etc...)
      * </p>
-     * <p/>
      * <p>
      * <strong>NOTE:</strong> Some layouts (such as maven 1 "legacy") are not compatible with this query.
      * </p>
@@ -98,7 +96,6 @@ public interface ManagedRepositoryContent
      * @param reference the reference to work off of.
      * @return the set of ArtifactReferences for related artifacts.
      * @throws ContentNotFoundException if the initial artifact reference does not exist within the repository.
-     * @throws LayoutException
      */
     Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
         throws ContentNotFoundException;
@@ -107,7 +104,6 @@ public interface ManagedRepositoryContent
      * <p>
      * Convenience method to get the repository (on disk) root directory.
      * </p>
-     * <p/>
      * <p>
      * Equivalent to calling <code>.getRepository().getLocation()</code>
      * </p>
@@ -141,7 +137,6 @@ public interface ManagedRepositoryContent
      * Given a specific {@link VersionedReference}, return the list of available versions for that
      * versioned reference.
      * </p>
-     * <p/>
      * <p>
      * <strong>NOTE:</strong> This is really only useful when working with SNAPSHOTs.
      * </p>
@@ -149,7 +144,6 @@ public interface ManagedRepositoryContent
      * @param reference the versioned reference to work off of.
      * @return the set of versions found.
      * @throws ContentNotFoundException if the versioned reference does not exist within the repository.
-     * @throws LayoutException
      */
     Set<String> getVersions( VersionedReference reference )
         throws ContentNotFoundException;

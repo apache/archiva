@@ -19,12 +19,12 @@ package org.apache.archiva.common.utils;
  * under the License.
  */
 
+import junit.framework.TestCase;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 /**
  * VersionComparatorTest 
@@ -97,7 +97,7 @@ public class VersionComparatorTest
 
     private void assertSort( String[] rawVersions, String[] expectedSort )
     {
-        List<String> versions = new ArrayList<String>();
+        List<String> versions = new ArrayList<>();
         versions.addAll( Arrays.asList( rawVersions ) );
 
         Collections.sort( versions, VersionComparator.getInstance() );

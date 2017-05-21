@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class SearchResults
 {
-    private Map<String, SearchResultHit> hits = new HashMap<String, SearchResultHit>();
+    private Map<String, SearchResultHit> hits = new HashMap<>();
 
     private int totalHits;
 
@@ -59,7 +59,7 @@ public class SearchResults
      */
     public List<SearchResultHit> getHits()
     {
-        return new ArrayList<SearchResultHit>( hits.values() );
+        return new ArrayList<>( hits.values() );
     }
 
     /**

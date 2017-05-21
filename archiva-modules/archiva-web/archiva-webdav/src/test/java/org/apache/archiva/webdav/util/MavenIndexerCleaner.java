@@ -19,9 +19,7 @@ package org.apache.archiva.webdav.util;
  */
 
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.lucene.store.Lock;
-import org.apache.lucene.store.LockReleaseFailedException;
-import org.apache.lucene.store.NativeFSLockFactory;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.slf4j.Logger;
@@ -36,7 +34,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Olivier Lamy
@@ -55,7 +53,6 @@ public class MavenIndexerCleaner
 
     @PostConstruct
     public void startup()
-        throws Exception
     {
         plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
         cleanupIndex();
@@ -63,12 +60,12 @@ public class MavenIndexerCleaner
 
     @PreDestroy
     public void shutdown()
-        throws Exception
     {
         cleanupIndex();
     }
 
 
+    @Override
     public void contextInitialized( ServletContextEvent servletContextEvent )
     {
         try
@@ -86,6 +83,7 @@ public class MavenIndexerCleaner
         }
     }
 
+    @Override
     public void contextDestroyed( ServletContextEvent servletContextEvent )
     {
         try
@@ -101,13 +99,19 @@ public class MavenIndexerCleaner
     }
 
     public void cleanupIndex()
-        throws Exception
     {
         log.info( "cleanup IndexingContext" );
-        NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
-        for ( IndexingContext context : nexusIndexer.getIndexingContexts().values() )
+        try
         {
-            nexusIndexer.removeIndexingContext( context, true );
+            NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
+            for ( IndexingContext context : nexusIndexer.getIndexingContexts().values() )
+            {
+                nexusIndexer.removeIndexingContext( context, true );
+            }
+        }
+        catch ( Exception e )
+        {
+            log.warn( "fail to cleanupIndex: {}", e.getMessage(), e );
         }
 
     }

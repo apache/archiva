@@ -38,6 +38,7 @@ public class AdminRepositoryConsumerComparator
         return INSTANCE;
     }
 
+    @Override
     public int compare( AdminRepositoryConsumer o1, AdminRepositoryConsumer o2 )
     {
         if ( o1 == null && o2 == null )

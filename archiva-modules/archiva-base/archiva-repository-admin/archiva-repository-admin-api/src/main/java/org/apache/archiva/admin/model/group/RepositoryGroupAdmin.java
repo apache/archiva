@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -73,4 +74,6 @@ public interface RepositoryGroupAdmin
      */
     Map<String, List<String>> getRepositoryToGroupMap()
         throws RepositoryAdminException;
+
+    File getMergedIndexDirectory( String repositoryGroupId );
 }

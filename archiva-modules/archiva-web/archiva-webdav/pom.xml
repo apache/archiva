@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.archiva</groupId>
     <artifactId>archiva-web</artifactId>
-    <version>1.4-M5-SNAPSHOT</version>
+    <version>2.2.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>archiva-webdav</artifactId>
@@ -89,6 +89,10 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-indexer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-filelock</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
@@ -177,6 +181,19 @@
     </dependency>
 
     <dependency>
+      <groupId>net.sourceforge.htmlunit</groupId>
+      <artifactId>htmlunit</artifactId>
+      <version>2.13</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http</artifactId>
       <scope>test</scope>
@@ -197,11 +214,7 @@
       <artifactId>wagon-http-lightweight</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>httpunit</groupId>
-      <artifactId>httpunit</artifactId>
-      <scope>test</scope>
-    </dependency>
+
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-test-utils</artifactId>
@@ -220,8 +233,18 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-common-test-resources</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -269,8 +292,10 @@
               org.apache.archiva.redback.*,
               org.apache.archiva.redback.components.taskqueue,
               org.codehaus.plexus.util*,
+              org.apache.archiva.common.filelock,
               org.codehaus.redback.integration.filter.authentication,
-              org.slf4j;resolution:=optional
+              org.slf4j;resolution:=optional,
+              com.google.common.io
             </Import-Package>
           </instructions>
         </configuration>
@@ -279,7 +304,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>${webdav.argLine}</argLine>
+          <argLine>${webdav.argLine} ${jacocoagent}</argLine>
           <systemPropertyVariables>
             <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             <plexus.home>${project.build.directory}/appserver-base</plexus.home>
@@ -288,6 +313,7 @@
             <archiva.user.configFileName>${project.build.testOutputDirectory}/repository-archiva.xml</archiva.user.configFileName>
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
+            <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
           </systemPropertyVariables>
           <forkMode>${webdav.forkMode}</forkMode>
         </configuration>

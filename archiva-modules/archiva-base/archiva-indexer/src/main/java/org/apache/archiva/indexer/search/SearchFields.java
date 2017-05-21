@@ -52,7 +52,7 @@ public class SearchFields
     /**
      * repositories
      */
-    private List<String> repositories = new ArrayList<String>();
+    private List<String> repositories = new ArrayList<>();
 
 
     /**
@@ -113,6 +113,13 @@ public class SearchFields
     private boolean includePomArtifacts = false;
 
     private String classifier;
+
+    /**
+     * we use exact String matching search
+     *
+     * @since 2.1.0
+     */
+    private boolean exactSearch = false;
 
     public SearchFields()
     {
@@ -279,6 +286,16 @@ public class SearchFields
     public void setBundleRequireBundle( String bundleRequireBundle )
     {
         this.bundleRequireBundle = bundleRequireBundle;
+    }
+
+    public boolean isExactSearch()
+    {
+        return exactSearch;
+    }
+
+    public void setExactSearch( boolean exactSearch )
+    {
+        this.exactSearch = exactSearch;
     }
 
     @Override

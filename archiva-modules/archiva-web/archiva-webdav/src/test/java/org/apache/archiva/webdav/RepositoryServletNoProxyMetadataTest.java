@@ -19,10 +19,10 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.meterware.httpunit.GetMethodWebRequest;
-import com.meterware.httpunit.WebRequest;
-import com.meterware.httpunit.WebResponse;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -34,6 +34,15 @@ import java.nio.charset.Charset;
 public class RepositoryServletNoProxyMetadataTest
     extends AbstractRepositoryServletTestCase
 {
+
+    @Before
+    @Override
+    public void setUp() throws Exception
+    {
+        super.setUp();
+        startRepository();
+    }
+
     @Test
     public void testGetVersionMetadataDefaultLayout()
         throws Exception
@@ -50,7 +59,7 @@ public class RepositoryServletNoProxyMetadataTest
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
 
-        assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
+        assertEquals( "Expected file contents", expectedMetadataContents, response.getContentAsString() );
     }
 
     @Test
@@ -69,7 +78,7 @@ public class RepositoryServletNoProxyMetadataTest
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
 
-        assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
+        assertEquals( "Expected file contents", expectedMetadataContents, response.getContentAsString() );
     }
 
     @Test
@@ -88,7 +97,7 @@ public class RepositoryServletNoProxyMetadataTest
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
 
-        assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
+        assertEquals( "Expected file contents", expectedMetadataContents, response.getContentAsString() );
     }
 
     @Test
@@ -109,7 +118,7 @@ public class RepositoryServletNoProxyMetadataTest
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseOK( response );
 
-        assertEquals( "Expected file contents", expectedMetadataContents, response.getText() );
+        assertEquals( "Expected file contents", expectedMetadataContents, response.getContentAsString() );
     }
 
 }

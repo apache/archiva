@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<metadata>
+  <groupId>org.apache.archiva</groupId>
+  <artifactId>archiva-model</artifactId>
+  <version>1.4-M4-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <buildNumber>1</buildNumber>
+      <timestamp>20130425.081822</timestamp>
+    </snapshot>
+    <lastUpdated>20130425081822</lastUpdated>
+  </versioning>
+</metadata>

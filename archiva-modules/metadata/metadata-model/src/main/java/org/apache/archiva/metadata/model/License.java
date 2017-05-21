@@ -47,6 +47,7 @@ public class License
 
     public License()
     {
+        // no op
     }
 
     public String getName()

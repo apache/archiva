@@ -22,9 +22,10 @@ package org.apache.archiva.repository.scanner;
 import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
@@ -33,6 +34,7 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,15 +42,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * RepositoryScannerTest
- *
- *
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml" } )
+@RunWith(ArchivaSpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml" })
 public class RepositoryScannerTest
     extends TestCase
 {
@@ -79,7 +78,8 @@ public class RepositoryScannerTest
 
     private ManagedRepository createDefaultRepository()
     {
-        File repoDir = new File( "src/test/repositories/default-repository" );
+        File repoDir =
+            Paths.get( System.getProperty( "basedir" ), "src/test/repositories/default-repository" ).toFile();
 
         assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
@@ -89,9 +89,9 @@ public class RepositoryScannerTest
     private ManagedRepository createSimpleRepository()
         throws IOException, ParseException
     {
-        File srcDir = new File( "src/test/repositories/simple-repository" );
+        File srcDir = Paths.get( System.getProperty( "basedir" ),  "src/test/repositories/simple-repository" ).toFile();
 
-        File repoDir = new File( "target/test-repos/simple-repository" );
+        File repoDir = Paths.get( System.getProperty( "basedir" ),  "target/test-repos/simple-repository" ).toFile();
 
         FileUtils.deleteDirectory( repoDir );
 
@@ -116,7 +116,7 @@ public class RepositoryScannerTest
 
     private ManagedRepository createLegacyRepository()
     {
-        File repoDir = new File( "src/test/repositories/legacy-repository" );
+        File repoDir = Paths.get( System.getProperty( "basedir" ),  "src/test/repositories/legacy-repository" ).toFile();
 
         assertTrue( "Legacy Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
 
@@ -143,7 +143,7 @@ public class RepositoryScannerTest
 
     private List<String> getIgnoreList()
     {
-        List<String> ignores = new ArrayList<String>();
+        List<String> ignores = new ArrayList<>();
         ignores.addAll( Arrays.asList( RepositoryScanner.IGNORABLE_CONTENT ) );
         return ignores;
     }
@@ -154,12 +154,12 @@ public class RepositoryScannerTest
     {
         ManagedRepository repository = createSimpleRepository();
 
-        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
+        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<>();
         KnownScanConsumer consumer = new KnownScanConsumer();
         consumer.setIncludes( ARTIFACT_PATTERNS );
         knownConsumers.add( consumer );
 
-        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<InvalidRepositoryContentConsumer>();
+        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<>();
         InvalidScanConsumer badconsumer = new InvalidScanConsumer();
         invalidConsumers.add( badconsumer );
 
@@ -181,12 +181,12 @@ public class RepositoryScannerTest
     {
         ManagedRepository repository = createSimpleRepository();
 
-        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
+        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<>();
         KnownScanConsumer consumer = new KnownScanConsumer();
         consumer.setIncludes( ARTIFACT_PATTERNS );
         knownConsumers.add( consumer );
 
-        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<InvalidRepositoryContentConsumer>();
+        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<>();
         InvalidScanConsumer badconsumer = new InvalidScanConsumer();
         invalidConsumers.add( badconsumer );
 
@@ -207,13 +207,13 @@ public class RepositoryScannerTest
     {
         ManagedRepository repository = createSimpleRepository();
 
-        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
+        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<>();
         KnownScanConsumer consumer = new KnownScanConsumer();
         consumer.setProcessUnmodified( true );
         consumer.setIncludes( ARTIFACT_PATTERNS );
         knownConsumers.add( consumer );
 
-        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<InvalidRepositoryContentConsumer>();
+        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<>();
         InvalidScanConsumer badconsumer = new InvalidScanConsumer();
         invalidConsumers.add( badconsumer );
 
@@ -234,14 +234,15 @@ public class RepositoryScannerTest
     {
         ManagedRepository repository = createDefaultRepository();
 
-        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
+        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<>();
         KnownScanConsumer consumer = new KnownScanConsumer();
         consumer.setIncludes(
             new String[]{ "**/*.jar", "**/*.war", "**/*.pom", "**/maven-metadata.xml", "**/*-site.xml", "**/*.zip",
-                "**/*.tar.gz", "**/*.sha1", "**/*.md5" } );
+                "**/*.tar.gz", "**/*.sha1", "**/*.md5" }
+        );
         knownConsumers.add( consumer );
 
-        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<InvalidRepositoryContentConsumer>();
+        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<>();
         InvalidScanConsumer badconsumer = new InvalidScanConsumer();
         invalidConsumers.add( badconsumer );
 
@@ -252,14 +253,14 @@ public class RepositoryScannerTest
         assertNotNull( "Stats should not be null.", stats );
         assertMinimumHits( "Stats.totalFileCount", 17, stats.getTotalFileCount() );
         assertMinimumHits( "Processed Count", 17, consumer.getProcessCount() );
-        assertEquals( "Processed Count (of invalid items)", 6, badconsumer.getProcessCount() );
+        assertEquals( "Processed Count (of invalid items):" + badconsumer.getPaths(), 6, badconsumer.getProcessCount() );
     }
 
     @Test
     public void testDefaultRepositoryArtifactScanner()
         throws Exception
     {
-        List<String> actualArtifactPaths = new ArrayList<String>();
+        List<String> actualArtifactPaths = new ArrayList<>();
 
         actualArtifactPaths.add( "invalid/invalid/1.0-20050611.123456-1/invalid-1.0-20050611.123456-1.jar" );
         actualArtifactPaths.add( "invalid/invalid/1.0-SNAPSHOT/invalid-1.0.jar" );
@@ -295,12 +296,12 @@ public class RepositoryScannerTest
 
         ManagedRepository repository = createDefaultRepository();
 
-        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
+        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<>();
         KnownScanConsumer consumer = new KnownScanConsumer();
         consumer.setIncludes( ARTIFACT_PATTERNS );
         knownConsumers.add( consumer );
 
-        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<InvalidRepositoryContentConsumer>();
+        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<>();
         InvalidScanConsumer badconsumer = new InvalidScanConsumer();
         invalidConsumers.add( badconsumer );
 
@@ -317,7 +318,7 @@ public class RepositoryScannerTest
     public void testDefaultRepositoryMetadataScanner()
         throws Exception
     {
-        List<String> actualMetadataPaths = new ArrayList<String>();
+        List<String> actualMetadataPaths = new ArrayList<>();
 
         actualMetadataPaths.add( "org/apache/maven/some-ejb/1.0/maven-metadata.xml" );
         actualMetadataPaths.add( "org/apache/maven/update/test-not-updated/maven-metadata.xml" );
@@ -332,12 +333,12 @@ public class RepositoryScannerTest
 
         ManagedRepository repository = createDefaultRepository();
 
-        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
+        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<>();
         KnownScanConsumer knownConsumer = new KnownScanConsumer();
         knownConsumer.setIncludes( new String[]{ "**/maven-metadata*.xml" } );
         knownConsumers.add( knownConsumer );
 
-        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<InvalidRepositoryContentConsumer>();
+        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<>();
         InvalidScanConsumer badconsumer = new InvalidScanConsumer();
         invalidConsumers.add( badconsumer );
 
@@ -354,7 +355,7 @@ public class RepositoryScannerTest
     public void testDefaultRepositoryProjectScanner()
         throws Exception
     {
-        List<String> actualProjectPaths = new ArrayList<String>();
+        List<String> actualProjectPaths = new ArrayList<>();
 
         actualProjectPaths.add( "org/apache/maven/A/1.0/A-1.0.pom" );
         actualProjectPaths.add( "org/apache/maven/B/2.0/B-2.0.pom" );
@@ -369,12 +370,12 @@ public class RepositoryScannerTest
 
         ManagedRepository repository = createDefaultRepository();
 
-        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
+        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<>();
         KnownScanConsumer consumer = new KnownScanConsumer();
         consumer.setIncludes( new String[]{ "**/*.pom" } );
         knownConsumers.add( consumer );
 
-        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<InvalidRepositoryContentConsumer>();
+        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<>();
         InvalidScanConsumer badconsumer = new InvalidScanConsumer();
         invalidConsumers.add( badconsumer );
 
@@ -391,7 +392,7 @@ public class RepositoryScannerTest
     public void testLegacyRepositoryArtifactScanner()
         throws Exception
     {
-        List<String> actualArtifactPaths = new ArrayList<String>();
+        List<String> actualArtifactPaths = new ArrayList<>();
 
         actualArtifactPaths.add( "invalid/jars/1.0/invalid-1.0.jar" );
         actualArtifactPaths.add( "invalid/jars/invalid-1.0.rar" );
@@ -410,12 +411,12 @@ public class RepositoryScannerTest
 
         ManagedRepository repository = createLegacyRepository();
 
-        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<KnownRepositoryContentConsumer>();
+        List<KnownRepositoryContentConsumer> knownConsumers = new ArrayList<>();
         KnownScanConsumer consumer = new KnownScanConsumer();
         consumer.setIncludes( ARTIFACT_PATTERNS );
         knownConsumers.add( consumer );
 
-        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<InvalidRepositoryContentConsumer>();
+        List<InvalidRepositoryContentConsumer> invalidConsumers = new ArrayList<>();
         InvalidScanConsumer badconsumer = new InvalidScanConsumer();
         invalidConsumers.add( badconsumer );
 

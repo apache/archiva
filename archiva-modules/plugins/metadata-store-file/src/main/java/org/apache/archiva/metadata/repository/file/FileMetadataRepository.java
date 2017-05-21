@@ -36,16 +36,18 @@ import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -86,17 +88,26 @@ public class FileMetadataRepository
     }
 
     private File getBaseDirectory( String repoId )
+        throws IOException
     {
         // TODO: should be configurable, like the index
-        String basedir = configuration.getConfiguration().getManagedRepositoriesAsMap().get( repoId ).getLocation();
+        ManagedRepositoryConfiguration managedRepositoryConfiguration =
+            configuration.getConfiguration().getManagedRepositoriesAsMap().get( repoId );
+        if ( managedRepositoryConfiguration == null )
+        {
+            return Files.createTempDirectory( repoId ).toFile();
+        }
+        String basedir = managedRepositoryConfiguration.getLocation();
         return new File( basedir, ".archiva" );
     }
 
     private File getDirectory( String repoId )
+        throws IOException
     {
         return new File( getBaseDirectory( repoId ), "content" );
     }
 
+    @Override
     public void updateProject( String repoId, ProjectMetadata project )
     {
         updateProject( repoId, project.getNamespace(), project.getId() );
@@ -122,101 +133,104 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public void updateProjectVersion( String repoId, String namespace, String projectId,
                                       ProjectVersionMetadata versionMetadata )
     {
-        updateProject( repoId, namespace, projectId );
-
-        File directory =
-            new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + versionMetadata.getId() );
-
-        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
-        // remove properties that are not references or artifacts
-        for ( Object key : new ArrayList<Object>( properties.keySet() ) )
-        {
-            String name = (String) key;
-            if ( !name.contains( ":" ) && !name.equals( "facetIds" ) )
-            {
-                properties.remove( name );
-            }
-
-            // clear the facet contents so old properties are no longer written
-            clearMetadataFacetProperties( versionMetadata.getFacetList(), properties, "" );
-        }
-        properties.setProperty( "id", versionMetadata.getId() );
-        setProperty( properties, "name", versionMetadata.getName() );
-        setProperty( properties, "description", versionMetadata.getDescription() );
-        setProperty( properties, "url", versionMetadata.getUrl() );
-        setProperty( properties, "incomplete", String.valueOf( versionMetadata.isIncomplete() ) );
-        if ( versionMetadata.getScm() != null )
-        {
-            setProperty( properties, "scm.connection", versionMetadata.getScm().getConnection() );
-            setProperty( properties, "scm.developerConnection", versionMetadata.getScm().getDeveloperConnection() );
-            setProperty( properties, "scm.url", versionMetadata.getScm().getUrl() );
-        }
-        if ( versionMetadata.getCiManagement() != null )
-        {
-            setProperty( properties, "ci.system", versionMetadata.getCiManagement().getSystem() );
-            setProperty( properties, "ci.url", versionMetadata.getCiManagement().getUrl() );
-        }
-        if ( versionMetadata.getIssueManagement() != null )
-        {
-            setProperty( properties, "issue.system", versionMetadata.getIssueManagement().getSystem() );
-            setProperty( properties, "issue.url", versionMetadata.getIssueManagement().getUrl() );
-        }
-        if ( versionMetadata.getOrganization() != null )
-        {
-            setProperty( properties, "org.name", versionMetadata.getOrganization().getName() );
-            setProperty( properties, "org.url", versionMetadata.getOrganization().getUrl() );
-        }
-        int i = 0;
-        for ( License license : versionMetadata.getLicenses() )
-        {
-            setProperty( properties, "license." + i + ".name", license.getName() );
-            setProperty( properties, "license." + i + ".url", license.getUrl() );
-            i++;
-        }
-        i = 0;
-        for ( MailingList mailingList : versionMetadata.getMailingLists() )
-        {
-            setProperty( properties, "mailingList." + i + ".archive", mailingList.getMainArchiveUrl() );
-            setProperty( properties, "mailingList." + i + ".name", mailingList.getName() );
-            setProperty( properties, "mailingList." + i + ".post", mailingList.getPostAddress() );
-            setProperty( properties, "mailingList." + i + ".unsubscribe", mailingList.getUnsubscribeAddress() );
-            setProperty( properties, "mailingList." + i + ".subscribe", mailingList.getSubscribeAddress() );
-            setProperty( properties, "mailingList." + i + ".otherArchives", join( mailingList.getOtherArchives() ) );
-            i++;
-        }
-        i = 0;
-        ProjectVersionReference reference = new ProjectVersionReference();
-        reference.setNamespace( namespace );
-        reference.setProjectId( projectId );
-        reference.setProjectVersion( versionMetadata.getId() );
-        reference.setReferenceType( ProjectVersionReference.ReferenceType.DEPENDENCY );
-        for ( Dependency dependency : versionMetadata.getDependencies() )
-        {
-            setProperty( properties, "dependency." + i + ".classifier", dependency.getClassifier() );
-            setProperty( properties, "dependency." + i + ".scope", dependency.getScope() );
-            setProperty( properties, "dependency." + i + ".systemPath", dependency.getSystemPath() );
-            setProperty( properties, "dependency." + i + ".artifactId", dependency.getArtifactId() );
-            setProperty( properties, "dependency." + i + ".groupId", dependency.getGroupId() );
-            setProperty( properties, "dependency." + i + ".version", dependency.getVersion() );
-            setProperty( properties, "dependency." + i + ".type", dependency.getType() );
-            setProperty( properties, "dependency." + i + ".optional", String.valueOf( dependency.isOptional() ) );
-
-            updateProjectReference( repoId, dependency.getGroupId(), dependency.getArtifactId(),
-                                    dependency.getVersion(), reference );
-
-            i++;
-        }
-        Set<String> facetIds = new LinkedHashSet<String>( versionMetadata.getFacetIds() );
-        facetIds.addAll( Arrays.asList( properties.getProperty( "facetIds", "" ).split( "," ) ) );
-        properties.setProperty( "facetIds", join( facetIds ) );
-
-        updateProjectVersionFacets( versionMetadata, properties );
 
         try
         {
+            updateProject( repoId, namespace, projectId );
+
+            File directory =
+                new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + versionMetadata.getId() );
+
+            Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+            // remove properties that are not references or artifacts
+            for ( Object key : new ArrayList( properties.keySet() ) )
+            {
+                String name = (String) key;
+                if ( !name.contains( ":" ) && !name.equals( "facetIds" ) )
+                {
+                    properties.remove( name );
+                }
+
+                // clear the facet contents so old properties are no longer written
+                clearMetadataFacetProperties( versionMetadata.getFacetList(), properties, "" );
+            }
+            properties.setProperty( "id", versionMetadata.getId() );
+            setProperty( properties, "name", versionMetadata.getName() );
+            setProperty( properties, "description", versionMetadata.getDescription() );
+            setProperty( properties, "url", versionMetadata.getUrl() );
+            setProperty( properties, "incomplete", String.valueOf( versionMetadata.isIncomplete() ) );
+            if ( versionMetadata.getScm() != null )
+            {
+                setProperty( properties, "scm.connection", versionMetadata.getScm().getConnection() );
+                setProperty( properties, "scm.developerConnection", versionMetadata.getScm().getDeveloperConnection() );
+                setProperty( properties, "scm.url", versionMetadata.getScm().getUrl() );
+            }
+            if ( versionMetadata.getCiManagement() != null )
+            {
+                setProperty( properties, "ci.system", versionMetadata.getCiManagement().getSystem() );
+                setProperty( properties, "ci.url", versionMetadata.getCiManagement().getUrl() );
+            }
+            if ( versionMetadata.getIssueManagement() != null )
+            {
+                setProperty( properties, "issue.system", versionMetadata.getIssueManagement().getSystem() );
+                setProperty( properties, "issue.url", versionMetadata.getIssueManagement().getUrl() );
+            }
+            if ( versionMetadata.getOrganization() != null )
+            {
+                setProperty( properties, "org.name", versionMetadata.getOrganization().getName() );
+                setProperty( properties, "org.url", versionMetadata.getOrganization().getUrl() );
+            }
+            int i = 0;
+            for ( License license : versionMetadata.getLicenses() )
+            {
+                setProperty( properties, "license." + i + ".name", license.getName() );
+                setProperty( properties, "license." + i + ".url", license.getUrl() );
+                i++;
+            }
+            i = 0;
+            for ( MailingList mailingList : versionMetadata.getMailingLists() )
+            {
+                setProperty( properties, "mailingList." + i + ".archive", mailingList.getMainArchiveUrl() );
+                setProperty( properties, "mailingList." + i + ".name", mailingList.getName() );
+                setProperty( properties, "mailingList." + i + ".post", mailingList.getPostAddress() );
+                setProperty( properties, "mailingList." + i + ".unsubscribe", mailingList.getUnsubscribeAddress() );
+                setProperty( properties, "mailingList." + i + ".subscribe", mailingList.getSubscribeAddress() );
+                setProperty( properties, "mailingList." + i + ".otherArchives",
+                             join( mailingList.getOtherArchives() ) );
+                i++;
+            }
+            i = 0;
+            ProjectVersionReference reference = new ProjectVersionReference();
+            reference.setNamespace( namespace );
+            reference.setProjectId( projectId );
+            reference.setProjectVersion( versionMetadata.getId() );
+            reference.setReferenceType( ProjectVersionReference.ReferenceType.DEPENDENCY );
+            for ( Dependency dependency : versionMetadata.getDependencies() )
+            {
+                setProperty( properties, "dependency." + i + ".classifier", dependency.getClassifier() );
+                setProperty( properties, "dependency." + i + ".scope", dependency.getScope() );
+                setProperty( properties, "dependency." + i + ".systemPath", dependency.getSystemPath() );
+                setProperty( properties, "dependency." + i + ".artifactId", dependency.getArtifactId() );
+                setProperty( properties, "dependency." + i + ".groupId", dependency.getGroupId() );
+                setProperty( properties, "dependency." + i + ".version", dependency.getVersion() );
+                setProperty( properties, "dependency." + i + ".type", dependency.getType() );
+                setProperty( properties, "dependency." + i + ".optional", String.valueOf( dependency.isOptional() ) );
+
+                updateProjectReference( repoId, dependency.getGroupId(), dependency.getArtifactId(),
+                                        dependency.getVersion(), reference );
+
+                i++;
+            }
+            Set<String> facetIds = new LinkedHashSet<String>( versionMetadata.getFacetIds() );
+            facetIds.addAll( Arrays.asList( properties.getProperty( "facetIds", "" ).split( "," ) ) );
+            properties.setProperty( "facetIds", join( facetIds ) );
+
+            updateProjectVersionFacets( versionMetadata, properties );
+
             writeProperties( properties, directory, PROJECT_VERSION_METADATA_KEY );
         }
         catch ( IOException e )
@@ -240,10 +254,10 @@ public class FileMetadataRepository
     private static void clearMetadataFacetProperties( Collection<MetadataFacet> facetList, Properties properties,
                                                       String prefix )
     {
-        List<Object> propsToRemove = new ArrayList<Object>();
+        List<Object> propsToRemove = new ArrayList<>();
         for ( MetadataFacet facet : facetList )
         {
-            for ( Object key : properties.keySet() )
+            for ( Object key : new ArrayList( properties.keySet() ) )
             {
                 String keyString = (String) key;
                 if ( keyString.startsWith( prefix + facet.getFacetId() + ":" ) )
@@ -262,18 +276,18 @@ public class FileMetadataRepository
     private void updateProjectReference( String repoId, String namespace, String projectId, String projectVersion,
                                          ProjectVersionReference reference )
     {
-        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
-
-        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
-        int i = Integer.parseInt( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
-        setProperty( properties, "ref:lastReferenceNum", Integer.toString( i ) );
-        setProperty( properties, "ref:reference." + i + ".namespace", reference.getNamespace() );
-        setProperty( properties, "ref:reference." + i + ".projectId", reference.getProjectId() );
-        setProperty( properties, "ref:reference." + i + ".projectVersion", reference.getProjectVersion() );
-        setProperty( properties, "ref:reference." + i + ".referenceType", reference.getReferenceType().toString() );
-
         try
         {
+            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
+
+            Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+            int i = Integer.parseInt( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
+            setProperty( properties, "ref:lastReferenceNum", Integer.toString( i ) );
+            setProperty( properties, "ref:reference." + i + ".namespace", reference.getNamespace() );
+            setProperty( properties, "ref:reference." + i + ".projectId", reference.getProjectId() );
+            setProperty( properties, "ref:reference." + i + ".projectVersion", reference.getProjectVersion() );
+            setProperty( properties, "ref:reference." + i + ".referenceType", reference.getReferenceType().toString() );
+
             writeProperties( properties, directory, PROJECT_VERSION_METADATA_KEY );
         }
         catch ( IOException e )
@@ -283,6 +297,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public void updateNamespace( String repoId, String namespace )
     {
         try
@@ -300,14 +315,24 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public List<String> getMetadataFacets( String repoId, String facetId )
+        throws MetadataRepositoryException
     {
-        File directory = getMetadataDirectory( repoId, facetId );
-        List<String> facets = new ArrayList<String>();
-        recurse( facets, "", directory );
-        return facets;
+        try
+        {
+            File directory = getMetadataDirectory( repoId, facetId );
+            List<String> facets = new ArrayList<>();
+            recurse( facets, "", directory );
+            return facets;
+        }
+        catch ( IOException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
     }
 
+    @Override
     public boolean hasMetadataFacet( String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
@@ -334,6 +359,7 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
     {
         Properties properties;
@@ -357,7 +383,7 @@ public class FileMetadataRepository
         if ( metadataFacetFactory != null )
         {
             metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
-            Map<String, String> map = new HashMap<String, String>();
+            Map<String, String> map = new HashMap<>();
             for ( Object key : new ArrayList( properties.keySet() ) )
             {
                 String property = (String) key;
@@ -368,6 +394,7 @@ public class FileMetadataRepository
         return metadataFacet;
     }
 
+    @Override
     public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
     {
         Properties properties = new Properties();
@@ -386,180 +413,223 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public void removeMetadataFacets( String repositoryId, String facetId )
+        throws MetadataRepositoryException
     {
-        File dir = getMetadataDirectory( repositoryId, facetId );
-        if ( !FileUtils.deleteQuietly( dir ) )
+        try
         {
-            log.error( "Cannot delete the metadata repository {}", dir );
+            File dir = getMetadataDirectory( repositoryId, facetId );
+            FileUtils.deleteDirectory( dir );
+        }
+        catch ( IOException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
+    @Override
     public void removeMetadataFacet( String repoId, String facetId, String name )
+        throws MetadataRepositoryException
     {
-        File dir = new File( getMetadataDirectory( repoId, facetId ), name );
-        if ( !FileUtils.deleteQuietly( dir ) )
+        try
         {
-            log.error( "Cannot delete the metadata repository {}", dir );
+            File dir = new File( getMetadataDirectory( repoId, facetId ), name );
+            FileUtils.deleteDirectory( dir );
+        }
+        catch ( IOException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
+        throws MetadataRepositoryException
     {
-        // TODO: this is quite slow - if we are to persist with this repository implementation we should build an index
-        //  of this information (eg. in Lucene, as before)
-
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
-        for ( String ns : getRootNamespaces( repoId ) )
+        try
         {
-            getArtifactsByDateRange( artifacts, repoId, ns, startTime, endTime );
+            // TODO: this is quite slow - if we are to persist with this repository implementation we should build an index
+            //  of this information (eg. in Lucene, as before)
+
+            List<ArtifactMetadata> artifacts = new ArrayList<>();
+            for ( String ns : getRootNamespaces( repoId ) )
+            {
+                getArtifactsByDateRange( artifacts, repoId, ns, startTime, endTime );
+            }
+            Collections.sort( artifacts, new ArtifactComparator() );
+            return artifacts;
         }
-        Collections.sort( artifacts, new ArtifactComparator() );
-        return artifacts;
+        catch ( MetadataResolutionException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
     }
 
     private void getArtifactsByDateRange( List<ArtifactMetadata> artifacts, String repoId, String ns, Date startTime,
                                           Date endTime )
+        throws MetadataRepositoryException
     {
-        for ( String namespace : getNamespaces( repoId, ns ) )
+        try
         {
-            getArtifactsByDateRange( artifacts, repoId, ns + "." + namespace, startTime, endTime );
-        }
-
-        for ( String project : getProjects( repoId, ns ) )
-        {
-            for ( String version : getProjectVersions( repoId, ns, project ) )
+            for ( String namespace : getNamespaces( repoId, ns ) )
             {
-                for ( ArtifactMetadata artifact : getArtifacts( repoId, ns, project, version ) )
+                getArtifactsByDateRange( artifacts, repoId, ns + "." + namespace, startTime, endTime );
+            }
+
+            for ( String project : getProjects( repoId, ns ) )
+            {
+                for ( String version : getProjectVersions( repoId, ns, project ) )
                 {
-                    if ( startTime == null || startTime.before( artifact.getWhenGathered() ) )
+                    for ( ArtifactMetadata artifact : getArtifacts( repoId, ns, project, version ) )
                     {
-                        if ( endTime == null || endTime.after( artifact.getWhenGathered() ) )
+                        if ( startTime == null || startTime.before( artifact.getWhenGathered() ) )
                         {
-                            artifacts.add( artifact );
+                            if ( endTime == null || endTime.after( artifact.getWhenGathered() ) )
+                            {
+                                artifacts.add( artifact );
+                            }
                         }
                     }
                 }
             }
         }
+        catch ( MetadataResolutionException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
     }
 
+    @Override
     public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
                                                       String projectVersion )
+        throws MetadataResolutionException
     {
-        Map<String, ArtifactMetadata> artifacts = new HashMap<String, ArtifactMetadata>();
-
-        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
-
-        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
-
-        for ( Map.Entry entry : properties.entrySet() )
+        try
         {
-            String name = (String) entry.getKey();
-            StringTokenizer tok = new StringTokenizer( name, ":" );
-            if ( tok.hasMoreTokens() && "artifact".equals( tok.nextToken() ) )
+            Map<String, ArtifactMetadata> artifacts = new HashMap<>();
+
+            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
+
+            Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+
+            for ( Map.Entry entry : properties.entrySet() )
             {
-                String field = tok.nextToken();
-                String id = tok.nextToken();
+                String name = (String) entry.getKey();
+                StringTokenizer tok = new StringTokenizer( name, ":" );
+                if ( tok.hasMoreTokens() && "artifact".equals( tok.nextToken() ) )
+                {
+                    String field = tok.nextToken();
+                    String id = tok.nextToken();
 
-                ArtifactMetadata artifact = artifacts.get( id );
-                if ( artifact == null )
-                {
-                    artifact = new ArtifactMetadata();
-                    artifact.setRepositoryId( repoId );
-                    artifact.setNamespace( namespace );
-                    artifact.setProject( projectId );
-                    artifact.setProjectVersion( projectVersion );
-                    artifact.setVersion( projectVersion );
-                    artifact.setId( id );
-                    artifacts.put( id, artifact );
-                }
-
-                String value = (String) entry.getValue();
-                if ( "updated".equals( field ) )
-                {
-                    artifact.setFileLastModified( Long.parseLong( value ) );
-                }
-                else if ( "size".equals( field ) )
-                {
-                    artifact.setSize( Long.valueOf( value ) );
-                }
-                else if ( "whenGathered".equals( field ) )
-                {
-                    artifact.setWhenGathered( new Date( Long.parseLong( value ) ) );
-                }
-                else if ( "version".equals( field ) )
-                {
-                    artifact.setVersion( value );
-                }
-                else if ( "md5".equals( field ) )
-                {
-                    artifact.setMd5( value );
-                }
-                else if ( "sha1".equals( field ) )
-                {
-                    artifact.setSha1( value );
-                }
-                else if ( "facetIds".equals( field ) )
-                {
-                    if ( value.length() > 0 )
+                    ArtifactMetadata artifact = artifacts.get( id );
+                    if ( artifact == null )
                     {
-                        String propertyPrefix = "artifact:facet:" + id + ":";
-                        for ( String facetId : value.split( "," ) )
-                        {
-                            MetadataFacetFactory factory = metadataFacetFactories.get( facetId );
-                            if ( factory == null )
-                            {
-                                log.error( "Attempted to load unknown artifact metadata facet: " + facetId );
-                            }
-                            else
-                            {
-                                MetadataFacet facet = factory.createMetadataFacet();
-                                String prefix = propertyPrefix + facet.getFacetId();
-                                Map<String, String> map = new HashMap<String, String>();
-                                for ( Object key : new ArrayList( properties.keySet() ) )
-                                {
-                                    String property = (String) key;
-                                    if ( property.startsWith( prefix ) )
-                                    {
-                                        map.put( property.substring( prefix.length() + 1 ),
-                                                 properties.getProperty( property ) );
-                                    }
-                                }
-                                facet.fromProperties( map );
-                                artifact.addFacet( facet );
-                            }
-                        }
+                        artifact = new ArtifactMetadata();
+                        artifact.setRepositoryId( repoId );
+                        artifact.setNamespace( namespace );
+                        artifact.setProject( projectId );
+                        artifact.setProjectVersion( projectVersion );
+                        artifact.setVersion( projectVersion );
+                        artifact.setId( id );
+                        artifacts.put( id, artifact );
                     }
 
-                    updateArtifactFacets( artifact, properties );
+                    String value = (String) entry.getValue();
+                    if ( "updated".equals( field ) )
+                    {
+                        artifact.setFileLastModified( Long.parseLong( value ) );
+                    }
+                    else if ( "size".equals( field ) )
+                    {
+                        artifact.setSize( Long.valueOf( value ) );
+                    }
+                    else if ( "whenGathered".equals( field ) )
+                    {
+                        artifact.setWhenGathered( new Date( Long.parseLong( value ) ) );
+                    }
+                    else if ( "version".equals( field ) )
+                    {
+                        artifact.setVersion( value );
+                    }
+                    else if ( "md5".equals( field ) )
+                    {
+                        artifact.setMd5( value );
+                    }
+                    else if ( "sha1".equals( field ) )
+                    {
+                        artifact.setSha1( value );
+                    }
+                    else if ( "facetIds".equals( field ) )
+                    {
+                        if ( value.length() > 0 )
+                        {
+                            String propertyPrefix = "artifact:facet:" + id + ":";
+                            for ( String facetId : value.split( "," ) )
+                            {
+                                MetadataFacetFactory factory = metadataFacetFactories.get( facetId );
+                                if ( factory == null )
+                                {
+                                    log.error( "Attempted to load unknown artifact metadata facet: " + facetId );
+                                }
+                                else
+                                {
+                                    MetadataFacet facet = factory.createMetadataFacet();
+                                    String prefix = propertyPrefix + facet.getFacetId();
+                                    Map<String, String> map = new HashMap<>();
+                                    for ( Object key : new ArrayList( properties.keySet() ) )
+                                    {
+                                        String property = (String) key;
+                                        if ( property.startsWith( prefix ) )
+                                        {
+                                            map.put( property.substring( prefix.length() + 1 ),
+                                                     properties.getProperty( property ) );
+                                        }
+                                    }
+                                    facet.fromProperties( map );
+                                    artifact.addFacet( facet );
+                                }
+                            }
+                        }
+
+                        updateArtifactFacets( artifact, properties );
+                    }
                 }
             }
+            return artifacts.values();
         }
-        return artifacts.values();
+        catch ( IOException e )
+        {
+            throw new MetadataResolutionException( e.getMessage(), e );
+        }
     }
 
+    @Override
     public void save()
     {
         // it's all instantly persisted
     }
 
+    @Override
     public void close()
     {
         // nothing additional to close
     }
 
+    @Override
     public void revert()
     {
         log.warn( "Attempted to revert a session, but the file-based repository storage doesn't support it" );
     }
 
+    @Override
     public boolean canObtainAccess( Class<?> aClass )
     {
         return false;
     }
 
-    public <T>T obtainAccess( Class<T> aClass )
+    @Override
+    public <T> T obtainAccess( Class<T> aClass )
     {
         throw new IllegalArgumentException(
             "Access using " + aClass + " is not supported on the file metadata storage" );
@@ -578,9 +648,10 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public Collection<String> getRepositories()
     {
-        List<String> repositories = new ArrayList<String>();
+        List<String> repositories = new ArrayList<>();
         for ( ManagedRepositoryConfiguration managedRepositoryConfiguration : configuration.getConfiguration().getManagedRepositories() )
         {
             repositories.add( managedRepositoryConfiguration.getId() );
@@ -588,21 +659,31 @@ public class FileMetadataRepository
         return repositories;
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
+        throws MetadataRepositoryException
     {
-        // TODO: this is quite slow - if we are to persist with this repository implementation we should build an index
-        //  of this information (eg. in Lucene, as before)
-        // alternatively, we could build a referential tree in the content repository, however it would need some levels
-        // of depth to avoid being too broad to be useful (eg. /repository/checksums/a/ab/abcdef1234567)
-
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
-        for ( String ns : getRootNamespaces( repositoryId ) )
+        try
         {
-            getArtifactsByChecksum( artifacts, repositoryId, ns, checksum );
+            // TODO: this is quite slow - if we are to persist with this repository implementation we should build an index
+            //  of this information (eg. in Lucene, as before)
+            // alternatively, we could build a referential tree in the content repository, however it would need some levels
+            // of depth to avoid being too broad to be useful (eg. /repository/checksums/a/ab/abcdef1234567)
+
+            List<ArtifactMetadata> artifacts = new ArrayList<>();
+            for ( String ns : getRootNamespaces( repositoryId ) )
+            {
+                getArtifactsByChecksum( artifacts, repositoryId, ns, checksum );
+            }
+            return artifacts;
         }
-        return artifacts;
+        catch ( MetadataResolutionException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
     }
 
+    @Override
     public void removeNamespace( String repositoryId, String project )
         throws MetadataRepositoryException
     {
@@ -621,84 +702,82 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
 
-        File directory = new File( getDirectory( artifactMetadata.getRepositoryId() ),
-                                   artifactMetadata.getNamespace() + "/" + artifactMetadata.getProject() + "/"
-                                       + baseVersion );
-
-        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
-
-        String id = artifactMetadata.getId();
-
-        properties.remove( "artifact:updated:" + id );
-        properties.remove( "artifact:whenGathered:" + id );
-        properties.remove( "artifact:size:" + id );
-        properties.remove( "artifact:md5:" + id );
-        properties.remove( "artifact:sha1:" + id );
-        properties.remove( "artifact:version:" + id );
-        properties.remove( "artifact:facetIds:" + id );
-
-        String prefix = "artifact:facet:" + id + ":";
-        for ( Object key : new ArrayList<Object>( properties.keySet() ) )
-        {
-            String property = (String) key;
-            if ( property.startsWith( prefix ) )
-            {
-                properties.remove( property );
-            }
-        }
-
         try
         {
+            File directory = new File( getDirectory( artifactMetadata.getRepositoryId() ),
+                                       artifactMetadata.getNamespace() + "/" + artifactMetadata.getProject() + "/"
+                                           + baseVersion );
+
+            Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+
+            String id = artifactMetadata.getId();
+
+            properties.remove( "artifact:updated:" + id );
+            properties.remove( "artifact:whenGathered:" + id );
+            properties.remove( "artifact:size:" + id );
+            properties.remove( "artifact:md5:" + id );
+            properties.remove( "artifact:sha1:" + id );
+            properties.remove( "artifact:version:" + id );
+            properties.remove( "artifact:facetIds:" + id );
+
+            String prefix = "artifact:facet:" + id + ":";
+            for ( Object key : new ArrayList( properties.keySet() ) )
+            {
+                String property = (String) key;
+                if ( property.startsWith( prefix ) )
+                {
+                    properties.remove( property );
+                }
+            }
+
             writeProperties( properties, directory, PROJECT_VERSION_METADATA_KEY );
         }
         catch ( IOException e )
         {
-            // TODO
-            log.error( e.getMessage(), e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
 
     }
 
+    @Override
     public void removeArtifact( String repoId, String namespace, String project, String version, String id )
+        throws MetadataRepositoryException
     {
-
-        File directory = new File( getDirectory( repoId ), namespace + "/" + project + "/" + version );
-
-        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
-
-        properties.remove( "artifact:updated:" + id );
-        properties.remove( "artifact:whenGathered:" + id );
-        properties.remove( "artifact:size:" + id );
-        properties.remove( "artifact:md5:" + id );
-        properties.remove( "artifact:sha1:" + id );
-        properties.remove( "artifact:version:" + id );
-        properties.remove( "artifact:facetIds:" + id );
-
-        String prefix = "artifact:facet:" + id + ":";
-        for ( Object key : new ArrayList<Object>( properties.keySet() ) )
-        {
-            String property = (String) key;
-            if ( property.startsWith( prefix ) )
-            {
-                properties.remove( property );
-            }
-        }
-
         try
         {
+            File directory = new File( getDirectory( repoId ), namespace + "/" + project + "/" + version );
+
+            Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+
+            properties.remove( "artifact:updated:" + id );
+            properties.remove( "artifact:whenGathered:" + id );
+            properties.remove( "artifact:size:" + id );
+            properties.remove( "artifact:md5:" + id );
+            properties.remove( "artifact:sha1:" + id );
+            properties.remove( "artifact:version:" + id );
+            properties.remove( "artifact:facetIds:" + id );
+
+            String prefix = "artifact:facet:" + id + ":";
+            for ( Object key : new ArrayList( properties.keySet() ) )
+            {
+                String property = (String) key;
+                if ( property.startsWith( prefix ) )
+                {
+                    properties.remove( property );
+                }
+            }
 
             FileUtils.deleteDirectory( directory );
-
             //writeProperties( properties, directory, PROJECT_VERSION_METADATA_KEY );
         }
         catch ( IOException e )
         {
-            // TODO
-            log.error( e.getMessage(), e );
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
@@ -712,6 +791,7 @@ public class FileMetadataRepository
      * @param metadataFacet  will remove artifacts which have this {@link MetadataFacet} using equals
      * @throws MetadataRepositoryException
      */
+    @Override
     public void removeArtifact( String repositoryId, String namespace, String project, String projectVersion,
                                 MetadataFacet metadataFacet )
         throws MetadataRepositoryException
@@ -719,39 +799,75 @@ public class FileMetadataRepository
         throw new UnsupportedOperationException( "not implemented" );
     }
 
+    @Override
     public void removeRepository( String repoId )
+        throws MetadataRepositoryException
     {
-        File dir = getDirectory( repoId );
-        if ( !FileUtils.deleteQuietly( dir ) )
+        try
         {
-            log.error( "Cannot delete repository {}", dir );
+            File dir = getDirectory( repoId );
+            FileUtils.deleteDirectory( dir );
+        }
+        catch ( IOException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
         }
     }
 
     private void getArtifactsByChecksum( List<ArtifactMetadata> artifacts, String repositoryId, String ns,
                                          String checksum )
+        throws MetadataRepositoryException
     {
-        for ( String namespace : getNamespaces( repositoryId, ns ) )
+        try
         {
-            getArtifactsByChecksum( artifacts, repositoryId, ns + "." + namespace, checksum );
-        }
-
-        for ( String project : getProjects( repositoryId, ns ) )
-        {
-            for ( String version : getProjectVersions( repositoryId, ns, project ) )
+            for ( String namespace : getNamespaces( repositoryId, ns ) )
             {
-                for ( ArtifactMetadata artifact : getArtifacts( repositoryId, ns, project, version ) )
+                getArtifactsByChecksum( artifacts, repositoryId, ns + "." + namespace, checksum );
+            }
+
+            for ( String project : getProjects( repositoryId, ns ) )
+            {
+                for ( String version : getProjectVersions( repositoryId, ns, project ) )
                 {
-                    if ( checksum.equals( artifact.getMd5() ) || checksum.equals( artifact.getSha1() ) )
+                    for ( ArtifactMetadata artifact : getArtifacts( repositoryId, ns, project, version ) )
                     {
-                        artifacts.add( artifact );
+                        if ( checksum.equals( artifact.getMd5() ) || checksum.equals( artifact.getSha1() ) )
+                        {
+                            artifacts.add( artifact );
+                        }
                     }
                 }
             }
         }
+        catch ( MetadataResolutionException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+    }
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException( "not yet implemented in File backend" );
+    }
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByMetadata( String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException( "not yet implemented in File backend" );
+    }
+
+    @Override
+    public List<ArtifactMetadata> getArtifactsByProperty( String key, String value, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException( "getArtifactsByProperty not yet implemented in File backend" );
     }
 
     private File getMetadataDirectory( String repoId, String facetId )
+        throws IOException
     {
         return new File( getBaseDirectory( repoId ), "facets/" + facetId );
     }
@@ -779,42 +895,46 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public void updateArtifact( String repoId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifact )
     {
-        ProjectVersionMetadata metadata = new ProjectVersionMetadata();
-        metadata.setId( projectVersion );
-        updateProjectVersion( repoId, namespace, projectId, metadata );
-
-        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
-
-        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
-
-        clearMetadataFacetProperties( artifact.getFacetList(), properties, "artifact:facet:" + artifact.getId() + ":" );
-
-        String id = artifact.getId();
-        properties.setProperty( "artifact:updated:" + id, Long.toString( artifact.getFileLastModified().getTime() ) );
-        properties.setProperty( "artifact:whenGathered:" + id, Long.toString( artifact.getWhenGathered().getTime() ) );
-        properties.setProperty( "artifact:size:" + id, Long.toString( artifact.getSize() ) );
-        if ( artifact.getMd5() != null )
-        {
-            properties.setProperty( "artifact:md5:" + id, artifact.getMd5() );
-        }
-        if ( artifact.getSha1() != null )
-        {
-            properties.setProperty( "artifact:sha1:" + id, artifact.getSha1() );
-        }
-        properties.setProperty( "artifact:version:" + id, artifact.getVersion() );
-
-        Set<String> facetIds = new LinkedHashSet<String>( artifact.getFacetIds() );
-        String property = "artifact:facetIds:" + id;
-        facetIds.addAll( Arrays.asList( properties.getProperty( property, "" ).split( "," ) ) );
-        properties.setProperty( property, join( facetIds ) );
-
-        updateArtifactFacets( artifact, properties );
-
         try
         {
+            ProjectVersionMetadata metadata = new ProjectVersionMetadata();
+            metadata.setId( projectVersion );
+            updateProjectVersion( repoId, namespace, projectId, metadata );
+
+            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
+
+            Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+
+            clearMetadataFacetProperties( artifact.getFacetList(), properties,
+                                          "artifact:facet:" + artifact.getId() + ":" );
+
+            String id = artifact.getId();
+            properties.setProperty( "artifact:updated:" + id,
+                                    Long.toString( artifact.getFileLastModified().getTime() ) );
+            properties.setProperty( "artifact:whenGathered:" + id,
+                                    Long.toString( artifact.getWhenGathered().getTime() ) );
+            properties.setProperty( "artifact:size:" + id, Long.toString( artifact.getSize() ) );
+            if ( artifact.getMd5() != null )
+            {
+                properties.setProperty( "artifact:md5:" + id, artifact.getMd5() );
+            }
+            if ( artifact.getSha1() != null )
+            {
+                properties.setProperty( "artifact:sha1:" + id, artifact.getSha1() );
+            }
+            properties.setProperty( "artifact:version:" + id, artifact.getVersion() );
+
+            Set<String> facetIds = new LinkedHashSet<String>( artifact.getFacetIds() );
+            String property = "artifact:facetIds:" + id;
+            facetIds.addAll( Arrays.asList( properties.getProperty( property, "" ).split( "," ) ) );
+            properties.setProperty( property, join( facetIds ) );
+
+            updateArtifactFacets( artifact, properties );
+
             writeProperties( properties, directory, PROJECT_VERSION_METADATA_KEY );
         }
         catch ( IOException e )
@@ -830,7 +950,7 @@ public class FileMetadataRepository
         {
             return readProperties( directory, propertiesKey );
         }
-        catch ( FileNotFoundException e )
+        catch ( FileNotFoundException | NoSuchFileException e )
         {
             // ignore and return new properties
         }
@@ -846,338 +966,397 @@ public class FileMetadataRepository
         throws IOException
     {
         Properties properties = new Properties();
-        FileInputStream in = null;
-        try
+        try (InputStream in = Files.newInputStream( new File( directory, propertiesKey + ".properties" ).toPath() ))
         {
-            in = new FileInputStream( new File( directory, propertiesKey + ".properties" ) );
+
             properties.load( in );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( in );
         }
         return properties;
     }
 
+    @Override
     public ProjectMetadata getProject( String repoId, String namespace, String projectId )
+        throws MetadataResolutionException
     {
-        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId );
-
-        Properties properties = readOrCreateProperties( directory, PROJECT_METADATA_KEY );
-
-        ProjectMetadata project = null;
-
-        String id = properties.getProperty( "id" );
-        if ( id != null )
+        try
         {
-            project = new ProjectMetadata();
-            project.setNamespace( properties.getProperty( "namespace" ) );
-            project.setId( id );
-        }
+            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId );
 
-        return project;
+            Properties properties = readOrCreateProperties( directory, PROJECT_METADATA_KEY );
+
+            ProjectMetadata project = null;
+
+            String id = properties.getProperty( "id" );
+            if ( id != null )
+            {
+                project = new ProjectMetadata();
+                project.setNamespace( properties.getProperty( "namespace" ) );
+                project.setId( id );
+            }
+
+            return project;
+        }
+        catch ( IOException e )
+        {
+            throw new MetadataResolutionException( e.getMessage(), e );
+        }
     }
 
+    @Override
     public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
                                                      String projectVersion )
+        throws MetadataResolutionException
     {
-        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
-
-        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
-        String id = properties.getProperty( "id" );
-        ProjectVersionMetadata versionMetadata = null;
-        if ( id != null )
+        try
         {
-            versionMetadata = new ProjectVersionMetadata();
-            versionMetadata.setId( id );
-            versionMetadata.setName( properties.getProperty( "name" ) );
-            versionMetadata.setDescription( properties.getProperty( "description" ) );
-            versionMetadata.setUrl( properties.getProperty( "url" ) );
-            versionMetadata.setIncomplete( Boolean.valueOf( properties.getProperty( "incomplete", "false" ) ) );
+            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
 
-            String scmConnection = properties.getProperty( "scm.connection" );
-            String scmDeveloperConnection = properties.getProperty( "scm.developerConnection" );
-            String scmUrl = properties.getProperty( "scm.url" );
-            if ( scmConnection != null || scmDeveloperConnection != null || scmUrl != null )
+            Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+            String id = properties.getProperty( "id" );
+            ProjectVersionMetadata versionMetadata = null;
+            if ( id != null )
             {
-                Scm scm = new Scm();
-                scm.setConnection( scmConnection );
-                scm.setDeveloperConnection( scmDeveloperConnection );
-                scm.setUrl( scmUrl );
-                versionMetadata.setScm( scm );
-            }
+                versionMetadata = new ProjectVersionMetadata();
+                versionMetadata.setId( id );
+                versionMetadata.setName( properties.getProperty( "name" ) );
+                versionMetadata.setDescription( properties.getProperty( "description" ) );
+                versionMetadata.setUrl( properties.getProperty( "url" ) );
+                versionMetadata.setIncomplete( Boolean.valueOf( properties.getProperty( "incomplete", "false" ) ) );
 
-            String ciSystem = properties.getProperty( "ci.system" );
-            String ciUrl = properties.getProperty( "ci.url" );
-            if ( ciSystem != null || ciUrl != null )
-            {
-                CiManagement ci = new CiManagement();
-                ci.setSystem( ciSystem );
-                ci.setUrl( ciUrl );
-                versionMetadata.setCiManagement( ci );
-            }
-
-            String issueSystem = properties.getProperty( "issue.system" );
-            String issueUrl = properties.getProperty( "issue.url" );
-            if ( issueSystem != null || issueUrl != null )
-            {
-                IssueManagement issueManagement = new IssueManagement();
-                issueManagement.setSystem( issueSystem );
-                issueManagement.setUrl( issueUrl );
-                versionMetadata.setIssueManagement( issueManagement );
-            }
-
-            String orgName = properties.getProperty( "org.name" );
-            String orgUrl = properties.getProperty( "org.url" );
-            if ( orgName != null || orgUrl != null )
-            {
-                Organization org = new Organization();
-                org.setName( orgName );
-                org.setUrl( orgUrl );
-                versionMetadata.setOrganization( org );
-            }
-
-            boolean done = false;
-            int i = 0;
-            while ( !done )
-            {
-                String licenseName = properties.getProperty( "license." + i + ".name" );
-                String licenseUrl = properties.getProperty( "license." + i + ".url" );
-                if ( licenseName != null || licenseUrl != null )
+                String scmConnection = properties.getProperty( "scm.connection" );
+                String scmDeveloperConnection = properties.getProperty( "scm.developerConnection" );
+                String scmUrl = properties.getProperty( "scm.url" );
+                if ( scmConnection != null || scmDeveloperConnection != null || scmUrl != null )
                 {
-                    License license = new License();
-                    license.setName( licenseName );
-                    license.setUrl( licenseUrl );
-                    versionMetadata.addLicense( license );
+                    Scm scm = new Scm();
+                    scm.setConnection( scmConnection );
+                    scm.setDeveloperConnection( scmDeveloperConnection );
+                    scm.setUrl( scmUrl );
+                    versionMetadata.setScm( scm );
                 }
-                else
-                {
-                    done = true;
-                }
-                i++;
-            }
 
-            done = false;
-            i = 0;
-            while ( !done )
-            {
-                String mailingListName = properties.getProperty( "mailingList." + i + ".name" );
-                if ( mailingListName != null )
+                String ciSystem = properties.getProperty( "ci.system" );
+                String ciUrl = properties.getProperty( "ci.url" );
+                if ( ciSystem != null || ciUrl != null )
                 {
-                    MailingList mailingList = new MailingList();
-                    mailingList.setName( mailingListName );
-                    mailingList.setMainArchiveUrl( properties.getProperty( "mailingList." + i + ".archive" ) );
-                    String p = properties.getProperty( "mailingList." + i + ".otherArchives" );
-                    if ( p != null && p.length() > 0 )
+                    CiManagement ci = new CiManagement();
+                    ci.setSystem( ciSystem );
+                    ci.setUrl( ciUrl );
+                    versionMetadata.setCiManagement( ci );
+                }
+
+                String issueSystem = properties.getProperty( "issue.system" );
+                String issueUrl = properties.getProperty( "issue.url" );
+                if ( issueSystem != null || issueUrl != null )
+                {
+                    IssueManagement issueManagement = new IssueManagement();
+                    issueManagement.setSystem( issueSystem );
+                    issueManagement.setUrl( issueUrl );
+                    versionMetadata.setIssueManagement( issueManagement );
+                }
+
+                String orgName = properties.getProperty( "org.name" );
+                String orgUrl = properties.getProperty( "org.url" );
+                if ( orgName != null || orgUrl != null )
+                {
+                    Organization org = new Organization();
+                    org.setName( orgName );
+                    org.setUrl( orgUrl );
+                    versionMetadata.setOrganization( org );
+                }
+
+                boolean done = false;
+                int i = 0;
+                while ( !done )
+                {
+                    String licenseName = properties.getProperty( "license." + i + ".name" );
+                    String licenseUrl = properties.getProperty( "license." + i + ".url" );
+                    if ( licenseName != null || licenseUrl != null )
                     {
-                        mailingList.setOtherArchives( Arrays.asList( p.split( "," ) ) );
+                        License license = new License();
+                        license.setName( licenseName );
+                        license.setUrl( licenseUrl );
+                        versionMetadata.addLicense( license );
                     }
                     else
                     {
-                        mailingList.setOtherArchives( Collections.<String>emptyList() );
+                        done = true;
                     }
-                    mailingList.setPostAddress( properties.getProperty( "mailingList." + i + ".post" ) );
-                    mailingList.setSubscribeAddress( properties.getProperty( "mailingList." + i + ".subscribe" ) );
-                    mailingList.setUnsubscribeAddress( properties.getProperty( "mailingList." + i + ".unsubscribe" ) );
-                    versionMetadata.addMailingList( mailingList );
+                    i++;
                 }
-                else
-                {
-                    done = true;
-                }
-                i++;
-            }
 
-            done = false;
-            i = 0;
-            while ( !done )
-            {
-                String dependencyArtifactId = properties.getProperty( "dependency." + i + ".artifactId" );
-                if ( dependencyArtifactId != null )
+                done = false;
+                i = 0;
+                while ( !done )
                 {
-                    Dependency dependency = new Dependency();
-                    dependency.setArtifactId( dependencyArtifactId );
-                    dependency.setGroupId( properties.getProperty( "dependency." + i + ".groupId" ) );
-                    dependency.setClassifier( properties.getProperty( "dependency." + i + ".classifier" ) );
-                    dependency.setOptional(
-                        Boolean.valueOf( properties.getProperty( "dependency." + i + ".optional" ) ) );
-                    dependency.setScope( properties.getProperty( "dependency." + i + ".scope" ) );
-                    dependency.setSystemPath( properties.getProperty( "dependency." + i + ".systemPath" ) );
-                    dependency.setType( properties.getProperty( "dependency." + i + ".type" ) );
-                    dependency.setVersion( properties.getProperty( "dependency." + i + ".version" ) );
-                    dependency.setOptional(
-                        Boolean.valueOf( properties.getProperty( "dependency." + i + ".optional" ) ) );
-                    versionMetadata.addDependency( dependency );
-                }
-                else
-                {
-                    done = true;
-                }
-                i++;
-            }
-
-            String facetIds = properties.getProperty( "facetIds", "" );
-            if ( facetIds.length() > 0 )
-            {
-                for ( String facetId : facetIds.split( "," ) )
-                {
-                    MetadataFacetFactory factory = metadataFacetFactories.get( facetId );
-                    if ( factory == null )
+                    String mailingListName = properties.getProperty( "mailingList." + i + ".name" );
+                    if ( mailingListName != null )
                     {
-                        log.error( "Attempted to load unknown project version metadata facet: {}", facetId );
-                    }
-                    else
-                    {
-                        MetadataFacet facet = factory.createMetadataFacet();
-                        Map<String, String> map = new HashMap<String, String>();
-                        for ( Object key : new ArrayList( properties.keySet() ) )
+                        MailingList mailingList = new MailingList();
+                        mailingList.setName( mailingListName );
+                        mailingList.setMainArchiveUrl( properties.getProperty( "mailingList." + i + ".archive" ) );
+                        String p = properties.getProperty( "mailingList." + i + ".otherArchives" );
+                        if ( p != null && p.length() > 0 )
                         {
-                            String property = (String) key;
-                            if ( property.startsWith( facet.getFacetId() ) )
-                            {
-                                map.put( property.substring( facet.getFacetId().length() + 1 ),
-                                         properties.getProperty( property ) );
-                            }
+                            mailingList.setOtherArchives( Arrays.asList( p.split( "," ) ) );
                         }
-                        facet.fromProperties( map );
-                        versionMetadata.addFacet( facet );
+                        else
+                        {
+                            mailingList.setOtherArchives( Collections.<String>emptyList() );
+                        }
+                        mailingList.setPostAddress( properties.getProperty( "mailingList." + i + ".post" ) );
+                        mailingList.setSubscribeAddress( properties.getProperty( "mailingList." + i + ".subscribe" ) );
+                        mailingList.setUnsubscribeAddress(
+                            properties.getProperty( "mailingList." + i + ".unsubscribe" ) );
+                        versionMetadata.addMailingList( mailingList );
+                    }
+                    else
+                    {
+                        done = true;
+                    }
+                    i++;
+                }
+
+                done = false;
+                i = 0;
+                while ( !done )
+                {
+                    String dependencyArtifactId = properties.getProperty( "dependency." + i + ".artifactId" );
+                    if ( dependencyArtifactId != null )
+                    {
+                        Dependency dependency = new Dependency();
+                        dependency.setArtifactId( dependencyArtifactId );
+                        dependency.setGroupId( properties.getProperty( "dependency." + i + ".groupId" ) );
+                        dependency.setClassifier( properties.getProperty( "dependency." + i + ".classifier" ) );
+                        dependency.setOptional(
+                            Boolean.valueOf( properties.getProperty( "dependency." + i + ".optional" ) ) );
+                        dependency.setScope( properties.getProperty( "dependency." + i + ".scope" ) );
+                        dependency.setSystemPath( properties.getProperty( "dependency." + i + ".systemPath" ) );
+                        dependency.setType( properties.getProperty( "dependency." + i + ".type" ) );
+                        dependency.setVersion( properties.getProperty( "dependency." + i + ".version" ) );
+                        dependency.setOptional(
+                            Boolean.valueOf( properties.getProperty( "dependency." + i + ".optional" ) ) );
+                        versionMetadata.addDependency( dependency );
+                    }
+                    else
+                    {
+                        done = true;
+                    }
+                    i++;
+                }
+
+                String facetIds = properties.getProperty( "facetIds", "" );
+                if ( facetIds.length() > 0 )
+                {
+                    for ( String facetId : facetIds.split( "," ) )
+                    {
+                        MetadataFacetFactory factory = metadataFacetFactories.get( facetId );
+                        if ( factory == null )
+                        {
+                            log.error( "Attempted to load unknown project version metadata facet: {}", facetId );
+                        }
+                        else
+                        {
+                            MetadataFacet facet = factory.createMetadataFacet();
+                            Map<String, String> map = new HashMap<>();
+                            for ( Object key : new ArrayList( properties.keySet() ) )
+                            {
+                                String property = (String) key;
+                                if ( property.startsWith( facet.getFacetId() ) )
+                                {
+                                    map.put( property.substring( facet.getFacetId().length() + 1 ),
+                                             properties.getProperty( property ) );
+                                }
+                            }
+                            facet.fromProperties( map );
+                            versionMetadata.addFacet( facet );
+                        }
                     }
                 }
-            }
 
-            updateProjectVersionFacets( versionMetadata, properties );
+                updateProjectVersionFacets( versionMetadata, properties );
+            }
+            return versionMetadata;
         }
-        return versionMetadata;
+        catch ( IOException e )
+        {
+            throw new MetadataResolutionException( e.getMessage(), e );
+        }
     }
 
+    @Override
     public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
                                                    String projectVersion )
+        throws MetadataResolutionException
     {
-        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
-
-        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
-
-        Set<String> versions = new HashSet<String>();
-        for ( Map.Entry entry : properties.entrySet() )
+        try
         {
-            String name = (String) entry.getKey();
-            if ( name.startsWith( "artifact:version:" ) )
+            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
+
+            Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+
+            Set<String> versions = new HashSet<String>();
+            for ( Map.Entry entry : properties.entrySet() )
             {
-                versions.add( (String) entry.getValue() );
+                String name = (String) entry.getKey();
+                if ( name.startsWith( "artifact:version:" ) )
+                {
+                    versions.add( (String) entry.getValue() );
+                }
             }
+            return versions;
         }
-        return versions;
+        catch ( IOException e )
+        {
+            throw new MetadataResolutionException( e.getMessage(), e );
+        }
     }
 
+    @Override
     public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
                                                                      String projectVersion )
+        throws MetadataResolutionException
     {
-        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
-
-        Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
-        int numberOfRefs = Integer.parseInt( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
-
-        List<ProjectVersionReference> references = new ArrayList<ProjectVersionReference>();
-        for ( int i = 0; i < numberOfRefs; i++ )
+        try
         {
-            ProjectVersionReference reference = new ProjectVersionReference();
-            reference.setProjectId( properties.getProperty( "ref:reference." + i + ".projectId" ) );
-            reference.setNamespace( properties.getProperty( "ref:reference." + i + ".namespace" ) );
-            reference.setProjectVersion( properties.getProperty( "ref:reference." + i + ".projectVersion" ) );
-            reference.setReferenceType( ProjectVersionReference.ReferenceType.valueOf(
-                properties.getProperty( "ref:reference." + i + ".referenceType" ) ) );
-            references.add( reference );
+            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
+
+            Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
+            int numberOfRefs = Integer.parseInt( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
+
+            List<ProjectVersionReference> references = new ArrayList<>();
+            for ( int i = 0; i < numberOfRefs; i++ )
+            {
+                ProjectVersionReference reference = new ProjectVersionReference();
+                reference.setProjectId( properties.getProperty( "ref:reference." + i + ".projectId" ) );
+                reference.setNamespace( properties.getProperty( "ref:reference." + i + ".namespace" ) );
+                reference.setProjectVersion( properties.getProperty( "ref:reference." + i + ".projectVersion" ) );
+                reference.setReferenceType( ProjectVersionReference.ReferenceType.valueOf(
+                    properties.getProperty( "ref:reference." + i + ".referenceType" ) ) );
+                references.add( reference );
+            }
+            return references;
         }
-        return references;
+        catch ( IOException e )
+        {
+            throw new MetadataResolutionException( e.getMessage(), e );
+        }
     }
 
+    @Override
     public Collection<String> getRootNamespaces( String repoId )
+        throws MetadataResolutionException
     {
         return getNamespaces( repoId, null );
     }
 
+    @Override
     public Collection<String> getNamespaces( String repoId, String baseNamespace )
+        throws MetadataResolutionException
     {
-        List<String> allNamespaces = new ArrayList<String>();
-        File directory = getDirectory( repoId );
-        File[] files = directory.listFiles();
-        if ( files != null )
+        try
         {
-            for ( File namespace : files )
+            List<String> allNamespaces = new ArrayList<>();
+            File directory = getDirectory( repoId );
+            File[] files = directory.listFiles();
+            if ( files != null )
             {
-                if ( new File( namespace, NAMESPACE_METADATA_KEY + ".properties" ).exists() )
+                for ( File namespace : files )
                 {
-                    allNamespaces.add( namespace.getName() );
+                    if ( new File( namespace, NAMESPACE_METADATA_KEY + ".properties" ).exists() )
+                    {
+                        allNamespaces.add( namespace.getName() );
+                    }
                 }
             }
-        }
 
-        Set<String> namespaces = new LinkedHashSet<String>();
-        int fromIndex = baseNamespace != null ? baseNamespace.length() + 1 : 0;
-        for ( String namespace : allNamespaces )
-        {
-            if ( baseNamespace == null || namespace.startsWith( baseNamespace + "." ) )
+            Set<String> namespaces = new LinkedHashSet<>();
+            int fromIndex = baseNamespace != null ? baseNamespace.length() + 1 : 0;
+            for ( String namespace : allNamespaces )
             {
-                int i = namespace.indexOf( '.', fromIndex );
-                if ( i >= 0 )
+                if ( baseNamespace == null || namespace.startsWith( baseNamespace + "." ) )
                 {
-                    namespaces.add( namespace.substring( fromIndex, i ) );
-                }
-                else
-                {
-                    namespaces.add( namespace.substring( fromIndex ) );
+                    int i = namespace.indexOf( '.', fromIndex );
+                    if ( i >= 0 )
+                    {
+                        namespaces.add( namespace.substring( fromIndex, i ) );
+                    }
+                    else
+                    {
+                        namespaces.add( namespace.substring( fromIndex ) );
+                    }
                 }
             }
+            return new ArrayList<>( namespaces );
         }
-        return new ArrayList<String>( namespaces );
+        catch ( IOException e )
+        {
+            throw new MetadataResolutionException( e.getMessage(), e );
+        }
     }
 
+    @Override
     public Collection<String> getProjects( String repoId, String namespace )
+        throws MetadataResolutionException
     {
-        List<String> projects = new ArrayList<String>();
-        File directory = new File( getDirectory( repoId ), namespace );
-        File[] files = directory.listFiles();
-        if ( files != null )
+        try
         {
-            for ( File project : files )
+            List<String> projects = new ArrayList<>();
+            File directory = new File( getDirectory( repoId ), namespace );
+            File[] files = directory.listFiles();
+            if ( files != null )
             {
-                if ( new File( project, PROJECT_METADATA_KEY + ".properties" ).exists() )
+                for ( File project : files )
                 {
-                    projects.add( project.getName() );
+                    if ( new File( project, PROJECT_METADATA_KEY + ".properties" ).exists() )
+                    {
+                        projects.add( project.getName() );
+                    }
                 }
             }
+            return projects;
         }
-        return projects;
+        catch ( IOException e )
+        {
+            throw new MetadataResolutionException( e.getMessage(), e );
+        }
     }
 
+    @Override
     public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+        throws MetadataResolutionException
     {
-        List<String> projectVersions = new ArrayList<String>();
-        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId );
-        File[] files = directory.listFiles();
-        if ( files != null )
+        try
         {
-            for ( File projectVersion : files )
+            List<String> projectVersions = new ArrayList<>();
+            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId );
+            File[] files = directory.listFiles();
+            if ( files != null )
             {
-                if ( new File( projectVersion, PROJECT_VERSION_METADATA_KEY + ".properties" ).exists() )
+                for ( File projectVersion : files )
                 {
-                    projectVersions.add( projectVersion.getName() );
+                    if ( new File( projectVersion, PROJECT_VERSION_METADATA_KEY + ".properties" ).exists() )
+                    {
+                        projectVersions.add( projectVersion.getName() );
+                    }
                 }
             }
+            return projectVersions;
         }
-        return projectVersions;
+        catch ( IOException e )
+        {
+            throw new MetadataResolutionException( e.getMessage(), e );
+        }
     }
 
+    @Override
     public void removeProject( String repositoryId, String namespace, String projectId )
         throws MetadataRepositoryException
     {
-        File directory = new File( getDirectory( repositoryId ), namespace + "/" + projectId );
         try
         {
-            if ( directory.exists() )
-            {
-                FileUtils.deleteDirectory( directory );
-            }
+            File directory = new File( getDirectory( repositoryId ), namespace + "/" + projectId );
+            FileUtils.deleteDirectory( directory );
         }
         catch ( IOException e )
         {
@@ -1185,41 +1364,36 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
         throws MetadataRepositoryException
     {
-        File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
-        if ( directory.exists() )
+        try
         {
-            try
-            {
-                FileUtils.deleteDirectory( directory );
-            }
-            catch ( IOException e )
-            {
-                throw new MetadataRepositoryException( e.getMessage(), e );
-            }
+            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
+            FileUtils.deleteDirectory( directory );
         }
+        catch ( IOException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+
     }
 
     private void writeProperties( Properties properties, File directory, String propertiesKey )
         throws IOException
     {
         directory.mkdirs();
-        FileOutputStream os = new FileOutputStream( new File( directory, propertiesKey + ".properties" ) );
-        try
+        try (OutputStream os = Files.newOutputStream( new File( directory, propertiesKey + ".properties" ).toPath() ))
         {
             properties.store( os, null );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( os );
         }
     }
 
     private static class ArtifactComparator
         implements Comparator<ArtifactMetadata>
     {
+        @Override
         public int compare( ArtifactMetadata artifact1, ArtifactMetadata artifact2 )
         {
             if ( artifact1.getWhenGathered() == artifact2.getWhenGathered() )
@@ -1238,17 +1412,27 @@ public class FileMetadataRepository
         }
     }
 
+    @Override
     public List<ArtifactMetadata> getArtifacts( String repoId )
+        throws MetadataRepositoryException
     {
-        List<ArtifactMetadata> artifacts = new ArrayList<ArtifactMetadata>();
-        for ( String ns : getRootNamespaces( repoId ) )
+        try
         {
-            getArtifacts( artifacts, repoId, ns );
+            List<ArtifactMetadata> artifacts = new ArrayList<>();
+            for ( String ns : getRootNamespaces( repoId ) )
+            {
+                getArtifacts( artifacts, repoId, ns );
+            }
+            return artifacts;
         }
-        return artifacts;
+        catch ( MetadataResolutionException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
     }
 
     private void getArtifacts( List<ArtifactMetadata> artifacts, String repoId, String ns )
+        throws MetadataResolutionException
     {
         for ( String namespace : getNamespaces( repoId, ns ) )
         {
@@ -1265,5 +1449,19 @@ public class FileMetadataRepository
                 }
             }
         }
+    }
+
+    @Override
+    public List<ArtifactMetadata> searchArtifacts( String text, String repositoryId, boolean exact )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException( "searchArtifacts not yet implemented in File backend" );
+    }
+
+    @Override
+    public List<ArtifactMetadata> searchArtifacts( String key, String text, String repositoryId, boolean exact )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException( "searchArtifacts not yet implemented in File backend" );
     }
 }

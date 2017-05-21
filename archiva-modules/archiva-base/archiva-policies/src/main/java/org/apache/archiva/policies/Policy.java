@@ -47,7 +47,7 @@ public interface Policy
     /**
      * Get the display name for this policy.
      *
-     * @todo i18n
+     * TODO todo i18n
      *
      * @return the name for this policy
      */

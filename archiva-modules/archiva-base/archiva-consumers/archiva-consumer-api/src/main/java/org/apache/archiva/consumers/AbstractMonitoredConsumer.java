@@ -22,7 +22,6 @@ package org.apache.archiva.consumers;
 import org.apache.archiva.common.FileTypeUtils;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -34,13 +33,15 @@ import java.util.Set;
 public abstract class AbstractMonitoredConsumer
     implements Consumer
 {
-    private Set<ConsumerMonitor> monitors = new HashSet<ConsumerMonitor>();
+    private final Set<ConsumerMonitor> monitors = new HashSet<ConsumerMonitor>();
     
+    @Override
     public void addConsumerMonitor( ConsumerMonitor monitor )
     {
         monitors.add( monitor );
     }
 
+    @Override
     public void removeConsumerMonitor( ConsumerMonitor monitor )
     {
         monitors.remove( monitor );
@@ -48,9 +49,8 @@ public abstract class AbstractMonitoredConsumer
 
     protected void triggerConsumerError( String type, String message )
     {
-        for ( Iterator<ConsumerMonitor> itmonitors = monitors.iterator(); itmonitors.hasNext(); )
+        for ( ConsumerMonitor monitor : monitors ) 
         {
-            ConsumerMonitor monitor = itmonitors.next();
             try
             {
                 monitor.consumerError( this, type, message );
@@ -64,9 +64,8 @@ public abstract class AbstractMonitoredConsumer
 
     protected void triggerConsumerWarning( String type, String message )
     {
-        for ( Iterator<ConsumerMonitor> itmonitors = monitors.iterator(); itmonitors.hasNext(); )
+        for ( ConsumerMonitor monitor : monitors ) 
         {
-            ConsumerMonitor monitor = itmonitors.next();
             try
             {
                 monitor.consumerWarning( this, type, message );
@@ -80,9 +79,8 @@ public abstract class AbstractMonitoredConsumer
 
     protected void triggerConsumerInfo( String message )
     {
-        for ( Iterator<ConsumerMonitor> itmonitors = monitors.iterator(); itmonitors.hasNext(); )
+        for ( ConsumerMonitor monitor : monitors ) 
         {
-            ConsumerMonitor monitor = itmonitors.next();
             try
             {
                 monitor.consumerInfo( this, message );

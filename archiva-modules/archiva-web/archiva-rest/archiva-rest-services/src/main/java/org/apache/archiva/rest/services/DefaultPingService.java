@@ -30,11 +30,13 @@ import org.springframework.stereotype.Service;
 public class DefaultPingService
     implements PingService
 {
+    @Override
     public String ping()
     {
         return "Yeah Baby It rocks!";
     }
 
+    @Override
     public String pingWithAuthz()
     {
         return ping();

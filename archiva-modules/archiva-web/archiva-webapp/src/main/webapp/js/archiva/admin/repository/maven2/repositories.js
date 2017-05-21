@@ -28,8 +28,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
   }
 
   window.managedRepositoryTypes = [
-            new ManagedRepositoryType("default","Maven 2.x Repository"),
-            new ManagedRepositoryType("legacy", "Maven 1.x Repository")
+            new ManagedRepositoryType("default","Maven 2.x Repository")
             ];
 
   ManagedRepository=function(id,name,layout,indexDirectory,location,snapshots,releases,blockRedeployments,cronExpression,
@@ -1217,12 +1216,36 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
               ],
               pageSize: 5,
               gridUpdateCallBack: function(){
-                //$("#main-content" ).find("#remote-repositories-table").find("[title]").tooltip();
+                $.log("remote repositories gridUpdateCallBack");
+
+
+                mainContent.find(".remote-check").each(function( index ) {
+                  var repoId = $( this ).attr("id");
+                  console.log( index + ": " + repoId);
+                  $.ajax({
+                    url: "restServices/archivaServices/remoteRepositoriesService/checkRemoteConnectivity/"+repoId.substringAfterFirst("remote-check-"),
+                    type: "GET",
+                    dataType: 'text',
+                    success: function(result){
+                      $.log("result:"+result);
+                      if(result=="true"){
+                        mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-clear.png" );
+                      } else {
+                        mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-severe-alert-16-16.png" );
+                      }
+                    },
+                    error: function(result){
+                        mainContent.find("img[id='"+repoId+"']").attr("src", "images/weather-severe-alert-16-16.png" );
+                    }
+                  });
+                });
+
+
               }
             });
             var mainContent = $("#main-content");
             ko.applyBindings(remoteRepositoriesViewModel,mainContent.find("#remote-repositories-view").get(0));
-            mainContent.find("#remote-repositories-pills #remote-repositories-view-a").tab('show')
+            mainContent.find("#remote-repositories-pills #remote-repositories-view-a").tab('show');
             removeMediumSpinnerImg(mainContent.find("#remote-repositories-content"));
             activatePopoverDoc();
             if(successFnRemoteRepositories){

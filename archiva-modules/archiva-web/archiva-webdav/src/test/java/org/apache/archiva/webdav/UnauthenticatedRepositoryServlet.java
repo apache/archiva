@@ -20,8 +20,13 @@ package org.apache.archiva.webdav;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * UnauthenticatedRepositoryServlet
@@ -45,5 +50,19 @@ public class UnauthenticatedRepositoryServlet
 
         UnauthenticatedDavSessionProvider sessionProvider = new UnauthenticatedDavSessionProvider();
         setDavSessionProvider( sessionProvider );
+    }
+
+    @Override
+    protected void service( HttpServletRequest request, HttpServletResponse response )
+        throws ServletException, IOException
+    {
+        String userAgent = request.getHeader( "User-Agent" );
+
+        if ( StringUtils.isEmpty( userAgent ))
+        {
+            throw new ServletException( "User-Agent is not configured" );
+        }
+
+        super.service( request, response );
     }
 }

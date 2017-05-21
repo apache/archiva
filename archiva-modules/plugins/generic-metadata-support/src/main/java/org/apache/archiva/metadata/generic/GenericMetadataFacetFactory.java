@@ -30,11 +30,13 @@ public class GenericMetadataFacetFactory
     implements MetadataFacetFactory
 {
 
+    @Override
     public MetadataFacet createMetadataFacet()
     {
         return new GenericMetadataFacet();
     }
 
+    @Override
     public MetadataFacet createMetadataFacet( String repositoryId, String name )
     {
         throw new UnsupportedOperationException( "There is no valid name for project version facets" );

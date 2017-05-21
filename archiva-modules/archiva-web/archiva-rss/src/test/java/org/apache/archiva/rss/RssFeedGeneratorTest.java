@@ -45,6 +45,7 @@ public class RssFeedGeneratorTest
     private RssFeedGenerator generator;
 
     @Before
+    @Override
     public void setUp()
         throws Exception
     {
@@ -57,7 +58,7 @@ public class RssFeedGeneratorTest
     public void testNewFeed()
         throws Exception
     {
-        List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
+        List<RssFeedEntry> entries = new ArrayList<>();
         RssFeedEntry entry = new RssFeedEntry( "Item 1" );
         
         Date whenGathered = new Date( System.currentTimeMillis() );
@@ -95,7 +96,7 @@ public class RssFeedGeneratorTest
     public void testNoDataEntries()
         throws Exception
     {
-        List<RssFeedEntry> entries = new ArrayList<RssFeedEntry>();
+        List<RssFeedEntry> entries = new ArrayList<>();
         SyndFeed feed =
             generator.generateFeed( "Test Feed", "The test feed from Archiva.", entries );
 

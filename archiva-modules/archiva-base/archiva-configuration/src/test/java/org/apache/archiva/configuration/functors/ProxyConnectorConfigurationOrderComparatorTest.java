@@ -40,7 +40,7 @@ public class ProxyConnectorConfigurationOrderComparatorTest
     @Test
     public void testSortOfAllZeros()
     {
-        List<ProxyConnectorConfiguration> proxies = new ArrayList<ProxyConnectorConfiguration>();
+        List<ProxyConnectorConfiguration> proxies = new ArrayList<>();
 
         proxies.add( createConnector( "corporate", 0 ) );
         proxies.add( createConnector( "snapshots", 0 ) );
@@ -55,7 +55,7 @@ public class ProxyConnectorConfigurationOrderComparatorTest
     @Test
     public void testSortNormal()
     {
-        List<ProxyConnectorConfiguration> proxies = new ArrayList<ProxyConnectorConfiguration>();
+        List<ProxyConnectorConfiguration> proxies = new ArrayList<>();
 
         proxies.add( createConnector( "corporate", 3 ) );
         proxies.add( createConnector( "snapshots", 1 ) );
@@ -70,7 +70,7 @@ public class ProxyConnectorConfigurationOrderComparatorTest
     @Test
     public void testSortPartial()
     {
-        List<ProxyConnectorConfiguration> proxies = new ArrayList<ProxyConnectorConfiguration>();
+        List<ProxyConnectorConfiguration> proxies = new ArrayList<>();
 
         proxies.add( createConnector( "corporate", 3 ) );
         proxies.add( createConnector( "snapshots", 0 ) );

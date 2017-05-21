@@ -36,36 +36,42 @@ public class MockRemoteRepositoryAdmin
 {
     private ArchivaConfiguration archivaConfiguration;
 
+    @Override
     public List<RemoteRepository> getRemoteRepositories()
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public RemoteRepository getRemoteRepository( String repositoryId )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Boolean deleteRemoteRepository( String repositoryId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Boolean addRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Boolean updateRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
     public Map<String, RemoteRepository> getRemoteRepositoriesAsMap()
         throws RepositoryAdminException
     {
@@ -82,6 +88,7 @@ public class MockRemoteRepositoryAdmin
         this.archivaConfiguration = archivaConfiguration;
     }
 
+    @Override
     public IndexingContext createIndexContext( RemoteRepository repository )
         throws RepositoryAdminException
     {

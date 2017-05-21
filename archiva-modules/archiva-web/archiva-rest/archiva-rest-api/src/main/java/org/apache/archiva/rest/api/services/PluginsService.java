@@ -29,19 +29,17 @@ import javax.ws.rs.core.MediaType;
  * contains some services for plugins
  *
  * @author Eric Barboni
- * @since 1.4-M4
+ * @since 1.4.0
  */
-@Path( "/pluginsService/" )
+@Path("/pluginsService/")
 public interface PluginsService
 {
 
-    @Path( "getAdminPlugins" )
+    @Path("getAdminPlugins")
     @GET
-    @Produces( 
-    {
-        MediaType.TEXT_PLAIN
-    } )
-    @RedbackAuthorization( noRestriction = true )
+    @Produces(
+        { MediaType.TEXT_PLAIN })
+    @RedbackAuthorization(noRestriction = true)
     String getAdminPlugins()
-            throws ArchivaRestServiceException;
+        throws ArchivaRestServiceException;
 }

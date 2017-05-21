@@ -38,7 +38,7 @@ public class Maven2RepositoryMetadataResolverManagedReleaseTest
     private static final Filter<String> ALL = new AllFilter<String>();
 
     @Inject
-    @Named (value = "repositoryStorage#maven2")
+    @Named ( "repositoryStorage#maven2")
     private Maven2RepositoryStorage storage;
 
     private static final String TEST_REPO_ID = "test";

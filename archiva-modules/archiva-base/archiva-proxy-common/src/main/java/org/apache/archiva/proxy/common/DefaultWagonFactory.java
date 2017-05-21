@@ -53,6 +53,7 @@ public class DefaultWagonFactory
         this.applicationContext = applicationContext;
     }
 
+    @Override
     public Wagon getWagon( WagonFactoryRequest wagonFactoryRequest )
         throws WagonFactoryException
     {
@@ -85,9 +86,9 @@ public class DefaultWagonFactory
         try
         {
             Class clazz = wagon.getClass();
-            Method getHttpHeaders = clazz.getMethod( "getHttpHeaders", null );
+            Method getHttpHeaders = clazz.getMethod( "getHttpHeaders" );
 
-            Properties headers = (Properties) getHttpHeaders.invoke( wagon, null );
+            Properties headers = (Properties) getHttpHeaders.invoke( wagon );
             if ( headers == null )
             {
                 headers = new Properties();
@@ -110,7 +111,7 @@ public class DefaultWagonFactory
         }
         catch ( Exception e )
         {
-            logger.warn( "fail to configure User-Agent: " + e.getMessage(), e );
+            logger.warn( "fail to configure User-Agent: {}", e.getMessage(), e );
         }
     }
 }

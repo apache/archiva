@@ -30,6 +30,7 @@ public class ConsumerScanningStatisticsComparator
 {
     public static final ConsumerScanningStatisticsComparator INSTANCE = new ConsumerScanningStatisticsComparator();
 
+    @Override
     public int compare( ConsumerScanningStatistics one, ConsumerScanningStatistics two )
     {
         if ( one == two )

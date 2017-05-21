@@ -19,7 +19,6 @@ package org.apache.archiva.webdav.util;
  * under the License.
  */
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +26,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,8 +36,6 @@ import java.util.StringTokenizer;
 
 /**
  * MimeTypes
- *
- *
  */
 @Service( "mimeTpes" )
 public class MimeTypes
@@ -50,7 +44,7 @@ public class MimeTypes
 
     private String resource = "org/apache/archiva/webdav/util/mime.types";
 
-    private Map<String, String> mimeMap = new HashMap<String, String>();
+    private Map<String, String> mimeMap = new HashMap<>();
 
     private Logger log = LoggerFactory.getLogger( MimeTypes.class );
 
@@ -88,30 +82,6 @@ public class MimeTypes
         load( resource );
     }
 
-    public void load( File file )
-    {
-        if ( !file.exists() || !file.isFile() || !file.canRead() )
-        {
-            log.error( "Unable to load mime types from file " + file.getAbsolutePath() + " : not a readable file." );
-            return;
-        }
-
-        FileInputStream fis = null;
-
-        try
-        {
-            fis = new FileInputStream( file );
-        }
-        catch ( FileNotFoundException e )
-        {
-            log.error( "Unable to load mime types from file " + file.getAbsolutePath() + " : " + e.getMessage(), e );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( fis );
-        }
-    }
-
     public void load( String resourceName )
     {
         ClassLoader cloader = this.getClass().getClassLoader();
@@ -124,20 +94,13 @@ public class MimeTypes
             throw new IllegalStateException( "Unable to find resource " + resourceName );
         }
 
-        InputStream mimeStream = null;
-
-        try
+        try (InputStream mimeStream = mimeURL.openStream())
         {
-            mimeStream = mimeURL.openStream();
             load( mimeStream );
         }
         catch ( IOException e )
         {
             log.error( "Unable to load mime map " + resourceName + " : " + e.getMessage(), e );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( mimeStream );
         }
     }
 
@@ -145,39 +108,38 @@ public class MimeTypes
     {
         mimeMap.clear();
 
-        InputStreamReader reader = null;
-        BufferedReader buf = null;
-
-        try
+        try (InputStreamReader reader = new InputStreamReader( mimeStream ))
         {
-            reader = new InputStreamReader( mimeStream );
-            buf = new BufferedReader( reader );
-            String line = null;
-
-            while ( ( line = buf.readLine() ) != null )
+            try (BufferedReader buf = new BufferedReader( reader ))
             {
-                line = line.trim();
 
-                if ( line.length() == 0 )
-                {
-                    // empty line. skip it
-                    continue;
-                }
+                String line = null;
 
-                if ( line.startsWith( "#" ) )
+                while ( ( line = buf.readLine() ) != null )
                 {
-                    // Comment. skip it
-                    continue;
-                }
+                    line = line.trim();
 
-                StringTokenizer tokenizer = new StringTokenizer( line );
-                if ( tokenizer.countTokens() > 1 )
-                {
-                    String type = tokenizer.nextToken();
-                    while ( tokenizer.hasMoreTokens() )
+                    if ( line.length() == 0 )
                     {
-                        String extension = tokenizer.nextToken().toLowerCase();
-                        this.mimeMap.put( extension, type );
+                        // empty line. skip it
+                        continue;
+                    }
+
+                    if ( line.startsWith( "#" ) )
+                    {
+                        // Comment. skip it
+                        continue;
+                    }
+
+                    StringTokenizer tokenizer = new StringTokenizer( line );
+                    if ( tokenizer.countTokens() > 1 )
+                    {
+                        String type = tokenizer.nextToken();
+                        while ( tokenizer.hasMoreTokens() )
+                        {
+                            String extension = tokenizer.nextToken().toLowerCase();
+                            this.mimeMap.put( extension, type );
+                        }
                     }
                 }
             }
@@ -185,11 +147,6 @@ public class MimeTypes
         catch ( IOException e )
         {
             log.error( "Unable to read mime types from input stream : " + e.getMessage(), e );
-        }
-        finally
-        {
-            IOUtils.closeQuietly( buf );
-            IOUtils.closeQuietly( reader );
         }
     }
 

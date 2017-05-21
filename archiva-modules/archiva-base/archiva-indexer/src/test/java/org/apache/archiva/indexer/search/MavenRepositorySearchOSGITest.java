@@ -19,6 +19,7 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
+import org.easymock.EasyMock;
 import org.junit.Test;
 
 import java.io.File;
@@ -43,7 +44,7 @@ public class MavenRepositorySearchOSGITest
         List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
 
         // search artifactId
-        archivaConfigControl.expectAndReturn( archivaConfig.getConfiguration(), config, 1, 2 );
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 

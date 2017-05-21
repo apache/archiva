@@ -24,7 +24,7 @@ under the License.
   xmlns="http://maven.apache.org/SETTINGS/1.0.0">
   <mirrors>
     <mirror>
-      <mirrorOf>archiva.snapshots</mirrorOf>
+      <mirrorOf>external:*</mirrorOf>
       <id>local-mirror</id>
       <name>local-mirror</name>
       <url>@localRepositoryUrl@</url>
@@ -37,28 +37,21 @@ under the License.
         <activeByDefault>true</activeByDefault>
       </activation>
       <repositories>
+        <!--
+        Uncomment if you have some redback librairies staged and want to cut a release
+        <repository>
+          <id>archiva-repository.apache.org.stage</id>
+          <url>https://archiva-repository.apache.org/archiva/repository/archiva-releases-stage/</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+        -->
         <repository>
           <id>local-central</id>
-          <url>@localRepositoryUrl@</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>apache.snapshots</id>
-          <url>@localRepositoryUrl@</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>archiva.snapshots</id>
           <url>@localRepositoryUrl@</url>
           <releases>
             <enabled>true</enabled>

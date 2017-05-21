@@ -19,12 +19,10 @@ package org.apache.archiva.metadata.model;
  * under the License.
  */
 
-import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 @XmlRootElement(name = "scm")
-@Entity
 public class Scm
     implements Serializable
 {
@@ -33,6 +31,18 @@ public class Scm
     private String developerConnection;
 
     private String url;
+
+    public Scm()
+    {
+        // no op
+    }
+
+    public Scm( String connection, String developerConnection, String url )
+    {
+        this.connection = connection;
+        this.developerConnection = developerConnection;
+        this.url = url;
+    }
 
     public String getUrl()
     {
@@ -62,5 +72,15 @@ public class Scm
     public void setConnection( String connection )
     {
         this.connection = connection;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Scm{" +
+            "connection='" + connection + '\'' +
+            ", developerConnection='" + developerConnection + '\'' +
+            ", url='" + url + '\'' +
+            '}';
     }
 }

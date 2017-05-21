@@ -18,8 +18,9 @@ package org.apache.archiva.rest.services.interceptors;
  * under the License.
  */
 
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,8 +29,9 @@ import javax.inject.Inject;
 
 /**
  * class to setup Jackson Json configuration
- * @since 1.4-M3
+ *
  * @author Olivier Lamy
+ * @since 1.4-M3
  */
 @Service("archivaJacksonJsonConfigurator")
 public class JacksonJsonConfigurator
@@ -40,6 +42,6 @@ public class JacksonJsonConfigurator
     public JacksonJsonConfigurator( ObjectMapper objectMapper )
     {
         log.info( "configure jackson ObjectMapper" );
-        objectMapper.configure( DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false );
+        objectMapper.configure( DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false );
     }
 }
