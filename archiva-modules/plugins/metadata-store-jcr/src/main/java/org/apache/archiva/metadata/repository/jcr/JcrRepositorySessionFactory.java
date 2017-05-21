@@ -57,7 +57,7 @@ public class JcrRepositorySessionFactory
     @Inject
     private Repository repository;
 
-    @Inject
+    // Lazy evaluation to avoid problems with circular dependencies during initialization
     private MetadataResolver metadataResolver;
 
     @Inject
@@ -75,13 +75,21 @@ public class JcrRepositorySessionFactory
             //  API.
             MetadataRepository metadataRepository = new JcrMetadataRepository( metadataFacetFactories, repository );
 
-            return new RepositorySession( metadataRepository, metadataResolver );
+            return new RepositorySession( metadataRepository, getMetadataResolver() );
         }
         catch ( RepositoryException e )
         {
             // FIXME: a custom exception requires refactoring for callers to handle it
             throw new RuntimeException( e );
         }
+    }
+
+    // Lazy evaluation to avoid problems with circular dependencies during initialization
+    private MetadataResolver getMetadataResolver() {
+        if (this.metadataResolver==null) {
+            this.metadataResolver = applicationContext.getBean( MetadataResolver.class );
+        }
+        return this.metadataResolver;
     }
 
     @PostConstruct
