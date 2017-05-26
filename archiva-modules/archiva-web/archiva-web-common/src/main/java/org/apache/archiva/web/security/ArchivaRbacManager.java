@@ -31,6 +31,7 @@ import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.rbac.UserAssignment;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -111,8 +112,11 @@ public class ArchivaRbacManager
 
             for ( String id : rbacManagerIds )
             {
+                if ( StringUtils.equalsIgnoreCase( "jdo", id ))
+                {
+                    id = RedbackRuntimeConfigurationAdmin.DEFAULT_RBAC_MANAGER_IMPL;
+                }
                 RBACManager rbacManager = applicationContext.getBean( "rbacManager#" + id, RBACManager.class );
-
                 rbacManagersPerId.put( id, rbacManager );
             }
 

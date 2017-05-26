@@ -29,6 +29,7 @@ import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -75,12 +76,21 @@ public class ArchivaLockedAdminEnvironmentCheck
         List<String> userManagerImpls =
             redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().getUserManagerImpls();
 
+        List<String> updated = new ArrayList<>(  );
         userManagers = new ArrayList<>( userManagerImpls.size() );
 
         for ( String beanId : userManagerImpls )
         {
+            // for migration purpose to help users
+            if ( StringUtils.equalsIgnoreCase( beanId, "jdo" ))
+            {
+                log.info( "jdo is not anymore supported we auto update to jpa" );
+                beanId = "jpa";
+            }
+            updated.add( beanId );
             userManagers.add( applicationContext.getBean( "userManager#" + beanId, UserManager.class ) );
         }
+        redbackRuntimeConfigurationAdmin.getRedbackRuntimeConfiguration().setUserManagerImpls( updated );
     }
 
     /**

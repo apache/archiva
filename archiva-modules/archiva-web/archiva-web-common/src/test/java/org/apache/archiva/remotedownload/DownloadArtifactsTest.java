@@ -178,7 +178,7 @@ public class DownloadArtifactsTest
         HttpWagon httpWagon = new HttpWagon();
         httpWagon.connect( new Repository( "foo", "http://localhost:" + port ) );
 
-        httpWagon.get( "/repository/internal/junit/junit/4.9/junit-4.9.jar", file );
+        httpWagon.get( "repository/internal/junit/junit/4.9/junit-4.9.jar", file );
 
         ZipFile zipFile = new ZipFile( file );
         List<String> entries = getZipEntriesNames( zipFile );

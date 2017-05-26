@@ -33,16 +33,18 @@ import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.archiva.webdav.RepositoryServlet;
-import org.apache.catalina.Context;
-import org.apache.catalina.deploy.ApplicationListener;
-import org.apache.catalina.deploy.ApplicationParameter;
-import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.cxf.common.util.Base64Utility;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.servlet.CXFServlet;
+import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -73,7 +75,7 @@ public abstract class AbstractDownloadTest
 
     public Server server = null;
 
-    public Tomcat tomcat;
+    ServerConnector serverConnector;
 
     public int port;
 
@@ -109,30 +111,24 @@ public abstract class AbstractDownloadTest
 
         System.setProperty( "redback.admin.creation.file", "target/auto-admin-creation.properties" );
 
-        tomcat = new Tomcat();
-        tomcat.setBaseDir( System.getProperty( "java.io.tmpdir" ) );
-        tomcat.setPort( 0 );
+        server = new Server();
+        serverConnector = new ServerConnector( server, new HttpConnectionFactory() );
+        server.addConnector( serverConnector );
 
-        Context context = tomcat.addContext( "", System.getProperty( "java.io.tmpdir" ) );
+        ServletHolder servletHolder = new ServletHolder( new CXFServlet() );
+        ServletContextHandler context = new ServletContextHandler( ServletContextHandler.SESSIONS );
+        context.setResourceBase( SystemUtils.JAVA_IO_TMPDIR );
+        context.setSessionHandler( new SessionHandler() );
+        context.addServlet( servletHolder, "/" + getRestServicesPath() + "/*" );
+        context.setInitParameter( "contextConfigLocation", getSpringConfigLocation() );
+        context.addEventListener( new ContextLoaderListener() );
 
-        ApplicationParameter applicationParameter = new ApplicationParameter();
-        applicationParameter.setName( "contextConfigLocation" );
-        applicationParameter.setValue( getSpringConfigLocation() );
-        context.addApplicationParameter( applicationParameter );
+        ServletHolder servletHolderRepo = new ServletHolder( new RepositoryServlet() );
+        context.addServlet( servletHolderRepo, "/repository/*" );
 
-        context.addApplicationListener( new ApplicationListener( ContextLoaderListener.class.getName(), false ) );
-
-        tomcat.addServlet( context, "cxf", new CXFServlet() );
-        context.addServletMapping( "/" + getRestServicesPath() + "/*" , "cxf" );
-
-        tomcat.addServlet( context, "archivarepo", new RepositoryServlet() );
-        context.addServletMapping( "/repository/*" , "archivarepo" );
-
-        tomcat.start();
-
-        port = tomcat.getConnector().getLocalPort();
-
-
+        server.setHandler( context );
+        server.start();
+        port = serverConnector.getLocalPort();
         log.info( "start server on port {}", this.port );
 
         User user = new User();
@@ -158,10 +154,6 @@ public abstract class AbstractDownloadTest
         {
             this.server.stop();
         }
-        if (this.tomcat != null)
-        {
-            this.tomcat.stop();
-        }
     }
 
 
@@ -173,7 +165,7 @@ public abstract class AbstractDownloadTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client( service ).header( "Referer", "http://localhost:" + port );
 
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
         return service;
@@ -187,7 +179,7 @@ public abstract class AbstractDownloadTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client( service ).header( "Referer", "http://localhost:" + port );
 
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
         return service;
@@ -201,7 +193,7 @@ public abstract class AbstractDownloadTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client( service ).header( "Referer", "http://localhost:" + port );
 
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
         return service;
@@ -216,7 +208,7 @@ public abstract class AbstractDownloadTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client( service ).header( "Referer", "http://localhost:" + port );
 
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
         return service;
@@ -230,7 +222,7 @@ public abstract class AbstractDownloadTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client( service ).header( "Referer", "http://localhost:" + port );
 
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
         return service;
@@ -244,7 +236,7 @@ public abstract class AbstractDownloadTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client( service ).header( "Referer", "http://localhost:" + port );
 
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000L );
         return service;
@@ -264,7 +256,7 @@ public abstract class AbstractDownloadTest
                                        RoleManagementService.class,
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client( service ).header( "Referer", "http://localhost:" + port );
 
         // for debuging purpose
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 3000000L );
@@ -282,7 +274,7 @@ public abstract class AbstractDownloadTest
             JAXRSClientFactory.create( "http://localhost:" + port + "/" + getRestServicesPath() + "/redbackServices/",
                                        UserService.class, Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client( service ).header( "Referer", "http://localhost:" + port );
 
         // for debuging purpose
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 3000000L );

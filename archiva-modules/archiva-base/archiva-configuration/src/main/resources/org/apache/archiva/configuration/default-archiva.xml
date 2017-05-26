@@ -144,7 +144,7 @@
 
   <redbackRuntimeConfiguration>
     <userManagerImpls>
-      <userManagerImpl>jdo</userManagerImpl>
+      <userManagerImpl>jpa</userManagerImpl>
     </userManagerImpls>
     <rbacManagerImpls>
       <rbacManagerImpl>cached</rbacManagerImpl>

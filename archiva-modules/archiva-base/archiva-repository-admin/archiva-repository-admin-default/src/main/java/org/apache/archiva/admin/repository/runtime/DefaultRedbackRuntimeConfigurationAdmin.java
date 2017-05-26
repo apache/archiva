@@ -100,6 +100,10 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                     String[] impls = StringUtils.split( userManagerImpl, ',' );
                     for ( String impl : impls )
                     {
+                        if (StringUtils.equalsIgnoreCase( "jdo", impl ))
+                        {
+                            impl = DEFAULT_USER_MANAGER_IMPL;
+                        }
                         redbackRuntimeConfiguration.getUserManagerImpls().add( impl );
                     }
                 }
@@ -117,6 +121,10 @@ public class DefaultRedbackRuntimeConfigurationAdmin
                     String[] impls = StringUtils.split( rbacManagerImpls, ',' );
                     for ( String impl : impls )
                     {
+                        if (StringUtils.equalsIgnoreCase( "jdo", impl ))
+                        {
+                            impl = DEFAULT_RBAC_MANAGER_IMPL;
+                        }
                         redbackRuntimeConfiguration.getRbacManagerImpls().add( impl );
                     }
                 }
