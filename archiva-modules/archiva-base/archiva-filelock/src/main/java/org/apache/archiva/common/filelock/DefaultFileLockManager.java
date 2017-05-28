@@ -71,6 +71,8 @@ public class DefaultFileLockManager
 
         while ( !acquired )
         {
+            // Make sure that not a bad lock is returned, if a exception was thrown.
+            lock = null;
 
             if ( timeout > 0 )
             {
@@ -88,7 +90,7 @@ public class DefaultFileLockManager
 
             if ( current != null )
             {
-                log.debug( "read lock file exist continue wait" );
+                log.trace( "read lock file exist continue wait" );
                 continue;
             }
 
@@ -97,7 +99,22 @@ public class DefaultFileLockManager
                 lock = new Lock( file, false );
                 createNewFileQuietly( file );
                 lock.openLock( false, timeout > 0 );
-                acquired = true;
+                // We are not returning an existing lock. If the lock is not
+                // exclusive, another thread may release the lock and the client
+                // knows nothing about it.
+                // The only atomic operation is the putIfAbsent operation, so if
+                // this returns null everything is OK, otherwise we should start at
+                // the beginning.
+                current = lockFiles.putIfAbsent( file, lock );
+                if ( current == null )
+                {
+                    // Success
+                    acquired = true;
+                } else {
+                    // We try again
+                    lock.close();
+                    lock=null;
+                }
             }
             catch ( FileNotFoundException e )
             {
@@ -116,14 +133,10 @@ public class DefaultFileLockManager
             }
             catch ( IllegalStateException e )
             {
-                log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
+                log.trace( "openLock {}:{}", e.getClass(), e.getMessage() );
             }
         }
-        Lock current = lockFiles.putIfAbsent( file, lock );
-        if ( current != null )
-        {
-            lock = current;
-        }
+
         return lock;
 
     }
@@ -149,7 +162,8 @@ public class DefaultFileLockManager
 
         while ( !acquired )
         {
-
+            // Make sure that not a bad lock is returned, if a exception was thrown.
+            lock = null;
             if ( timeout > 0 )
             {
                 long delta = stopWatch.getTime();
@@ -169,14 +183,29 @@ public class DefaultFileLockManager
 
                 if ( current != null )
                 {
-                    log.debug( "write lock file exist continue wait" );
+                    log.trace( "write lock file exist continue wait" );
 
                     continue;
                 }
                 lock = new Lock( file, true );
                 createNewFileQuietly( file );
                 lock.openLock( true, timeout > 0 );
-                acquired = true;
+                // We are not returning an existing lock. If the lock is not
+                // exclusive, another thread may release the lock and the client
+                // knows nothing about it.
+                // The only atomic operation is the putIfAbsent operation, so if
+                // this returns null everything is OK, otherwise we should start at
+                // the beginning.
+                current = lockFiles.putIfAbsent( file, lock );
+                if ( current == null )
+                {
+                    // Success
+                    acquired = true;
+                } else {
+                    // We try again
+                    lock.close();
+                    lock=null;
+                }
             }
             catch ( FileNotFoundException e )
             {
@@ -195,14 +224,8 @@ public class DefaultFileLockManager
             }
             catch ( IllegalStateException e )
             {
-                log.debug( "openLock {}:{}", e.getClass(), e.getMessage() );
+                log.trace( "openLock {}:{}", e.getClass(), e.getMessage() );
             }
-        }
-
-        Lock current = lockFiles.putIfAbsent( file, lock );
-        if ( current != null )
-        {
-            lock = current;
         }
 
         return lock;

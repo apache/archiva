@@ -144,11 +144,14 @@ public class DefaultFileLockManagerTest {
             try {
                 logger.info("thread3");
                 Lock lock = fileLockManager.readFileLock(this.file);
+                Path outFile = null;
                 try {
+                    outFile = Files.createTempFile("foo", ".jar");
                     Files.copy(Paths.get(lock.getFile().getPath()),
-                            new FileOutputStream(File.createTempFile("foo", ".jar")));
+                            Files.newOutputStream(outFile));
                 } finally {
                     fileLockManager.release(lock);
+                    if (outFile!=null) Files.delete( outFile );
                 }
                 logger.info("thread3 ok");
                 success.incrementAndGet();
@@ -207,10 +210,13 @@ public class DefaultFileLockManagerTest {
             try {
                 logger.info("thread6");
                 Lock lock = fileLockManager.readFileLock(this.file);
+                Path outFile = null;
                 try {
-                    Files.copy(lock.getFile().toPath(), new FileOutputStream(File.createTempFile("foo", ".jar")));
+                    outFile = Files.createTempFile("foo", ".jar");
+                    Files.copy(lock.getFile().toPath(), Files.newOutputStream( outFile ));
                 } finally {
                     fileLockManager.release(lock);
+                    if (outFile!=null) Files.delete( outFile );
                 }
                 logger.info("thread6 ok");
                 success.incrementAndGet();
@@ -248,10 +254,13 @@ public class DefaultFileLockManagerTest {
             try {
                 logger.info("thread8");
                 Lock lock = fileLockManager.readFileLock(this.file);
+                Path outFile = null;
                 try {
-                    Files.copy(lock.getFile().toPath(), new FileOutputStream(File.createTempFile("foo", ".jar")));
+                    outFile = Files.createTempFile("foo", ".jar");
+                    Files.copy(lock.getFile().toPath(), Files.newOutputStream( outFile ));
                 } finally {
                     fileLockManager.release(lock);
+                    if (outFile!=null) Files.delete( outFile );
                 }
                 logger.info("thread8 ok");
                 success.incrementAndGet();
@@ -288,10 +297,13 @@ public class DefaultFileLockManagerTest {
             try {
                 logger.info("thread10");
                 Lock lock = fileLockManager.readFileLock(this.file);
+                Path outFile = null;
                 try {
-                    Files.copy(lock.getFile().toPath(), new FileOutputStream(File.createTempFile("foo", ".jar")));
+                    outFile = Files.createTempFile("foo", ".jar");
+                    Files.copy(lock.getFile().toPath(), Files.newOutputStream( outFile ));
                 } finally {
                     fileLockManager.release(lock);
+                    if (outFile!=null) Files.delete(outFile);
                 }
                 logger.info("thread10 ok");
                 success.incrementAndGet();
