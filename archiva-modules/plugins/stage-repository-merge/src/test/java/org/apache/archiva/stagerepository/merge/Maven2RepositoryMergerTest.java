@@ -19,7 +19,7 @@ package org.apache.archiva.stagerepository.merge;
  * under the License.
  */
 
-import junit.framework.TestCase;
+mport junit.framework.TestCase;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
