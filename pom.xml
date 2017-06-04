@@ -87,7 +87,7 @@
     <httpclient.core.version>4.4.4</httpclient.core.version>
     <javaxMailVersion>1.4</javaxMailVersion>
     <jettyVersion>9.4.5.v20170502</jettyVersion>
-    <guava.version>16.0.1</guava.version>
+    <guava.version>22.0</guava.version>
     <openjpaVersion>2.4.1</openjpaVersion>
 
     <!-- restore when we will be able to use a derby in memory database -->

@@ -19,31 +19,25 @@ package org.apache.archiva.web.test;
  */
 
 import junit.framework.Assert;
+import org.apache.archiva.web.test.tools.WebdriverInitializer;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.fluentlenium.adapter.FluentTest;
+import org.fluentlenium.adapter.junit.FluentTest;
 import org.fluentlenium.core.domain.FluentList;
 import org.fluentlenium.core.domain.FluentWebElement;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.safari.SafariDriver;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.io.FileUtils;
-import org.fluentlenium.core.Fluent;
-import org.junit.Before;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -53,7 +47,7 @@ public class WebDriverBrowseTest
 {
 
     @Override
-    public Fluent takeScreenShot( String fileName )
+    public void takeScreenShot( String fileName )
     {
         File fileNameHTML = new File( "target", "errorshtmlsnap" );
         try
@@ -67,14 +61,17 @@ public class WebDriverBrowseTest
         {
             e.printStackTrace();
         }
-        return super.takeScreenShot( fileNameHTML.getAbsolutePath() );
+        super.takeScreenShot( fileNameHTML.getAbsolutePath() );
 
     }
 
     @Before
     public void init()
     {
-        setSnapshotMode( Mode.TAKE_SNAPSHOT_ON_FAIL );
+
+        setScreenshotMode( TriggerMode.AUTOMATIC_ON_FAIL);
+        setDriverLifecycle( DriverLifecycle.CLASS );
+
     }
 
     @Test
@@ -93,34 +90,34 @@ public class WebDriverBrowseTest
         goTo( "http://localhost:" + tomcatPort + "/archiva/index.html?request_lang=en" );
 
         // wait until topbar-menu-container is feeded
-        await().atMost( 5, TimeUnit.SECONDS ).until( "#topbar-menu" ).isPresent();
+        await().atMost( 5, TimeUnit.SECONDS ).until( $("#topbar-menu" )).present();
 
         FluentList<FluentWebElement> elements = find( "#create-admin-link-a" );
 
-        if ( !elements.isEmpty() && elements.get( 0 ).isDisplayed() )
+        if ( !elements.isEmpty() && elements.get( 0 ).displayed() )
         {
             WebElement webElement = elements.get( 0 ).getElement();
             Assert.assertEquals( "Create Admin User", webElement.getText() );
 
             webElement.click();
-            await().atMost( 2, TimeUnit.SECONDS ).until( "#user-create" ).isPresent();
-            assertThat( find( "#username" ).getValue().equals( "admin" ) );
-            assertThat( find( "#password" ).getValue().isEmpty() );
-            assertThat( find( "#confirmPassword" ).getValue().isEmpty() );
-            assertThat( find( "#email" ).getValue().isEmpty() );
+            await().atMost( 2, TimeUnit.SECONDS ).until($( "#user-create" )).present();
+            assertThat( find( "#username" ).value().equals( "admin" ) );
+            assertThat( find( "#password" ).value().isEmpty() );
+            assertThat( find( "#confirmPassword" ).value().isEmpty() );
+            assertThat( find( "#email" ).value().isEmpty() );
 
-            fill( "#fullname" ).with( p.getProperty( "ADMIN_FULLNAME" ) );
-            fill( "#email" ).with( p.getProperty( "ADMIN_EMAIL" ) );
-            fill( "#password" ).with( p.getProperty( "ADMIN_PASSWORD" ) );
-            fill( "#confirmPassword" ).with( p.getProperty( "ADMIN_PASSWORD" ) );
+            $("#fullname").fill().with( p.getProperty( "ADMIN_FULLNAME" ) );
+            $("#email").fill().with( p.getProperty( "ADMIN_EMAIL" ) );
+            $("#password").fill().with( p.getProperty( "ADMIN_PASSWORD" ) );
+            $("#confirmPassword").fill().with( p.getProperty( "ADMIN_PASSWORD" ) );
             find( "#user-create-form-register-button" ).click();
 
-            await().atMost( 2, TimeUnit.SECONDS ).until( "#logout-link" ).isPresent();
+            await().atMost( 2, TimeUnit.SECONDS ).until($("#logout-link" )).present();
 
             FluentList<FluentWebElement> elementss = find( "#menu-find-browse-a" );
             WebElement webElsement = elementss.get( 0 ).getElement();
             webElsement.click();
-            await().atMost( 2, TimeUnit.SECONDS ).until( "#main_browse_result" ).isPresent();
+            await().atMost( 2, TimeUnit.SECONDS ).until($("#main_browse_result" )).present();
             // give me search page :( not  browse page
 
             takeScreenShot( "search.png" );
@@ -140,36 +137,7 @@ public class WebDriverBrowseTest
     }
 
     @Override
-    public WebDriver getDefaultDriver() {
-        String seleniumBrowser = System.getProperty("selenium.browser");
-        String seleniumHost = System.getProperty("seleniumHost", "localhost");
-        int seleniumPort = Integer.getInteger("seleniumPort", 4444);
-        try {
-
-            if (StringUtils.contains(seleniumBrowser, "chrome")) {
-                return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
-                        DesiredCapabilities.chrome()
-                );
-            }
-
-            if (StringUtils.contains(seleniumBrowser, "safari")) {
-                return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
-                        DesiredCapabilities.safari()
-                );
-            }
-
-            if (StringUtils.contains(seleniumBrowser, "iexplore")) {
-                return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
-                        DesiredCapabilities.internetExplorer()
-                );
-            }
-
-            return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
-                    DesiredCapabilities.firefox()
-            );
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Initializion of remote driver failed");
-        }
-
+    public WebDriver newWebDriver() {
+        return WebdriverInitializer.newWebDriver();
     }
 }

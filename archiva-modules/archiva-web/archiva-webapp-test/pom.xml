@@ -35,9 +35,9 @@
     <tomcat.propertiesPortFilePath>${project.build.directory}/tomcat-port.properties</tomcat.propertiesPortFilePath>
     <maxWaitTimeInMs>10000</maxWaitTimeInMs>
 
-    <seleniumPluginVersion>2.3</seleniumPluginVersion>
-    <selenium-server.version>2.53.1</selenium-server.version>
-    <fluentlenium.version>0.10.2</fluentlenium.version>
+    <selenium-server.version>3.4.0</selenium-server.version>
+    <fluentlenium.version>3.2.0</fluentlenium.version>
+    <fluentlenium.festassert.version>0.13.2</fluentlenium.festassert.version>
 
     <browserPath></browserPath>
   </properties>
@@ -70,7 +70,18 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
+      <scope>test</scope>
       <version>${selenium-server.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>javax.servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium.client-drivers</groupId>
@@ -81,12 +92,43 @@
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>javax.servlet-api</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-remote-driver</artifactId>
+      <scope>test</scope>
       <version>${selenium-server.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>javax.servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-leg-rc</artifactId>
+      <scope>test</scope>
+      <version>${selenium-server.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.testng</groupId>
+          <artifactId>testng</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>javax.servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -96,20 +138,24 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>htmlunit-driver</artifactId>
-      <version>2.24</version>
+      <version>2.26</version>
     </dependency>
 
-
     <dependency>
-      <groupId>org.fluentlenium</groupId>
-      <artifactId>fluentlenium-festassert</artifactId>
-      <version>${fluentlenium.version}</version>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-server</artifactId>
       <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
+      <version>${selenium-server.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>javax.servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -117,6 +163,25 @@
       <artifactId>fluentlenium-core</artifactId>
       <version>${fluentlenium.version}</version>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.fluentlenium</groupId>
+      <artifactId>fluentlenium-festassert</artifactId>
+      <version>${fluentlenium.festassert.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.fluentlenium</groupId>
+      <artifactId>fluentlenium-junit</artifactId>
+      <version>${fluentlenium.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
     </dependency>
 
     <!-- Dependency for MavenConnectionTest -->
@@ -183,37 +248,6 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>selenium-maven-plugin</artifactId>
-          <dependencies>
-            <dependency>
-              <groupId>org.seleniumhq.selenium</groupId>
-              <artifactId>selenium-server</artifactId>
-              <version>${selenium-server.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.seleniumhq.selenium</groupId>
-              <artifactId>selenium-remote-driver</artifactId>
-              <version>${selenium-server.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.seleniumhq.selenium</groupId>
-              <artifactId>selenium-api</artifactId>
-              <version>${selenium-server.version}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.commons</groupId>
-              <artifactId>commons-exec</artifactId>
-              <version>1.3</version>
-            </dependency>
-            <dependency>
-              <groupId>org.seleniumhq.selenium</groupId>
-              <artifactId>htmlunit-driver</artifactId>
-              <version>2.24</version>
-            </dependency>  
-          </dependencies>
-        </plugin>
-        <plugin>
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
@@ -274,6 +308,7 @@
                 <maxWaitTimeInMs>${maxWaitTimeInMs}</maxWaitTimeInMs>
                 <seleniumHost>${seleniumHost}</seleniumHost>
                 <seleniumPort>${seleniumPort}</seleniumPort>
+                <seleniumRemote>${seleniumRemote}</seleniumRemote>
                 <tomcat.propertiesPortFilePath>${tomcat.propertiesPortFilePath}</tomcat.propertiesPortFilePath>
               </systemPropertyVariables>
             </configuration>
@@ -439,36 +474,27 @@
         </property>
       </activation>
       <properties>
-        <seleniumHost>localhost</seleniumHost>
-        <seleniumPort>4444</seleniumPort>
+        <seleniumRemote>false</seleniumRemote>
       </properties>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>selenium-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>pre-integration-test</phase>
-                <goals>
-                  <goal>start-server</goal>
-                </goals>
-                <configuration>
-                  <background>true</background>
-                  <port>${seleniumPort}</port>
-                  <logOutput>true</logOutput>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
+    </profile>
+    <profile>
+      <id>htmlunit</id>
+      <activation>
+        <property>
+          <name>!browser</name>
+        </property>
+      </activation>
+      <properties>
+        <selenium.browser>*htmlunit</selenium.browser>
+        <excluded.groups/>
+      </properties>
     </profile>
     <profile>
       <id>firefox</id>
       <activation>
         <property>
-          <name>!browser</name>
+          <name>browser</name>
+          <value>firefox</value>
         </property>
       </activation>
       <properties>

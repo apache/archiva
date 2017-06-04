@@ -21,7 +21,10 @@ package org.apache.archiva.web.test.parent;
 
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
+import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 import org.apache.archiva.web.test.tools.ArchivaSeleniumExecutionRule;
+import org.apache.archiva.web.test.tools.WebdriverInitializer;
+import org.apache.xpath.operations.Bool;
 import org.junit.Assert;
 import org.junit.Rule;
 
@@ -37,6 +40,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.WebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto:evenisse@apache.org">Emmanuel Venisse</a>
@@ -45,6 +51,7 @@ import org.apache.commons.io.FileUtils;
 
 public abstract class AbstractSeleniumTest
 {
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     @Rule
     public ArchivaSeleniumExecutionRule archivaSeleniumExecutionRule = new ArchivaSeleniumExecutionRule();
@@ -59,6 +66,8 @@ public abstract class AbstractSeleniumTest
     public String seleniumHost = System.getProperty( "seleniumHost", "localhost" );
 
     public int seleniumPort = Integer.getInteger( "seleniumPort", 4444 );
+
+    public boolean remoteSelenium = Boolean.parseBoolean( System.getProperty( "remoteSelenium", "false" ) );
 
     private Selenium selenium = null;
 
@@ -83,7 +92,7 @@ public abstract class AbstractSeleniumTest
 
         baseUrl = "http://localhost:" + tomcatPort + "/archiva/index.html?request_lang=en";
 
-        open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs );
+        open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs, remoteSelenium );
         archivaSeleniumExecutionRule.selenium = selenium;
         assertAdminCreated();
     }
@@ -102,14 +111,15 @@ public abstract class AbstractSeleniumTest
     /**
      * Initialize selenium
      */
-    public void open( String baseUrl, String browser, String seleniumHost, int seleniumPort, int maxWaitTimeInMs )
+    public void open( String baseUrl, String browser, String seleniumHost, int seleniumPort, int maxWaitTimeInMs, boolean remoteSelenium)
         throws Exception
     {
         try
         {
             if ( getSelenium() == null )
             {
-                selenium = new DefaultSelenium( seleniumHost, seleniumPort, browser, baseUrl );
+                WebDriver driver = WebdriverInitializer.newWebDriver(browser, seleniumHost, seleniumPort, remoteSelenium);
+                selenium = new WebDriverBackedSelenium(driver, baseUrl);
                 selenium.start();
                 selenium.setTimeout( Integer.toString( maxWaitTimeInMs ) );
             }
@@ -125,15 +135,15 @@ public abstract class AbstractSeleniumTest
     public void assertAdminCreated()
         throws Exception
     {
-        initializeArchiva( baseUrl, browser, maxWaitTimeInMs, seleniumHost, seleniumPort );
+        initializeArchiva( baseUrl, browser, maxWaitTimeInMs, seleniumHost, seleniumPort, remoteSelenium );
     }
 
     public void initializeArchiva( String baseUrl, String browser, int maxWaitTimeInMs, String seleniumHost,
-                                   int seleniumPort )
+                                   int seleniumPort, boolean remoteSelenium)
         throws Exception
     {
 
-        open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs );
+        open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs, remoteSelenium);
 
         getSelenium().open( baseUrl );
 
@@ -701,8 +711,12 @@ public abstract class AbstractSeleniumTest
         
         File fileName = new File( targetPath, fileBaseName + ".png" );
 
-        selenium.captureEntirePageScreenshot( fileName.getAbsolutePath(), "background=#FFFFFF" );
-        
+        try
+        {
+            selenium.captureEntirePageScreenshot( fileName.getAbsolutePath(), "background=#FFFFFF" );
+        } catch (UnsupportedOperationException ex) {
+            logger.warn("Could not create screenshot. Not supported by this webdriver. "+selenium.getClass().getName());
+        }
         return fileName.getAbsolutePath();
     }
 

@@ -19,10 +19,13 @@ package org.apache.archiva.web.test;
  */
 
 import junit.framework.Assert;
+import org.apache.archiva.web.test.tools.WebdriverInitializer;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.fluentlenium.adapter.FluentTest;
+import org.fluentlenium.adapter.junit.FluentTest;
 import org.fluentlenium.core.domain.FluentList;
 import org.fluentlenium.core.domain.FluentWebElement;
+import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -38,21 +41,21 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.io.FileUtils;
-import org.fluentlenium.core.Fluent;
-import org.junit.Before;
 
 /**
  * @author Olivier Lamy
  */
 public class WebDriverTest
-        extends FluentTest {
+        extends FluentTest
+{
+
+
 
     @Override
-    public Fluent takeScreenShot(String fileName) {
+    public void takeScreenShot(String fileName) {
         try {
             // save html to have a minimum feedback if jenkins firefox not up
             File fileNameHTML = new File(fileName + ".html");
@@ -61,13 +64,15 @@ public class WebDriverTest
             System.out.print(e.getMessage());
             e.printStackTrace();
         }
-        return super.takeScreenShot(fileName);
+        super.takeScreenShot(fileName);
     }
+
 
     @Before
     public void init() {
-        setSnapshotMode(Mode.TAKE_SNAPSHOT_ON_FAIL);
-        setSnapshotPath(new File("target", "errorshtmlsnap").getAbsolutePath());
+        setScreenshotMode(TriggerMode.AUTOMATIC_ON_FAIL);
+        setScreenshotPath( Paths.get("target", "errorshtmlsnap").toAbsolutePath().toString());
+        setDriverLifecycle( DriverLifecycle.CLASS );
     }
 
     @Test
@@ -79,15 +84,16 @@ public class WebDriverTest
                 new FileInputStream(new File(System.getProperty("tomcat.propertiesPortFilePath"))));
 
         int tomcatPort = Integer.parseInt(tomcatPortProperties.getProperty("tomcat.maven.http.port"));
-
-        goTo("http://localhost:" + tomcatPort + "/archiva/index.html?request_lang=en");
+        String url = "http://localhost:" + tomcatPort + "/archiva/index.html?request_lang=en";
+        System.err.println("URL: "+url);
+        goTo(url);
 
         // wait until topbar-menu-container is feeded
-        await().atMost(5, TimeUnit.SECONDS).until("#topbar-menu").isPresent();
+        await().atMost(10, TimeUnit.SECONDS).until($("#topbar-menu")).present();
 
         FluentList<FluentWebElement> elements = find("#create-admin-link-a");
 
-        if (!elements.isEmpty() && elements.get(0).isDisplayed()) {
+        if (!elements.isEmpty() && elements.get(0).displayed()) {
             WebElement webElement = elements.get(0).getElement();
             Assert.assertEquals("Create Admin User", webElement.getText());
         } else {
@@ -99,36 +105,7 @@ public class WebDriverTest
     }
 
     @Override
-    public WebDriver getDefaultDriver() {
-        String seleniumBrowser = System.getProperty("selenium.browser");
-        String seleniumHost = System.getProperty("seleniumHost", "localhost");
-        int seleniumPort = Integer.getInteger("seleniumPort", 4444);
-        try {
-
-            if (StringUtils.contains(seleniumBrowser, "chrome")) {
-                return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
-                        DesiredCapabilities.chrome()
-                );
-            }
-
-            if (StringUtils.contains(seleniumBrowser, "safari")) {
-                return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
-                        DesiredCapabilities.safari()
-                );
-            }
-
-            if (StringUtils.contains(seleniumBrowser, "iexplore")) {
-                return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
-                        DesiredCapabilities.internetExplorer()
-                );
-            }
-
-            return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),
-                    DesiredCapabilities.firefox()
-            );
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Initializion of remote driver failed");
-        }
-
+    public WebDriver newWebDriver() {
+        return WebdriverInitializer.newWebDriver();
     }
 }

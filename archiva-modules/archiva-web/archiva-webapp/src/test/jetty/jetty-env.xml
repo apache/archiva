@@ -1,0 +1,30 @@
+<?xml version="1.0"  encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+
+<Configure id="wac" class="org.eclipse.jetty.webapp.WebAppContext">
+  <New id="derbyDs" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg></Arg>
+    <Arg>jdbc/users</Arg>
+    <Arg>
+      <New class="org.apache.derby.jdbc.EmbeddedDataSource">
+        <Set name="databaseName">database/users;create=true</Set>
+        <Set name="user">sa</Set>
+        <Set name="password"></Set>
+      </New>
+    </Arg>
+  </New>
+
+
+  <New id="mail" class="org.eclipse.jetty.plus.jndi.Resource">
+    <Arg>mail/Session</Arg>
+    <Arg>
+      <New class="org.eclipse.jetty.jndi.factories.MailSessionReference">
+        <Set name="properties">
+          <New class="java.util.Properties">
+            <Put name="mail.smtp.host">localhost</Put>
+          </New>
+        </Set>
+      </New>
+    </Arg>
+  </New>
+</Configure>
