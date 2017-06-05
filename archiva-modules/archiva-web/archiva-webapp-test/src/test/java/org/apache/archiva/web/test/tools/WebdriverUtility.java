@@ -18,8 +18,10 @@ package org.apache.archiva.web.test.tools;
  * under the License.
  */
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -28,15 +30,29 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Created by martin_s on 04.06.17.
  */
-public class WebdriverInitializer
+public class WebdriverUtility
 {
+
+    static final Logger log = LoggerFactory.getLogger( WebdriverUtility.class );
 
     public static WebDriver newWebDriver() {
         String seleniumBrowser = System.getProperty("selenium.browser");
@@ -114,5 +130,75 @@ public class WebdriverInitializer
             throw new RuntimeException("Initializion of remote driver failed");
         }
 
+    }
+
+    public static String getBaseUrl() {
+
+        if (System.getProperties().containsKey( "baseUrl" )) {
+            return System.getProperty("baseUrl");
+        }
+        int containerPort = 7777;
+        if (System.getProperties().containsKey("container.http.port")) {
+            containerPort = Integer.parseInt(System.getProperty("container.http.port"));
+        } else if (System.getProperties().containsKey("container.propertiesPortFilePath"))
+        {
+            Properties portProperties = new Properties();
+            try (InputStream inputStream = Files.newInputStream(Paths.get(System.getProperty("container.propertiesPortFilePath"))))
+            {
+                portProperties.load(inputStream);
+            }
+            catch ( IOException e )
+            {
+                log.error("Error during property loading with containger.propertiesPortFilePath");
+            }
+            if ( portProperties.containsKey( "tomcat.maven.http.port" ) )
+            {
+                containerPort = Integer.parseInt( portProperties.getProperty( "tomcat.maven.http.port" ) );
+            }
+            else
+            {
+                containerPort = Integer.parseInt( portProperties.getProperty( "container.http.port" ) );
+            }
+        }
+        return "http://localhost:" + containerPort+"/archiva";
+    }
+
+    public static void takeScreenShot( String fileName, WebDriver driver, Consumer<String> screenShotFunction) {
+        try
+        {
+            Path snapDir = Paths.get( "target", "errorshtmlsnap" );
+            if ( !Files.exists( snapDir ) )
+            {
+                Files.createDirectories( snapDir );
+            }
+            Path htmlFile = snapDir.resolve( fileName + ".html" );
+            Path screenShotFile = snapDir.resolve( fileName );
+            String pageSource=null;
+            String encoding="ISO-8859-1";
+            try
+            {
+                pageSource = ( (JavascriptExecutor) driver ).executeScript( "return document.documentElement.outerHTML;" ).toString();
+            } catch (Exception e) {
+                log.info("Could not create html source by javascript");
+                pageSource = driver.getPageSource();
+            }
+            if (pageSource.contains("encoding=\"")) {
+                encoding = pageSource.replaceFirst( ".*encoding=\"([^\"]+)\".*", "$1" );
+            }
+            FileUtils.writeStringToFile( htmlFile.toFile(), pageSource, encoding);
+            try
+            {
+                screenShotFunction.accept( screenShotFile.toAbsolutePath().toString() );
+            }
+            catch ( Exception e )
+            {
+                log.info( "Could not create screenshot: " + e.getMessage() );
+            }
+
+        }
+        catch ( IOException e )
+        {
+            log.info( "Creating screenshot failed " + e.getMessage() );
+        }
     }
 }

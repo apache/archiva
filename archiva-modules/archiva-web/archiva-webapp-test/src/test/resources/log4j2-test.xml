@@ -19,7 +19,7 @@
   -->
 
 
-<configuration status="debug">
+<configuration status="info">
   <appenders>
     <Console name="console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d [%t] %-5p %c %x - %m%n"/>
@@ -30,7 +30,6 @@
     <logger name="org.springframework" level="error"/>
     <logger name="com.gargoylesoftware.htmlunit.DefaultCssErrorHandler" level="error" />
     <logger name="com.gargoylesoftware.htmlunit.html.HtmlScript" level="error" />
-    <logger name="org.apache.http.wire" level="debug" />
 
     <root level="info">
       <appender-ref ref="console"/>

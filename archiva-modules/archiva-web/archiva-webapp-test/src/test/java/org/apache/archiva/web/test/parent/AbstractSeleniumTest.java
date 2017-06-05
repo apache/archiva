@@ -19,12 +19,11 @@ package org.apache.archiva.web.test.parent;
  * under the License.
  */
 
-import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.Selenium;
+//import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 import org.apache.archiva.web.test.tools.ArchivaSeleniumExecutionRule;
-import org.apache.archiva.web.test.tools.WebdriverInitializer;
-import org.apache.xpath.operations.Bool;
+import org.apache.archiva.web.test.tools.WebdriverUtility;
 import org.junit.Assert;
 import org.junit.Rule;
 
@@ -84,13 +83,7 @@ public abstract class AbstractSeleniumTest
         p = new Properties();
         p.load( this.getClass().getClassLoader().getResourceAsStream( "test.properties" ) );
 
-        Properties tomcatPortProperties = new Properties();
-        tomcatPortProperties.load(
-            new FileInputStream( new File( System.getProperty( "tomcat.propertiesPortFilePath" ) ) ) );
-
-        int tomcatPort = Integer.parseInt( tomcatPortProperties.getProperty( "tomcat.maven.http.port" ) );
-
-        baseUrl = "http://localhost:" + tomcatPort + "/archiva/index.html?request_lang=en";
+        baseUrl = WebdriverUtility.getBaseUrl()+"/index.html?request_lang=en";
 
         open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs, remoteSelenium );
         archivaSeleniumExecutionRule.selenium = selenium;
@@ -118,8 +111,9 @@ public abstract class AbstractSeleniumTest
         {
             if ( getSelenium() == null )
             {
-                WebDriver driver = WebdriverInitializer.newWebDriver(browser, seleniumHost, seleniumPort, remoteSelenium);
-                selenium = new WebDriverBackedSelenium(driver, baseUrl);
+                WebDriver driver = WebdriverUtility.newWebDriver(browser, seleniumHost, seleniumPort, remoteSelenium);
+                WebDriverBackedSelenium selenium = new WebDriverBackedSelenium(driver, baseUrl);
+                selenium.getWrappedDriver();
                 selenium.start();
                 selenium.setTimeout( Integer.toString( maxWaitTimeInMs ) );
             }

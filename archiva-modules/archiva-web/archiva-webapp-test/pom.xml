@@ -30,14 +30,14 @@
   <name>Archiva Web :: Javascript Application Tests</name>
 
   <properties>
-    <webappDirectory>${project.build.directory}/tomcat7x/webapps/archiva</webappDirectory>
-    <container.test.port>0</container.test.port>
-    <tomcat.propertiesPortFilePath>${project.build.directory}/tomcat-port.properties</tomcat.propertiesPortFilePath>
+    <webappDirectory>${project.build.directory}/container/webapps/archiva</webappDirectory>
+    <container.propertiesPortFilePath>${project.build.directory}/container-port.properties</container.propertiesPortFilePath>
     <maxWaitTimeInMs>10000</maxWaitTimeInMs>
-
     <selenium-server.version>3.4.0</selenium-server.version>
     <fluentlenium.version>3.2.0</fluentlenium.version>
     <fluentlenium.festassert.version>0.13.2</fluentlenium.festassert.version>
+    <seleniumHost></seleniumHost>
+    <seleniumPort></seleniumPort>
 
     <browserPath></browserPath>
   </properties>
@@ -67,6 +67,8 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+    <!-- Selenium dependencies -->
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
@@ -81,39 +83,29 @@
           <groupId>javax.servlet</groupId>
           <artifactId>javax.servlet-api</artifactId>
         </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium.client-drivers</groupId>
-      <artifactId>selenium-java-client-driver</artifactId>
-      <scope>test</scope>
-      <exclusions>
         <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-io</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>javax.servlet-api</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-remote-driver</artifactId>
-      <scope>test</scope>
-      <version>${selenium-server.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
+          <groupId>org.eclipse.jetty.websocket</groupId>
+          <artifactId>websocket-client</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>javax.servlet-api</artifactId>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-util</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty.websocket</groupId>
+          <artifactId>websocket-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty.websocket</groupId>
+          <artifactId>websocket-common</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-leg-rc</artifactId>
@@ -125,21 +117,37 @@
           <artifactId>testng</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>javax.servlet</groupId>
           <artifactId>javax.servlet-api</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-io</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty.websocket</groupId>
+          <artifactId>websocket-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-util</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty.websocket</groupId>
+          <artifactId>websocket-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty.websocket</groupId>
+          <artifactId>websocket-common</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-exec</artifactId>
-      <version>1.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>htmlunit-driver</artifactId>
-      <version>2.26</version>
-    </dependency>
+
+
 
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
@@ -154,6 +162,26 @@
         <exclusion>
           <groupId>javax.servlet</groupId>
           <artifactId>javax.servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-io</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-util</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty.websocket</groupId>
+          <artifactId>websocket-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty.websocket</groupId>
+          <artifactId>websocket-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty.websocket</groupId>
+          <artifactId>websocket-common</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -178,6 +206,8 @@
       <version>${fluentlenium.version}</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- End of Selenium dependencies -->
 
     <dependency>
       <groupId>xerces</groupId>
@@ -233,9 +263,36 @@
       <artifactId>log4j-1.2-api</artifactId>
     </dependency>
 
+
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-io</artifactId>
+      <version>${jettyVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <version>${jettyVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty.websocket</groupId>
+      <artifactId>websocket-api</artifactId>
+      <version>${jettyVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty.websocket</groupId>
+      <artifactId>websocket-client</artifactId>
+      <version>${jettyVersion}</version>
+      <scope>test</scope>
+    </dependency>
+
+
   </dependencies>
 
   <build>
+
     <testResources>
       <testResource>
         <directory>src/test/resources</directory>
@@ -264,6 +321,27 @@
       </plugins>
     </pluginManagement>
     <plugins>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <configuration>
+          <portNames>
+            <portName>container.http.port</portName>
+            <portName>container.stop.port</portName>
+          </portNames>
+        </configuration>
+        <executions>
+          <execution>
+            <id>reserve-port</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>reserve-network-port</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
         <executions>
@@ -288,17 +366,19 @@
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
+        <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
           <redirectTestOutputToFile>false</redirectTestOutputToFile>
           <runOrder>alphabetical</runOrder>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
         </configuration>
         <executions>
           <execution>
             <id>integration-tests</id>
-            <phase>integration-test</phase>
             <goals>
-              <goal>test</goal>
+              <goal>integration-test</goal>
             </goals>
             <configuration>
               <systemPropertyVariables>
@@ -308,11 +388,19 @@
                 <maxWaitTimeInMs>${maxWaitTimeInMs}</maxWaitTimeInMs>
                 <seleniumHost>${seleniumHost}</seleniumHost>
                 <seleniumPort>${seleniumPort}</seleniumPort>
-                <seleniumRemote>${seleniumRemote}</seleniumRemote>
-                <tomcat.propertiesPortFilePath>${tomcat.propertiesPortFilePath}</tomcat.propertiesPortFilePath>
+                <container.propertiesPortFilePath>${container.propertiesPortFilePath}</container.propertiesPortFilePath>
+                <container.http.port>${container.http.port}</container.http.port>
               </systemPropertyVariables>
             </configuration>
+
           </execution>
+          <execution>
+            <id>verify</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+
         </executions>
       </plugin>
     </plugins>
@@ -402,7 +490,82 @@
               </execution>
             </executions>
           </plugin>
+
+
           <plugin>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-maven-plugin</artifactId>
+            <version>9.4.5.v20170502</version>
+            <configuration>
+              <stopKey>archivastop</stopKey>
+              <stopPort>${container.stop.port}</stopPort>
+              <stopWait>30</stopWait>
+              <httpConnector>
+                <port>${container.http.port}</port>
+              </httpConnector>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derby</artifactId>
+                <version>${derbyVersion}</version>
+              </dependency>
+              <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>${javaxMailVersion}</version>
+              </dependency>
+
+            </dependencies>
+            <executions>
+              <execution>
+                <id>jetty-run</id>
+                <goals>
+                  <goal>deploy-war</goal>
+                </goals>
+                <phase>pre-integration-test</phase>
+                <configuration>
+                  <daemon>true</daemon>
+                  <webApp>
+                    <contextPath>/archiva</contextPath>
+                    <jettyEnvXml>${project.build.testOutputDirectory}/jetty/jetty-env.xml</jettyEnvXml>
+                  </webApp>
+                  <war>${webappDirectory}</war>
+                  <systemProperties>
+                    <systemProperty>
+                      <name>appserver.base</name>
+                      <value>${project.build.directory}/appserver-base</value>
+                    </systemProperty>
+                    <systemProperty>
+                      <name>appserver.home</name>
+                      <value>${project.build.directory}/appserver-base</value>
+                    </systemProperty>
+                    <systemProperty>
+                      <name>derby.system.home</name>
+                      <value>${project.build.directory}</value>
+                    </systemProperty>
+                    <systemProperty>
+                      <name>archiva.devMode</name>
+                      <value>true</value>
+                    </systemProperty>
+                    <systemProperty>
+                      <name>openjpa.Log</name>
+                      <value>${openjpa.Log}</value>
+                    </systemProperty>
+                  </systemProperties>
+                </configuration>
+              </execution>
+              <execution>
+                <id>jetty-shutdown</id>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+                <phase>post-integration-test</phase>
+              </execution>
+            </executions>
+          </plugin>
+
+<!--          <plugin>
             <groupId>org.apache.tomcat.maven</groupId>
             <artifactId>tomcat7-maven-plugin</artifactId>
             <dependencies>
@@ -426,7 +589,7 @@
                 <phase>pre-integration-test</phase>
                 <configuration>
                   <path>/archiva</path>
-                  <port>${container.test.port}</port>
+                  <port>${container.http.port}</port>
                   <uriEncoding>UTF-8</uriEncoding>
                   <warDirectory>${webappDirectory}</warDirectory>
                   <fork>true</fork>
@@ -439,7 +602,7 @@
                     <openjpa.Log>${openjpa.Log}</openjpa.Log>
                   </systemProperties>
                   <contextFile>${project.build.testOutputDirectory}/archiva.xml</contextFile>
-                  <propertiesPortFilePath>${tomcat.propertiesPortFilePath}</propertiesPortFilePath>
+                  <propertiesPortFilePath>${container.propertiesPortFilePath}</propertiesPortFilePath>
                   <useNaming>true</useNaming>
                 </configuration>
               </execution>
@@ -451,7 +614,7 @@
                 <phase>post-integration-test</phase>
               </execution>
             </executions>
-          </plugin>
+          </plugin>-->
         </plugins>
       </build>
     </profile>
@@ -463,20 +626,10 @@
         </property>
       </activation>
       <properties>
-        <baseUrl>http://localhost:${container.test.port}/archiva/index.html?request_lang=en</baseUrl>
+        <baseUrl>http://localhost:${container.http.port}/archiva</baseUrl>
       </properties>
     </profile>
-    <profile>
-      <id>start-selenium</id>
-      <activation>
-        <property>
-          <name>!seleniumHost</name>
-        </property>
-      </activation>
-      <properties>
-        <seleniumRemote>false</seleniumRemote>
-      </properties>
-    </profile>
+
     <profile>
       <id>htmlunit</id>
       <activation>

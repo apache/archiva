@@ -19,7 +19,7 @@
   -->
 
 
-<configuration status="debug">
+<configuration status="info">
   <appenders>
     <Console name="console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d [%t] %-5p %c %x - %m%n"/>
@@ -38,6 +38,8 @@
     <logger name="org.codehaus.plexus" level="error"/>
 
     <logger name="org.apache.archiva.redback" level="error"/>
+
+    <logger name="org.apache.jackrabbit" level="error" />
 
     <logger name="org.apache.cxf" level="error"/>
 

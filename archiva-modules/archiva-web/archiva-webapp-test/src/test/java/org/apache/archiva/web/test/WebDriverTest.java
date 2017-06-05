@@ -18,53 +18,41 @@ package org.apache.archiva.web.test;
  * under the License.
  */
 
-import junit.framework.Assert;
-import org.apache.archiva.web.test.tools.WebdriverInitializer;
+import org.junit.Assert;
+import org.apache.archiva.web.test.tools.WebdriverUtility;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.fluentlenium.adapter.junit.FluentTest;
+import org.fluentlenium.configuration.ConfigurationProperties;
+import org.fluentlenium.configuration.FluentConfiguration;
 import org.fluentlenium.core.domain.FluentList;
 import org.fluentlenium.core.domain.FluentWebElement;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.safari.SafariDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Olivier Lamy
  */
+@FluentConfiguration(driverLifecycle = ConfigurationProperties.DriverLifecycle.CLASS)
 public class WebDriverTest
         extends FluentTest
 {
 
-
+    final Logger log = LoggerFactory.getLogger( WebDriver.class );
 
     @Override
-    public void takeScreenShot(String fileName) {
-        try {
-            // save html to have a minimum feedback if jenkins firefox not up
-            File fileNameHTML = new File(fileName + ".html");
-            FileUtils.writeStringToFile(fileNameHTML, getDriver().getPageSource());
-        } catch (IOException e) {
-            System.out.print(e.getMessage());
-            e.printStackTrace();
-        }
-        super.takeScreenShot(fileName);
+    public void takeScreenShot( String fileName )
+    {
+        WebdriverUtility.takeScreenShot( fileName, getDriver(), (a)->super.takeScreenShot( a ) );
     }
 
 
@@ -79,18 +67,12 @@ public class WebDriverTest
     public void simpletest()
             throws Exception {
 
-        Properties tomcatPortProperties = new Properties();
-        tomcatPortProperties.load(
-                new FileInputStream(new File(System.getProperty("tomcat.propertiesPortFilePath"))));
-
-        int tomcatPort = Integer.parseInt(tomcatPortProperties.getProperty("tomcat.maven.http.port"));
-        String url = "http://localhost:" + tomcatPort + "/archiva/index.html?request_lang=en";
-        System.err.println("URL: "+url);
+        String url = WebdriverUtility.getBaseUrl()+ "/index.html?request_lang=en";
         goTo(url);
 
         // wait until topbar-menu-container is feeded
-        await().atMost(10, TimeUnit.SECONDS).until($("#topbar-menu")).present();
-
+        //await().atMost(20, TimeUnit.SECONDS).until($("#topbar-menu")).present();
+        await().untilPredicate((fl) ->$("#topbar-menu").present());
         FluentList<FluentWebElement> elements = find("#create-admin-link-a");
 
         if (!elements.isEmpty() && elements.get(0).displayed()) {
@@ -106,6 +88,6 @@ public class WebDriverTest
 
     @Override
     public WebDriver newWebDriver() {
-        return WebdriverInitializer.newWebDriver();
+        return WebdriverUtility.newWebDriver();
     }
 }

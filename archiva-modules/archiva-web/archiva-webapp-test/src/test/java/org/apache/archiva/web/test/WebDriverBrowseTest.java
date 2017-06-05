@@ -18,10 +18,11 @@ package org.apache.archiva.web.test;
  * under the License.
  */
 
-import junit.framework.Assert;
-import org.apache.archiva.web.test.tools.WebdriverInitializer;
+import org.fluentlenium.configuration.ConfigurationProperties;
+import org.fluentlenium.configuration.FluentConfiguration;
+import org.junit.Assert;
+import org.apache.archiva.web.test.tools.WebdriverUtility;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.fluentlenium.adapter.junit.FluentTest;
 import org.fluentlenium.core.domain.FluentList;
 import org.fluentlenium.core.domain.FluentWebElement;
@@ -29,11 +30,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -42,90 +48,75 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author Olivier Lamy
  */
+@FluentConfiguration(driverLifecycle = ConfigurationProperties.DriverLifecycle.CLASS)
 public class WebDriverBrowseTest
-        extends FluentTest
+    extends FluentTest
 {
+
+    final Logger log = LoggerFactory.getLogger( WebDriverBrowseTest.class );
 
     @Override
     public void takeScreenShot( String fileName )
     {
-        File fileNameHTML = new File( "target", "errorshtmlsnap" );
-        try
-        {
-            // save html to have a minimum feedback if jenkins firefox not up
-            fileNameHTML = new File( fileNameHTML, fileName );
-            FileUtils.writeStringToFile( new File ( new File( "target", "errorshtmlsnap" ) , fileName + ".html"), getDriver().getPageSource() );
-
-        }
-        catch ( IOException e )
-        {
-            e.printStackTrace();
-        }
-        super.takeScreenShot( fileNameHTML.getAbsolutePath() );
-
+        WebdriverUtility.takeScreenShot( fileName, getDriver(), (a)->super.takeScreenShot( a ) );
     }
 
     @Before
     public void init()
     {
 
-        setScreenshotMode( TriggerMode.AUTOMATIC_ON_FAIL);
+        setScreenshotMode( TriggerMode.AUTOMATIC_ON_FAIL );
         setDriverLifecycle( DriverLifecycle.CLASS );
 
     }
 
     @Test
     public void simpletest()
-            throws Exception
+        throws Exception
     {
         Properties p = new Properties();
         p.load( this.getClass().getClassLoader().getResourceAsStream( "test.properties" ) );
 
-        Properties tomcatPortProperties = new Properties();
-        tomcatPortProperties.load(
-                new FileInputStream( new File( System.getProperty( "tomcat.propertiesPortFilePath" ) ) ) );
-
-        int tomcatPort = Integer.parseInt( tomcatPortProperties.getProperty( "tomcat.maven.http.port" ) );
-
-        goTo( "http://localhost:" + tomcatPort + "/archiva/index.html?request_lang=en" );
+        String baseUrl = WebdriverUtility.getBaseUrl();
+        String url = baseUrl + "/index.html?request_lang=en";
+        goTo( url );
 
         // wait until topbar-menu-container is feeded
-        await().atMost( 5, TimeUnit.SECONDS ).until( $("#topbar-menu" )).present();
+        await().atMost( 5, TimeUnit.SECONDS ).untilPredicate( ( fl ) -> $( "#topbar-menu" ).present() );
 
         FluentList<FluentWebElement> elements = find( "#create-admin-link-a" );
-
         if ( !elements.isEmpty() && elements.get( 0 ).displayed() )
         {
             WebElement webElement = elements.get( 0 ).getElement();
             Assert.assertEquals( "Create Admin User", webElement.getText() );
 
             webElement.click();
-            await().atMost( 2, TimeUnit.SECONDS ).until($( "#user-create" )).present();
+            await().atMost( 2, TimeUnit.SECONDS ).untilPredicate( ( fl ) -> $( "#user-create" ).present() );
             assertThat( find( "#username" ).value().equals( "admin" ) );
             assertThat( find( "#password" ).value().isEmpty() );
             assertThat( find( "#confirmPassword" ).value().isEmpty() );
             assertThat( find( "#email" ).value().isEmpty() );
 
-            $("#fullname").fill().with( p.getProperty( "ADMIN_FULLNAME" ) );
-            $("#email").fill().with( p.getProperty( "ADMIN_EMAIL" ) );
-            $("#password").fill().with( p.getProperty( "ADMIN_PASSWORD" ) );
-            $("#confirmPassword").fill().with( p.getProperty( "ADMIN_PASSWORD" ) );
+            $( "#fullname" ).fill().with( p.getProperty( "ADMIN_FULLNAME" ) );
+            $( "#email" ).fill().with( p.getProperty( "ADMIN_EMAIL" ) );
+            $( "#password" ).fill().with( p.getProperty( "ADMIN_PASSWORD" ) );
+            $( "#confirmPassword" ).fill().with( p.getProperty( "ADMIN_PASSWORD" ) );
             find( "#user-create-form-register-button" ).click();
 
-            await().atMost( 2, TimeUnit.SECONDS ).until($("#logout-link" )).present();
+            await().atMost( 2, TimeUnit.SECONDS ).untilPredicate( ( fl ) -> $( "#logout-link" ).present() );
 
             FluentList<FluentWebElement> elementss = find( "#menu-find-browse-a" );
             WebElement webElsement = elementss.get( 0 ).getElement();
             webElsement.click();
-            await().atMost( 2, TimeUnit.SECONDS ).until($("#main_browse_result" )).present();
+            await().atMost( 5, TimeUnit.SECONDS ).untilPredicate( ( fl ) -> $( "#main_browse_result" ).present() );
             // give me search page :( not  browse page
 
             takeScreenShot( "search.png" );
 
-            goTo( "http://localhost:" + tomcatPort + "/archiva/index.html#browse?request_lang=en" );
+            goTo( baseUrl + "/index.html#browse?request_lang=en" );
             takeScreenShot( "browse.png" );
             // give me a browse page
-            
+
         }
         else
         {
@@ -137,7 +128,8 @@ public class WebDriverBrowseTest
     }
 
     @Override
-    public WebDriver newWebDriver() {
-        return WebdriverInitializer.newWebDriver();
+    public WebDriver newWebDriver()
+    {
+        return WebdriverUtility.newWebDriver();
     }
 }
