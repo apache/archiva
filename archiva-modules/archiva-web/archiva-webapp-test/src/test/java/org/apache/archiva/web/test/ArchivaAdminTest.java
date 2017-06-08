@@ -29,7 +29,7 @@ public class ArchivaAdminTest
     @Test
     public void testHome()
     {
-        getSelenium().open( baseUrl );
+        getWebDriver().get( baseUrl );
         assertPage( "Apache Archiva" );
     }
 }

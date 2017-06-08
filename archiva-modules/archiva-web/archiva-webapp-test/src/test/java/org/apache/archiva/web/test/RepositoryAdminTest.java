@@ -22,8 +22,12 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Based on LoginTest of Emmanuel Venisse test.
@@ -41,36 +45,41 @@ public class RepositoryAdminTest
     public void testManagedRepository()
     {
         login( getAdminUsername(), getAdminPassword() );
-        clickLinkWithLocator( "menu-repositories-list-a", true );
-        // add custom repo
-        assertTextPresent( "Repositories Administration" );
-        clickLinkWithXPath( "//a[@href='#remote-repositories-content']", true );
-        
-        clickLinkWithXPath( "//a[@href='#remote-repository-edit']", true );
+        clickLinkWithLocator( "menu-repositories-list-a");
+        WebDriverWait wait = new WebDriverWait(getWebDriver(), 10);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("managed-repositories-view-a")));
+        clickLinkWithXPath( "//a[@href='#remote-repositories-content']");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("remote-repositories-view-a")));
+        clickLinkWithXPath( "//a[@href='#remote-repository-edit']", false );
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("remote-repository-save-button")));
         
         setFieldValue( "id", "myrepoid" );        
         setFieldValue( "name", "My repo name" );        
         setFieldValue( "url", "http://www.repo.org" );
         
-        clickButtonWithLocator( "remote-repository-save-button", true );
-       
-        clickLinkWithLocator( "menu-proxy-connectors-list-a", true );
-        
+        clickButtonWithLocator( "remote-repository-save-button");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("remote-repositories-view-a")));
+
+        clickLinkWithLocator( "menu-proxy-connectors-list-a");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("proxy-connectors-view-tabs-a-network-proxies-grid")));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("main-content"), "Proxy Connectors"));
         // proxy connect
-        assertTextPresent( "Proxy Connectors" );
-        assertTextPresent( "central" );
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("proxy-connectors-view"), "central" ));
         assertTextNotPresent( "myrepoid" );
-        clickButtonWithLocator( "proxy-connectors-view-tabs-a-edit", true );
+        clickButtonWithLocator( "proxy-connectors-view-tabs-a-edit");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("proxy-connector-btn-save")));
         selectValue( "sourceRepoId", "internal" );
         // Workaround
         // TODO: Check after upgrade of htmlunit, bootstrap or jquery
         // TODO: Check whats wrong here
         ( (JavascriptExecutor) getWebDriver() ).executeScript( "$('#targetRepoId').show();" );
         // End of Workaround
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("targetRepoId")));
         selectValue( "targetRepoId", "myrepoid" );
-        clickButtonWithLocator( "proxy-connector-btn-save", true);
-        assertTextPresent( "central" );
-        assertTextPresent( "myrepoid" );
+        clickButtonWithLocator( "proxy-connector-btn-save");
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("user-messages"),"ProxyConnector added"));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("proxy-connectors-view"), "central" ));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("proxy-connectors-view"), "myrepoid" ));
         clickLinkWithXPath( "//i[contains(concat(' ',normalize-space(@class),' '),' icon-resize-vertical ')]/../..", true );
         assertTextPresent( "internal" );
         // order test

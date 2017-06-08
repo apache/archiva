@@ -23,6 +23,8 @@ import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * Based on LoginTest of Emmanuel Venisse test.
@@ -41,8 +43,9 @@ public class LoginTest
     {
         goToLoginPage();
         setFieldValue( "user-login-form-username", "badUsername" );
-        clickLinkWithLocator( "modal-login-ok", true );
-        assertTextPresent( "This field is required." );
+        clickLinkWithLocator( "modal-login-ok", false );
+        WebDriverWait wait = new WebDriverWait(getWebDriver(), 2);
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("modal-login"), "This field is required."));
 
     }
 
@@ -52,8 +55,9 @@ public class LoginTest
         goToLoginPage();
         setFieldValue( "user-login-form-username", getProperty( "ADMIN_USERNAME" ) );
         setFieldValue( "user-login-form-password", "badPassword" );
-        clickLinkWithLocator( "modal-login-ok", true );
-        assertTextPresent( "You have entered an incorrect username and/or password" );
+        clickLinkWithLocator( "modal-login-ok", false );
+        WebDriverWait wait = new WebDriverWait(getWebDriver(), 2);
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("modal-login"), "You have entered an incorrect username and/or password"));
     }
 
     @Test
@@ -61,9 +65,9 @@ public class LoginTest
     {
         goToLoginPage();
         setFieldValue( "user-login-form-password", "password" );
-        waitPage();
-        clickLinkWithLocator( "modal-login-ok", true );
-        assertTextPresent( "This field is required." );
+        clickLinkWithLocator( "modal-login-ok", false);
+        WebDriverWait wait = new WebDriverWait(getWebDriver(), 2);
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("modal-login"), "This field is required."));
     }
 
     @Test
@@ -73,8 +77,9 @@ public class LoginTest
         setFieldValue( "user-login-form-username", getProperty( "ADMIN_USERNAME" ) );
         Assert.assertTrue(getWebDriver().findElement( By.id("modal-login-ok") ).isDisplayed());
         Assert.assertTrue(getWebDriver().findElement( By.id("modal-login-ok") ).isEnabled());
-        clickLinkWithLocator( "modal-login-ok", true );
-        assertTextPresent( "This field is required." );
+        clickLinkWithLocator( "modal-login-ok", false );
+        WebDriverWait wait = new WebDriverWait(getWebDriver(), 2);
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("modal-login"), "This field is required."));
     }
 
     @Test
@@ -83,7 +88,7 @@ public class LoginTest
         goToLoginPage();
         setFieldValue( "user-login-form-username", getProperty( "ADMIN_USERNAME" ) );
         setFieldValue( "user-login-form-password", getProperty( "ADMIN_PASSWORD" ) );
-        clickLinkWithLocator( "modal-login-ok", true );
+        clickLinkWithLocator( "modal-login-ok");
 
         assertUserLoggedIn( getProperty( "ADMIN_USERNAME" ) );
     }

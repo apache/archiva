@@ -21,9 +21,7 @@ package org.apache.archiva.web.test.tools;
 import com.gargoylesoftware.htmlunit.WebClient;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
@@ -174,16 +172,18 @@ public class WebdriverUtility
         return "http://localhost:" + containerPort+"/archiva";
     }
 
-    public static void takeScreenShot( String fileName, WebDriver driver, Consumer<String> screenShotFunction) {
+    public static Path takeScreenShot( String fileName, WebDriver driver) {
+        Path result = null;
         try
         {
             Path snapDir = Paths.get( "target", "errorshtmlsnap" );
+            Path screenShotDir = Paths.get("target","screenshots");
             if ( !Files.exists( snapDir ) )
             {
                 Files.createDirectories( snapDir );
             }
             Path htmlFile = snapDir.resolve( fileName + ".html" );
-            Path screenShotFile = snapDir.resolve( fileName );
+            Path screenShotFile = screenShotDir.resolve( fileName );
             String pageSource=null;
             String encoding="ISO-8859-1";
             try
@@ -199,7 +199,9 @@ public class WebdriverUtility
             FileUtils.writeStringToFile( htmlFile.toFile(), pageSource, encoding);
             try
             {
-                screenShotFunction.accept( screenShotFile.toAbsolutePath().toString() );
+                File scrs = ((TakesScreenshot)driver).getScreenshotAs( OutputType.FILE );
+                result = scrs.toPath();
+                Files.copy(result, screenShotFile);
             }
             catch ( Exception e )
             {
@@ -211,5 +213,6 @@ public class WebdriverUtility
         {
             log.info( "Creating screenshot failed " + e.getMessage() );
         }
+        return result;
     }
 }

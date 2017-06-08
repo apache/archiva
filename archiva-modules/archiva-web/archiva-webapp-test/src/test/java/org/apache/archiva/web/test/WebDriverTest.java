@@ -57,7 +57,7 @@ public class WebDriverTest
     public void takeScreenShot( String fileName )
     {
         log.info("Taking screenshot "+fileName);
-        WebdriverUtility.takeScreenShot( fileName, getDriver(), (a)->super.takeScreenShot( a ) );
+        WebdriverUtility.takeScreenShot( fileName, getDriver());
     }
 
     @Override

@@ -169,7 +169,7 @@ public abstract class AbstractArchivaTest
 
     public void goToHomePage()
     {
-        getSelenium().open( baseUrl );
+        getWebDriver().get( baseUrl );
     }
 
     protected void logout()

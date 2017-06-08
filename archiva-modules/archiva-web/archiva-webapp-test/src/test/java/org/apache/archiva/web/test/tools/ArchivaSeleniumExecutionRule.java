@@ -36,8 +36,6 @@ public class ArchivaSeleniumExecutionRule
 
     final Logger log = LoggerFactory.getLogger( ArchivaSeleniumExecutionRule.class );
 
-    // FIXME cerate a separate TestRule for open and close calls ?
-    public Selenium selenium;
 
     public Statement apply( Statement base, FrameworkMethod method, Object target )
     {

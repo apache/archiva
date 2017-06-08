@@ -29,6 +29,9 @@ import org.junit.Rule;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -37,14 +40,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,8 +77,6 @@ public abstract class AbstractSeleniumTest
 
     public boolean remoteSelenium = Boolean.parseBoolean( System.getProperty( "remoteSelenium", "false" ) );
 
-    private Selenium selenium = null;
-
     WebDriver webDriver = null;
 
     public Properties p;
@@ -93,7 +95,6 @@ public abstract class AbstractSeleniumTest
         baseUrl = WebdriverUtility.getBaseUrl()+"/index.html?request_lang=en";
 
         open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs, remoteSelenium );
-        archivaSeleniumExecutionRule.selenium = selenium;
         assertAdminCreated();
     }
 
@@ -102,10 +103,7 @@ public abstract class AbstractSeleniumTest
      */
     public void close()
     {
-        if ( getSelenium() != null )
-        {
-            getSelenium().stop();
-        }
+        getWebDriver().close();
     }
 
     /**
@@ -116,13 +114,11 @@ public abstract class AbstractSeleniumTest
     {
         try
         {
-            if ( getSelenium() == null )
+            if ( getWebDriver() == null )
             {
                 WebDriver driver = WebdriverUtility.newWebDriver(browser, seleniumHost, seleniumPort, remoteSelenium);
-                WebDriverBackedSelenium selenium = new WebDriverBackedSelenium(driver, baseUrl);
                 // selenium.start();
-                selenium.setTimeout( Integer.toString( maxWaitTimeInMs ) );
-                this.selenium = selenium;
+                // selenium.setTimeout( Integer.toString( maxWaitTimeInMs ) );
                 this.webDriver = driver;
             }
         }
@@ -147,9 +143,15 @@ public abstract class AbstractSeleniumTest
 
         open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs, remoteSelenium);
 
-        getSelenium().open( baseUrl );
+        getWebDriver().get(baseUrl);
+        WebDriverWait wait = new WebDriverWait(getWebDriver(),30);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("topbar-menu")));
 
-        waitPage();
+        FluentWait fluentWait = new FluentWait(getWebDriver()).withTimeout(10, TimeUnit.SECONDS);
+        fluentWait.until( ExpectedConditions.or(
+                    ExpectedConditions.visibilityOfElementLocated(By.id("create-admin-link")),
+                            ExpectedConditions.visibilityOfElementLocated(By.id("login-link-a"))));
+
 
         // if not admin user created create one
         if ( isElementVisible( "create-admin-link" ) )
@@ -157,7 +159,9 @@ public abstract class AbstractSeleniumTest
             Assert.assertFalse( isElementVisible( "login-link-a" ) );
             Assert.assertFalse( isElementVisible( "register-link-a" ) );
             // skygo need to set to true for passing is that work as expected ?
-            clickLinkWithLocator( "create-admin-link-a", true );
+            clickLinkWithLocator( "create-admin-link-a");
+            wait = new WebDriverWait(getWebDriver(), 5);
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("user-create")));
             assertCreateAdmin();
             String fullname = getProperty( "ADMIN_FULLNAME" );
             String username = getAdminUsername();
@@ -165,26 +169,15 @@ public abstract class AbstractSeleniumTest
             String password = getProperty( "ADMIN_PASSWORD" );
             submitAdminData( fullname, mail, password );
             assertUserLoggedIn( username );
-            clickLinkWithLocator( "logout-link-a" );
+            clickLinkWithLocator( "logout-link-a" , false);
         }
         else
         {
-            try
-            {
-                Assert.assertNotNull( getWebDriver().findElement( By.id( "login-link-a" ) ) );
-            } catch (NoSuchElementException e) {
-                logger.info("ASSERT: login-link-a not found!");
-            }
             Assert.assertTrue( isElementVisible( "login-link-a" ) );
             Assert.assertTrue( isElementVisible( "register-link-a" ) );
             login( getAdminUsername(), getAdminPassword() );
         }
 
-    }
-
-    public Selenium getSelenium()
-    {
-        return selenium;
     }
 
     public WebDriver getWebDriver() {
@@ -214,7 +207,7 @@ public abstract class AbstractSeleniumTest
         setFieldValue( "email", email );
         setFieldValue( "password", password );
         setFieldValue( "confirmPassword", password );
-        clickButtonWithLocator( "user-create-form-register-button" );
+        clickButtonWithLocator( "user-create-form-register-button" , false);
     }
 
     public void login( String username, String password )
@@ -239,20 +232,22 @@ public abstract class AbstractSeleniumTest
     // Go to Login Page
     public void goToLoginPage()
     {
-        getSelenium().open( baseUrl );
-        waitPage();
-        getWebDriver().manage().window().maximize();
+        logger.info("Goto login page");
+        getWebDriver().get( baseUrl );
+        WebDriverWait wait = new WebDriverWait(getWebDriver(),30);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("topbar-menu")));
+        wait.until(ExpectedConditions.or(ExpectedConditions.visibilityOfElementLocated(By.id("logout-link")),
+                ExpectedConditions.visibilityOfElementLocated(By.id("login-link-a"))));
+
         // are we already logged in ?
         if ( isElementVisible( "logout-link" ) ) //isElementPresent( "logoutLink" ) )
         {
+            logger.info("Logging out ");
             // so logout
             clickLinkWithLocator( "logout-link-a", false );
-            clickLinkWithLocator( "login-link-a" );
         }
-        else if ( isElementVisible( "login-link-a" ) )
-        {
-            clickLinkWithLocator( "login-link-a", true );
-        }
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("login-link-a")));
+        clickLinkWithLocator( "login-link-a", false );
         // This is a workaround for bug with HTMLUnit. The display attribute of the
         // login dialog is not changed via the click.
         // TODO: Check after changing jquery, bootstrap or htmlunit version
@@ -261,7 +256,8 @@ public abstract class AbstractSeleniumTest
             ( (JavascriptExecutor) getWebDriver() ).executeScript( "$('#modal-login').show();" );
         }
         // END OF WORKAROUND
-
+        wait = new WebDriverWait(getWebDriver(),20);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("modal-login")));
         assertLoginModal();
     }
 
@@ -270,8 +266,8 @@ public abstract class AbstractSeleniumTest
     {
         assertElementPresent( "user-login-form" );
         Assert.assertTrue( isElementVisible( "register-link" ) );
-        assertElementPresent( "user-login-form-username" );
-        assertElementPresent( "user-login-form-password" );
+        Assert.assertTrue( isElementVisible("user-login-form-username" ));
+        Assert.assertTrue( isElementVisible("user-login-form-password" ));
         assertButtonWithIdPresent( "modal-login-ok" );
         Assert.assertTrue( isElementVisible( "modal-login-ok" ));
     }
@@ -290,19 +286,26 @@ public abstract class AbstractSeleniumTest
     public void submitLoginPage( String username, String password, boolean rememberMe, boolean validUsernamePassword,
                                  String assertReturnPage )
     {
-        clickLinkWithLocator( "login-link-a", true );
-        // TODO: Check whats wrong here
-        ( (JavascriptExecutor) getWebDriver() ).executeScript( "$('#modal-login').show();" );
-
-        setFieldValue( "user-login-form-username", username );
-        setFieldValue( "user-login-form-password", password );
+        logger.info("Activating login form");
+        // clickLinkWithLocator( "login-link-a", false);
+        WebDriverWait wait = new WebDriverWait(getWebDriver(),5);
+        WebElement usernameField = wait.until(ExpectedConditions.visibilityOf(getWebDriver().findElement(By.id("user-login-form-username"))));
+        wait = new WebDriverWait(getWebDriver(),5);
+        WebElement passwordField = wait.until(ExpectedConditions.visibilityOf(getWebDriver().findElement(By.id("user-login-form-password"))));
+        wait = new WebDriverWait(getWebDriver(),5);
+        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(By.id("modal-login-ok")));
+        logger.info("Login form visible");
+        logger.info("Enter username "+username);
+        usernameField.sendKeys(username);
+        logger.info("Enter password "+password);
+        passwordField.sendKeys(password);
         /*
         if ( rememberMe )
         {
             checkField( "rememberMe" );
         }*/
 
-        clickButtonWithLocator( "modal-login-ok" );
+        button.click();
         if ( validUsernamePassword )
         {
             assertUserLoggedIn( username );
@@ -327,8 +330,9 @@ public abstract class AbstractSeleniumTest
 
     protected void assertUserLoggedIn( String username )
     {
+        WebDriverWait wait = new WebDriverWait(getWebDriver(), 10);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("logout-link")));
         Assert.assertFalse( isElementVisible( "login-link" ) );
-        Assert.assertTrue( isElementVisible( "logout-link" ) );
         Assert.assertFalse( isElementVisible( "register-link" ) );
         Assert.assertFalse( isElementVisible( "create-admin-link" ) );
     }
@@ -375,26 +379,10 @@ public abstract class AbstractSeleniumTest
         Assert.assertTrue( "'" + text + "' isn't present.", getWebDriver().getPageSource().contains( text ) );
     }
 
-    /**
-     * one of text args must be in the page so use en and fr text (olamy use en locale :-) )
-     *
-     * @param texts
-     */
-    public void assertTextPresent( String... texts )
-    {
-        boolean present = false;
-        StringBuilder sb = new StringBuilder();
-        for ( String text : texts )
-        {
-            present = present || getSelenium().isTextPresent( text );
-            sb.append( " " + text + " " );
-        }
-        Assert.assertTrue( "'one of the following test " + sb.toString() + "' isn't present.", present );
-    }
 
     public void assertTextNotPresent( String text )
     {
-        Assert.assertFalse( "'" + text + "' is present.", getSelenium().isTextPresent( text ) );
+        Assert.assertFalse( "'" + text + "' is present.", isTextPresent( text ) );
     }
 
     public void assertElementPresent( String elementLocator )
@@ -446,14 +434,11 @@ public abstract class AbstractSeleniumTest
         assertElementNotPresent( "/¯img[@alt='" + alt + "']" );
     }
 
-    public void assertCellValueFromTable( String expected, String tableElement, int row, int column )
-    {
-        Assert.assertEquals( expected, getCellValueFromTable( tableElement, row, column ) );
-    }
+
 
     public boolean isTextPresent( String text )
     {
-        return getSelenium().isTextPresent( text );
+        return getWebDriver().getPageSource().contains(text);
     }
 
     public boolean isLinkPresent( String text )
@@ -509,10 +494,6 @@ public abstract class AbstractSeleniumTest
         return findElement(fieldName ).getAttribute( "value" );
     }
 
-    public String getCellValueFromTable( String tableElement, int row, int column )
-    {
-        return getSelenium().getTable( tableElement + "." + row + "." + column );
-    }
 
     public void selectValue( String locator, String value )
     {
@@ -568,7 +549,7 @@ public abstract class AbstractSeleniumTest
 
     public void clickButtonWithValue( String text )
     {
-        clickButtonWithValue( text, true );
+        clickButtonWithValue( text, false );
     }
 
     public void clickButtonWithValue( String text, boolean wait )
@@ -602,7 +583,7 @@ public abstract class AbstractSeleniumTest
 
     public void clickLinkWithText( String text )
     {
-        clickLinkWithText( text, true );
+        clickLinkWithText( text, false );
     }
 
     public void clickLinkWithText( String text, boolean wait )
@@ -612,7 +593,7 @@ public abstract class AbstractSeleniumTest
 
     public void clickLinkWithXPath( String xpath )
     {
-        clickLinkWithXPath( xpath, true );
+        clickLinkWithXPath( xpath, false );
     }
 
     public void clickLinkWithXPath( String xpath, boolean wait )
@@ -622,7 +603,7 @@ public abstract class AbstractSeleniumTest
 
     public void clickLinkWithLocator( String locator )
     {
-        clickLinkWithLocator( locator, true );
+        clickLinkWithLocator( locator, false );
     }
 
     public void clickLinkWithLocator( String locator, boolean wait )
@@ -637,7 +618,7 @@ public abstract class AbstractSeleniumTest
 
     public void clickButtonWithLocator( String locator )
     {
-        clickButtonWithLocator( locator, true );
+        clickButtonWithLocator( locator, false );
     }
 
     public void clickButtonWithLocator( String locator, boolean wait )
@@ -720,42 +701,11 @@ public abstract class AbstractSeleniumTest
         }
 
         targetPath.mkdirs();
-        Selenium selenium = getSelenium();
-        if (selenium!=null)
+        if (getWebDriver()!=null)
         {
             String fileBaseName = methodName + "_" + className + ".java_" + lineNumber + "-" + time;
             File fileName = new File( targetPath, fileBaseName + ".png" );
-            selenium.windowMaximize();
-
-            if (selenium instanceof WebDriverBackedSelenium)
-            {
-                WebdriverUtility.takeScreenShot( fileName.getName(), ( (WebDriverBackedSelenium) selenium ).getWrappedDriver(),
-                    (a)->selenium.captureEntirePageScreenshot( a, "background=#FFFFFF" )
-                    );
-            } else
-            {
-
-                try
-                {
-                    // save html to have a minimum feedback if jenkins firefox not up
-                    File fileNameHTML = new File( new File( "target", "errorshtmlsnap" ), fileBaseName + ".html" );
-                    FileUtils.writeStringToFile( fileNameHTML, selenium.getHtmlSource() );
-                }
-                catch ( IOException e )
-                {
-                    System.out.print( e.getMessage() );
-                    e.printStackTrace();
-                }
-
-
-                try
-                {
-                }
-                catch ( UnsupportedOperationException ex )
-                {
-                    logger.warn( "Could not create screenshot. Not supported by this webdriver. " + selenium.getClass().getName() );
-                }
-            }
+            Path screenshot = WebdriverUtility.takeScreenShot( fileName.getName(), getWebDriver());
             return fileName.getAbsolutePath();
         } else {
             return "";
