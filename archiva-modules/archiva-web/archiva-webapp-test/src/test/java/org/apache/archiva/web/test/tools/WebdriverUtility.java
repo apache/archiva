@@ -18,6 +18,7 @@ package org.apache.archiva.web.test.tools;
  * under the License.
  */
 
+import com.gargoylesoftware.htmlunit.WebClient;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.Capabilities;
@@ -122,8 +123,18 @@ public class WebdriverUtility
             {
                 DesiredCapabilities capabilities = DesiredCapabilities.htmlUnit();
                 capabilities.setJavascriptEnabled( true );
-                capabilities.setVersion( "firefox-51" );
-                return new HtmlUnitDriver( capabilities  );
+                capabilities.setVersion( "firefox-52" );
+                HtmlUnitDriver driver = new HtmlUnitDriver( capabilities  ) {
+                    @Override
+                    protected WebClient modifyWebClient( WebClient client )
+                    {
+                        client.getOptions().setThrowExceptionOnFailingStatusCode( false );
+                        client.getOptions().setThrowExceptionOnScriptError( false );
+                        client.getOptions().setCssEnabled( true );
+                        return client;
+                    }
+                };
+                return driver;
             }
 
         } catch (MalformedURLException e) {

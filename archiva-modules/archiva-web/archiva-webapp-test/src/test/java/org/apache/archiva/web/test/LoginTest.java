@@ -20,7 +20,9 @@ package org.apache.archiva.web.test;
  */
 
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
+import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.By;
 
 /**
  * Based on LoginTest of Emmanuel Venisse test.
@@ -59,6 +61,7 @@ public class LoginTest
     {
         goToLoginPage();
         setFieldValue( "user-login-form-password", "password" );
+        waitPage();
         clickLinkWithLocator( "modal-login-ok", true );
         assertTextPresent( "This field is required." );
     }
@@ -68,6 +71,8 @@ public class LoginTest
     {
         goToLoginPage();
         setFieldValue( "user-login-form-username", getProperty( "ADMIN_USERNAME" ) );
+        Assert.assertTrue(getWebDriver().findElement( By.id("modal-login-ok") ).isDisplayed());
+        Assert.assertTrue(getWebDriver().findElement( By.id("modal-login-ok") ).isEnabled());
         clickLinkWithLocator( "modal-login-ok", true );
         assertTextPresent( "This field is required." );
     }

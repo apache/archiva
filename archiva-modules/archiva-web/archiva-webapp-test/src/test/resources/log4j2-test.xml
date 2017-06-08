@@ -30,6 +30,10 @@
     <logger name="org.springframework" level="error"/>
     <logger name="com.gargoylesoftware.htmlunit.DefaultCssErrorHandler" level="error" />
     <logger name="com.gargoylesoftware.htmlunit.html.HtmlScript" level="error" />
+    <logger name="com.gargoylesoftware.htmlunit.javascript" level="error" />
+    <logger name="com.gargoylesoftware.htmlunit" level="error" />
+    <logger name="com.gargoylesoftware.htmlunit.javascript.StrictErrorReporter" level="off" />
+
 
     <root level="info">
       <appender-ref ref="console"/>

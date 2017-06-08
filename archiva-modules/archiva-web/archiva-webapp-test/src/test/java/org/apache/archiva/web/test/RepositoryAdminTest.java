@@ -22,6 +22,8 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 /**
  * Based on LoginTest of Emmanuel Venisse test.
@@ -40,9 +42,8 @@ public class RepositoryAdminTest
     {
         login( getAdminUsername(), getAdminPassword() );
         clickLinkWithLocator( "menu-repositories-list-a", true );
-        
         // add custom repo
-        assertTextPresent( "Repositories Administration " );
+        assertTextPresent( "Repositories Administration" );
         clickLinkWithXPath( "//a[@href='#remote-repositories-content']", true );
         
         clickLinkWithXPath( "//a[@href='#remote-repository-edit']", true );
@@ -60,16 +61,21 @@ public class RepositoryAdminTest
         assertTextPresent( "central" );
         assertTextNotPresent( "myrepoid" );
         clickButtonWithLocator( "proxy-connectors-view-tabs-a-edit", true );
-        getSelenium().select( "sourceRepoId", "internal" );
-        getSelenium().select( "targetRepoId", "myrepoid" );
+        selectValue( "sourceRepoId", "internal" );
+        // Workaround
+        // TODO: Check after upgrade of htmlunit, bootstrap or jquery
+        // TODO: Check whats wrong here
+        ( (JavascriptExecutor) getWebDriver() ).executeScript( "$('#targetRepoId').show();" );
+        // End of Workaround
+        selectValue( "targetRepoId", "myrepoid" );
         clickButtonWithLocator( "proxy-connector-btn-save", true);
         assertTextPresent( "central" );
         assertTextPresent( "myrepoid" );
         clickLinkWithXPath( "//i[contains(concat(' ',normalize-space(@class),' '),' icon-resize-vertical ')]/../..", true );
         assertTextPresent( "internal" );
         // order test
-        Assert.assertTrue( "First repo is myrepo",getSelenium().getText("xpath=//div[@id='proxy-connector-edit-order-div']/div[1]" ).contains( "myrepoid" ));
-        Assert.assertTrue( "Second repo is central",getSelenium().getText("xpath=//div[@id='proxy-connector-edit-order-div']/div[2]" ).contains( "central" ));
+        Assert.assertTrue( "First repo is myrepo",findElement("//div[@id='proxy-connector-edit-order-div']/div[1]").getText().contains("myrepoid"));
+        Assert.assertTrue( "Second repo is central",findElement("//div[@id='proxy-connector-edit-order-div']/div[2]" ).getText().contains( "central" ));
              
         // works until this point
         /*getSelenium().mouseDown( "xpath=//div[@id='proxy-connector-edit-order-div']/div[1]" );

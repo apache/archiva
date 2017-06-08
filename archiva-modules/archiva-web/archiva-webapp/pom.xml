@@ -963,6 +963,143 @@
       </plugin>
       -->
       <plugin>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>9.4.5.v20170502</version>
+        <configuration>
+          <scanIntervalSeconds>10</scanIntervalSeconds>
+          <webApp>
+            <contextPath>/archiva</contextPath>
+          </webApp>
+          <jettyXml>${basedir}/src/test/jetty/jetty-env.xml</jettyXml>
+
+          <systemProperties>
+            <systemProperty>
+              <name>plexus.home</name>
+              <value>${archivaAppServerBase}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>appserver.base</name>
+              <value>${archivaAppServerBase}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>appserver.home</name>
+              <value>${archivaAppServerBase}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>derby.system.home</name>
+              <value>${archivaAppServerBase}/logs</value>
+            </systemProperty>
+            <systemProperty>
+              <name>java.io.tmpdir</name>
+              <value>${project.build.directory}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>archiva.user.configFileName</name>
+              <value>${archivaAppServerBase}/conf/archiva.xml</value>
+            </systemProperty>
+            <systemProperty>
+              <name>archiva.devMode</name>
+              <value>${archiva.devMode}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>archiva.javascriptLog</name>
+              <value>${archiva.javascriptLog}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>archiva.logMissingI18n</name>
+              <value>${archiva.logMissingI18n}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>cassandra.host</name>
+              <value>${cassandra.host}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>cassandra.port</name>
+              <value>${cassandra.port}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>archiva.repositorySessionFactory.id</name>
+              <value>${archiva.repositorySessionFactory.id}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>org.apache.sirona.configuration.sirona.properties</name>
+              <value>${archiva.sirona.configuration}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>AsyncLoggerConfig.WaitStrategy</name>
+              <value>Block</value>
+            </systemProperty>
+            <systemProperty>
+              <name>AsyncLogger.WaitStrategy</name>
+              <value>Block</value>
+            </systemProperty>
+            <systemProperty>
+              <name>openjpa.Log</name>
+              <value>${openjpa.Log}</value>
+            </systemProperty>
+          </systemProperties>
+
+        </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.derby</groupId>
+              <artifactId>derby</artifactId>
+              <version>${derbyVersion}</version>
+            </dependency>
+            <dependency>
+              <groupId>javax.mail</groupId>
+              <artifactId>mail</artifactId>
+              <version>${javaxMailVersion}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.openjpa</groupId>
+              <artifactId>openjpa</artifactId>
+              <version>${openjpaVersion}</version>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.geronimo.specs</groupId>
+              <artifactId>geronimo-jpa_2.0_spec</artifactId>
+              <version>1.1</version>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.geronimo.specs</groupId>
+              <artifactId>geronimo-jta_1.1_spec</artifactId>
+              <version>1.1.1</version>
+            </dependency>
+            <dependency>
+              <groupId>net.sourceforge.serp</groupId>
+              <artifactId>serp</artifactId>
+              <version>1.15.1</version>
+            </dependency>
+
+            <dependency>
+              <groupId>org.eclipse.jetty</groupId>
+              <artifactId>jetty-io</artifactId>
+              <version>9.4.5.v20170502</version>
+            </dependency>
+            <dependency>
+              <groupId>org.eclipse.jetty</groupId>
+              <artifactId>jetty-util</artifactId>
+              <version>9.4.5.v20170502</version>
+            </dependency>
+            <dependency>
+              <groupId>org.eclipse.jetty</groupId>
+              <artifactId>jetty-client</artifactId>
+              <version>9.4.5.v20170502</version>
+            </dependency>
+            <dependency>
+              <groupId>org.eclipse.jetty.websocket</groupId>
+              <artifactId>websocket-client</artifactId>
+              <version>9.4.5.v20170502</version>
+            </dependency>
+
+          </dependencies>
+
+      </plugin>
+
+
+      <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
         <artifactId>tomcat7-maven-plugin</artifactId>
         <configuration>

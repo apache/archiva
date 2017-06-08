@@ -174,7 +174,8 @@ public abstract class AbstractArchivaTest
 
     protected void logout()
     {
-        clickLinkWithText( "Logout" );
+        clickLinkWithLocator( "logout-link-a" );
+        waitPage();
         assertTextNotPresent( "Current User:" );
         assertLinkNotVisible( "Edit Details" );
         assertLinkNotVisible( "Logout" );

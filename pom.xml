@@ -99,6 +99,7 @@
     <plexus-utils.version>3.0.15</plexus-utils.version>
     <asfTomcatMavenPluginVersion>2.2</asfTomcatMavenPluginVersion>
     <tomcat7Version>7.0.54</tomcat7Version>
+    <htmlUnitVersion>2.27</htmlUnitVersion>
 
     <release.preparationGoals>clean install</release.preparationGoals>
     <springockito.version>1.0.9</springockito.version>

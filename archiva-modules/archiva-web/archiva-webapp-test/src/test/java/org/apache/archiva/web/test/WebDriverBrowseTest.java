@@ -18,6 +18,8 @@ package org.apache.archiva.web.test;
  * under the License.
  */
 
+import com.gargoylesoftware.htmlunit.javascript.background.JavaScriptExecutor;
+import org.fluentlenium.adapter.junit.After;
 import org.fluentlenium.configuration.ConfigurationProperties;
 import org.fluentlenium.configuration.FluentConfiguration;
 import org.junit.Assert;
@@ -28,8 +30,11 @@ import org.fluentlenium.core.domain.FluentList;
 import org.fluentlenium.core.domain.FluentWebElement;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +63,20 @@ public class WebDriverBrowseTest
     @Override
     public void takeScreenShot( String fileName )
     {
+        log.info("Taking screenshot "+fileName);
         WebdriverUtility.takeScreenShot( fileName, getDriver(), (a)->super.takeScreenShot( a ) );
+    }
+
+    @Override
+    protected void failed( String testName )
+    {
+        takeScreenShot( testName + ".png" );
+    }
+
+    @Override
+    public boolean canTakeScreenShot()
+    {
+        return true;
     }
 
     @Before
@@ -67,6 +85,7 @@ public class WebDriverBrowseTest
 
         setScreenshotMode( TriggerMode.AUTOMATIC_ON_FAIL );
         setDriverLifecycle( DriverLifecycle.CLASS );
+
 
     }
 
@@ -120,9 +139,21 @@ public class WebDriverBrowseTest
         }
         else
         {
-            elements = find( "#login-link-a" );
+            elements = find( By.id("login-link-a"));
             WebElement webElement = elements.get( 0 ).getElement();
-            Assert.assertEquals( "LOGIN", webElement.getText() );
+            for(FluentWebElement element : elements) {
+                log.info("Found login link: "+element.getElement().getTagName()+ " "+ element.getElement().getText());
+            }
+            log.info("innerText: "+webElement.getAttribute("innerText"));
+            log.info("value: "+webElement.getAttribute("value"));
+            log.info("innerHTML: "+webElement.getAttribute( "innerHTML" ));
+            log.info("JS: "+((( JavascriptExecutor)getDriver()).executeScript("return $(arguments[0]).text();", webElement)));
+            if (getDriver() instanceof HtmlUnitDriver) {
+                Assert.assertEquals( "LOGIN", webElement.getText().toUpperCase() );
+            } else
+            {
+                Assert.assertEquals( "LOGIN", webElement.getText() );
+            }
         }
 
     }

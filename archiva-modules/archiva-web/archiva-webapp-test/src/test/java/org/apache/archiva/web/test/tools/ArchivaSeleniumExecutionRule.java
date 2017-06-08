@@ -24,6 +24,8 @@ import org.junit.rules.MethodRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Olivier Lamy
@@ -31,6 +33,9 @@ import org.junit.runners.model.Statement;
 public class ArchivaSeleniumExecutionRule
     implements MethodRule //TestRule
 {
+
+    final Logger log = LoggerFactory.getLogger( ArchivaSeleniumExecutionRule.class );
+
     // FIXME cerate a separate TestRule for open and close calls ?
     public Selenium selenium;
 
@@ -43,6 +48,7 @@ public class ArchivaSeleniumExecutionRule
         }
         catch ( Throwable e )
         {
+            log.info("Exception thrown in Selenium test: "+e.getClass().getName()+" - "+e.getMessage());
             String fileName =
                 ( (AbstractSeleniumTest) target ).captureScreenShotOnFailure( e, method.getMethod().getName(),
                                                                               target.getClass().getName() );
@@ -52,6 +58,7 @@ public class ArchivaSeleniumExecutionRule
         finally
         {
             ( (AbstractSeleniumTest) target ).close();
+
         }
         return new Statement()
         {
