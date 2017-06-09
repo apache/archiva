@@ -62,6 +62,10 @@ public class WebdriverUtility
     }
 
     public static WebDriver newWebDriver(String seleniumBrowser, String seleniumHost, int seleniumPort, boolean seleniumRemote) {
+        log.info("WebDriver {}, {}, {}, {}", seleniumBrowser, seleniumHost, seleniumPort, seleniumRemote);
+        if (seleniumRemote && StringUtils.isEmpty( seleniumHost )) {
+            throw new IllegalArgumentException( "seleniumHost must be set, when seleniumRemote=true" );
+        }
         try {
 
             if ( StringUtils.contains(seleniumBrowser, "chrome")) {

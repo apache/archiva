@@ -36,8 +36,7 @@
     <selenium-server.version>3.4.0</selenium-server.version>
     <fluentlenium.version>3.2.0</fluentlenium.version>
     <fluentlenium.festassert.version>0.13.2</fluentlenium.festassert.version>
-    <seleniumHost></seleniumHost>
-    <seleniumPort></seleniumPort>
+
 
     <browserPath></browserPath>
   </properties>
@@ -434,6 +433,7 @@
                 <maxWaitTimeInMs>${maxWaitTimeInMs}</maxWaitTimeInMs>
                 <seleniumHost>${seleniumHost}</seleniumHost>
                 <seleniumPort>${seleniumPort}</seleniumPort>
+                <seleniumRemote>${seleniumRemote}</seleniumRemote>
                 <container.propertiesPortFilePath>${container.propertiesPortFilePath}</container.propertiesPortFilePath>
                 <container.http.port>${container.http.port}</container.http.port>
               </systemPropertyVariables>
@@ -673,6 +673,41 @@
       </activation>
       <properties>
         <baseUrl>http://localhost:${container.http.port}/archiva</baseUrl>
+      </properties>
+    </profile>
+
+
+    <profile>
+      <id>seleniumHost</id>
+      <activation>
+        <property>
+          <name>!seleniumHost</name>
+        </property>
+      </activation>
+      <properties>
+        <seleniumHost>localhost</seleniumHost>
+      </properties>
+    </profile>
+    <profile>
+      <id>seleniumPort</id>
+      <activation>
+        <property>
+          <name>!seleniumPort</name>
+        </property>
+      </activation>
+      <properties>
+        <seleniumPort></seleniumPort>
+      </properties>
+    </profile>
+    <profile>
+      <id>seleniumRemote</id>
+      <activation>
+        <property>
+          <name>!seleniumRemote</name>
+        </property>
+      </activation>
+      <properties>
+        <seleniumRemote>false</seleniumRemote>
       </properties>
     </profile>
 

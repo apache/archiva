@@ -59,7 +59,7 @@ public abstract class AbstractSeleniumTest
     public String browser = System.getProperty( "browser" );
 
     public String baseUrl =
-        "http://localhost:" + System.getProperty( "tomcat.maven.http.port" ) + "/archiva/index.html?request_lang=en";
+        "http://localhost:" + System.getProperty( "container.http.port" ) + "/archiva/index.html?request_lang=en";
 
     public int maxWaitTimeInMs = Integer.getInteger( "maxWaitTimeInMs" );
 
@@ -67,7 +67,7 @@ public abstract class AbstractSeleniumTest
 
     public int seleniumPort = Integer.getInteger( "seleniumPort", 4444 );
 
-    public boolean remoteSelenium = Boolean.parseBoolean( System.getProperty( "remoteSelenium", "false" ) );
+    public boolean remoteSelenium = Boolean.parseBoolean( System.getProperty( "seleniumRemote", "false" ) );
 
     WebDriver webDriver = null;
 
