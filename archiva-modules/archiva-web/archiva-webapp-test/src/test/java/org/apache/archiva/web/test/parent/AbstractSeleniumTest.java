@@ -623,6 +623,7 @@ public abstract class AbstractSeleniumTest
 
     public <V> V tryClick(By clickableLocator, Function<? super WebDriver, V> conditions, String message, int attempts, int maxWaitTimeInS) {
 
+        getWebDriver().manage().window().maximize();
         int count = attempts;
         WebDriverWait wait = new WebDriverWait( getWebDriver(), maxWaitTimeInS );
         V result = null;
@@ -634,9 +635,7 @@ public abstract class AbstractSeleniumTest
             {
                 el = wait.until(ExpectedConditions.elementToBeClickable( clickableLocator ));
                 Actions actions = new Actions(getWebDriver());
-                actions.moveToElement(el);
-                actions.perform();
-                el.click();
+                actions.moveToElement(el).click().perform();
                 result = wait.until( conditions  );
                 return result;
             } catch (Exception e) {
