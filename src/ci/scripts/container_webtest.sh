@@ -39,6 +39,8 @@ TAG="${CONTAINER_NAME}:${CONTAINER_VERSION}"
 
 START_ARG="$1"
 
+docker -v
+
 function stop_instance() {
   CONT=`docker ps -q --filter=name=${INSTANCE_NAME}`
   if [ "${CONT}" != "" ]; then
@@ -55,7 +57,7 @@ function stop_instance() {
 
 function start_instance() {
   echo "Starting container ${INSTANCE_NAME}"
-  docker run -d --network="${NETWORK_TYPE}" -p "${PORT_MAPPING}" --name "${INSTANCE_NAME}" "${TAG}"
+  docker run -d --net="${NETWORK_TYPE}" -p "${PORT_MAPPING}" --name "${INSTANCE_NAME}" "${TAG}"
 }
 
 function print_usage() {
