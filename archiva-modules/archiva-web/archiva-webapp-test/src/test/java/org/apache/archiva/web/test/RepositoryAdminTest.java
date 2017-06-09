@@ -66,9 +66,11 @@ public class RepositoryAdminTest
         
         el.click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("remote-repositories-view-a")));
-        el = wait.until(ExpectedConditions.elementToBeClickable( By.id("menu-proxy-connectors-list-a") ));
-        el.click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("proxy-connectors-view-tabs-a-network-proxies-grid")));
+        tryClick(By.id("menu-proxy-connectors-list-a"),
+            ExpectedConditions.visibilityOfElementLocated(By.id("proxy-connectors-view-tabs-a-network-proxies-grid")),
+            "Network proxies not available",
+            3,10
+            );
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("main-content"), "Proxy Connectors"));
         // proxy connect
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("proxy-connectors-view"), "central" ));

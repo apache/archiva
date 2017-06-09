@@ -620,6 +620,32 @@ public abstract class AbstractSeleniumTest
         }
     }
 
+    public <V> V tryClick(By clickableLocator, Function<? super WebDriver, V> conditions, String message, int attempts, int maxWaitTimeInS) {
+
+        int count = attempts;
+        WebDriverWait wait = new WebDriverWait( getWebDriver(), maxWaitTimeInS );
+        V result = null;
+        Exception ex = null;
+        while(count>0)
+        {
+            try
+            {
+                WebElement el = wait.until(ExpectedConditions.elementToBeClickable( clickableLocator ));
+                el.click();
+                result = wait.until( conditions  );
+                count=0;
+                ex = null;
+            } catch (Exception e) {
+                ex = e;
+                count--;
+            }
+        }
+        if (ex!=null) {
+            Assert.fail( message);
+        }
+        return result;
+    }
+
     /**
      * Executes click() on the WebElement <code>el</code> and waits for the conditions.
      * If the condition is not fulfilled in <code>maxWaitTimeInS</code>, the click is executed again

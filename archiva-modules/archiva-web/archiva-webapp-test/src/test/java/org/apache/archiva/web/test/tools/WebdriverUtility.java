@@ -23,6 +23,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
@@ -69,13 +70,17 @@ public class WebdriverUtility
         try {
 
             if ( StringUtils.contains(seleniumBrowser, "chrome")) {
+                ChromeOptions options = new ChromeOptions();
+                options.addArguments("start-maximized");
                 if (seleniumRemote)
                 {
+                    DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+                    capabilities.setCapability( ChromeOptions.CAPABILITY, options );
                     return new RemoteWebDriver( new URL( "http://" + seleniumHost + ":" + seleniumPort + "/wd/hub" ),
-                        DesiredCapabilities.chrome()
+                        capabilities
                     );
                 } else {
-                    return new ChromeDriver(  );
+                    return new ChromeDriver( options );
                 }
             }
 
