@@ -41,12 +41,15 @@ public class ArchivaSeleniumExecutionRule
     {
         try
         {
+            log.info("Test "+method.getDeclaringClass().getName()+"#"+method.getName());
             ( (AbstractSeleniumTest) target ).open();
             method.getMethod().invoke( target );
         }
         catch ( Throwable e )
         {
+
             log.info("Exception thrown in Selenium test: "+e.getClass().getName()+" - "+e.getMessage());
+            log.info("Method "+method.getName());
             String fileName =
                 ( (AbstractSeleniumTest) target ).captureScreenShotOnFailure( e, method.getMethod().getName(),
                                                                               target.getClass().getName() );

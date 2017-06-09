@@ -141,13 +141,6 @@ public class WebDriverBrowseTest
         {
             elements = find( By.id("login-link-a"));
             WebElement webElement = elements.get( 0 ).getElement();
-            for(FluentWebElement element : elements) {
-                log.info("Found login link: "+element.getElement().getTagName()+ " "+ element.getElement().getText());
-            }
-            log.info("innerText: "+webElement.getAttribute("innerText"));
-            log.info("value: "+webElement.getAttribute("value"));
-            log.info("innerHTML: "+webElement.getAttribute( "innerHTML" ));
-            log.info("JS: "+((( JavascriptExecutor)getDriver()).executeScript("return $(arguments[0]).text();", webElement)));
             if (getDriver() instanceof HtmlUnitDriver) {
                 Assert.assertEquals( "LOGIN", webElement.getText().toUpperCase() );
             } else

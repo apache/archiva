@@ -3,6 +3,7 @@ package org.apache.archiva.web.test.parent;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -101,10 +102,11 @@ public abstract class AbstractArchivaTest
     {
         login( getAdminUsername(), getAdminPassword() );
         WebDriverWait wait = new WebDriverWait(getWebDriver(), 10);
-        clickLinkWithLocator( "menu-users-list-a");
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("users-view-tabs-li-user-edit-a")));
-        clickLinkWithLocator( "users-view-tabs-li-user-edit-a");
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("user-create-form-register-button")));
+        WebElement el = wait.until(ExpectedConditions.elementToBeClickable( By.id("menu-users-list-a") ));
+        el = tryClick(el, ExpectedConditions.elementToBeClickable(By.id("users-view-tabs-li-user-edit-a")), "User List not available");
+        el = tryClick(el, ExpectedConditions.elementToBeClickable(By.id("users-view-tabs-li-user-edit-a")),"User Edit View not available");
+        el = tryClick(el, ExpectedConditions.elementToBeClickable(By.id("user-create-form-register-button")),
+            "Register Form not available");
         assertCreateUserPage();
         setFieldValue( "username", userName );
         setFieldValue( "fullname", fullName );
@@ -112,10 +114,9 @@ public abstract class AbstractArchivaTest
         setFieldValue( "password", password );
         setFieldValue( "confirmPassword", confirmPassword );
 
-        clickLinkWithLocator( "user-create-form-register-button");
+        el.click();
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("users-grid-user-id-" + userName)));
-        assertTextPresent( "User " + userName + " created." );
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("user-messages"),"User " + userName + " created." ));
         assertElementPresent( "users-grid-user-id-" + userName );
 
         if ( valid )

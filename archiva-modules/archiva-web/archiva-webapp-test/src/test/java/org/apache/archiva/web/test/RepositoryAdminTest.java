@@ -48,30 +48,34 @@ public class RepositoryAdminTest
     public void testManagedRepository()
     {
         login( getAdminUsername(), getAdminPassword() );
-        WebDriverWait wait = new WebDriverWait(getWebDriver(), 10);
-        wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-repositories-list-a")));
-        clickLinkWithLocator( "menu-repositories-list-a");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("managed-repositories-view-a")));
-        clickLinkWithXPath( "//a[@href='#remote-repositories-content']");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("remote-repositories-view-a")));
-        clickLinkWithXPath( "//a[@href='#remote-repository-edit']", false );
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("remote-repository-save-button")));
+        WebDriverWait wait = new WebDriverWait(getWebDriver(), 20);
+        WebElement el;
+        el = wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-repositories-list-a")));
+        tryClick( el,  ExpectedConditions.presenceOfElementLocated( By.id( "managed-repositories-view-a" ) ),
+            "Managed Repositories not activated");
+        el = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@href='#remote-repositories-content']")));
+        tryClick(el,ExpectedConditions.visibilityOfElementLocated(By.id("remote-repositories-view-a")),
+            "Remote Repositories View not available");
+        el = wait.until(ExpectedConditions.elementToBeClickable( By.xpath("//a[@href='#remote-repository-edit']") ));
+        el = tryClick(el, ExpectedConditions.visibilityOfElementLocated(By.id("remote-repository-save-button")),
+            "Repository Save Button not available");
         
         setFieldValue( "id", "myrepoid" );        
         setFieldValue( "name", "My repo name" );        
         setFieldValue( "url", "http://www.repo.org" );
         
-        clickButtonWithLocator( "remote-repository-save-button");
+        el.click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("remote-repositories-view-a")));
-
-        clickLinkWithLocator( "menu-proxy-connectors-list-a");
+        el = wait.until(ExpectedConditions.elementToBeClickable( By.id("menu-proxy-connectors-list-a") ));
+        el.click();
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("proxy-connectors-view-tabs-a-network-proxies-grid")));
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("main-content"), "Proxy Connectors"));
         // proxy connect
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("proxy-connectors-view"), "central" ));
         assertTextNotPresent( "myrepoid" );
-        clickButtonWithLocator( "proxy-connectors-view-tabs-a-edit");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("proxy-connector-btn-save")));
+        el = wait.until(ExpectedConditions.elementToBeClickable( By.id("proxy-connectors-view-tabs-a-edit") ));
+        el.click();
+        el = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("proxy-connector-btn-save")));
         selectValue( "sourceRepoId", "internal" );
         // Workaround
         // TODO: Check after upgrade of htmlunit, bootstrap or jquery
@@ -80,7 +84,7 @@ public class RepositoryAdminTest
         // End of Workaround
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("targetRepoId")));
         selectValue( "targetRepoId", "myrepoid" );
-        clickButtonWithLocator( "proxy-connector-btn-save");
+        el.click();
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("user-messages"),"ProxyConnector added"));
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("proxy-connectors-view"), "central" ));
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("proxy-connectors-view"), "myrepoid" ));
@@ -88,7 +92,7 @@ public class RepositoryAdminTest
         // This is needed here for HTMLUnit Tests. Currently do not know why, wait is not working for the
         // list entries down
         waitPage();
-        WebElement el = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("proxy-connector-edit-order-div")));
+        el = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("proxy-connector-edit-order-div")));
         assertTextPresent( "internal" );
         List<WebElement> repos = el.findElements(By.xpath("./div"));
         Assert.assertTrue("First repo is myrepo", repos.get(0).getText().contains("myrepoid"));

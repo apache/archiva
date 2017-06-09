@@ -19,30 +19,22 @@ package org.apache.archiva.web.test.parent;
  * under the License.
  */
 
-import com.thoughtworks.selenium.Selenium;
-import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 import org.apache.archiva.web.test.tools.ArchivaSeleniumExecutionRule;
 import org.apache.archiva.web.test.tools.WebdriverUtility;
 import org.junit.Assert;
 import org.junit.Rule;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
-import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -294,10 +286,7 @@ public abstract class AbstractSeleniumTest
         WebElement passwordField = wait.until(ExpectedConditions.visibilityOf(getWebDriver().findElement(By.id("user-login-form-password"))));
         wait = new WebDriverWait(getWebDriver(),5);
         WebElement button = wait.until(ExpectedConditions.elementToBeClickable(By.id("modal-login-ok")));
-        logger.info("Login form visible");
-        logger.info("Enter username "+username);
         usernameField.sendKeys(username);
-        logger.info("Enter password "+password);
         passwordField.sendKeys(password);
         /*
         if ( rememberMe )
@@ -630,6 +619,59 @@ public abstract class AbstractSeleniumTest
             waitPage();
         }
     }
+
+    /**
+     * Executes click() on the WebElement <code>el</code> and waits for the conditions.
+     * If the condition is not fulfilled in <code>maxWaitTimeInS</code>, the click is executed again
+     * and waits again for the condition.
+     * After the number of attempts as given by the parameter an assertion error will be thrown, with
+     * the given <code>message</code>.
+     *
+     * If the click was successful the element is returned that was created by the condition.
+     *
+     * @param el The element where the click is executed
+     * @param conditions The conditions to wait for after the click
+     * @param message The assertion messages
+     * @param attempts Maximum number of click attempts
+     * @param maxWaitTimeInS The time in seconds to wait that the condition is fulfilled.
+     * @param <V> The return type
+     * @return
+     */
+    public <V> V tryClick( WebElement el, Function<? super WebDriver, V> conditions, String message, int attempts, int maxWaitTimeInS)
+    {
+        int count = attempts;
+        WebDriverWait wait = new WebDriverWait( getWebDriver(), maxWaitTimeInS );
+        V result = null;
+        Exception ex = null;
+        while(count>0)
+        {
+            el.click();
+            try
+            {
+                result = wait.until( conditions  );
+                count=0;
+                ex = null;
+            } catch (Exception e) {
+                ex = e;
+                count--;
+            }
+        }
+        if (ex!=null) {
+            Assert.fail( message);
+        }
+        return result;
+    }
+
+    public <V> V tryClick(WebElement el, Function<? super WebDriver, V> conditions, String message, int attempts )
+    {
+        return tryClick( el, conditions, message, attempts, 10 );
+    }
+
+    public <V> V tryClick(WebElement el, Function<? super WebDriver, V> conditions, String message)
+    {
+        return tryClick( el, conditions, message, 3);
+    }
+
 
     public void setFieldValues( Map<String, String> fieldMap )
     {

@@ -51,7 +51,7 @@ public class WebDriverTest
         extends FluentTest
 {
 
-    final Logger log = LoggerFactory.getLogger( WebDriver.class );
+    final Logger log = LoggerFactory.getLogger( WebDriverTest.class );
 
     @Override
     public void takeScreenShot( String fileName )
@@ -100,10 +100,6 @@ public class WebDriverTest
                 log.info("Found login link: "+element.getElement().getTagName()+ " "+ element.getElement().getText());
             }
             WebElement webElement = elements.get(0).getElement();
-            log.info("innerText: "+webElement.getAttribute("innerText"));
-            log.info("value: "+webElement.getAttribute("value"));
-            log.info("innerHTML: "+webElement.getAttribute( "innerHTML" ));
-            log.info("JS: "+(((JavascriptExecutor)getDriver()).executeScript("return $(arguments[0]).text();", webElement)));
             if (getDriver() instanceof HtmlUnitDriver ) {
                 Assert.assertEquals( "LOGIN", webElement.getText().toUpperCase() );
             } else
