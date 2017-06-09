@@ -639,6 +639,14 @@ public abstract class AbstractSeleniumTest
                 ex = e;
                 count--;
             }
+            try
+            {
+                Thread.currentThread().sleep(500);
+            }
+            catch ( InterruptedException e )
+            {
+                // Ignore
+            }
         }
         if (ex!=null) {
             Assert.fail( message);
@@ -671,15 +679,31 @@ public abstract class AbstractSeleniumTest
         Exception ex = null;
         while(count>0)
         {
+            if (count<attempts) {
+                try
+                {
+                    result = conditions.apply( getWebDriver() );
+                    return result;
+                } catch (Exception e) {
+                    // Ignore
+                }
+            }
             el.click();
             try
             {
                 result = wait.until( conditions  );
-                count=0;
-                ex = null;
+                return result;
             } catch (Exception e) {
                 ex = e;
                 count--;
+            }
+            try
+            {
+                Thread.currentThread().sleep(500);
+            }
+            catch ( InterruptedException e )
+            {
+                // Ignore
             }
         }
         if (ex!=null) {
