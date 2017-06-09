@@ -65,8 +65,8 @@ COPY chrome_launcher.sh /usr/bin/google-chrome
 RUN chmod +x /opt/bin/entry_point.sh
 RUN chmod +x /usr/bin/google-chrome
 
-ENV SCREEN_WIDTH 1360
-ENV SCREEN_HEIGHT 1020
+ENV SCREEN_WIDTH 1600
+ENV SCREEN_HEIGHT 1200
 ENV SCREEN_DEPTH 24
 ENV X_START_NUM=3
 

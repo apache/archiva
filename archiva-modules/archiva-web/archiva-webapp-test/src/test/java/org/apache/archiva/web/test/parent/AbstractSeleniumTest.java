@@ -37,6 +37,7 @@ import java.util.function.Function;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Select;
@@ -626,16 +627,24 @@ public abstract class AbstractSeleniumTest
         WebDriverWait wait = new WebDriverWait( getWebDriver(), maxWaitTimeInS );
         V result = null;
         Exception ex = null;
+        WebElement el = null;
         while(count>0)
         {
             try
             {
-                WebElement el = wait.until(ExpectedConditions.elementToBeClickable( clickableLocator ));
+                el = wait.until(ExpectedConditions.elementToBeClickable( clickableLocator ));
+                Actions actions = new Actions(getWebDriver());
+                actions.moveToElement(el);
+                actions.perform();
                 el.click();
                 result = wait.until( conditions  );
-                count=0;
-                ex = null;
+                return result;
             } catch (Exception e) {
+                logger.info("Error: {}, {}, {}",count,e.getClass().getName(), e.getMessage());
+                if (el!=null) {
+                    Point elLoc = el.getLocation();
+                    logger.info("Location: x={} y={}", elLoc.getX(), elLoc.getY());
+                }
                 ex = e;
                 count--;
             }
@@ -694,6 +703,7 @@ public abstract class AbstractSeleniumTest
                 result = wait.until( conditions  );
                 return result;
             } catch (Exception e) {
+                logger.info("Error: {}, {}",count, e.getMessage());
                 ex = e;
                 count--;
             }
