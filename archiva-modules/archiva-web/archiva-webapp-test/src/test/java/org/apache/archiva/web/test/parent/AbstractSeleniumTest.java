@@ -355,7 +355,7 @@ public abstract class AbstractSeleniumTest
 
     public void assertPage( String title )
     {
-        Assert.assertEquals( getTitle(), title );
+        Assert.assertEquals( title,  getTitle());
     }
 
     public String getTitle()

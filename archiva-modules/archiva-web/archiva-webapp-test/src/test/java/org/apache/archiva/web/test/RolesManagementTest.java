@@ -22,6 +22,9 @@ import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 
 /**
@@ -36,14 +39,17 @@ public class RolesManagementTest
         throws Exception
     {
         login( getAdminUsername(), getAdminPassword() );
-        clickLinkWithLocator( "menu-roles-list-a", true );
-        assertTextPresent( "Archiva System Administrator " );
+        clickLinkWithLocator( "menu-roles-list-a");
+        WebDriverWait wait = new WebDriverWait(getWebDriver(), 10);
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("roles-view"),"Archiva System Administrator"));
         Assert.assertTrue( StringUtils.isEmpty( getText( "role-description-Guest" ) ) );
         clickLinkWithLocator( "edit-role-Guest" );
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("role-edit-description-save")));
         String desc = "The guest description";
         setFieldValue( "role-edit-description", desc );
         clickButtonWithLocator( "role-edit-description-save" );
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("user-messages"), "Role Guest updated."));
         clickLinkWithLocator( "roles-view-tabs-a-roles-grid" );
-        Assert.assertTrue( StringUtils.equals( desc, getText( "role-description-Guest" ) ) );
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("role-description-Guest"), desc));
     }
 }

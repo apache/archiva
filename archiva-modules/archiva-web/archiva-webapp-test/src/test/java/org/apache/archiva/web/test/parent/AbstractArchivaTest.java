@@ -2,6 +2,9 @@ package org.apache.archiva.web.test.parent;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,9 +100,11 @@ public abstract class AbstractArchivaTest
                              boolean valid )
     {
         login( getAdminUsername(), getAdminPassword() );
-        clickLinkWithLocator( "menu-users-list-a", true );
-        clickLinkWithLocator( "users-view-tabs-li-user-edit-a", true );
-
+        WebDriverWait wait = new WebDriverWait(getWebDriver(), 10);
+        clickLinkWithLocator( "menu-users-list-a");
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("users-view-tabs-li-user-edit-a")));
+        clickLinkWithLocator( "users-view-tabs-li-user-edit-a");
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("user-create-form-register-button")));
         assertCreateUserPage();
         setFieldValue( "username", userName );
         setFieldValue( "fullname", fullName );
@@ -107,8 +112,9 @@ public abstract class AbstractArchivaTest
         setFieldValue( "password", password );
         setFieldValue( "confirmPassword", confirmPassword );
 
-        clickLinkWithLocator( "user-create-form-register-button", true );
+        clickLinkWithLocator( "user-create-form-register-button");
 
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("users-grid-user-id-" + userName)));
         assertTextPresent( "User " + userName + " created." );
         assertElementPresent( "users-grid-user-id-" + userName );
 
@@ -131,13 +137,17 @@ public abstract class AbstractArchivaTest
 
     public void deleteUser( String userName, String fullName, String emailAd, boolean validated, boolean locked )
     {
-        clickLinkWithLocator( "menu-users-list-a", true );
+        clickLinkWithLocator( "menu-users-list-a");
+        WebDriverWait wait = new WebDriverWait(getWebDriver(),10);
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("users-grid-delete-" + userName)));
         assertTextPresent( userName );
         assertTextPresent( fullName );
 
         clickLinkWithLocator( "users-grid-delete-" + userName );
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("dialog-confirm-modal-ok")));
 
         clickLinkWithLocator( "dialog-confirm-modal-ok" );
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("alert-message-success-close-a" )));
         assertTextPresent( "User " + userName + " deleted." );
 
         clickLinkWithLocator( "alert-message-success-close-a" );
@@ -175,7 +185,8 @@ public abstract class AbstractArchivaTest
     protected void logout()
     {
         clickLinkWithLocator( "logout-link-a" );
-        waitPage();
+        WebDriverWait wait = new WebDriverWait(getWebDriver(), 10);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()='Login']//ancestor::a")));
         assertTextNotPresent( "Current User:" );
         assertLinkNotVisible( "Edit Details" );
         assertLinkNotVisible( "Logout" );

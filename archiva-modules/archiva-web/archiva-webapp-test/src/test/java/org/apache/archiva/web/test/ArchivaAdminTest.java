@@ -21,6 +21,8 @@ package org.apache.archiva.web.test;
 
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 import org.junit.Test;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class ArchivaAdminTest
     extends AbstractArchivaTest
@@ -30,6 +32,7 @@ public class ArchivaAdminTest
     public void testHome()
     {
         getWebDriver().get( baseUrl );
-        assertPage( "Apache Archiva" );
+        WebDriverWait wait = new WebDriverWait(getWebDriver(), 30);
+        wait.until(ExpectedConditions.titleContains("Apache Archiva"));
     }
 }

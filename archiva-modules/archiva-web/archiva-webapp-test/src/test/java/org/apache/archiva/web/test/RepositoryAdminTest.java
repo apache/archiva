@@ -24,10 +24,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.List;
 
 /**
  * Based on LoginTest of Emmanuel Venisse test.
@@ -45,8 +48,9 @@ public class RepositoryAdminTest
     public void testManagedRepository()
     {
         login( getAdminUsername(), getAdminPassword() );
-        clickLinkWithLocator( "menu-repositories-list-a");
         WebDriverWait wait = new WebDriverWait(getWebDriver(), 10);
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-repositories-list-a")));
+        clickLinkWithLocator( "menu-repositories-list-a");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("managed-repositories-view-a")));
         clickLinkWithXPath( "//a[@href='#remote-repositories-content']");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("remote-repositories-view-a")));
@@ -80,12 +84,16 @@ public class RepositoryAdminTest
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("user-messages"),"ProxyConnector added"));
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("proxy-connectors-view"), "central" ));
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("proxy-connectors-view"), "myrepoid" ));
-        clickLinkWithXPath( "//i[contains(concat(' ',normalize-space(@class),' '),' icon-resize-vertical ')]/../..", true );
+        clickLinkWithXPath( "//i[contains(@class,'icon-resize-vertical')]//ancestor::a");
+        // This is needed here for HTMLUnit Tests. Currently do not know why, wait is not working for the
+        // list entries down
+        waitPage();
+        WebElement el = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("proxy-connector-edit-order-div")));
         assertTextPresent( "internal" );
-        // order test
-        Assert.assertTrue( "First repo is myrepo",findElement("//div[@id='proxy-connector-edit-order-div']/div[1]").getText().contains("myrepoid"));
-        Assert.assertTrue( "Second repo is central",findElement("//div[@id='proxy-connector-edit-order-div']/div[2]" ).getText().contains( "central" ));
-             
+        List<WebElement> repos = el.findElements(By.xpath("./div"));
+        Assert.assertTrue("First repo is myrepo", repos.get(0).getText().contains("myrepoid"));
+        Assert.assertTrue("Second repo is central", repos.get(1).getText().contains("central"));
+
         // works until this point
         /*getSelenium().mouseDown( "xpath=//div[@id='proxy-connector-edit-order-div']/div[1]" );
         getSelenium().mouseMove( "xpath=//div[@id='proxy-connector-edit-order-div']/div[2]" );
