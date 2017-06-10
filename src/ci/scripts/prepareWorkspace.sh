@@ -33,5 +33,5 @@ for i in ${ATTIC_DIRS}; do
 done
 
 for i in ${REMOVE_DIRS}; do
-  find . -type d -name "${i}" -exec rm -rf {} \;
+  find . -type d -name "${i}" -print0 | xargs -0 rm -rvf
 done
