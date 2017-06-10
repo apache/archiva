@@ -819,13 +819,15 @@
             <executions>
               <execution>
                 <id>cleanup-files</id>
+                <phase>clean</phase>
                 <goals>
                   <goal>run</goal>
                 </goals>
                 <configuration>
-                  <tasks>
-                    <delete file="${user.home}/.m2/archiva.xml" quiet="true"/>
-                  </tasks>
+                  <failOnError>false</failOnError>
+                  <target>
+                    <delete file="${user.home}/.m2/archiva.xml" />
+                  </target>
                 </configuration>
               </execution>
             </executions>
