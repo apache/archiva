@@ -23,10 +23,15 @@
 #  Removes directories that are not used anymore.
 ##
 ATTIC_DIRS=""
+REMOVE_DIRS=".indexer"
 
 for i in ${ATTIC_DIRS}; do
  if [ "X${i}" != "X" -a -d ${i} ]; then
    echo "Deleting directory ${i}"
    rm -rf ${i}
  fi
+done
+
+for i in ${REMOVE_DIRS}; do
+  find . -type d -name "${i}" -exec rm -rf {} \;
 done
