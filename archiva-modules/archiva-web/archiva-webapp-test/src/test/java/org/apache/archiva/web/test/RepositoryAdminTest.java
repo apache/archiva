@@ -47,7 +47,7 @@ public class RepositoryAdminTest
     @Test
     public void testManagedRepository()
     {
-        login( getAdminUsername(), getAdminPassword() );
+        // login( getAdminUsername(), getAdminPassword() );
         WebDriverWait wait = new WebDriverWait(getWebDriver(), 20);
         WebElement el;
         el = wait.until(ExpectedConditions.elementToBeClickable(By.id("menu-repositories-list-a")));
