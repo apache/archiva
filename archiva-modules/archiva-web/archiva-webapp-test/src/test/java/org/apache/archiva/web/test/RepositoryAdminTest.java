@@ -54,7 +54,7 @@ public class RepositoryAdminTest
         tryClick( el,  ExpectedConditions.presenceOfElementLocated( By.id( "managed-repositories-view-a" ) ),
             "Managed Repositories not activated");
         el = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@href='#remote-repositories-content']")));
-        tryClick(el,ExpectedConditions.visibilityOfElementLocated(By.id("remote-repositories-view-a")),
+        tryClick(el,ExpectedConditions.visibilityOfElementLocated(By.xpath("//table[@id='remote-repositories-table']//td[contains(text(),'central')]")),
             "Remote Repositories View not available");
         el = wait.until(ExpectedConditions.elementToBeClickable( By.xpath("//a[@href='#remote-repository-edit']") ));
         el = tryClick(el, ExpectedConditions.visibilityOfElementLocated(By.id("remote-repository-save-button")),
