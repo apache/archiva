@@ -96,14 +96,20 @@ public class WebdriverUtility
             }
 
             if (StringUtils.contains(seleniumBrowser, "iexplore")) {
+                DesiredCapabilities capabilities = DesiredCapabilities.internetExplorer();
+                capabilities.setCapability( InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true );
+                WebDriver driver;
                 if (seleniumRemote)
                 {
-                    return new RemoteWebDriver( new URL( "http://" + seleniumHost + ":" + seleniumPort + "/wd/hub" ),
-                        DesiredCapabilities.internetExplorer()
+                    driver = new RemoteWebDriver( new URL( "http://" + seleniumHost + ":" + seleniumPort + "/wd/hub" ),
+                        capabilities
                     );
                 } else {
-                    new InternetExplorerDriver(  );
+                    driver = new InternetExplorerDriver( capabilities );
                 }
+                driver.manage().window().maximize();
+                return driver;
+
             }
 
             if (StringUtils.contains( seleniumBrowser, "firefox" ))
@@ -120,18 +126,20 @@ public class WebdriverUtility
                 }
             }
 
+            // Default driver
+            DesiredCapabilities capabilities = DesiredCapabilities.htmlUnit();
+            capabilities.setJavascriptEnabled( true );
+            capabilities.setVersion( "firefox-52" );
+            WebDriver driver;
             if ( seleniumRemote )
             {
-                return new RemoteWebDriver( new URL( "http://" + seleniumHost + ":" + seleniumPort + "/wd/hub" ),
-                    DesiredCapabilities.htmlUnit()
+                driver = new RemoteWebDriver( new URL( "http://" + seleniumHost + ":" + seleniumPort + "/wd/hub" ),
+                    capabilities
                 );
             }
             else
             {
-                DesiredCapabilities capabilities = DesiredCapabilities.htmlUnit();
-                capabilities.setJavascriptEnabled( true );
-                capabilities.setVersion( "firefox-52" );
-                HtmlUnitDriver driver = new HtmlUnitDriver( capabilities  ) {
+                driver = new HtmlUnitDriver( capabilities  ) {
                     @Override
                     protected WebClient modifyWebClient( WebClient client )
                     {
@@ -141,8 +149,8 @@ public class WebdriverUtility
                         return client;
                     }
                 };
-                return driver;
             }
+            return driver;
 
         } catch (MalformedURLException e) {
             throw new RuntimeException("Initializion of remote driver failed");
