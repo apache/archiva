@@ -140,35 +140,41 @@ public abstract class AbstractSeleniumTest
         WebDriverWait wait = new WebDriverWait(getWebDriver(),30);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("topbar-menu")));
 
-        FluentWait fluentWait = new FluentWait(getWebDriver()).withTimeout(10, TimeUnit.SECONDS);
-        fluentWait.until( ExpectedConditions.or(
-                    ExpectedConditions.visibilityOfElementLocated(By.id("create-admin-link")),
+        wait = new WebDriverWait( getWebDriver(), 20 );
+        Boolean found = wait.until( ExpectedConditions.or(
+                    ExpectedConditions.visibilityOfElementLocated(By.id("create-admin-link-a")),
                             ExpectedConditions.visibilityOfElementLocated(By.id("login-link-a"))));
-
-
-        // if not admin user created create one
-        if ( isElementVisible( "create-admin-link" ) )
+        if (found)
         {
-            Assert.assertFalse( isElementVisible( "login-link-a" ) );
-            Assert.assertFalse( isElementVisible( "register-link-a" ) );
-            // skygo need to set to true for passing is that work as expected ?
-            clickLinkWithLocator( "create-admin-link-a");
-            wait = new WebDriverWait(getWebDriver(), 5);
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("user-create")));
-            assertCreateAdmin();
-            String fullname = getProperty( "ADMIN_FULLNAME" );
-            String username = getAdminUsername();
-            String mail = getProperty( "ADMIN_EMAIL" );
-            String password = getProperty( "ADMIN_PASSWORD" );
-            submitAdminData( fullname, mail, password );
-            assertUserLoggedIn( username );
-            clickLinkWithLocator( "logout-link-a" , false);
-        }
-        else
-        {
-            Assert.assertTrue( isElementVisible( "login-link-a" ) );
-            Assert.assertTrue( isElementVisible( "register-link-a" ) );
-            login( getAdminUsername(), getAdminPassword() );
+
+            WebElement adminLink = getWebDriver().findElement( By.id( "create-admin-link-a" ) );
+            WebElement loginLink = getWebDriver().findElement( By.id( "login-link-a" ) );
+
+            // if not admin user created create one
+            if ( adminLink != null && adminLink.isDisplayed() )
+            {
+
+                Assert.assertFalse( isElementVisible( "login-link-a" ) );
+                Assert.assertFalse( isElementVisible( "register-link-a" ) );
+                // skygo need to set to true for passing is that work as expected ?
+                adminLink.click();
+                wait = new WebDriverWait( getWebDriver(), 10 );
+                wait.until( ExpectedConditions.visibilityOfElementLocated( By.id( "user-create" ) ) );
+                assertCreateAdmin();
+                String fullname = getProperty( "ADMIN_FULLNAME" );
+                String username = getAdminUsername();
+                String mail = getProperty( "ADMIN_EMAIL" );
+                String password = getProperty( "ADMIN_PASSWORD" );
+                submitAdminData( fullname, mail, password );
+                assertUserLoggedIn( username );
+                clickLinkWithLocator( "logout-link-a", false );
+            }
+                 else if ( loginLink != null && loginLink.isDisplayed() )
+            {
+                Assert.assertTrue( isElementVisible( "login-link-a" ) );
+                Assert.assertTrue( isElementVisible( "register-link-a" ) );
+                login( getAdminUsername(), getAdminPassword() );
+            }
         }
 
     }
