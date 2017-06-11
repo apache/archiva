@@ -98,6 +98,10 @@ public class WebdriverUtility
             if (StringUtils.contains(seleniumBrowser, "iexplore")) {
                 DesiredCapabilities capabilities = DesiredCapabilities.internetExplorer();
                 capabilities.setCapability( InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true );
+                // capabilities.setCapability( InternetExplorerDriver.LOG_FILE, "target/selenium/driver.log" );
+                capabilities.setCapability( InternetExplorerDriver.LOG_LEVEL, "DEBUG" );
+                capabilities.setCapability( InternetExplorerDriver.BROWSER_ATTACH_TIMEOUT, 60000 );
+                capabilities.setCapability( InternetExplorerDriver.INITIAL_BROWSER_URL, getBaseUrl() );
                 WebDriver driver;
                 if (seleniumRemote)
                 {
