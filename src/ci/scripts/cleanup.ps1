@@ -40,7 +40,7 @@
 param (
     [switch]$Verbose = $False,
     [String[]]$Browsers = @("firefox.exe","iexplore.exe","chrome.exe"),
-    [String[]]$SeleniumProcesses = @("mshta.exe","java.exe")
+    [String[]]$SeleniumProcesses = @("mshta.exe","java.exe","IEDriverServer.exe")
 )
 
 # $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
