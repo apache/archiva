@@ -116,11 +116,11 @@ public abstract class AbstractArchivaTest
 
         el.click();
 
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("user-messages"),"User " + userName + " created." ));
-        assertElementPresent( "users-grid-user-id-" + userName );
-
         if ( valid )
         {
+            wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("user-messages"),"User " + userName + " created." ));
+            wait.until(ExpectedConditions.visibilityOfElementLocated( By.id("users-grid-user-id-" + userName) ));
+
             //String[] columnValues = { userName, fullName, emailAd };
             //assertElementPresent( XPathExpressionUtil.getTableRow( columnValues ) );
 

@@ -647,8 +647,14 @@ public abstract class AbstractSeleniumTest
             } catch (Exception e) {
                 logger.info("Error: {}, {}, {}",count,e.getClass().getName(), e.getMessage());
                 if (el!=null) {
-                    Point elLoc = el.getLocation();
-                    logger.info("Location: x={} y={}", elLoc.getX(), elLoc.getY());
+                    // Elements may be stale and throw an exception, if the location is requested
+                    try
+                    {
+                        Point elLoc = el.getLocation();
+                        logger.info( "Location: x={} y={}", elLoc.getX(), elLoc.getY() );
+                    } catch (Throwable e2) {
+                        logger.info("Could not determine location");
+                    }
                 }
                 ex = e;
                 count--;
