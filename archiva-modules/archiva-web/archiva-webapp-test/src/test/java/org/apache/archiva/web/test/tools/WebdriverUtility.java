@@ -102,7 +102,7 @@ public class WebdriverUtility
                 capabilities.setCapability( InternetExplorerDriver.LOG_LEVEL, "TRACE" );
                 capabilities.setCapability( InternetExplorerDriver.BROWSER_ATTACH_TIMEOUT, 60000 );
                 capabilities.setCapability( InternetExplorerDriver.INITIAL_BROWSER_URL, getBaseUrl() );
-                capabilities.setCapability( InternetExplorerDriver.FORCE_CREATE_PROCESS, true );
+                // capabilities.setCapability( InternetExplorerDriver.FORCE_CREATE_PROCESS, true );
                 WebDriver driver;
                 if (seleniumRemote)
                 {
