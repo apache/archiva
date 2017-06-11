@@ -90,11 +90,15 @@ public class RepositoryAdminTest
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("user-messages"),"ProxyConnector added"));
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("proxy-connectors-view"), "central" ));
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("proxy-connectors-view"), "myrepoid" ));
-        clickLinkWithXPath( "//i[contains(@class,'icon-resize-vertical')]//ancestor::a");
+
+        tryClick(By.xpath("//i[contains(@class,'icon-resize-vertical')]//ancestor::a" ),
+            ExpectedConditions.visibilityOfAllElementsLocatedBy(By.id("proxy-connector-edit-order-div")),
+            "Edit order view not visible", 3, 10);
+        // clickLinkWithXPath( "//i[contains(@class,'icon-resize-vertical')]//ancestor::a");
         // This is needed here for HTMLUnit Tests. Currently do not know why, wait is not working for the
         // list entries down
-        waitPage();
-        el = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("proxy-connector-edit-order-div")));
+        // waitPage();
+        // el = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("proxy-connector-edit-order-div")));
         assertTextPresent( "internal" );
         List<WebElement> repos = wait.until(ExpectedConditions.numberOfElementsToBe( By.xpath("//div[@id='proxy-connector-edit-order-div']/div"), 2));
         Assert.assertTrue("First repo is myrepo", repos.get(0).getText().contains("myrepoid"));
