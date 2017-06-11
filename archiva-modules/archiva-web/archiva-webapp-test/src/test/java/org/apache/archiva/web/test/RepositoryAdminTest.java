@@ -96,7 +96,7 @@ public class RepositoryAdminTest
         waitPage();
         el = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("proxy-connector-edit-order-div")));
         assertTextPresent( "internal" );
-        List<WebElement> repos = el.findElements(By.xpath("./div"));
+        List<WebElement> repos = wait.until(ExpectedConditions.numberOfElementsToBe( By.xpath("//div[@id='proxy-connector-edit-order-div']/div"), 2));
         Assert.assertTrue("First repo is myrepo", repos.get(0).getText().contains("myrepoid"));
         Assert.assertTrue("Second repo is central", repos.get(1).getText().contains("central"));
 
