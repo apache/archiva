@@ -77,7 +77,7 @@
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <jacocoagent />
     <lucene.version>3.6.2</lucene.version>
-    <jackrabbit.version>2.9.1</jackrabbit.version>
+    <jackrabbit.version>2.14.1</jackrabbit.version>
 
     <sirona.version>0.1-incubating</sirona.version>
 
