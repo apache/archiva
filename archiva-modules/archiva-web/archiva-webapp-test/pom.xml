@@ -36,9 +36,7 @@
     <selenium-server.version>3.4.0</selenium-server.version>
     <fluentlenium.version>3.2.0</fluentlenium.version>
     <fluentlenium.festassert.version>0.13.2</fluentlenium.festassert.version>
-
-
-    <browserPath></browserPath>
+    <browserPath/>
   </properties>
 
   <dependencies>
@@ -358,7 +356,6 @@
               <exclude>src/test/resources/local-repo/**</exclude>
               <exclude>src/test/resources/projects/**</exclude>
               <exclude>src/test/resources/snapshots/**</exclude>
-              <exclude>src/test/tomcat*/conf/catalina.policy</exclude>
             </excludes>
           </configuration>
         </plugin>
@@ -615,57 +612,6 @@
               </execution>
             </executions>
           </plugin>
-
-<!--          <plugin>
-            <groupId>org.apache.tomcat.maven</groupId>
-            <artifactId>tomcat7-maven-plugin</artifactId>
-            <dependencies>
-              <dependency>
-                <groupId>org.apache.derby</groupId>
-                <artifactId>derby</artifactId>
-                <version>${derbyVersion}</version>
-              </dependency>
-              <dependency>
-                <groupId>javax.mail</groupId>
-                <artifactId>mail</artifactId>
-                <version>${javaxMailVersion}</version>
-              </dependency>
-            </dependencies>
-            <executions>
-              <execution>
-                <id>tomcat-run</id>
-                <goals>
-                  <goal>run-war-only</goal>
-                </goals>
-                <phase>pre-integration-test</phase>
-                <configuration>
-                  <path>/archiva</path>
-                  <port>${container.http.port}</port>
-                  <uriEncoding>UTF-8</uriEncoding>
-                  <warDirectory>${webappDirectory}</warDirectory>
-                  <fork>true</fork>
-                  <ignorePackaging>true</ignorePackaging>
-                  <systemProperties>
-                    <appserver.base>${project.build.directory}/appserver-base</appserver.base>
-                    <appserver.home>${project.build.directory}/appserver-base</appserver.home>
-                    <derby.system.home>${project.build.directory}</derby.system.home>
-                    <archiva.devMode>true</archiva.devMode>
-                    <openjpa.Log>${openjpa.Log}</openjpa.Log>
-                  </systemProperties>
-                  <contextFile>${project.build.testOutputDirectory}/archiva.xml</contextFile>
-                  <propertiesPortFilePath>${container.propertiesPortFilePath}</propertiesPortFilePath>
-                  <useNaming>true</useNaming>
-                </configuration>
-              </execution>
-              <execution>
-                <id>tomcat-shutdown</id>
-                <goals>
-                  <goal>shutdown</goal>
-                </goals>
-                <phase>post-integration-test</phase>
-              </execution>
-            </executions>
-          </plugin>-->
         </plugins>
       </build>
     </profile>
@@ -701,7 +647,7 @@
         </property>
       </activation>
       <properties>
-        <seleniumPort></seleniumPort>
+        <seleniumPort/>
       </properties>
     </profile>
     <profile>
