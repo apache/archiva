@@ -17,8 +17,9 @@
   ~ under the License.
   -->
 
-<!DOCTYPE Repository PUBLIC "-//The Apache Software Foundation//DTD Jackrabbit 1.6//EN"
-    "http://jackrabbit.apache.org/dtd/repository-2.0.dtd">
+<!DOCTYPE Repository
+        PUBLIC "-//The Apache Software Foundation//DTD Jackrabbit 1.5//EN"
+        "http://jackrabbit.apache.org/dtd/repository-1.5.dtd">
 
 <!-- START SNIPPET: default-repository -->
 <Repository>
