@@ -374,6 +374,11 @@
             <portName>container.http.port</portName>
             <portName>container.stop.port</portName>
           </portNames>
+          <fileSet/>
+          <name/>
+          <regex/>
+          <source/>
+          <value/>
         </configuration>
         <executions>
           <execution>
