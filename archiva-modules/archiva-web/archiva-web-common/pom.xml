@@ -509,7 +509,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-Xmx1024m -Xms512m -XX:MaxPermSize=256m ${jacocoagent}</argLine>
+          <argLine>-Xmx1024m -Xms512m -XX:MaxPermSize=256m @{jacocoproperty}</argLine>
           <systemPropertyVariables>
             <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             <plexus.home>${project.build.directory}/appserver-base</plexus.home>
@@ -525,6 +525,17 @@
             <archiva.repositorySessionFactory.id>test</archiva.repositorySessionFactory.id>
             <openjpa.Log>${openjpa.Log}</openjpa.Log>
           </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <!-- Conflicts with the client libraries. Found no other exclude entry that worked -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/*org/apache/archiva/web/model/*</exclude>
+            <exclude>**/archiva-web-common-json-client.jar*</exclude>
+          </excludes>
         </configuration>
       </plugin>
     </plugins>

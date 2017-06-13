@@ -75,7 +75,6 @@
     <javax.jcr.version>2.0</javax.jcr.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
-    <jacocoagent />
     <lucene.version>3.6.2</lucene.version>
     <jackrabbit.version>2.14.1</jackrabbit.version>
 
@@ -106,6 +105,9 @@
     <mockito.version>1.9.5</mockito.version>
     
     <openjpa.Log>DefaultLevel=INFO,Runtime=ERROR,Tool=ERROR,SQL=ERROR,Schema=ERROR,MetaData=ERROR</openjpa.Log>
+
+    <jacocoproperty/>
+    <jacoco.plugin.version>0.7.9</jacoco.plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -1778,7 +1780,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-            <argLine>${jacocoagent}</argLine>
+            <argLine>@{jacocoproperty}</argLine>
             <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
             <runOrder>alphabetical</runOrder>
             <systemPropertyVariables>
@@ -1876,7 +1878,7 @@
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.7.2.201409121644</version>
+            <version>${jacoco.plugin.version}</version>
             <executions>
               <execution>
                 <goals>
@@ -1897,9 +1899,6 @@
           </plugin>
         </plugins>
       </build>
-      <properties>
-        <jacocoagent>${jacocoproperty}</jacocoagent>
-      </properties>
     </profile>
     <profile>
       <id>modernizer</id>
