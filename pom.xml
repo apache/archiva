@@ -1849,7 +1849,7 @@
                   </goals>
                   <configuration>
                     <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
-                    <tarLongFileFormat>gnu</tarLongFileFormat>
+                    <tarLongFileMode>posix</tarLongFileMode>
                   </configuration>
                 </execution>
               </executions>
