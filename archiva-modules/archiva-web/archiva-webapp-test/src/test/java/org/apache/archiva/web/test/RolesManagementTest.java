@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -39,9 +40,10 @@ public class RolesManagementTest
         throws Exception
     {
         login( getAdminUsername(), getAdminPassword() );
-        clickLinkWithLocator( "menu-roles-list-a");
         WebDriverWait wait = new WebDriverWait(getWebDriver(), 10);
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("roles-view"),"Archiva System Administrator"));
+        WebElement link = wait.until(ExpectedConditions.elementToBeClickable( By.id("menu-roles-list-a") ));
+        tryClick( link, ExpectedConditions.textToBePresentInElementLocated(By.id("roles-view"),"Archiva System Administrator"),
+            "Roles view not available");
         Assert.assertTrue( StringUtils.isEmpty( getText( "role-description-Guest" ) ) );
         clickLinkWithLocator( "edit-role-Guest" );
         wait.until(ExpectedConditions.elementToBeClickable(By.id("role-edit-description-save")));
