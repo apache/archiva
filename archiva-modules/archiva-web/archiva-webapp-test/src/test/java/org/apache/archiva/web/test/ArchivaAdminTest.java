@@ -22,9 +22,14 @@ package org.apache.archiva.web.test;
 import org.apache.archiva.web.test.parent.AbstractArchivaTest;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class ArchivaAdminTest
     extends AbstractArchivaTest
@@ -33,23 +38,23 @@ public class ArchivaAdminTest
     @Test
     public void testHome()
     {
-        getWebDriver().get( baseUrl );
-        WebDriverWait wait = new WebDriverWait(getWebDriver(), 30);
-        wait.until(ExpectedConditions.titleContains("Apache Archiva"));
+        loadPage( baseUrl, 30 );
+        WebDriverWait wait = new WebDriverWait( getWebDriver(), 30 );
+        wait.until( ExpectedConditions.titleContains( "Apache Archiva" ) );
     }
 
     @Test
     public void testInitialRepositories()
     {
-        WebDriverWait wait = new WebDriverWait(getWebDriver(), 20);
+        WebDriverWait wait = new WebDriverWait( getWebDriver(), 20 );
         WebElement el;
-        el = wait.until(ExpectedConditions.elementToBeClickable( By.id("menu-repositories-list-a")));
-        tryClick( el,  ExpectedConditions.presenceOfElementLocated( By.xpath("//table[@id='managed-repositories-table']//td[contains(text(),'internal')]") ),
-            "Managed Repositories not activated");
-        wait.until(ExpectedConditions.visibilityOfElementLocated( By.xpath("//table[@id='managed-repositories-table']//td[contains(text(),'snapshots')]") ));
-        el = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@href='#remote-repositories-content']")));
-        tryClick(el,ExpectedConditions.visibilityOfElementLocated(By.xpath("//table[@id='remote-repositories-table']//td[contains(text(),'central')]")),
-            "Remote Repositories View not available");
+        el = wait.until( ExpectedConditions.elementToBeClickable( By.id( "menu-repositories-list-a" ) ) );
+        tryClick( el, ExpectedConditions.presenceOfElementLocated( By.xpath( "//table[@id='managed-repositories-table']//td[contains(text(),'internal')]" ) ),
+            "Managed Repositories not activated" );
+        wait.until( ExpectedConditions.visibilityOfElementLocated( By.xpath( "//table[@id='managed-repositories-table']//td[contains(text(),'snapshots')]" ) ) );
+        el = wait.until( ExpectedConditions.elementToBeClickable( By.xpath( "//a[@href='#remote-repositories-content']" ) ) );
+        tryClick( el, ExpectedConditions.visibilityOfElementLocated( By.xpath( "//table[@id='remote-repositories-table']//td[contains(text(),'central')]" ) ),
+            "Remote Repositories View not available" );
 
     }
 }

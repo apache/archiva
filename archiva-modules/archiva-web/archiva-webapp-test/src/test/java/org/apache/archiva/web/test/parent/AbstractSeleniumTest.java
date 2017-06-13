@@ -129,6 +129,19 @@ public abstract class AbstractSeleniumTest
         initializeArchiva( baseUrl, browser, maxWaitTimeInMs, seleniumHost, seleniumPort, remoteSelenium );
     }
 
+    public void loadPage(String url, int timeout) {
+        getWebDriver().get( url );
+        WebDriverWait wait = new WebDriverWait( getWebDriver(), timeout );
+        wait.until( new Function<WebDriver, Boolean>()
+                    {
+                        public Boolean apply( WebDriver driver )
+                        {
+                            return ( (JavascriptExecutor) driver ).executeScript( "return document.readyState" ).equals( "complete" );
+                        }
+                    }
+        );
+    }
+
     public void initializeArchiva( String baseUrl, String browser, int maxWaitTimeInMs, String seleniumHost,
                                    int seleniumPort, boolean remoteSelenium)
         throws Exception
@@ -136,7 +149,7 @@ public abstract class AbstractSeleniumTest
 
         open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs, remoteSelenium);
 
-        getWebDriver().get(baseUrl);
+        loadPage(baseUrl, 30);
         WebDriverWait wait = new WebDriverWait(getWebDriver(),30);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("topbar-menu")));
 
@@ -232,7 +245,7 @@ public abstract class AbstractSeleniumTest
     public void goToLoginPage()
     {
         logger.info("Goto login page");
-        getWebDriver().get( baseUrl );
+        loadPage(baseUrl, 30);
         WebDriverWait wait = new WebDriverWait(getWebDriver(),30);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("topbar-menu")));
         wait.until(ExpectedConditions.or(ExpectedConditions.visibilityOfElementLocated(By.id("logout-link")),

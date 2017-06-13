@@ -180,7 +180,7 @@ public abstract class AbstractArchivaTest
 
     public void goToHomePage()
     {
-        getWebDriver().get( baseUrl );
+        loadPage( baseUrl, 30 );
     }
 
     protected void logout()
