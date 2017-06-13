@@ -471,6 +471,7 @@
             <!--org.apache.jackrabbit.minMemoryPerCache>1</org.apache.jackrabbit.minMemoryPerCache-->
             <archiva.repositorySessionFactory.id>jcr</archiva.repositorySessionFactory.id>
             <openjpa.Log>${openjpa.Log}</openjpa.Log>
+            <org.apache.jackrabbit.core.state.validatehierarchy>true</org.apache.jackrabbit.core.state.validatehierarchy>
           </systemPropertyVariables>
         </configuration>
       </plugin>

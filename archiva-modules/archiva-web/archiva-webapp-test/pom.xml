@@ -600,6 +600,10 @@
                       <name>openjpa.Log</name>
                       <value>${openjpa.Log}</value>
                     </systemProperty>
+                    <systemProperty>
+                      <name>org.apache.jackrabbit.core.state.validatehierarchy</name>
+                      <value>true</value>
+                    </systemProperty>
                   </systemProperties>
                 </configuration>
               </execution>

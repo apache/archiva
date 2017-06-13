@@ -331,6 +331,7 @@
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
             <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
             <openjpa.Log>${openjpa.Log}</openjpa.Log>
+            <org.apache.jackrabbit.core.state.validatehierarchy>true</org.apache.jackrabbit.core.state.validatehierarchy>
           </systemPropertyVariables>
           <forkMode>${webdav.forkMode}</forkMode>
         </configuration>

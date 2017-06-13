@@ -30,6 +30,15 @@ import java.io.File;
  */
 public class ArchivaJcrRepositoryConfig
 {
+    // Recommended to avoid inconsistencies caused by race conditions.
+    static
+    {
+        if ( !System.getProperties( ).containsKey( "org.apache.jackrabbit.core.state.validatehierarchy" ) )
+        {
+            System.setProperty( "org.apache.jackrabbit.core.state.validatehierarchy", "true" );
+        }
+    }
+
     public static RepositoryConfig create( String file, String home )
         throws ConfigurationException
     {
