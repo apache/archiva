@@ -282,19 +282,6 @@
   -->
   <!-- END SNIPPET: jcr-location -->
 
-  <!--
-
-  <bean class="org.apache.sirona.spring.BeanNameMonitoringAutoProxyCreator">
-    <property name="beanNames">
-      <list>
-        <value>Default**</value>
-        <value>**#rest</value>
-        <value>**#default</value>
-      </list>
-    </property>
-  </bean>
-  -->
-
   <bean name="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
     <property name="jpaVendorAdapter" >
       <bean class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter" />

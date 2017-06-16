@@ -41,7 +41,6 @@
     <rest.admin.pwd />
     <test.useTomcat>false</test.useTomcat>
     <archiva.groupIndexTtl>30</archiva.groupIndexTtl>
-    <archiva.sirona.configuration />
     <archiva.repositorySessionFactory.id>jcr</archiva.repositorySessionFactory.id>
     <cassandra.host>localhost</cassandra.host>
     <cassandra.port>9160</cassandra.port>
@@ -592,45 +591,6 @@
       </exclusions>
     </dependency>
 
-
-    <!-- sirona -->
-    <!--
-    FIXME for some reasons doesn't work with the jetty app see MRM-1792
-    <dependency>
-      <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-jdbc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-spring</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-reporting</artifactId>
-      <classifier>classes</classifier>
-    </dependency>
-    -->
-    <!--
-    <dependency>
-      <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-ehcache-agent</artifactId>
-    </dependency>
-
-
-    <dependency>
-      <groupId>org.apache.sirona</groupId>
-      <artifactId>sirona-cassandra</artifactId>
-    </dependency>
-    -->
-
     <dependency>
       <groupId>cglib</groupId>
       <artifactId>cglib</artifactId>
@@ -1023,10 +983,6 @@
               <value>${archiva.repositorySessionFactory.id}</value>
             </systemProperty>
             <systemProperty>
-              <name>org.apache.sirona.configuration.sirona.properties</name>
-              <value>${archiva.sirona.configuration}</value>
-            </systemProperty>
-            <systemProperty>
               <name>AsyncLoggerConfig.WaitStrategy</name>
               <value>Block</value>
             </systemProperty>
@@ -1123,7 +1079,6 @@
             <cassandra.host>${cassandra.host}</cassandra.host>
             <cassandra.port>${cassandra.port}</cassandra.port>
             <archiva.repositorySessionFactory.id>${archiva.repositorySessionFactory.id}</archiva.repositorySessionFactory.id>
-            <org.apache.sirona.configuration.sirona.properties>${archiva.sirona.configuration}</org.apache.sirona.configuration.sirona.properties>
             <AsyncLoggerConfig.WaitStrategy>Block</AsyncLoggerConfig.WaitStrategy>
             <AsyncLogger.WaitStrategy>Block</AsyncLogger.WaitStrategy>
             <openjpa.Log>${openjpa.Log}</openjpa.Log>

@@ -31,17 +31,6 @@
     </param-value>
   </context-param>
 
-  <!-- to activate sirona -->
-  <context-param>
-    <param-name>org.apache.sirona.reporting.activated</param-name>
-    <param-value>true</param-value>
-  </context-param>
-
-  <context-param>
-    <param-name>org.apache.sirona.reporting.mapping</param-name>
-    <param-value>/sirona-monitoring</param-value>
-  </context-param>
-
   <filter>
     <filter-name>encodingFilter</filter-name>
     <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
