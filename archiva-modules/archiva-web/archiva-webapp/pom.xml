@@ -31,12 +31,11 @@
 
   <properties>
     <tomcatContextXml>${basedir}/src/test/tomcat/tomcat-context-archiva.xml</tomcatContextXml>
-    <tomcatRunPort>9091</tomcatRunPort>
-    <tomcatRunPath>/archiva</tomcatRunPath>
     <archiva.devMode>true</archiva.devMode>
     <archiva.javascriptLog>true</archiva.javascriptLog>
     <archiva.logMissingI18n>true</archiva.logMissingI18n>
     <archivaAppServerBase>${project.build.directory}/appserver-base</archivaAppServerBase>
+    <jettyDumpOnStart>false</jettyDumpOnStart>
     <archiva.baseRestUrl />
     <rest.admin.pwd />
     <test.useTomcat>false</test.useTomcat>
@@ -925,8 +924,8 @@
       <plugin>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
-        <version>9.4.5.v20170502</version>
         <configuration>
+          <dumpOnStart>${jettyDumpOnStart}</dumpOnStart>
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <webApp>
             <contextPath>/archiva</contextPath>
@@ -997,98 +996,6 @@
           </systemProperties>
 
         </configuration>
-          <dependencies>
-            <dependency>
-              <groupId>org.apache.derby</groupId>
-              <artifactId>derby</artifactId>
-              <version>${derbyVersion}</version>
-            </dependency>
-            <dependency>
-              <groupId>javax.mail</groupId>
-              <artifactId>mail</artifactId>
-              <version>${javaxMailVersion}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.openjpa</groupId>
-              <artifactId>openjpa</artifactId>
-              <version>${openjpaVersion}</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.geronimo.specs</groupId>
-              <artifactId>geronimo-jpa_2.0_spec</artifactId>
-              <version>1.1</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.geronimo.specs</groupId>
-              <artifactId>geronimo-jta_1.1_spec</artifactId>
-              <version>1.1.1</version>
-            </dependency>
-            <dependency>
-              <groupId>net.sourceforge.serp</groupId>
-              <artifactId>serp</artifactId>
-              <version>1.15.1</version>
-            </dependency>
-
-            <dependency>
-              <groupId>org.eclipse.jetty</groupId>
-              <artifactId>jetty-io</artifactId>
-              <version>9.4.5.v20170502</version>
-            </dependency>
-            <dependency>
-              <groupId>org.eclipse.jetty</groupId>
-              <artifactId>jetty-util</artifactId>
-              <version>9.4.5.v20170502</version>
-            </dependency>
-            <dependency>
-              <groupId>org.eclipse.jetty</groupId>
-              <artifactId>jetty-client</artifactId>
-              <version>9.4.5.v20170502</version>
-            </dependency>
-            <dependency>
-              <groupId>org.eclipse.jetty.websocket</groupId>
-              <artifactId>websocket-client</artifactId>
-              <version>9.4.5.v20170502</version>
-            </dependency>
-
-          </dependencies>
-
-      </plugin>
-
-
-      <plugin>
-        <groupId>org.apache.tomcat.maven</groupId>
-        <artifactId>tomcat7-maven-plugin</artifactId>
-        <configuration>
-          <port>${tomcatRunPort}</port>
-          <path>${tomcatRunPath}</path>
-          <contextFile>${tomcatContextXml}</contextFile>
-          <useTestClasspath>false</useTestClasspath>
-
-          <systemProperties>
-            <plexus.home>${archivaAppServerBase}</plexus.home>
-            <appserver.base>${archivaAppServerBase}</appserver.base>
-            <appserver.home>${archivaAppServerBase}</appserver.home>
-            <derby.system.home>${archivaAppServerBase}/logs</derby.system.home>
-            <!-- remove admin auto creation that must be tested too -->
-            <!--redback.admin.creation.file>${basedir}/target/auto-admin-creation.properties</redback.admin.creation.file-->
-            <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
-            <archiva.user.configFileName>${archivaAppServerBase}/conf/archiva.xml</archiva.user.configFileName>
-            <archiva.devMode>${archiva.devMode}</archiva.devMode>
-            <archiva.javascriptLog>${archiva.javascriptLog}</archiva.javascriptLog>
-            <archiva.logMissingI18n>${archiva.logMissingI18n}</archiva.logMissingI18n>
-            <cassandra.host>${cassandra.host}</cassandra.host>
-            <cassandra.port>${cassandra.port}</cassandra.port>
-            <archiva.repositorySessionFactory.id>${archiva.repositorySessionFactory.id}</archiva.repositorySessionFactory.id>
-            <AsyncLoggerConfig.WaitStrategy>Block</AsyncLoggerConfig.WaitStrategy>
-            <AsyncLogger.WaitStrategy>Block</AsyncLogger.WaitStrategy>
-            <openjpa.Log>${openjpa.Log}</openjpa.Log>
-          </systemProperties>
-          <additionalClasspathDirs>
-            <additionalClasspathDir>${basedir}/src/test/tomcat</additionalClasspathDir>
-          </additionalClasspathDirs>
-
-
-        </configuration>
         <dependencies>
           <dependency>
             <groupId>org.apache.derby</groupId>
@@ -1121,6 +1028,26 @@
             <version>1.15.1</version>
           </dependency>
 
+          <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-io</artifactId>
+            <version>${jettyVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-util</artifactId>
+            <version>${jettyVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-client</artifactId>
+            <version>${jettyVersion}</version>
+          </dependency>
+          <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-client</artifactId>
+            <version>${jettyVersion}</version>
+          </dependency>
         </dependencies>
       </plugin>
 

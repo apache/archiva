@@ -239,7 +239,7 @@
         <executions>
           <execution>
             <id>start-cassandra</id>
-            <phase>test-compile</phase>
+            <phase>process-test-classes</phase>
             <goals>
               <goal>start</goal>
             </goals>

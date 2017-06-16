@@ -698,7 +698,6 @@ public class DefaultArchivaConfiguration
                     return false;
                 }
             }
-
             FileUtils.writeStringToFile( file, contents, "UTF-8" );
             return true;
         }

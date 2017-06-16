@@ -83,7 +83,8 @@
     <httpclient.version>4.5.2</httpclient.version>
     <httpclient.core.version>4.4.4</httpclient.core.version>
     <javaxMailVersion>1.4</javaxMailVersion>
-    <jettyVersion>9.4.5.v20170502</jettyVersion>
+    <!--jettyVersion>9.4.5.v20170502</jettyVersion-->
+    <jettyVersion>9.4.7-SNAPSHOT</jettyVersion>
     <guava.version>22.0</guava.version>
     <openjpaVersion>2.4.1</openjpaVersion>
 
@@ -1749,6 +1750,11 @@
           <groupId>org.apache.tomcat.maven</groupId>
           <artifactId>tomcat7-maven-plugin</artifactId>
           <version>${asfTomcatMavenPluginVersion}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-maven-plugin</artifactId>
+          <version>${jettyVersion}</version>
         </plugin>
         <plugin>
           <groupId>org.apache.rat</groupId>
