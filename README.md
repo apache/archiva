@@ -10,7 +10,7 @@ Running from Source Code
 ========================
 
 As webapp js is in dev and won't probably be released soon, the module is not activated by default and it's included only in a profile
-mvn tomcat7:run -pl :archiva-webapp -am  (to save fingers :-) use sh ./t7.sh ) (debug with sh ./t7-debug.sh  port 8000)
+mvn jetty:run -pl :archiva-webapp -am  (to save fingers :-) use sh ./jetty.sh ) (debug with sh ./jetty-debug.sh debug port 8000)
 
 
 hit your browser: http://localhost:9091/archiva/index.html
@@ -49,7 +49,7 @@ This file must contains:
 Using with cassandra as metadata storage
 ========================
 You can run the application using cassandra as storage.
-sh ./t7.sh -Pcassandra
+sh ./jetty.sh -Pcassandra
 
 Default cassandra host is localhost and port 9160
 

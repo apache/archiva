@@ -30,7 +30,6 @@
   <name>Archiva Web :: Javascript Application</name>
 
   <properties>
-    <tomcatContextXml>${basedir}/src/test/tomcat/tomcat-context-archiva.xml</tomcatContextXml>
     <archiva.devMode>true</archiva.devMode>
     <archiva.javascriptLog>true</archiva.javascriptLog>
     <archiva.logMissingI18n>true</archiva.logMissingI18n>
@@ -38,7 +37,6 @@
     <jettyDumpOnStart>false</jettyDumpOnStart>
     <archiva.baseRestUrl />
     <rest.admin.pwd />
-    <test.useTomcat>false</test.useTomcat>
     <archiva.groupIndexTtl>30</archiva.groupIndexTtl>
     <archiva.repositorySessionFactory.id>jcr</archiva.repositorySessionFactory.id>
     <cassandra.host>localhost</cassandra.host>
@@ -1079,7 +1077,6 @@
             <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
             <archiva.baseRestUrl>${archiva.baseRestUrl}</archiva.baseRestUrl>
             <rest.admin.pwd>${rest.admin.pwd}</rest.admin.pwd>
-            <test.useTomcat>${test.useTomcat}</test.useTomcat>
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
           </systemPropertyVariables>
