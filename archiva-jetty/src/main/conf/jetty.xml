@@ -157,31 +157,29 @@
   <New id="users" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>jdbc/users</Arg>
     <Arg>
-      <New class="org.apache.tomcat.jdbc.pool.DataSource">
+      <New class="com.zaxxer.hikari.HikariDataSource">
         <Set name="driverClassName">org.apache.derby.jdbc.EmbeddedDriver</Set>
-        <Set name="url">jdbc:derby:<SystemProperty name="appserver.base" default=".."/>/data/databases/users;create=true</Set>
+        <Set name="jdbcUrl">jdbc:derby:<SystemProperty name="appserver.base" default=".."/>/data/databases/users;create=true</Set>
         <Set name="username">sa</Set>
-        <Set name="maxActive">20</Set>
-        <Set name="removeAbandoned">true</Set>
-        <Set name="logAbandoned">true</Set>
-        <Set name="initialSize">5</Set>
-        <Set name="testOnBorrow">true</Set>
+        <Set name="maximumPoolSize">20</Set>
+        <Set name="minimumIdle">5</Set>
         <!-- very rigourous sql query validation -->
-        <Set name="validationQuery">select 1</Set>
+        <!--Set name="connectionTestQuery">select 1</Set-->
       </New>
     </Arg>
   </New>
 
+  <!--
   <New id="usersShutdown" class="org.eclipse.jetty.plus.jndi.Resource">
     <Arg>jdbc/usersShutdown</Arg>
     <Arg>
-      <New class="org.apache.tomcat.jdbc.pool.DataSource">
+      <New class="com.zaxxer.hikari.HikariDataSource">
         <Set name="driverClassName">org.apache.derby.jdbc.EmbeddedDriver</Set>
-        <Set name="url">jdbc:derby:<SystemProperty name="appserver.base" default=".."/>/data/databases/users</Set>
+        <Set name="jdbcUrl">jdbc:derby:<SystemProperty name="appserver.base" default=".."/>/data/databases/users</Set>
         <Set name="username">sa</Set>
       </New>
     </Arg>
   </New>
-
+  -->
 
 </Configure>

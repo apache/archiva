@@ -53,7 +53,7 @@ public class DefaultRepositoryScanner
     @Inject
     private RepositoryContentConsumers repositoryContentConsumers;
 
-    private Set<RepositoryScannerInstance> inProgressScans = new LinkedHashSet<RepositoryScannerInstance>();
+    private Set<RepositoryScannerInstance> inProgressScans = new LinkedHashSet<>();
 
     @Override
     public RepositoryScanStatistics scan( ManagedRepository repository, long changesSince )

@@ -33,7 +33,7 @@ import java.util.Collection;
  */
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class ArchivaRepositoryScanningTaskExecutorPhase1Test
-    extends ArchivaRepositoryScanningTaskExecutorAbstractTest
+    extends AbstractArchivaRepositoryScanningTaskExecutorTest
 {
     // Split of ArchivaRepositoryScanningTaskExecutorTest should be executed first 
     // to avoid testConsumer in unknown state if member of Phase2 all ready executed

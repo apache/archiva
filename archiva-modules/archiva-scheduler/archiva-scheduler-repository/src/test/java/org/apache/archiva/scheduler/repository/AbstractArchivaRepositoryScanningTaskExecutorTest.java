@@ -27,9 +27,11 @@ import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
 import org.apache.archiva.mock.MockRepositorySessionFactory;
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -48,7 +50,7 @@ import static org.mockito.Mockito.mock;
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 @DirtiesContext( classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD )
-public abstract class ArchivaRepositoryScanningTaskExecutorAbstractTest
+public abstract class AbstractArchivaRepositoryScanningTaskExecutorTest
     extends TestCase
 {
     @Inject
@@ -96,12 +98,11 @@ public abstract class ArchivaRepositoryScanningTaskExecutorAbstractTest
         // set the timestamps to a time well in the past
         Calendar cal = Calendar.getInstance();
         cal.add( Calendar.YEAR, -1 );
-        for ( File f : (List<File>) FileUtils.getFiles( repoDir, "**", null ) )
-        {
-            f.setLastModified( cal.getTimeInMillis() );
-        }
+        FileUtils.getFiles( repoDir, "**", null ) //
+            .stream().forEach( file -> file.setLastModified( cal.getTimeInMillis() ) );
+
         // TODO: test they are excluded instead
-        for ( String dir : (List<String>) FileUtils.getDirectoryNames( repoDir, "**/.svn", null, false ) )
+        for ( String dir : FileUtils.getDirectoryNames( repoDir, "**/.svn", null, false ) )
         {
             FileUtils.deleteDirectory( new File( repoDir, dir ) );
         }

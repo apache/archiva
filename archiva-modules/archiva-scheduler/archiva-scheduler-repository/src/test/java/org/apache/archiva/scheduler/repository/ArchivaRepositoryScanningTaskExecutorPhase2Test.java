@@ -34,26 +34,23 @@ import java.util.Date;
 
 /**
  * ArchivaRepositoryScanningTaskExecutorPhase2Test
- *
- *
  */
 
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class ArchivaRepositoryScanningTaskExecutorPhase2Test
-    extends ArchivaRepositoryScanningTaskExecutorAbstractTest
+    extends AbstractArchivaRepositoryScanningTaskExecutorTest
 {
 
     @Test
     public void testExecutorScanOnlyNewArtifacts()
         throws Exception
     {
+        createAndSaveTestStats();
+
         RepositoryTask repoTask = new RepositoryTask();
 
         repoTask.setRepositoryId( TEST_REPO_ID );
         repoTask.setScanAll( false );
-
-        createAndSaveTestStats();
-
         taskExecutor.executeTask( repoTask );
 
         // check no artifacts processed
@@ -67,7 +64,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         RepositoryStatistics newStats =
             repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
         assertEquals( 0, newStats.getNewFileCount() );
-        assertEquals( 31, newStats.getTotalFileCount() );
+        assertEquals( 41, newStats.getTotalFileCount() );
         // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
 //        assertEquals( 8, newStats.getTotalArtifactCount() );
 //        assertEquals( 3, newStats.getTotalGroupCount() );
@@ -100,7 +97,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         RepositoryStatistics updatedStats =
             repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
         assertEquals( 2, updatedStats.getNewFileCount() );
-        assertEquals( 33, updatedStats.getTotalFileCount() );
+        assertEquals( 43, updatedStats.getTotalFileCount() );
         // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
 //        assertEquals( 8, newStats.getTotalArtifactCount() );
 //        assertEquals( 3, newStats.getTotalGroupCount() );
@@ -147,7 +144,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         RepositoryStatistics newStats =
             repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
         assertEquals( 2, newStats.getNewFileCount() );
-        assertEquals( 33, newStats.getTotalFileCount() );
+        assertEquals( 43, newStats.getTotalFileCount() );
         // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
 //        assertEquals( 8, newStats.getTotalArtifactCount() );
 //        assertEquals( 3, newStats.getTotalGroupCount() );
@@ -194,7 +191,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         RepositoryStatistics newStats =
             repositoryStatisticsManager.getLastStatistics( metadataRepository, TEST_REPO_ID );
         assertEquals( 2, newStats.getNewFileCount() );
-        assertEquals( 33, newStats.getTotalFileCount() );
+        assertEquals( 43, newStats.getTotalFileCount() );
         // FIXME: can't test these as they weren't stored in the database, move to tests for RepositoryStatisticsManager implementation
 //        assertEquals( 8, newStats.getTotalArtifactCount() );
 //        assertEquals( 3, newStats.getTotalGroupCount() );
@@ -212,8 +209,9 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         repoTask.setScanAll( true );
 
         Date date = Calendar.getInstance().getTime();
-        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
-                                                            new Date( date.getTime() - 1234567 ), date, 8, 8 );
+        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID, //
+                                                            new Date( date.getTime() - 1234567 ), //
+                                                            date, 8, 8 ); //
 
         taskExecutor.executeTask( repoTask );
 
@@ -227,17 +225,9 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         throws MetadataRepositoryException
     {
         Date date = Calendar.getInstance().getTime();
-        RepositoryStatistics stats = new RepositoryStatistics();
-        stats.setScanStartTime( new Date( date.getTime() - 1234567 ) );
-        stats.setScanEndTime( date );
-        stats.setNewFileCount( 31 );
-        stats.setTotalArtifactCount( 8 );
-        stats.setTotalFileCount( 31 );
-        stats.setTotalGroupCount( 3 );
-        stats.setTotalProjectCount( 5 );
-        stats.setTotalArtifactFileSize( 38545 );
 
-        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID,
-                                                            new Date( date.getTime() - 1234567 ), date, 31, 31 );
+        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID, //
+                                                            new Date( date.getTime() - 1234567 ), date, //
+                                                            41, 41 );
     }
 }

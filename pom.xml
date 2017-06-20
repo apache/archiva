@@ -79,7 +79,7 @@
     <jackrabbit.version>2.14.1</jackrabbit.version>
 
     <cxf.version>3.0.3</cxf.version>
-    <derbyVersion>10.10.1.1</derbyVersion>
+    <derbyVersion>10.13.1.1</derbyVersion>
     <httpclient.version>4.5.2</httpclient.version>
     <httpclient.core.version>4.4.4</httpclient.core.version>
     <javaxMailVersion>1.4</javaxMailVersion>
@@ -95,7 +95,6 @@
     <plexus-digest.version>1.1</plexus-digest.version>
     <plexus-expression-evaluator.version>2.1</plexus-expression-evaluator.version>
     <plexus-utils.version>3.0.15</plexus-utils.version>
-    <tomcat7Version>7.0.54</tomcat7Version>
     <htmlUnitVersion>2.27</htmlUnitVersion>
 
     <release.preparationGoals>clean install</release.preparationGoals>
@@ -460,7 +459,13 @@
       <dependency>
         <groupId>com.lmax</groupId>
         <artifactId>disruptor</artifactId>
-        <version>3.2.1</version>
+        <version>3.3.6</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+        <version>2.6.3</version>
       </dependency>
 
       <!--
@@ -643,16 +648,6 @@
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>${commons-lang.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>tomcat-jdbc</artifactId>
-        <version>${tomcat7Version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>tomcat-juli</artifactId>
-        <version>${tomcat7Version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
