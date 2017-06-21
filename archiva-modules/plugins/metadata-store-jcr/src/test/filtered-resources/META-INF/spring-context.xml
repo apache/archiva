@@ -19,14 +19,14 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-  <bean id="repository" class="org.apache.jackrabbit.core.RepositoryImpl" destroy-method="shutdown">
-    <constructor-arg ref="config"/>
+  <bean id="repositoryFactory" class="org.apache.archiva.metadata.repository.jcr.RepositoryFactory" >
+    <property name="storeType" value="oak-segment-tar" />
   </bean>
-  <bean id="config" class="org.apache.jackrabbit.core.config.RepositoryConfig" factory-method="create">
-    <constructor-arg value="${basedir}/src/test/repository.xml"/>
-    <constructor-arg value="${project.build.directory}/jcr"/>
+
+  <bean id="repository" class="org.apache.archiva.metadata.repository.jcr.RepositoryFactory" factory-method="createRepository"
+    factory-bean="repositoryFactory">
   </bean>
 </beans>

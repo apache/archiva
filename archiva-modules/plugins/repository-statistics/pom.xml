@@ -45,10 +45,6 @@
       <artifactId>jcr</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-jcr-commons</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-test-utils</artifactId>
       <version>${project.version}</version>
@@ -58,17 +54,6 @@
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-jcl</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-core</artifactId>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jcl-over-slf4j</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -96,7 +81,6 @@
             <Import-Package>
               javax.jcr,
               javax.jcr.query,
-              org.apache.jackrabbit.commons;version="[2.3,3)",
               org.apache.archiva.metadata.model;version=${project.version},
               org.apache.archiva.metadata.repository;version=${project.version},
               org.apache.archiva.metadata.repository.storage.maven2;version=${project.version},

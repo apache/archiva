@@ -37,6 +37,8 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.jackrabbit.oak.plugins.index.IndexUtils;
+import org.apache.jackrabbit.oak.spi.state.NodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,6 +141,8 @@ public class JcrMetadataRepository
         registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.FACET_NODE_TYPE );
         registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.DEPENDENCY_NODE_TYPE );
 
+
+
     }
 
     private static void registerMixinNodeType( NodeTypeManager nodeTypeManager, String name )
@@ -155,6 +159,8 @@ public class JcrMetadataRepository
             nodeTypeManager.registerNodeType( nodeType, false );
         }
     }
+
+
 
     @Override
     public void updateProject( String repositoryId, ProjectMetadata project )
@@ -754,6 +760,10 @@ public class JcrMetadataRepository
         catch ( RepositoryException e )
         {
             throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+        log.info("Artifacts found {}", artifacts.size());
+        for (ArtifactMetadata meta : artifacts) {
+            log.info("Artifact: "+meta.getVersion()+" "+meta.getFacetList());
         }
         return artifacts;
     }
@@ -1418,11 +1428,9 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> searchArtifacts( String key, String text, String repositoryId, boolean exact )
+    public List<ArtifactMetadata> searchArtifacts( String key, String text, String repositoryId, boolean e )
         throws MetadataRepositoryException
     {
-        // we can't do exact search in any property (*), we need a key
-        boolean e = exact && key != null;
         String theKey = key == null ? "*" : "[" + key + "]";
         String projectVersionCondition =
             e ? "(projectVersion." + theKey + " = $value)" : "contains([projectVersion]." + theKey + ", $value)";
@@ -1432,7 +1440,6 @@ public class JcrMetadataRepository
                 + ARTIFACT_NODE_TYPE + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) LEFT OUTER JOIN ["
                 + FACET_NODE_TYPE + "] AS facet ON ISCHILDNODE(facet, projectVersion) WHERE ("
                 + projectVersionCondition + " OR " + facetCondition + ")";
-
         return runJcrQuery( repositoryId, q, ImmutableMap.of( "value", text ) );
     }
 
@@ -1555,7 +1562,7 @@ public class JcrMetadataRepository
 
     private static String getRepositoryContentPath( String repositoryId )
     {
-        return getRepositoryPath( repositoryId ) + "/content/";
+        return getRepositoryPath( repositoryId ) + "/content";
     }
 
     private static String getFacetPath( String repositoryId, String facetId )
@@ -1565,7 +1572,7 @@ public class JcrMetadataRepository
 
     private static String getNamespacePath( String repositoryId, String namespace )
     {
-        return getRepositoryContentPath( repositoryId ) + namespace.replace( '.', '/' );
+        return getRepositoryContentPath( repositoryId ) + "/" + namespace.replace( '.', '/' );
     }
 
     private static String getProjectPath( String repositoryId, String namespace, String projectId )
@@ -1594,6 +1601,7 @@ public class JcrMetadataRepository
     private Node getOrAddNodeByPath( Node baseNode, String name, String nodeType )
         throws RepositoryException
     {
+        log.debug("getOrAddNodeByPath"+baseNode+" "+name+" "+nodeType);
         Node node = baseNode;
         for ( String n : name.split( "/" ) )
         {
@@ -1614,8 +1622,10 @@ public class JcrMetadataRepository
     private Node getOrAddRepositoryNode( String repositoryId )
         throws RepositoryException
     {
+        log.debug("getOrAddRepositoryNode "+repositoryId);
         Node root = getJcrSession().getRootNode();
         Node node = JcrUtils.getOrAddNode( root, "repositories" );
+        log.debug("Repositories "+node);
         node = JcrUtils.getOrAddNode( node, repositoryId );
         return node;
     }

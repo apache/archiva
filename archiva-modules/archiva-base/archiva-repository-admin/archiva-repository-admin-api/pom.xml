@@ -73,6 +73,14 @@
           <groupId>com.google.code.atinject</groupId>
           <artifactId>atinject</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.apache.lucene</groupId>
+          <artifactId>lucene-queryparser</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.lucene</groupId>
+          <artifactId>lucene-analyzers-common</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
   </dependencies>
