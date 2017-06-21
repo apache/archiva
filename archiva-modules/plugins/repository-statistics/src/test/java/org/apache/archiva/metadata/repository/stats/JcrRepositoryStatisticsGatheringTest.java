@@ -22,9 +22,14 @@ package org.apache.archiva.metadata.repository.stats;
 import junit.framework.TestCase;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.jcr.RepositoryFactory;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.jackrabbit.core.TransientRepository;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import javax.jcr.ImportUUIDBehavior;
@@ -41,12 +46,6 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
-
-import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static org.mockito.Mockito.*;
 
@@ -83,8 +82,10 @@ public class JcrRepositoryStatisticsGatheringTest
         assertTrue( confFile.exists() );
         assertFalse( dir.exists() );
 
-        TransientRepository repository = new TransientRepository( confFile, dir );
-        session = repository.login( new SimpleCredentials( "username", "password".toCharArray() ) );
+        RepositoryFactory repositoryFactory = new RepositoryFactory();
+        repositoryFactory.setRepositoryPath( dir.getPath() );
+        session = repositoryFactory.createRepository().login(new SimpleCredentials( "admin", "admin".toCharArray()));
+
 
         // TODO: perhaps have an archiva-jcr-utils module shared by these plugins that does this and can contain
         //      structure information

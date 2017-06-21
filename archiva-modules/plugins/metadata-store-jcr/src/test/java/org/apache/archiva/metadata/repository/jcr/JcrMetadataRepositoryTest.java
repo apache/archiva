@@ -22,12 +22,15 @@ package org.apache.archiva.metadata.repository.jcr;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.commons.io.FileUtils;
+import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.jcr.Repository;
@@ -42,6 +45,22 @@ public class JcrMetadataRepositoryTest
     @Inject
     private ApplicationContext applicationContext;
 
+    private static Repository jcrRepository;
+
+    @BeforeClass
+    public static void setupSpec() throws IOException, InvalidFileStoreVersionException
+    {
+        File directory = new File( "target/test-repositories" );
+        if ( directory.exists() )
+        {
+            FileUtils.deleteDirectory( directory );
+        }
+        RepositoryFactory factory = new RepositoryFactory();
+        factory.setRepositoryPath( directory.getPath() );
+        jcrRepository = factory.createRepository();
+
+    }
+
     @Before
     @Override
     public void setUp()
@@ -49,17 +68,11 @@ public class JcrMetadataRepositoryTest
     {
         super.setUp();
 
-        File directory = new File( "target/test-repositories" );
-        if ( directory.exists() )
-        {
-            FileUtils.deleteDirectory( directory );
-        }
 
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
 
         // TODO: probably don't need to use Spring for this
-        Repository repository = applicationContext.getBean( Repository.class );
-        jcrMetadataRepository = new JcrMetadataRepository( factories, repository );
+        jcrMetadataRepository = new JcrMetadataRepository( factories, jcrRepository );
 
         try
         {
