@@ -7,7 +7,6 @@ build
 *.ipr
 *.iws
 out/
-.indexer
 
 #jenv
 .java-version
