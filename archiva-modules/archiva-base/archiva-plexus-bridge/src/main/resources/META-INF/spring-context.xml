@@ -28,5 +28,5 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.common.plexusbridge"/>
+  <context:component-scan base-package="org.apache.archiva.common.plexusbridge,org.apache.maven.index"/>
 </beans>

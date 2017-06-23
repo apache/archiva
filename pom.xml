@@ -86,7 +86,7 @@
     <javaxMailVersion>1.4</javaxMailVersion>
     <!--jettyVersion>9.4.5.v20170502</jettyVersion-->
     <jettyVersion>9.4.7-SNAPSHOT</jettyVersion>
-    <guava.version>22.0</guava.version>
+    <guava.version>15.0</guava.version>
     <openjpaVersion>2.4.1</openjpaVersion>
 
     <!-- restore when we will be able to use a derby in memory database -->
@@ -318,12 +318,30 @@
             <groupId>com.google.code.atinject</groupId>
             <artifactId>atinject</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>sisu-guava</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>sisu-guice</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.archetype</groupId>
         <artifactId>archetype-common</artifactId>
         <version>3.0.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>

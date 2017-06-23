@@ -20,18 +20,11 @@ package org.apache.archiva.common.plexusbridge;
  */
 
 import org.apache.maven.index.context.IndexCreator;
-import org.apache.maven.index.creator.JarFileContentsIndexCreator;
-import org.apache.maven.index.creator.MavenArchetypeArtifactInfoIndexCreator;
-import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
-import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
-import org.apache.maven.index.creator.OsgiArtifactIndexCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -44,32 +37,14 @@ public class MavenIndexerUtils
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
+    @Inject
     private List<? extends IndexCreator> allIndexCreators;
 
-    @Inject
-    public MavenIndexerUtils( PlexusSisuBridge plexusSisuBridge )
-        throws PlexusSisuBridgeException
+    public MavenIndexerUtils()
     {
-        allIndexCreators = new ArrayList( plexusSisuBridge.lookupList( IndexCreator.class ) );
-
         if ( allIndexCreators == null || allIndexCreators.isEmpty() )
         {
-            // olamy when the TCL is not a URLClassLoader lookupList fail !
-            // when using tomcat maven plugin so adding a simple hack
-            log.warn( "using lookupList from sisu plexus failed so build indexCreator manually" );
-
-            allIndexCreators =
-                Arrays.asList( plexusSisuBridge.lookup( IndexCreator.class, OsgiArtifactIndexCreator.ID ),
-                               plexusSisuBridge.lookup( IndexCreator.class, MavenArchetypeArtifactInfoIndexCreator.ID ),
-                               plexusSisuBridge.lookup( IndexCreator.class, MinimalArtifactInfoIndexCreator.ID ),
-                               plexusSisuBridge.lookup( IndexCreator.class, JarFileContentsIndexCreator.ID ),
-                               plexusSisuBridge.lookup( IndexCreator.class, MavenPluginArtifactInfoIndexCreator.ID ) );
-
-        }
-
-        if ( allIndexCreators == null || allIndexCreators.isEmpty() )
-        {
-            throw new PlexusSisuBridgeException( "no way to initiliaze IndexCreator" );
+            throw new RuntimeException( "cannot initiliaze IndexCreators" );
         }
 
         log.debug( "allIndexCreators {}", allIndexCreators );

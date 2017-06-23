@@ -23,9 +23,6 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
-import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
@@ -60,29 +57,15 @@ public class DefaultRemoteRepositoryAdmin
 {
 
     @Inject
-    private PlexusSisuBridge plexusSisuBridge;
-
-    @Inject
-    private MavenIndexerUtils mavenIndexerUtils;
-
-    // fields
     private List<? extends IndexCreator> indexCreators;
 
+    @Inject
     private NexusIndexer indexer;
 
     @PostConstruct
     private void initialize()
         throws RepositoryAdminException
     {
-        try
-        {
-            indexCreators = mavenIndexerUtils.getAllIndexCreators();
-            indexer = plexusSisuBridge.lookup( NexusIndexer.class );
-        }
-        catch ( PlexusSisuBridgeException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
         for ( RemoteRepository remoteRepository : getRemoteRepositories() )
         {
             createIndexContext( remoteRepository );
@@ -323,7 +306,7 @@ public class DefaultRemoteRepositoryAdmin
             }
             return indexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir, indexDirectory,
                                                remoteRepository.getUrl(), calculateIndexRemoteUrl( remoteRepository ),
-                                               mavenIndexerUtils.getAllIndexCreators() );
+                                               indexCreators );
         }
         catch ( MalformedURLException e )
         {

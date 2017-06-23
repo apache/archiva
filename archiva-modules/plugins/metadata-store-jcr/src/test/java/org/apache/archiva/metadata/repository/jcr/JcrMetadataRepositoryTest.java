@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository.jcr;
  * under the License.
  */
 
+import com.google.common.base.Objects;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.commons.io.FileUtils;
