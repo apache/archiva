@@ -26,7 +26,6 @@ import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 import java.io.File;

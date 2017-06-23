@@ -827,14 +827,7 @@ public abstract class AbstractMetadataRepositoryTest
         Collection<ArtifactMetadata> artifacts =
             repository.getArtifacts( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
         ArrayList<ArtifactMetadata> actual = new ArrayList<>( artifacts );
-        Collections.sort( actual, new Comparator<ArtifactMetadata>()
-        {
-            @Override
-            public int compare( ArtifactMetadata o1, ArtifactMetadata o2 )
-            {
-                return o1.getId().compareTo( o2.getId() );
-            }
-        } );
+        Collections.sort( actual,( o1, o2 ) -> o1.getId().compareTo( o2.getId() ) );
         assertEquals( Arrays.asList( artifact1, artifact2 ), actual );
     }
 
