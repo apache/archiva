@@ -109,23 +109,25 @@ public class DefaultManagedRepositoryAdmin
     private Cache<String, Collection<String>> namespacesCache;
 
     // fields
-    List<? extends IndexCreator> indexCreators;
+    @Inject
+    private List<? extends IndexCreator> indexCreators;
 
-    NexusIndexer indexer;
+    @Inject
+    private NexusIndexer indexer;
 
     @PostConstruct
     public void initialize()
         throws RepositoryAdminException, RoleManagerException
     {
-        try
-        {
-            indexCreators = mavenIndexerUtils.getAllIndexCreators();
-            indexer = plexusSisuBridge.lookup( NexusIndexer.class );
-        }
-        catch ( PlexusSisuBridgeException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
+//        try
+//        {
+//            indexCreators = mavenIndexerUtils.getAllIndexCreators();
+//            indexer = plexusSisuBridge.lookup( NexusIndexer.class );
+//        }
+//        catch ( PlexusSisuBridgeException e )
+//        {
+//            throw new RepositoryAdminException( e.getMessage(), e );
+//        }
         // initialize index context on start and check roles here
         for ( ManagedRepository managedRepository : getManagedRepositories() )
         {

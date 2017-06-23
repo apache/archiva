@@ -29,7 +29,7 @@
 
   <context:annotation-config />
   <context:component-scan
-    base-package="org.apache.archiva.admin.repository"/>
+    base-package="org.apache.archiva.admin.repository,org.apache.maven.index"/>
 
   <alias name="redbackRuntimeConfigurationAdmin#default" alias="userConfiguration#archiva"/>
 

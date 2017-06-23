@@ -38,6 +38,24 @@
       <artifactId>archiva-security-common</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.maven.indexer</groupId>
+      <artifactId>indexer-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.sonatype.sisu</groupId>
+          <artifactId>sisu-guava</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.sonatype.sisu</groupId>
+          <artifactId>sisu-guice</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.archetype</groupId>
+      <artifactId>archetype-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-scheduler-repository-api</artifactId>
     </dependency>
@@ -109,7 +127,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
-      <version>${spring.version}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -120,7 +137,6 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>${spring.version}</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
