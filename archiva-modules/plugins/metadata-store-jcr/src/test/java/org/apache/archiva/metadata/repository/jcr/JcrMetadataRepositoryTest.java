@@ -19,7 +19,6 @@ package org.apache.archiva.metadata.repository.jcr;
  * under the License.
  */
 
-import com.google.common.base.Objects;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.commons.io.FileUtils;
@@ -29,13 +28,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.springframework.context.ApplicationContext;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
 import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 public class JcrMetadataRepositoryTest
     extends AbstractMetadataRepositoryTest
@@ -58,7 +57,6 @@ public class JcrMetadataRepositoryTest
         RepositoryFactory factory = new RepositoryFactory();
         factory.setRepositoryPath( directory.getPath() );
         jcrRepository = factory.createRepository();
-
     }
 
     @Before
@@ -83,6 +81,7 @@ public class JcrMetadataRepositoryTest
 
             // removing content is faster than deleting and re-copying the files from target/jcr
             session.getRootNode().getNode( "repositories" ).remove();
+            session.save();
         }
         catch ( RepositoryException e )
         {

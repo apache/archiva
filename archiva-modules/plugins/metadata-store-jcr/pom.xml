@@ -29,7 +29,7 @@
   <packaging>bundle</packaging>
   <name>Archiva Core Plugins :: JCR Storage for Metadata</name>
   <properties>
-    <jcr-oak.version>1.7.1</jcr-oak.version>
+    <jcr-oak.version>1.7.2</jcr-oak.version>
   </properties>
   <dependencies>
     <dependency>
