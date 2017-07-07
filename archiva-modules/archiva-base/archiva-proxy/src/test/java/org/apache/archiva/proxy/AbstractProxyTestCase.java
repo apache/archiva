@@ -120,7 +120,7 @@ public abstract class AbstractProxyTestCase
     protected ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
-    protected PlexusSisuBridge plexusSisuBridge;
+    protected NexusIndexer nexusIndexer;
 
     @Before
     public void setUp()
@@ -198,7 +198,6 @@ public abstract class AbstractProxyTestCase
     protected void removeMavenIndexes()
         throws Exception
     {
-        NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
 
         for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
         {

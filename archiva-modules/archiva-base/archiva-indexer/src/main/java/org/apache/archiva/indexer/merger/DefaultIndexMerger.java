@@ -19,7 +19,6 @@ package org.apache.archiva.indexer.merger;
  */
 
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
@@ -62,12 +61,12 @@ public class DefaultIndexMerger
     private List<String> runningGroups = new CopyOnWriteArrayList<String>();
 
     @Inject
-    public DefaultIndexMerger( PlexusSisuBridge plexusSisuBridge, MavenIndexerUtils mavenIndexerUtils )
+    public DefaultIndexMerger( NexusIndexer nexusIndexer, IndexPacker indexPacker, MavenIndexerUtils mavenIndexerUtils )
         throws PlexusSisuBridgeException
     {
-        this.indexer = plexusSisuBridge.lookup( NexusIndexer.class );
+        this.indexer = nexusIndexer;
         this.mavenIndexerUtils = mavenIndexerUtils;
-        indexPacker = plexusSisuBridge.lookup( IndexPacker.class, "default" );
+        this.indexPacker = indexPacker;
     }
 
     @Override
@@ -112,7 +111,9 @@ public class DefaultIndexMerger
 
             if ( indexMergerRequest.isPackIndex() )
             {
-                IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexLocation );
+                IndexPackingRequest request = new IndexPackingRequest( indexingContext, //
+                                                                       indexingContext.acquireIndexSearcher().getIndexReader(), //
+                                                                       indexLocation );
                 indexPacker.packIndex( request );
             }
 

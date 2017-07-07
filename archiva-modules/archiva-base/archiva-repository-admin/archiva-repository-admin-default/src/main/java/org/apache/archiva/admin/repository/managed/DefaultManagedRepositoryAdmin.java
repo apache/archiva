@@ -96,9 +96,6 @@ public class DefaultManagedRepositoryAdmin
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     @Inject
-    private PlexusSisuBridge plexusSisuBridge;
-
-    @Inject
     private MavenIndexerUtils mavenIndexerUtils;
 
     @Inject
@@ -369,19 +366,13 @@ public class DefaultManagedRepositoryAdmin
 
         try
         {
-            NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
-
-            IndexingContext context = nexusIndexer.getIndexingContexts().get( repository.getId() );
+            IndexingContext context = indexer.getIndexingContexts().get( repository.getId() );
             if ( context != null )
             {
                 // delete content only if directory exists
-                nexusIndexer.removeIndexingContext( context,
+                indexer.removeIndexingContext( context,
                                                     deleteContent && context.getIndexDirectoryFile().exists() );
             }
-        }
-        catch ( PlexusSisuBridgeException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
         }
         catch ( IOException e )
         {
@@ -824,16 +815,6 @@ public class DefaultManagedRepositoryAdmin
     public void setRepositoryTaskScheduler( RepositoryArchivaTaskScheduler repositoryTaskScheduler )
     {
         this.repositoryTaskScheduler = repositoryTaskScheduler;
-    }
-
-    public PlexusSisuBridge getPlexusSisuBridge()
-    {
-        return plexusSisuBridge;
-    }
-
-    public void setPlexusSisuBridge( PlexusSisuBridge plexusSisuBridge )
-    {
-        this.plexusSisuBridge = plexusSisuBridge;
     }
 
     public MavenIndexerUtils getMavenIndexerUtils()

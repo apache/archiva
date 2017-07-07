@@ -22,10 +22,15 @@ package org.apache.archiva.common.plexusbridge;
 import org.apache.maven.index.context.IndexCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -37,11 +42,21 @@ public class MavenIndexerUtils
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
-    @Inject
     private List<? extends IndexCreator> allIndexCreators;
 
-    public MavenIndexerUtils()
+    private ApplicationContext applicationContext;
+
+    @Inject
+    public MavenIndexerUtils(ApplicationContext applicationContext, Map<String, IndexCreator> indexers)
     {
+        this.applicationContext = applicationContext;
+    }
+
+    @PostConstruct
+    public void initialize()
+    {
+        allIndexCreators = new ArrayList<>( applicationContext.getBeansOfType( IndexCreator.class ).values());
+
         if ( allIndexCreators == null || allIndexCreators.isEmpty() )
         {
             throw new RuntimeException( "cannot initiliaze IndexCreators" );

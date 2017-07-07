@@ -37,7 +37,7 @@ public class MavenIndexerCleaner
     Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    private PlexusSisuBridge plexusSisuBridge;
+    private NexusIndexer nexusIndexer;
 
     @PreDestroy
     public void shutdown()
@@ -45,7 +45,6 @@ public class MavenIndexerCleaner
     {
 
         log.info( "cleanup IndexingContext" );
-        NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
         for ( IndexingContext context : nexusIndexer.getIndexingContexts().values() )
         {
             nexusIndexer.removeIndexingContext( context, true );

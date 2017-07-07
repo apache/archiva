@@ -23,13 +23,9 @@ package org.apache.archiva.scheduler.indexing;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.redback.components.taskqueue.Task;
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutionException;
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
 import org.apache.maven.index.FlatSearchRequest;
@@ -40,11 +36,12 @@ import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
+import org.apache.maven.index.shaded.lucene.search.BooleanClause;
+import org.apache.maven.index.shaded.lucene.search.BooleanQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
@@ -60,31 +57,18 @@ public class ArchivaIndexingTaskExecutor
 {
     private Logger log = LoggerFactory.getLogger( ArchivaIndexingTaskExecutor.class );
 
+    @Inject
     private IndexPacker indexPacker;
 
-    private ArtifactContextProducer artifactContextProducer;
-
     @Inject
-    private PlexusSisuBridge plexusSisuBridge;
+    private ArtifactContextProducer artifactContextProducer;
 
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
+    @Inject
     private NexusIndexer nexusIndexer;
 
-    @PostConstruct
-    public void initialize()
-        throws PlexusSisuBridgeException
-    {
-        log.info( "Initialized {}", this.getClass().getName() );
-
-        artifactContextProducer = plexusSisuBridge.lookup( ArtifactContextProducer.class );
-
-        indexPacker = plexusSisuBridge.lookup( IndexPacker.class, "default" );
-
-        nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
-
-    }
 
     /**
      * depending on current {@link Task} you have.
@@ -162,9 +146,9 @@ public class ArchivaIndexingTaskExecutor
                         // TODO make that configurable?
                         if ( artifactFile.getPath().endsWith( ".pom" ) )
                         {
-                            ac.getArtifactInfo().fextension = "pom";
-                            ac.getArtifactInfo().packaging = "pom";
-                            ac.getArtifactInfo().classifier = "pom";
+                            ac.getArtifactInfo().setFileExtension( "pom" );
+                            ac.getArtifactInfo().setPackaging( "pom" );
+                            ac.getArtifactInfo().setClassifier( "pom" );
                         }
                         if ( indexingTask.getAction().equals( ArtifactIndexingTask.Action.ADD ) )
                         {
@@ -174,20 +158,20 @@ public class ArchivaIndexingTaskExecutor
 
                             BooleanQuery q = new BooleanQuery();
                             q.add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression(
-                                ac.getArtifactInfo().groupId ) ), BooleanClause.Occur.MUST );
+                                ac.getArtifactInfo().getGroupId() ) ), BooleanClause.Occur.MUST );
                             q.add( nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression(
-                                ac.getArtifactInfo().artifactId ) ), BooleanClause.Occur.MUST );
+                                ac.getArtifactInfo().getArtifactId() ) ), BooleanClause.Occur.MUST );
                             q.add( nexusIndexer.constructQuery( MAVEN.VERSION, new SourcedSearchExpression(
-                                ac.getArtifactInfo().version ) ), BooleanClause.Occur.MUST );
-                            if ( ac.getArtifactInfo().classifier != null )
+                                ac.getArtifactInfo().getVersion() ) ), BooleanClause.Occur.MUST );
+                            if ( ac.getArtifactInfo().getClassifier() != null )
                             {
                                 q.add( nexusIndexer.constructQuery( MAVEN.CLASSIFIER, new SourcedSearchExpression(
-                                    ac.getArtifactInfo().classifier ) ), BooleanClause.Occur.MUST );
+                                    ac.getArtifactInfo().getClassifier() ) ), BooleanClause.Occur.MUST );
                             }
-                            if ( ac.getArtifactInfo().packaging != null )
+                            if ( ac.getArtifactInfo().getPackaging() != null )
                             {
                                 q.add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression(
-                                    ac.getArtifactInfo().packaging ) ), BooleanClause.Occur.MUST );
+                                    ac.getArtifactInfo().getPackaging() ) ), BooleanClause.Occur.MUST );
                             }
                             FlatSearchRequest flatSearchRequest = new FlatSearchRequest( q, context );
                             FlatSearchResponse flatSearchResponse = nexusIndexer.searchFlat( flatSearchRequest );
@@ -272,13 +256,4 @@ public class ArchivaIndexingTaskExecutor
         this.indexPacker = indexPacker;
     }
 
-    public PlexusSisuBridge getPlexusSisuBridge()
-    {
-        return plexusSisuBridge;
-    }
-
-    public void setPlexusSisuBridge( PlexusSisuBridge plexusSisuBridge )
-    {
-        this.plexusSisuBridge = plexusSisuBridge;
-    }
 }

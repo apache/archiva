@@ -49,14 +49,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-queries</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
     </dependency>
@@ -84,7 +76,12 @@
     </dependency>
     <dependency>
       <groupId>org.apache.maven.indexer</groupId>
+      <artifactId>indexer-reader</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.indexer</groupId>
       <artifactId>indexer-core</artifactId>
+      <classifier>shaded-lucene</classifier>
       <exclusions>
         <exclusion>
           <groupId>org.apache.lucene</groupId>

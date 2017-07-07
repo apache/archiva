@@ -88,14 +88,13 @@ public class NexusIndexerConsumer
     public NexusIndexerConsumer(
         @Named( value = "archivaTaskScheduler#indexing" ) ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
         @Named( value = "archivaConfiguration" ) ArchivaConfiguration configuration, FileTypes filetypes,
-        PlexusSisuBridge plexusSisuBridge, MavenIndexerUtils mavenIndexerUtils,
-        ManagedRepositoryAdmin managedRepositoryAdmin )
-        throws PlexusSisuBridgeException
+        MavenIndexerUtils mavenIndexerUtils,
+        ManagedRepositoryAdmin managedRepositoryAdmin, NexusIndexer nexusIndexer )
     {
         this.configuration = configuration;
         this.filetypes = filetypes;
         this.scheduler = scheduler;
-        this.nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
+        this.nexusIndexer = nexusIndexer;
         this.allIndexCreators = mavenIndexerUtils.getAllIndexCreators();
         this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
