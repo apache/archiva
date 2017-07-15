@@ -23,16 +23,14 @@ import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.easymock.IMocksControl;
-
-import static org.easymock.EasyMock.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.jcr.Session;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +40,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import static org.easymock.EasyMock.createControl;
+import static org.easymock.EasyMock.expect;
 
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class RepositoryStatisticsManagerTest
@@ -65,7 +66,7 @@ public class RepositoryStatisticsManagerTest
 
     private static SimpleDateFormat createTimestampFormat()
     {
-        SimpleDateFormat fmt = new SimpleDateFormat( RepositoryStatistics.SCAN_TIMESTAMP_FORMAT );
+        SimpleDateFormat fmt = new SimpleDateFormat( DefaultRepositoryStatistics.SCAN_TIMESTAMP_FORMAT );
         fmt.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
         return fmt;
     }
@@ -90,9 +91,10 @@ public class RepositoryStatisticsManagerTest
         Date startTime = TIMESTAMP_FORMAT.parse( SECOND_TEST_SCAN );
         Date endTime = new Date( startTime.getTime() + 60000 );
 
-        RepositoryStatistics stats = new RepositoryStatistics();
-        stats.setScanStartTime( startTime );
-        stats.setScanEndTime( endTime );
+        DefaultRepositoryStatistics defStats = new DefaultRepositoryStatistics();
+        defStats.setScanStartTime( startTime );
+        defStats.setScanEndTime( endTime );
+        RepositoryStatistics stats = defStats;
         stats.setTotalArtifactFileSize( 1314527915L );
         stats.setNewFileCount( 123 );
         stats.setTotalArtifactCount( 10386 );
@@ -101,10 +103,10 @@ public class RepositoryStatisticsManagerTest
         stats.setTotalFileCount( 56229 );
 
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn(
+        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Arrays.asList( FIRST_TEST_SCAN, SECOND_TEST_SCAN ) );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID,
+        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID,
                                                      SECOND_TEST_SCAN ) ).andReturn( stats );
 
         metadataRepositoryControl.replay();
@@ -129,7 +131,7 @@ public class RepositoryStatisticsManagerTest
         throws Exception
     {
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn(
+        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Collections.<String>emptyList() );
         metadataRepositoryControl.replay();
 
@@ -152,13 +154,11 @@ public class RepositoryStatisticsManagerTest
 
         metadataRepository.addMetadataFacet( TEST_REPO_ID, stats );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn(
+        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Arrays.asList( stats.getName() ) );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID,
+        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID,
                                                      stats.getName() ) ).andReturn( stats );
-
-        expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false );
 
         metadataRepositoryControl.replay();
 
@@ -188,25 +188,24 @@ public class RepositoryStatisticsManagerTest
         Date current = new Date();
 
         Date startTime1 = new Date( current.getTime() - 12345 );
-        RepositoryStatistics stats1 = createTestStats( startTime1, new Date( current.getTime() - 6000 ) );
+        DefaultRepositoryStatistics stats1 = createTestStats( startTime1, new Date( current.getTime() - 6000 ) );
         metadataRepository.addMetadataFacet( TEST_REPO_ID, stats1 );
 
         Date startTime2 = new Date( current.getTime() - 3000 );
-        RepositoryStatistics stats2 = createTestStats( startTime2, current );
+        DefaultRepositoryStatistics stats2 = createTestStats( startTime2, current );
         metadataRepository.addMetadataFacet( TEST_REPO_ID, stats2 );
 
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn(
+        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Arrays.asList( stats1.getName(), stats2.getName() ) );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID,
+        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID,
                                                      stats2.getName() ) ).andReturn( stats2 );
-        metadataRepository.removeMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID );
+        metadataRepository.removeMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn(
+        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Collections.<String>emptyList() );
 
-        expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false ).times( 2 );
         metadataRepositoryControl.replay();
 
         repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO_ID, startTime1,
@@ -228,9 +227,9 @@ public class RepositoryStatisticsManagerTest
         throws Exception
     {
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn(
+        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Collections.<String>emptyList() ).times( 2 );
-        metadataRepository.removeMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID );
+        metadataRepository.removeMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID );
 
         metadataRepositoryControl.replay();
 
@@ -257,15 +256,14 @@ public class RepositoryStatisticsManagerTest
 
         ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
+        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         // only match the middle one
         String key = keys.get( 1 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
 
-        expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false ).times( 3 );
 
         metadataRepositoryControl.replay();
 
@@ -301,19 +299,18 @@ public class RepositoryStatisticsManagerTest
 
         List<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
+        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         String key = keys.get( 1 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
 
         key = keys.get( 2 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
 
-        expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false ).times( 3 );
 
         metadataRepositoryControl.replay();
 
@@ -349,18 +346,16 @@ public class RepositoryStatisticsManagerTest
 
         List<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
+        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         String key = keys.get( 0 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
         key = keys.get( 1 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
-
-        expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false ).times( 3 );
 
         metadataRepositoryControl.replay();
 
@@ -397,22 +392,20 @@ public class RepositoryStatisticsManagerTest
 
         ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
+        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         String key = keys.get( 0 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
         key = keys.get( 1 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
         key = keys.get( 2 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, RepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
-
-        expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false ).times( 3 );
 
         metadataRepositoryControl.replay();
 
@@ -449,9 +442,7 @@ public class RepositoryStatisticsManagerTest
 
         ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, RepositoryStatistics.FACET_ID ) ).andReturn( keys );
-
-        expect( metadataRepository.canObtainAccess( Session.class ) ).andReturn( false ).times( 3 );
+        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         metadataRepositoryControl.replay();
 
@@ -475,7 +466,7 @@ public class RepositoryStatisticsManagerTest
     private void addStats( Date startTime, Date endTime )
         throws Exception
     {
-        RepositoryStatistics stats = createTestStats( startTime, endTime );
+        DefaultRepositoryStatistics stats = createTestStats( startTime, endTime );
         metadataRepository.addMetadataFacet( TEST_REPO_ID, stats );
         statsCreated.put( stats.getName(), stats );
     }
@@ -498,9 +489,9 @@ public class RepositoryStatisticsManagerTest
         return metadata;
     }
 
-    private RepositoryStatistics createTestStats( Date startTime, Date endTime )
+    private DefaultRepositoryStatistics createTestStats( Date startTime, Date endTime )
     {
-        RepositoryStatistics stats = new RepositoryStatistics();
+        DefaultRepositoryStatistics stats = new DefaultRepositoryStatistics();
         stats.setRepositoryId( TEST_REPO_ID );
         stats.setScanStartTime( startTime );
         stats.setScanEndTime( endTime );

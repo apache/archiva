@@ -195,6 +195,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>metadata-statistics-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>metadata-repository-api</artifactId>
         <version>${project.version}</version>
         <classifier>tests</classifier>

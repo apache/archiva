@@ -28,7 +28,7 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
 import org.apache.archiva.redback.components.scheduler.CronExpressionValidator;
 import org.apache.archiva.redback.components.scheduler.Scheduler;
 import org.apache.archiva.redback.components.taskqueue.TaskQueue;

@@ -19,7 +19,7 @@ package org.apache.archiva.rest.api.services;
  */
 
 import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
-import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 

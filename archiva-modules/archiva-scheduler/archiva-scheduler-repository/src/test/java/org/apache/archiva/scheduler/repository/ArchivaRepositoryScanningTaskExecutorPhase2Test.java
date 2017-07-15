@@ -20,7 +20,8 @@ package org.apache.archiva.scheduler.repository;
  */
 
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
+import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.codehaus.plexus.util.FileUtils;
@@ -225,7 +226,7 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
         throws MetadataRepositoryException
     {
         Date date = Calendar.getInstance().getTime();
-        RepositoryStatistics stats = new RepositoryStatistics();
+        DefaultRepositoryStatistics stats = new DefaultRepositoryStatistics();
         stats.setScanStartTime( new Date( date.getTime() - 1234567 ) );
         stats.setScanEndTime( date );
         stats.setNewFileCount( 31 );

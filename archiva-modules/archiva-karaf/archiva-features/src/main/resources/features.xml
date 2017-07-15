@@ -89,6 +89,7 @@
     <feature version="[3,4)">spring</feature>
     <bundle>mvn:org.apache.archiva/metadata-model/${project.version}</bundle>
     <bundle>mvn:org.apache.archiva/metadata-repository-api/${project.version}</bundle>
+    <bundle>mvn:org.apache.archiva/metadata-statistics-api/${project.version}</bundle>
   </feature>
 
   <feature name="archiva-audit" description="Archiva Audit module" version="${project.version}" resolver="(obr)">
@@ -206,8 +207,6 @@
 
   <feature name="archiva-repository-statistics" description="Archiva Repository Statistics module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-repository-layer</feature>
-    <bundle dependency="true">mvn:javax.jcr/jcr/${javax.jcr.version}</bundle>
-    <bundle dependency="true">mvn:org.apache.jackrabbit/jackrabbit-jcr-commons/${jackrabbit.version}</bundle>
     <bundle>mvn:org.apache.archiva/repository-statistics/${project.version}</bundle>
   </feature>
 

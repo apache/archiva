@@ -20,16 +20,32 @@ package org.apache.archiva.metadata.repository.stats;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.jcr.JcrMetadataRepository;
+import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.core.TransientRepository;
+import org.apache.jackrabbit.core.config.RepositoryConfig;
+import org.apache.regexp.RE;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.jcr.ImportUUIDBehavior;
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
@@ -40,19 +56,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import static org.junit.Assert.assertEquals;
 
-import static org.mockito.Mockito.*;
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
+public class JcrRepositoryStatisticsGatheringTest extends TestCase
 
-@RunWith( ArchivaBlockJUnit4ClassRunner.class )
-public class JcrRepositoryStatisticsGatheringTest
-    extends TestCase
 {
     private static final int TOTAL_FILE_COUNT = 1000;
 
@@ -60,50 +72,56 @@ public class JcrRepositoryStatisticsGatheringTest
 
     private static final String TEST_REPO = "test-repo";
 
-    private RepositoryStatisticsManager repositoryStatisticsManager;
-
-    private MetadataRepository metadataRepository;
+    JcrMetadataRepository repository;
 
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
-    private Session session;
+    @Inject
+    private ApplicationContext applicationContext;
 
-    @Override
+    @Inject
+    @Named("repository")
+    Repository jcrRepository;
+
+    Session session;
+
+
+
+
     @Before
     public void setUp()
         throws Exception
     {
-        super.setUp();
 
-        File confFile = new File( "src/test/repository.xml" );
-        File dir = new File( "target/jcr" );
-        FileUtils.deleteDirectory( dir );
+        File directory = new File( "target/test-repositories" );
+        if ( directory.exists() )
+        {
+            FileUtils.deleteDirectory( directory );
+        }
 
-        assertTrue( confFile.exists() );
-        assertFalse( dir.exists() );
+        Map<String, MetadataFacetFactory> factories = AbstractMetadataRepositoryTest.createTestMetadataFacetFactories();
 
-        TransientRepository repository = new TransientRepository( confFile, dir );
-        session = repository.login( new SimpleCredentials( "username", "password".toCharArray() ) );
+        assertNotNull( jcrRepository );
+        // TODO: probably don't need to use Spring for this
+        JcrMetadataRepository jcrMetadataRepository = new JcrMetadataRepository( factories, jcrRepository );
 
-        // TODO: perhaps have an archiva-jcr-utils module shared by these plugins that does this and can contain
-        //      structure information
-        Workspace workspace = session.getWorkspace();
-        NamespaceRegistry registry = workspace.getNamespaceRegistry();
-        registry.registerNamespace( "archiva", "http://archiva.apache.org/jcr/" );
+        try
+        {
+            session = jcrMetadataRepository.getJcrSession();
 
-        NodeTypeManager nodeTypeManager = workspace.getNodeTypeManager();
-        registerMixinNodeType( nodeTypeManager, "archiva:namespace" );
-        registerMixinNodeType( nodeTypeManager, "archiva:project" );
-        registerMixinNodeType( nodeTypeManager, "archiva:projectVersion" );
-        registerMixinNodeType( nodeTypeManager, "archiva:artifact" );
-        registerMixinNodeType( nodeTypeManager, "archiva:facet" );
+            // set up namespaces, etc.
+            JcrMetadataRepository.initialize( session );
 
-        metadataRepository = mock( MetadataRepository.class );
-        when( metadataRepository.canObtainAccess( Session.class ) ).thenReturn( true );
-        when( metadataRepository.obtainAccess( Session.class ) ).thenReturn( session );
+            // removing content is faster than deleting and re-copying the files from target/jcr
+            session.getRootNode().getNode( "repositories" ).remove();
+        }
+        catch ( RepositoryException e )
+        {
+            // ignore
+        }
 
-        repositoryStatisticsManager = new DefaultRepositoryStatisticsManager();
+        this.repository = jcrMetadataRepository;
     }
 
     private static void registerMixinNodeType( NodeTypeManager nodeTypeManager, String type )
@@ -115,17 +133,15 @@ public class JcrRepositoryStatisticsGatheringTest
         nodeTypeManager.registerNodeType( nodeType, false );
     }
 
-    @Override
     @After
     public void tearDown()
         throws Exception
     {
-        if ( session != null )
+        if (repository!=null)
         {
-            session.logout();
+            repository.close( );
         }
 
-        super.tearDown();
     }
 
     @Test
@@ -140,10 +156,15 @@ public class JcrRepositoryStatisticsGatheringTest
         loadContentIntoRepo( TEST_REPO );
         loadContentIntoRepo( "another-repo" );
 
-        repositoryStatisticsManager.addStatisticsAfterScan( metadataRepository, TEST_REPO, startTime, endTime,
-                                                            TOTAL_FILE_COUNT, NEW_FILE_COUNT );
+        DefaultRepositoryStatistics testedStatistics = new DefaultRepositoryStatistics();
+        testedStatistics.setNewFileCount( NEW_FILE_COUNT );
+        testedStatistics.setTotalFileCount( TOTAL_FILE_COUNT );
+        testedStatistics.setScanStartTime( startTime );
+        testedStatistics.setScanEndTime( endTime );
 
-        RepositoryStatistics expectedStatistics = new RepositoryStatistics();
+        repository.populateStatistics( repository, TEST_REPO, testedStatistics );
+
+        DefaultRepositoryStatistics expectedStatistics = new DefaultRepositoryStatistics();
         expectedStatistics.setNewFileCount( NEW_FILE_COUNT );
         expectedStatistics.setTotalFileCount( TOTAL_FILE_COUNT );
         expectedStatistics.setScanEndTime( endTime );
@@ -161,7 +182,26 @@ public class JcrRepositoryStatisticsGatheringTest
         expectedStatistics.setTotalCountForType( "pom", 144 );
         expectedStatistics.setRepositoryId( TEST_REPO );
 
-        verify( metadataRepository ).addMetadataFacet( TEST_REPO, expectedStatistics );
+        System.out.println(testedStatistics.getTotalCountForType());
+
+        assertEquals( NEW_FILE_COUNT, testedStatistics.getNewFileCount());
+        assertEquals( TOTAL_FILE_COUNT, testedStatistics.getTotalFileCount() );
+        assertEquals( endTime, testedStatistics.getScanEndTime() );
+        assertEquals( startTime, testedStatistics.getScanStartTime() );
+        assertEquals( 95954585, testedStatistics.getTotalArtifactFileSize() );
+        assertEquals( 269, testedStatistics.getTotalArtifactCount() );
+        assertEquals( 1, testedStatistics.getTotalGroupCount() );
+        assertEquals( 43, testedStatistics.getTotalProjectCount() );
+        assertEquals( 1, testedStatistics.getTotalCountForType( "zip" ) );
+        assertEquals( 1, testedStatistics.getTotalCountForType( "gz" ) );
+        assertEquals( 10, testedStatistics.getTotalCountForType( "java-source" ) );
+        assertEquals( 108, testedStatistics.getTotalCountForType( "jar" ) );
+        assertEquals( 3, testedStatistics.getTotalCountForType( "xml" ) );
+        assertEquals( 2, testedStatistics.getTotalCountForType( "war" ) );
+        assertEquals( 144, testedStatistics.getTotalCountForType( "pom" ) );
+        assertEquals( 10, testedStatistics.getTotalCountForType( "java-source" ) );
+
+
     }
 
     private void loadContentIntoRepo( String repoId )

@@ -23,15 +23,13 @@ import junit.framework.TestCase;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
 import org.apache.archiva.mock.MockRepositorySessionFactory;
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -40,7 +38,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.util.Calendar;
-import java.util.List;
 
 import static org.mockito.Mockito.mock;
 

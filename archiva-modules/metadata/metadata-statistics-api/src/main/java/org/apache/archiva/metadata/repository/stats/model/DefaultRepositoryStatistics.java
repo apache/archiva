@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.repository.stats;
+package org.apache.archiva.metadata.repository.stats.model;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,16 +19,18 @@ package org.apache.archiva.metadata.repository.stats;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.MetadataFacet;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
-public class RepositoryStatistics
-    implements MetadataFacet
+/**
+ * Default statistics implementation
+ */
+public class DefaultRepositoryStatistics
+    implements RepositoryStatistics
 {
     private Date scanEndTime;
 
@@ -46,17 +48,21 @@ public class RepositoryStatistics
 
     private long newFileCount;
 
-    public static String FACET_ID = "org.apache.archiva.metadata.repository.stats";
+    public static final String SCAN_TIMESTAMP_FORMAT = "yyyy/MM/dd/HHmmss.SSS";
 
-    static final String SCAN_TIMESTAMP_FORMAT = "yyyy/MM/dd/HHmmss.SSS";
-
-    private Map<String, Long> totalCountForType = new ZeroForNullHashMap<String, Long>();
+    private Map<String, Long> totalCountForType = new ZeroForNullHashMap<>();
 
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
     private String repositoryId;
 
-    public Date getScanEndTime()
+    private Map<String, Long> customValues;
+
+    public static final String TYPE_PREFIX = "count-type-";
+    public static final String CUSTOM_PREFIX = "count-custom-";
+
+    @Override
+    public Date getScanEndTime( )
     {
         return scanEndTime;
     }
@@ -66,7 +72,8 @@ public class RepositoryStatistics
         this.scanEndTime = scanEndTime;
     }
 
-    public Date getScanStartTime()
+    @Override
+    public Date getScanStartTime( )
     {
         return scanStartTime;
     }
@@ -76,72 +83,86 @@ public class RepositoryStatistics
         this.scanStartTime = scanStartTime;
     }
 
-    public long getTotalArtifactCount()
+    @Override
+    public long getTotalArtifactCount( )
     {
         return totalArtifactCount;
     }
 
+    @Override
     public void setTotalArtifactCount( long totalArtifactCount )
     {
         this.totalArtifactCount = totalArtifactCount;
     }
 
-    public long getTotalArtifactFileSize()
+    @Override
+    public long getTotalArtifactFileSize( )
     {
         return totalArtifactFileSize;
     }
 
+    @Override
     public void setTotalArtifactFileSize( long totalArtifactFileSize )
     {
         this.totalArtifactFileSize = totalArtifactFileSize;
     }
 
-    public long getTotalFileCount()
+    @Override
+    public long getTotalFileCount( )
     {
         return totalFileCount;
     }
 
+    @Override
     public void setTotalFileCount( long totalFileCount )
     {
         this.totalFileCount = totalFileCount;
     }
 
-    public long getTotalGroupCount()
+    @Override
+    public long getTotalGroupCount( )
     {
         return totalGroupCount;
     }
 
+    @Override
     public void setTotalGroupCount( long totalGroupCount )
     {
         this.totalGroupCount = totalGroupCount;
     }
 
-    public long getTotalProjectCount()
+    @Override
+    public long getTotalProjectCount( )
     {
         return totalProjectCount;
     }
 
+    @Override
     public void setTotalProjectCount( long totalProjectCount )
     {
         this.totalProjectCount = totalProjectCount;
     }
 
+    @Override
     public void setNewFileCount( long newFileCount )
     {
         this.newFileCount = newFileCount;
     }
 
-    public long getNewFileCount()
+    @Override
+    public long getNewFileCount( )
     {
         return newFileCount;
     }
 
-    public long getDuration()
+    @Override
+    public long getDuration( )
     {
         return scanEndTime.getTime() - scanStartTime.getTime();
     }
 
-    public String getRepositoryId()
+    @Override
+    public String getRepositoryId( )
     {
         return repositoryId;
     }
@@ -174,8 +195,18 @@ public class RepositoryStatistics
     public Map<String, String> toProperties()
     {
         Map<String, String> properties = new HashMap<>();
-        properties.put( "scanEndTime", String.valueOf( scanEndTime.getTime() ) );
-        properties.put( "scanStartTime", String.valueOf( scanStartTime.getTime() ) );
+        if (scanEndTime==null) {
+            properties.put("scanEndTime", "0");
+        } else
+        {
+            properties.put( "scanEndTime", String.valueOf( scanEndTime.getTime( ) ) );
+        }
+        if (scanStartTime==null) {
+            properties.put("scanStartTime","0");
+        } else
+        {
+            properties.put( "scanStartTime", String.valueOf( scanStartTime.getTime( ) ) );
+        }
         properties.put( "totalArtifactCount", String.valueOf( totalArtifactCount ) );
         properties.put( "totalArtifactFileSize", String.valueOf( totalArtifactFileSize ) );
         properties.put( "totalFileCount", String.valueOf( totalFileCount ) );
@@ -185,7 +216,12 @@ public class RepositoryStatistics
         properties.put( "repositoryId", repositoryId );
         for ( Map.Entry<String, Long> entry : totalCountForType.entrySet() )
         {
-            properties.put( "count-" + entry.getKey(), String.valueOf( entry.getValue() ) );
+            properties.put( TYPE_PREFIX + entry.getKey(), String.valueOf( entry.getValue() ) );
+        }
+        if (customValues!=null) {
+            for (Map.Entry<String, Long> entry : customValues.entrySet()) {
+                properties.put(CUSTOM_PREFIX+entry.getKey(), String.valueOf(entry.getValue()));
+            }
         }
         return properties;
     }
@@ -205,12 +241,18 @@ public class RepositoryStatistics
         totalCountForType.clear();
         for ( Map.Entry<String, String> entry : properties.entrySet() )
         {
-            if ( entry.getKey().startsWith( "count-" ) )
+            if ( entry.getKey().startsWith( TYPE_PREFIX ) )
             {
-                totalCountForType.put( entry.getKey().substring( 6 ), Long.valueOf( entry.getValue() ) );
+                totalCountForType.put( entry.getKey().substring( TYPE_PREFIX.length() ), Long.valueOf( entry.getValue() ) );
+            } else if (entry.getKey().startsWith( CUSTOM_PREFIX )) {
+                if (customValues==null) {
+                    createCustomValueMap();
+                }
+                customValues.put(entry.getKey().substring( CUSTOM_PREFIX.length() ), Long.valueOf(entry.getValue()));
             }
         }
     }
+
 
     @Override
     public boolean equals( Object o )
@@ -224,7 +266,7 @@ public class RepositoryStatistics
             return false;
         }
 
-        RepositoryStatistics that = (RepositoryStatistics) o;
+        DefaultRepositoryStatistics that = (DefaultRepositoryStatistics) o;
 
         if ( newFileCount != that.newFileCount )
         {
@@ -262,12 +304,16 @@ public class RepositoryStatistics
         {
             return false;
         }
-        if ( !repositoryId.equals( that.repositoryId ) )
-        {
+        if ( customValues==null && that.customValues!=null) {
             return false;
         }
-
-        return true;
+        if ( customValues!=null && that.customValues==null) {
+            return false;
+        }
+        if (customValues!=null && !customValues.equals(that.customValues)) {
+            return false;
+        }
+        return repositoryId.equals( that.repositoryId );
     }
 
     @Override
@@ -283,6 +329,8 @@ public class RepositoryStatistics
         result = 31 * result + (int) ( newFileCount ^ ( newFileCount >>> 32 ) );
         result = 31 * result + totalCountForType.hashCode();
         result = 31 * result + repositoryId.hashCode();
+        if (customValues!=null)
+            result = 31 * result + customValues.hashCode();
         return result;
     }
 
@@ -293,31 +341,72 @@ public class RepositoryStatistics
             ", totalArtifactCount=" + totalArtifactCount + ", totalArtifactFileSize=" + totalArtifactFileSize +
             ", totalFileCount=" + totalFileCount + ", totalGroupCount=" + totalGroupCount + ", totalProjectCount=" +
             totalProjectCount + ", newFileCount=" + newFileCount + ", totalCountForType=" + totalCountForType + ", " +
-            "repositoryId=" + repositoryId + '}';
+            "repositoryId=" + repositoryId +
+            getCustomValueString() +
+            '}';
     }
 
-    public Map<String, Long> getTotalCountForType()
+    private String getCustomValueString() {
+        if (customValues==null) {
+            return "";
+        } else {
+            return customValues.entrySet().stream().map(entry -> entry.getKey()+"="+entry.getValue()).collect(
+                Collectors.joining( ",")
+            );
+        }
+    }
+
+    @Override
+    public Map<String, Long> getTotalCountForType( )
     {
         return totalCountForType;
     }
 
+    @Override
     public long getTotalCountForType( String type )
     {
         return totalCountForType.get( type );
     }
 
+    @Override
     public void setTotalCountForType( String type, long count )
     {
-        totalCountForType.put( type.replaceAll( "-", "_" ).replaceAll( "\\.", "_" ), count );
+        totalCountForType.put( type, count );
     }
-    
-    private static final class ZeroForNullHashMap<K, V extends Long> extends HashMap<K, V>
+
+    @Override
+    public long getCustomValue( String fieldName )
+    {
+        // Lazy evaluation, because it may not be used very often.
+        if (customValues==null) {
+            createCustomValueMap();
+        }
+        return customValues.get(fieldName);
+    }
+
+    @Override
+    public void setCustomValue( String fieldName, long count )
+    {
+        // Lazy evaluation, because it may not be used very often.
+        if (customValues==null) {
+            createCustomValueMap();
+        }
+        customValues.put(fieldName, count);
+    }
+
+    private void createCustomValueMap( )
+    {
+        customValues = new ZeroForNullHashMap<>();
+    }
+
+
+    private static final class ZeroForNullHashMap<K> extends HashMap<K, Long>
     {   
         @Override
-        public V get(Object key) {
-            V value = super.get( key );
+        public Long get(Object key) {
+            Long value = super.get( key );
             
-            return value != null ? value : ( V ) Long.valueOf( 0L );
+            return ( value != null ) ? value : Long.valueOf( 0L );
         }
     }
 }

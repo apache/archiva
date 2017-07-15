@@ -32,9 +32,12 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
 import org.apache.archiva.metadata.model.Scm;
+import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.slf4j.Logger;
@@ -57,6 +60,7 @@ import javax.jcr.Workspace;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
 import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
@@ -80,7 +84,7 @@ import java.util.Set;
  * TODO revise reference storage
  */
 public class JcrMetadataRepository
-    implements MetadataRepository
+    implements MetadataRepository,RepositoryStatisticsProvider
 {
 
     private static final String JCR_LAST_MODIFIED = "jcr:lastModified";
@@ -113,7 +117,7 @@ public class JcrMetadataRepository
     }
 
 
-    static void initialize( Session session )
+    public static void initialize( Session session )
         throws RepositoryException
     {
 
@@ -1694,4 +1698,81 @@ public class JcrMetadataRepository
         }
         return this.jcrSession;
     }
+
+    @Override
+    public void populateStatistics( MetadataRepository repository, String repositoryId,
+                                            RepositoryStatistics repositoryStatistics )
+        throws MetadataRepositoryException
+    {
+        if (!(repository instanceof JcrMetadataRepository)) {
+            throw new MetadataRepositoryException( "The statistics population is only possible for JcrMetdataRepository implementations" );
+        }
+        Session session = (Session) repository.obtainAccess( Session.class );
+        // TODO: these may be best as running totals, maintained by observations on the properties in JCR
+
+        try
+        {
+            QueryManager queryManager = session.getWorkspace().getQueryManager();
+
+            // TODO: JCR-SQL2 query will not complete on a large repo in Jackrabbit 2.2.0 - see JCR-2835
+            //    Using the JCR-SQL2 variants gives
+            //      "org.apache.lucene.search.BooleanQuery$TooManyClauses: maxClauseCount is set to 1024"
+//            String whereClause = "WHERE ISDESCENDANTNODE([/repositories/" + repositoryId + "/content])";
+//            Query query = queryManager.createQuery( "SELECT size FROM [archiva:artifact] " + whereClause,
+//                                                    Query.JCR_SQL2 );
+            String whereClause = "WHERE jcr:path LIKE '/repositories/" + repositoryId + "/content/%'";
+            Query query = queryManager.createQuery( "SELECT size FROM archiva:artifact " + whereClause, Query.SQL );
+
+            QueryResult queryResult = query.execute();
+
+            Map<String, Integer> totalByType = new HashMap<>();
+            long totalSize = 0, totalArtifacts = 0;
+            for ( Row row : JcrUtils.getRows( queryResult ) )
+            {
+                Node n = row.getNode();
+                totalSize += row.getValue( "size" ).getLong();
+
+                String type;
+                if ( n.hasNode( MavenArtifactFacet.FACET_ID ) )
+                {
+                    Node facetNode = n.getNode( MavenArtifactFacet.FACET_ID );
+                    type = facetNode.getProperty( "type" ).getString();
+                }
+                else
+                {
+                    type = "Other";
+                }
+                Integer prev = totalByType.get( type );
+                totalByType.put( type, prev != null ? prev + 1 : 1 );
+
+                totalArtifacts++;
+            }
+
+            repositoryStatistics.setTotalArtifactCount( totalArtifacts );
+            repositoryStatistics.setTotalArtifactFileSize( totalSize );
+            for ( Map.Entry<String, Integer> entry : totalByType.entrySet() )
+            {
+                System.out.println("Setting count for type: "+entry.getKey()+" = "+entry.getValue());
+                repositoryStatistics.setTotalCountForType( entry.getKey(), entry.getValue() );
+            }
+
+            // The query ordering is a trick to ensure that the size is correct, otherwise due to lazy init it will be -1
+//            query = queryManager.createQuery( "SELECT * FROM [archiva:project] " + whereClause, Query.JCR_SQL2 );
+            query = queryManager.createQuery( "SELECT * FROM archiva:project " + whereClause + " ORDER BY jcr:score",
+                Query.SQL );
+            repositoryStatistics.setTotalProjectCount( query.execute().getRows().getSize() );
+
+//            query = queryManager.createQuery(
+//                "SELECT * FROM [archiva:namespace] " + whereClause + " AND namespace IS NOT NULL", Query.JCR_SQL2 );
+            query = queryManager.createQuery(
+                "SELECT * FROM archiva:namespace " + whereClause + " AND namespace IS NOT NULL ORDER BY jcr:score",
+                Query.SQL );
+            repositoryStatistics.setTotalGroupCount( query.execute().getRows().getSize() );
+        }
+        catch ( RepositoryException e )
+        {
+            throw new MetadataRepositoryException( e.getMessage(), e );
+        }
+    }
+
 }

@@ -21,6 +21,7 @@ package org.apache.archiva.metadata.repository.stats;
 
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,12 +34,12 @@ public class RepositoryStatisticsFactory
     @Override
     public MetadataFacet createMetadataFacet()
     {
-        return new RepositoryStatistics();
+        return new DefaultRepositoryStatistics();
     }
 
     @Override
     public MetadataFacet createMetadataFacet( String repositoryId, String name )
     {
-        return new RepositoryStatistics();
+        return new DefaultRepositoryStatistics();
     }
 }

@@ -16,17 +16,17 @@
   ~ KIND, either express or implied.  See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
--->
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>plugins</artifactId>
+    <artifactId>metadata</artifactId>
     <groupId>org.apache.archiva</groupId>
     <version>3.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>repository-statistics</artifactId>
+  <artifactId>metadata-statistics-api</artifactId>
   <packaging>bundle</packaging>
-  <name>Archiva Core Plugins :: Repository Statistics</name>
+  <name>Archiva Metadata :: Statistics API</name>
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -34,36 +34,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-statistics-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-model-maven2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-test-utils</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>  
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-jcl</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
@@ -73,22 +44,15 @@
         <artifactId>maven-bundle-plugin</artifactId>
         <configuration>
           <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.repository.statistics</Bundle-SymbolicName>
+            <Bundle-SymbolicName>org.apache.archiva.metadata.repository.api</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
-              org.apache.archiva.metadata.repository.stats;version=${project.version}
+              org.apache.archiva.metadata.repository.stats.model;version=${project.version}
             </Export-Package>
             <Import-Package>
-              javax.jcr,
-              javax.jcr.query,
-              org.apache.jackrabbit.commons;version="[2.3,3)",
               org.apache.archiva.metadata.model;version=${project.version},
-              org.apache.archiva.metadata.repository;version=${project.version},
-              org.apache.archiva.metadata.repository.storage.maven2;version=${project.version},
-              org.apache.archiva.metadata.model.maven2,
-              org.springframework*;version="[3,4)",
-              org.apache.commons.lang.time,
-              org.slf4j;resolution:=optional
+              org.apache.archiva.maven2.model;version=${project.version},
+              org.slf4j;resolution:=optional,
             </Import-Package>
           </instructions>
         </configuration>

@@ -19,13 +19,14 @@ package org.apache.archiva.metadata.repository.stats;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsProvider;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryWalkingStatisticsProvider;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.jackrabbit.commons.JcrUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,20 +34,10 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-import javax.jcr.query.Row;
 
 /**
  *
@@ -59,11 +50,13 @@ public class DefaultRepositoryStatisticsManager
 
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
+    private RepositoryWalkingStatisticsProvider walkingProvider = new RepositoryWalkingStatisticsProvider();
+
     @Override
     public boolean hasStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
-        return metadataRepository.hasMetadataFacet( repositoryId, RepositoryStatistics.FACET_ID );
+        return metadataRepository.hasMetadataFacet( repositoryId, DefaultRepositoryStatistics.FACET_ID );
     }
 
     @Override
@@ -73,7 +66,7 @@ public class DefaultRepositoryStatisticsManager
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         // TODO: consider a more efficient implementation that directly gets the last one from the content repository
-        List<String> scans = metadataRepository.getMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
+        List<String> scans = metadataRepository.getMetadataFacets( repositoryId, DefaultRepositoryStatistics.FACET_ID );
         if ( scans == null )
         {
             return null;
@@ -95,50 +88,12 @@ public class DefaultRepositoryStatisticsManager
         }
     }
 
-    private void walkRepository( MetadataRepository metadataRepository, RepositoryStatistics stats, String repositoryId,
-                                 String ns )
-        throws MetadataResolutionException
-    {
-        for ( String namespace : metadataRepository.getNamespaces( repositoryId, ns ) )
-        {
-            walkRepository( metadataRepository, stats, repositoryId, ns + "." + namespace );
-        }
-
-        Collection<String> projects = metadataRepository.getProjects( repositoryId, ns );
-        if ( !projects.isEmpty() )
-        {
-            stats.setTotalGroupCount( stats.getTotalGroupCount() + 1 );
-            stats.setTotalProjectCount( stats.getTotalProjectCount() + projects.size() );
-
-            for ( String project : projects )
-            {
-                for ( String version : metadataRepository.getProjectVersions( repositoryId, ns, project ) )
-                {
-                    for ( ArtifactMetadata artifact : metadataRepository.getArtifacts( repositoryId, ns, project,
-                                                                                       version ) )
-                    {
-                        stats.setTotalArtifactCount( stats.getTotalArtifactCount() + 1 );
-                        stats.setTotalArtifactFileSize( stats.getTotalArtifactFileSize() + artifact.getSize() );
-
-                        MavenArtifactFacet facet =
-                            (MavenArtifactFacet) artifact.getFacet( MavenArtifactFacet.FACET_ID );
-                        if ( facet != null )
-                        {
-                            String type = facet.getType();
-                            stats.setTotalCountForType( type, stats.getTotalCountForType( type ) + 1 );
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     @Override
     public void addStatisticsAfterScan( MetadataRepository metadataRepository, String repositoryId, Date startTime,
                                         Date endTime, long totalFiles, long newFiles )
         throws MetadataRepositoryException
     {
-        RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
+        DefaultRepositoryStatistics repositoryStatistics = new DefaultRepositoryStatistics();
         repositoryStatistics.setRepositoryId( repositoryId );
         repositoryStatistics.setScanStartTime( startTime );
         repositoryStatistics.setScanEndTime( endTime );
@@ -154,23 +109,14 @@ public class DefaultRepositoryStatisticsManager
 
         long startGather = System.currentTimeMillis();
 
-        // FIXME what about other implementations ?
-
-        if ( metadataRepository.canObtainAccess( Session.class ) )
+        if ( metadataRepository instanceof RepositoryStatisticsProvider)
         {
-            // TODO: this is currently very raw and susceptible to changes in content structure. Should we instead
-            //   depend directly on the plugin and interrogate the JCR repository's knowledge of the structure?
-            populateStatisticsFromJcr( (Session) metadataRepository.obtainAccess( Session.class ), repositoryId,
-                                       repositoryStatistics );
+            ((RepositoryStatisticsProvider)metadataRepository).populateStatistics( metadataRepository,
+                repositoryId, repositoryStatistics);
         }
         else
         {
-            // TODO:
-            //   if the file repository is used more permanently, we may seek a more efficient mechanism - e.g. we could
-            //   build an index, or store the aggregate information and update it on the fly. We can perhaps even walk
-            //   but retrieve less information to speed it up. In the mean time, we walk the repository using the
-            //   standard APIs
-            populateStatisticsFromRepositoryWalk( metadataRepository, repositoryId, repositoryStatistics );
+            walkingProvider.populateStatistics( metadataRepository, repositoryId, repositoryStatistics );
         }
 
         log.info( "Gathering statistics executed in {} ms",  ( System.currentTimeMillis() - startGather ) );
@@ -178,98 +124,11 @@ public class DefaultRepositoryStatisticsManager
         metadataRepository.addMetadataFacet( repositoryId, repositoryStatistics );
     }
 
-    private void populateStatisticsFromJcr( Session session, String repositoryId,
-                                            RepositoryStatistics repositoryStatistics )
-        throws MetadataRepositoryException
-    {
-        // TODO: these may be best as running totals, maintained by observations on the properties in JCR
-
-        try
-        {
-            QueryManager queryManager = session.getWorkspace().getQueryManager();
-
-            // TODO: JCR-SQL2 query will not complete on a large repo in Jackrabbit 2.2.0 - see JCR-2835
-            //    Using the JCR-SQL2 variants gives
-            //      "org.apache.lucene.search.BooleanQuery$TooManyClauses: maxClauseCount is set to 1024"
-//            String whereClause = "WHERE ISDESCENDANTNODE([/repositories/" + repositoryId + "/content])";
-//            Query query = queryManager.createQuery( "SELECT size FROM [archiva:artifact] " + whereClause,
-//                                                    Query.JCR_SQL2 );
-            String whereClause = "WHERE jcr:path LIKE '/repositories/" + repositoryId + "/content/%'";
-            Query query = queryManager.createQuery( "SELECT size FROM archiva:artifact " + whereClause, Query.SQL );
-
-            QueryResult queryResult = query.execute();
-
-            Map<String, Integer> totalByType = new HashMap<>();
-            long totalSize = 0, totalArtifacts = 0;
-            for ( Row row : JcrUtils.getRows( queryResult ) )
-            {
-                Node n = row.getNode();
-                totalSize += row.getValue( "size" ).getLong();
-
-                String type;
-                if ( n.hasNode( MavenArtifactFacet.FACET_ID ) )
-                {
-                    Node facetNode = n.getNode( MavenArtifactFacet.FACET_ID );
-                    type = facetNode.getProperty( "type" ).getString();
-                }
-                else
-                {
-                    type = "Other";
-                }
-                Integer prev = totalByType.get( type );
-                totalByType.put( type, prev != null ? prev + 1 : 1 );
-
-                totalArtifacts++;
-            }
-
-            repositoryStatistics.setTotalArtifactCount( totalArtifacts );
-            repositoryStatistics.setTotalArtifactFileSize( totalSize );
-            for ( Map.Entry<String, Integer> entry : totalByType.entrySet() )
-            {
-                repositoryStatistics.setTotalCountForType( entry.getKey(), entry.getValue() );
-            }
-
-            // The query ordering is a trick to ensure that the size is correct, otherwise due to lazy init it will be -1
-//            query = queryManager.createQuery( "SELECT * FROM [archiva:project] " + whereClause, Query.JCR_SQL2 );
-            query = queryManager.createQuery( "SELECT * FROM archiva:project " + whereClause + " ORDER BY jcr:score",
-                                              Query.SQL );
-            repositoryStatistics.setTotalProjectCount( query.execute().getRows().getSize() );
-
-//            query = queryManager.createQuery(
-//                "SELECT * FROM [archiva:namespace] " + whereClause + " AND namespace IS NOT NULL", Query.JCR_SQL2 );
-            query = queryManager.createQuery(
-                "SELECT * FROM archiva:namespace " + whereClause + " AND namespace IS NOT NULL ORDER BY jcr:score",
-                Query.SQL );
-            repositoryStatistics.setTotalGroupCount( query.execute().getRows().getSize() );
-        }
-        catch ( RepositoryException e )
-        {
-            throw new MetadataRepositoryException( e.getMessage(), e );
-        }
-    }
-
-    private void populateStatisticsFromRepositoryWalk( MetadataRepository metadataRepository, String repositoryId,
-                                                       RepositoryStatistics repositoryStatistics )
-        throws MetadataRepositoryException
-    {
-        try
-        {
-            for ( String ns : metadataRepository.getRootNamespaces( repositoryId ) )
-            {
-                walkRepository( metadataRepository, repositoryStatistics, repositoryId, ns );
-            }
-        }
-        catch ( MetadataResolutionException e )
-        {
-            throw new MetadataRepositoryException( e.getMessage(), e );
-        }
-    }
-
     @Override
     public void deleteStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
-        metadataRepository.removeMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
+        metadataRepository.removeMetadataFacets( repositoryId, DefaultRepositoryStatistics.FACET_ID );
     }
 
     @Override
@@ -278,7 +137,7 @@ public class DefaultRepositoryStatisticsManager
         throws MetadataRepositoryException
     {
         List<RepositoryStatistics> results = new ArrayList<>();
-        List<String> list = metadataRepository.getMetadataFacets( repositoryId, RepositoryStatistics.FACET_ID );
+        List<String> list = metadataRepository.getMetadataFacets( repositoryId, DefaultRepositoryStatistics.FACET_ID );
         Collections.sort( list, Collections.reverseOrder() );
         for ( String name : list )
         {
@@ -290,7 +149,7 @@ public class DefaultRepositoryStatisticsManager
                 {
                     RepositoryStatistics stats =
                         (RepositoryStatistics) metadataRepository.getMetadataFacet( repositoryId,
-                                                                                    RepositoryStatistics.FACET_ID,
+                                                                                    DefaultRepositoryStatistics.FACET_ID,
                                                                                     name );
                     results.add( stats );
                 }
@@ -306,7 +165,7 @@ public class DefaultRepositoryStatisticsManager
 
     private static SimpleDateFormat createNameFormat()
     {
-        SimpleDateFormat fmt = new SimpleDateFormat( RepositoryStatistics.SCAN_TIMESTAMP_FORMAT );
+        SimpleDateFormat fmt = new SimpleDateFormat( DefaultRepositoryStatistics.SCAN_TIMESTAMP_FORMAT );
         fmt.setTimeZone( UTC_TIME_ZONE );
         return fmt;
     }

@@ -21,8 +21,9 @@ package org.apache.archiva.scheduler.repository;
 
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.stats.RepositoryStatistics;
-import org.apache.archiva.metadata.repository.stats.RepositoryStatisticsManager;
+import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
+import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public class TestRepositoryStatisticsManager
     {
         List<RepositoryStatistics> stats = getStatsList( repositoryId );
 
-        RepositoryStatistics repositoryStatistics = new RepositoryStatistics();
+        DefaultRepositoryStatistics repositoryStatistics = new DefaultRepositoryStatistics();
         repositoryStatistics.setScanStartTime( startTime );
         repositoryStatistics.setScanEndTime( endTime );
         repositoryStatistics.setNewFileCount( newFiles );

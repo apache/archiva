@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.repository.stats;
+package org.apache.archiva.metadata.repository.stats.model;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -22,25 +22,26 @@ package org.apache.archiva.metadata.repository.stats;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 
-import java.util.Date;
-import java.util.List;
-
-public interface RepositoryStatisticsManager
+/**
+ *
+ * This interface is used for populating statistics data. It should be implemented
+ * by metadata store implementations in the MetadataRepository class, if the store
+ * implementation can provide a faster implementation than walking the tree.
+ *
+ * @author Martin Stockhammer
+ * @since 2.3
+ */
+public interface RepositoryStatisticsProvider
 {
-    RepositoryStatistics getLastStatistics( MetadataRepository metadataRepository, String repositoryId )
-        throws MetadataRepositoryException;
 
-    boolean hasStatistics( MetadataRepository metadataRepository, String repositoryId )
-        throws MetadataRepositoryException;
-
-    void addStatisticsAfterScan( MetadataRepository metadataRepository, String repositoryId, Date startTime,
-                                 Date endTime, long totalFiles, long newFiles )
-        throws MetadataRepositoryException;
-
-    void deleteStatistics( MetadataRepository metadataRepository, String repositoryId )
-        throws MetadataRepositoryException;
-
-    List<RepositoryStatistics> getStatisticsInRange( MetadataRepository metadataRepository, String repositoryId,
-                                                     Date startTime, Date endTime )
+    /**
+     * Populate the statistics object with the statistics data of this repository.
+     *
+     * @param repository The current metadata repository implementation
+     * @param repositoryId The repository Id
+     * @param statistics The statistics object that should be filled.
+     * @throws MetadataRepositoryException Is thrown, if an error occurs while accessing the repository
+     */
+    void populateStatistics( MetadataRepository repository, String repositoryId, RepositoryStatistics statistics)
         throws MetadataRepositoryException;
 }

@@ -21,6 +21,7 @@ package org.apache.archiva.rest.api.model;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author Olivier Lamy
@@ -49,6 +50,10 @@ public class ArchivaRepositoryStatistics
     private long duration;
 
     private String lastScanDate;
+
+    private Map<String, Long> totalCountForType;
+
+    private Map<String, Long> customValues;
 
     public ArchivaRepositoryStatistics()
     {
@@ -155,6 +160,24 @@ public class ArchivaRepositoryStatistics
         this.lastScanDate = lastScanDate;
     }
 
+    public void setTotalCountForType(Map<String, Long> totalCountForType) {
+        this.totalCountForType = totalCountForType;
+    }
+
+    public Map<String, Long> getTotalCountForType() {
+        return this.totalCountForType;
+    }
+
+    public void setCustomValues(Map<String,Long> customValues) {
+        this.customValues = customValues;
+    }
+
+    public Map<String,Long> getCustomValues() {
+        return this.customValues;
+    }
+
+
+
     @Override
     public String toString()
     {
@@ -170,7 +193,16 @@ public class ArchivaRepositoryStatistics
         sb.append( ", newFileCount=" ).append( newFileCount );
         sb.append( ", duration=" ).append( duration );
         sb.append( ", lastScanDate='" ).append( lastScanDate ).append( '\'' );
+        addMapString( sb, totalCountForType );
+        addMapString( sb, customValues );
         sb.append( '}' );
         return sb.toString();
+    }
+
+    private void addMapString(StringBuilder builder, Map<String, Long> map) {
+        if (map!=null)
+        {
+            map.entrySet( ).stream( ).forEach( entry -> builder.append( ", " ).append( entry.getKey( ) ).append( '=' ).append( entry.getValue( ) ) );
+        }
     }
 }

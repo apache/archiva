@@ -101,7 +101,7 @@ public abstract class AbstractMetadataRepositoryTest
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
-    protected static Map<String, MetadataFacetFactory> createTestMetadataFacetFactories()
+    public static Map<String, MetadataFacetFactory> createTestMetadataFacetFactories()
     {
         Map<String, MetadataFacetFactory> factories = new HashMap<>();
         factories.put( TEST_FACET_ID, new MetadataFacetFactory()

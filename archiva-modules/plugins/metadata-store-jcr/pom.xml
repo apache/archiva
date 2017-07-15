@@ -34,6 +34,10 @@
       <artifactId>metadata-repository-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-statistics-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
@@ -104,6 +108,10 @@
       <testResource>
         <directory>src/test/filtered-resources</directory>
         <filtering>true</filtering>
+      </testResource>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>false</filtering>
       </testResource>
     </testResources>
     <plugins>

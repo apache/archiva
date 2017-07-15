@@ -19,10 +19,10 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.webdav.util.RepositoryPathUtil;
 import org.apache.jackrabbit.util.Text;
 import org.apache.jackrabbit.webdav.DavLocatorFactory;
 import org.apache.jackrabbit.webdav.DavResourceLocator;
-import org.apache.archiva.webdav.util.RepositoryPathUtil;
 
 /**
  */
