@@ -232,7 +232,9 @@ public class ArchivaIndexingTaskExecutor
             if ( !repository.isSkipPackedIndexCreation() )
             {
 
-                IndexPackingRequest request = new IndexPackingRequest( context, context.getIndexDirectoryFile() );
+                IndexPackingRequest request = new IndexPackingRequest( context, //
+                                                                       context.acquireIndexSearcher().getIndexReader(), //
+                                                                       context.getIndexDirectoryFile() );
                 indexPacker.packIndex( request );
                 context.updateTimestamp( true );
 

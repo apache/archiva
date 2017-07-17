@@ -38,6 +38,7 @@ import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.QueryCreator;
 import org.apache.maven.index.ScanningResult;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.shaded.lucene.index.IndexUpgrader;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 import org.junit.After;
@@ -242,13 +243,13 @@ public abstract class AbstractMavenRepositorySearch
         @Override
         public void scanningStarted( IndexingContext ctx )
         {
-
+            //
         }
 
         @Override
         public void scanningFinished( IndexingContext ctx, ScanningResult result )
         {
-
+            // no op
         }
 
         @Override
@@ -260,7 +261,9 @@ public abstract class AbstractMavenRepositorySearch
         @Override
         public void artifactDiscovered( ArtifactContext ac )
         {
-            log.debug( "artifactDiscovered {}:{}", ac.getArtifact().getPath(), ac.getArtifactInfo() );
+            log.debug( "artifactDiscovered {}:{}", //
+                       ac.getArtifact() == null ? "" : ac.getArtifact().getPath(), //
+                       ac.getArtifact() == null ? "" : ac.getArtifactInfo() );
         }
     }
 
