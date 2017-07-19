@@ -79,9 +79,6 @@
               org.apache.archiva.metadata.repository.stats;version=${project.version}
             </Export-Package>
             <Import-Package>
-              javax.jcr,
-              javax.jcr.query,
-              org.apache.jackrabbit.commons;version="[2.3,3)",
               org.apache.archiva.metadata.model;version=${project.version},
               org.apache.archiva.metadata.repository;version=${project.version},
               org.apache.archiva.metadata.repository.storage.maven2;version=${project.version},
