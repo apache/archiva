@@ -36,6 +36,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +56,6 @@ public class JcrRepositorySessionFactory
 
     private Map<String, MetadataFacetFactory> metadataFacetFactories;
 
-    @Inject
     private Repository repository;
 
     // Lazy evaluation to avoid problems with circular dependencies during initialization
@@ -123,6 +124,11 @@ public class JcrRepositorySessionFactory
         JcrMetadataRepository metadataRepository = null;
         try
         {
+            RepositoryFactory factory = new RepositoryFactory();
+            // FIXME this need to be configurable
+            Path directoryPath = Paths.get(System.getProperty( "appserver.base" ), "data/jcr");
+            factory.setRepositoryPath( directoryPath );
+            repository = factory.createRepository();
             metadataRepository = new JcrMetadataRepository( metadataFacetFactories, repository );
             JcrMetadataRepository.initialize( metadataRepository.getJcrSession() );
         }

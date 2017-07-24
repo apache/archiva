@@ -53,8 +53,6 @@ public class ArchivaStartup
 
     private DefaultRepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
-    private PlexusSisuBridge plexusSisuBridge;
-
     private NexusIndexer nexusIndexer;
 
     @Override
@@ -74,16 +72,8 @@ public class ArchivaStartup
 
         tqeIndexing = wac.getBean( "taskQueueExecutor#indexing", ThreadedTaskQueueExecutor.class );
 
-        plexusSisuBridge = wac.getBean( PlexusSisuBridge.class );
+        nexusIndexer = wac.getBean( NexusIndexer.class );
 
-        try
-        {
-            nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
-        }
-        catch ( PlexusSisuBridgeException e )
-        {
-            throw new RuntimeException( "Unable to get NexusIndexer: " + e.getMessage(), e );
-        }
         try
         {
             securitySync.startup();

@@ -20,8 +20,8 @@ package org.apache.archiva.scheduler.indexing;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.maven.index.context.IndexingContext;
 import org.apache.archiva.redback.components.taskqueue.Task;
+import org.apache.maven.index.context.IndexingContext;
 
 import java.io.File;
 
@@ -80,7 +80,13 @@ public class ArtifactIndexingTask
 
     public void setExecuteOnEntireRepo( boolean executeOnEntireRepo )
     {
+        this.executeOnEntireRepo( executeOnEntireRepo );
+    }
+
+    public ArtifactIndexingTask executeOnEntireRepo( boolean executeOnEntireRepo )
+    {
         this.executeOnEntireRepo = executeOnEntireRepo;
+        return this;
     }
 
     @Override

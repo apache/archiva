@@ -22,6 +22,7 @@ package org.apache.archiva.indexer.search;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.maven.index.shaded.lucene.index.IndexUpgrader;
 import org.codehaus.plexus.util.FileUtils;
 import org.easymock.EasyMock;
 import org.junit.Test;
@@ -29,10 +30,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,8 +38,8 @@ import java.util.Collections;
 import java.util.List;
 
 
-@RunWith(ArchivaSpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" })
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class MavenRepositorySearchTest
     extends AbstractMavenRepositorySearch
 {
@@ -290,13 +288,13 @@ public class MavenRepositorySearchTest
 
         archivaConfigControl.replay();
 
-        SearchResults results = search.search( "user", selectedRepos, "org", limits, Collections.<String>emptyList() );
+        SearchResults results = search.search( "user", selectedRepos, "org", limits, Collections.emptyList() );
 
         archivaConfigControl.verify();
 
         assertNotNull( results );
         assertEquals( 1, results.getHits().size() );
-        assertEquals( "total hits not 8 for page1 " + results, 8, results.getTotalHits() );
+        assertEquals( "total hits not 9 for page1 " + results, 9, results.getTotalHits() );
         assertEquals( "returned hits not 1 for page1 " + results, 1, results.getReturnedHitsCount() );
         assertEquals( limits, results.getLimits() );
 
@@ -317,7 +315,7 @@ public class MavenRepositorySearchTest
         assertNotNull( results );
 
         assertEquals( "hits not 1", 1, results.getHits().size() );
-        assertEquals( "total hits not 8 for page 2 " + results, 8, results.getTotalHits() );
+        assertEquals( "total hits not 9 for page 2 " + results, 9, results.getTotalHits() );
         assertEquals( "returned hits not 1 for page2 " + results, 1, results.getReturnedHitsCount() );
         assertEquals( limits, results.getLimits() );
     }
@@ -873,7 +871,9 @@ public class MavenRepositorySearchTest
         File indexDirectory = new File( repo, ".index" );
         FileUtils.copyDirectoryStructure( new File( "src/test/repo-release" ), repo );
 
-        createIndex( "repo-release", Collections.<File>emptyList(), false );
+        IndexUpgrader.main( new String[]{indexDirectory.getAbsolutePath()} );
+
+        createIndex( "repo-release", Collections.emptyList(), false );
 
         nexusIndexer.addIndexingContext( REPO_RELEASE, REPO_RELEASE, repo, indexDirectory,
                                          repo.toURI().toURL().toExternalForm(),
@@ -886,8 +886,9 @@ public class MavenRepositorySearchTest
 
         archivaConfigControl.replay();
 
-        SearchResults searchResults = search.search( null, Arrays.asList( REPO_RELEASE ), "org.example", limits,
-                                                     Collections.<String>emptyList() );
+        SearchResults searchResults = search.search( null, Arrays.asList( REPO_RELEASE ), //
+                                                     "org.example", limits, //
+                                                     Collections.emptyList() );
 
         log.info( "results: {}", searchResults.getHits().size() );
 

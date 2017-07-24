@@ -57,7 +57,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Olivier Lamy
  * @since 1.4-M1
  */
-@Service ("downloadRemoteIndexScheduler#default")
+@Service( "downloadRemoteIndexScheduler#default" )
 public class DefaultDownloadRemoteIndexScheduler
     implements ConfigurationListener, DownloadRemoteIndexScheduler
 {
@@ -65,7 +65,7 @@ public class DefaultDownloadRemoteIndexScheduler
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     @Inject
-    @Named (value = "taskScheduler#indexDownloadRemote")
+    @Named( value = "taskScheduler#indexDownloadRemote" )
     private TaskScheduler taskScheduler;
 
     @Inject
@@ -84,15 +84,15 @@ public class DefaultDownloadRemoteIndexScheduler
     private NetworkProxyAdmin networkProxyAdmin;
 
     @Inject
-    private PlexusSisuBridge plexusSisuBridge;
-
-    @Inject
     private MavenIndexerUtils mavenIndexerUtils;
 
+    @Inject
     private NexusIndexer nexusIndexer;
 
+    @Inject
     private IndexUpdater indexUpdater;
 
+    @Inject
     private IndexPacker indexPacker;
 
     // store ids about currently running remote download : updated in DownloadRemoteIndexTask
@@ -105,12 +105,6 @@ public class DefaultDownloadRemoteIndexScheduler
     {
         archivaConfiguration.addListener( this );
         // TODO add indexContexts even if null
-
-        nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
-
-        indexUpdater = plexusSisuBridge.lookup( IndexUpdater.class );
-
-        this.indexPacker = plexusSisuBridge.lookup( IndexPacker.class );
 
         for ( RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )
         {
@@ -180,11 +174,14 @@ public class DefaultDownloadRemoteIndexScheduler
                 }
             }
 
-            DownloadRemoteIndexTaskRequest downloadRemoteIndexTaskRequest =
-                new DownloadRemoteIndexTaskRequest().setRemoteRepository( remoteRepository ).setNetworkProxy(
-                    networkProxy ).setFullDownload( fullDownload ).setWagonFactory(
-                    wagonFactory ).setRemoteRepositoryAdmin( remoteRepositoryAdmin ).setIndexUpdater(
-                    indexUpdater ).setIndexPacker( this.indexPacker );
+            DownloadRemoteIndexTaskRequest downloadRemoteIndexTaskRequest = new DownloadRemoteIndexTaskRequest() //
+                .setRemoteRepository( remoteRepository ) //
+                .setNetworkProxy( networkProxy ) //
+                .setFullDownload( fullDownload ) //
+                .setWagonFactory( wagonFactory ) //
+                .setRemoteRepositoryAdmin( remoteRepositoryAdmin ) //
+                .setIndexUpdater( indexUpdater ) //
+                .setIndexPacker( this.indexPacker );
 
             if ( now )
             {

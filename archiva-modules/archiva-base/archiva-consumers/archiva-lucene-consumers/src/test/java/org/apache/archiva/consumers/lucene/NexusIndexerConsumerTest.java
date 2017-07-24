@@ -23,13 +23,14 @@ import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.maven.index.NexusIndexer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +46,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * NexusIndexerConsumerTest
@@ -58,7 +58,7 @@ public class NexusIndexerConsumerTest
     private final class ArchivaTaskSchedulerStub
         implements ArchivaTaskScheduler<ArtifactIndexingTask>
     {
-        Set<File> indexed = new HashSet<File>();
+        Set<File> indexed = new HashSet<>();
 
         @Override
         public void queueTask( ArtifactIndexingTask task )
@@ -96,7 +96,7 @@ public class NexusIndexerConsumerTest
     private ApplicationContext applicationContext;
 
     @Inject
-    private PlexusSisuBridge plexusSisuBridge;
+    private NexusIndexer nexusIndexer;
 
     @Inject
     private MavenIndexerUtils mavenIndexerUtils;
@@ -119,8 +119,8 @@ public class NexusIndexerConsumerTest
         FileTypes filetypes = applicationContext.getBean( FileTypes.class );
 
         nexusIndexerConsumer =
-            new NexusIndexerConsumer( scheduler, configuration, filetypes, plexusSisuBridge, mavenIndexerUtils,
-                                      managedRepositoryAdmin );
+            new NexusIndexerConsumer( scheduler, configuration, filetypes, mavenIndexerUtils,
+                                      managedRepositoryAdmin, nexusIndexer );
 
         // initialize to set the file types to be processed
         ( (NexusIndexerConsumer) nexusIndexerConsumer ).initialize();

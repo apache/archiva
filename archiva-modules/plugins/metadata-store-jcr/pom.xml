@@ -28,9 +28,6 @@
   <artifactId>metadata-store-jcr</artifactId>
   <packaging>bundle</packaging>
   <name>Archiva Core Plugins :: JCR Storage for Metadata</name>
-  <properties>
-    <jcr-oak.version>1.7.2</jcr-oak.version>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -65,12 +62,10 @@
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>oak-jcr</artifactId>
-      <version>${jcr-oak.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>oak-segment-tar</artifactId>
-      <version>${jcr-oak.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
@@ -124,6 +119,7 @@
       <artifactId>xercesImpl</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
@@ -169,6 +165,7 @@
       <artifactId>lucene-analyzers-common</artifactId>
       <version>${lucene.version}</version>
     </dependency>
+
   </dependencies>
   <build>
     <testResources>

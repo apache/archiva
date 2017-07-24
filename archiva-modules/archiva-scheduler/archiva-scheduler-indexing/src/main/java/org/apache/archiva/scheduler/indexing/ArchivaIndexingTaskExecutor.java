@@ -51,7 +51,7 @@ import java.io.IOException;
  * all performed by this executor. Add and update artifact in index tasks are added in the indexing task queue by the
  * NexusIndexerConsumer while remove artifact from index tasks are added by the LuceneCleanupRemoveIndexedConsumer.
  */
-@Service ( "taskExecutor#indexing" )
+@Service( "taskExecutor#indexing" )
 public class ArchivaIndexingTaskExecutor
     implements TaskExecutor
 {
@@ -112,9 +112,10 @@ public class ArchivaIndexingTaskExecutor
             {
                 try
                 {
-                    log.debug( "Creating indexing context on resource: {}", ( indexingTask.getResourceFile() == null
-                        ? "none"
-                        : indexingTask.getResourceFile().getPath() ) );
+                    log.debug( "Creating indexing context on resource: {}", //
+                               ( indexingTask.getResourceFile() == null
+                                   ? "none"
+                                   : indexingTask.getResourceFile().getPath() ) );
                     context = managedRepositoryAdmin.createIndexContext( repository );
                 }
                 catch ( RepositoryAdminException e )
@@ -233,8 +234,10 @@ public class ArchivaIndexingTaskExecutor
             {
 
                 IndexPackingRequest request = new IndexPackingRequest( context, //
-                                                                       context.acquireIndexSearcher().getIndexReader(), //
+                                                                       context.acquireIndexSearcher().getIndexReader(),
+                                                                       //
                                                                        context.getIndexDirectoryFile() );
+
                 indexPacker.packIndex( request );
                 context.updateTimestamp( true );
 

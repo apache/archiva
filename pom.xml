@@ -77,7 +77,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <lucene.version>4.10.4</lucene.version>
-    <jackrabbit.version>2.14.1</jackrabbit.version>
+
+    <jcr-oak.version>1.7.2</jcr-oak.version>
+    <jackrabbit.version>2.15.4</jackrabbit.version>
 
     <cxf.version>3.0.3</cxf.version>
     <derbyVersion>10.13.1.1</derbyVersion>
@@ -284,6 +286,36 @@
         <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-indexer</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>oak-jcr</artifactId>
+        <version>${jcr-oak.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>oak-segment-tar</artifactId>
+        <version>${jcr-oak.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>oak-lucene</artifactId>
+        <version>${jcr-oak.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-misc</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-facet</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-webdav</artifactId>
+        <version>${jackrabbit.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.indexer</groupId>

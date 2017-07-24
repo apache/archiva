@@ -277,7 +277,7 @@
         <executions>
           <execution>
             <id>test-repository</id>
-            <phase>generate-test-resources</phase>
+            <phase>process-test-classes</phase>
             <goals>
               <goal>unpack-dependencies</goal>
             </goals>
