@@ -18,11 +18,10 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
-import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.packer.IndexPacker;
@@ -50,23 +49,22 @@ public class DefaultIndexMerger
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
-    private MavenIndexerUtils mavenIndexerUtils;
+    private final NexusIndexer indexer;
 
-    private NexusIndexer indexer;
+    private final IndexPacker indexPacker;
 
-    private IndexPacker indexPacker;
+    private final List<IndexCreator> indexCreators;
 
     private List<TemporaryGroupIndex> temporaryGroupIndexes = new CopyOnWriteArrayList<>();
 
-    private List<String> runningGroups = new CopyOnWriteArrayList<String>();
+    private List<String> runningGroups = new CopyOnWriteArrayList<>();
 
     @Inject
-    public DefaultIndexMerger( NexusIndexer nexusIndexer, IndexPacker indexPacker, MavenIndexerUtils mavenIndexerUtils )
-        throws PlexusSisuBridgeException
+    public DefaultIndexMerger( NexusIndexer nexusIndexer, IndexPacker indexPacker, List<IndexCreator> indexCreators )
     {
         this.indexer = nexusIndexer;
-        this.mavenIndexerUtils = mavenIndexerUtils;
         this.indexPacker = indexPacker;
+        this.indexCreators = indexCreators;
     }
 
     @Override
@@ -96,7 +94,7 @@ public class DefaultIndexMerger
             File indexLocation = new File( mergedIndexDirectory, indexMergerRequest.getMergedIndexPath() );
             IndexingContext indexingContext =
                 indexer.addIndexingContext( tempRepoId, tempRepoId, mergedIndexDirectory, indexLocation, null, null,
-                                            mavenIndexerUtils.getAllIndexCreators() );
+                                            indexCreators );
 
             for ( String repoId : indexMergerRequest.getRepositoriesIds() )
             {
@@ -127,11 +125,7 @@ public class DefaultIndexMerger
                       stopWatch.getTime() );
             return indexingContext;
         }
-        catch ( IOException e )
-        {
-            throw new IndexMergerException( e.getMessage(), e );
-        }
-        catch ( UnsupportedExistingLuceneIndexException e )
+        catch ( IOException | UnsupportedExistingLuceneIndexException e )
         {
             throw new IndexMergerException( e.getMessage(), e );
         }

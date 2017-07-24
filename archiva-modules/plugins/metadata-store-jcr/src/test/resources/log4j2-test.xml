@@ -19,7 +19,7 @@
   -->
 
 
-<configuration status="debug">
+<configuration>
 
 
 
@@ -31,11 +31,8 @@
 
   </appenders>
   <loggers>
-
-
-    <logger name="org.apache.jackrabbit" level="trace"/>
-
-    <root level="debug" includeLocation="true">
+    <logger name="org.apache.jackrabbit" level="info"/>
+    <root level="info" includeLocation="true">
       <appender-ref ref="console"/>
     </root>
   </loggers>

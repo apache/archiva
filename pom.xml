@@ -291,6 +291,12 @@
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>oak-jcr</artifactId>
         <version>${jcr-oak.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>

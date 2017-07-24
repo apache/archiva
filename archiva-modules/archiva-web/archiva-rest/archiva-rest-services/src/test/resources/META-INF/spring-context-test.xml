@@ -75,6 +75,7 @@
     <property name="queue" ref="taskQueue#repository-scanning"/>
   </bean>
 
+  <!--
   <bean id="repository" class="org.apache.jackrabbit.core.RepositoryImpl" destroy-method="shutdown">
     <constructor-arg ref="config"/>
   </bean>
@@ -83,6 +84,7 @@
     <constructor-arg value="${basedir}/src/test/repository.xml"/>
     <constructor-arg value="${appserver.base}/jcr"/>
   </bean>
+  -->
 
   <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry"
         init-method="initialize">

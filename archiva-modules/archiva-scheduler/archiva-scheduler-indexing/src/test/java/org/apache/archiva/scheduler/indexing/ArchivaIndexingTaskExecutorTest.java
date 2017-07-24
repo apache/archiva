@@ -22,14 +22,13 @@ package org.apache.archiva.scheduler.indexing;
 import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.expr.StringSearchExpression;
@@ -37,7 +36,9 @@ import org.apache.maven.index.shaded.lucene.search.BooleanClause;
 import org.apache.maven.index.shaded.lucene.search.BooleanQuery;
 import org.apache.maven.index.shaded.lucene.search.IndexSearcher;
 import org.apache.maven.index.shaded.lucene.search.TopDocs;
+import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
+import org.apache.maven.index.updater.IndexUpdater;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
@@ -46,19 +47,10 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.List;
 import java.util.Set;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * ArchivaIndexingTaskExecutorTest
@@ -77,10 +69,13 @@ public class ArchivaIndexingTaskExecutorTest
     private NexusIndexer indexer;
 
     @Inject
-    MavenIndexerUtils mavenIndexerUtils;
+    List<IndexCreator> indexCreators;
 
     @Inject
     ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
+    private IndexUpdater indexUpdater;
 
     @Before
     @Override
@@ -153,12 +148,12 @@ public class ArchivaIndexingTaskExecutorTest
 
         if ( !indexer.getIndexingContexts().containsKey( repositoryConfig.getId() ) )
         {
-            IndexingContext context = indexer.addIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(),
-                                                                  new File( repositoryConfig.getLocation() ),
-                                                                  new File( repositoryConfig.getLocation(),
-                                                                            ".indexer" ), null, null,
-                                                                  mavenIndexerUtils.getAllIndexCreators()
-            );
+            IndexingContext context = indexer.addIndexingContext( repositoryConfig.getId(), //
+                                                                  repositoryConfig.getId(), //
+                                                                  new File( repositoryConfig.getLocation() ), //
+                                                                  new File( repositoryConfig.getLocation(), ".indexer" )
+                                                                  //
+                , null, null, indexCreators );
             context.setSearchable( true );
         }
 
@@ -260,8 +255,7 @@ public class ArchivaIndexingTaskExecutorTest
                BooleanClause.Occur.SHOULD );
         q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID,
                                        new SourcedSearchExpression( "archiva-index-methods-jar-test" ) ),
-               BooleanClause.Occur.SHOULD
-        );
+               BooleanClause.Occur.SHOULD );
 
         assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
         assertFalse( new File( repositoryConfig.getLocation(), ".index" ).exists() );
@@ -317,17 +311,17 @@ public class ArchivaIndexingTaskExecutorTest
         // test packed index file creation
         //no more zip
         //Assertions.assertThat(new File( indexerDirectory, "nexus-maven-repository-index.zip" )).exists();
-        Assertions.assertThat(new File( indexerDirectory, "nexus-maven-repository-index.properties" )).exists();
-        Assertions.assertThat(new File( indexerDirectory, "nexus-maven-repository-index.gz" )).exists();
+        Assertions.assertThat( new File( indexerDirectory, "nexus-maven-repository-index.properties" ) ).exists();
+        Assertions.assertThat( new File( indexerDirectory, "nexus-maven-repository-index.gz" ) ).exists();
 
         // unpack .zip index
         File destDir = new File( repositoryConfig.getLocation(), ".indexer/tmp" );
-        unzipIndex( indexerDirectory.getPath(), destDir.getPath() );
+        //unzipIndex( indexerDirectory.getPath(), destDir.getPath() );
 
-        TrackingFetcher fetcher = new TrackingFetcher( remoteRepo );
-        updateRequest = new IndexUpdateRequest( testContext, fetcher );
-        updateRequest.setLocalIndexCacheDir( localCacheDir );
-        updater.fetchAndUpdateIndex( updateRequest );
+        DefaultIndexUpdater.FileFetcher fetcher = new DefaultIndexUpdater.FileFetcher( indexerDirectory );
+        IndexUpdateRequest updateRequest = new IndexUpdateRequest( getIndexingContext(), fetcher );
+        //updateRequest.setLocalIndexCacheDir( indexerDirectory );
+        indexUpdater.fetchAndUpdateIndex( updateRequest );
 
         BooleanQuery q = new BooleanQuery();
         q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "org.apache.archiva" ) ),

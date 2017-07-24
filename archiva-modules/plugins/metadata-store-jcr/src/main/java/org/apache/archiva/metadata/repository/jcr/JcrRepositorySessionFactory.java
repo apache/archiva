@@ -98,7 +98,7 @@ public class JcrRepositorySessionFactory
         throws Exception
     {
 
-        // skip initialisation if not cassandra
+        // skip initialisation if not jcr
         if ( !StringUtils.equals( repositorySessionFactoryBean.getId(), "jcr" ) )
         {
             return;

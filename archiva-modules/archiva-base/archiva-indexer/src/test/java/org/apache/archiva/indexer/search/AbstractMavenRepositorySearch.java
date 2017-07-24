@@ -22,7 +22,6 @@ package org.apache.archiva.indexer.search;
 import junit.framework.TestCase;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
-import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -37,8 +36,8 @@ import org.apache.maven.index.ArtifactScanningListener;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.QueryCreator;
 import org.apache.maven.index.ScanningResult;
+import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.shaded.lucene.index.IndexUpgrader;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 import org.junit.After;
@@ -85,7 +84,7 @@ public abstract class AbstractMavenRepositorySearch
     PlexusSisuBridge plexusSisuBridge;
 
     @Inject
-    MavenIndexerUtils mavenIndexerUtils;
+    List<IndexCreator> indexCreators;
 
     @Inject
     NexusIndexer nexusIndexer;
@@ -106,7 +105,7 @@ public abstract class AbstractMavenRepositorySearch
         FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ) );
         assertFalse( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ).exists() );
 
-        archivaConfigControl = EasyMock.createControl( );
+        archivaConfigControl = EasyMock.createControl();
 
         archivaConfig = archivaConfigControl.createMock( ArchivaConfiguration.class );
 
@@ -116,12 +115,11 @@ public abstract class AbstractMavenRepositorySearch
         DefaultProxyConnectorAdmin defaultProxyConnectorAdmin = new DefaultProxyConnectorAdmin();
         defaultProxyConnectorAdmin.setArchivaConfiguration( archivaConfig );
 
-        search = new MavenRepositorySearch( nexusIndexer, defaultManagedRepositoryAdmin, mavenIndexerUtils,
-                                            defaultProxyConnectorAdmin, queryCreator );
+        search = new MavenRepositorySearch( nexusIndexer, defaultManagedRepositoryAdmin, defaultProxyConnectorAdmin,
+                                            queryCreator );
 
-        defaultManagedRepositoryAdmin.setMavenIndexerUtils( mavenIndexerUtils );
         defaultManagedRepositoryAdmin.setIndexer( nexusIndexer );
-        defaultManagedRepositoryAdmin.setIndexCreators( mavenIndexerUtils.getAllIndexCreators() );
+        defaultManagedRepositoryAdmin.setIndexCreators( indexCreators );
 
         config = new Configuration();
         config.addManagedRepository( createRepositoryConfig( TEST_REPO_1 ) );
@@ -204,8 +202,7 @@ public abstract class AbstractMavenRepositorySearch
 
         context = nexusIndexer.addIndexingContext( repository, repository, repo, indexDirectory,
                                                    repo.toURI().toURL().toExternalForm(),
-                                                   indexDirectory.toURI().toURL().toString(),
-                                                   search.getAllIndexCreators() );
+                                                   indexDirectory.toURI().toURL().toString(), indexCreators );
 
         // minimize datas in memory
 //        context.getIndexWriter().setMaxBufferedDocs( -1 );

@@ -22,9 +22,6 @@ package org.apache.archiva.consumers.lucene;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.FileTypes;
@@ -32,13 +29,13 @@ import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.redback.components.registry.Registry;
+import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.archiva.redback.components.registry.RegistryListener;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -88,14 +85,13 @@ public class NexusIndexerConsumer
     public NexusIndexerConsumer(
         @Named( value = "archivaTaskScheduler#indexing" ) ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
         @Named( value = "archivaConfiguration" ) ArchivaConfiguration configuration, FileTypes filetypes,
-        MavenIndexerUtils mavenIndexerUtils,
-        ManagedRepositoryAdmin managedRepositoryAdmin, NexusIndexer nexusIndexer )
+        List<IndexCreator> indexCreators, ManagedRepositoryAdmin managedRepositoryAdmin, NexusIndexer nexusIndexer )
     {
         this.configuration = configuration;
         this.filetypes = filetypes;
         this.scheduler = scheduler;
         this.nexusIndexer = nexusIndexer;
-        this.allIndexCreators = mavenIndexerUtils.getAllIndexCreators();
+        this.allIndexCreators = indexCreators;
         this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 

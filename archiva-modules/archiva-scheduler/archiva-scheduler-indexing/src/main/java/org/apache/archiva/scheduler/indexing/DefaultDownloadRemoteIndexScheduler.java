@@ -25,8 +25,6 @@ import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.common.ArchivaException;
-import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationEvent;
@@ -82,9 +80,6 @@ public class DefaultDownloadRemoteIndexScheduler
 
     @Inject
     private NetworkProxyAdmin networkProxyAdmin;
-
-    @Inject
-    private MavenIndexerUtils mavenIndexerUtils;
 
     @Inject
     private NexusIndexer nexusIndexer;

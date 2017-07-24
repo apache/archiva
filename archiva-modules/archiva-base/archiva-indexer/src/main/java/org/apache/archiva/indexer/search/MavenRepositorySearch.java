@@ -24,11 +24,9 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
-import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.commons.lang.StringUtils;
-
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
@@ -77,8 +75,6 @@ public class MavenRepositorySearch
 
     private ProxyConnectorAdmin proxyConnectorAdmin;
 
-    private MavenIndexerUtils mavenIndexerUtils;
-
     protected MavenRepositorySearch()
     {
         // for test purpose
@@ -86,14 +82,12 @@ public class MavenRepositorySearch
 
     @Inject
     public MavenRepositorySearch( NexusIndexer nexusIndexer, ManagedRepositoryAdmin managedRepositoryAdmin,
-                                  MavenIndexerUtils mavenIndexerUtils, ProxyConnectorAdmin proxyConnectorAdmin,
-                                  QueryCreator queryCreator)
+                                  ProxyConnectorAdmin proxyConnectorAdmin, QueryCreator queryCreator )
         throws PlexusSisuBridgeException
     {
         this.indexer = nexusIndexer;
         this.queryCreator = queryCreator;
         this.managedRepositoryAdmin = managedRepositoryAdmin;
-        this.mavenIndexerUtils = mavenIndexerUtils;
         this.proxyConnectorAdmin = proxyConnectorAdmin;
     }
 
@@ -162,11 +156,9 @@ public class MavenRepositorySearch
         BooleanQuery q = new BooleanQuery();
         if ( StringUtils.isNotBlank( searchFields.getGroupId() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.GROUP_ID, searchFields.isExactSearch()
-                                               ? new SourcedSearchExpression( searchFields.getGroupId() )
-                                               : new UserInputSearchExpression( searchFields.getGroupId() )
-                   ), BooleanClause.Occur.MUST
-            );
+            q.add( indexer.constructQuery( MAVEN.GROUP_ID, searchFields.isExactSearch() ? new SourcedSearchExpression(
+                       searchFields.getGroupId() ) : new UserInputSearchExpression( searchFields.getGroupId() ) ),
+                   BooleanClause.Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getArtifactId() ) )
@@ -174,69 +166,64 @@ public class MavenRepositorySearch
             q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID,
                                            searchFields.isExactSearch()
                                                ? new SourcedSearchExpression( searchFields.getArtifactId() )
-                                               : new UserInputSearchExpression( searchFields.getArtifactId() )
-                   ), BooleanClause.Occur.MUST
-            );
+                                               : new UserInputSearchExpression( searchFields.getArtifactId() ) ),
+                   BooleanClause.Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getVersion() ) )
         {
             q.add( indexer.constructQuery( MAVEN.VERSION, searchFields.isExactSearch() ? new SourcedSearchExpression(
-                searchFields.getVersion() ) : new SourcedSearchExpression( searchFields.getVersion() ) ), BooleanClause.Occur.MUST );
+                       searchFields.getVersion() ) : new SourcedSearchExpression( searchFields.getVersion() ) ),
+                   BooleanClause.Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getPackaging() ) )
         {
             q.add( indexer.constructQuery( MAVEN.PACKAGING, searchFields.isExactSearch() ? new SourcedSearchExpression(
                        searchFields.getPackaging() ) : new UserInputSearchExpression( searchFields.getPackaging() ) ),
-                   BooleanClause.Occur.MUST
-            );
+                   BooleanClause.Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getClassName() ) )
         {
             q.add( indexer.constructQuery( MAVEN.CLASSNAMES,
-                                           new UserInputSearchExpression( searchFields.getClassName() ) ), BooleanClause.Occur.MUST );
+                                           new UserInputSearchExpression( searchFields.getClassName() ) ),
+                   BooleanClause.Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleSymbolicName() ) )
         {
             q.add( indexer.constructQuery( OSGI.SYMBOLIC_NAME,
                                            new UserInputSearchExpression( searchFields.getBundleSymbolicName() ) ),
-                   BooleanClause.Occur.MUST
-            );
+                   BooleanClause.Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleVersion() ) )
         {
             q.add( indexer.constructQuery( OSGI.VERSION,
                                            new UserInputSearchExpression( searchFields.getBundleVersion() ) ),
-                   BooleanClause.Occur.MUST
-            );
+                   BooleanClause.Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleExportPackage() ) )
         {
             q.add( indexer.constructQuery( OSGI.EXPORT_PACKAGE,
                                            new UserInputSearchExpression( searchFields.getBundleExportPackage() ) ),
-                   Occur.MUST
-            );
+                   Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleExportService() ) )
         {
             q.add( indexer.constructQuery( OSGI.EXPORT_SERVICE,
                                            new UserInputSearchExpression( searchFields.getBundleExportService() ) ),
-                   Occur.MUST
-            );
+                   Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleImportPackage() ) )
         {
             q.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
                                            new UserInputSearchExpression( searchFields.getBundleImportPackage() ) ),
-                   Occur.MUST
-            );
+                   Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleName() ) )
@@ -249,24 +236,21 @@ public class MavenRepositorySearch
         {
             q.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
                                            new UserInputSearchExpression( searchFields.getBundleImportPackage() ) ),
-                   Occur.MUST
-            );
+                   Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleRequireBundle() ) )
         {
             q.add( indexer.constructQuery( OSGI.REQUIRE_BUNDLE,
                                            new UserInputSearchExpression( searchFields.getBundleRequireBundle() ) ),
-                   Occur.MUST
-            );
+                   Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getClassifier() ) )
         {
             q.add( indexer.constructQuery( MAVEN.CLASSIFIER, searchFields.isExactSearch() ? new SourcedSearchExpression(
                        searchFields.getClassifier() ) : new UserInputSearchExpression( searchFields.getClassifier() ) ),
-                   Occur.MUST
-            );
+                   Occur.MUST );
         }
         else if ( searchFields.isExactSearch() )
         {
@@ -283,7 +267,8 @@ public class MavenRepositorySearch
                        searchFields.getRepositories(), searchFields.isIncludePomArtifacts() );
     }
 
-    private static class NullSearch implements SearchTyped, SearchExpression
+    private static class NullSearch
+        implements SearchTyped, SearchExpression
     {
         private static final NullSearch INSTANCE = new NullSearch();
 
@@ -475,13 +460,6 @@ public class MavenRepositorySearch
         }
 
     }
-
-
-    protected List<? extends IndexCreator> getAllIndexCreators()
-    {
-        return mavenIndexerUtils.getAllIndexCreators();
-    }
-
 
     private SearchResults convertToSearchResults( FlatSearchResponse response, SearchResultLimits limits,
                                                   List<? extends ArtifactInfoFilter> artifactInfoFilters,

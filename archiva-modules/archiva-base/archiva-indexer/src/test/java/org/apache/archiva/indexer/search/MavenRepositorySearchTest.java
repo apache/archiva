@@ -871,13 +871,13 @@ public class MavenRepositorySearchTest
         File indexDirectory = new File( repo, ".index" );
         FileUtils.copyDirectoryStructure( new File( "src/test/repo-release" ), repo );
 
-        IndexUpgrader.main( new String[]{indexDirectory.getAbsolutePath()} );
+        IndexUpgrader.main( new String[]{ indexDirectory.getAbsolutePath() } );
 
         createIndex( "repo-release", Collections.emptyList(), false );
 
         nexusIndexer.addIndexingContext( REPO_RELEASE, REPO_RELEASE, repo, indexDirectory,
                                          repo.toURI().toURL().toExternalForm(),
-                                         indexDirectory.toURI().toURL().toString(), search.getAllIndexCreators() );
+                                         indexDirectory.toURI().toURL().toString(), indexCreators );
 
         SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
         limits.setPageSize( 300 );

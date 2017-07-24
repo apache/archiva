@@ -23,9 +23,6 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
-import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
@@ -96,9 +93,6 @@ public class DefaultManagedRepositoryAdmin
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     @Inject
-    private MavenIndexerUtils mavenIndexerUtils;
-
-    @Inject
     protected RoleManager roleManager;
 
     @Inject
@@ -116,15 +110,6 @@ public class DefaultManagedRepositoryAdmin
     public void initialize()
         throws RepositoryAdminException, RoleManagerException
     {
-//        try
-//        {
-//            indexCreators = mavenIndexerUtils.getAllIndexCreators();
-//            indexer = plexusSisuBridge.lookup( NexusIndexer.class );
-//        }
-//        catch ( PlexusSisuBridgeException e )
-//        {
-//            throw new RepositoryAdminException( e.getMessage(), e );
-//        }
         // initialize index context on start and check roles here
         for ( ManagedRepository managedRepository : getManagedRepositories() )
         {
@@ -815,16 +800,6 @@ public class DefaultManagedRepositoryAdmin
     public void setRepositoryTaskScheduler( RepositoryArchivaTaskScheduler repositoryTaskScheduler )
     {
         this.repositoryTaskScheduler = repositoryTaskScheduler;
-    }
-
-    public MavenIndexerUtils getMavenIndexerUtils()
-    {
-        return mavenIndexerUtils;
-    }
-
-    public void setMavenIndexerUtils( MavenIndexerUtils mavenIndexerUtils )
-    {
-        this.mavenIndexerUtils = mavenIndexerUtils;
     }
 
     public NexusIndexer getIndexer()

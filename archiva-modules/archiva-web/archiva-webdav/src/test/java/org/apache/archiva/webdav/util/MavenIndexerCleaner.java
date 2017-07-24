@@ -18,23 +18,18 @@ package org.apache.archiva.webdav.util;
  * under the License.
  */
 
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.io.IOException;
 
 /**
  * @author Olivier Lamy
@@ -46,15 +41,16 @@ public class MavenIndexerCleaner
     Logger log = LoggerFactory.getLogger( getClass() );
 
 
-    private PlexusSisuBridge plexusSisuBridge;
 
     @Inject
     private ApplicationContext applicationContext;
 
+    @Inject
+    NexusIndexer nexusIndexer;
+
     @PostConstruct
     public void startup()
     {
-        plexusSisuBridge = applicationContext.getBean( PlexusSisuBridge.class );
         cleanupIndex();
     }
 
@@ -70,9 +66,6 @@ public class MavenIndexerCleaner
     {
         try
         {
-            WebApplicationContext wacu =
-                WebApplicationContextUtils.getRequiredWebApplicationContext( servletContextEvent.getServletContext() );
-            plexusSisuBridge = wacu.getBean( PlexusSisuBridge.class );
             cleanupIndex();
 
         }
@@ -103,7 +96,6 @@ public class MavenIndexerCleaner
         log.info( "cleanup IndexingContext" );
         try
         {
-            NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
             for ( IndexingContext context : nexusIndexer.getIndexingContexts().values() )
             {
                 nexusIndexer.removeIndexingContext( context, true );
