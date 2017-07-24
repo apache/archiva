@@ -78,7 +78,7 @@
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <lucene.version>4.10.4</lucene.version>
 
-    <jcr-oak.version>1.7.2</jcr-oak.version>
+    <jcr-oak.version>1.7.3</jcr-oak.version>
     <jackrabbit.version>2.15.4</jackrabbit.version>
 
     <cxf.version>3.0.3</cxf.version>
