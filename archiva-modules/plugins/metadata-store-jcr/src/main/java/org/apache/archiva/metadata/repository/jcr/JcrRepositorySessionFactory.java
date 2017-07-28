@@ -33,6 +33,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
@@ -44,7 +45,7 @@ import java.util.Map;
 /**
  *
  */
-@Service("repositorySessionFactory#jcr")
+@Service( "repositorySessionFactory#jcr" )
 public class JcrRepositorySessionFactory
     implements RepositorySessionFactory
 {
@@ -63,6 +64,8 @@ public class JcrRepositorySessionFactory
 
     @Inject
     private RepositorySessionFactoryBean repositorySessionFactoryBean;
+
+    private RepositoryFactory repositoryFactory;
 
     @Override
     public RepositorySession createSession()
@@ -86,8 +89,10 @@ public class JcrRepositorySessionFactory
     }
 
     // Lazy evaluation to avoid problems with circular dependencies during initialization
-    private MetadataResolver getMetadataResolver() {
-        if (this.metadataResolver==null) {
+    private MetadataResolver getMetadataResolver()
+    {
+        if ( this.metadataResolver == null )
+        {
             this.metadataResolver = applicationContext.getBean( MetadataResolver.class );
         }
         return this.metadataResolver;
@@ -124,11 +129,12 @@ public class JcrRepositorySessionFactory
         JcrMetadataRepository metadataRepository = null;
         try
         {
-            RepositoryFactory factory = new RepositoryFactory();
+
+            repositoryFactory = new RepositoryFactory();
             // FIXME this need to be configurable
-            Path directoryPath = Paths.get(System.getProperty( "appserver.base" ), "data/jcr");
-            factory.setRepositoryPath( directoryPath );
-            repository = factory.createRepository();
+            Path directoryPath = Paths.get( System.getProperty( "appserver.base" ), "data/jcr" );
+            repositoryFactory.setRepositoryPath( directoryPath );
+            repository = repositoryFactory.createRepository();
             metadataRepository = new JcrMetadataRepository( metadataFacetFactories, repository );
             JcrMetadataRepository.initialize( metadataRepository.getJcrSession() );
         }
@@ -146,5 +152,11 @@ public class JcrRepositorySessionFactory
 
         stopWatch.stop();
         logger.info( "time to initialize JcrRepositorySessionFactory: {}", stopWatch.getTime() );
+    }
+
+    @PreDestroy
+    public void close()
+    {
+        repositoryFactory.close();
     }
 }
