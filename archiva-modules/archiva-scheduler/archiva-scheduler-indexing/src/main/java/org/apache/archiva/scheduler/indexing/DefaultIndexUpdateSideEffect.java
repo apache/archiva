@@ -20,7 +20,7 @@ package org.apache.archiva.scheduler.indexing;
  */
 
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.shaded.lucene.store.Directory;
+import org.apache.maven.index_shaded.lucene.store.Directory;
 import org.apache.maven.index.updater.IndexUpdateSideEffect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

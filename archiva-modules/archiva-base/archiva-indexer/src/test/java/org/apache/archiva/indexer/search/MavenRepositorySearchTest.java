@@ -22,7 +22,7 @@ package org.apache.archiva.indexer.search;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.maven.index.shaded.lucene.index.IndexUpgrader;
+import org.apache.maven.index_shaded.lucene.index.IndexUpgrader;
 import org.codehaus.plexus.util.FileUtils;
 import org.easymock.EasyMock;
 import org.junit.Test;
