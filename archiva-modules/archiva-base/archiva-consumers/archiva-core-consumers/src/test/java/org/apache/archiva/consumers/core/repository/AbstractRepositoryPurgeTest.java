@@ -144,7 +144,7 @@ public abstract class AbstractRepositoryPurgeTest
         if ( path.contains( " " ) )
         {
             LoggerFactory.getLogger( AbstractRepositoryPurgeTest.class.getName() ).error(
-                "You are building and testing with a path: \n " + path + " containing space. Consider relocating." );
+                "You are building and testing with a path: \n {} containing space. Consider relocating.", path );
             return path.replaceAll( " ", "&amp;20" );
         }
         return path;

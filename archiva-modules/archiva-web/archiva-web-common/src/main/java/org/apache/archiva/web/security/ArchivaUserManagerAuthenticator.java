@@ -89,7 +89,7 @@ public class ArchivaUserManagerAuthenticator
         }
         catch ( RepositoryAdminException e )
         {
-            log.error("Error during repository initialization "+e.getMessage(),e);
+            log.error( "Error during repository initialization {}", e.getMessage(), e );
             // throw new AuthenticationException( e.getMessage(), e );
         }
     }

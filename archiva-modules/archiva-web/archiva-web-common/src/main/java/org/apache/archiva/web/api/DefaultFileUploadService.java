@@ -569,8 +569,8 @@ public class DefaultFileUploadService
         }
         catch ( TaskQueueException e )
         {
-            log.error( "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName()
-                           + "']." );
+            log.error( "Unable to queue repository task to execute consumers on resource file ['{}"
+                           + "'].", localFile.getName() );
         }
     }
 

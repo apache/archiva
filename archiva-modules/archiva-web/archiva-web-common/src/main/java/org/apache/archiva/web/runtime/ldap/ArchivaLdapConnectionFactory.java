@@ -73,7 +73,7 @@ public class ArchivaLdapConnectionFactory
         }
         catch ( InvalidNameException e )
         {
-            log.error("Error during initialization of LdapConnectionFactory "+e.getMessage(),e);
+            log.error( "Error during initialization of LdapConnectionFactory {}", e.getMessage(), e );
             // throw new RuntimeException( "Error while initializing connection factory.", e );
         }
         catch ( RepositoryAdminException e )

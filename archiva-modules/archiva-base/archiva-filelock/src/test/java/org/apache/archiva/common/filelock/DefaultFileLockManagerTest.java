@@ -112,7 +112,7 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread1 ok");
                 success.incrementAndGet();
             } catch (Throwable e) {
-                logger.error("Error occured " + e.getMessage());
+                logger.error("Error occured {}", e.getMessage());
                 e.printStackTrace();
                 throw e;
             }
@@ -132,7 +132,7 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread2 ok");
                 success.incrementAndGet();
             } catch (Throwable e) {
-                logger.error("Error occured " + e.getMessage());
+                logger.error("Error occured {}", e.getMessage());
                 e.printStackTrace();
                 throw e;
             }
@@ -156,7 +156,7 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread3 ok");
                 success.incrementAndGet();
             } catch (Throwable e) {
-                logger.error("Error occured " + e.getMessage());
+                logger.error("Error occured {}", e.getMessage());
                 e.printStackTrace();
                 throw e;
             }
@@ -177,7 +177,7 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread4 ok");
                 success.incrementAndGet();
             } catch (Throwable e) {
-                logger.error("Error occured " + e.getMessage());
+                logger.error("Error occured {}", e.getMessage());
                 e.printStackTrace();
                 throw e;
             }
@@ -198,7 +198,7 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread5 ok");
                 success.incrementAndGet();
             } catch (Throwable e) {
-                logger.error("Error occured " + e.getMessage());
+                logger.error("Error occured {}", e.getMessage());
                 e.printStackTrace();
                 throw e;
             }
@@ -221,7 +221,7 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread6 ok");
                 success.incrementAndGet();
             } catch (Throwable e) {
-                logger.error("Error occured " + e.getMessage());
+                logger.error("Error occured {}", e.getMessage());
                 e.printStackTrace();
                 throw e;
             }
@@ -242,7 +242,7 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread7 ok");
                 success.incrementAndGet();
             } catch (Throwable e) {
-                logger.error("Error occured " + e.getMessage());
+                logger.error("Error occured {}", e.getMessage());
                 e.printStackTrace();
                 throw e;
             }
@@ -265,7 +265,7 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread8 ok");
                 success.incrementAndGet();
             } catch (Throwable e) {
-                logger.error("Error occured " + e.getMessage());
+                logger.error("Error occured {}", e.getMessage());
                 e.printStackTrace();
                 throw e;
             }
@@ -286,7 +286,7 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread9 ok");
                 success.incrementAndGet();
             } catch (Throwable e) {
-                logger.error("Error occured " + e.getMessage());
+                logger.error("Error occured {}", e.getMessage());
                 e.printStackTrace();
                 throw e;
             }
@@ -308,7 +308,7 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread10 ok");
                 success.incrementAndGet();
             } catch (Throwable e) {
-                logger.error("Error occured " + e.getMessage());
+                logger.error("Error occured {}", e.getMessage());
                 e.printStackTrace();
                 throw e;
             }

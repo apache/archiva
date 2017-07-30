@@ -428,10 +428,9 @@ public class DefaultRepositoryProxyConnectors
                     "Transfer error from repository {} for resource {}, continuing to next repository. Error message: {}",
                     targetRepository.getRepository().getId(), path, e.getMessage() );
                 log.debug( MarkerFactory.getDetachedMarker( "transfer.error" ),
-                           "Transfer error from repository \"" + targetRepository.getRepository().getId()
-                               + "\" for resource " + path + ", continuing to next repository. Error message: {}",
-                           e.getMessage(), e
-                );
+                           "Transfer error from repository \"{}"
+                               + "\" for resource {}, continuing to next repository. Error message: {}",
+                           targetRepository.getRepository().getId(), path, e.getMessage(), e );
             }
             catch ( RepositoryAdminException e )
             {
@@ -830,8 +829,8 @@ public class DefaultRepositoryProxyConnectors
         }
         catch ( TaskQueueException e )
         {
-            log.error( "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName()
-                           + "']." );
+            log.error( "Unable to queue repository task to execute consumers on resource file ['{}"
+                           + "'].", localFile.getName() );
         }
     }
 

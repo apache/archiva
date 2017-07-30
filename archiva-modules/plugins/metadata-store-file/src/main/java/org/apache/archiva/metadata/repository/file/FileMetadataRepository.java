@@ -570,7 +570,7 @@ public class FileMetadataRepository
                                 MetadataFacetFactory factory = metadataFacetFactories.get( facetId );
                                 if ( factory == null )
                                 {
-                                    log.error( "Attempted to load unknown artifact metadata facet: " + facetId );
+                                    log.error( "Attempted to load unknown artifact metadata facet: {}", facetId );
                                 }
                                 else
                                 {

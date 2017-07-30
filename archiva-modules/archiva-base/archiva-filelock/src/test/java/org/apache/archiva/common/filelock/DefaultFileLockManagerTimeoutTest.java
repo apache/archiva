@@ -76,14 +76,14 @@ public class DefaultFileLockManagerTimeoutTest
                 try {
                     Files.copy(largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
-                    logger.warn("Copy failed "+e.getMessage());
+                    logger.warn("Copy failed {}", e.getMessage());
                     // On windows a FileSystemException is thrown
                     // We ignore this
                 }
 
                 lock = fileLockManager.writeFileLock(file);
             } catch (FileSystemException ex) {
-                logger.error("Exception from filesystem "+ex.getMessage());
+                logger.error("Exception from filesystem {}", ex.getMessage());
                 ex.printStackTrace();
                 throw ex;
             }

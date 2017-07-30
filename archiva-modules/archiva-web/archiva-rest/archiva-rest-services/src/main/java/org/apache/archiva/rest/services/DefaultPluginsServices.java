@@ -72,7 +72,7 @@ public class DefaultPluginsServices
         {
             sb.append( repoType ).append( "|" );
         }
-        log.debug( "getAdminPlugins: {}", sb.toString() );
+        log.debug( "getAdminPlugins: {}", sb );
         if ( sb.length() > 1 )
         {
             adminPlugins = sb.substring( 0, sb.length() - 1 );

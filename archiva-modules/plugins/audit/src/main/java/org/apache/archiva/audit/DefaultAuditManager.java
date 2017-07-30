@@ -134,7 +134,7 @@ public class DefaultAuditManager
                 }
                 catch ( ParseException e )
                 {
-                    log.error( "Invalid audit event found in the metadata repository: " + e.getMessage() );
+                    log.error( "Invalid audit event found in the metadata repository: {}", e.getMessage() );
                     // continue and ignore this one
                 }
             }

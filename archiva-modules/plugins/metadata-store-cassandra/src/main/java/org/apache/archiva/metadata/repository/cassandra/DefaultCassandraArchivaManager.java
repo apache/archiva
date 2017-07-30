@@ -458,7 +458,7 @@ public class DefaultCassandraArchivaManager
         { // ensure keyspace exists, here if the keyspace doesn't exist we suppose nothing exist
             if ( cluster.describeKeyspace( keyspaceName ) == null )
             {
-                logger.info( "Creating Archiva Cassandra '" + keyspaceName + "' keyspace." );
+                logger.info( "Creating Archiva Cassandra '{}' keyspace.", keyspaceName );
                 cluster.addKeyspace( HFactory.createKeyspaceDefinition( keyspaceName, //
                                                                         ThriftKsDef.DEF_STRATEGY_CLASS, //
                                                                         replicationFactor, //
