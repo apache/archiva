@@ -387,7 +387,7 @@ public class DefaultRepositoryArchivaTaskScheduler
         catch ( RuntimeException e )
         {
             log.error(
-                "ParseException in repository scanning cron expression, disabling repository scanning for '': {}",
+                "ParseException in repository scanning cron expression, disabling repository scanning for '{}': {}",
                 repoConfig.getId(), e.getMessage() );
         }
 

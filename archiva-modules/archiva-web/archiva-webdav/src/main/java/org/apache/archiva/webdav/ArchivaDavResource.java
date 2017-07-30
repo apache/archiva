@@ -522,7 +522,7 @@ public class ArchivaDavResource
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_FILE );
             }
 
-            log.debug( "{}{}' copied to '{}' (current user '{)')", ( isCollection() ? "Directory '" : "File '" ),
+            log.debug( "{}{}' copied to '{}' (current user '{}')", ( isCollection() ? "Directory '" : "File '" ),
                        getLocalResource().getName(), destination, this.principal );
 
         }
