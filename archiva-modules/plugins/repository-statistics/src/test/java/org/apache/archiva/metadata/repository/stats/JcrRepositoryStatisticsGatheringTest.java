@@ -84,7 +84,9 @@ public class JcrRepositoryStatisticsGatheringTest
 
         RepositoryFactory repositoryFactory = new RepositoryFactory();
         repositoryFactory.setRepositoryPath( dir.getPath() );
-        session = repositoryFactory.createRepository().login(new SimpleCredentials( "admin", "admin".toCharArray()));
+        repositoryFactory.setStoreType( RepositoryFactory.StoreType.IN_MEMORY_TYPE );
+        session = repositoryFactory.createRepository() //
+            .login(new SimpleCredentials( "admin", "admin".toCharArray()));
 
 
         // TODO: perhaps have an archiva-jcr-utils module shared by these plugins that does this and can contain

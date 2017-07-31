@@ -77,20 +77,22 @@ public class RepositoryFactory
 
     private FileStore fileStore;
 
+    private ExecutorService executorService;
+
     public enum StoreType
     {
         SEGMENT_FILE_TYPE,
         IN_MEMORY_TYPE;
     }
 
-
     private StoreType storeType = SEGMENT_FILE_TYPE;
 
-    Path repositoryPath = Paths.get( "repository" );
+    private Path repositoryPath = Paths.get( "repository" );
 
     public Repository createRepository()
         throws IOException, InvalidFileStoreVersionException
     {
+        createExecutor();
         NodeStore nodeStore;
         if ( SEGMENT_FILE_TYPE == storeType )
         {
@@ -199,7 +201,6 @@ public class RepositoryFactory
             }
         } );
 
-        ExecutorService executorService = createExecutor();
         StatisticsProvider statsProvider = StatisticsProvider.NOOP;
         int queueSize = Integer.getInteger( "queueSize", 10000 );
         File indexDir = Files.createTempDirectory( "archiva_index" ).toFile();
@@ -255,6 +256,10 @@ public class RepositoryFactory
         {
             fileStore.close();
         }
+        if (executorService != null)
+        {
+            executorService.shutdownNow();
+        }
     }
 
     public StoreType getStoreType()
@@ -294,9 +299,13 @@ public class RepositoryFactory
         }
     }
 
-    private ExecutorService createExecutor()
+    private void createExecutor()
     {
-        return Executors.newCachedThreadPool();
+        if (executorService ==null )
+        {
+            executorService = Executors.newCachedThreadPool();
+        }
+
 //
 //        ThreadPoolExecutor executor =
 //            new ThreadPoolExecutor( 0, 5, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(),
