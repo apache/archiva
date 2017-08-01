@@ -1353,7 +1353,7 @@ public class JcrMetadataRepository
             getJcrSession().save();
         } catch ( InvalidItemStateException e ) {
             // olamy this might happen when deleting a repo while is under scanning
-            log.warn( "skip InvalidItemStateException:" + e.getMessage(), e );
+            log.warn( "skip InvalidItemStateException:{}", e.getMessage(), e );
         }
         catch ( RepositoryException e )
         {
@@ -1493,7 +1493,7 @@ public class JcrMetadataRepository
                 MetadataFacetFactory factory = metadataFacetFactories.get( name );
                 if ( factory == null )
                 {
-                    log.error( "Attempted to load unknown project version metadata facet: " + name );
+                    log.error( "Attempted to load unknown project version metadata facet: {}", name );
                 }
                 else
                 {

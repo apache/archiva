@@ -152,7 +152,7 @@ public class SecuritySynchronization
         catch ( RoleManagerException e )
         {
             // Log error.
-            log.error( "Unable to create roles for configured repositories: " + e.getMessage(), e );
+            log.error( "Unable to create roles for configured repositories: {}", e.getMessage(), e );
         }
     }
 

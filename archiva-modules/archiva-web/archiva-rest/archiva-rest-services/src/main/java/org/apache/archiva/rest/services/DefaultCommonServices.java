@@ -83,7 +83,7 @@ public class DefaultCommonServices
         }
         catch ( IOException e )
         {
-            log.warn( "skip error loading properties {}", resourceName.toString() );
+            log.warn( "skip error loading properties {}", resourceName );
         }
 
         return fromProperties( properties );

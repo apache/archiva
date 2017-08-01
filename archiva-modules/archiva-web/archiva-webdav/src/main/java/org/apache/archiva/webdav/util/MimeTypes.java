@@ -100,7 +100,7 @@ public class MimeTypes
         }
         catch ( IOException e )
         {
-            log.error( "Unable to load mime map " + resourceName + " : " + e.getMessage(), e );
+            log.error( "Unable to load mime map {} : {}", resourceName, e.getMessage(), e );
         }
     }
 
@@ -146,7 +146,7 @@ public class MimeTypes
         }
         catch ( IOException e )
         {
-            log.error( "Unable to read mime types from input stream : " + e.getMessage(), e );
+            log.error( "Unable to read mime types from input stream : {}", e.getMessage(), e );
         }
     }
 

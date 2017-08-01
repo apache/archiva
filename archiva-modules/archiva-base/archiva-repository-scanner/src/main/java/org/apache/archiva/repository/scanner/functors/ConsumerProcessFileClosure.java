@@ -77,8 +77,8 @@ public class ConsumerProcessFileClosure
                 /* Intentionally Catch all exceptions.
                  * So that the discoverer processing can continue.
                  */
-                log.error( "Consumer [" + id + "] had an error when processing file ["
-                    + basefile.getAbsolutePath() + "]: " + e.getMessage(), e );
+                log.error( "Consumer [{}] had an error when processing file ["
+                    + "{}]: {}", id, basefile.getAbsolutePath(), e.getMessage(), e );
             }
         }
     }

@@ -156,7 +156,7 @@ public class DefaultRepositoryStatisticsManager
             }
             catch ( ParseException e )
             {
-                log.error( "Invalid scan result found in the metadata repository: " + e.getMessage() );
+                log.error( "Invalid scan result found in the metadata repository: {}", e.getMessage() );
                 // continue and ignore this one
             }
         }

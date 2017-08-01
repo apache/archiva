@@ -135,7 +135,7 @@ public class ArchivaIndexingTaskExecutor
                 }
                 catch ( RepositoryAdminException e )
                 {
-                    log.error( "Error occurred while creating context: " + e.getMessage() );
+                    log.error( "Error occurred while creating context: {}", e.getMessage() );
                     throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage(), e );
                 }
             }
@@ -227,7 +227,7 @@ public class ArchivaIndexingTaskExecutor
             }
             catch ( IOException e )
             {
-                log.error( "Error occurred while executing indexing task '" + indexingTask + "': " + e.getMessage(),
+                log.error( "Error occurred while executing indexing task '{}': {}", indexingTask, e.getMessage(),
                            e );
                 throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask + "'",
                                                   e );
@@ -261,7 +261,7 @@ public class ArchivaIndexingTaskExecutor
         }
         catch ( IOException e )
         {
-            log.error( "Error occurred while executing indexing task '" + indexingTask + "': " + e.getMessage() );
+            log.error( "Error occurred while executing indexing task '{}': {}", indexingTask, e.getMessage() );
             throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask + "'",
                                               e );
         }

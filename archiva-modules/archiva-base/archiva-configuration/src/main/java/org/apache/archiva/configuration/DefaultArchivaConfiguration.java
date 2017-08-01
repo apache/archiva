@@ -703,7 +703,7 @@ public class DefaultArchivaConfiguration
         }
         catch ( IOException e )
         {
-            log.error( "Unable to create " + filetype + " file: " + e.getMessage(), e );
+            log.error( "Unable to create {} file: {}", filetype, e.getMessage(), e );
             return false;
         }
     }

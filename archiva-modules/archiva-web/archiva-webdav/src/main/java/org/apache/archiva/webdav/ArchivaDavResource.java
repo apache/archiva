@@ -522,7 +522,7 @@ public class ArchivaDavResource
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_FILE );
             }
 
-            log.debug( "{}{}' copied to '{}' (current user '{)')", ( isCollection() ? "Directory '" : "File '" ),
+            log.debug( "{}{}' copied to '{}' (current user '{}')", ( isCollection() ? "Directory '" : "File '" ),
                        getLocalResource().getName(), destination, this.principal );
 
         }
@@ -723,8 +723,8 @@ public class ArchivaDavResource
         }
         catch ( TaskQueueException e )
         {
-            log.error( "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName()
-                           + "']." );
+            log.error( "Unable to queue repository task to execute consumers on resource file ['{}"
+                           + "'].", localFile.getName() );
         }
     }
 }

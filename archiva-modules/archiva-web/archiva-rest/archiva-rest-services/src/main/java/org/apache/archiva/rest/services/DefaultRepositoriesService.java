@@ -352,7 +352,7 @@ public class DefaultRepositoriesService
         }
         catch ( AuthorizationException e )
         {
-            log.error( "error reading permission: " + e.getMessage(), e );
+            log.error( "error reading permission: {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
 
@@ -370,7 +370,7 @@ public class DefaultRepositoriesService
         }
         catch ( AuthorizationException e )
         {
-            log.error( "error reading permission: " + e.getMessage(), e );
+            log.error( "error reading permission: {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
 
@@ -394,7 +394,7 @@ public class DefaultRepositoriesService
 
             if ( StringUtils.isEmpty( artifactSourcePath ) )
             {
-                log.error( "cannot find artifact " + artifactTransferRequest.toString() );
+                log.error( "cannot find artifact {}", artifactTransferRequest );
                 throw new ArchivaRestServiceException( "cannot find artifact " + artifactTransferRequest.toString(),
                                                        null );
             }
@@ -403,7 +403,7 @@ public class DefaultRepositoriesService
 
             if ( !artifactFile.exists() )
             {
-                log.error( "cannot find artifact " + artifactTransferRequest.toString() );
+                log.error( "cannot find artifact {}", artifactTransferRequest );
                 throw new ArchivaRestServiceException( "cannot find artifact " + artifactTransferRequest.toString(),
                                                        null );
             }
@@ -487,17 +487,17 @@ public class DefaultRepositoriesService
         }
         catch ( RepositoryException e )
         {
-            log.error( "RepositoryException: " + e.getMessage(), e );
+            log.error( "RepositoryException: {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         catch ( RepositoryAdminException e )
         {
-            log.error( "RepositoryAdminException: " + e.getMessage(), e );
+            log.error( "RepositoryAdminException: {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         catch ( IOException e )
         {
-            log.error( "IOException: " + e.getMessage(), e );
+            log.error( "IOException: {}", e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(), e );
         }
         return true;
@@ -517,8 +517,8 @@ public class DefaultRepositoriesService
         }
         catch ( TaskQueueException e )
         {
-            log.error( "Unable to queue repository task to execute consumers on resource file ['" + localFile.getName()
-                           + "']." );
+            log.error( "Unable to queue repository task to execute consumers on resource file ['{}"
+                           + "'].", localFile.getName() );
         }
     }
 

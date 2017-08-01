@@ -89,8 +89,8 @@ public abstract class AbstractRepositoryAdminTest
         if ( path.contains( SPACE ) )
         {
             LoggerFactory.getLogger( AbstractRepositoryAdminTest.class.getName() ).error(
-                "You are building and testing  with {appserver.base}: \n " + path
-                    + " containing space. Consider relocating." );
+                "You are building and testing  with {appserver.base}: \n {}"
+                    + " containing space. Consider relocating.", path );
         }
         return path.replaceAll( SPACE, "&amp;20" );
     }

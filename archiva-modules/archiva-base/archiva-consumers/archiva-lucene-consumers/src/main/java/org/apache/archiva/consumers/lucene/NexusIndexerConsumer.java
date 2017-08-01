@@ -219,7 +219,7 @@ public class NexusIndexerConsumer
         }
         catch ( TaskQueueException e )
         {
-            log.error( "Error queueing task: " + task + ": " + e.getMessage(), e );
+            log.error( "Error queueing task: {}: {}", task, e.getMessage(), e );
         }
     }
 
