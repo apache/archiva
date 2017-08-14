@@ -55,4 +55,10 @@ public class TestRepositorySessionFactory
     {
         return this;
     }
+
+    @Override
+    public void close()
+    {
+        // no op
+    }
 }

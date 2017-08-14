@@ -45,6 +45,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -77,6 +78,7 @@ public abstract class AbstractArchivaRestTest
 
     // END SNIPPET: authz-header
 
+
     @BeforeClass
     public static void chekRepo()
     {
@@ -101,6 +103,7 @@ public abstract class AbstractArchivaRestTest
 
         super.startServer();
     }
+
 
     private void removeAppsubFolder( File appServerBase, String folder )
         throws Exception

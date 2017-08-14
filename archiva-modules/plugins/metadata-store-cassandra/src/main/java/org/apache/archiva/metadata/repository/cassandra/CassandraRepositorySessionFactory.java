@@ -82,4 +82,10 @@ public class CassandraRepositorySessionFactory
         return new RepositorySession( metadataRepository, metadataResolver );
     }
 
+
+    @Override
+    public void close()
+    {
+        cassandraArchivaManager.shutdown();
+    }
 }

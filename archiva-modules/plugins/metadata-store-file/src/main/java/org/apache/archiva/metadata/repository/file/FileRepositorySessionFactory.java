@@ -42,21 +42,12 @@ import java.util.Map;
 public class FileRepositorySessionFactory
     implements RepositorySessionFactory
 {
-    /**
-     *
-     */
     private Map<String, MetadataFacetFactory> metadataFacetFactories;
 
-    /**
-     *
-     */
     @Inject
     @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration configuration;
 
-    /**
-     *
-     */
     @Inject
     private MetadataResolver metadataResolver;
 
@@ -86,5 +77,11 @@ public class FileRepositorySessionFactory
         MetadataRepository metadataRepository = new FileMetadataRepository( metadataFacetFactories, configuration );
 
         return new RepositorySession( metadataRepository, metadataResolver );
+    }
+
+    @Override
+    public void close()
+    {
+        // no op
     }
 }

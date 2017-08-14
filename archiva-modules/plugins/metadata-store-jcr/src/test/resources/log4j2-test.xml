@@ -19,9 +19,7 @@
   -->
 
 
-<configuration>
-
-
+<configuration status="debug">
 
   <appenders>
     <Console name="console" target="SYSTEM_OUT">

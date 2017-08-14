@@ -73,4 +73,10 @@ public class MockRepositorySessionFactory
             }
         };
     }
+
+    @Override
+    public void close()
+    {
+        // no op
+    }
 }

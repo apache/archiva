@@ -77,6 +77,8 @@ public class RepositoryFactory
 
     private FileStore fileStore;
 
+    private NodeStore nodeStore;
+
     private ExecutorService executorService;
 
     public enum StoreType
@@ -93,11 +95,13 @@ public class RepositoryFactory
         throws IOException, InvalidFileStoreVersionException
     {
         createExecutor();
-        NodeStore nodeStore;
+
         if ( SEGMENT_FILE_TYPE == storeType )
         {
             fileStore = FileStoreBuilder.fileStoreBuilder( repositoryPath.toFile() ).build();
-            nodeStore = SegmentNodeStoreBuilders.builder( fileStore ).build();
+            nodeStore = SegmentNodeStoreBuilders.builder( fileStore ) //
+                .withStatisticsProvider( StatisticsProvider.NOOP ) //
+                .build();
         }
         else if ( IN_MEMORY_TYPE == storeType )
         {
