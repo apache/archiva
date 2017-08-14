@@ -58,4 +58,10 @@ public class TestRepositorySessionFactoryBean
         logger.info( "create RepositorySessionFactory instance of {}", repositorySessionFactory.getClass().getName() );
         return repositorySessionFactory;
     }
+
+    @Override
+    public String getId()
+    {
+        return this.beanId;
+    }
 }
