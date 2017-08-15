@@ -904,8 +904,7 @@
           <webApp>
             <contextPath>/archiva</contextPath>
           </webApp>
-          <jettyXml>${basedir}/src/test/jetty/jetty-env.xml</jettyXml>
-
+          <jettyXml>${basedir}/src/test/jetty-env.xml</jettyXml>
           <systemProperties>
             <systemProperty>
               <name>plexus.home</name>
@@ -921,7 +920,7 @@
             </systemProperty>
             <systemProperty>
               <name>derby.system.home</name>
-              <value>${archivaAppServerBase}/logs</value>
+              <value>${archivaAppServerBase}/database</value>
             </systemProperty>
             <systemProperty>
               <name>java.io.tmpdir</name>
@@ -954,6 +953,10 @@
             <systemProperty>
               <name>archiva.repositorySessionFactory.id</name>
               <value>${archiva.repositorySessionFactory.id}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>log4j.configurationFile</name>
+              <value>${basedir}/src/test/log4j2-test.xml</value>
             </systemProperty>
             <systemProperty>
               <name>AsyncLoggerConfig.WaitStrategy</name>
