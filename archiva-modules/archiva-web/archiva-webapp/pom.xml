@@ -789,8 +789,6 @@
       <version>${spring.version}</version>
     </dependency>
 
-
-
   </dependencies>
 
   <build>
@@ -1003,7 +1001,6 @@
             <artifactId>serp</artifactId>
             <version>1.15.1</version>
           </dependency>
-
           <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-io</artifactId>
