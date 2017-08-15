@@ -23,16 +23,19 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
+import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryCheckPath;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
+import org.apache.maven.index_shaded.lucene.index.IndexFormatTooOldException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -304,19 +307,28 @@ public class DefaultRemoteRepositoryAdmin
             {
                 indexDirectory.mkdirs();
             }
-            return indexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir, indexDirectory,
-                                               remoteRepository.getUrl(), calculateIndexRemoteUrl( remoteRepository ),
-                                               indexCreators );
+
+            try
+            {
+
+                return indexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir, indexDirectory,
+                                                   remoteRepository.getUrl(), calculateIndexRemoteUrl( remoteRepository ),
+                                                   indexCreators );
+            }
+            catch ( IndexFormatTooOldException e )
+            {
+                // existing index with an old lucene format so we need to delete it!!!
+                // delete it first then recreate it.
+                log.warn( "the index of repository {} is too old we have to delete and recreate it", //
+                          remoteRepository.getId() );
+                FileUtils.deleteDirectory( indexDirectory );
+                return indexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir, indexDirectory,
+                                                   remoteRepository.getUrl(), calculateIndexRemoteUrl( remoteRepository ),
+                                                   indexCreators );
+
+            }
         }
-        catch ( MalformedURLException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-        catch ( UnsupportedExistingLuceneIndexException e )
+        catch ( IOException | UnsupportedExistingLuceneIndexException e )
         {
             throw new RepositoryAdminException( e.getMessage(), e );
         }

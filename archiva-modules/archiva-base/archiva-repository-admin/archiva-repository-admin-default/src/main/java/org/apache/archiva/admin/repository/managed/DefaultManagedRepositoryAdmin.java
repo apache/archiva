@@ -46,6 +46,7 @@ import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
+import org.apache.maven.index_shaded.lucene.index.IndexFormatTooOldException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -638,24 +639,33 @@ public class DefaultManagedRepositoryAdmin
 
             if ( context == null )
             {
-                context = indexer.addIndexingContext( repository.getId(), repository.getId(), repositoryDirectory,
-                                                      indexDirectory,
-                                                      repositoryDirectory.toURI().toURL().toExternalForm(),
-                                                      indexDirectory.toURI().toURL().toString(), indexCreators );
+                try
+                {
+                    context = indexer.addIndexingContext( repository.getId(), repository.getId(), repositoryDirectory,
+                                                          indexDirectory,
+                                                          repositoryDirectory.toURI().toURL().toExternalForm(),
+                                                          indexDirectory.toURI().toURL().toString(), indexCreators );
 
-                context.setSearchable( repository.isScanned() );
+                    context.setSearchable( repository.isScanned() );
+                }
+                catch ( IndexFormatTooOldException e )
+                {
+                    // existing index with an old lucene format so we need to delete it!!!
+                    // delete it first then recreate it.
+                    log.warn( "the index of repository {} is too old we have to delete and recreate it", //
+                              repository.getId() );
+                    FileUtils.deleteDirectory( indexDirectory );
+                    context = indexer.addIndexingContext( repository.getId(), repository.getId(), repositoryDirectory,
+                                                          indexDirectory,
+                                                          repositoryDirectory.toURI().toURL().toExternalForm(),
+                                                          indexDirectory.toURI().toURL().toString(), indexCreators );
+
+                    context.setSearchable( repository.isScanned() );
+                }
             }
             return context;
         }
-        catch ( MalformedURLException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-        catch ( UnsupportedExistingLuceneIndexException e )
+        catch ( IOException| UnsupportedExistingLuceneIndexException e )
         {
             throw new RepositoryAdminException( e.getMessage(), e );
         }
