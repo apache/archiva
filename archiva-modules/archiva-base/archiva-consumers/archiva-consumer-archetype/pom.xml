@@ -86,6 +86,11 @@
       <version>1.9</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>5.5.4</version>
+    </dependency>
 
     <!-- for some reasons this help sonar to run -->
     <dependency>
