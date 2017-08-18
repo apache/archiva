@@ -76,7 +76,7 @@
     <javax.jcr.version>2.0</javax.jcr.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
-    <lucene.version>4.10.4</lucene.version>
+    <lucene.version>5.5.4</lucene.version>
 
     <jcr-oak.version>1.7.5</jcr-oak.version>
     <jackrabbit.version>2.15.4</jackrabbit.version>
