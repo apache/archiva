@@ -96,6 +96,11 @@
       <artifactId>lucene-highlighter</artifactId>
       <version>5.5.4</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-memory</artifactId>
+      <version>5.5.4</version>
+    </dependency>
 
     <!-- for some reasons this help sonar to run -->
     <dependency>
