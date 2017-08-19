@@ -44,6 +44,7 @@
     <dependency>
       <groupId>org.apache.maven.indexer</groupId>
       <artifactId>indexer-core</artifactId>
+      <classifier>shaded-lucene</classifier>
       <exclusions>
         <exclusion>
           <groupId>org.codehaus.plexus</groupId>
@@ -72,6 +73,14 @@
         <exclusion>
           <groupId>com.google.code.atinject</groupId>
           <artifactId>atinject</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.lucene</groupId>
+          <artifactId>lucene-queryparser</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.lucene</groupId>
+          <artifactId>lucene-analyzers-common</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

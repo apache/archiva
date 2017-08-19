@@ -131,29 +131,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-jcr-commons</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-core</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jcl-over-slf4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>commons-dbcp</groupId>
-          <artifactId>commons-dbcp</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
-    <dependency>
       <groupId>commons-configuration</groupId>
       <artifactId>commons-configuration</artifactId>
       <exclusions>
@@ -278,6 +255,7 @@
     <dependency>
       <groupId>org.apache.maven.indexer</groupId>
       <artifactId>indexer-core</artifactId>
+      <classifier>shaded-lucene</classifier>
       <exclusions>
         <exclusion>
           <groupId>org.codehaus.plexus</groupId>
@@ -811,8 +789,6 @@
       <version>${spring.version}</version>
     </dependency>
 
-
-
   </dependencies>
 
   <build>
@@ -928,8 +904,7 @@
           <webApp>
             <contextPath>/archiva</contextPath>
           </webApp>
-          <jettyXml>${basedir}/src/test/jetty/jetty-env.xml</jettyXml>
-
+          <jettyXml>${basedir}/src/test/jetty-env.xml</jettyXml>
           <systemProperties>
             <systemProperty>
               <name>plexus.home</name>
@@ -945,7 +920,7 @@
             </systemProperty>
             <systemProperty>
               <name>derby.system.home</name>
-              <value>${archivaAppServerBase}/logs</value>
+              <value>${archivaAppServerBase}/database</value>
             </systemProperty>
             <systemProperty>
               <name>java.io.tmpdir</name>
@@ -978,6 +953,10 @@
             <systemProperty>
               <name>archiva.repositorySessionFactory.id</name>
               <value>${archiva.repositorySessionFactory.id}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>log4j.configurationFile</name>
+              <value>${basedir}/src/test/log4j2-test.xml</value>
             </systemProperty>
             <systemProperty>
               <name>AsyncLoggerConfig.WaitStrategy</name>
@@ -1025,7 +1004,6 @@
             <artifactId>serp</artifactId>
             <version>1.15.1</version>
           </dependency>
-
           <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-io</artifactId>

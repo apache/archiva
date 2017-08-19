@@ -98,7 +98,7 @@ public abstract class AbstractRepositoryPurgeTest
     protected ApplicationContext applicationContext;
 
     @Inject
-    protected PlexusSisuBridge plexusSisuBridge;
+    protected NexusIndexer nexusIndexer;
 
 
     @Before
@@ -132,7 +132,6 @@ public abstract class AbstractRepositoryPurgeTest
     protected void removeMavenIndexes()
         throws Exception
     {
-        NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
         for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
         {
             nexusIndexer.removeIndexingContext( indexingContext, false );

@@ -23,9 +23,6 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
-import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
@@ -49,6 +46,7 @@ import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
+import org.apache.maven.index_shaded.lucene.index.IndexFormatTooOldException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -96,12 +94,6 @@ public class DefaultManagedRepositoryAdmin
     private RepositoryStatisticsManager repositoryStatisticsManager;
 
     @Inject
-    private PlexusSisuBridge plexusSisuBridge;
-
-    @Inject
-    private MavenIndexerUtils mavenIndexerUtils;
-
-    @Inject
     protected RoleManager roleManager;
 
     @Inject
@@ -109,23 +101,16 @@ public class DefaultManagedRepositoryAdmin
     private Cache<String, Collection<String>> namespacesCache;
 
     // fields
-    List<? extends IndexCreator> indexCreators;
+    @Inject
+    private List<? extends IndexCreator> indexCreators;
 
-    NexusIndexer indexer;
+    @Inject
+    private NexusIndexer indexer;
 
     @PostConstruct
     public void initialize()
         throws RepositoryAdminException, RoleManagerException
     {
-        try
-        {
-            indexCreators = mavenIndexerUtils.getAllIndexCreators();
-            indexer = plexusSisuBridge.lookup( NexusIndexer.class );
-        }
-        catch ( PlexusSisuBridgeException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
         // initialize index context on start and check roles here
         for ( ManagedRepository managedRepository : getManagedRepositories() )
         {
@@ -367,19 +352,13 @@ public class DefaultManagedRepositoryAdmin
 
         try
         {
-            NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
-
-            IndexingContext context = nexusIndexer.getIndexingContexts().get( repository.getId() );
+            IndexingContext context = indexer.getIndexingContexts().get( repository.getId() );
             if ( context != null )
             {
                 // delete content only if directory exists
-                nexusIndexer.removeIndexingContext( context,
+                indexer.removeIndexingContext( context,
                                                     deleteContent && context.getIndexDirectoryFile().exists() );
             }
-        }
-        catch ( PlexusSisuBridgeException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
         }
         catch ( IOException e )
         {
@@ -660,24 +639,33 @@ public class DefaultManagedRepositoryAdmin
 
             if ( context == null )
             {
-                context = indexer.addIndexingContext( repository.getId(), repository.getId(), repositoryDirectory,
-                                                      indexDirectory,
-                                                      repositoryDirectory.toURI().toURL().toExternalForm(),
-                                                      indexDirectory.toURI().toURL().toString(), indexCreators );
+                try
+                {
+                    context = indexer.addIndexingContext( repository.getId(), repository.getId(), repositoryDirectory,
+                                                          indexDirectory,
+                                                          repositoryDirectory.toURI().toURL().toExternalForm(),
+                                                          indexDirectory.toURI().toURL().toString(), indexCreators );
 
-                context.setSearchable( repository.isScanned() );
+                    context.setSearchable( repository.isScanned() );
+                }
+                catch ( IndexFormatTooOldException e )
+                {
+                    // existing index with an old lucene format so we need to delete it!!!
+                    // delete it first then recreate it.
+                    log.warn( "the index of repository {} is too old we have to delete and recreate it", //
+                              repository.getId() );
+                    FileUtils.deleteDirectory( indexDirectory );
+                    context = indexer.addIndexingContext( repository.getId(), repository.getId(), repositoryDirectory,
+                                                          indexDirectory,
+                                                          repositoryDirectory.toURI().toURL().toExternalForm(),
+                                                          indexDirectory.toURI().toURL().toString(), indexCreators );
+
+                    context.setSearchable( repository.isScanned() );
+                }
             }
             return context;
         }
-        catch ( MalformedURLException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-        catch ( UnsupportedExistingLuceneIndexException e )
+        catch ( IOException| UnsupportedExistingLuceneIndexException e )
         {
             throw new RepositoryAdminException( e.getMessage(), e );
         }
@@ -822,26 +810,6 @@ public class DefaultManagedRepositoryAdmin
     public void setRepositoryTaskScheduler( RepositoryArchivaTaskScheduler repositoryTaskScheduler )
     {
         this.repositoryTaskScheduler = repositoryTaskScheduler;
-    }
-
-    public PlexusSisuBridge getPlexusSisuBridge()
-    {
-        return plexusSisuBridge;
-    }
-
-    public void setPlexusSisuBridge( PlexusSisuBridge plexusSisuBridge )
-    {
-        this.plexusSisuBridge = plexusSisuBridge;
-    }
-
-    public MavenIndexerUtils getMavenIndexerUtils()
-    {
-        return mavenIndexerUtils;
-    }
-
-    public void setMavenIndexerUtils( MavenIndexerUtils mavenIndexerUtils )
-    {
-        this.mavenIndexerUtils = mavenIndexerUtils;
     }
 
     public NexusIndexer getIndexer()

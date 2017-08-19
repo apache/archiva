@@ -51,7 +51,7 @@
     <commons-codec.version>1.6</commons-codec.version>
     <commons-collections.version>3.2.1</commons-collections.version>
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
-    <commons-io.version>2.4</commons-io.version>
+    <commons-io.version>2.5</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
 
     <maven3x.version>3.0.5</maven3x.version>
@@ -59,7 +59,8 @@
     <aether.version>1.13.1</aether.version>
 
     <maven-model-converter.version>2.1</maven-model-converter.version>
-    <maven.indexer.version>5.1.1</maven.indexer.version>
+    <!-- TODO: Before Release 3.0 check, if stable version will be released -->
+    <maven.indexer.version>6.0-SNAPSHOT</maven.indexer.version>
     <wagon.version>2.9</wagon.version>
     <redback.version>3.0.0-SNAPSHOT</redback.version>
     <redback.cache.version>2.2</redback.cache.version>
@@ -70,13 +71,15 @@
     <slf4j.version>1.7.25</slf4j.version>
     <log4j.version>2.8.2</log4j.version>
 
-    <spring.version>4.3.8.RELEASE</spring.version>
+    <spring.version>4.3.10.RELEASE</spring.version>
 
     <javax.jcr.version>2.0</javax.jcr.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
-    <lucene.version>3.6.2</lucene.version>
-    <jackrabbit.version>2.14.1</jackrabbit.version>
+    <lucene.version>4.10.4</lucene.version>
+
+    <jcr-oak.version>1.7.5</jcr-oak.version>
+    <jackrabbit.version>2.15.4</jackrabbit.version>
 
     <cxf.version>3.0.3</cxf.version>
     <derbyVersion>10.13.1.1</derbyVersion>
@@ -85,7 +88,7 @@
     <javaxMailVersion>1.4</javaxMailVersion>
     <!--jettyVersion>9.4.5.v20170502</jettyVersion-->
     <jettyVersion>9.4.7-SNAPSHOT</jettyVersion>
-    <guava.version>22.0</guava.version>
+    <guava.version>15.0</guava.version>
     <openjpaVersion>2.4.1</openjpaVersion>
 
     <!-- restore when we will be able to use a derby in memory database -->
@@ -125,17 +128,6 @@
         <artifactId>assertj-core</artifactId>
         <version>1.7.1</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-webdav</artifactId>
-        <version>${jackrabbit.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>xerces</groupId>
@@ -301,10 +293,56 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>oak-jcr</artifactId>
+        <version>${jcr-oak.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>oak-segment-tar</artifactId>
+        <version>${jcr-oak.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>oak-lucene</artifactId>
+        <version>${jcr-oak.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-misc</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-facet</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-webdav</artifactId>
+        <version>${jackrabbit.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.indexer</groupId>
+        <artifactId>indexer-reader</artifactId>
+        <version>${maven.indexer.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.maven.indexer</groupId>
         <artifactId>indexer-core</artifactId>
         <version>${maven.indexer.version}</version>
+        <classifier>shaded-lucene</classifier>
         <exclusions>
+          <exclusion>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-container-default</artifactId>
@@ -332,6 +370,29 @@
           <exclusion>
             <groupId>com.google.code.atinject</groupId>
             <artifactId>atinject</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>sisu-guava</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>sisu-guice</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.archetype</groupId>
+        <artifactId>archetype-common</artifactId>
+        <version>3.0.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>*</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1322,16 +1383,7 @@
         <artifactId>jcr</artifactId>
         <version>${javax.jcr.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-jcr-commons</artifactId>
-        <version>${jackrabbit.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.jackrabbit</groupId>
-        <artifactId>jackrabbit-core</artifactId>
-        <version>${jackrabbit.version}</version>
-      </dependency>
+
 
       <!-- Transitive versions to manage -->
       <dependency>
@@ -1628,7 +1680,7 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-            <argLine>@{jacocoproperty}</argLine>
+            <argLine></argLine>
             <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
             <runOrder>alphabetical</runOrder>
             <systemPropertyVariables>

@@ -22,11 +22,5 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="repository" class="org.apache.jackrabbit.core.RepositoryImpl" destroy-method="shutdown">
-    <constructor-arg ref="config"/>
-  </bean>
-  <bean id="config" class="org.apache.jackrabbit.core.config.RepositoryConfig" factory-method="create">
-    <constructor-arg value="${basedir}/src/test/repository.xml"/>
-    <constructor-arg value="${project.build.directory}/jcr"/>
-  </bean>
+
 </beans>

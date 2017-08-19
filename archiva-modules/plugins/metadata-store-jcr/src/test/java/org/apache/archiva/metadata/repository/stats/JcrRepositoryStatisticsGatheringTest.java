@@ -24,32 +24,26 @@ import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.jcr.JcrMetadataRepository;
+import org.apache.archiva.metadata.repository.jcr.RepositoryFactory;
 import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
-import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.jackrabbit.core.TransientRepository;
-import org.apache.jackrabbit.core.config.RepositoryConfig;
-import org.apache.regexp.RE;
+import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.jcr.ImportUUIDBehavior;
-import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
-import javax.jcr.Workspace;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
 import java.io.File;
@@ -59,12 +53,9 @@ import java.util.Date;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import static org.junit.Assert.assertEquals;
-
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
 public class JcrRepositoryStatisticsGatheringTest extends TestCase
-
 {
     private static final int TOTAL_FILE_COUNT = 1000;
 
@@ -80,13 +71,24 @@ public class JcrRepositoryStatisticsGatheringTest extends TestCase
     @Inject
     private ApplicationContext applicationContext;
 
-    @Inject
-    @Named("repository")
-    Repository jcrRepository;
-
     Session session;
 
 
+    private static Repository jcrRepository;
+
+    @BeforeClass
+    public static void setupSpec() throws IOException, InvalidFileStoreVersionException
+    {
+        File directory = new File( "target/test-repositories" );
+        if ( directory.exists() )
+        {
+            FileUtils.deleteDirectory( directory );
+        }
+        RepositoryFactory factory = new RepositoryFactory();
+        factory.setRepositoryPath( directory.getPath() );
+        factory.setStoreType( RepositoryFactory.StoreType.IN_MEMORY_TYPE );
+        jcrRepository = factory.createRepository();
+    }
 
 
     @Before
@@ -94,17 +96,14 @@ public class JcrRepositoryStatisticsGatheringTest extends TestCase
         throws Exception
     {
 
-        File directory = new File( "target/test-repositories" );
-        if ( directory.exists() )
-        {
-            FileUtils.deleteDirectory( directory );
-        }
-
         Map<String, MetadataFacetFactory> factories = AbstractMetadataRepositoryTest.createTestMetadataFacetFactories();
 
         assertNotNull( jcrRepository );
         // TODO: probably don't need to use Spring for this
         JcrMetadataRepository jcrMetadataRepository = new JcrMetadataRepository( factories, jcrRepository );
+
+
+        session = jcrMetadataRepository.getJcrSession();
 
         try
         {

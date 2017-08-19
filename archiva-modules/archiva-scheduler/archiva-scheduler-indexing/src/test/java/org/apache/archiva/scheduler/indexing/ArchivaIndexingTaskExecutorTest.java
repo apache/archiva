@@ -22,21 +22,24 @@ package org.apache.archiva.scheduler.indexing;
 import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.TopDocs;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.expr.StringSearchExpression;
+import org.apache.maven.index_shaded.lucene.search.BooleanClause;
+import org.apache.maven.index_shaded.lucene.search.BooleanQuery;
+import org.apache.maven.index_shaded.lucene.search.IndexSearcher;
+import org.apache.maven.index_shaded.lucene.search.TopDocs;
+import org.apache.maven.index.updater.DefaultIndexUpdater;
+import org.apache.maven.index.updater.IndexUpdateRequest;
+import org.apache.maven.index.updater.IndexUpdater;
+import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,18 +47,10 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.List;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * ArchivaIndexingTaskExecutorTest
@@ -70,16 +65,17 @@ public class ArchivaIndexingTaskExecutorTest
 
     private ManagedRepository repositoryConfig;
 
+    @Inject
     private NexusIndexer indexer;
 
     @Inject
-    PlexusSisuBridge plexusSisuBridge;
-
-    @Inject
-    MavenIndexerUtils mavenIndexerUtils;
+    List<IndexCreator> indexCreators;
 
     @Inject
     ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
+    private IndexUpdater indexUpdater;
 
     @Before
     @Override
@@ -97,8 +93,6 @@ public class ArchivaIndexingTaskExecutorTest
         repositoryConfig.setScanned( true );
         repositoryConfig.setSnapshots( false );
         repositoryConfig.setReleases( true );
-
-        indexer = plexusSisuBridge.lookup( NexusIndexer.class );
 
         managedRepositoryAdmin.createIndexContext( repositoryConfig );
     }
@@ -147,19 +141,19 @@ public class ArchivaIndexingTaskExecutorTest
 
         BooleanQuery q = new BooleanQuery();
         q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "org.apache.archiva" ) ),
-               Occur.SHOULD );
+               BooleanClause.Occur.SHOULD );
         q.add(
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
-            Occur.SHOULD );
+            BooleanClause.Occur.SHOULD );
 
         if ( !indexer.getIndexingContexts().containsKey( repositoryConfig.getId() ) )
         {
-            IndexingContext context = indexer.addIndexingContext( repositoryConfig.getId(), repositoryConfig.getId(),
-                                                                  new File( repositoryConfig.getLocation() ),
-                                                                  new File( repositoryConfig.getLocation(),
-                                                                            ".indexer" ), null, null,
-                                                                  mavenIndexerUtils.getAllIndexCreators()
-            );
+            IndexingContext context = indexer.addIndexingContext( repositoryConfig.getId(), //
+                                                                  repositoryConfig.getId(), //
+                                                                  new File( repositoryConfig.getLocation() ), //
+                                                                  new File( repositoryConfig.getLocation(), ".indexer" )
+                                                                  //
+                , null, null, indexCreators );
             context.setSearchable( true );
         }
 
@@ -173,9 +167,9 @@ public class ArchivaIndexingTaskExecutorTest
         Set<ArtifactInfo> results = response.getResults();
 
         ArtifactInfo artifactInfo = results.iterator().next();
-        assertEquals( "org.apache.archiva", artifactInfo.groupId );
-        assertEquals( "archiva-index-methods-jar-test", artifactInfo.artifactId );
-        assertEquals( "test-repo", artifactInfo.repository );
+        assertEquals( "org.apache.archiva", artifactInfo.getGroupId() );
+        assertEquals( "archiva-index-methods-jar-test", artifactInfo.getArtifactId() );
+        assertEquals( "test-repo", artifactInfo.getRepository() );
 
     }
 
@@ -195,10 +189,10 @@ public class ArchivaIndexingTaskExecutorTest
 
         BooleanQuery q = new BooleanQuery();
         q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "org.apache.archiva" ) ),
-               Occur.SHOULD );
+               BooleanClause.Occur.SHOULD );
         q.add(
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
-            Occur.SHOULD );
+            BooleanClause.Occur.SHOULD );
 
         IndexingContext ctx = indexer.getIndexingContexts().get( repositoryConfig.getId() );
 
@@ -231,7 +225,7 @@ public class ArchivaIndexingTaskExecutorTest
 
         BooleanQuery q = new BooleanQuery();
         q.add( indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.apache.archiva" ) ),
-               Occur.SHOULD );
+               BooleanClause.Occur.SHOULD );
         //q.add(
         //    indexer.constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( "archiva-index-methods-jar-test" ) ),
         //    Occur.SHOULD );
@@ -258,10 +252,10 @@ public class ArchivaIndexingTaskExecutorTest
 
         q = new BooleanQuery();
         q.add( indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.apache.archiva" ) ),
-               Occur.SHOULD );
+               BooleanClause.Occur.SHOULD );
         q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID,
-                                       new SourcedSearchExpression( "archiva-index-methods-jar-test" ) ), Occur.SHOULD
-        );
+                                       new SourcedSearchExpression( "archiva-index-methods-jar-test" ) ),
+               BooleanClause.Occur.SHOULD );
 
         assertTrue( new File( repositoryConfig.getLocation(), ".indexer" ).exists() );
         assertFalse( new File( repositoryConfig.getLocation(), ".index" ).exists() );
@@ -315,20 +309,26 @@ public class ArchivaIndexingTaskExecutorTest
         assertTrue( indexerDirectory.exists() );
 
         // test packed index file creation
-        assertTrue( new File( indexerDirectory, "nexus-maven-repository-index.zip" ).exists() );
-        assertTrue( new File( indexerDirectory, "nexus-maven-repository-index.properties" ).exists() );
-        assertTrue( new File( indexerDirectory, "nexus-maven-repository-index.gz" ).exists() );
+        //no more zip
+        //Assertions.assertThat(new File( indexerDirectory, "nexus-maven-repository-index.zip" )).exists();
+        Assertions.assertThat( new File( indexerDirectory, "nexus-maven-repository-index.properties" ) ).exists();
+        Assertions.assertThat( new File( indexerDirectory, "nexus-maven-repository-index.gz" ) ).exists();
 
         // unpack .zip index
         File destDir = new File( repositoryConfig.getLocation(), ".indexer/tmp" );
-        unzipIndex( indexerDirectory.getPath(), destDir.getPath() );
+        //unzipIndex( indexerDirectory.getPath(), destDir.getPath() );
+
+        DefaultIndexUpdater.FileFetcher fetcher = new DefaultIndexUpdater.FileFetcher( indexerDirectory );
+        IndexUpdateRequest updateRequest = new IndexUpdateRequest( getIndexingContext(), fetcher );
+        //updateRequest.setLocalIndexCacheDir( indexerDirectory );
+        indexUpdater.fetchAndUpdateIndex( updateRequest );
 
         BooleanQuery q = new BooleanQuery();
         q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "org.apache.archiva" ) ),
-               Occur.SHOULD );
+               BooleanClause.Occur.SHOULD );
         q.add(
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
-            Occur.SHOULD );
+            BooleanClause.Occur.SHOULD );
 
         FlatSearchRequest request = new FlatSearchRequest( q, getIndexingContext() );
         FlatSearchResponse response = indexer.searchFlat( request );
@@ -336,42 +336,11 @@ public class ArchivaIndexingTaskExecutorTest
         Set<ArtifactInfo> results = response.getResults();
 
         ArtifactInfo artifactInfo = results.iterator().next();
-        assertEquals( "org.apache.archiva", artifactInfo.groupId );
-        assertEquals( "archiva-index-methods-jar-test", artifactInfo.artifactId );
-        assertEquals( "test-repo", artifactInfo.repository );
+        assertEquals( "org.apache.archiva", artifactInfo.getGroupId() );
+        assertEquals( "archiva-index-methods-jar-test", artifactInfo.getArtifactId() );
+        assertEquals( "test-repo", artifactInfo.getRepository() );
 
         assertEquals( 1, response.getTotalHits() );
     }
 
-    private void unzipIndex( String indexDir, String destDir )
-        throws IOException
-    {
-        final int buff = 2048;
-
-        Files.createDirectories( Paths.get( destDir ) );
-
-        try (InputStream fin = Files.newInputStream( Paths.get( indexDir, "nexus-maven-repository-index.zip" ) ))
-        {
-            ZipInputStream in = new ZipInputStream( new BufferedInputStream( fin ) );
-            ZipEntry entry;
-
-            while ( ( entry = in.getNextEntry() ) != null )
-            {
-                int count;
-                byte data[] = new byte[buff];
-                try (OutputStream fout = Files.newOutputStream( Paths.get( destDir, entry.getName() ) ))
-                {
-                    try (BufferedOutputStream out = new BufferedOutputStream( fout, buff ))
-                    {
-
-                        while ( ( count = in.read( data, 0, buff ) ) != -1 )
-                        {
-                            out.write( data, 0, count );
-                        }
-                    }
-                }
-            }
-
-        }
-    }
 }

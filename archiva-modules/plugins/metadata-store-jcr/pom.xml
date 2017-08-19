@@ -52,6 +52,12 @@
       <artifactId>archiva-test-utils</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>  
     <dependency>
       <groupId>javax.jcr</groupId>
@@ -59,23 +65,38 @@
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-jcr-commons</artifactId>
+      <artifactId>oak-jcr</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-core</artifactId>
-      <scope>provided</scope>
-      <!-- could trim more, but since it's just for test we don't need to worry -->
+      <artifactId>oak-segment-tar</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jackrabbit</groupId>
+      <artifactId>oak-lucene</artifactId>
+      <version>${jcr-oak.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jcl-over-slf4j</artifactId>
+          <groupId>org.apache.lucene</groupId>
+          <artifactId>lucene-misc</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.lucene</groupId>
+          <artifactId>lucene-facet</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-jcl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
@@ -101,6 +122,57 @@
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-misc</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-facet</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-codecs</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-queryparser</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-sandbox</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-highlighter</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-memory</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-analyzers-common</artifactId>
+      <version>${lucene.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-core</artifactId>
+      <version>3.1.0</version>
     </dependency>
   </dependencies>
   <build>
@@ -134,13 +206,20 @@
               org.apache.archiva.metadata.model;version=${project.version},
               org.apache.archiva.metadata.repository;version=${project.version},
               org.apache.commons.lang;version="[2.4,3)",
-              org.apache.jackrabbit.commons;version="[2.3,3)",
-              org.apache.jackrabbit.core.config,
               org.springframework*;version="[3,4)",
               org.slf4j;resolution:=optional,
               org.apache.commons.lang.time
             </Import-Package>
           </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <appserver.base>${project.build.directory}/jcr/repo</appserver.base>
+          </systemPropertyVariables>
         </configuration>
       </plugin>
     </plugins>

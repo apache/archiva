@@ -16,25 +16,15 @@
   ~ KIND, either express or implied.  See the License for the
   ~ specific language governing permissions and limitations
   ~ under the License.
-  -->
-
-
+-->
 <configuration status="debug">
-
-
-
   <appenders>
     <Console name="console" target="SYSTEM_OUT">
-      <!--PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/-->
       <PatternLayout pattern="%highlight{%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n}" />
     </Console>
-
   </appenders>
   <loggers>
-
-
-    <logger name="org.apache.archiva.common.filelock" level="debug"/>
-
+    <logger name="org.apache.archiva.common.filelock" level="info"/>
     <root level="info" includeLocation="true">
       <appender-ref ref="console"/>
     </root>

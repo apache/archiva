@@ -369,21 +369,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.jackrabbit</groupId>
-      <artifactId>jackrabbit-core</artifactId>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jcl-over-slf4j</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
@@ -509,7 +494,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>-Xmx1024m -Xms512m -XX:MaxPermSize=256m @{jacocoproperty}</argLine>
+          <reuseForks>false</reuseForks>
+          <argLine>-Xms1024m -Xmx2048m -server -XX:MaxPermSize=256m @{jacocoproperty}</argLine>
           <systemPropertyVariables>
             <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             <plexus.home>${project.build.directory}/appserver-base</plexus.home>

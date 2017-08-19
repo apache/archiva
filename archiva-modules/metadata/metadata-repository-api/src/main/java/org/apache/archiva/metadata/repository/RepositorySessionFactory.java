@@ -22,4 +22,6 @@ package org.apache.archiva.metadata.repository;
 public interface RepositorySessionFactory
 {
     RepositorySession createSession();
+
+    void close();
 }

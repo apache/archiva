@@ -37,6 +37,7 @@
 
   <util:properties id="archivaRuntimeProperties" location="classpath:application.properties" />
 
+  <!--
   <bean id="jcr-repository" class="org.apache.jackrabbit.core.RepositoryImpl" destroy-method="shutdown" lazy-init="true">
     <constructor-arg ref="jcr-config"/>
   </bean>
@@ -46,7 +47,7 @@
     <constructor-arg value="${appserver.base}/conf/repository.xml"/>
     <constructor-arg value="${appserver.base}/data/jcr"/>
   </bean>
-
+ -->
 
 
   <jee:jndi-lookup id="dataSource" jndi-name="java:/comp/env/jdbc/users" />

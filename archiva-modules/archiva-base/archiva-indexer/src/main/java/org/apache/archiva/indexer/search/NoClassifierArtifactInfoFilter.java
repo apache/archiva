@@ -38,6 +38,6 @@ public class NoClassifierArtifactInfoFilter
     @Override
     public boolean addArtifactInResult( ArtifactInfo artifact, Map<String, SearchResultHit> currentResult )
     {
-        return StringUtils.isBlank( artifact.classifier );
+        return StringUtils.isBlank( artifact.getClassifier() );
     }
 }

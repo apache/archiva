@@ -56,7 +56,7 @@ public abstract class AbstractArtifactConsumerTest
     ArchivaConfiguration archivaConfiguration;
 
     @Inject
-    protected PlexusSisuBridge plexusSisuBridge;
+    protected NexusIndexer nexusIndexer;
 
 
     @Before
@@ -75,7 +75,6 @@ public abstract class AbstractArtifactConsumerTest
     public void tearDown()
         throws Exception
     {
-        NexusIndexer nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
         for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
         {
             nexusIndexer.removeIndexingContext( indexingContext, false );

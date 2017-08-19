@@ -44,10 +44,10 @@ public class TemporaryGroupIndexCleaner
     private NexusIndexer indexer;
 
     @Inject
-    public TemporaryGroupIndexCleaner( PlexusSisuBridge plexusSisuBridge )
+    public TemporaryGroupIndexCleaner( NexusIndexer nexusIndexer )
         throws PlexusSisuBridgeException
     {
-        indexer = plexusSisuBridge.lookup( NexusIndexer.class );
+        this.indexer = nexusIndexer;
     }
 
     // 900000
@@ -55,15 +55,19 @@ public class TemporaryGroupIndexCleaner
     public void cleanTemporaryIndex()
     {
 
-        for ( TemporaryGroupIndex temporaryGroupIndex : indexMerger.getTemporaryGroupIndexes() )
-        {
-            // cleanup files older than the ttl
-            if ( new Date().getTime() - temporaryGroupIndex.getCreationTime() > temporaryGroupIndex.getMergedIndexTtl() )
-            {
-                log.info( "cleanTemporaryIndex for groupId {}", temporaryGroupIndex.getGroupId() );
-                indexMerger.cleanTemporaryGroupIndex( temporaryGroupIndex );
+        indexMerger.getTemporaryGroupIndexes()
+            .stream()
+            .forEach( temporaryGroupIndex ->
+                 {
+                     // cleanup files older than the ttl
+                     if ( new Date().getTime() - temporaryGroupIndex.getCreationTime() >
+                         temporaryGroupIndex.getMergedIndexTtl() )
+                     {
+                         log.info( "cleanTemporaryIndex for groupId {}", temporaryGroupIndex.getGroupId() );
+                         indexMerger.cleanTemporaryGroupIndex( temporaryGroupIndex );
 
-            }
-        }
+                     }
+                 }
+        );
     }
 }

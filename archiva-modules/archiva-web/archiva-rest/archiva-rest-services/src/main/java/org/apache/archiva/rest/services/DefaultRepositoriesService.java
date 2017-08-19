@@ -23,16 +23,15 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
-import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
@@ -124,9 +123,6 @@ public class DefaultRepositoriesService
 
     @Inject
     private PlexusSisuBridge plexusSisuBridge;
-
-    @Inject
-    private MavenIndexerUtils mavenIndexerUtils;
 
     @Inject
     private SecuritySystem securitySystem;

@@ -20,16 +20,15 @@ package org.apache.archiva.scheduler.indexing;
 
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.expr.StringSearchExpression;
+import org.apache.maven.index_shaded.lucene.search.BooleanClause;
+import org.apache.maven.index_shaded.lucene.search.BooleanQuery;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -75,8 +74,6 @@ public class DownloadRemoteIndexTaskTest
     DefaultDownloadRemoteIndexScheduler downloadRemoteIndexScheduler;
 
     @Inject
-    PlexusSisuBridge plexusSisuBridge;
-
     NexusIndexer nexusIndexer;
 
     @Before
@@ -90,7 +87,6 @@ public class DownloadRemoteIndexTaskTest
         this.server.start();
         this.port = serverConnector.getLocalPort();
         log.info( "start server on port {}", this.port );
-        nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
     }
 
     protected void createContext( Server server, File repositoryDirectory )

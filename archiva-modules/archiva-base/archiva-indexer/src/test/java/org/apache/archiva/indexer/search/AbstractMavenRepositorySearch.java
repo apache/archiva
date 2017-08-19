@@ -22,7 +22,6 @@ package org.apache.archiva.indexer.search;
 import junit.framework.TestCase;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
-import org.apache.archiva.common.plexusbridge.MavenIndexerUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -35,7 +34,9 @@ import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
 import org.apache.maven.index.ArtifactScanningListener;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.QueryCreator;
 import org.apache.maven.index.ScanningResult;
+import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
@@ -72,6 +73,7 @@ public abstract class AbstractMavenRepositorySearch
 
     ArchivaConfiguration archivaConfig;
 
+    @Inject
     ArtifactContextProducer artifactContextProducer;
 
     IMocksControl archivaConfigControl;
@@ -82,9 +84,13 @@ public abstract class AbstractMavenRepositorySearch
     PlexusSisuBridge plexusSisuBridge;
 
     @Inject
-    MavenIndexerUtils mavenIndexerUtils;
+    List<IndexCreator> indexCreators;
 
+    @Inject
     NexusIndexer nexusIndexer;
+
+    @Inject
+    QueryCreator queryCreator;
 
     @Before
     @Override
@@ -99,7 +105,7 @@ public abstract class AbstractMavenRepositorySearch
         FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ) );
         assertFalse( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ).exists() );
 
-        archivaConfigControl = EasyMock.createControl( );
+        archivaConfigControl = EasyMock.createControl();
 
         archivaConfig = archivaConfigControl.createMock( ArchivaConfiguration.class );
 
@@ -109,16 +115,11 @@ public abstract class AbstractMavenRepositorySearch
         DefaultProxyConnectorAdmin defaultProxyConnectorAdmin = new DefaultProxyConnectorAdmin();
         defaultProxyConnectorAdmin.setArchivaConfiguration( archivaConfig );
 
-        search = new MavenRepositorySearch( plexusSisuBridge, defaultManagedRepositoryAdmin, mavenIndexerUtils,
-                                            defaultProxyConnectorAdmin );
+        search = new MavenRepositorySearch( nexusIndexer, defaultManagedRepositoryAdmin, defaultProxyConnectorAdmin,
+                                            queryCreator );
 
-        nexusIndexer = plexusSisuBridge.lookup( NexusIndexer.class );
-
-        artifactContextProducer = plexusSisuBridge.lookup( ArtifactContextProducer.class );
-
-        defaultManagedRepositoryAdmin.setMavenIndexerUtils( mavenIndexerUtils );
         defaultManagedRepositoryAdmin.setIndexer( nexusIndexer );
-        defaultManagedRepositoryAdmin.setIndexCreators( mavenIndexerUtils.getAllIndexCreators() );
+        defaultManagedRepositoryAdmin.setIndexCreators( indexCreators );
 
         config = new Configuration();
         config.addManagedRepository( createRepositoryConfig( TEST_REPO_1 ) );
@@ -201,12 +202,11 @@ public abstract class AbstractMavenRepositorySearch
 
         context = nexusIndexer.addIndexingContext( repository, repository, repo, indexDirectory,
                                                    repo.toURI().toURL().toExternalForm(),
-                                                   indexDirectory.toURI().toURL().toString(),
-                                                   search.getAllIndexCreators() );
+                                                   indexDirectory.toURI().toURL().toString(), indexCreators );
 
         // minimize datas in memory
-        context.getIndexWriter().setMaxBufferedDocs( -1 );
-        context.getIndexWriter().setRAMBufferSizeMB( 1 );
+//        context.getIndexWriter().setMaxBufferedDocs( -1 );
+//        context.getIndexWriter().setRAMBufferSizeMB( 1 );
         for ( File artifactFile : filesToBeIndexed )
         {
             assertTrue( "file not exists " + artifactFile.getPath(), artifactFile.exists() );
@@ -214,9 +214,9 @@ public abstract class AbstractMavenRepositorySearch
 
             if ( artifactFile.getPath().endsWith( ".pom" ) )
             {
-                ac.getArtifactInfo().fextension = "pom";
-                ac.getArtifactInfo().packaging = "pom";
-                ac.getArtifactInfo().classifier = "pom";
+                ac.getArtifactInfo().setFileExtension( "pom" );
+                ac.getArtifactInfo().setPackaging( "pom" );
+                ac.getArtifactInfo().setClassifier( "pom" );
             }
             nexusIndexer.addArtifactToIndex( ac, context );
             context.updateTimestamp( true );
@@ -240,13 +240,13 @@ public abstract class AbstractMavenRepositorySearch
         @Override
         public void scanningStarted( IndexingContext ctx )
         {
-
+            //
         }
 
         @Override
         public void scanningFinished( IndexingContext ctx, ScanningResult result )
         {
-
+            // no op
         }
 
         @Override
@@ -258,7 +258,9 @@ public abstract class AbstractMavenRepositorySearch
         @Override
         public void artifactDiscovered( ArtifactContext ac )
         {
-            log.debug( "artifactDiscovered {}:{}", ac.getArtifact().getPath(), ac.getArtifactInfo() );
+            log.debug( "artifactDiscovered {}:{}", //
+                       ac.getArtifact() == null ? "" : ac.getArtifact().getPath(), //
+                       ac.getArtifact() == null ? "" : ac.getArtifactInfo() );
         }
     }
 
