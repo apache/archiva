@@ -65,6 +65,19 @@
       </exclusions>
     </dependency>
 
+    <!--
+      jcr-oak currently needs guava 15.0 and selenium webdriver needs 22.0
+      This is a rather poor workaround here better would be a way to use
+      the higher version for all scopes.
+      TODO: Check what's necessary to get jcr oak running with 22.0
+     -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>22.0</version>
+      <scope>test</scope>
+    </dependency>
+
     <!-- Selenium dependencies -->
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
