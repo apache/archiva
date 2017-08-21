@@ -58,7 +58,7 @@ public abstract class AbstractProgressConsumer
         count++;
         if ( ( count % 1000 ) == 0 )
         {
-            System.out.println( "Files Processed: " + count );
+            logger.info( "Files Processed: {}", count );
         }
 
     }
@@ -73,7 +73,7 @@ public abstract class AbstractProgressConsumer
     @Override
     public void completeScan()
     {
-        System.out.println( "Final Count of Artifacts processed by " + getId() + ": " + count );
+        logger.info( "Final Count of Artifacts processed by {} : {}", getId(), count );
     }
 
     @Override

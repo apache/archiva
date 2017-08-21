@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository.jcr;
  * under the License.
  */
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.CiManagement;
 import org.apache.archiva.metadata.model.Dependency;
@@ -40,12 +41,8 @@ import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsProvider;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
-import org.apache.jackrabbit.oak.plugins.index.IndexUtils;
-import org.apache.jackrabbit.oak.spi.state.NodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableMap;
 
 import javax.jcr.InvalidItemStateException;
 import javax.jcr.NamespaceRegistry;
@@ -66,7 +63,6 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -86,7 +82,7 @@ import java.util.Set;
  * TODO revise reference storage
  */
 public class JcrMetadataRepository
-    implements MetadataRepository,RepositoryStatisticsProvider
+    implements MetadataRepository, RepositoryStatisticsProvider
 {
 
     private static final String JCR_LAST_MODIFIED = "jcr:lastModified";
@@ -146,7 +142,6 @@ public class JcrMetadataRepository
         registerMixinNodeType( nodeTypeManager, JcrMetadataRepository.DEPENDENCY_NODE_TYPE );
 
 
-
     }
 
     private static void registerMixinNodeType( NodeTypeManager nodeTypeManager, String name )
@@ -163,7 +158,6 @@ public class JcrMetadataRepository
             nodeTypeManager.registerNodeType( nodeType, false );
         }
     }
-
 
 
     @Override
@@ -750,7 +744,7 @@ public class JcrMetadataRepository
             long start = Calendar.getInstance().getTimeInMillis();
             QueryResult result = query.execute();
             long end = Calendar.getInstance().getTimeInMillis();
-            log.info( "JCR Query ran in {} milliseconds: {}", end - start , q );
+            log.info( "JCR Query ran in {} milliseconds: {}", end - start, q );
 
             artifacts = new ArrayList<>();
             RowIterator rows = result.getRows();
@@ -765,9 +759,10 @@ public class JcrMetadataRepository
         {
             throw new MetadataRepositoryException( e.getMessage(), e );
         }
-        log.info("Artifacts found {}", artifacts.size());
-        for (ArtifactMetadata meta : artifacts) {
-            log.info("Artifact: "+meta.getVersion()+" "+meta.getFacetList());
+        log.info( "Artifacts found {}", artifacts.size() );
+        for ( ArtifactMetadata meta : artifacts )
+        {
+            log.info( "Artifact: " + meta.getVersion() + " " + meta.getFacetList() );
         }
         return artifacts;
     }
@@ -789,9 +784,8 @@ public class JcrMetadataRepository
     public List<ArtifactMetadata> getArtifactsByMetadata( String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
-        String q =
-            "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "] AS artifact INNER JOIN [" + FACET_NODE_TYPE
-                + "] AS facet ON ISCHILDNODE(facet, artifact) WHERE ([facet].[" + key + "] = $value)";
+        String q = "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "] AS artifact INNER JOIN [" + FACET_NODE_TYPE
+            + "] AS facet ON ISCHILDNODE(facet, artifact) WHERE ([facet].[" + key + "] = $value)";
 
         return runJcrQuery( repositoryId, q, ImmutableMap.of( "value", value ) );
     }
@@ -860,8 +854,8 @@ public class JcrMetadataRepository
 
     private static String getArtifactQuery( String repositoryId )
     {
-        return "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "] AS artifact WHERE ISDESCENDANTNODE(artifact,'/" +
-            getRepositoryContentPath( repositoryId ) + "')";
+        return "SELECT * FROM [" + ARTIFACT_NODE_TYPE + "] AS artifact WHERE ISDESCENDANTNODE(artifact,'/"
+            + getRepositoryContentPath( repositoryId ) + "')";
     }
 
     @Override
@@ -1109,8 +1103,8 @@ public class JcrMetadataRepository
         List<ProjectVersionReference> references = new ArrayList<>();
 
         // TODO: bind variables instead
-        String q = "SELECT * FROM [archiva:dependency] WHERE ISDESCENDANTNODE([/repositories/" + repositoryId +
-            "/content]) AND [groupId]='" + namespace + "' AND [artifactId]='" + projectId + "'";
+        String q = "SELECT * FROM [archiva:dependency] WHERE ISDESCENDANTNODE([/repositories/" + repositoryId
+            + "/content]) AND [groupId]='" + namespace + "' AND [artifactId]='" + projectId + "'";
         if ( projectVersion != null )
         {
             q += " AND [version]='" + projectVersion + "'";
@@ -1361,7 +1355,9 @@ public class JcrMetadataRepository
         try
         {
             getJcrSession().save();
-        } catch ( InvalidItemStateException e ) {
+        }
+        catch ( InvalidItemStateException e )
+        {
             // olamy this might happen when deleting a repo while is under scanning
             log.warn( "skip InvalidItemStateException:{}", e.getMessage(), e );
         }
@@ -1391,7 +1387,7 @@ public class JcrMetadataRepository
     }
 
     @Override
-    public <T>T obtainAccess( Class<T> aClass )
+    public <T> T obtainAccess( Class<T> aClass )
         throws MetadataRepositoryException
     {
         if ( aClass == Session.class )
@@ -1440,10 +1436,10 @@ public class JcrMetadataRepository
             e ? "(projectVersion." + theKey + " = $value)" : "contains([projectVersion]." + theKey + ", $value)";
         String facetCondition = e ? "(facet." + theKey + " = $value)" : "contains([facet]." + theKey + ", $value)";
         String q =
-            "SELECT * FROM [" + PROJECT_VERSION_NODE_TYPE + "] AS projectVersion LEFT OUTER JOIN ["
-                + ARTIFACT_NODE_TYPE + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) LEFT OUTER JOIN ["
-                + FACET_NODE_TYPE + "] AS facet ON ISCHILDNODE(facet, projectVersion) WHERE ("
-                + projectVersionCondition + " OR " + facetCondition + ")";
+            "SELECT * FROM [" + PROJECT_VERSION_NODE_TYPE + "] AS projectVersion LEFT OUTER JOIN [" + ARTIFACT_NODE_TYPE
+                + "] AS artifact ON ISCHILDNODE(artifact, projectVersion) LEFT OUTER JOIN [" + FACET_NODE_TYPE
+                + "] AS facet ON ISCHILDNODE(facet, projectVersion) WHERE (" + projectVersionCondition + " OR "
+                + facetCondition + ")";
         return runJcrQuery( repositoryId, q, ImmutableMap.of( "value", text ) );
     }
 
@@ -1454,7 +1450,7 @@ public class JcrMetadataRepository
 
         ArtifactMetadata artifact = new ArtifactMetadata();
         artifact.setId( id );
-        artifact.setRepositoryId( repositoryId == null ? artifactNode.getAncestor(2).getName() : repositoryId );
+        artifact.setRepositoryId( repositoryId == null ? artifactNode.getAncestor( 2 ).getName() : repositoryId );
 
         Node projectVersionNode = artifactNode.getParent();
         Node projectNode = projectVersionNode.getParent();
@@ -1605,7 +1601,7 @@ public class JcrMetadataRepository
     private Node getOrAddNodeByPath( Node baseNode, String name, String nodeType )
         throws RepositoryException
     {
-        log.debug("getOrAddNodeByPath"+baseNode+" "+name+" "+nodeType);
+        log.debug( "getOrAddNodeByPath" + baseNode + " " + name + " " + nodeType );
         Node node = baseNode;
         for ( String n : name.split( "/" ) )
         {
@@ -1626,10 +1622,10 @@ public class JcrMetadataRepository
     private Node getOrAddRepositoryNode( String repositoryId )
         throws RepositoryException
     {
-        log.debug("getOrAddRepositoryNode "+repositoryId);
+        log.debug( "getOrAddRepositoryNode " + repositoryId );
         Node root = getJcrSession().getRootNode();
         Node node = JcrUtils.getOrAddNode( root, "repositories" );
-        log.debug("Repositories "+node);
+        log.debug( "Repositories " + node );
         node = JcrUtils.getOrAddNode( node, repositoryId );
         return node;
     }
@@ -1711,11 +1707,13 @@ public class JcrMetadataRepository
 
     @Override
     public void populateStatistics( MetadataRepository repository, String repositoryId,
-                                            RepositoryStatistics repositoryStatistics )
+                                    RepositoryStatistics repositoryStatistics )
         throws MetadataRepositoryException
     {
-        if (!(repository instanceof JcrMetadataRepository)) {
-            throw new MetadataRepositoryException( "The statistics population is only possible for JcrMetdataRepository implementations" );
+        if ( !( repository instanceof JcrMetadataRepository ) )
+        {
+            throw new MetadataRepositoryException(
+                "The statistics population is only possible for JcrMetdataRepository implementations" );
         }
         Session session = (Session) repository.obtainAccess( Session.class );
         // TODO: these may be best as running totals, maintained by observations on the properties in JCR
@@ -1762,14 +1760,14 @@ public class JcrMetadataRepository
             repositoryStatistics.setTotalArtifactFileSize( totalSize );
             for ( Map.Entry<String, Integer> entry : totalByType.entrySet() )
             {
-                System.out.println("Setting count for type: "+entry.getKey()+" = "+entry.getValue());
+                log.info( "Setting count for type: {} = {}", entry.getKey(), entry.getValue() );
                 repositoryStatistics.setTotalCountForType( entry.getKey(), entry.getValue() );
             }
 
             // The query ordering is a trick to ensure that the size is correct, otherwise due to lazy init it will be -1
 //            query = queryManager.createQuery( "SELECT * FROM [archiva:project] " + whereClause, Query.JCR_SQL2 );
             query = queryManager.createQuery( "SELECT * FROM archiva:project " + whereClause + " ORDER BY jcr:score",
-                Query.SQL );
+                                              Query.SQL );
             repositoryStatistics.setTotalProjectCount( query.execute().getRows().getSize() );
 
 //            query = queryManager.createQuery(

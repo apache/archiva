@@ -35,6 +35,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -55,7 +57,8 @@ import java.util.zip.GZIPInputStream;
 
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
-public class JcrRepositoryStatisticsGatheringTest extends TestCase
+public class JcrRepositoryStatisticsGatheringTest
+    extends TestCase
 {
     private static final int TOTAL_FILE_COUNT = 1000;
 
@@ -73,11 +76,13 @@ public class JcrRepositoryStatisticsGatheringTest extends TestCase
 
     Session session;
 
-
     private static Repository jcrRepository;
 
+    Logger logger = LoggerFactory.getLogger( getClass() );
+
     @BeforeClass
-    public static void setupSpec() throws IOException, InvalidFileStoreVersionException
+    public static void setupSpec()
+        throws IOException, InvalidFileStoreVersionException
     {
         File directory = new File( "target/test-repositories" );
         if ( directory.exists() )
@@ -101,7 +106,6 @@ public class JcrRepositoryStatisticsGatheringTest extends TestCase
         assertNotNull( jcrRepository );
         // TODO: probably don't need to use Spring for this
         JcrMetadataRepository jcrMetadataRepository = new JcrMetadataRepository( factories, jcrRepository );
-
 
         session = jcrMetadataRepository.getJcrSession();
 
@@ -136,9 +140,9 @@ public class JcrRepositoryStatisticsGatheringTest extends TestCase
     public void tearDown()
         throws Exception
     {
-        if (repository!=null)
+        if ( repository != null )
         {
-            repository.close( );
+            repository.close();
         }
 
     }
@@ -181,9 +185,9 @@ public class JcrRepositoryStatisticsGatheringTest extends TestCase
         expectedStatistics.setTotalCountForType( "pom", 144 );
         expectedStatistics.setRepositoryId( TEST_REPO );
 
-        System.out.println(testedStatistics.getTotalCountForType());
+        logger.info("getTotalCountForType: {}", testedStatistics.getTotalCountForType() );
 
-        assertEquals( NEW_FILE_COUNT, testedStatistics.getNewFileCount());
+        assertEquals( NEW_FILE_COUNT, testedStatistics.getNewFileCount() );
         assertEquals( TOTAL_FILE_COUNT, testedStatistics.getTotalFileCount() );
         assertEquals( endTime, testedStatistics.getScanEndTime() );
         assertEquals( startTime, testedStatistics.getScanStartTime() );

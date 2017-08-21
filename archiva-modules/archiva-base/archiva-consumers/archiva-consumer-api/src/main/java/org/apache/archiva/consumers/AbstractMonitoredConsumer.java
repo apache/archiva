@@ -20,6 +20,8 @@ package org.apache.archiva.consumers;
  */
 
 import org.apache.archiva.common.FileTypeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +35,9 @@ import java.util.Set;
 public abstract class AbstractMonitoredConsumer
     implements Consumer
 {
+
+    protected final Logger logger = LoggerFactory.getLogger( getClass() );
+
     private final Set<ConsumerMonitor> monitors = new HashSet<ConsumerMonitor>();
     
     @Override

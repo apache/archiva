@@ -32,6 +32,8 @@ import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
@@ -50,7 +52,7 @@ import java.util.Properties;
 
 /**
  * ArchivaCli
- *
+ * <p>
  * TODO add back reading of archiva.xml from a given location
  */
 public class ArchivaCli
@@ -66,6 +68,8 @@ public class ArchivaCli
     public static final String BLACKLISTED_PATTERNS = "blacklistPatterns";
 
     public static final String POM_PROPERTIES = "/META-INF/maven/org.apache.archiva/archiva-cli/pom.properties";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( ArchivaCli.class );
 
     private static String getVersion()
         throws IOException
@@ -102,7 +106,7 @@ public class ArchivaCli
         }
         catch ( IllegalArgumentException e )
         {
-            System.err.println( e.getMessage() );
+            LOGGER.error( e.getMessage(), e );
             Args.usage( command );
             return;
         }
@@ -132,7 +136,7 @@ public class ArchivaCli
         }
         else if ( command.version )
         {
-            System.out.print( "Version: " + getVersion() );
+            LOGGER.info( "Version: {}", getVersion() );
         }
         else if ( command.convert )
         {
@@ -142,7 +146,7 @@ public class ArchivaCli
         {
             if ( command.repository == null )
             {
-                System.err.println( "The repository must be specified." );
+                LOGGER.error( "The repository must be specified." );
                 Args.usage( command );
                 return;
             }
@@ -183,11 +187,11 @@ public class ArchivaCli
             RepositoryScanStatistics stats = scanner.scan( repo, knownConsumerList, invalidConsumerList, ignoredContent,
                                                            RepositoryScanner.FRESH_SCAN );
 
-            System.out.println( "\n" + stats.toDump( repo ) );
+            LOGGER.info( stats.toDump( repo ) );
         }
         catch ( RepositoryScannerException e )
         {
-            e.printStackTrace( System.err );
+            LOGGER.error( e.getMessage(), e );
         }
     }
 
@@ -202,7 +206,7 @@ public class ArchivaCli
         {
             if ( !availableConsumers.containsKey( specifiedConsumer ) )
             {
-                System.err.println( "Specified consumer [" + specifiedConsumer + "] not found." );
+                LOGGER.error( "Specified consumer [{}] not found.", specifiedConsumer );
                 dumpAvailableConsumers();
                 System.exit( 1 );
             }
@@ -217,14 +221,14 @@ public class ArchivaCli
     {
         Map<String, KnownRepositoryContentConsumer> availableConsumers = getConsumers();
 
-        System.out.println( ".\\ Available Consumer List \\.______________________________" );
+        LOGGER.info( ".\\ Available Consumer List \\.______________________________" );
 
         for ( Map.Entry<String, KnownRepositoryContentConsumer> entry : availableConsumers.entrySet() )
         {
             String consumerHint = entry.getKey();
             RepositoryContentConsumer consumer = entry.getValue();
-            System.out.println(
-                "  " + consumerHint + ": " + consumer.getDescription() + " (" + consumer.getClass().getName() + ")" );
+            LOGGER.info( "  {} : {} ({})", //
+                         consumerHint, consumer.getDescription(), consumer.getClass().getName() );
         }
     }
 
@@ -249,11 +253,12 @@ public class ArchivaCli
     private void doConversion( String properties )
         throws IOException, RepositoryConversionException
     {
-        LegacyRepositoryConverter legacyRepositoryConverter = applicationContext.getBean( LegacyRepositoryConverter.class );
+        LegacyRepositoryConverter legacyRepositoryConverter =
+            applicationContext.getBean( LegacyRepositoryConverter.class );
 
         Properties p = new Properties();
 
-        try (InputStream fis = Files.newInputStream( Paths.get(properties)))
+        try (InputStream fis = Files.newInputStream( Paths.get( properties ) ))
         {
             p.load( fis );
         }
@@ -262,7 +267,7 @@ public class ArchivaCli
 
         File newRepositoryPath = new File( p.getProperty( TARGET_REPO_PATH ) );
 
-        System.out.println( "Converting " + oldRepositoryPath + " to " + newRepositoryPath );
+        LOGGER.info( "Converting {} to {}", oldRepositoryPath, newRepositoryPath );
 
         List<String> fileExclusionPatterns = null;
 
@@ -294,9 +299,7 @@ public class ArchivaCli
         @Argument( description = "Scan the specified repository", value = "scan", alias = "s" )
         private boolean scan;
 
-        @Argument(
-            description = "Convert a legacy Maven 1.x repository to a Maven 2.x repository using a properties file to describe the conversion",
-            value = "convert", alias = "c" )
+        @Argument( description = "Convert a legacy Maven 1.x repository to a Maven 2.x repository using a properties file to describe the conversion", value = "convert", alias = "c" )
         private boolean convert;
 
         @Argument( description = "The properties file for the conversion", value = "properties" )
