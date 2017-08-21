@@ -31,11 +31,11 @@ import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.TransferFailedException;
 import org.apache.maven.wagon.Wagon;
-import org.apache.maven.wagon.providers.http.AbstractHttpClientWagon;
-import org.apache.maven.wagon.providers.http.HttpConfiguration;
-import org.apache.maven.wagon.providers.http.HttpMethodConfiguration;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
+import org.apache.maven.wagon.shared.http.AbstractHttpClientWagon;
+import org.apache.maven.wagon.shared.http.HttpConfiguration;
+import org.apache.maven.wagon.shared.http.HttpMethodConfiguration;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -157,11 +157,11 @@ public class DefaultRemoteRepositoriesService
             wagon.setReadTimeout(checkReadTimeout);
             wagon.setTimeout(checkTimeout);
 
-            if (wagon instanceof AbstractHttpClientWagon) {
+            if (wagon instanceof AbstractHttpClientWagon ) {
                 HttpMethodConfiguration httpMethodConfiguration = new HttpMethodConfiguration() //
                         .setUsePreemptive(true) //
                         .setReadTimeout(checkReadTimeout);
-                HttpConfiguration httpConfiguration = new HttpConfiguration().setGet(httpMethodConfiguration);
+                HttpConfiguration httpConfiguration = new HttpConfiguration().setGet( httpMethodConfiguration);
                 AbstractHttpClientWagon.class.cast(wagon).setHttpConfiguration(httpConfiguration);
             }
 

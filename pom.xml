@@ -61,7 +61,7 @@
     <maven-model-converter.version>2.1</maven-model-converter.version>
     <!-- TODO: Before Release 3.0 check, if stable version will be released -->
     <maven.indexer.version>6.0-SNAPSHOT</maven.indexer.version>
-    <wagon.version>2.9</wagon.version>
+    <wagon.version>3.0.0</wagon.version>
     <redback.version>3.0.0-SNAPSHOT</redback.version>
     <redback.cache.version>2.2</redback.cache.version>
     <redback.quartz.version>2.1</redback.quartz.version>
