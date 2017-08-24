@@ -30,19 +30,38 @@ import org.apache.archiva.configuration.FileType;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.mock.MockRepositorySessionFactory;
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.test.context.ContextConfiguration;
+import sun.awt.image.ImageWatched;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import static com.sun.imageio.plugins.jpeg.JPEG.version;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  */
@@ -152,10 +171,37 @@ public class RepositoryPurgeConsumerTest
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
         String repoRoot = prepareTestRepos();
+        String projectNs = "org.jruby.plugins";
+        String projectPath = projectNs.replaceAll("\\.","/");
+        String projectName = "jruby-rake-plugin";
+        String projectVersion = "1.0RC1-SNAPSHOT";
+        String projectRoot = repoRoot + "/" + projectPath+"/"+projectName;
+        String versionRoot = projectRoot + "/" + projectVersion;
+
+        Path repo = getTestRepoRootPath();
+        Path vDir = repo.resolve(projectPath).resolve(projectName).resolve(projectVersion);
+
+        // Provide the metadata list
+        List<ArtifactMetadata> ml = getArtifactMetadataFromDir( TEST_REPO_ID, projectName, repo, vDir );
+        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
+            projectName, projectVersion)).thenReturn(ml);
+        Set<String> deletedVersions = new HashSet<>();
+        deletedVersions.add("1.0RC1-20070504.153317-1");
+        deletedVersions.add("1.0RC1-20070504.160758-2");
 
         repoPurgeConsumer.processFile( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
 
-        String versionRoot = repoRoot + "/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT";
+        // Verify the metadataRepository invocations
+        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
+        verify(metadataRepository, times(2)).removeArtifact(metadataArg.capture(), eq(projectVersion));
+        List<ArtifactMetadata> metaL = metadataArg.getAllValues();
+        for (ArtifactMetadata meta : metaL) {
+            assertTrue(meta.getId().startsWith(projectName));
+            assertTrue(deletedVersions.contains(meta.getVersion()));
+        }
+
+
 
         // assert if removed from repo
         assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar" );
@@ -247,11 +293,37 @@ public class RepositoryPurgeConsumerTest
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
         String repoRoot = prepareTestRepos();
-        String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-install-plugin";
+        String projectNs = "org.apache.maven.plugins";
+        String projectPath = projectNs.replaceAll("\\.","/");
+        String projectName = "maven-install-plugin";
+        String projectVersion = "2.2-SNAPSHOT";
+        String projectRoot = repoRoot + "/" + projectPath+"/"+projectName;
 
-        setLastModified( projectRoot + "/2.2-SNAPSHOT" );
+        setLastModified( projectRoot + "/"+projectVersion);
+
+
+        Path repo = getTestRepoRootPath();
+        Path vDir = repo.resolve(projectPath).resolve(projectName).resolve(projectVersion);
+
+        // Provide the metadata list
+        List<ArtifactMetadata> ml = getArtifactMetadataFromDir( TEST_REPO_ID, projectName, repo, vDir );
+        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
+                projectName, projectVersion)).thenReturn(ml);
+        Set<String> deletedVersions = new HashSet<>();
+        deletedVersions.add("2.2-SNAPSHOT");
+        deletedVersions.add("2.2-20061118.060401-2");
 
         repoPurgeConsumer.processFile( PATH_TO_BY_DAYS_OLD_ARTIFACT );
+
+        // Verify the metadataRepository invocations
+        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
+        verify(metadataRepository, times(2)).removeArtifact(metadataArg.capture(), eq(projectVersion));
+        List<ArtifactMetadata> metaL = metadataArg.getAllValues();
+        for (ArtifactMetadata meta : metaL) {
+            assertTrue(meta.getId().startsWith(projectName));
+            assertTrue(deletedVersions.contains(meta.getVersion()));
+        }
 
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar" );
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.md5" );
@@ -305,12 +377,29 @@ public class RepositoryPurgeConsumerTest
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
         String repoRoot = prepareTestRepos();
+        String projectNs = "org.apache.maven.plugins";
+        String projectPath = projectNs.replaceAll("\\.","/");
+        String projectName = "maven-plugin-plugin";
+        String projectVersion = "2.3-SNAPSHOT";
+        String projectRoot = repoRoot + "/" + projectPath+"/"+projectName;
+
+        Path repo = getTestRepoRootPath();
+        Path vDir = repo.resolve(projectPath).resolve(projectName).resolve(projectVersion);
+
+        // Provide the metadata list
+        List<ArtifactMetadata> ml = getArtifactMetadataFromDir( TEST_REPO_ID, projectName, repo, vDir );
+        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
+            projectName, projectVersion)).thenReturn(ml);
 
         repoPurgeConsumer.processFile(
             CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
 
+        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
+        verify(metadataRepository, never()).removeArtifact(any(), any());
+        verify(metadataRepository, never()).removeArtifact( any(), any(), any(), any(), any(MetadataFacet.class) );
+
         // check if the snapshot wasn't removed
-        String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-plugin-plugin";
 
         assertExists( projectRoot + "/2.3-SNAPSHOT" );
         assertExists( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.jar" );
@@ -350,11 +439,25 @@ public class RepositoryPurgeConsumerTest
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 
         String repoRoot = prepareTestRepos();
+        String projectNs = "org.apache.maven.plugins";
+        String projectPath = projectNs.replaceAll("\\.","/");
+        String projectName = "maven-plugin-plugin";
+        String projectVersion = "2.3-SNAPSHOT";
+        String projectRoot = repoRoot + "/" + projectPath+"/"+projectName;
+        Path repo = getTestRepoRootPath();
+        Path vDir = repo.resolve(projectPath).resolve(projectName).resolve(projectVersion);
+
+        // Provide the metadata list
+        List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
+        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
+            projectName, projectVersion)).thenReturn(ml);
 
         repoPurgeConsumer.processFile(
             CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
 
-        String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-plugin-plugin";
+        verify(metadataRepository, times(1)).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
+        verify(metadataRepository, never()).removeArtifact(any(), any());
 
         // check if the snapshot was removed
         assertDeleted( projectRoot + "/2.3-SNAPSHOT" );

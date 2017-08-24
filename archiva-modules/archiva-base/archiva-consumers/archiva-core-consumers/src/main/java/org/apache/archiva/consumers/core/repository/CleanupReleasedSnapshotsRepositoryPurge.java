@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.common.utils.VersionComparator;
@@ -159,13 +160,14 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                 versionRef.setVersion( artifactRef.getVersion() );
                 repository.deleteVersion( versionRef );
 
-                // FIXME: looks incomplete, might not delete related metadata?
                 for ( RepositoryListener listener : listeners )
                 {
                     listener.deleteArtifact( metadataRepository, repository.getId(), artifactRef.getGroupId(),
                                              artifactRef.getArtifactId(), artifactRef.getVersion(),
                                              artifactFile.getName() );
                 }
+                metadataRepository.removeProjectVersion( repository.getId(), artifactRef.getGroupId(),
+                    artifactRef.getArtifactId(), artifactRef.getVersion());
 
                 needsMetadataUpdate = true;
             }
@@ -185,6 +187,10 @@ public class CleanupReleasedSnapshotsRepositoryPurge
         catch ( ContentNotFoundException e )
         {
             throw new RepositoryPurgeException( e.getMessage(), e );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            log.error("Could not remove metadata during cleanup of released snapshots of {}", path, e);
         }
     }
 

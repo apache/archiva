@@ -20,15 +20,25 @@ package org.apache.archiva.consumers.core.repository;
  */
 
 import java.io.File;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  */
@@ -66,10 +76,18 @@ public class DaysOldRepositoryPurgeTest
                                                 Collections.singletonList( listener ) );
 
         String repoRoot = prepareTestRepos();
+        String projectNs = "org.apache.maven.plugins";
+        String projectPath = projectNs.replaceAll("\\.","/");
+        String projectName = "maven-install-plugin";
+        String projectVersion = "2.2-SNAPSHOT";
+        String projectRoot = repoRoot + "/" + projectPath+"/"+projectName;
+        Path repo = getTestRepoRootPath();
+        Path vDir = repo.resolve(projectPath).resolve(projectName).resolve(projectVersion);
+        Set<String> deletedVersions = new HashSet<>();
+        deletedVersions.add("2.2-SNAPSHOT");
+        deletedVersions.add("2.2-20061118.060401-2");
 
-        String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-install-plugin";
-
-        setLastModified( projectRoot + "/2.2-SNAPSHOT/", OLD_TIMESTAMP );
+        setLastModified( projectRoot + "/" + projectVersion + "/", OLD_TIMESTAMP );
 
         // test listeners for the correct artifacts
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
@@ -84,9 +102,25 @@ public class DaysOldRepositoryPurgeTest
                                  "maven-install-plugin-2.2-20061118.060401-2.pom" );
         listenerControl.replay();
 
+        // Provide the metadata list
+        List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
+        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
+            projectName, projectVersion)).thenReturn(ml);
+
         repoPurge.process( PATH_TO_BY_DAYS_OLD_ARTIFACT );
 
         listenerControl.verify();
+
+        // Verify the metadataRepository invocations
+        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
+        verify(metadataRepository, times(2)).removeArtifact(metadataArg.capture(), eq(projectVersion));
+        List<ArtifactMetadata> metaL = metadataArg.getAllValues();
+        for (ArtifactMetadata meta : metaL) {
+            assertTrue(meta.getId().startsWith(projectName));
+            assertTrue(deletedVersions.contains(meta.getVersion()));
+        }
+
 
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar" );
         assertDeleted( projectRoot + "/2.2-SNAPSHOT/maven-install-plugin-2.2-SNAPSHOT.jar.md5" );
@@ -128,10 +162,17 @@ public class DaysOldRepositoryPurgeTest
                                                 repoConfiguration.getRetentionCount(), repositorySession, listeners );
 
         String repoRoot = prepareTestRepos();
+        String projectNs = "org.apache.maven.plugins";
+        String projectPath = projectNs.replaceAll("\\.","/");
+        String projectName = "maven-assembly-plugin";
+        String projectVersion = "1.1.2-SNAPSHOT";
+        String projectRoot = repoRoot + "/" + projectPath+"/"+projectName;
+        Path repo = getTestRepoRootPath();
+        Path vDir = repo.resolve(projectPath).resolve(projectName).resolve(projectVersion);
+        Set<String> deletedVersions = new HashSet<>();
+        deletedVersions.add("1.1.2-20070427.065136-1");
 
-        String projectRoot = repoRoot + "/org/apache/maven/plugins/maven-assembly-plugin";
-
-        setLastModified( projectRoot + "/1.1.2-SNAPSHOT/", OLD_TIMESTAMP );
+        setLastModified( projectRoot + "/" + projectVersion + "/", OLD_TIMESTAMP );
 
         // test listeners for the correct artifacts
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
@@ -142,9 +183,26 @@ public class DaysOldRepositoryPurgeTest
                                  "maven-assembly-plugin-1.1.2-20070427.065136-1.pom" );
         listenerControl.replay();
 
+        // Provide the metadata list
+        List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
+        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
+            projectName, projectVersion)).thenReturn(ml);
+
+
         repoPurge.process( PATH_TO_TEST_ORDER_OF_DELETION );
 
         listenerControl.verify();
+
+        // Verify the metadataRepository invocations
+        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
+        verify(metadataRepository, times(deletedVersions.size())).removeArtifact(metadataArg.capture(), eq(projectVersion));
+        List<ArtifactMetadata> metaL = metadataArg.getAllValues();
+        for (ArtifactMetadata meta : metaL) {
+            assertTrue(meta.getId().startsWith(projectName));
+            assertTrue(deletedVersions.contains(meta.getVersion()));
+        }
+
 
         assertDeleted( projectRoot + "/1.1.2-SNAPSHOT/maven-assembly-plugin-1.1.2-20070427.065136-1.jar" );
         assertDeleted( projectRoot + "/1.1.2-SNAPSHOT/maven-assembly-plugin-1.1.2-20070427.065136-1.jar.sha1" );
@@ -179,8 +237,18 @@ public class DaysOldRepositoryPurgeTest
                                                 repoConfiguration.getRetentionCount(), repositorySession, listeners );
 
         String repoRoot = prepareTestRepos();
+        String projectNs = "org.codehaus.plexus";
+        String projectPath = projectNs.replaceAll("\\.","/");
+        String projectName = "plexus-utils";
+        String projectVersion = "1.4.3-SNAPSHOT";
+        String projectRoot = repoRoot + "/" + projectPath+"/"+projectName;
+        Path repo = getTestRepoRootPath();
+        Path vDir = repo.resolve(projectPath).resolve(projectName).resolve(projectVersion);
+        Set<String> deletedVersions = new HashSet<>();
+        deletedVersions.add("1.4.3-20070113.163208-4");
 
-        String versionRoot = repoRoot + "/org/codehaus/plexus/plexus-utils/1.4.3-SNAPSHOT";
+
+        String versionRoot = projectRoot + "/"+ projectVersion;
 
         Calendar currentDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
         setLastModified( versionRoot, currentDate.getTimeInMillis() );
@@ -209,9 +277,26 @@ public class DaysOldRepositoryPurgeTest
                                  "1.4.3-20070113.163208-4", "plexus-utils-1.4.3-20070113.163208-4.pom" );
         listenerControl.replay();
 
+        // Provide the metadata list
+        List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
+        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
+            projectName, projectVersion)).thenReturn(ml);
+
+
         repoPurge.process( PATH_TO_BY_DAYS_OLD_METADATA_DRIVEN_ARTIFACT );
 
         listenerControl.verify();
+
+        // Verify the metadataRepository invocations
+        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
+        verify(metadataRepository, times(deletedVersions.size())).removeArtifact(metadataArg.capture(), eq(projectVersion));
+        List<ArtifactMetadata> metaL = metadataArg.getAllValues();
+        for (ArtifactMetadata meta : metaL) {
+            assertTrue(meta.getId().startsWith(projectName));
+            assertTrue(deletedVersions.contains(meta.getVersion()));
+        }
+
 
         // this should be deleted since the filename version (timestamp) is older than
         // 100 days even if the last modified date was <100 days ago

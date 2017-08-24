@@ -21,8 +21,11 @@ package org.apache.archiva.consumers.core.repository;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -41,6 +44,14 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -194,6 +205,10 @@ public abstract class AbstractRepositoryPurgeTest
         return new File( "target/test-" + getName() + "/" + TEST_REPO_ID );
     }
 
+    protected Path getTestRepoRootPath() {
+        return Paths.get("target/test-"+getName()+"/"+TEST_REPO_ID);
+    }
+
     protected String prepareTestRepos()
         throws Exception
     {
@@ -217,5 +232,15 @@ public abstract class AbstractRepositoryPurgeTest
     public String getName()
     {
         return StringUtils.substringAfterLast( getClass().getName(), "." );
+    }
+
+    protected List<ArtifactMetadata> getArtifactMetadataFromDir( String repoId, String projectName, Path repoDir, Path vDir ) throws IOException
+    {
+        Maven2RepositoryPathTranslator translator = new Maven2RepositoryPathTranslator( new ArrayList<>(  ) );
+        return Files.find(vDir, 1,
+                    (path, basicFileAttributes) -> basicFileAttributes.isRegularFile() && path.getFileName().toString().startsWith(projectName))
+            .map( path ->
+                                translator.getArtifactForPath( repoId, repoDir.relativize( path ).toString() )
+            ).collect( Collectors.toList());
     }
 }

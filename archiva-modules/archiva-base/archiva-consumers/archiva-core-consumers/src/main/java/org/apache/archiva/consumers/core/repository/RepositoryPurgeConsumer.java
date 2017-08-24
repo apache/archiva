@@ -102,9 +102,6 @@ public class RepositoryPurgeConsumer
     @Autowired(required = false)
     private List<RepositoryListener> listeners = Collections.emptyList();
 
-    /**
-     * FIXME: this could be multiple implementations and needs to be configured.
-     */
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
@@ -189,7 +186,6 @@ public class RepositoryPurgeConsumer
             {
                 cleanUp.process( path );
             }
-
             repoPurge.process( path );
         }
         catch ( RepositoryPurgeException rpe )

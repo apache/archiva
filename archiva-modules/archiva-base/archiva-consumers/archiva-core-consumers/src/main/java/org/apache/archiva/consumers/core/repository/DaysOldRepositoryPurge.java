@@ -33,12 +33,7 @@ import org.apache.archiva.repository.layout.LayoutException;
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 
 /**
@@ -99,6 +94,7 @@ public class DaysOldRepositoryPurge
 
             int countToPurge = versions.size() - retentionCount;
 
+            Set<ArtifactReference> artifactsToDelete = new HashSet<>();
             for ( String version : versions )
             {
                 if ( countToPurge-- <= 0 )
@@ -117,7 +113,7 @@ public class DaysOldRepositoryPurge
                 {
                     if ( newArtifactFile.lastModified() < olderThanThisDate.getTimeInMillis() )
                     {
-                        doPurgeAllRelated( newArtifactReference );
+                        artifactsToDelete.addAll(repository.getRelatedArtifacts(newArtifactReference) );
                     }
                 }
                 // Is this a timestamp snapshot "1.0-20070822.123456-42" ?
@@ -127,10 +123,11 @@ public class DaysOldRepositoryPurge
 
                     if ( timestampCal.getTimeInMillis() < olderThanThisDate.getTimeInMillis() )
                     {
-                        doPurgeAllRelated( newArtifactReference );
+                        artifactsToDelete.addAll( repository.getRelatedArtifacts(newArtifactReference));
                     }
                 }
             }
+            purge(artifactsToDelete);
         }
         catch ( ContentNotFoundException e )
         {
@@ -175,17 +172,4 @@ public class DaysOldRepositoryPurge
         return null;
     }
 
-    private void doPurgeAllRelated( ArtifactReference reference )
-    {
-        try
-        {
-            Set<ArtifactReference> related = repository.getRelatedArtifacts( reference );
-            purge( related );
-        }
-        catch ( ContentNotFoundException e )
-        {
-            // Nothing to do here - it means the repository would have been constructed incorrectly
-            log.debug( e.getMessage(), e );
-        }
-    }
 }

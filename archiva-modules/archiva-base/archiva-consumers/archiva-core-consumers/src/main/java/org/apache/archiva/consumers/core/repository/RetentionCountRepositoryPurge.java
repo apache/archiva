@@ -32,6 +32,7 @@ import org.apache.archiva.repository.layout.LayoutException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -78,21 +79,22 @@ public class RetentionCountRepositoryPurge
 
                 if ( retentionCount > versions.size() )
                 {
+                    log.trace("No deletion, because retention count is higher than actual number of artifacts.");
                     // Done. nothing to do here. skip it.
                     return;
                 }
 
                 int countToPurge = versions.size() - retentionCount;
-
+                Set<ArtifactReference> artifactsToDelete = new HashSet<>();
                 for ( String version : versions )
                 {
                     if ( countToPurge-- <= 0 )
                     {
                         break;
                     }
-
-                    doPurgeAllRelated( artifact, version );
+                    artifactsToDelete.addAll(repository.getRelatedArtifacts( getNewArtifactReference( artifact, version) ));
                 }
+                purge(artifactsToDelete);
             }
         }
         catch ( LayoutException le )
@@ -101,12 +103,14 @@ public class RetentionCountRepositoryPurge
         }
         catch ( ContentNotFoundException e )
         {
-            // Nothing to do here.
-            // TODO: Log this condition?
+            log.error("Repostory artifact not found {}", path);
         }
     }
 
-    private void doPurgeAllRelated( ArtifactReference reference, String version )
+    /*
+     * Returns a new artifact reference with different version
+     */
+    private ArtifactReference getNewArtifactReference( ArtifactReference reference, String version )
         throws LayoutException
     {
         ArtifactReference artifact = new ArtifactReference();
@@ -115,16 +119,7 @@ public class RetentionCountRepositoryPurge
         artifact.setVersion( version );
         artifact.setClassifier( reference.getClassifier() );
         artifact.setType( reference.getType() );
+        return artifact;
 
-        try
-        {
-            Set<ArtifactReference> related = repository.getRelatedArtifacts( artifact );
-            purge( related );
-        }
-        catch ( ContentNotFoundException e )
-        {
-            // Nothing to do here.
-            // TODO: Log this?
-        }
     }
 }

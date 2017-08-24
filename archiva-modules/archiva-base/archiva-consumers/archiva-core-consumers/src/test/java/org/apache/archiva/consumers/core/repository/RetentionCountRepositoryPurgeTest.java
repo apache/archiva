@@ -19,13 +19,23 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
+import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 /**
  * Test RetentionsCountRepositoryPurgeTest
@@ -62,6 +72,17 @@ public class RetentionCountRepositoryPurgeTest
         throws Exception
     {
         String repoRoot = prepareTestRepos();
+        String projectNs = "org.jruby.plugins";
+        String projectPath = projectNs.replaceAll("\\.","/");
+        String projectName = "jruby-rake-plugin";
+        String projectVersion = "1.0RC1-SNAPSHOT";
+        String projectRoot = repoRoot + "/" + projectPath+"/"+projectName;
+        Path repo = getTestRepoRootPath();
+        Path vDir = repo.resolve(projectPath).resolve(projectName).resolve(projectVersion);
+        Set<String> deletedVersions = new HashSet<>();
+        deletedVersions.add("1.0RC1-20070504.153317-1");
+        deletedVersions.add("1.0RC1-20070504.160758-2");
+        String versionRoot = projectRoot + "/" + projectVersion;
 
         // test listeners for the correct artifacts
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.jruby.plugins", "jruby-rake-plugin",
@@ -87,11 +108,26 @@ public class RetentionCountRepositoryPurgeTest
                                  "1.0RC1-20070504.160758-2", "jruby-rake-plugin-1.0RC1-20070504.160758-2.pom" );
         listenerControl.replay();
 
+        // Provide the metadata list
+        List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
+        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
+            projectName, projectVersion)).thenReturn(ml);
+
+
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
 
         listenerControl.verify();
 
-        String versionRoot = repoRoot + "/org/jruby/plugins/jruby-rake-plugin/1.0RC1-SNAPSHOT";
+        // Verify the metadataRepository invocations
+        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
+        verify(metadataRepository, times(deletedVersions.size())).removeArtifact(metadataArg.capture(), eq(projectVersion));
+        List<ArtifactMetadata> metaL = metadataArg.getAllValues();
+        for (ArtifactMetadata meta : metaL) {
+            assertTrue(meta.getId().startsWith(projectName));
+            assertTrue(deletedVersions.contains(meta.getVersion()));
+        }
+
 
         // assert if removed from repo
         assertDeleted( versionRoot + "/jruby-rake-plugin-1.0RC1-20070504.153317-1.jar" );
@@ -132,6 +168,17 @@ public class RetentionCountRepositoryPurgeTest
         throws Exception
     {
         String repoRoot = prepareTestRepos();
+        String projectNs = "org.codehaus.castor";
+        String projectPath = projectNs.replaceAll("\\.","/");
+        String projectName = "castor-anttasks";
+        String projectVersion = "1.1.2-SNAPSHOT";
+        String projectRoot = repoRoot + "/" + projectPath+"/"+projectName;
+        Path repo = getTestRepoRootPath();
+        Path vDir = repo.resolve(projectPath).resolve(projectName).resolve(projectVersion);
+        Set<String> deletedVersions = new HashSet<>();
+        deletedVersions.add("1.1.2-20070427.065136-1");
+        String versionRoot = projectRoot + "/" + projectVersion;
+
 
         // test listeners for the correct artifacts
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.castor", "castor-anttasks",
@@ -140,11 +187,25 @@ public class RetentionCountRepositoryPurgeTest
                                  "1.1.2-20070427.065136-1", "castor-anttasks-1.1.2-20070427.065136-1.pom" );
         listenerControl.replay();
 
+        // Provide the metadata list
+        List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
+        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
+            projectName, projectVersion)).thenReturn(ml);
+
         repoPurge.process( PATH_TO_BY_RETENTION_COUNT_POM );
 
         listenerControl.verify();
 
-        String versionRoot = repoRoot + "/org/codehaus/castor/castor-anttasks/1.1.2-SNAPSHOT";
+        // Verify the metadataRepository invocations
+        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
+        verify(metadataRepository, times(deletedVersions.size())).removeArtifact(metadataArg.capture(), eq(projectVersion));
+        List<ArtifactMetadata> metaL = metadataArg.getAllValues();
+        for (ArtifactMetadata meta : metaL) {
+            assertTrue(meta.getId().startsWith(projectName));
+            assertTrue(deletedVersions.contains(meta.getVersion()));
+        }
+
 
         // assert if removed from repo
         assertDeleted( versionRoot + "/castor-anttasks-1.1.2-20070427.065136-1.jar" );
@@ -181,6 +242,17 @@ public class RetentionCountRepositoryPurgeTest
         throws Exception
     {
         String repoRoot = prepareTestRepos();
+        String projectNs = "org.apache.maven.plugins";
+        String projectPath = projectNs.replaceAll("\\.","/");
+        String projectName = "maven-assembly-plugin";
+        String projectVersion = "1.1.2-SNAPSHOT";
+        String projectRoot = repoRoot + "/" + projectPath+"/"+projectName;
+        Path repo = getTestRepoRootPath();
+        Path vDir = repo.resolve(projectPath).resolve(projectName).resolve(projectVersion);
+        Set<String> deletedVersions = new HashSet<>();
+        deletedVersions.add("1.1.2-20070427.065136-1");
+        String versionRoot = projectRoot + "/" + projectVersion;
+
 
         // test listeners for the correct artifacts
         listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
@@ -191,11 +263,25 @@ public class RetentionCountRepositoryPurgeTest
                                  "maven-assembly-plugin-1.1.2-20070427.065136-1.pom" );
         listenerControl.replay();
 
+        // Provide the metadata list
+        List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
+        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
+            projectName, projectVersion)).thenReturn(ml);
+
         repoPurge.process( PATH_TO_TEST_ORDER_OF_DELETION );
 
         listenerControl.verify();
 
-        String versionRoot = repoRoot + "/org/apache/maven/plugins/maven-assembly-plugin/1.1.2-SNAPSHOT";
+        // Verify the metadataRepository invocations
+        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
+        verify(metadataRepository, times(deletedVersions.size())).removeArtifact(metadataArg.capture(), eq(projectVersion));
+        List<ArtifactMetadata> metaL = metadataArg.getAllValues();
+        for (ArtifactMetadata meta : metaL) {
+            assertTrue(meta.getId().startsWith(projectName));
+            assertTrue(deletedVersions.contains(meta.getVersion()));
+        }
+
 
         assertDeleted( versionRoot + "/maven-assembly-plugin-1.1.2-20070427.065136-1.jar" );
         assertDeleted( versionRoot + "/maven-assembly-plugin-1.1.2-20070427.065136-1.jar.sha1" );
