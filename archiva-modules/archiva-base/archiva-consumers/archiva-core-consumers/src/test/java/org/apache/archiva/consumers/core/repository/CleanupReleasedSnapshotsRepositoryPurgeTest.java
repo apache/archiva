@@ -32,7 +32,6 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;

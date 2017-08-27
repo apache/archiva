@@ -21,7 +21,6 @@ package org.apache.archiva.consumers.core;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
@@ -37,8 +36,6 @@ import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
-import org.apache.archiva.redback.components.registry.Registry;
-import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;

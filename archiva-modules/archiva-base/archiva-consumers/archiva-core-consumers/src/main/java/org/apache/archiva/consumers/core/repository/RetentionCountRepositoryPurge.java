@@ -19,14 +19,14 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.layout.LayoutException;
 
 import java.io.File;

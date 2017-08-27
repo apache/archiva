@@ -19,6 +19,14 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.commons.lang.time.DateUtils;
+import org.junit.After;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -27,14 +35,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.repository.events.RepositoryListener;
-import org.apache.commons.lang.time.DateUtils;
-import org.junit.After;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
