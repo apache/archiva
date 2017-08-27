@@ -51,8 +51,6 @@ import java.util.List;
 
 /**
  * MetadataUpdaterConsumer will create and update the metadata present within the repository.
- *
- *
  */
 @Service( "knownRepositoryContentConsumer#metadata-updater" )
 @Scope( "prototype" )
@@ -98,13 +96,13 @@ public class MetadataUpdaterConsumer
     private long scanStartTimestamp = 0;
 
     @Override
-    public String getDescription()
+    public String getDescription( )
     {
         return description;
     }
 
     @Override
-    public String getId()
+    public String getId( )
     {
         return id;
     }
@@ -120,17 +118,17 @@ public class MetadataUpdaterConsumer
     {
         try
         {
-            this.repository = repositoryFactory.getManagedRepositoryContent( repoConfig.getId() );
-            this.repositoryDir = new File( repository.getRepoRoot() );
-            this.scanStartTimestamp = System.currentTimeMillis();
+            this.repository = repositoryFactory.getManagedRepositoryContent( repoConfig.getId( ) );
+            this.repositoryDir = new File( repository.getRepoRoot( ) );
+            this.scanStartTimestamp = System.currentTimeMillis( );
         }
         catch ( RepositoryNotFoundException e )
         {
-            throw new ConsumerException( e.getMessage(), e );
+            throw new ConsumerException( e.getMessage( ), e );
         }
         catch ( RepositoryException e )
         {
-            throw new ConsumerException( e.getMessage(), e );
+            throw new ConsumerException( e.getMessage( ), e );
         }
     }
 
@@ -142,7 +140,7 @@ public class MetadataUpdaterConsumer
     }
 
     @Override
-    public void completeScan()
+    public void completeScan( )
     {
         /* do nothing here */
     }
@@ -150,17 +148,17 @@ public class MetadataUpdaterConsumer
     @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
-        completeScan();
+        completeScan( );
     }
 
     @Override
-    public List<String> getExcludes()
+    public List<String> getExcludes( )
     {
-        return getDefaultArtifactExclusions();
+        return getDefaultArtifactExclusions( );
     }
 
     @Override
-    public List<String> getIncludes()
+    public List<String> getIncludes( )
     {
         return this.includes;
     }
@@ -180,7 +178,7 @@ public class MetadataUpdaterConsumer
             }
             catch ( LayoutException e )
             {
-                log.info( "Not processing path that is not an artifact: {} ({})", path, e.getMessage() );
+                log.info( "Not processing path that is not an artifact: {} ({})", path, e.getMessage( ) );
             }
         }
     }
@@ -194,9 +192,9 @@ public class MetadataUpdaterConsumer
 
     private void updateProjectMetadata( ArtifactReference artifact, String path )
     {
-        ProjectReference projectRef = new ProjectReference();
-        projectRef.setGroupId( artifact.getGroupId() );
-        projectRef.setArtifactId( artifact.getArtifactId() );
+        ProjectReference projectRef = new ProjectReference( );
+        projectRef.setGroupId( artifact.getGroupId( ) );
+        projectRef.setArtifactId( artifact.getArtifactId( ) );
 
         try
         {
@@ -204,7 +202,7 @@ public class MetadataUpdaterConsumer
 
             File projectMetadata = new File( this.repositoryDir, metadataPath );
 
-            if ( projectMetadata.exists() && ( projectMetadata.lastModified() >= this.scanStartTimestamp ) )
+            if ( projectMetadata.exists( ) && ( projectMetadata.lastModified( ) >= this.scanStartTimestamp ) )
             {
                 // This metadata is up to date. skip it.
                 log.debug( "Skipping uptodate metadata: {}", this.metadataTools.toPath( projectRef ) );
@@ -218,36 +216,36 @@ public class MetadataUpdaterConsumer
         {
             log.warn( "Unable to convert path [{}] to an internal project reference: ", path, e );
             triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF,
-                                    "Unable to convert path [" + path + "] to an internal project reference: "
-                                        + e.getMessage() );
+                "Unable to convert path [" + path + "] to an internal project reference: "
+                    + e.getMessage( ) );
         }
         catch ( RepositoryMetadataException e )
         {
             log.error( "Unable to write project metadat for artifact [{}]:", path, e );
             triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
-                                  "Unable to write project metadata for artifact [" + path + "]: " + e.getMessage() );
+                "Unable to write project metadata for artifact [" + path + "]: " + e.getMessage( ) );
         }
         catch ( IOException e )
         {
             log.warn( "Project metadata not written due to IO warning: ", e );
             triggerConsumerWarning( TYPE_METADATA_IO,
-                                    "Project metadata not written due to IO warning: " + e.getMessage() );
+                "Project metadata not written due to IO warning: " + e.getMessage( ) );
         }
         catch ( ContentNotFoundException e )
         {
             log.warn( "Project metadata not written because no versions were found to update: ", e );
             triggerConsumerWarning( TYPE_METADATA_IO,
-                                    "Project metadata not written because no versions were found to update: "
-                                        + e.getMessage() );
+                "Project metadata not written because no versions were found to update: "
+                    + e.getMessage( ) );
         }
     }
 
     private void updateVersionMetadata( ArtifactReference artifact, String path )
     {
-        VersionedReference versionRef = new VersionedReference();
-        versionRef.setGroupId( artifact.getGroupId() );
-        versionRef.setArtifactId( artifact.getArtifactId() );
-        versionRef.setVersion( artifact.getVersion() );
+        VersionedReference versionRef = new VersionedReference( );
+        versionRef.setGroupId( artifact.getGroupId( ) );
+        versionRef.setArtifactId( artifact.getArtifactId( ) );
+        versionRef.setVersion( artifact.getVersion( ) );
 
         try
         {
@@ -255,7 +253,7 @@ public class MetadataUpdaterConsumer
 
             File projectMetadata = new File( this.repositoryDir, metadataPath );
 
-            if ( projectMetadata.exists() && ( projectMetadata.lastModified() >= this.scanStartTimestamp ) )
+            if ( projectMetadata.exists( ) && ( projectMetadata.lastModified( ) >= this.scanStartTimestamp ) )
             {
                 // This metadata is up to date. skip it.
                 log.debug( "Skipping uptodate metadata: {}", this.metadataTools.toPath( versionRef ) );
@@ -269,27 +267,27 @@ public class MetadataUpdaterConsumer
         {
             log.warn( "Unable to convert path [{}] to an internal version reference: ", path, e );
             triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF,
-                                    "Unable to convert path [" + path + "] to an internal version reference: "
-                                        + e.getMessage() );
+                "Unable to convert path [" + path + "] to an internal version reference: "
+                    + e.getMessage( ) );
         }
         catch ( RepositoryMetadataException e )
         {
-            log.error( "Unable to write version metadata for artifact [{}]: ", path, e ); 
+            log.error( "Unable to write version metadata for artifact [{}]: ", path, e );
             triggerConsumerError( TYPE_METADATA_WRITE_FAILURE,
-                                  "Unable to write version metadata for artifact [" + path + "]: " + e.getMessage() );
+                "Unable to write version metadata for artifact [" + path + "]: " + e.getMessage( ) );
         }
         catch ( IOException e )
         {
             log.warn( "Version metadata not written due to IO warning: ", e );
             triggerConsumerWarning( TYPE_METADATA_IO,
-                                    "Version metadata not written due to IO warning: " + e.getMessage() );
+                "Version metadata not written due to IO warning: " + e.getMessage( ) );
         }
         catch ( ContentNotFoundException e )
         {
-            log.warn( "Version metadata not written because no versions were found to update: ", e ); 
+            log.warn( "Version metadata not written because no versions were found to update: ", e );
             triggerConsumerWarning( TYPE_METADATA_IO,
-                                    "Version metadata not written because no versions were found to update: "
-                                        + e.getMessage() );
+                "Version metadata not written because no versions were found to update: "
+                    + e.getMessage( ) );
         }
     }
 
@@ -310,16 +308,16 @@ public class MetadataUpdaterConsumer
     }
     */
 
-    private void initIncludes()
+    private void initIncludes( )
     {
         includes = new ArrayList<>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     @PostConstruct
-    public void initialize()
+    public void initialize( )
     {
         //configuration.addChangeListener( this );
 
-        initIncludes();
+        initIncludes( );
     }
 }

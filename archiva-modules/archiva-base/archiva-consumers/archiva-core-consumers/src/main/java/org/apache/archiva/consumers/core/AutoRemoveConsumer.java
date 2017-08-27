@@ -42,8 +42,6 @@ import java.util.List;
 
 /**
  * AutoRemoveConsumer
- *
- *
  */
 @Service( "knownRepositoryContentConsumer#auto-remove" )
 @Scope( "prototype" )
@@ -81,13 +79,13 @@ public class AutoRemoveConsumer
     private List<String> includes = new ArrayList<>( 0 );
 
     @Override
-    public String getId()
+    public String getId( )
     {
         return this.id;
     }
 
     @Override
-    public String getDescription()
+    public String getDescription( )
     {
         return this.description;
     }
@@ -96,7 +94,7 @@ public class AutoRemoveConsumer
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
-        this.repositoryDir = new File( repository.getLocation() );
+        this.repositoryDir = new File( repository.getLocation( ) );
     }
 
     @Override
@@ -107,7 +105,7 @@ public class AutoRemoveConsumer
     }
 
     @Override
-    public void completeScan()
+    public void completeScan( )
     {
         /* do nothing */
     }
@@ -115,17 +113,17 @@ public class AutoRemoveConsumer
     @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
-        completeScan();
+        completeScan( );
     }
 
     @Override
-    public List<String> getExcludes()
+    public List<String> getExcludes( )
     {
         return null;
     }
 
     @Override
-    public List<String> getIncludes()
+    public List<String> getIncludes( )
     {
         return includes;
     }
@@ -135,11 +133,11 @@ public class AutoRemoveConsumer
         throws ConsumerException
     {
         File file = new File( this.repositoryDir, path );
-        if ( file.exists() )
+        if ( file.exists( ) )
         {
-            log.info( "(Auto) Removing File: {}", file.getAbsolutePath() );
-            triggerConsumerInfo( "(Auto) Removing File: " + file.getAbsolutePath() );
-            file.delete();
+            log.info( "(Auto) Removing File: {}", file.getAbsolutePath( ) );
+            triggerConsumerInfo( "(Auto) Removing File: " + file.getAbsolutePath( ) );
+            file.delete( );
         }
     }
 
@@ -155,7 +153,7 @@ public class AutoRemoveConsumer
     {
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
         {
-            initIncludes();
+            initIncludes( );
         }
     }
 
@@ -165,16 +163,16 @@ public class AutoRemoveConsumer
         /* do nothing */
     }
 
-    private void initIncludes()
+    private void initIncludes( )
     {
         includes = new ArrayList<>( filetypes.getFileTypePatterns( FileTypes.AUTO_REMOVE ) );
     }
 
     @PostConstruct
-    public void initialize()
+    public void initialize( )
     {
         configuration.addChangeListener( this );
 
-        initIncludes();
+        initIncludes( );
     }
 }

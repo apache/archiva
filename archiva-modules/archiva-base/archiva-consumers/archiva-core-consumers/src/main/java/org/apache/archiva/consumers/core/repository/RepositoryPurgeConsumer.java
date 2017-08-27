@@ -87,7 +87,7 @@ public class RepositoryPurgeConsumer
     @Named( value = "fileTypes" )
     private FileTypes filetypes;
 
-    private List<String> includes = new ArrayList<>();
+    private List<String> includes = new ArrayList<>( );
 
     private RepositoryPurge repoPurge;
 
@@ -99,8 +99,8 @@ public class RepositoryPurgeConsumer
      *
      */
     @Inject
-    @Autowired(required = false)
-    private List<RepositoryListener> listeners = Collections.emptyList();
+    @Autowired( required = false )
+    private List<RepositoryListener> listeners = Collections.emptyList( );
 
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
@@ -108,25 +108,25 @@ public class RepositoryPurgeConsumer
     private RepositorySession repositorySession;
 
     @Override
-    public String getId()
+    public String getId( )
     {
         return this.id;
     }
 
     @Override
-    public String getDescription()
+    public String getDescription( )
     {
         return this.description;
     }
 
     @Override
-    public List<String> getExcludes()
+    public List<String> getExcludes( )
     {
-        return getDefaultArtifactExclusions();
+        return getDefaultArtifactExclusions( );
     }
 
     @Override
-    public List<String> getIncludes()
+    public List<String> getIncludes( )
     {
         return this.includes;
     }
@@ -138,35 +138,35 @@ public class RepositoryPurgeConsumer
         ManagedRepositoryContent repositoryContent;
         try
         {
-            repositoryContent = repositoryContentFactory.getManagedRepositoryContent( repository.getId() );
+            repositoryContent = repositoryContentFactory.getManagedRepositoryContent( repository.getId( ) );
         }
         catch ( RepositoryNotFoundException e )
         {
-            throw new ConsumerException( "Can't run repository purge: " + e.getMessage(), e );
+            throw new ConsumerException( "Can't run repository purge: " + e.getMessage( ), e );
         }
         catch ( RepositoryException e )
         {
-            throw new ConsumerException( "Can't run repository purge: " + e.getMessage(), e );
+            throw new ConsumerException( "Can't run repository purge: " + e.getMessage( ), e );
         }
 
-        repositorySession = repositorySessionFactory.createSession();
+        repositorySession = repositorySessionFactory.createSession( );
 
-        if ( repository.getDaysOlder() != 0 )
+        if ( repository.getDaysOlder( ) != 0 )
         {
-            repoPurge = new DaysOldRepositoryPurge( repositoryContent, repository.getDaysOlder(),
-                                                    repository.getRetentionCount(), repositorySession, listeners );
+            repoPurge = new DaysOldRepositoryPurge( repositoryContent, repository.getDaysOlder( ),
+                repository.getRetentionCount( ), repositorySession, listeners );
         }
         else
         {
             repoPurge =
-                new RetentionCountRepositoryPurge( repositoryContent, repository.getRetentionCount(), repositorySession,
-                                                   listeners );
+                new RetentionCountRepositoryPurge( repositoryContent, repository.getRetentionCount( ), repositorySession,
+                    listeners );
         }
 
         cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repositoryContent, metadataTools, managedRepositoryAdmin,
-                                                               repositoryContentFactory, repositorySession, listeners );
+            repositoryContentFactory, repositorySession, listeners );
 
-        deleteReleasedSnapshots = repository.isDeleteReleasedSnapshots();
+        deleteReleasedSnapshots = repository.isDeleteReleasedSnapshots( );
     }
 
     @Override
@@ -190,7 +190,7 @@ public class RepositoryPurgeConsumer
         }
         catch ( RepositoryPurgeException rpe )
         {
-            throw new ConsumerException( rpe.getMessage(), rpe );
+            throw new ConsumerException( rpe.getMessage( ), rpe );
         }
     }
 
@@ -202,15 +202,15 @@ public class RepositoryPurgeConsumer
     }
 
     @Override
-    public void completeScan()
+    public void completeScan( )
     {
-        repositorySession.close();
+        repositorySession.close( );
     }
 
     @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
-        completeScan();
+        completeScan( );
     }
 
     @Override
@@ -218,7 +218,7 @@ public class RepositoryPurgeConsumer
     {
         if ( ConfigurationNames.isRepositoryScanning( propertyName ) )
         {
-            initIncludes();
+            initIncludes( );
         }
     }
 
@@ -228,27 +228,27 @@ public class RepositoryPurgeConsumer
         /* do nothing */
     }
 
-    private void initIncludes()
+    private void initIncludes( )
     {
         includes = new ArrayList<>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
     }
 
     @PostConstruct
-    public void initialize()
+    public void initialize( )
     {
         configuration.addChangeListener( this );
 
-        initIncludes();
+        initIncludes( );
     }
 
     @Override
-    public boolean isProcessUnmodified()
+    public boolean isProcessUnmodified( )
     {
         // we need to check all files for deletion, especially if not modified
         return true;
     }
 
-    public ArchivaConfiguration getConfiguration()
+    public ArchivaConfiguration getConfiguration( )
     {
         return configuration;
     }
@@ -258,7 +258,7 @@ public class RepositoryPurgeConsumer
         this.configuration = configuration;
     }
 
-    public RepositoryContentFactory getRepositoryContentFactory()
+    public RepositoryContentFactory getRepositoryContentFactory( )
     {
         return repositoryContentFactory;
     }
@@ -268,7 +268,7 @@ public class RepositoryPurgeConsumer
         this.repositoryContentFactory = repositoryContentFactory;
     }
 
-    public MetadataTools getMetadataTools()
+    public MetadataTools getMetadataTools( )
     {
         return metadataTools;
     }
@@ -278,7 +278,7 @@ public class RepositoryPurgeConsumer
         this.metadataTools = metadataTools;
     }
 
-    public FileTypes getFiletypes()
+    public FileTypes getFiletypes( )
     {
         return filetypes;
     }
@@ -288,7 +288,7 @@ public class RepositoryPurgeConsumer
         this.filetypes = filetypes;
     }
 
-    public RepositoryPurge getRepoPurge()
+    public RepositoryPurge getRepoPurge( )
     {
         return repoPurge;
     }
@@ -298,7 +298,7 @@ public class RepositoryPurgeConsumer
         this.repoPurge = repoPurge;
     }
 
-    public RepositoryPurge getCleanUp()
+    public RepositoryPurge getCleanUp( )
     {
         return cleanUp;
     }
@@ -308,7 +308,7 @@ public class RepositoryPurgeConsumer
         this.cleanUp = cleanUp;
     }
 
-    public boolean isDeleteReleasedSnapshots()
+    public boolean isDeleteReleasedSnapshots( )
     {
         return deleteReleasedSnapshots;
     }
@@ -318,7 +318,7 @@ public class RepositoryPurgeConsumer
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
     }
 
-    public RepositorySessionFactory getRepositorySessionFactory()
+    public RepositorySessionFactory getRepositorySessionFactory( )
     {
         return repositorySessionFactory;
     }
@@ -328,7 +328,7 @@ public class RepositoryPurgeConsumer
         this.repositorySessionFactory = repositorySessionFactory;
     }
 
-    public RepositorySession getRepositorySession()
+    public RepositorySession getRepositorySession( )
     {
         return repositorySession;
     }
