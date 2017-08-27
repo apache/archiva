@@ -93,9 +93,9 @@ public class CleanupReleasedSnapshotsRepositoryPurge
     {
         try
         {
-            File artifactFile = new File( repository.getRepoRoot(), path );
+            File artifactFile = new File( repository.getRepoRoot( ), path );
 
-            if ( !artifactFile.exists() )
+            if ( !artifactFile.exists( ) )
             {
                 // Nothing to do here, file doesn't exist, skip it.
                 return;
@@ -103,28 +103,28 @@ public class CleanupReleasedSnapshotsRepositoryPurge
 
             ArtifactReference artifactRef = repository.toArtifactReference( path );
 
-            if ( !VersionUtil.isSnapshot( artifactRef.getVersion() ) )
+            if ( !VersionUtil.isSnapshot( artifactRef.getVersion( ) ) )
             {
                 // Nothing to do here, not a snapshot, skip it.
                 return;
             }
 
-            ProjectReference reference = new ProjectReference();
-            reference.setGroupId( artifactRef.getGroupId() );
-            reference.setArtifactId( artifactRef.getArtifactId() );
+            ProjectReference reference = new ProjectReference( );
+            reference.setGroupId( artifactRef.getGroupId( ) );
+            reference.setArtifactId( artifactRef.getArtifactId( ) );
 
             // Gether the released versions
-            List<String> releasedVersions = new ArrayList<>();
+            List<String> releasedVersions = new ArrayList<>( );
 
-            List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
+            List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories( );
             for ( ManagedRepository repo : repos )
             {
-                if ( repo.isReleases() )
+                if ( repo.isReleases( ) )
                 {
                     try
                     {
                         ManagedRepositoryContent repoContent =
-                            repoContentFactory.getManagedRepositoryContent( repo.getId() );
+                            repoContentFactory.getManagedRepositoryContent( repo.getId( ) );
                         for ( String version : repoContent.getVersions( reference ) )
                         {
                             if ( !VersionUtil.isSnapshot( version ) )
@@ -144,30 +144,30 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                 }
             }
 
-            Collections.sort( releasedVersions, VersionComparator.getInstance() );
+            Collections.sort( releasedVersions, VersionComparator.getInstance( ) );
 
             // Now clean out any version that is earlier than the highest released version.
             boolean needsMetadataUpdate = false;
 
-            VersionedReference versionRef = new VersionedReference();
-            versionRef.setGroupId( artifactRef.getGroupId() );
-            versionRef.setArtifactId( artifactRef.getArtifactId() );
+            VersionedReference versionRef = new VersionedReference( );
+            versionRef.setGroupId( artifactRef.getGroupId( ) );
+            versionRef.setArtifactId( artifactRef.getArtifactId( ) );
 
-            MetadataRepository metadataRepository = repositorySession.getRepository();
+            MetadataRepository metadataRepository = repositorySession.getRepository( );
 
-            if ( releasedVersions.contains( VersionUtil.getReleaseVersion( artifactRef.getVersion() ) ) )
+            if ( releasedVersions.contains( VersionUtil.getReleaseVersion( artifactRef.getVersion( ) ) ) )
             {
-                versionRef.setVersion( artifactRef.getVersion() );
+                versionRef.setVersion( artifactRef.getVersion( ) );
                 repository.deleteVersion( versionRef );
 
                 for ( RepositoryListener listener : listeners )
                 {
-                    listener.deleteArtifact( metadataRepository, repository.getId(), artifactRef.getGroupId(),
-                                             artifactRef.getArtifactId(), artifactRef.getVersion(),
-                                             artifactFile.getName() );
+                    listener.deleteArtifact( metadataRepository, repository.getId( ), artifactRef.getGroupId( ),
+                        artifactRef.getArtifactId( ), artifactRef.getVersion( ),
+                        artifactFile.getName( ) );
                 }
-                metadataRepository.removeProjectVersion( repository.getId(), artifactRef.getGroupId(),
-                    artifactRef.getArtifactId(), artifactRef.getVersion());
+                metadataRepository.removeProjectVersion( repository.getId( ), artifactRef.getGroupId( ),
+                    artifactRef.getArtifactId( ), artifactRef.getVersion( ) );
 
                 needsMetadataUpdate = true;
             }
@@ -176,34 +176,35 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             {
                 updateMetadata( artifactRef );
             }
-        } catch ( RepositoryAdminException e )
+        }
+        catch ( RepositoryAdminException e )
         {
-            throw new RepositoryPurgeException( e.getMessage(), e );
+            throw new RepositoryPurgeException( e.getMessage( ), e );
         }
         catch ( LayoutException e )
         {
-            log.debug( "Not processing file that is not an artifact: {}", e.getMessage() );
+            log.debug( "Not processing file that is not an artifact: {}", e.getMessage( ) );
         }
         catch ( ContentNotFoundException e )
         {
-            throw new RepositoryPurgeException( e.getMessage(), e );
+            throw new RepositoryPurgeException( e.getMessage( ), e );
         }
         catch ( MetadataRepositoryException e )
         {
-            log.error("Could not remove metadata during cleanup of released snapshots of {}", path, e);
+            log.error( "Could not remove metadata during cleanup of released snapshots of {}", path, e );
         }
     }
 
     private void updateMetadata( ArtifactReference artifact )
     {
-        VersionedReference versionRef = new VersionedReference();
-        versionRef.setGroupId( artifact.getGroupId() );
-        versionRef.setArtifactId( artifact.getArtifactId() );
-        versionRef.setVersion( artifact.getVersion() );
+        VersionedReference versionRef = new VersionedReference( );
+        versionRef.setGroupId( artifact.getGroupId( ) );
+        versionRef.setArtifactId( artifact.getArtifactId( ) );
+        versionRef.setVersion( artifact.getVersion( ) );
 
-        ProjectReference projectRef = new ProjectReference();
-        projectRef.setGroupId( artifact.getGroupId() );
-        projectRef.setArtifactId( artifact.getArtifactId() );
+        ProjectReference projectRef = new ProjectReference( );
+        projectRef.setGroupId( artifact.getGroupId( ) );
+        projectRef.setArtifactId( artifact.getArtifactId( ) );
 
         try
         {

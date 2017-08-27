@@ -70,9 +70,9 @@ public class DaysOldRepositoryPurge
     {
         try
         {
-            File artifactFile = new File( repository.getRepoRoot(), path );
+            File artifactFile = new File( repository.getRepoRoot( ), path );
 
-            if ( !artifactFile.exists() )
+            if ( !artifactFile.exists( ) )
             {
                 return;
             }
@@ -83,24 +83,24 @@ public class DaysOldRepositoryPurge
             olderThanThisDate.add( Calendar.DATE, -daysOlder );
 
             // respect retention count
-            VersionedReference reference = new VersionedReference();
-            reference.setGroupId( artifact.getGroupId() );
-            reference.setArtifactId( artifact.getArtifactId() );
-            reference.setVersion( artifact.getVersion() );
+            VersionedReference reference = new VersionedReference( );
+            reference.setGroupId( artifact.getGroupId( ) );
+            reference.setArtifactId( artifact.getArtifactId( ) );
+            reference.setVersion( artifact.getVersion( ) );
 
             List<String> versions = new ArrayList<>( repository.getVersions( reference ) );
 
-            Collections.sort( versions, VersionComparator.getInstance() );
+            Collections.sort( versions, VersionComparator.getInstance( ) );
 
-            if ( retentionCount > versions.size() )
+            if ( retentionCount > versions.size( ) )
             {
                 // Done. nothing to do here. skip it.
                 return;
             }
 
-            int countToPurge = versions.size() - retentionCount;
+            int countToPurge = versions.size( ) - retentionCount;
 
-            Set<ArtifactReference> artifactsToDelete = new HashSet<>();
+            Set<ArtifactReference> artifactsToDelete = new HashSet<>( );
             for ( String version : versions )
             {
                 if ( countToPurge-- <= 0 )
@@ -109,39 +109,39 @@ public class DaysOldRepositoryPurge
                 }
 
                 ArtifactReference newArtifactReference = repository.toArtifactReference(
-                    artifactFile.getAbsolutePath() );
+                    artifactFile.getAbsolutePath( ) );
                 newArtifactReference.setVersion( version );
 
                 File newArtifactFile = repository.toFile( newArtifactReference );
 
                 // Is this a generic snapshot "1.0-SNAPSHOT" ?
-                if ( VersionUtil.isGenericSnapshot( newArtifactReference.getVersion() ) )
+                if ( VersionUtil.isGenericSnapshot( newArtifactReference.getVersion( ) ) )
                 {
-                    if ( newArtifactFile.lastModified() < olderThanThisDate.getTimeInMillis() )
+                    if ( newArtifactFile.lastModified( ) < olderThanThisDate.getTimeInMillis( ) )
                     {
-                        artifactsToDelete.addAll(repository.getRelatedArtifacts(newArtifactReference) );
+                        artifactsToDelete.addAll( repository.getRelatedArtifacts( newArtifactReference ) );
                     }
                 }
                 // Is this a timestamp snapshot "1.0-20070822.123456-42" ?
-                else if ( VersionUtil.isUniqueSnapshot( newArtifactReference.getVersion() ) )
+                else if ( VersionUtil.isUniqueSnapshot( newArtifactReference.getVersion( ) ) )
                 {
-                    Calendar timestampCal = uniqueSnapshotToCalendar( newArtifactReference.getVersion() );
+                    Calendar timestampCal = uniqueSnapshotToCalendar( newArtifactReference.getVersion( ) );
 
-                    if ( timestampCal.getTimeInMillis() < olderThanThisDate.getTimeInMillis() )
+                    if ( timestampCal.getTimeInMillis( ) < olderThanThisDate.getTimeInMillis( ) )
                     {
-                        artifactsToDelete.addAll( repository.getRelatedArtifacts(newArtifactReference));
+                        artifactsToDelete.addAll( repository.getRelatedArtifacts( newArtifactReference ) );
                     }
                 }
             }
-            purge(artifactsToDelete);
+            purge( artifactsToDelete );
         }
         catch ( ContentNotFoundException e )
         {
-            throw new RepositoryPurgeException( e.getMessage(), e );
+            throw new RepositoryPurgeException( e.getMessage( ), e );
         }
         catch ( LayoutException e )
         {
-            log.debug( "Not processing file that is not an artifact: {}", e.getMessage() );
+            log.debug( "Not processing file that is not an artifact: {}", e.getMessage( ) );
         }
     }
 
@@ -151,10 +151,10 @@ public class DaysOldRepositoryPurge
         // This needs to be broken down into ${base}-${timestamp}-${build_number}
 
         Matcher m = VersionUtil.UNIQUE_SNAPSHOT_PATTERN.matcher( version );
-        if ( m.matches() )
+        if ( m.matches( ) )
         {
             Matcher mtimestamp = VersionUtil.TIMESTAMP_PATTERN.matcher( m.group( 2 ) );
-            if ( mtimestamp.matches() )
+            if ( mtimestamp.matches( ) )
             {
                 String tsDate = mtimestamp.group( 1 );
                 String tsTime = mtimestamp.group( 2 );

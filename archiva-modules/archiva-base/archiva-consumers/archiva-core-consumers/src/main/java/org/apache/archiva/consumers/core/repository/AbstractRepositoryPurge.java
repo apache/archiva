@@ -364,15 +364,16 @@ public abstract class AbstractRepositoryPurge
         }
     }
 
-    private void deleteSilently(Path path) {
+    private void deleteSilently( Path path )
+    {
         try
         {
             Files.deleteIfExists( path );
-            triggerAuditEvent( repository.getRepository( ).getId( ), path.toString(), AuditEvent.PURGE_FILE );
+            triggerAuditEvent( repository.getRepository( ).getId( ), path.toString( ), AuditEvent.PURGE_FILE );
         }
         catch ( IOException e )
         {
-            log.error("Error occured during file deletion {}: {} ",path,e.getMessage(), e);
+            log.error( "Error occured during file deletion {}: {} ", path, e.getMessage( ), e );
         }
     }
 
@@ -388,24 +389,24 @@ public abstract class AbstractRepositoryPurge
      */
     private void purgeSupportFiles( Path artifactFile )
     {
-        Path parentDir = artifactFile.getParent();
+        Path parentDir = artifactFile.getParent( );
 
-        if ( !Files.exists(parentDir) )
+        if ( !Files.exists( parentDir ) )
         {
             return;
         }
 
-        final String artifactName = artifactFile.getFileName().toString();
+        final String artifactName = artifactFile.getFileName( ).toString( );
 
         try
         {
-            Files.find(parentDir, 3,
-                ( path, basicFileAttributes ) -> path.getFileName().toString().startsWith(artifactName)
-                    && Files.isRegularFile( path )     ).forEach( this::deleteSilently );
+            Files.find( parentDir, 3,
+                ( path, basicFileAttributes ) -> path.getFileName( ).toString( ).startsWith( artifactName )
+                    && Files.isRegularFile( path ) ).forEach( this::deleteSilently );
         }
         catch ( IOException e )
         {
-            log.error("Purge of support files failed {}: {}", artifactFile, e.getMessage(), e);
+            log.error( "Purge of support files failed {}: {}", artifactFile, e.getMessage( ), e );
         }
 
     }

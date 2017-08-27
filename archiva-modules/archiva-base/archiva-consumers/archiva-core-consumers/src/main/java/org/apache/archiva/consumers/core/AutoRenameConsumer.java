@@ -40,8 +40,6 @@ import java.util.Map;
 
 /**
  * AutoRenameConsumer
- *
- *
  */
 @Service( "knownRepositoryContentConsumer#auto-rename" )
 @Scope( "prototype" )
@@ -49,7 +47,7 @@ public class AutoRenameConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer
 {
-    private Logger log = LoggerFactory.getLogger( AutoRenameConsumer.class ); 
+    private Logger log = LoggerFactory.getLogger( AutoRenameConsumer.class );
 
     private String id = "auto-rename";
 
@@ -61,9 +59,9 @@ public class AutoRenameConsumer
 
     private List<String> includes = new ArrayList<>( 3 );
 
-    private Map<String, String> extensionRenameMap = new HashMap<>();
+    private Map<String, String> extensionRenameMap = new HashMap<>( );
 
-    public AutoRenameConsumer()
+    public AutoRenameConsumer( )
     {
         includes.add( "**/*.distribution-tgz" );
         includes.add( "**/*.distribution-zip" );
@@ -75,13 +73,13 @@ public class AutoRenameConsumer
     }
 
     @Override
-    public String getId()
+    public String getId( )
     {
         return this.id;
     }
 
     @Override
-    public String getDescription()
+    public String getDescription( )
     {
         return this.description;
     }
@@ -90,7 +88,7 @@ public class AutoRenameConsumer
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
-        this.repositoryDir = new File( repository.getLocation() );
+        this.repositoryDir = new File( repository.getLocation( ) );
     }
 
     @Override
@@ -101,7 +99,7 @@ public class AutoRenameConsumer
     }
 
     @Override
-    public void completeScan()
+    public void completeScan( )
     {
         /* do nothing */
     }
@@ -109,17 +107,17 @@ public class AutoRenameConsumer
     @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
-        completeScan();
+        completeScan( );
     }
 
     @Override
-    public List<String> getExcludes()
+    public List<String> getExcludes( )
     {
         return null;
     }
 
     @Override
-    public List<String> getIncludes()
+    public List<String> getIncludes( )
     {
         return includes;
     }
@@ -129,16 +127,16 @@ public class AutoRenameConsumer
         throws ConsumerException
     {
         File file = new File( this.repositoryDir, path );
-        if ( file.exists() )
+        if ( file.exists( ) )
         {
-            Iterator<String> itExtensions = this.extensionRenameMap.keySet().iterator();
-            while ( itExtensions.hasNext() )
+            Iterator<String> itExtensions = this.extensionRenameMap.keySet( ).iterator( );
+            while ( itExtensions.hasNext( ) )
             {
-                String extension = itExtensions.next();
+                String extension = itExtensions.next( );
                 if ( path.endsWith( extension ) )
                 {
                     String fixedExtension = this.extensionRenameMap.get( extension );
-                    String correctedPath = path.substring( 0, path.length() - extension.length() ) + fixedExtension;
+                    String correctedPath = path.substring( 0, path.length( ) - extension.length( ) ) + fixedExtension;
                     File to = new File( this.repositoryDir, correctedPath );
                     try
                     {
@@ -149,14 +147,14 @@ public class AutoRenameConsumer
                     {
                         log.warn( "Unable to rename {} to {} :", path, correctedPath, e );
                         triggerConsumerWarning( RENAME_FAILURE, "Unable to rename " + path + " to " + correctedPath +
-                            ": " + e.getMessage() );
+                            ": " + e.getMessage( ) );
                     }
                 }
             }
 
-            log.info( "(Auto) Removing File: {} ", file.getAbsolutePath() );
-            triggerConsumerInfo( "(Auto) Removing File: " + file.getAbsolutePath() );
-            file.delete();
+            log.info( "(Auto) Removing File: {} ", file.getAbsolutePath( ) );
+            triggerConsumerInfo( "(Auto) Removing File: " + file.getAbsolutePath( ) );
+            file.delete( );
         }
     }
 

@@ -45,8 +45,6 @@ import java.util.List;
 
 /**
  * ValidateChecksumConsumer - validate the provided checksum against the file it represents.
- *
- *
  */
 @Service( "knownRepositoryContentConsumer#validate-checksums" )
 @Scope( "prototype" )
@@ -83,13 +81,13 @@ public class ValidateChecksumConsumer
     private List<String> includes;
 
     @Override
-    public String getId()
+    public String getId( )
     {
         return this.id;
     }
 
     @Override
-    public String getDescription()
+    public String getDescription( )
     {
         return this.description;
     }
@@ -98,7 +96,7 @@ public class ValidateChecksumConsumer
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
-        this.repositoryDir = new File( repository.getLocation() );
+        this.repositoryDir = new File( repository.getLocation( ) );
     }
 
     @Override
@@ -109,7 +107,7 @@ public class ValidateChecksumConsumer
     }
 
     @Override
-    public void completeScan()
+    public void completeScan( )
     {
         /* nothing to do */
     }
@@ -117,17 +115,17 @@ public class ValidateChecksumConsumer
     @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
-        completeScan();
+        completeScan( );
     }
 
     @Override
-    public List<String> getExcludes()
+    public List<String> getExcludes( )
     {
         return null;
     }
 
     @Override
-    public List<String> getIncludes()
+    public List<String> getIncludes( )
     {
         return this.includes;
     }
@@ -148,13 +146,13 @@ public class ValidateChecksumConsumer
         catch ( FileNotFoundException e )
         {
             log.error( "File not found during checksum validation: ", e );
-            triggerConsumerError( CHECKSUM_NOT_FOUND, "File not found during checksum validation: " + e.getMessage() );
+            triggerConsumerError( CHECKSUM_NOT_FOUND, "File not found during checksum validation: " + e.getMessage( ) );
         }
         catch ( DigesterException e )
         {
             log.error( "Digester failure during checksum validation on {}", checksumFile );
             triggerConsumerError( CHECKSUM_DIGESTER_FAILURE,
-                                  "Digester failure during checksum validation on " + checksumFile );
+                "Digester failure during checksum validation on " + checksumFile );
         }
         catch ( IOException e )
         {
@@ -171,15 +169,15 @@ public class ValidateChecksumConsumer
     }
 
     @PostConstruct
-    public void initialize()
+    public void initialize( )
         throws PlexusSisuBridgeException
     {
         checksum = plexusSisuBridge.lookup( ChecksumFile.class );
-        List<Digester> allDigesters = new ArrayList<>( digesterUtils.getAllDigesters() );
-        includes = new ArrayList<>( allDigesters.size() );
+        List<Digester> allDigesters = new ArrayList<>( digesterUtils.getAllDigesters( ) );
+        includes = new ArrayList<>( allDigesters.size( ) );
         for ( Digester digester : allDigesters )
         {
-            includes.add( "**/*" + digester.getFilenameExtension() );
+            includes.add( "**/*" + digester.getFilenameExtension( ) );
         }
     }
 }

@@ -57,53 +57,53 @@ public class RetentionCountRepositoryPurge
     {
         try
         {
-            File artifactFile = new File( repository.getRepoRoot(), path );
+            File artifactFile = new File( repository.getRepoRoot( ), path );
 
-            if ( !artifactFile.exists() )
+            if ( !artifactFile.exists( ) )
             {
                 return;
             }
 
             ArtifactReference artifact = repository.toArtifactReference( path );
 
-            if ( VersionUtil.isSnapshot( artifact.getVersion() ) )
+            if ( VersionUtil.isSnapshot( artifact.getVersion( ) ) )
             {
-                VersionedReference reference = new VersionedReference();
-                reference.setGroupId( artifact.getGroupId() );
-                reference.setArtifactId( artifact.getArtifactId() );
-                reference.setVersion( artifact.getVersion() );
+                VersionedReference reference = new VersionedReference( );
+                reference.setGroupId( artifact.getGroupId( ) );
+                reference.setArtifactId( artifact.getArtifactId( ) );
+                reference.setVersion( artifact.getVersion( ) );
 
                 List<String> versions = new ArrayList<>( repository.getVersions( reference ) );
 
-                Collections.sort( versions, VersionComparator.getInstance() );
+                Collections.sort( versions, VersionComparator.getInstance( ) );
 
-                if ( retentionCount > versions.size() )
+                if ( retentionCount > versions.size( ) )
                 {
-                    log.trace("No deletion, because retention count is higher than actual number of artifacts.");
+                    log.trace( "No deletion, because retention count is higher than actual number of artifacts." );
                     // Done. nothing to do here. skip it.
                     return;
                 }
 
-                int countToPurge = versions.size() - retentionCount;
-                Set<ArtifactReference> artifactsToDelete = new HashSet<>();
+                int countToPurge = versions.size( ) - retentionCount;
+                Set<ArtifactReference> artifactsToDelete = new HashSet<>( );
                 for ( String version : versions )
                 {
                     if ( countToPurge-- <= 0 )
                     {
                         break;
                     }
-                    artifactsToDelete.addAll(repository.getRelatedArtifacts( getNewArtifactReference( artifact, version) ));
+                    artifactsToDelete.addAll( repository.getRelatedArtifacts( getNewArtifactReference( artifact, version ) ) );
                 }
-                purge(artifactsToDelete);
+                purge( artifactsToDelete );
             }
         }
         catch ( LayoutException le )
         {
-            throw new RepositoryPurgeException( le.getMessage(), le );
+            throw new RepositoryPurgeException( le.getMessage( ), le );
         }
         catch ( ContentNotFoundException e )
         {
-            log.error("Repostory artifact not found {}", path);
+            log.error( "Repostory artifact not found {}", path );
         }
     }
 
@@ -113,12 +113,12 @@ public class RetentionCountRepositoryPurge
     private ArtifactReference getNewArtifactReference( ArtifactReference reference, String version )
         throws LayoutException
     {
-        ArtifactReference artifact = new ArtifactReference();
-        artifact.setGroupId( reference.getGroupId() );
-        artifact.setArtifactId( reference.getArtifactId() );
+        ArtifactReference artifact = new ArtifactReference( );
+        artifact.setGroupId( reference.getGroupId( ) );
+        artifact.setArtifactId( reference.getArtifactId( ) );
         artifact.setVersion( version );
-        artifact.setClassifier( reference.getClassifier() );
-        artifact.setType( reference.getType() );
+        artifact.setClassifier( reference.getClassifier( ) );
+        artifact.setType( reference.getType( ) );
         return artifact;
 
     }

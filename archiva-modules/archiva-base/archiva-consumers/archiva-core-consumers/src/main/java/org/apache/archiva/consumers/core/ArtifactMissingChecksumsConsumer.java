@@ -82,17 +82,17 @@ public class ArtifactMissingChecksumsConsumer
 
         //configuration.addChangeListener( this );
 
-        initIncludes();
+        initIncludes( );
     }
 
     @Override
-    public String getId()
+    public String getId( )
     {
         return this.id;
     }
 
     @Override
-    public String getDescription()
+    public String getDescription( )
     {
         return this.description;
     }
@@ -101,7 +101,7 @@ public class ArtifactMissingChecksumsConsumer
     public void beginScan( ManagedRepository repo, Date whenGathered )
         throws ConsumerException
     {
-        this.repositoryDir = new File( repo.getLocation() );
+        this.repositoryDir = new File( repo.getLocation( ) );
     }
 
     @Override
@@ -112,7 +112,7 @@ public class ArtifactMissingChecksumsConsumer
     }
 
     @Override
-    public void completeScan()
+    public void completeScan( )
     {
         /* do nothing */
     }
@@ -120,17 +120,17 @@ public class ArtifactMissingChecksumsConsumer
     @Override
     public void completeScan( boolean executeOnEntireRepo )
     {
-        completeScan();
+        completeScan( );
     }
 
     @Override
-    public List<String> getExcludes()
+    public List<String> getExcludes( )
     {
-        return getDefaultArtifactExclusions();
+        return getDefaultArtifactExclusions( );
     }
 
     @Override
-    public List<String> getIncludes()
+    public List<String> getIncludes( )
     {
         return includes;
     }
@@ -153,48 +153,48 @@ public class ArtifactMissingChecksumsConsumer
     private void createFixChecksum( String path, ChecksumAlgorithm checksumAlgorithm )
     {
         File artifactFile = new File( this.repositoryDir, path );
-        File checksumFile = new File( this.repositoryDir, path + "." + checksumAlgorithm.getExt() );
+        File checksumFile = new File( this.repositoryDir, path + "." + checksumAlgorithm.getExt( ) );
 
-        if ( checksumFile.exists() )
+        if ( checksumFile.exists( ) )
         {
             checksum = new ChecksummedFile( artifactFile );
             try
             {
                 if ( !checksum.isValidChecksum( checksumAlgorithm ) )
                 {
-                    checksum.fixChecksums( new ChecksumAlgorithm[]{ checksumAlgorithm } );
-                    log.info( "Fixed checksum file {}", checksumFile.getAbsolutePath() );
-                    triggerConsumerInfo( "Fixed checksum file " + checksumFile.getAbsolutePath() );
+                    checksum.fixChecksums( new ChecksumAlgorithm[]{checksumAlgorithm} );
+                    log.info( "Fixed checksum file {}", checksumFile.getAbsolutePath( ) );
+                    triggerConsumerInfo( "Fixed checksum file " + checksumFile.getAbsolutePath( ) );
                 }
             }
             catch ( IOException e )
             {
                 log.error( "Cannot calculate checksum for file {} :", checksumFile, e );
                 triggerConsumerError( TYPE_CHECKSUM_CANNOT_CALC, "Cannot calculate checksum for file " + checksumFile +
-                    ": " + e.getMessage() );
+                    ": " + e.getMessage( ) );
             }
         }
-        else if ( !checksumFile.exists() )
+        else if ( !checksumFile.exists( ) )
         {
             checksum = new ChecksummedFile( artifactFile );
             try
             {
                 checksum.createChecksum( checksumAlgorithm );
-                log.info( "Created missing checksum file {}", checksumFile.getAbsolutePath() );
-                triggerConsumerInfo( "Created missing checksum file " + checksumFile.getAbsolutePath() );
+                log.info( "Created missing checksum file {}", checksumFile.getAbsolutePath( ) );
+                triggerConsumerInfo( "Created missing checksum file " + checksumFile.getAbsolutePath( ) );
             }
             catch ( IOException e )
             {
                 log.error( "Cannot create checksum for file {} :", checksumFile, e );
                 triggerConsumerError( TYPE_CHECKSUM_CANNOT_CREATE, "Cannot create checksum for file " + checksumFile +
-                    ": " + e.getMessage() );
+                    ": " + e.getMessage( ) );
             }
         }
         else
         {
-            log.warn( "Checksum file {} is not a file. ", checksumFile.getAbsolutePath() );
+            log.warn( "Checksum file {} is not a file. ", checksumFile.getAbsolutePath( ) );
             triggerConsumerWarning( TYPE_CHECKSUM_NOT_FILE,
-                                    "Checksum file " + checksumFile.getAbsolutePath() + " is not a file." );
+                "Checksum file " + checksumFile.getAbsolutePath( ) + " is not a file." );
         }
     }
 
@@ -217,17 +217,17 @@ public class ArtifactMissingChecksumsConsumer
 
     */
 
-    private void initIncludes()
+    private void initIncludes( )
     {
         includes = new ArrayList<>( filetypes.getFileTypePatterns( FileTypes.ARTIFACTS ) );
 
     }
 
     @PostConstruct
-    public void initialize()
+    public void initialize( )
     {
         //configuration.addChangeListener( this );
 
-        initIncludes();
+        initIncludes( );
     }
 }

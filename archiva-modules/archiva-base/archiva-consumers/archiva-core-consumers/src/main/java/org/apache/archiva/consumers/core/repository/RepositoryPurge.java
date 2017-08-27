@@ -27,7 +27,7 @@ public interface RepositoryPurge
     /**
      * Perform checking on artifact for repository purge
      *
-     * @param path          path to the scanned artifact
+     * @param path path to the scanned artifact
      */
     void process( String path )
         throws RepositoryPurgeException;

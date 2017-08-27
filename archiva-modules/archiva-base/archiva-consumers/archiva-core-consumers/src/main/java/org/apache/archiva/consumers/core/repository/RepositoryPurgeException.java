@@ -26,9 +26,9 @@ package org.apache.archiva.consumers.core.repository;
 public class RepositoryPurgeException
     extends Exception
 {
-    public RepositoryPurgeException()
+    public RepositoryPurgeException( )
     {
-        super();
+        super( );
     }
 
     public RepositoryPurgeException( String message, Throwable cause )
