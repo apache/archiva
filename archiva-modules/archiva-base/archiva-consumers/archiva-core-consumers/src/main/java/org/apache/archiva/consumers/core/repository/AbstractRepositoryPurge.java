@@ -36,8 +36,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -400,15 +405,36 @@ public abstract class AbstractRepositoryPurge
 
         try
         {
-            Files.find( parentDir, 3,
-                ( path, basicFileAttributes ) -> path.getFileName( ).toString( ).startsWith( artifactName )
-                    && Files.isRegularFile( path ) ).forEach( this::deleteSilently );
+            deleteArtifactFiles( parentDir, 3, artifactName );
         }
         catch ( IOException e )
         {
             log.error( "Purge of support files failed {}: {}", artifactFile, e.getMessage( ), e );
         }
 
+    }
+
+    public static void deleteArtifactFiles(final Path directory, final int maxDepth, final String artifactName) throws IOException
+    {
+            Files.walkFileTree(directory, new HashSet<FileVisitOption>(  ), maxDepth, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile( Path file, BasicFileAttributes attrs) throws IOException {
+                    if (file.getFileName().toString().startsWith(artifactName)) {
+                        try {
+                            Files.delete( file );
+                        } catch (IOException e) {
+                            // We do not stop, if an error occurs.
+                        }
+                    }
+                    return FileVisitResult.CONTINUE;
+                }
+
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
+
+            });
     }
 
     private void triggerAuditEvent( String repoId, String resource, String action )

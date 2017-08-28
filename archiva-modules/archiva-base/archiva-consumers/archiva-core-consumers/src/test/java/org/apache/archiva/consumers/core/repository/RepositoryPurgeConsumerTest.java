@@ -386,8 +386,8 @@ public class RepositoryPurgeConsumerTest
 
         verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, never()).removeArtifact(any(), any());
-        verify(metadataRepository, never()).removeArtifact( any(), any(), any(), any(), any(MetadataFacet.class) );
+        verify(metadataRepository, never()).removeArtifact(any(ArtifactMetadata.class), any(String.class));
+        verify(metadataRepository, never()).removeArtifact( any(String.class), any(String.class), any(String.class), any(String.class), any(MetadataFacet.class) );
 
         // check if the snapshot wasn't removed
 
@@ -447,7 +447,7 @@ public class RepositoryPurgeConsumerTest
 
         verify(metadataRepository, times(1)).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, never()).removeArtifact(any(), any());
+        verify(metadataRepository, never()).removeArtifact(any(ArtifactMetadata.class), any(String.class));
 
         // check if the snapshot was removed
         assertDeleted( projectRoot + "/2.3-SNAPSHOT" );

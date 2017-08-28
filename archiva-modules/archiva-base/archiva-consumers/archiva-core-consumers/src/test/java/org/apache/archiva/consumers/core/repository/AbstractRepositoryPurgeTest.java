@@ -20,9 +20,11 @@ package org.apache.archiva.consumers.core.repository;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.events.RepositoryListener;
@@ -43,12 +45,16 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -231,13 +237,27 @@ public abstract class AbstractRepositoryPurgeTest
         return StringUtils.substringAfterLast( getClass().getName(), "." );
     }
 
-    protected List<ArtifactMetadata> getArtifactMetadataFromDir( String repoId, String projectName, Path repoDir, Path vDir ) throws IOException
+    protected List<ArtifactMetadata> getArtifactMetadataFromDir( final String repoId, final String projectName, final Path repoDir, final Path vDir ) throws IOException
     {
-        Maven2RepositoryPathTranslator translator = new Maven2RepositoryPathTranslator( new ArrayList<>(  ) );
-        return Files.find(vDir, 1,
-                    (path, basicFileAttributes) -> basicFileAttributes.isRegularFile() && path.getFileName().toString().startsWith(projectName))
-            .map( path ->
-                                translator.getArtifactForPath( repoId, repoDir.relativize( path ).toString() )
-            ).collect( Collectors.toList());
+        final Maven2RepositoryPathTranslator translator = new Maven2RepositoryPathTranslator( new ArrayList<ArtifactMappingProvider>(  ) );
+        final List<ArtifactMetadata> result = new ArrayList<>(  );
+        Files.walkFileTree(vDir, new HashSet<FileVisitOption>(  ), 1, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile( Path file, BasicFileAttributes attrs) throws IOException {
+                if (file.getFileName().toString().startsWith(projectName)) {
+                    ArtifactMetadata m = translator.getArtifactForPath( repoId, repoDir.relativize( file ).toString() );
+                    result.add(m);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                return FileVisitResult.CONTINUE;
+            }
+
+        });
+        return result;
     }
+
 }

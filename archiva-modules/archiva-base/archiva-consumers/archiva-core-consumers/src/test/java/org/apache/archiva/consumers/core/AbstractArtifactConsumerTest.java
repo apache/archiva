@@ -19,6 +19,7 @@ package org.apache.archiva.consumers.core;
  * under the License.
  */
 
+import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.utils.BaseFile;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
