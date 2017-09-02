@@ -19,10 +19,9 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
@@ -42,14 +41,14 @@ public class MavenProxyPropertyLoaderTest
     public void testLoadValidMavenProxyConfiguration()
         throws IOException, InvalidConfigurationException
     {
-        File confFile = ArchivaConfigurationTest.getTestFile( "src/test/conf/maven-proxy-complete.conf" );
+        Path confFile = ArchivaConfigurationTest.getTestFile( "src/test/conf/maven-proxy-complete.conf" );
 
         Configuration configuration = new Configuration();
         NetworkProxyConfiguration proxy = new NetworkProxyConfiguration();
         proxy.setHost( "original-host" );
         configuration.addNetworkProxy( proxy ); // overwritten
 
-        loader.load( Files.newInputStream(confFile.toPath()), configuration );
+        loader.load( Files.newInputStream(confFile), configuration );
 
         Map<String, ManagedRepositoryConfiguration> repositoryIdMap = configuration.getManagedRepositoriesAsMap();
         assertEquals( "Count repositories", 1, repositoryIdMap.size() );

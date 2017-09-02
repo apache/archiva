@@ -19,8 +19,10 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import javax.inject.Inject;
 import org.apache.archiva.common.utils.FileUtil;
@@ -41,15 +43,17 @@ import org.springframework.test.context.ContextConfiguration;
 public class ArchivaConfigurationMRM789Test
 {
 
+    private static String FILE_ENCODING = "UTF-8";
+
     @Inject
     protected ApplicationContext applicationContext;
 
     @Inject
     FileTypes filetypes;
 
-    public static File getTestFile( String path )
+    public static Path getTestFile( String path )
     {
-        return new File( FileUtil.getBasedir(), path );
+        return Paths.get( FileUtil.getBasedir(), path );
     }
 
     protected <T> T lookup( Class<T> clazz, String hint )
@@ -62,22 +66,22 @@ public class ArchivaConfigurationMRM789Test
     public void testGetConfigurationFromDefaultsWithDefaultRepoLocationAlreadyExisting()
         throws Exception
     {
-        File repo = new File( FileUtil.getBasedir(), "target/test-classes/existing_snapshots" );
-        repo.mkdirs();
+        Path repo = Paths.get( FileUtil.getBasedir(), "target/test-classes/existing_snapshots" );
+        Files.createDirectories(repo);
 
-        repo = new File( FileUtil.getBasedir(), "target/test-classes/existing_internal" );
-        repo.mkdirs();
+        repo = Paths.get( FileUtil.getBasedir(), "target/test-classes/existing_internal" );
+        Files.createDirectories(repo);
 
         String existingTestDefaultArchivaConfigFile = FileUtils.readFileToString(
-            getTestFile( "target/test-classes/org/apache/archiva/configuration/test-default-archiva.xml" ) );
+            getTestFile( "target/test-classes/org/apache/archiva/configuration/test-default-archiva.xml" ).toFile(), FILE_ENCODING );
         existingTestDefaultArchivaConfigFile =
             StringUtils.replace( existingTestDefaultArchivaConfigFile, "${appserver.base}", FileUtil.getBasedir() );
 
-        File generatedTestDefaultArchivaConfigFile = new File( FileUtil.getBasedir(),
+        Path generatedTestDefaultArchivaConfigFile = Paths.get( FileUtil.getBasedir(),
                                                                "target/test-classes/org/apache/archiva/configuration/default-archiva.xml" );
 
-        FileUtils.writeStringToFile( generatedTestDefaultArchivaConfigFile, existingTestDefaultArchivaConfigFile,
-                                     Charset.forName("UTF-8") );
+        FileUtils.writeStringToFile( generatedTestDefaultArchivaConfigFile.toFile(), existingTestDefaultArchivaConfigFile,
+                                     Charset.forName(FILE_ENCODING) );
 
         ArchivaConfiguration archivaConfiguration =
             lookup( ArchivaConfiguration.class, "test-defaults-default-repo-location-exists" );
@@ -87,8 +91,8 @@ public class ArchivaConfigurationMRM789Test
         ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
         assertTrue( "check managed repositories", repository.getLocation().endsWith( "data/repositories/internal" ) );
 
-        generatedTestDefaultArchivaConfigFile.delete();
-        assertFalse( generatedTestDefaultArchivaConfigFile.exists() );
+        Files.deleteIfExists(generatedTestDefaultArchivaConfigFile);
+        assertFalse( Files.exists(generatedTestDefaultArchivaConfigFile) );
     }
 
 

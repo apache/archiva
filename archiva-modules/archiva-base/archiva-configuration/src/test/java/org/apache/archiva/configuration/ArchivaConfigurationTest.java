@@ -34,8 +34,10 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -59,9 +61,9 @@ public class ArchivaConfigurationTest
     @Inject
     FileTypes filetypes;
 
-    public static File getTestFile( String path )
+    public static Path getTestFile( String path )
     {
-        return new File( FileUtil.getBasedir(), path );
+        return Paths.get( FileUtil.getBasedir(), path );
     }
 
     protected <T> T lookup( Class<T> clazz, String hint )
@@ -197,9 +199,9 @@ public class ArchivaConfigurationTest
     public void testStoreConfiguration()
         throws Exception
     {
-        File file = getTestFile( "target/test/test-file.xml" );
-        file.delete();
-        assertFalse( file.exists() );
+        Path file = getTestFile( "target/test/test-file.xml" );
+        Files.deleteIfExists(file);
+        assertFalse( Files.exists(file) );
 
         // TODO: remove with commons-configuration 1.4
         //file.getParentFile().mkdirs();
@@ -228,7 +230,7 @@ public class ArchivaConfigurationTest
 
         verify( listener );
 
-        assertTrue( "Check file exists", file.exists() );
+        assertTrue( "Check file exists", Files.exists(file) );
 
         // check it
         configuration = archivaConfiguration.getConfiguration();
@@ -251,16 +253,16 @@ public class ArchivaConfigurationTest
     public void testStoreConfigurationUser()
         throws Exception
     {
-        File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        Path baseFile = getTestFile( "target/test/test-file.xml" );
+        Files.deleteIfExists( baseFile );
+        assertFalse( Files.exists(baseFile) );
 
-        File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        Path userFile = getTestFile( "target/test/test-file-user.xml" );
+        Files.deleteIfExists( userFile );
+        assertFalse( Files.exists(userFile) );
 
-        userFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.forName( "UTF-8" ) );
+        Files.createDirectories(userFile.getParent());
+        FileUtils.writeStringToFile( userFile.toFile(), "<configuration/>", Charset.forName( "UTF-8" ) );
 
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-save-user" );
 
@@ -271,8 +273,8 @@ public class ArchivaConfigurationTest
 
         archivaConfiguration.save( configuration );
 
-        assertTrue( "Check file exists", userFile.exists() );
-        assertFalse( "Check file not created", baseFile.exists() );
+        assertTrue( "Check file exists", Files.exists(userFile) );
+        assertFalse( "Check file not created", Files.exists(baseFile) );
 
         // check it
         configuration = archivaConfiguration.getConfiguration();
@@ -283,13 +285,13 @@ public class ArchivaConfigurationTest
     public void testStoreConfigurationLoadedFromDefaults()
         throws Exception
     {
-        File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        Path baseFile = getTestFile( "target/test/test-file.xml" );
+        Files.delete(baseFile);
+        assertFalse( Files.exists(baseFile) );
 
-        File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        Path userFile = getTestFile( "target/test/test-file-user.xml" );
+        Files.deleteIfExists(userFile);
+        assertFalse( Files.exists(userFile) );
 
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-save-user-defaults" );
 
@@ -312,8 +314,8 @@ public class ArchivaConfigurationTest
 
         verify( listener );
 
-        assertTrue( "Check file exists", userFile.exists() );
-        assertFalse( "Check file not created", baseFile.exists() );
+        assertTrue( "Check file exists", Files.exists(userFile) );
+        assertFalse( "Check file not created", Files.exists(baseFile) );
 
         // check it
         configuration = archivaConfiguration.getConfiguration();
@@ -339,16 +341,16 @@ public class ArchivaConfigurationTest
     public void testStoreConfigurationFallback()
         throws Exception
     {
-        File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        Path baseFile = getTestFile( "target/test/test-file.xml" );
+        Files.deleteIfExists(baseFile);
+        assertFalse( Files.exists(baseFile) );
 
-        File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        Path userFile = getTestFile( "target/test/test-file-user.xml" );
+        Files.deleteIfExists(userFile);
+        assertFalse( Files.exists(userFile) );
 
-        baseFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( baseFile, "<configuration/>", Charset.forName( "UTF-8" ) );
+        Files.createDirectories( baseFile.getParent());
+        FileUtils.writeStringToFile( baseFile.toFile(), "<configuration/>", Charset.forName( "UTF-8" ) );
 
         ArchivaConfiguration archivaConfiguration =
             (ArchivaConfiguration) lookup( ArchivaConfiguration.class, "test-save-user-fallback" );
@@ -362,8 +364,8 @@ public class ArchivaConfigurationTest
 
         archivaConfiguration.save( configuration );
 
-        assertTrue( "Check file exists", baseFile.exists() );
-        assertFalse( "Check file not created", userFile.exists() );
+        assertTrue( "Check file exists", Files.exists(baseFile) );
+        assertFalse( "Check file not created", Files.exists(userFile) );
 
         // check it
         configuration = archivaConfiguration.getConfiguration();
@@ -374,19 +376,19 @@ public class ArchivaConfigurationTest
     public void testStoreConfigurationFailsWhenReadFromBothLocationsNoLists()
         throws Exception
     {
-        File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        Path baseFile = getTestFile( "target/test/test-file.xml" );
+        Files.deleteIfExists(baseFile);
+        assertFalse( Files.exists(baseFile) );
 
-        File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        Path userFile = getTestFile( "target/test/test-file-user.xml" );
+        Files.deleteIfExists(userFile);
+        assertFalse( Files.exists(userFile) );
 
-        baseFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( baseFile, "<configuration/>", Charset.forName( "UTF-8" ) );
+        Files.createDirectories( baseFile.getParent() );
+        FileUtils.writeStringToFile( baseFile.toFile(), "<configuration/>", Charset.forName( "UTF-8" ) );
 
-        userFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.forName( "UTF-8" ) );
+        Files.createDirectories( userFile.getParent());
+        FileUtils.writeStringToFile( userFile.toFile(), "<configuration/>", Charset.forName( "UTF-8" ) );
 
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-save-user" );
 
@@ -399,12 +401,12 @@ public class ArchivaConfigurationTest
 
         archivaConfiguration.save( configuration );
 
-        assertTrue( "Check file exists", baseFile.exists() );
+        assertTrue( "Check file exists", Files.exists(baseFile) );
         assertEquals( "Check base file is unchanged", "<configuration/>",
-                      FileUtils.readFileToString( baseFile, Charset.forName( "UTF-8" ) ) );
-        assertTrue( "Check file exists", userFile.exists() );
+                      FileUtils.readFileToString( baseFile.toFile(), Charset.forName( "UTF-8" ) ) );
+        assertTrue( "Check file exists", Files.exists(userFile) );
         assertFalse( "Check base file is changed",
-                     "<configuration/>".equals( FileUtils.readFileToString( userFile, Charset.forName( "UTF-8" ) ) ) );
+                     "<configuration/>".equals( FileUtils.readFileToString( userFile.toFile(), Charset.forName( "UTF-8" ) ) ) );
 
         // check it
         configuration = archivaConfiguration.getConfiguration();
@@ -415,19 +417,19 @@ public class ArchivaConfigurationTest
     public void testStoreConfigurationFailsWhenReadFromBothLocationsUserHasLists()
         throws Exception
     {
-        File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        Path baseFile = getTestFile( "target/test/test-file.xml" );
+        Files.deleteIfExists(baseFile);
+        assertFalse( Files.exists(baseFile) );
 
-        File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        Path userFile = getTestFile( "target/test/test-file-user.xml" );
+        Files.deleteIfExists(userFile);
+        assertFalse( Files.exists(userFile) );
 
-        userFile.getParentFile().mkdirs();
-        FileUtils.copyFile( getTestFile( "src/test/conf/conf-user.xml" ), userFile );
+        Files.createDirectories( userFile.getParent() );
+        FileUtils.copyFile( getTestFile( "src/test/conf/conf-user.xml" ).toFile(), userFile.toFile() );
 
-        baseFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( baseFile, "<configuration/>", Charset.forName( "UTF-8" ) );
+        Files.createDirectories(baseFile.getParent());
+        FileUtils.writeStringToFile( baseFile.toFile(), "<configuration/>", Charset.forName( "UTF-8" ) );
 
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-save-user" );
 
@@ -440,12 +442,12 @@ public class ArchivaConfigurationTest
 
         archivaConfiguration.save( configuration );
 
-        assertTrue( "Check file exists", baseFile.exists() );
+        assertTrue( "Check file exists", Files.exists(baseFile) );
         assertEquals( "Check base file is unchanged", "<configuration/>",
-                      FileUtils.readFileToString( baseFile, Charset.forName( "UTF-8" ) ) );
-        assertTrue( "Check file exists", userFile.exists() );
+                      FileUtils.readFileToString( baseFile.toFile(), Charset.forName( "UTF-8" ) ) );
+        assertTrue( "Check file exists", Files.exists(userFile) );
         assertFalse( "Check base file is changed",
-                     "<configuration/>".equals( FileUtils.readFileToString( userFile, Charset.forName( "UTF-8" ) ) ) );
+                     "<configuration/>".equals( FileUtils.readFileToString( userFile.toFile(), Charset.forName( "UTF-8" ) ) ) );
 
         // check it
         configuration = archivaConfiguration.getConfiguration();
@@ -456,19 +458,19 @@ public class ArchivaConfigurationTest
     public void testStoreConfigurationFailsWhenReadFromBothLocationsAppserverHasLists()
         throws Exception
     {
-        File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        Path baseFile = getTestFile( "target/test/test-file.xml" );
+        Files.deleteIfExists(baseFile);
+        assertFalse( Files.exists(baseFile) );
 
-        File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        Path userFile = getTestFile( "target/test/test-file-user.xml" );
+        Files.deleteIfExists(userFile);
+        assertFalse( Files.exists(userFile) );
 
-        baseFile.getParentFile().mkdirs();
-        FileUtils.copyFile( getTestFile( "src/test/conf/conf-base.xml" ), baseFile );
+        Files.createDirectories(baseFile.getParent());
+        FileUtils.copyFile( getTestFile( "src/test/conf/conf-base.xml" ).toFile(), baseFile.toFile() );
 
-        userFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.forName( "UTF-8" ) );
+        Files.createDirectories(userFile.getParent());
+        FileUtils.writeStringToFile( userFile.toFile(), "<configuration/>", Charset.forName( "UTF-8" ) );
 
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-save-user" );
 
@@ -515,8 +517,8 @@ public class ArchivaConfigurationTest
     public void testLoadConfigurationFromInvalidUserLocationOnDisk()
         throws Exception
     {
-        File testConfDir = getTestFile( "target/test-appserver-base/conf/" );
-        testConfDir.mkdirs();
+        Path testConfDir = getTestFile( "target/test-appserver-base/conf/" );
+        Files.createDirectories( testConfDir );
 
         ArchivaConfiguration archivaConfiguration =
             lookup( ArchivaConfiguration.class, "test-not-allowed-to-write-to-user" );
@@ -587,12 +589,12 @@ public class ArchivaConfigurationTest
         throws Exception
     {
         // Setup the autodetect-v1.xml file in the target directory (so we can save/load it)
-        File userFile = getTestFile( "target/test-autodetect-v1/archiva-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        Path userFile = getTestFile( "target/test-autodetect-v1/archiva-user.xml" );
+        Files.deleteIfExists(userFile);
+        assertFalse( Files.exists(userFile) );
 
-        userFile.getParentFile().mkdirs();
-        FileUtils.copyFile( getTestFile( "src/test/conf/autodetect-v1.xml" ), userFile );
+        Files.createDirectories(userFile.getParent());
+        FileUtils.copyFile( getTestFile( "src/test/conf/autodetect-v1.xml" ).toFile(), userFile.toFile());
 
         // Load the original (unconverted) archiva.xml
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-autodetect-v1" );
@@ -631,7 +633,7 @@ public class ArchivaConfigurationTest
         assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositoriesAsMap().size() );
         assertEquals( "check v1 repositories size.", 0, configuration.getRepositories().size() );
 
-        String actualXML = FileUtils.readFileToString( userFile, Charset.forName( "UTF-8" ) );
+        String actualXML = FileUtils.readFileToString( userFile.toFile(), Charset.forName( "UTF-8" ) );
         XMLAssert.assertXpathNotExists( "//configuration/repositories/repository", actualXML );
         XMLAssert.assertXpathNotExists( "//configuration/repositories", actualXML );
     }
@@ -674,19 +676,19 @@ public class ArchivaConfigurationTest
     public void testCronExpressionsWithComma()
         throws Exception
     {
-        File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        Path baseFile = getTestFile( "target/test/test-file.xml" );
+        Files.deleteIfExists(baseFile);
+        assertFalse( Files.exists(baseFile) );
 
-        File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        Path userFile = getTestFile( "target/test/test-file-user.xml" );
+        Files.deleteIfExists(userFile);
+        assertFalse( Files.exists(userFile) );
 
-        baseFile.getParentFile().mkdirs();
-        FileUtils.copyFile( getTestFile( "src/test/conf/escape-cron-expressions.xml" ), baseFile );
+        Files.createDirectories(baseFile.getParent());
+        FileUtils.copyFile( getTestFile( "src/test/conf/escape-cron-expressions.xml" ).toFile(), baseFile.toFile() );
 
-        userFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.defaultCharset() );
+        Files.createDirectories(userFile.getParent());
+        FileUtils.writeStringToFile( userFile.toFile(), "<configuration/>", Charset.defaultCharset() );
 
         final ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-cron-expressions" );
 
@@ -728,19 +730,19 @@ public class ArchivaConfigurationTest
     public void testRemoveLastElements()
         throws Exception
     {
-        File baseFile = getTestFile( "target/test/test-file.xml" );
-        baseFile.delete();
-        assertFalse( baseFile.exists() );
+        Path baseFile = getTestFile( "target/test/test-file.xml" );
+        Files.deleteIfExists(baseFile);
+        assertFalse( Files.exists(baseFile) );
 
-        File userFile = getTestFile( "target/test/test-file-user.xml" );
-        userFile.delete();
-        assertFalse( userFile.exists() );
+        Path userFile = getTestFile( "target/test/test-file-user.xml" );
+        Files.deleteIfExists(userFile);
+        assertFalse( Files.exists(userFile) );
 
-        baseFile.getParentFile().mkdirs();
-        FileUtils.copyFile( getTestFile( "src/test/conf/conf-single-list-elements.xml" ), baseFile );
+        Files.createDirectories( baseFile.getParent() );
+        FileUtils.copyFile( getTestFile( "src/test/conf/conf-single-list-elements.xml" ).toFile(), baseFile.toFile() );
 
-        userFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( userFile, "<configuration/>", Charset.forName( "UTF-8" ) );
+        Files.createDirectories( userFile.getParent());
+        FileUtils.writeStringToFile( userFile.toFile(), "<configuration/>", Charset.forName( "UTF-8" ) );
 
         ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-remove-central" );
 

@@ -51,8 +51,10 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -94,6 +96,8 @@ public class DefaultArchivaConfiguration
     implements ArchivaConfiguration, RegistryListener
 {
     private Logger log = LoggerFactory.getLogger( DefaultArchivaConfiguration.class );
+
+    private static String FILE_ENCODING = "UTF-8";
 
     /**
      * Plexus registry to read the configuration from.
@@ -684,21 +688,21 @@ public class DefaultArchivaConfiguration
      */
     private boolean writeFile( String filetype, String path, String contents )
     {
-        File file = new File( path );
+        Path file = Paths.get( path );
 
         try
         {
             // Check parent directory (if it is declared)
-            if ( file.getParentFile() != null )
+            if ( file.getParent() != null )
             {
                 // Check that directory exists
-                if ( !file.getParentFile().isDirectory() )
+                if ( !Files.isDirectory( file.getParent() ) )
                 {
                     // Directory to file must exist for file to be created
                     return false;
                 }
             }
-            FileUtils.writeStringToFile( file, contents, "UTF-8" );
+            FileUtils.writeStringToFile( file.toFile(), contents, FILE_ENCODING);
             return true;
         }
         catch ( IOException e )
@@ -950,9 +954,9 @@ public class DefaultArchivaConfiguration
         for ( ManagedRepositoryConfiguration repo : (List<ManagedRepositoryConfiguration>) config.getManagedRepositories() )
         {
             String repoPath = repo.getLocation();
-            File repoLocation = new File( repoPath );
+            Path repoLocation = Paths.get( repoPath );
 
-            if ( repoLocation.exists() && repoLocation.isDirectory() && !repoPath.endsWith(
+            if ( Files.exists(repoLocation) && Files.isDirectory(repoLocation) && !repoPath.endsWith(
                 "data/repositories/" + repo.getId() ) )
             {
                 repo.setLocation( repoPath + "/data/repositories/" + repo.getId() );
