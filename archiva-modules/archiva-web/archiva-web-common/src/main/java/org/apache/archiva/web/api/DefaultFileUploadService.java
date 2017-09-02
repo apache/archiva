@@ -643,7 +643,7 @@ public class DefaultFileUploadService
             projectMetadata.setReleasedVersion( latestVersion );
         }
 
-        RepositoryMetadataWriter.write( projectMetadata, projectMetadataFile );
+        RepositoryMetadataWriter.write( projectMetadata, projectMetadataFile.toPath() );
 
         if ( fixChecksums )
         {
@@ -677,7 +677,7 @@ public class DefaultFileUploadService
         metadata.getSnapshotVersion().setTimestamp( timestamp );
         metadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
 
-        RepositoryMetadataWriter.write( metadata, metadataFile );
+        RepositoryMetadataWriter.write( metadata, metadataFile.toPath() );
 
         if ( fixChecksums )
         {

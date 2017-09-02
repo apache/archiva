@@ -71,6 +71,9 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -93,6 +96,8 @@ public class DefaultBrowseService
     extends AbstractRestService
     implements BrowseService
 {
+
+    private Charset ARTIFACT_CONTENT_ENCODING=Charset.forName( "UTF-8" );
 
     @Inject
     private DependencyTreeBuilder dependencyTreeBuilder;
@@ -706,8 +711,8 @@ public class DefaultBrowseService
                 ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version, classifier,
                                                                        StringUtils.isEmpty( type ) ? "jar" : type,
                                                                        repoId );
-                File file = managedRepositoryContent.toFile( archivaArtifact );
-                if ( file.exists() )
+                Path file = managedRepositoryContent.toFile( archivaArtifact );
+                if ( Files.exists(file) )
                 {
                     return readFileEntries( file, path, repoId );
                 }
@@ -783,8 +788,8 @@ public class DefaultBrowseService
                 ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version, classifier,
                                                                        StringUtils.isEmpty( type ) ? "jar" : type,
                                                                        repoId );
-                File file = managedRepositoryContent.toFile( archivaArtifact );
-                if ( !file.exists() )
+                Path file = managedRepositoryContent.toFile( archivaArtifact );
+                if ( !Files.exists(file) )
                 {
                     log.debug( "file: {} not exists for repository: {} try next repository", file, repoId );
                     continue;
@@ -792,18 +797,18 @@ public class DefaultBrowseService
                 if ( StringUtils.isNotBlank( path ) )
                 {
                     // zip entry of the path -> path must a real file entry of the archive
-                    JarFile jarFile = new JarFile( file );
+                    JarFile jarFile = new JarFile( file.toFile() );
                     ZipEntry zipEntry = jarFile.getEntry( path );
                     try (InputStream inputStream = jarFile.getInputStream( zipEntry ))
                     {
-                        return new ArtifactContent( IOUtils.toString( inputStream ), repoId );
+                        return new ArtifactContent( IOUtils.toString( inputStream, ARTIFACT_CONTENT_ENCODING ), repoId );
                     }
                     finally
                     {
                         closeQuietly( jarFile );
                     }
                 }
-                return new ArtifactContent( FileUtils.readFileToString( file ), repoId );
+                return new ArtifactContent( new String(Files.readAllBytes( file ), ARTIFACT_CONTENT_ENCODING), repoId );
             }
         }
         catch ( IOException e )
@@ -857,9 +862,9 @@ public class DefaultBrowseService
                                                                        StringUtils.isEmpty( classifier )
                                                                            ? ""
                                                                            : classifier, "jar", repoId );
-                File file = managedRepositoryContent.toFile( archivaArtifact );
+                Path file = managedRepositoryContent.toFile( archivaArtifact );
 
-                if ( file != null && file.exists() )
+                if ( file != null && Files.exists(file) )
                 {
                     return true;
                 }
@@ -867,13 +872,13 @@ public class DefaultBrowseService
                 // in case of SNAPSHOT we can have timestamped version locally !
                 if ( StringUtils.endsWith( version, VersionUtil.SNAPSHOT ) )
                 {
-                    File metadataFile = new File( file.getParent(), MetadataTools.MAVEN_METADATA );
-                    if ( metadataFile.exists() )
+                    Path metadataFile = file.getParent().resolve(MetadataTools.MAVEN_METADATA );
+                    if ( Files.exists(metadataFile) )
                     {
                         try
                         {
                             ArchivaRepositoryMetadata archivaRepositoryMetadata =
-                                MavenMetadataReader.read( metadataFile );
+                                MavenMetadataReader.read( metadataFile.toFile() );
                             int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
                             String timeStamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
                             // rebuild file name with timestamped version and build number
@@ -884,9 +889,9 @@ public class DefaultBrowseService
                                 .append( ( StringUtils.isEmpty( classifier ) ? "" : "-" + classifier ) ) //
                                 .append( ".jar" ).toString();
 
-                            File timeStampFile = new File( file.getParent(), timeStampFileName );
-                            log.debug( "try to find timestamped snapshot version file: {}", timeStampFile.getPath() );
-                            if ( timeStampFile.exists() )
+                            Path timeStampFile = file.getParent().resolve( timeStampFileName );
+                            log.debug( "try to find timestamped snapshot version file: {}", timeStampFile.toAbsolutePath() );
+                            if ( Files.exists(timeStampFile) )
                             {
                                 return true;
                             }
@@ -900,9 +905,9 @@ public class DefaultBrowseService
 
                 String path = managedRepositoryContent.toPath( archivaArtifact );
 
-                file = connectors.fetchFromProxies( managedRepositoryContent, path );
+                file = connectors.fetchFromProxies( managedRepositoryContent, path ).toPath();
 
-                if ( file != null && file.exists() )
+                if ( file != null && Files.exists(file) )
                 {
                     // download pom now
                     String pomPath = StringUtils.substringBeforeLast( path, ".jar" ) + ".pom";
@@ -1093,7 +1098,7 @@ public class DefaultBrowseService
         }
     }
 
-    protected List<ArtifactContentEntry> readFileEntries(final File file, final String filterPath, final String repoId )
+    protected List<ArtifactContentEntry> readFileEntries(final Path file, final String filterPath, final String repoId )
         throws IOException
     {
         String cleanedfilterPath = filterPath==null ? "" : (StringUtils.startsWith(filterPath, "/") ?
@@ -1103,7 +1108,7 @@ public class DefaultBrowseService
         if (!StringUtils.endsWith(cleanedfilterPath,"/") && !StringUtils.isEmpty(cleanedfilterPath)) {
             filterDepth++;
         }
-        JarFile jarFile = new JarFile( file );
+        JarFile jarFile = new JarFile( file.toFile() );
         try
         {
             Enumeration<JarEntry> jarEntryEnumeration = jarFile.entries();

@@ -40,6 +40,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -167,25 +170,25 @@ public class ManagedDefaultRepositoryContent
     public Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
         throws ContentNotFoundException
     {
-        File artifactFile = toFile( reference );
-        File repoDir = artifactFile.getParentFile();
+        Path artifactFile = toFile( reference );
+        Path repoDir = artifactFile.getParent();
 
-        if ( !repoDir.exists() )
+        if ( !Files.exists(repoDir))
         {
             throw new ContentNotFoundException(
-                "Unable to get related artifacts using a non-existant directory: " + repoDir.getAbsolutePath() );
+                "Unable to get related artifacts using a non-existant directory: " + repoDir.toAbsolutePath() );
         }
 
-        if ( !repoDir.isDirectory() )
+        if ( !Files.isDirectory( repoDir ) )
         {
             throw new ContentNotFoundException(
-                "Unable to get related artifacts using a non-directory: " + repoDir.getAbsolutePath() );
+                "Unable to get related artifacts using a non-directory: " + repoDir.toAbsolutePath() );
         }
 
         Set<ArtifactReference> foundArtifacts = new HashSet<>();
 
         // First gather up the versions found as artifacts in the managed repository.
-        File repoFiles[] = repoDir.listFiles();
+        File repoFiles[] = repoDir.toFile().listFiles();
         for (File repoFile : repoFiles) 
         {
             if (repoFile.isDirectory()) {
@@ -350,8 +353,8 @@ public class ManagedDefaultRepositoryContent
     @Override
     public boolean hasContent( ArtifactReference reference )
     {
-        File artifactFile = toFile( reference );
-        return artifactFile.exists() && artifactFile.isFile();
+        Path artifactFile = toFile( reference );
+        return Files.exists(artifactFile) && Files.isRegularFile( artifactFile );
     }
 
     @Override
@@ -406,15 +409,15 @@ public class ManagedDefaultRepositoryContent
     }
 
     @Override
-    public File toFile( ArtifactReference reference )
+    public Path toFile( ArtifactReference reference )
     {
-        return new File( repository.getLocation(), toPath( reference ) );
+        return Paths.get( repository.getLocation(), toPath( reference ) );
     }
 
     @Override
-    public File toFile( ArchivaArtifact reference )
+    public Path toFile( ArchivaArtifact reference )
     {
-        return new File( repository.getLocation(), toPath( reference ) );
+        return Paths.get( repository.getLocation(), toPath( reference ) );
     }
 
     /**

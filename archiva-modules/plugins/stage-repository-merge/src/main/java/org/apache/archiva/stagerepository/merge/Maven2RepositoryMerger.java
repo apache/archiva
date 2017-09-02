@@ -329,7 +329,7 @@ public class Maven2RepositoryMerger
             projectMetadata.setReleasedVersion( latestVersion );
         }
 
-        RepositoryMetadataWriter.write( projectMetadata, projectMetaDataFileIntargetRepo );
+        RepositoryMetadataWriter.write( projectMetadata, projectMetaDataFileIntargetRepo.toPath() );
 
     }
 
@@ -346,7 +346,7 @@ public class Maven2RepositoryMerger
         }
 
         versionMetadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
-        RepositoryMetadataWriter.write( versionMetadata, versionMetaDataFileInTargetRepo );
+        RepositoryMetadataWriter.write( versionMetadata, versionMetaDataFileInTargetRepo.toPath() );
     }
 
     private ArchivaRepositoryMetadata getMetadata( File metadataFile )

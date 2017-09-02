@@ -26,7 +26,7 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.layout.LayoutException;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Set;
 
 /**
@@ -197,7 +197,7 @@ public interface ManagedRepositoryContent
      * @param reference the artifact reference to use.
      * @return the relative path to the artifact.
      */
-    File toFile( ArtifactReference reference );
+    Path toFile( ArtifactReference reference );
 
     /**
      * Given an {@link ArchivaArtifact}, return the file reference to the artifact.
@@ -205,7 +205,7 @@ public interface ManagedRepositoryContent
      * @param reference the archiva artifact to use.
      * @return the relative path to the artifact.
      */
-    File toFile( ArchivaArtifact reference );
+    Path toFile( ArchivaArtifact reference );
 
     /**
      * Given a {@link ProjectReference}, return the path to the metadata for

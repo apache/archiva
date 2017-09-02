@@ -613,7 +613,7 @@ public class DefaultRepositoriesService
             projectMetadata.setReleasedVersion( latestVersion );
         }
 
-        RepositoryMetadataWriter.write( projectMetadata, projectMetadataFile );
+        RepositoryMetadataWriter.write( projectMetadata, projectMetadataFile.toPath() );
 
         if ( fixChecksums )
         {
@@ -1187,7 +1187,7 @@ public class DefaultRepositoriesService
         metadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
         metadata.setAvailableVersions( availableVersions );
 
-        RepositoryMetadataWriter.write( metadata, metadataFile );
+        RepositoryMetadataWriter.write( metadata, metadataFile.toPath() );
         ChecksummedFile checksum = new ChecksummedFile( metadataFile );
         checksum.fixChecksums( algorithms );
     }

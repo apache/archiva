@@ -211,7 +211,7 @@ public abstract class AbstractRepositoryPurge
                         log.error( "Error during metadata retrieval {}: {}", metaBaseId, e.getMessage( ) );
                     }
                 }
-                Path artifactFile = repository.toFile( reference ).toPath( );
+                Path artifactFile = repository.toFile( reference );
 
                 for ( RepositoryListener listener : listeners )
                 {

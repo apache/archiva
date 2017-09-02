@@ -672,7 +672,7 @@ public class DefaultRepositoryProxyConnectors
 
     private File toLocalFile( ManagedRepositoryContent repository, ArtifactReference artifact )
     {
-        return repository.toFile( artifact );
+        return repository.toFile( artifact ).toFile();
     }
 
     /**

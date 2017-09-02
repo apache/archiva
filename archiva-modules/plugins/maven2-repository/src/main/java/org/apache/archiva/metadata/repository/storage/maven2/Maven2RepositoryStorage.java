@@ -89,6 +89,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -687,9 +688,9 @@ public class Maven2RepositoryStorage
         connectors.fetchFromProxies( managedRepository, pomReference );
 
         // Open and read the POM from the managed repo
-        File pom = managedRepository.toFile( pomReference );
+        Path pom = managedRepository.toFile( pomReference );
 
-        if ( !pom.exists() )
+        if ( !Files.exists(pom) )
         {
             return;
         }
@@ -699,7 +700,7 @@ public class Maven2RepositoryStorage
             // MavenXpp3Reader leaves the file open, so we need to close it ourselves.
 
             Model model = null;
-            try (Reader reader = Files.newBufferedReader( pom.toPath(), Charset.defaultCharset() ))
+            try (Reader reader = Files.newBufferedReader( pom, Charset.defaultCharset() ))
             {
                 model = MAVEN_XPP_3_READER.read( reader );
             }

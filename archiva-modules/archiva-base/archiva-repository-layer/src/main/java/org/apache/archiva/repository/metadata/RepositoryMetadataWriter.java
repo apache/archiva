@@ -19,21 +19,21 @@ package org.apache.archiva.repository.metadata;
  * under the License.
  */
 
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.Plugin;
 import org.apache.archiva.xml.XMLException;
 import org.apache.archiva.xml.XMLWriter;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -44,11 +44,11 @@ import java.util.List;
  */
 public class RepositoryMetadataWriter
 {
-    public static void write( ArchivaRepositoryMetadata metadata, File outputFile )
+    public static void write( ArchivaRepositoryMetadata metadata, Path outputFile )
         throws RepositoryMetadataException
     {
         boolean thrown = false;
-        try (FileWriter writer = new FileWriter( outputFile ))
+        try (FileWriter writer = new FileWriter( outputFile.toFile() ))
         {
             write( metadata, writer );
             writer.flush();
@@ -57,7 +57,7 @@ public class RepositoryMetadataWriter
         {
             thrown = true;
             throw new RepositoryMetadataException(
-                "Unable to write metadata file: " + outputFile.getAbsolutePath() + " - " + e.getMessage(), e );
+                "Unable to write metadata file: " + outputFile.toAbsolutePath() + " - " + e.getMessage(), e );
         }
         finally
         {

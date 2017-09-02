@@ -1269,7 +1269,7 @@ public class ArchivaDavResourceFactory
         }
 
         outputFile.getParentFile().mkdirs();
-        RepositoryMetadataWriter.write( mergedMetadata, outputFile );
+        RepositoryMetadataWriter.write( mergedMetadata, outputFile.toPath() );
 
         createChecksumFile( outputFilename, digestSha1 );
         createChecksumFile( outputFilename, digestMd5 );

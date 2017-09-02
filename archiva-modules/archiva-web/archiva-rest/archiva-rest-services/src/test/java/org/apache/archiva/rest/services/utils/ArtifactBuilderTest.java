@@ -21,6 +21,7 @@ package org.apache.archiva.rest.services.utils;
 import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 import org.easymock.TestSubject;
 import org.junit.Test;
@@ -33,36 +34,36 @@ public class ArtifactBuilderTest
     @Test
     public void testBuildSnapshot()
     {
-        assertThat( builder.getExtensionFromFile( new File( "/tmp/foo-2.3-20141119.064321-40.jar" ) ) ).isEqualTo( "jar" );
+        assertThat( builder.getExtensionFromFile( Paths.get( "/tmp/foo-2.3-20141119.064321-40.jar" ) ) ).isEqualTo( "jar" );
     }
 
     @Test
     public void testBuildPom()
     {
-        assertThat( builder.getExtensionFromFile( new File( "/tmp/foo-1.0.pom" ) ) ).isEqualTo( "pom" );
+        assertThat( builder.getExtensionFromFile( Paths.get( "/tmp/foo-1.0.pom" ) ) ).isEqualTo( "pom" );
     }
 
     @Test
     public void testBuildJar()
     {
-        assertThat( builder.getExtensionFromFile( new File( "/tmp/foo-1.0-sources.jar" ) ) ).isEqualTo( "jar" );
+        assertThat( builder.getExtensionFromFile( Paths.get( "/tmp/foo-1.0-sources.jar" ) ) ).isEqualTo( "jar" );
     }
 
     @Test
     public void testBuildTarGz()
     {
-        assertThat( builder.getExtensionFromFile( new File( "/tmp/foo-1.0.tar.gz" ) ) ).isEqualTo( "tar.gz" );
+        assertThat( builder.getExtensionFromFile( Paths.get( "/tmp/foo-1.0.tar.gz" ) ) ).isEqualTo( "tar.gz" );
     }
 
     @Test
     public void testBuildPomZip()
     {
-        assertThat( builder.getExtensionFromFile( new File( "/tmp/foo-1.0.pom.zip" ) ) ).isEqualTo( "pom.zip" );
+        assertThat( builder.getExtensionFromFile( Paths.get( "/tmp/foo-1.0.pom.zip" ) ) ).isEqualTo( "pom.zip" );
     }
 
     @Test
     public void testBuildR00()
     {
-        assertThat( builder.getExtensionFromFile( new File( "/tmp/foo-1.0.r00" ) ) ).isEqualTo( "r00" );
+        assertThat( builder.getExtensionFromFile( Paths.get( "/tmp/foo-1.0.r00" ) ) ).isEqualTo( "r00" );
     }
 }

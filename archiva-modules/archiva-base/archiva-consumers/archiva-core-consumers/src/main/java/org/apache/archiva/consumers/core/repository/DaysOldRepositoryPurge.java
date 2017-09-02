@@ -31,6 +31,9 @@ import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.commons.lang.time.DateUtils;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -112,12 +115,12 @@ public class DaysOldRepositoryPurge
                     artifactFile.getAbsolutePath( ) );
                 newArtifactReference.setVersion( version );
 
-                File newArtifactFile = repository.toFile( newArtifactReference );
+                Path newArtifactFile = repository.toFile( newArtifactReference );
 
                 // Is this a generic snapshot "1.0-SNAPSHOT" ?
                 if ( VersionUtil.isGenericSnapshot( newArtifactReference.getVersion( ) ) )
                 {
-                    if ( newArtifactFile.lastModified( ) < olderThanThisDate.getTimeInMillis( ) )
+                    if ( Files.getLastModifiedTime( newArtifactFile ).toMillis() < olderThanThisDate.getTimeInMillis( ) )
                     {
                         artifactsToDelete.addAll( repository.getRelatedArtifacts( newArtifactReference ) );
                     }
@@ -135,7 +138,7 @@ public class DaysOldRepositoryPurge
             }
             purge( artifactsToDelete );
         }
-        catch ( ContentNotFoundException e )
+        catch ( ContentNotFoundException | IOException e )
         {
             throw new RepositoryPurgeException( e.getMessage( ), e );
         }

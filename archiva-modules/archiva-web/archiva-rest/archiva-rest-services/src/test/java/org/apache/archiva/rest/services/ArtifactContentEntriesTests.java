@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,7 +58,7 @@ public class ArtifactContentEntriesTests
         throws Exception
     {
 
-        File file = new File( getBasedir(),
+        Path file = Paths.get( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
         List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, null, "foo" );
@@ -74,7 +76,7 @@ public class ArtifactContentEntriesTests
         throws Exception
     {
 
-        File file = new File( getBasedir(),
+        Path file = Paths.get( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
         List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "", "foo" );
@@ -92,7 +94,7 @@ public class ArtifactContentEntriesTests
         throws Exception
     {
 
-        File file = new File( getBasedir(),
+        Path file = Paths.get( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
         List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "/", "foo" );
@@ -110,7 +112,7 @@ public class ArtifactContentEntriesTests
         throws Exception
     {
 
-        File file = new File( getBasedir(),
+        Path file = Paths.get( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
         List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "org", "foo" );
@@ -127,7 +129,7 @@ public class ArtifactContentEntriesTests
         throws Exception
     {
 
-        File file = new File( getBasedir(),
+        Path file = Paths.get( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
         List<ArtifactContentEntry> artifactContentEntries =
@@ -145,7 +147,7 @@ public class ArtifactContentEntriesTests
         throws Exception
     {
 
-        File file = new File( getBasedir(),
+        Path file = Paths.get( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
         List<ArtifactContentEntry> artifactContentEntries =

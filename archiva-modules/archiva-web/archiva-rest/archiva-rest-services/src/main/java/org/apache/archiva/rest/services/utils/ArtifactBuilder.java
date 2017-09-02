@@ -26,6 +26,7 @@ import org.apache.archiva.maven2.model.Artifact;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -79,7 +80,7 @@ public class ArtifactBuilder
 
         ref.setClassifier( classifier );
         ref.setType( type );
-        File file = managedRepositoryContent.toFile( ref );
+        Path file = managedRepositoryContent.toFile( ref );
 
         String extension = getExtensionFromFile(file);
         
@@ -124,10 +125,10 @@ public class ArtifactBuilder
     /**
      * Extract file extension
      */
-    String getExtensionFromFile( File file )
+    String getExtensionFromFile( Path file )
     {
         // we are just interested in the section after the last -
-        String[] parts = file.getName().split( "-" );
+        String[] parts = file.getFileName().toString().split( "-" );
         if ( parts.length > 0 )
         {
             // get anything after a dot followed by a letter a-z, including other dots
@@ -139,7 +140,7 @@ public class ArtifactBuilder
             }
         }
         // just in case
-        return FilenameUtils.getExtension( file.getName() );
+        return FilenameUtils.getExtension( file.toFile().getName() );
     }
 
 }
