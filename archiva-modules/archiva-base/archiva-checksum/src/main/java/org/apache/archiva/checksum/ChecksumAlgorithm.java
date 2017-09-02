@@ -19,9 +19,10 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
-import java.io.File;
 
 import org.apache.commons.io.FilenameUtils;
+
+import java.nio.file.Path;
 
 /**
  * Enumeration of available ChecksumAlgorithm techniques.
@@ -32,9 +33,9 @@ public enum ChecksumAlgorithm {
     SHA1("SHA-1", "sha1", "SHA1"),
     MD5("MD5", "md5", "MD5");
 
-    public static ChecksumAlgorithm getByExtension( File file )
+    public static ChecksumAlgorithm getByExtension( Path file )
     {
-        String ext = FilenameUtils.getExtension( file.getName() ).toLowerCase();
+        String ext = FilenameUtils.getExtension( file.getFileName().toString() ).toLowerCase();
         if ( ChecksumAlgorithm.SHA1.getExt().equals( ext ) )
         {
             return ChecksumAlgorithm.SHA1;
@@ -44,7 +45,7 @@ public enum ChecksumAlgorithm {
             return ChecksumAlgorithm.MD5;
         }
 
-        throw new IllegalArgumentException( "Filename " + file.getName() + " has no associated extension." );
+        throw new IllegalArgumentException( "Filename " + file.getFileName() + " has no associated extension." );
     }
 
     /**

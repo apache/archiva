@@ -20,6 +20,7 @@ package org.apache.archiva.checksum;
  */
 
 import java.io.File;
+import java.nio.file.Paths;
 
 import junit.framework.TestCase;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
@@ -38,15 +39,15 @@ public class ChecksumAlgorithmTest
     @Test
     public void testGetHashByExtensionSha1()
     {
-        assertEquals( ChecksumAlgorithm.SHA1, ChecksumAlgorithm.getByExtension( new File( "something.jar.sha1" ) ) );
-        assertEquals( ChecksumAlgorithm.SHA1, ChecksumAlgorithm.getByExtension( new File( "OTHER.JAR.SHA1" ) ) );
+        assertEquals( ChecksumAlgorithm.SHA1, ChecksumAlgorithm.getByExtension( Paths.get( "something.jar.sha1" ) ) );
+        assertEquals( ChecksumAlgorithm.SHA1, ChecksumAlgorithm.getByExtension( Paths.get( "OTHER.JAR.SHA1" ) ) );
     }
     
     @Test
     public void testGetHashByExtensionMd5()
     {
-        assertEquals( ChecksumAlgorithm.MD5, ChecksumAlgorithm.getByExtension( new File( "something.jar.md5" ) ) );
-        assertEquals( ChecksumAlgorithm.MD5, ChecksumAlgorithm.getByExtension( new File( "OTHER.JAR.MD5" ) ) );
+        assertEquals( ChecksumAlgorithm.MD5, ChecksumAlgorithm.getByExtension( Paths.get( "something.jar.md5" ) ) );
+        assertEquals( ChecksumAlgorithm.MD5, ChecksumAlgorithm.getByExtension( Paths.get( "OTHER.JAR.MD5" ) ) );
     }
 
     @Test
@@ -54,7 +55,7 @@ public class ChecksumAlgorithmTest
     {
         try
         {
-            ChecksumAlgorithm.getByExtension( new File( "something.jar" ) );
+            ChecksumAlgorithm.getByExtension( Paths.get( "something.jar" ) );
             fail( "Expected " + IllegalArgumentException.class.getName() );
         }
         catch ( IllegalArgumentException e )
