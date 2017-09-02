@@ -431,7 +431,7 @@ limitations under the License.
       <ul>
       [#list resourceGroup.resources?sort_by("path") as resource]
 [#list resource.methods as method]
-<li><a href="#${method.slug}">${apiRelativePath}${resourceGroup.contextPath}${resource.path}</a></li>
+        <li><a href="#${method.slug}">${apiRelativePath}${resourceGroup.contextPath!""}${resource.path}</a></li>
 [/#list]
       [/#list]
       </ul>
@@ -452,7 +452,7 @@ limitations under the License.
         [#list resource.methods as method]
 
       <div id="${method.slug}">
-        <h2>${method.label} <small>${resource.path} <a href="${apiRelativePath}${resourceGroup.contextPath}${resource.path}" class="glyphicon glyphicon-new-window" target="_blank"></a></small></h2>
+        <h2>${method.label} <small>${resource.path} <a href="${apiRelativePath}${resourceGroup.contextPath!""}${resource.path}" class="glyphicon glyphicon-new-window" target="_blank"></a></small></h2>
           [#if resourceGroup.deprecated?? || method.deprecated??]
 
         <div class="alert alert-danger">This method has been deprecated. [#if method.deprecated??] ${method.deprecated!""}[#else] ${resource.deprecated!""}[/#if]</div>
