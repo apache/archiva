@@ -20,7 +20,6 @@ package org.apache.archiva.policies;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.apache.archiva.common.utils.FileUtil;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -365,7 +364,7 @@ public class ChecksumPolicyTest
 
     public static File getTestFile( String path )
     {
-        return new File( FileUtil.getBasedir(), path );
+        return new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), path );
     }
 
 }

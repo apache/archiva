@@ -105,7 +105,7 @@ public class ArtifactMissingChecksumsConsumerTest
 
         Path md5Path = Paths.get( repoConfig.getLocation(), path + ".md5" );
 
-        ChecksummedFile checksum = new ChecksummedFile( new File( repoConfig.getLocation(), path ) );
+        ChecksummedFile checksum = new ChecksummedFile( Paths.get(repoConfig.getLocation(), path ) );
 
         Assertions.assertThat( sha1Path.toFile() ).exists();
         Assertions.assertThat( md5Path.toFile() ).exists();

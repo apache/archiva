@@ -883,7 +883,7 @@ public class Maven2RepositoryStorage
     {
         metadata.setWhenGathered( new Date() );
         metadata.setFileLastModified( file.lastModified() );
-        ChecksummedFile checksummedFile = new ChecksummedFile( file );
+        ChecksummedFile checksummedFile = new ChecksummedFile( file.toPath() );
         try
         {
             metadata.setMd5( checksummedFile.calculateChecksum( ChecksumAlgorithm.MD5 ) );

@@ -19,14 +19,18 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 /**
  * ChecksummedFileTest
@@ -46,6 +50,8 @@ public class ChecksummedFileTest
 
     private static final String REMOTE_METADATA_MD5 = "d41d8cd98f00b204e9800998ecf8427e";
 
+    private static final Charset FILE_ENCODING = Charset.forName( "UTF-8" );
+
 
     @Before
     public void cleanTestDir()
@@ -60,36 +66,36 @@ public class ChecksummedFileTest
         }
     }
 
-    private File createTestableJar( String filename )
+    private Path createTestableJar( String filename )
         throws IOException
     {
-        File srcFile = getTestResource( filename );
-        File destFile = new File( getTestOutputDir(), srcFile.getName() );
-        FileUtils.copyFile( srcFile, destFile );
+        Path srcFile = getTestResource( filename );
+        Path destFile = getTestOutputDir( ).resolve( srcFile.getFileName());
+        Files.copy( srcFile, destFile, StandardCopyOption.REPLACE_EXISTING );
         return destFile;
     }
 
-    private File createTestableJar( String filename, boolean copySha1, boolean copyMd5 )
+    private Path createTestableJar( String filename, boolean copySha1, boolean copyMd5 )
         throws IOException
     {
-        File srcFile = getTestResource( filename );
-        File jarFile = new File( getTestOutputDir(), srcFile.getName() );
-        FileUtils.copyFile( srcFile, jarFile );
+        Path srcFile = getTestResource( filename );
+        Path jarFile = getTestOutputDir().resolve(srcFile.getFileName() );
+        Files.copy( srcFile, jarFile, StandardCopyOption.REPLACE_EXISTING );
 
         if ( copySha1 )
         {
-            File srcSha1 = new File( srcFile.getAbsolutePath() + ".sha1" );
-            File sha1File = new File( jarFile.getAbsolutePath() + ".sha1" );
+            Path srcSha1 = srcFile.resolveSibling( srcFile.getFileName() + ".sha1" );
+            Path sha1File = jarFile.resolveSibling( jarFile.getFileName() + ".sha1" );
 
-            FileUtils.copyFile( srcSha1, sha1File );
+            Files.copy( srcSha1, sha1File, StandardCopyOption.REPLACE_EXISTING );
         }
 
         if ( copyMd5 )
         {
-            File srcMd5 = new File( srcFile.getAbsolutePath() + ".md5" );
-            File md5File = new File( jarFile.getAbsolutePath() + ".md5" );
+            Path srcMd5 = srcFile.resolveSibling( srcFile.getFileName() + ".md5" );
+            Path md5File = jarFile.resolveSibling( jarFile.getFileName() + ".md5" );
 
-            FileUtils.copyFile( srcMd5, md5File );
+            Files.copy( srcMd5, md5File, StandardCopyOption.REPLACE_EXISTING );
         }
 
         return jarFile;
@@ -99,7 +105,7 @@ public class ChecksummedFileTest
     public void testCalculateChecksumMd5()
         throws IOException
     {
-        File testfile = getTestResource( "examples/redback-authz-open.jar" );
+        Path testfile = getTestResource( "examples/redback-authz-open.jar" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
         String expectedChecksum = "f42047fe2e177ac04d0df7aa44d408be";
         String actualChecksum = checksummedFile.calculateChecksum( ChecksumAlgorithm.MD5 );
@@ -110,7 +116,7 @@ public class ChecksummedFileTest
     public void testCalculateChecksumSha1()
         throws IOException
     {
-        File testfile = getTestResource( "examples/redback-authz-open.jar" );
+        Path testfile = getTestResource( "examples/redback-authz-open.jar" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
         String expectedChecksum = "2bb14b388973351b0a4dfe11d171965f59cc61a1";
         String actualChecksum = checksummedFile.calculateChecksum( ChecksumAlgorithm.SHA1 );
@@ -121,12 +127,12 @@ public class ChecksummedFileTest
     public void testCreateChecksum()
         throws IOException
     {
-        File testableJar = createTestableJar( "examples/redback-authz-open.jar" );
+        Path testableJar = createTestableJar( "examples/redback-authz-open.jar" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testableJar );
         checksummedFile.createChecksum( ChecksumAlgorithm.SHA1 );
-        File hashFile = checksummedFile.getChecksumFile( ChecksumAlgorithm.SHA1 );
-        assertTrue( "ChecksumAlgorithm file should exist.", hashFile.exists() );
-        String hashContents = FileUtils.readFileToString( hashFile );
+        Path hashFile = checksummedFile.getChecksumFile( ChecksumAlgorithm.SHA1 );
+        assertTrue( "ChecksumAlgorithm file should exist.", Files.exists(hashFile) );
+        String hashContents = org.apache.commons.io.FileUtils.readFileToString( hashFile.toFile() );
         hashContents = StringUtils.trim( hashContents );
         assertEquals( "2bb14b388973351b0a4dfe11d171965f59cc61a1  redback-authz-open.jar", hashContents );
     }
@@ -135,11 +141,11 @@ public class ChecksummedFileTest
     public void testFixChecksum()
         throws IOException
     {
-        File jarFile = createTestableJar( "examples/redback-authz-open.jar" );
-        File sha1File = new File( jarFile.getAbsolutePath() + ".sha1" );
+        Path jarFile = createTestableJar( "examples/redback-authz-open.jar" );
+        Path sha1File = jarFile.resolveSibling( jarFile.getFileName()+ ".sha1" );
 
         // A typical scenario seen in the wild.
-        FileUtils.writeStringToFile( sha1File, "sha1sum: redback-authz-open.jar: No such file or directory" );
+        org.apache.commons.io.FileUtils.writeStringToFile( sha1File.toFile(), "sha1sum: redback-authz-open.jar: No such file or directory" );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
         assertFalse( "ChecksummedFile.isValid(SHA1) == false",
@@ -155,15 +161,15 @@ public class ChecksummedFileTest
     @Test
     public void testGetChecksumFile()
     {
-        ChecksummedFile checksummedFile = new ChecksummedFile( new File( "test.jar" ) );
-        assertEquals( "test.jar.sha1", checksummedFile.getChecksumFile( ChecksumAlgorithm.SHA1 ).getName() );
+        ChecksummedFile checksummedFile = new ChecksummedFile( Paths.get( "test.jar" ) );
+        assertEquals( "test.jar.sha1", checksummedFile.getChecksumFile( ChecksumAlgorithm.SHA1 ).getFileName().toString() );
     }
 
     @Test
     public void testIsValidChecksum()
         throws IOException
     {
-        File jarFile = createTestableJar( "examples/redback-authz-open.jar", true, false );
+        Path jarFile = createTestableJar( "examples/redback-authz-open.jar", true, false );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
         assertTrue( "ChecksummedFile.isValid(SHA1)", checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
@@ -173,11 +179,11 @@ public class ChecksummedFileTest
     public void testIsValidChecksumInvalidSha1Format()
         throws IOException
     {
-        File jarFile = createTestableJar( "examples/redback-authz-open.jar" );
-        File sha1File = new File( jarFile.getAbsolutePath() + ".sha1" );
+        Path jarFile = createTestableJar( "examples/redback-authz-open.jar" );
+        Path sha1File = jarFile.resolveSibling( jarFile.getFileName() + ".sha1" );
 
         // A typical scenario seen in the wild.
-        FileUtils.writeStringToFile( sha1File, "sha1sum: redback-authz-open.jar: No such file or directory" );
+        FileUtils.writeStringToFile( sha1File, FILE_ENCODING, "sha1sum: redback-authz-open.jar: No such file or directory" );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
         assertFalse( "ChecksummedFile.isValid(SHA1)", checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
@@ -188,7 +194,7 @@ public class ChecksummedFileTest
     public void testIsValidChecksumNoChecksumFiles()
         throws IOException
     {
-        File jarFile = createTestableJar( "examples/redback-authz-open.jar", false, false );
+        Path jarFile = createTestableJar( "examples/redback-authz-open.jar", false, false );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
         assertFalse( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums(
@@ -200,7 +206,7 @@ public class ChecksummedFileTest
     public void testIsValidChecksumSha1AndMd5()
         throws IOException
     {
-        File jarFile = createTestableJar( "examples/redback-authz-open.jar", true, true );
+        Path jarFile = createTestableJar( "examples/redback-authz-open.jar", true, true );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
         assertTrue( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums(
@@ -211,7 +217,7 @@ public class ChecksummedFileTest
     public void testIsValidChecksumSha1NoMd5()
         throws IOException
     {
-        File jarFile = createTestableJar( "examples/redback-authz-open.jar", true, false );
+        Path jarFile = createTestableJar( "examples/redback-authz-open.jar", true, false );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
         assertTrue( "ChecksummedFile.isValid(SHA1)", checksummedFile.isValidChecksums(
@@ -226,7 +232,7 @@ public class ChecksummedFileTest
         String expected = SERVLETAPI_SHA1
             + "  /home/projects/maven/repository-staging/to-ibiblio/maven2/servletapi/servletapi/2.4/servletapi-2.4.pom";
 
-        File testfile = getTestResource( "examples/redback-authz-open.jar" );
+        Path testfile = getTestResource( "examples/redback-authz-open.jar" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
         String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.SHA1,
                                                   "servletapi/servletapi/2.4/servletapi-2.4.pom" );
@@ -239,7 +245,7 @@ public class ChecksummedFileTest
         throws IOException
     {
         String expected = SERVLETAPI_SHA1 + "  -";
-        File testfile = getTestResource( "examples/redback-authz-open.jar" );
+        Path testfile = getTestResource( "examples/redback-authz-open.jar" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
         String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.SHA1,
                                                   "servletapi/servletapi/2.4/servletapi-2.4.pom" );
@@ -251,7 +257,7 @@ public class ChecksummedFileTest
         throws IOException
     {
         String expected = "SHA1(-)=" + SERVLETAPI_SHA1;
-        File testfile = getTestResource( "examples/redback-authz-open.jar" );
+        Path testfile = getTestResource( "examples/redback-authz-open.jar" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
         String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.SHA1,
                                                   "servletapi/servletapi/2.4/servletapi-2.4.pom" );
@@ -263,7 +269,7 @@ public class ChecksummedFileTest
         throws IOException
     {
         String expected = REMOTE_METADATA_SHA1 + "  /home/test/repository/examples/metadata/maven-metadata.xml";
-        File testfile = getTestResource( "examples/metadata/maven-metadata-remote.xml" );
+        Path testfile = getTestResource( "examples/metadata/maven-metadata-remote.xml" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
 
         try
@@ -283,7 +289,7 @@ public class ChecksummedFileTest
         throws IOException
     {
         String expected = REMOTE_METADATA_MD5 + "  ./examples/metadata/maven-metadata.xml";
-        File testfile = getTestResource( "examples/metadata/maven-metadata-remote.xml" );
+        Path testfile = getTestResource( "examples/metadata/maven-metadata-remote.xml" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
 
         try

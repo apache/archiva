@@ -21,7 +21,6 @@ package org.apache.archiva.converter.artifact;
 
 import junit.framework.TestCase;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
@@ -108,7 +107,7 @@ public class LegacyToDefaultConverterTest
 
     public static File getTestFile( String path )
     {
-        return new File( FileUtil.getBasedir(), path );
+        return new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), path );
     }
 
     private void copyDirectoryStructure( File sourceDirectory, File destinationDirectory )
@@ -429,7 +428,7 @@ public class LegacyToDefaultConverterTest
         Artifact artifact =
             createArtifact( "org.apache.maven.plugins", "maven-foo-plugin", "1.0", "1.0", "maven-plugin" );
         artifact.setFile(
-            new File( FileUtil.getBasedir(), "src/test/source-repository/test/plugins/maven-foo-plugin-1.0.jar" ) );
+            new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/source-repository/test/plugins/maven-foo-plugin-1.0.jar" ) );
         artifactConverter.convert( artifact, targetRepository );
         // There is a warning but I can't figure out how to look at it. Eyeballing the results it appears
         // the plugin is being coverted correctly.

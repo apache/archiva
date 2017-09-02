@@ -25,7 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import javax.inject.Inject;
-import org.apache.archiva.common.utils.FileUtil;
+
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -53,7 +53,7 @@ public class ArchivaConfigurationMRM789Test
 
     public static Path getTestFile( String path )
     {
-        return Paths.get( FileUtil.getBasedir(), path );
+        return Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), path );
     }
 
     protected <T> T lookup( Class<T> clazz, String hint )
@@ -66,18 +66,18 @@ public class ArchivaConfigurationMRM789Test
     public void testGetConfigurationFromDefaultsWithDefaultRepoLocationAlreadyExisting()
         throws Exception
     {
-        Path repo = Paths.get( FileUtil.getBasedir(), "target/test-classes/existing_snapshots" );
+        Path repo = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-classes/existing_snapshots" );
         Files.createDirectories(repo);
 
-        repo = Paths.get( FileUtil.getBasedir(), "target/test-classes/existing_internal" );
+        repo = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-classes/existing_internal" );
         Files.createDirectories(repo);
 
         String existingTestDefaultArchivaConfigFile = FileUtils.readFileToString(
             getTestFile( "target/test-classes/org/apache/archiva/configuration/test-default-archiva.xml" ).toFile(), FILE_ENCODING );
         existingTestDefaultArchivaConfigFile =
-            StringUtils.replace( existingTestDefaultArchivaConfigFile, "${appserver.base}", FileUtil.getBasedir() );
+            StringUtils.replace( existingTestDefaultArchivaConfigFile, "${appserver.base}", org.apache.archiva.common.utils.FileUtils.getBasedir() );
 
-        Path generatedTestDefaultArchivaConfigFile = Paths.get( FileUtil.getBasedir(),
+        Path generatedTestDefaultArchivaConfigFile = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(),
                                                                "target/test-classes/org/apache/archiva/configuration/default-archiva.xml" );
 
         FileUtils.writeStringToFile( generatedTestDefaultArchivaConfigFile.toFile(), existingTestDefaultArchivaConfigFile,

@@ -20,7 +20,7 @@ package org.apache.archiva.scheduler.indexing;
 
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
-import org.apache.archiva.common.utils.FileUtil;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
@@ -145,7 +145,7 @@ public class DownloadRemoteIndexTaskTest
     {
         RemoteRepository remoteRepository = new RemoteRepository();
         File indexDirectory =
-            new File( FileUtil.getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
+            new File( FileUtils.getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
         indexDirectory.mkdirs();
         indexDirectory.deleteOnExit();
 

@@ -557,7 +557,7 @@ public class DefaultRepositoriesService
 
     private void fixChecksums( File file )
     {
-        ChecksummedFile checksum = new ChecksummedFile( file );
+        ChecksummedFile checksum = new ChecksummedFile( file.toPath() );
         checksum.fixChecksums( algorithms );
     }
 
@@ -1188,7 +1188,7 @@ public class DefaultRepositoriesService
         metadata.setAvailableVersions( availableVersions );
 
         RepositoryMetadataWriter.write( metadata, metadataFile.toPath() );
-        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile.toPath() );
         checksum.fixChecksums( algorithms );
     }
 

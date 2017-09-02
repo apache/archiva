@@ -21,7 +21,6 @@ package org.apache.archiva.rest.services;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
@@ -45,7 +44,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -334,7 +332,7 @@ public abstract class AbstractArchivaRestTest
 
     protected ManagedRepository getTestManagedRepository()
     {
-        String location = new File( FileUtil.getBasedir(), "target/test-repo" ).getAbsolutePath();
+        String location = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-repo" ).getAbsolutePath();
         return new ManagedRepository( "TEST", "test", location, "default", true, true, false, "2 * * * * ?", null,
                                       false, 2, 3, true, false, "my nice repo", false );
 

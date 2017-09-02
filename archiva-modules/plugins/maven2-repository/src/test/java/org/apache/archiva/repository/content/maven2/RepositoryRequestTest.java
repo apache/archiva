@@ -20,7 +20,7 @@ package org.apache.archiva.repository.content.maven2;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.common.utils.FileUtil;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -368,7 +368,7 @@ public class RepositoryRequestTest
     private ManagedRepositoryContent createManagedRepo( String layout )
         throws Exception
     {
-        File repoRoot = new File( FileUtil.getBasedir() + "/target/test-repo" );
+        File repoRoot = new File( FileUtils.getBasedir() + "/target/test-repo" );
         return createManagedRepositoryContent( "test-internal", "Internal Test Repo", repoRoot, layout );
     }
 

@@ -23,7 +23,6 @@ import junit.framework.TestCase;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
@@ -99,11 +98,11 @@ public abstract class AbstractMavenRepositorySearch
     {
         super.setUp();
 
-        FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_1 + "/.indexer" ) );
-        assertFalse( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_1 + "/.indexer" ).exists() );
+        FileUtils.deleteDirectory( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 + "/.indexer" ) );
+        assertFalse( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 + "/.indexer" ).exists() );
 
-        FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ) );
-        assertFalse( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ).exists() );
+        FileUtils.deleteDirectory( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ) );
+        assertFalse( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ).exists() );
 
         archivaConfigControl = EasyMock.createControl();
 
@@ -137,11 +136,11 @@ public abstract class AbstractMavenRepositorySearch
             nexusIndexer.removeIndexingContext( indexingContext, true );
         }
 
-        FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_1 ) );
-        assertFalse( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_1 ).exists() );
+        FileUtils.deleteDirectory( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 ) );
+        assertFalse( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 ).exists() );
 
-        FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_2 ) );
-        assertFalse( new File( FileUtil.getBasedir(), "/target/repos/" + TEST_REPO_2 ).exists() );
+        FileUtils.deleteDirectory( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 ) );
+        assertFalse( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 ).exists() );
 
         super.tearDown();
     }
@@ -150,7 +149,7 @@ public abstract class AbstractMavenRepositorySearch
     {
         ManagedRepositoryConfiguration repositoryConfig = new ManagedRepositoryConfiguration();
         repositoryConfig.setId( repository );
-        repositoryConfig.setLocation( FileUtil.getBasedir() + "/target/repos/" + repository );
+        repositoryConfig.setLocation( org.apache.archiva.common.utils.FileUtils.getBasedir() + "/target/repos/" + repository );
         File f = new File( repositoryConfig.getLocation() );
         if ( !f.exists() )
         {
@@ -176,7 +175,7 @@ public abstract class AbstractMavenRepositorySearch
             nexusIndexer.removeIndexingContext( context, true );
         }
 
-        File indexerDirectory = new File( FileUtil.getBasedir(), "/target/repos/" + repository + "/.indexer" );
+        File indexerDirectory = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + repository + "/.indexer" );
 
         if ( indexerDirectory.exists() )
         {
@@ -185,7 +184,7 @@ public abstract class AbstractMavenRepositorySearch
 
         assertFalse( indexerDirectory.exists() );
 
-        File lockFile = new File( FileUtil.getBasedir(), "/target/repos/" + repository + "/.indexer/write.lock" );
+        File lockFile = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + repository + "/.indexer/write.lock" );
         if ( lockFile.exists() )
         {
             lockFile.delete();
@@ -193,10 +192,10 @@ public abstract class AbstractMavenRepositorySearch
 
         assertFalse( lockFile.exists() );
 
-        File repo = new File( FileUtil.getBasedir(), "src/test/" + repository );
+        File repo = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + repository );
         assertTrue( repo.exists() );
         File indexDirectory =
-            new File( FileUtil.getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
+            new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
         indexDirectory.deleteOnExit();
         FileUtils.deleteDirectory( indexDirectory );
 

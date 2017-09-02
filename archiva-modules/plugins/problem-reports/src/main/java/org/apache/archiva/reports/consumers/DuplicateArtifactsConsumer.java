@@ -149,7 +149,7 @@ public class DuplicateArtifactsConsumer
         //  alternatively this could come straight from the storage resolver, which could populate the artifact metadata
         //  in the later parse call with the desired checksum and use that
         String checksumSha1;
-        ChecksummedFile checksummedFile = new ChecksummedFile( artifactFile );
+        ChecksummedFile checksummedFile = new ChecksummedFile( artifactFile.toPath() );
         try
         {
             checksumSha1 = checksummedFile.calculateChecksum( ChecksumAlgorithm.SHA1 );

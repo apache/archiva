@@ -20,7 +20,6 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.rest.api.model.BrowseResult;
 import org.apache.archiva.rest.api.model.BrowseResultEntry;
@@ -542,7 +541,7 @@ public class RepositoriesServiceTest
 
     protected ManagedRepository getTestManagedRepository( String id, String path )
     {
-        String location = new File( FileUtil.getBasedir(), "target/" + path ).getAbsolutePath();
+        String location = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/" + path ).getAbsolutePath();
         return new ManagedRepository( id, id, location, "default", true, true, true, "2 * * * * ?", null, false, 80, 80,
                                       true, false );
     }

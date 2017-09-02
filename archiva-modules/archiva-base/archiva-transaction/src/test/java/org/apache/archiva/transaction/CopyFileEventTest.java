@@ -20,7 +20,6 @@ package org.apache.archiva.transaction;
  */
 
 import org.apache.commons.io.FileUtils;
-import org.apache.archiva.common.utils.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,11 +32,11 @@ import org.junit.Test;
 public class CopyFileEventTest
     extends AbstractFileEventTest
 {
-    private File testDir = new File( FileUtil.getBasedir(), "target/transaction-tests/copy-file" );
+    private File testDir = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/transaction-tests/copy-file" );
 
     private File testDest = new File( testDir, "test-file.txt" );
 
-    private File testSource = new File( FileUtil.getBasedir(), "target/transaction-tests/test-file.txt" );
+    private File testSource = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/transaction-tests/test-file.txt" );
 
     private File testDestChecksum;
 
@@ -163,7 +162,7 @@ public class CopyFileEventTest
     {
         super.tearDown();
 
-        FileUtils.deleteDirectory( new File( FileUtil.getBasedir(), "target/transaction-tests" ) );
+        FileUtils.deleteDirectory( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/transaction-tests" ) );
     }
 
     @Override

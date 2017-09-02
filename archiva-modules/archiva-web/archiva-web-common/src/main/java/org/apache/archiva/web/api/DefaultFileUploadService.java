@@ -551,7 +551,7 @@ public class DefaultFileUploadService
 
     private void fixChecksums( File file )
     {
-        ChecksummedFile checksum = new ChecksummedFile( file );
+        ChecksummedFile checksum = new ChecksummedFile( file.toPath() );
         checksum.fixChecksums( algorithms );
     }
 

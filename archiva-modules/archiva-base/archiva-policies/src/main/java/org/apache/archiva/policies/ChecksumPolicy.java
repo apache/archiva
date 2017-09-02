@@ -108,7 +108,7 @@ public class ChecksumPolicy
 
         if ( FAIL.equals( policySetting ) )
         {
-            ChecksummedFile checksum = new ChecksummedFile( localFile );
+            ChecksummedFile checksum = new ChecksummedFile( localFile.toPath() );
             if ( checksum.isValidChecksums( algorithms ) )
             {
                 return;
@@ -131,7 +131,7 @@ public class ChecksumPolicy
 
         if ( FIX.equals( policySetting ) )
         {
-            ChecksummedFile checksum = new ChecksummedFile( localFile );
+            ChecksummedFile checksum = new ChecksummedFile( localFile.toPath() );
             if ( checksum.fixChecksums( algorithms ) )
             {
                 log.debug( "Checksum policy set to FIX, checksum files have been updated." );

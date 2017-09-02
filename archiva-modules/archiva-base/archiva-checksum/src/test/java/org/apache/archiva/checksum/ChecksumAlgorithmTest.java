@@ -19,13 +19,12 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
-import java.io.File;
-import java.nio.file.Paths;
-
 import junit.framework.TestCase;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.nio.file.Paths;
 
 /**
  * ChecksumAlgorithmTest

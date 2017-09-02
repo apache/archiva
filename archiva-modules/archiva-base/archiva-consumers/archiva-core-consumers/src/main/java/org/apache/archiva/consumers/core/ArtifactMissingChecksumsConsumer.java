@@ -157,7 +157,7 @@ public class ArtifactMissingChecksumsConsumer
 
         if ( checksumFile.exists( ) )
         {
-            checksum = new ChecksummedFile( artifactFile );
+            checksum = new ChecksummedFile( artifactFile.toPath() );
             try
             {
                 if ( !checksum.isValidChecksum( checksumAlgorithm ) )
@@ -176,7 +176,7 @@ public class ArtifactMissingChecksumsConsumer
         }
         else if ( !checksumFile.exists( ) )
         {
-            checksum = new ChecksummedFile( artifactFile );
+            checksum = new ChecksummedFile( artifactFile.toPath() );
             try
             {
                 checksum.createChecksum( checksumAlgorithm );

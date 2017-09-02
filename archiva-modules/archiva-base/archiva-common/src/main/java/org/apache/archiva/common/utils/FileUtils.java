@@ -18,9 +18,15 @@ package org.apache.archiva.common.utils;
  * under the License.
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 import java.util.Optional;
 
@@ -32,6 +38,7 @@ import java.util.Optional;
  */
 public class FileUtils
 {
+    private static final Logger log = LoggerFactory.getLogger( FileUtils.class );
     /**
      * Deletes the directory recursively and quietly.
      *
@@ -84,5 +91,45 @@ public class FileUtils
         if (!result) {
             throw new IOException("Error during recursive delete of "+dir.toAbsolutePath());
         }
+    }
+
+    public static String readFileToString( Path file, Charset encoding)
+    {
+        try
+        {
+            return new String(Files.readAllBytes( file ), encoding  );
+        }
+        catch ( IOException e )
+        {
+            log.error("Could not read from file {}", file);
+            return "";
+        }
+    }
+
+    public static void writeStringToFile( Path file, Charset encoding, String value )
+    {
+        try
+        {
+            Files.write( file,  value.getBytes( encoding ), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        }
+        catch ( IOException e )
+        {
+            log.error("Could not write to file {}", file);
+        }
+    }
+
+    /**
+     * Return the base directory 
+     * @return
+     */
+    public static String getBasedir()
+    {
+        String basedir = System.getProperty( "basedir" );
+        if ( basedir == null )
+        {
+            basedir = Paths.get("").toAbsolutePath().toString();
+        }
+
+        return basedir;
     }
 }

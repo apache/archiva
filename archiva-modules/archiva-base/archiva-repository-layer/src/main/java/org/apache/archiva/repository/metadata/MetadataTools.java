@@ -477,7 +477,7 @@ public class MetadataTools
 
         RepositoryMetadataWriter.write( metadata, metadataFile );
 
-        ChecksummedFile checksum = new ChecksummedFile( metadataFile.toFile() );
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
         checksum.fixChecksums( algorithms );
     }
 
@@ -650,7 +650,7 @@ public class MetadataTools
 
         // Save the metadata model to disk.
         RepositoryMetadataWriter.write( metadata, metadataFile );
-        ChecksummedFile checksum = new ChecksummedFile( metadataFile.toFile() );
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
         checksum.fixChecksums( algorithms );
     }
 
@@ -890,7 +890,7 @@ public class MetadataTools
 
         // Save the metadata model to disk.
         RepositoryMetadataWriter.write( metadata, metadataFile );
-        ChecksummedFile checksum = new ChecksummedFile( metadataFile.toFile() );
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
         checksum.fixChecksums( algorithms );
     }
 

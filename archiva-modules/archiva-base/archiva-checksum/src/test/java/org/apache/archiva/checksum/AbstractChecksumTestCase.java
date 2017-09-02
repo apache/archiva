@@ -20,11 +20,14 @@ package org.apache.archiva.checksum;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.common.utils.FileUtil;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.runner.RunWith;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * AbstractChecksumTestCase
@@ -35,26 +38,30 @@ import java.io.File;
 public abstract class AbstractChecksumTestCase
     extends TestCase
 {
-    public File getTestOutputDir()
+    public Path getTestOutputDir()
     {
-        File dir = new File( FileUtil.getBasedir(), "target/test-output/" + getName() );
-        if ( dir.exists() == false )
+        Path dir = Paths.get( FileUtils.getBasedir(), "target/test-output/" + getName() );
+        if ( !Files.exists(dir))
         {
-            if ( dir.mkdirs() == false )
+            try
             {
-                fail( "Unable to create test output directory: " + dir.getAbsolutePath() );
+                Files.createDirectories( dir );
+            }
+            catch ( IOException e )
+            {
+                fail( "Unable to create test output directory: " + dir.toAbsolutePath() );
             }
         }
         return dir;
     }
 
-    public File getTestResource( String filename )
+    public Path getTestResource( String filename )
     {
-        File dir = new File( FileUtil.getBasedir(), "src/test/resources" );
-        File file = new File( dir, filename );
-        if ( file.exists() == false )
+        Path dir = Paths.get( FileUtils.getBasedir(), "src/test/resources" );
+        Path file = dir.resolve(filename );
+        if ( !Files.exists(file))
         {
-            fail( "Test Resource does not exist: " + file.getAbsolutePath() );
+            fail( "Test Resource does not exist: " + file.toAbsolutePath() );
         }
         return file;
     }

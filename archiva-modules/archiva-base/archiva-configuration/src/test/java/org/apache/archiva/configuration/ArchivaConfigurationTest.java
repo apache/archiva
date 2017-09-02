@@ -19,7 +19,6 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
@@ -63,7 +62,7 @@ public class ArchivaConfigurationTest
 
     public static Path getTestFile( String path )
     {
-        return Paths.get( FileUtil.getBasedir(), path );
+        return Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), path );
     }
 
     protected <T> T lookup( Class<T> clazz, String hint )

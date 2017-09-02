@@ -20,7 +20,6 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
@@ -53,7 +52,6 @@ import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -773,15 +771,15 @@ public class Maven2RepositoryMetadataResolverTest
     {
         for ( String path : pathsToBeDeleted )
         {
-            File dir = new File( FileUtil.getBasedir(), path );
+            File dir = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), path );
             FileUtils.deleteDirectory( dir );
 
             assertFalse( dir.exists() );
         }
-        File dest = new File( FileUtil.getBasedir(), "target/test-repository/com/example/test/test-artifact-module-a" );
+        File dest = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-repository/com/example/test/test-artifact-module-a" );
         File parentPom =
-            new File( FileUtil.getBasedir(), "target/test-repository/com/example/test/test-artifact-parent" );
-        File rootPom = new File( FileUtil.getBasedir(), "target/test-repository/com/example/test/test-artifact-root" );
+            new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-repository/com/example/test/test-artifact-parent" );
+        File rootPom = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-repository/com/example/test/test-artifact-root" );
 
         FileUtils.deleteDirectory( dest );
         FileUtils.deleteDirectory( parentPom );
@@ -795,8 +793,8 @@ public class Maven2RepositoryMetadataResolverTest
     private File copyTestArtifactWithParent( String srcPath, String destPath )
         throws IOException
     {
-        File src = new File( FileUtil.getBasedir(), srcPath );
-        File dest = new File( FileUtil.getBasedir(), destPath );
+        File src = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), srcPath );
+        File dest = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), destPath );
 
         FileUtils.copyDirectory( src, dest );
         assertTrue( dest.exists() );
