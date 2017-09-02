@@ -19,7 +19,8 @@ package org.apache.archiva.proxy.model;
  * under the License.
  */
 
-import java.io.File;
+
+import java.nio.file.Path;
 
 /**
  * A result from a proxy fetch operation.
@@ -30,18 +31,18 @@ public class ProxyFetchResult
 {
 
     //The file returned
-    private File file;
+    private Path file;
 
     //Was the local file modified by the fetch?
     private boolean modified;
 
-    public ProxyFetchResult( File file, boolean modified )
+    public ProxyFetchResult( Path file, boolean modified )
     {
         this.file = file;
         this.modified = modified;
     }
 
-    public File getFile()
+    public Path getFile()
     {
         return file;
     }

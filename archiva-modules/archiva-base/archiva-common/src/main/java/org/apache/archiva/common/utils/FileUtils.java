@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.Optional;
 
 /**
  *
@@ -31,6 +32,11 @@ import java.util.Comparator;
  */
 public class FileUtils
 {
+    /**
+     * Deletes the directory recursively and quietly.
+     *
+     * @param dir
+     */
     public static void deleteQuietly(Path dir) {
         try
         {
@@ -54,5 +60,29 @@ public class FileUtils
         }
 
 
+    }
+
+    public static void deleteDirectory( Path dir ) throws IOException
+    {
+        if (!Files.isDirectory( dir )) {
+            throw new IOException("Given path is not a directory ");
+        }
+        boolean result = Files.walk(dir)
+            .sorted( Comparator.reverseOrder())
+            .map( file ->  {
+                try
+                {
+                    Files.delete( file );
+                    return Optional.of(Boolean.TRUE);
+                }
+                catch ( IOException e )
+                {
+                    return Optional.empty();
+                }
+
+            }).allMatch( Optional::isPresent );
+        if (!result) {
+            throw new IOException("Error during recursive delete of "+dir.toAbsolutePath());
+        }
     }
 }

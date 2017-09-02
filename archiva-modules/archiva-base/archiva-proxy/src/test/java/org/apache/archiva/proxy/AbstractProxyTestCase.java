@@ -57,6 +57,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -64,6 +68,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -108,7 +113,7 @@ public abstract class AbstractProxyTestCase
 
     protected ManagedRepositoryContent managedDefaultRepository;
 
-    protected File managedDefaultDir;
+    protected Path managedDefaultDir;
 
     protected MockConfiguration config;
 
@@ -140,7 +145,7 @@ public abstract class AbstractProxyTestCase
         managedDefaultRepository =
             createRepository( ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath, "default" );
 
-        managedDefaultDir = new File( managedDefaultRepository.getRepoRoot() );
+        managedDefaultDir = Paths.get( managedDefaultRepository.getRepoRoot() );
 
         ManagedRepository repoConfig = managedDefaultRepository.getRepository();
 
@@ -205,127 +210,72 @@ public abstract class AbstractProxyTestCase
         }
     }
 
-    /*
-    protected static final ArgumentsMatcher customWagonGetIfNewerMatcher = new ArgumentsMatcher()
-    {
 
-        public boolean matches( Object[] expected, Object[] actual )
-        {
-            if ( expected.length < 1 || actual.length < 1 )
-            {
-                return false;
-            }
-            return MockControl.ARRAY_MATCHER.matches( ArrayUtils.remove( expected, 1 ),
-                                                      ArrayUtils.remove( actual, 1 ) );
-        }
-
-        public String toString( Object[] arguments )
-        {
-            return ArrayUtils.toString( arguments );
-        }
-    };
-
-    protected static final ArgumentsMatcher customWagonGetMatcher = new ArgumentsMatcher()
-    {
-
-        public boolean matches( Object[] expected, Object[] actual )
-        {
-            if ( expected.length == 2 && actual.length == 2 )
-            {
-                if ( expected[0] == null && actual[0] == null )
-                {
-                    return true;
-                }
-
-                if ( expected[0] == null )
-                {
-                    return actual[0] == null;
-                }
-
-                if ( actual[0] == null )
-                {
-                    return expected[0] == null;
-                }
-
-                return expected[0].equals( actual[0] );
-            }
-            return false;
-        }
-
-        public String toString( Object[] arguments )
-        {
-            return ArrayUtils.toString( arguments );
-        }
-    };
-    */
-
-    protected void assertChecksums( File expectedFile, String expectedSha1Contents, String expectedMd5Contents )
+    protected void assertChecksums( Path expectedFile, String expectedSha1Contents, String expectedMd5Contents )
         throws Exception
     {
-        File sha1File = new File( expectedFile.getAbsolutePath() + ".sha1" );
-        File md5File = new File( expectedFile.getAbsolutePath() + ".md5" );
+        Path sha1File = expectedFile.toAbsolutePath().resolveSibling( expectedFile.getFileName().toString()+ ".sha1" );
+        Path md5File = expectedFile.toAbsolutePath().resolveSibling( expectedFile.getFileName().toString() + ".md5" );
 
         if ( expectedSha1Contents == null )
         {
-            assertFalse( "SHA1 File should NOT exist: " + sha1File.getPath(), sha1File.exists() );
+            assertFalse( "SHA1 File should NOT exist: " + sha1File.toAbsolutePath(), Files.exists(sha1File) );
         }
         else
         {
-            assertTrue( "SHA1 File should exist: " + sha1File.getPath(), sha1File.exists() );
+            assertTrue( "SHA1 File should exist: " + sha1File.toAbsolutePath(), Files.exists(sha1File) );
             String actualSha1Contents = readChecksumFile( sha1File );
-            assertEquals( "SHA1 File contents: " + sha1File.getPath(), expectedSha1Contents, actualSha1Contents );
+            assertEquals( "SHA1 File contents: " + sha1File.toAbsolutePath(), expectedSha1Contents, actualSha1Contents );
         }
 
         if ( expectedMd5Contents == null )
         {
-            assertFalse( "MD5 File should NOT exist: " + md5File.getPath(), md5File.exists() );
+            assertFalse( "MD5 File should NOT exist: " + md5File.toAbsolutePath(), Files.exists(md5File) );
         }
         else
         {
-            assertTrue( "MD5 File should exist: " + md5File.getPath(), md5File.exists() );
+            assertTrue( "MD5 File should exist: " + md5File.toAbsolutePath(), Files.exists(md5File) );
             String actualMd5Contents = readChecksumFile( md5File );
-            assertEquals( "MD5 File contents: " + md5File.getPath(), expectedMd5Contents, actualMd5Contents );
+            assertEquals( "MD5 File contents: " + md5File.toAbsolutePath(), expectedMd5Contents, actualMd5Contents );
         }
     }
 
-    protected void assertFileEquals( File expectedFile, File actualFile, File sourceFile )
+    protected void assertFileEquals( Path expectedFile, Path actualFile, Path sourceFile )
         throws Exception
     {
         assertNotNull( "Expected File should not be null.", expectedFile );
         assertNotNull( "Actual File should not be null.", actualFile );
 
-        assertTrue( "Check actual file exists.", actualFile.exists() );
-        assertEquals( "Check filename path is appropriate.", expectedFile.getCanonicalPath(),
-                      actualFile.getCanonicalPath() );
-        assertEquals( "Check file path matches.", expectedFile.getAbsolutePath(), actualFile.getAbsolutePath() );
-
+        assertTrue( "Check actual file exists.", Files.exists(actualFile) );
+        assertTrue( "Check file is the same.", Files.isSameFile( expectedFile,
+            actualFile));
         String expectedContents =
-            org.apache.commons.io.FileUtils.readFileToString( sourceFile, Charset.defaultCharset() );
+            org.apache.commons.io.FileUtils.readFileToString( sourceFile.toFile(), Charset.defaultCharset() );
         String actualContents =
-            org.apache.commons.io.FileUtils.readFileToString( actualFile, Charset.defaultCharset() );
+            org.apache.commons.io.FileUtils.readFileToString( actualFile.toFile(), Charset.defaultCharset() );
         assertEquals( "Check file contents.", expectedContents, actualContents );
     }
 
-    protected void assertNotDownloaded( File downloadedFile )
+    protected void assertNotDownloaded(  Path downloadedFile )
     {
         assertNull( "Found file: " + downloadedFile + "; but was expecting a failure", downloadedFile );
     }
 
     @SuppressWarnings( "unchecked" )
-    protected void assertNoTempFiles( File expectedFile )
+    protected void assertNoTempFiles( Path expectedFile )
     {
-        File workingDir = expectedFile.getParentFile();
-        if ( ( workingDir == null ) || !workingDir.isDirectory() )
+        Path workingDir = expectedFile.getParent();
+        if ( ( workingDir == null ) || !Files.isDirectory( workingDir) )
         {
             return;
         }
 
         Collection<File> tmpFiles =
-            org.apache.commons.io.FileUtils.listFiles( workingDir, new String[]{ "tmp" }, false );
+            org.apache.commons.io.FileUtils.listFiles( workingDir.toFile(), new String[]{ "tmp" }, false );
         if ( !tmpFiles.isEmpty() )
         {
             StringBuilder emsg = new StringBuilder();
-            emsg.append( "Found Temp Files in dir: " ).append( workingDir.getPath() );
+            emsg.append( "Found Temp Files in dir: " ).append( workingDir.toString() );
             for ( File tfile : tmpFiles )
             {
                 emsg.append( "\n   " ).append( tfile.getName() );
@@ -342,17 +292,17 @@ public abstract class AbstractProxyTestCase
      * @throws java.io.IOException if there is a copying problem
      * @todo get back into plexus-utils, share with converter module
      */
-    protected void copyDirectoryStructure( File sourceDirectory, File destDirectory )
+    protected void copyDirectoryStructure( Path sourceDirectory, Path destDirectory )
         throws IOException
     {
-        if ( !sourceDirectory.exists() )
+        if ( !Files.exists(sourceDirectory) )
         {
-            throw new IOException( "Source directory doesn't exists (" + sourceDirectory.getAbsolutePath() + ")." );
+            throw new IOException( "Source directory doesn't exists (" + sourceDirectory.toAbsolutePath() + ")." );
         }
 
-        File[] files = sourceDirectory.listFiles();
+        File[] files = sourceDirectory.toFile().listFiles();
 
-        String sourcePath = sourceDirectory.getAbsolutePath();
+        String sourcePath = sourceDirectory.toAbsolutePath().toString();
 
         for ( int i = 0; i < files.length; i++ )
         {
@@ -362,7 +312,7 @@ public abstract class AbstractProxyTestCase
 
             dest = dest.substring( sourcePath.length() + 1 );
 
-            File destination = new File( destDirectory, dest );
+            File destination = new File( destDirectory.toFile(), dest );
 
             if ( file.isFile() )
             {
@@ -382,7 +332,7 @@ public abstract class AbstractProxyTestCase
                             "Could not create destination directory '" + destination.getAbsolutePath() + "'." );
                     }
 
-                    copyDirectoryStructure( file, destination );
+                    copyDirectoryStructure( file.toPath(), destination.toPath() );
                 }
             }
             else
@@ -411,7 +361,7 @@ public abstract class AbstractProxyTestCase
     /**
      * Read the first line from the checksum file, and return it (trimmed).
      */
-    protected String readChecksumFile( File checksumFile )
+    protected String readChecksumFile( Path checksumFile )
         throws Exception
     {
         FileReader freader = null;
@@ -419,7 +369,7 @@ public abstract class AbstractProxyTestCase
 
         try
         {
-            freader = new FileReader( checksumFile );
+            freader = new FileReader( checksumFile.toFile() );
             buf = new BufferedReader( freader );
             return buf.readLine();
         }
@@ -530,12 +480,12 @@ public abstract class AbstractProxyTestCase
         config.triggerChange( prefix + ".layout", repoConfig.getLayout() );
     }
 
-    protected File saveTargetedRepositoryConfig( String id, String originalPath, String targetPath, String layout )
+    protected Path saveTargetedRepositoryConfig( String id, String originalPath, String targetPath, String layout )
         throws IOException
     {
-        File repoLocation = new File( targetPath );
-        FileUtils.deleteDirectory( repoLocation );
-        copyDirectoryStructure( new File( originalPath ), repoLocation );
+        Path repoLocation = Paths.get( targetPath );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoLocation );
+        copyDirectoryStructure( Paths.get(originalPath) , repoLocation );
 
         saveRemoteRepositoryConfig( id, "Target Repo-" + id, targetPath, layout );
 
@@ -561,23 +511,23 @@ public abstract class AbstractProxyTestCase
             resourceDir = resourcePath.substring( 0, idx );
         }
 
-        File sourceRepoDir = new File( REPOPATH_DEFAULT_MANAGED );
-        File sourceDir = new File( sourceRepoDir, resourceDir );
+        Path sourceRepoDir = Paths.get( REPOPATH_DEFAULT_MANAGED );
+        Path sourceDir = sourceRepoDir.resolve(resourceDir );
 
-        File destRepoDir = managedDefaultDir;
-        File destDir = new File( destRepoDir, resourceDir );
+        Path destRepoDir = managedDefaultDir;
+        Path destDir = destRepoDir.resolve(resourceDir );
 
         // Cleanout destination dirs.
-        if ( destDir.exists() )
+        if ( Files.exists(destDir))
         {
-            FileUtils.deleteDirectory( destDir );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( destDir );
         }
 
         // Make the destination dir.
-        destDir.mkdirs();
+        Files.createDirectories(destDir);
 
         // Test the source dir.
-        if ( !sourceDir.exists() )
+        if ( !Files.exists(sourceDir) )
         {
             // This is just a warning.
             log.error( "[WARN] Skipping setup of testable managed repository, source dir does not exist: {}", //
@@ -587,7 +537,7 @@ public abstract class AbstractProxyTestCase
         {
 
             // Test that the source is a dir.
-            if ( !sourceDir.isDirectory() )
+            if ( !Files.isDirectory( sourceDir) )
             {
                 fail( "Unable to setup testable managed repository, source is not a directory: " + sourceDir );
             }
@@ -597,55 +547,91 @@ public abstract class AbstractProxyTestCase
         }
     }
 
-    protected void setManagedNewerThanRemote( File managedFile, File remoteFile )
+    protected void setManagedNewerThanRemote( Path managedFile, Path remoteFile )
     {
         setManagedNewerThanRemote( managedFile, remoteFile, 55000 );
     }
 
-    protected void setManagedNewerThanRemote( File managedFile, File remoteFile, long time )
+    protected void setManagedNewerThanRemote( Path managedFile, Path remoteFile, long time )
     {
-        assertTrue( "Managed File should exist: ", managedFile.exists() );
-        assertTrue( "Remote File should exist: ", remoteFile.exists() );
+        assertTrue( "Managed File should exist: ", Files.exists(managedFile) );
+        assertTrue( "Remote File should exist: ", Files.exists(remoteFile) );
 
-        managedFile.setLastModified( remoteFile.lastModified() + time );
+        try
+        {
+            Files.setLastModifiedTime( managedFile,
+                FileTime.from(Files.getLastModifiedTime( remoteFile ).toMillis() + time, TimeUnit.MILLISECONDS ));
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace( );
+        }
 
-        assertTrue( managedFile.lastModified() > remoteFile.lastModified() );
+        try
+        {
+            assertTrue( Files.getLastModifiedTime( managedFile).compareTo( Files.getLastModifiedTime( remoteFile )) > 0);
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace( );
+        }
     }
 
-    protected void setManagedOlderThanRemote( File managedFile, File remoteFile )
+    protected void setManagedOlderThanRemote( Path managedFile, Path remoteFile )
     {
         setManagedOlderThanRemote( managedFile, remoteFile, 55000 );
     }
 
-    protected void setManagedOlderThanRemote( File managedFile, File remoteFile, long time )
+    protected void setManagedOlderThanRemote( Path  managedFile, Path remoteFile, long time )
     {
-        assertTrue( "Managed File should exist: ", managedFile.exists() );
-        assertTrue( "Remote File should exist: ", remoteFile.exists() );
+        assertTrue( "Managed File should exist: ", Files.exists(managedFile) );
+        assertTrue( "Remote File should exist: ", Files.exists(remoteFile) );
 
-        managedFile.setLastModified( remoteFile.lastModified() - time );
+        try
+        {
+            Files.setLastModifiedTime( managedFile,
+                FileTime.from(Files.getLastModifiedTime( remoteFile ).toMillis() - time, TimeUnit.MILLISECONDS ));
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace( );
+        }
 
-        assertTrue( managedFile.lastModified() < remoteFile.lastModified() );
+        try
+        {
+            assertTrue( Files.getLastModifiedTime( managedFile ).compareTo(Files.getLastModifiedTime( remoteFile  )) < 0 );
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace( );
+        }
 
     }
 
-    protected void assertNotModified( File file, long expectedModificationTime )
+    protected void assertNotModified( Path file, long expectedModificationTime )
     {
-        assertEquals( "File <" + file.getAbsolutePath() + "> not have been modified.", expectedModificationTime,
-                      file.lastModified() );
+        try
+        {
+            assertEquals( "File <" + file.toAbsolutePath() + "> not have been modified.", expectedModificationTime,
+                          Files.getLastModifiedTime( file ).toMillis());
+        }
+        catch ( IOException e )
+        {
+            e.printStackTrace( );
+        }
     }
 
 
-    protected void assertNotExistsInManagedDefaultRepo( File file )
+    protected void assertNotExistsInManagedDefaultRepo( Path testFile )
         throws Exception
     {
-        String managedDefaultPath = managedDefaultDir.getCanonicalPath();
-        String testFile = file.getCanonicalPath();
+        Path managedDefaultPath = managedDefaultDir;
 
         assertTrue( "Unit Test Failure: File <" + testFile
                         + "> should be have been defined within the managed default path of <" + managedDefaultPath
                         + ">", testFile.startsWith( managedDefaultPath ) );
 
-        assertFalse( "File < " + testFile + "> should not exist in managed default repository.", file.exists() );
+        assertFalse( "File < " + testFile + "> should not exist in managed default repository.", Files.exists(testFile) );
     }
 
     protected static Date getFutureDate()

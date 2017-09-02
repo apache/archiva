@@ -54,9 +54,11 @@ import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
@@ -105,16 +107,16 @@ public class HttpProxyTransferTest
         // Setup source repository (using default layout)
         String repoPath = "target/test-repository/managed/" + getClass().getSimpleName();
 
-        File destRepoDir = new File( repoPath );
+        Path destRepoDir = Paths.get( repoPath );
 
         // Cleanout destination dirs.
-        if ( destRepoDir.exists() )
+        if ( Files.exists(destRepoDir))
         {
-            FileUtils.deleteDirectory( destRepoDir );
+            FileUtils.deleteDirectory( destRepoDir.toFile() );
         }
 
         // Make the destination dir.
-        destRepoDir.mkdirs();
+        Files.createDirectories(destRepoDir);
 
         ManagedRepository repo = new ManagedRepository();
         repo.setId( MANAGED_ID );
@@ -212,23 +214,22 @@ public class HttpProxyTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         addConnector();
 
-        File expectedFile = new File( new File( managedDefaultRepository.getRepoRoot() ), path );
+        Path expectedFile = Paths.get( managedDefaultRepository.getRepoRoot() ).resolve( path );
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        File sourceFile = new File( PROXIED_BASEDIR, path );
+        Path sourceFile = Paths.get( PROXIED_BASEDIR, path );
         assertNotNull( "Expected File should not be null.", expectedFile );
         assertNotNull( "Actual File should not be null.", downloadedFile );
 
-        assertTrue( "Check actual file exists.", downloadedFile.exists() );
-        assertEquals( "Check filename path is appropriate.", expectedFile.getCanonicalPath(),
-                      downloadedFile.getCanonicalPath() );
-        assertEquals( "Check file path matches.", expectedFile.getAbsolutePath(), downloadedFile.getAbsolutePath() );
+        assertTrue( "Check actual file exists.", Files.exists(downloadedFile));
+        assertTrue( "Check filename path is appropriate.", Files.isSameFile( expectedFile, downloadedFile));
+        assertTrue( "Check file path matches.", Files.isSameFile( expectedFile, downloadedFile));
 
-        String expectedContents = FileUtils.readFileToString( sourceFile, Charset.defaultCharset() );
-        String actualContents = FileUtils.readFileToString( downloadedFile, Charset.defaultCharset() );
+        String expectedContents = FileUtils.readFileToString( sourceFile.toFile(), Charset.defaultCharset() );
+        String actualContents = FileUtils.readFileToString( downloadedFile.toFile(), Charset.defaultCharset() );
         assertEquals( "Check file contents.", expectedContents, actualContents );
 
         Assertions.assertThat( System.getProperty( "http.proxyHost" ) ).isEmpty();

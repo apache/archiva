@@ -28,6 +28,7 @@ import org.apache.archiva.common.filelock.FileLockException;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.filelock.FileLockTimeoutException;
 import org.apache.archiva.common.filelock.Lock;
+import org.apache.archiva.common.utils.FileUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ConfigurationNames;
@@ -87,7 +88,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Proxy;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -302,10 +306,10 @@ public class DefaultRepositoryProxyConnectors
     }
 
     @Override
-    public File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
+    public Path fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
         throws ProxyDownloadException
     {
-        File localFile = toLocalFile( repository, artifact );
+        Path localFile = toLocalFile( repository, artifact );
 
         Properties requestProperties = new Properties();
         requestProperties.setProperty( "filetype", "artifact" );
@@ -334,13 +338,13 @@ public class DefaultRepositoryProxyConnectors
 
             try
             {
-                File downloadedFile =
+                Path downloadedFile =
                     transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties,
                                   true );
 
                 if ( fileExists( downloadedFile ) )
                 {
-                    log.debug( "Successfully transferred: {}", downloadedFile.getAbsolutePath() );
+                    log.debug( "Successfully transferred: {}", downloadedFile.toAbsolutePath() );
                     return downloadedFile;
                 }
             }
@@ -373,12 +377,12 @@ public class DefaultRepositoryProxyConnectors
     }
 
     @Override
-    public File fetchFromProxies( ManagedRepositoryContent repository, String path )
+    public Path fetchFromProxies( ManagedRepositoryContent repository, String path )
     {
-        File localFile = new File( repository.getRepoRoot(), path );
+        Path localFile = Paths.get( repository.getRepoRoot(), path );
 
         // no update policies for these paths
-        if ( localFile.exists() )
+        if ( Files.exists(localFile) )
         {
             return null;
         }
@@ -402,13 +406,13 @@ public class DefaultRepositoryProxyConnectors
 
             try
             {
-                File downloadedFile =
+                Path downloadedFile =
                     transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties,
                                   false );
 
                 if ( fileExists( downloadedFile ) )
                 {
-                    log.debug( "Successfully transferred: {}", downloadedFile.getAbsolutePath() );
+                    log.debug( "Successfully transferred: {}", downloadedFile.toAbsolutePath() );
                     return downloadedFile;
                 }
             }
@@ -449,7 +453,7 @@ public class DefaultRepositoryProxyConnectors
     @Override
     public ProxyFetchResult fetchMetadataFromProxies( ManagedRepositoryContent repository, String logicalPath )
     {
-        File localFile = new File( repository.getRepoRoot(), logicalPath );
+        Path localFile = Paths.get( repository.getRepoRoot(), logicalPath );
 
         Properties requestProperties = new Properties();
         requestProperties.setProperty( "filetype", "metadata" );
@@ -466,7 +470,7 @@ public class DefaultRepositoryProxyConnectors
 
             RemoteRepositoryContent targetRepository = connector.getTargetRepository();
 
-            File localRepoFile = toLocalRepoFile( repository, targetRepository, logicalPath );
+            Path localRepoFile = toLocalRepoFile( repository, targetRepository, logicalPath );
             long originalMetadataTimestamp = getLastModified( localRepoFile );
 
             try
@@ -507,7 +511,7 @@ public class DefaultRepositoryProxyConnectors
             metadataNeedsUpdating = true;
         }
 
-        if ( metadataNeedsUpdating || !localFile.exists() )
+        if ( metadataNeedsUpdating || !Files.exists(localFile))
         {
             try
             {
@@ -515,7 +519,7 @@ public class DefaultRepositoryProxyConnectors
             }
             catch ( RepositoryMetadataException e )
             {
-                log.warn( "Unable to update metadata {}:{}", localFile.getAbsolutePath(), e.getMessage(), e );
+                log.warn( "Unable to update metadata {}:{}", localFile.toAbsolutePath(), e.getMessage(), e );
             }
 
         }
@@ -543,9 +547,9 @@ public class DefaultRepositoryProxyConnectors
      * @throws NotModifiedException
      * @throws org.apache.archiva.admin.model.RepositoryAdminException
      */
-    protected void transferResources( ProxyConnector connector, RemoteRepositoryContent remoteRepository, File tmpMd5,
-                                      File tmpSha1, File tmpResource, String url, String remotePath, File resource,
-                                      File workingDirectory, ManagedRepositoryContent repository )
+    protected void transferResources( ProxyConnector connector, RemoteRepositoryContent remoteRepository, Path tmpMd5,
+                                      Path tmpSha1, Path tmpResource, String url, String remotePath, Path resource,
+                                      Path workingDirectory, ManagedRepositoryContent repository )
         throws ProxyException, NotModifiedException, RepositoryAdminException
     {
         Wagon wagon = null;
@@ -623,26 +627,34 @@ public class DefaultRepositoryProxyConnectors
     }
 
     private void transferArtifact( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
-                                   ManagedRepositoryContent repository, File resource, File tmpDirectory,
-                                   File destFile )
+                                   ManagedRepositoryContent repository, Path resource, Path tmpDirectory,
+                                   Path destFile )
         throws ProxyException
     {
         transferSimpleFile( wagon, remoteRepository, remotePath, repository, resource, destFile );
     }
 
-    private long getLastModified( File file )
+    private long getLastModified( Path file )
     {
-        if ( !file.exists() || !file.isFile() )
+        if ( !Files.exists(file) || !Files.isRegularFile(file) )
         {
             return 0;
         }
 
-        return file.lastModified();
+        try
+        {
+            return Files.getLastModifiedTime(file).toMillis();
+        }
+        catch ( IOException e )
+        {
+            log.error("Could get the modified time of file {}", file.toAbsolutePath());
+            return 0;
+        }
     }
 
-    private boolean hasBeenUpdated( File file, long originalLastModified )
+    private boolean hasBeenUpdated( Path file, long originalLastModified )
     {
-        if ( !file.exists() || !file.isFile() )
+        if ( !Files.exists(file) || !Files.isRegularFile(file) )
         {
             return false;
         }
@@ -651,11 +663,11 @@ public class DefaultRepositoryProxyConnectors
         return ( currentLastModified > originalLastModified );
     }
 
-    private File toLocalRepoFile( ManagedRepositoryContent repository, RemoteRepositoryContent targetRepository,
+    private Path toLocalRepoFile( ManagedRepositoryContent repository, RemoteRepositoryContent targetRepository,
                                   String targetPath )
     {
         String repoPath = metadataTools.getRepositorySpecificName( targetRepository, targetPath );
-        return new File( repository.getRepoRoot(), repoPath );
+        return Paths.get( repository.getRepoRoot(), repoPath );
     }
 
     /**
@@ -670,9 +682,9 @@ public class DefaultRepositoryProxyConnectors
         }
     }
 
-    private File toLocalFile( ManagedRepositoryContent repository, ArtifactReference artifact )
+    private Path toLocalFile( ManagedRepositoryContent repository, ArtifactReference artifact )
     {
-        return repository.toFile( artifact ).toFile();
+        return repository.toFile( artifact );
     }
 
     /**
@@ -681,19 +693,19 @@ public class DefaultRepositoryProxyConnectors
      * @param file the file to test. (may be null)
      * @return true if file exists. false if the file param is null, doesn't exist, or is not of type File.
      */
-    private boolean fileExists( File file )
+    private boolean fileExists( Path file )
     {
         if ( file == null )
         {
             return false;
         }
 
-        if ( !file.exists() )
+        if ( !Files.exists(file))
         {
             return false;
         }
 
-        return file.isFile();
+        return Files.isRegularFile(file);
     }
 
     /**
@@ -712,8 +724,8 @@ public class DefaultRepositoryProxyConnectors
      *                              the remote resource is not newer than the local File.
      * @throws ProxyException       if transfer was unsuccessful.
      */
-    private File transferFile( ProxyConnector connector, RemoteRepositoryContent remoteRepository, String remotePath,
-                               ManagedRepositoryContent repository, File resource, Properties requestProperties,
+    private Path transferFile( ProxyConnector connector, RemoteRepositoryContent remoteRepository, String remotePath,
+                               ManagedRepositoryContent repository, Path resource, Properties requestProperties,
                                boolean executeConsumers )
         throws ProxyException, NotModifiedException, RepositoryAdminException
     {
@@ -763,10 +775,10 @@ public class DefaultRepositoryProxyConnectors
             return null;
         }
 
-        File workingDirectory = createWorkingDirectory( repository );
-        File tmpResource = new File( workingDirectory, resource.getName() );
-        File tmpMd5 = new File( workingDirectory, resource.getName() + ".md5" );
-        File tmpSha1 = new File( workingDirectory, resource.getName() + ".sha1" );
+        Path workingDirectory = createWorkingDirectory( repository );
+        Path tmpResource = workingDirectory.resolve(resource.getFileName());
+        Path tmpMd5 = workingDirectory.resolve(resource.getFileName().toString() + ".md5" );
+        Path tmpSha1 = workingDirectory.resolve( resource.getFileName().toString() + ".sha1" );
 
         try
         {
@@ -791,9 +803,9 @@ public class DefaultRepositoryProxyConnectors
 
             if ( resource != null )
             {
-                synchronized ( resource.getAbsolutePath().intern() )
+                synchronized ( resource.toAbsolutePath().toString().intern() )
                 {
-                    File directory = resource.getParentFile();
+                    Path directory = resource.getParent();
                     moveFileIfExists( tmpMd5, directory );
                     moveFileIfExists( tmpSha1, directory );
                     moveFileIfExists( tmpResource, directory );
@@ -802,7 +814,7 @@ public class DefaultRepositoryProxyConnectors
         }
         finally
         {
-            FileUtils.deleteQuietly( workingDirectory );
+            org.apache.archiva.common.utils.FileUtils.deleteQuietly( workingDirectory );
         }
 
         if ( executeConsumers )
@@ -815,11 +827,11 @@ public class DefaultRepositoryProxyConnectors
         return resource;
     }
 
-    private void queueRepositoryTask( String repositoryId, File localFile )
+    private void queueRepositoryTask( String repositoryId, Path localFile )
     {
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
-        task.setResourceFile( localFile );
+        task.setResourceFile( localFile.toFile() );
         task.setUpdateRelatedArtifacts( true );
         task.setScanAll( true );
 
@@ -830,7 +842,7 @@ public class DefaultRepositoryProxyConnectors
         catch ( TaskQueueException e )
         {
             log.error( "Unable to queue repository task to execute consumers on resource file ['{}"
-                           + "'].", localFile.getName() );
+                           + "'].", localFile.getFileName() );
         }
     }
 
@@ -840,12 +852,12 @@ public class DefaultRepositoryProxyConnectors
      * @param fileToMove this could be either the main artifact, sha1 or md5 checksum file.
      * @param directory  directory to write files to
      */
-    private void moveFileIfExists( File fileToMove, File directory )
+    private void moveFileIfExists( Path fileToMove, Path directory )
         throws ProxyException
     {
-        if ( fileToMove != null && fileToMove.exists() )
+        if ( fileToMove != null && Files.exists(fileToMove) )
         {
-            File newLocation = new File( directory, fileToMove.getName() );
+            Path newLocation = directory.resolve(fileToMove.getFileName());
             moveTempToTarget( fileToMove, newLocation );
         }
     }
@@ -865,8 +877,8 @@ public class DefaultRepositoryProxyConnectors
      * @throws ProxyException if copying the downloaded file into place did not succeed.
      */
     private void transferChecksum( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
-                                   ManagedRepositoryContent repository, File resource, File tmpDirectory, String ext,
-                                   File destFile )
+                                   ManagedRepositoryContent repository, Path resource, Path tmpDirectory, String ext,
+                                   Path destFile )
         throws ProxyException
     {
         String url = remoteRepository.getURL().getUrl() + remotePath + ext;
@@ -913,7 +925,7 @@ public class DefaultRepositoryProxyConnectors
      * @throws ProxyException if there was a problem moving the downloaded file into place.
      */
     private void transferSimpleFile( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
-                                     ManagedRepositoryContent repository, File origFile, File destFile )
+                                     ManagedRepositoryContent repository, Path origFile, Path destFile )
         throws ProxyException
     {
         assert ( remotePath != null );
@@ -923,10 +935,10 @@ public class DefaultRepositoryProxyConnectors
         {
             boolean success = false;
 
-            if ( !origFile.exists() )
+            if ( !Files.exists(origFile))
             {
                 log.debug( "Retrieving {} from {}", remotePath, remoteRepository.getRepository().getName() );
-                wagon.get( addParameters( remotePath, remoteRepository.getRepository() ), destFile );
+                wagon.get( addParameters( remotePath, remoteRepository.getRepository() ), destFile.toFile() );
                 success = true;
 
                 // You wouldn't get here on failure, a WagonException would have been thrown.
@@ -935,15 +947,22 @@ public class DefaultRepositoryProxyConnectors
             else
             {
                 log.debug( "Retrieving {} from {} if updated", remotePath, remoteRepository.getRepository().getName() );
-                success = wagon.getIfNewer( addParameters( remotePath, remoteRepository.getRepository() ), destFile,
-                                            origFile.lastModified() );
+                try
+                {
+                    success = wagon.getIfNewer( addParameters( remotePath, remoteRepository.getRepository() ), destFile.toFile(),
+                                                Files.getLastModifiedTime(origFile).toMillis());
+                }
+                catch ( IOException e )
+                {
+                    throw new ProxyException( "Failed to the modification time of "+origFile.toAbsolutePath() );
+                }
                 if ( !success )
                 {
                     throw new NotModifiedException(
-                        "Not downloaded, as local file is newer than remote side: " + origFile.getAbsolutePath() );
+                        "Not downloaded, as local file is newer than remote side: " + origFile.toAbsolutePath() );
                 }
 
-                if ( destFile.exists() )
+                if ( Files.exists(destFile))
                 {
                     log.debug( "Downloaded successfully." );
                 }
@@ -981,7 +1000,7 @@ public class DefaultRepositoryProxyConnectors
      * @throws PolicyViolationException
      */
     private void validatePolicies( Map<String, ? extends DownloadPolicy> policies, Map<String, String> settings,
-                                   Properties request, File localFile )
+                                   Properties request, Path localFile )
         throws PolicyViolationException
     {
         for ( Entry<String, ? extends DownloadPolicy> entry : policies.entrySet() )
@@ -997,7 +1016,7 @@ public class DefaultRepositoryProxyConnectors
             log.debug( "Applying [{}] policy with [{}]", key, setting );
             try
             {
-                policy.applyPolicy( setting, request, localFile );
+                policy.applyPolicy( setting, request, localFile.toFile() );
             }
             catch ( PolicyConfigurationException e )
             {
@@ -1008,7 +1027,7 @@ public class DefaultRepositoryProxyConnectors
 
     private void validatePolicies( Map<String, DownloadErrorPolicy> policies, Map<String, String> settings,
                                    Properties request, ArtifactReference artifact, RemoteRepositoryContent content,
-                                   File localFile, Exception exception, Map<String, Exception> previousExceptions )
+                                   Path localFile, Exception exception, Map<String, Exception> previousExceptions )
         throws ProxyDownloadException
     {
         boolean process = true;
@@ -1026,7 +1045,7 @@ public class DefaultRepositoryProxyConnectors
             try
             {
                 // all policies must approve the exception, any can cancel
-                process = policy.applyPolicy( setting, request, localFile, exception, previousExceptions );
+                process = policy.applyPolicy( setting, request, localFile.toFile(), exception, previousExceptions );
                 if ( !process )
                 {
                     break;
@@ -1066,11 +1085,11 @@ public class DefaultRepositoryProxyConnectors
      * @param repository
      * @return file location of working directory
      */
-    private File createWorkingDirectory( ManagedRepositoryContent repository )
+    private Path createWorkingDirectory( ManagedRepositoryContent repository )
     {
         try
         {
-            return Files.createTempDirectory( "temp" ).toFile();
+            return Files.createTempDirectory( "temp" );
         }
         catch ( IOException e )
         {
@@ -1087,47 +1106,52 @@ public class DefaultRepositoryProxyConnectors
      * @param target The final location of the downloaded file
      * @throws ProxyException when the temp file cannot replace the target file
      */
-    private void moveTempToTarget( File temp, File target )
+    private void moveTempToTarget( Path temp, Path target )
         throws ProxyException
     {
 
         Lock lock;
         try
         {
-            lock = fileLockManager.writeFileLock( target );
+            lock = fileLockManager.writeFileLock( target.toFile() );
             if ( lock.getFile().exists() && !lock.getFile().delete() )
             {
-                throw new ProxyException( "Unable to overwrite existing target file: " + target.getAbsolutePath() );
+                throw new ProxyException( "Unable to overwrite existing target file: " + target.toAbsolutePath() );
             }
 
             lock.getFile().getParentFile().mkdirs();
 
-            if ( !temp.renameTo( lock.getFile() ) )
+            try
+            {
+                Files.move(temp, lock.getFile().toPath() );
+            }
+            catch ( IOException e )
             {
                 log.warn( "Unable to rename tmp file to its final name... resorting to copy command." );
 
                 try
                 {
-                    FileUtils.copyFile( temp, lock.getFile() );
+                    Files.copy( temp, lock.getFile().toPath() );
                 }
-                catch ( IOException e )
+                catch ( IOException e2 )
                 {
                     if ( lock.getFile().exists() )
                     {
                         log.debug( "Tried to copy file {} to {} but file with this name already exists.",
-                                   temp.getName(), lock.getFile().getAbsolutePath() );
+                            temp.getFileName(), lock.getFile().getAbsolutePath() );
                     }
                     else
                     {
                         throw new ProxyException(
-                            "Cannot copy tmp file " + temp.getAbsolutePath() + " to its final location", e );
+                            "Cannot copy tmp file " + temp.toAbsolutePath() + " to its final location", e2 );
                     }
                 }
                 finally
                 {
-                    FileUtils.deleteQuietly( temp );
+                    org.apache.archiva.common.utils.FileUtils.deleteQuietly( temp );
                 }
             }
+
         }
         catch ( FileLockException | FileLockTimeoutException e )
         {

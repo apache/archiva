@@ -26,7 +26,11 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -46,16 +50,16 @@ public class SnapshotTransferTest
         String path = "org/apache/maven/test/does-not-exist/1.0-SNAPSHOT/does-not-exist-1.0-SNAPSHOT.jar";
         setupTestableManagedRepository( path );
         
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        expectedFile.delete();
-        assertFalse( expectedFile.exists() );
+        Files.deleteIfExists(expectedFile);
+        assertFalse( Files.exists(expectedFile) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
         assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
@@ -67,18 +71,18 @@ public class SnapshotTransferTest
         String path = "org/apache/maven/test/get-timestamped-snapshot/1.0-SNAPSHOT/get-timestamped-snapshot-1.0-SNAPSHOT.jar";
         setupTestableManagedRepository( path );
         
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        expectedFile.delete();
-        assertFalse( expectedFile.exists() );
+        Files.deleteIfExists(expectedFile);
+        assertFalse( Files.exists(expectedFile) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        File proxiedFile = new File( REPOPATH_PROXIED1, path );
+        Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile, proxiedFile );
         assertNoTempFiles( expectedFile );
     }
@@ -90,18 +94,18 @@ public class SnapshotTransferTest
         String path = "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
         setupTestableManagedRepository( path );
         
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        assertTrue( expectedFile.exists() );
-        expectedFile.setLastModified( getPastDate().getTime() );
+        assertTrue( Files.exists(expectedFile) );
+        Files.setLastModifiedTime( expectedFile, FileTime.from( getPastDate().getTime(), TimeUnit.MILLISECONDS ));
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        File proxiedFile = new File( REPOPATH_PROXIED1, path );
+        Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile, proxiedFile );
         assertNoTempFiles( expectedFile );
     }
@@ -113,8 +117,8 @@ public class SnapshotTransferTest
         String path = "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
         setupTestableManagedRepository( path );
         
-        File expectedFile = new File( managedDefaultDir, path );
-        File remoteFile = new File( REPOPATH_PROXIED1, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
+        Path remoteFile = Paths.get(REPOPATH_PROXIED1, path);
         
         setManagedNewerThanRemote( expectedFile, remoteFile );
         
@@ -124,7 +128,7 @@ public class SnapshotTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false );
 
         // Attempt to download.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         // Should not have downloaded as managed is newer than remote.
         assertNotDownloaded( downloadedFile );
@@ -141,11 +145,11 @@ public class SnapshotTransferTest
         String path = "org/apache/maven/test/get-timestamped-snapshot-in-both/1.0-SNAPSHOT/get-timestamped-snapshot-in-both-1.0-SNAPSHOT.jar";
         setupTestableManagedRepository( path );
         
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = createArtifactReference( "default", path );
 
-        expectedFile.delete();
-        assertFalse( expectedFile.exists() );
+        Files.delete(expectedFile);
+        assertFalse( Files.exists(expectedFile) );
 
         // Create customized proxy / target repository
         File targetProxyDir = saveTargetedRepositoryConfig( ID_PROXIED1_TARGET, REPOPATH_PROXIED1,
@@ -162,7 +166,7 @@ public class SnapshotTransferTest
         File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         // Should have downloaded the content from proxy2, as proxy1 has an old (by file.lastModified check) version.
-        File proxiedFile = new File( REPOPATH_PROXIED2, path );
+        Path proxiedFile = Paths.get(REPOPATH_PROXIED2, path);
         assertFileEquals( expectedFile, downloadedFile, proxiedFile );
         assertNoTempFiles( expectedFile );
     } 
@@ -173,11 +177,11 @@ public class SnapshotTransferTest
         String path = "org/apache/maven/test/get-timestamped-snapshot-in-both/1.0-SNAPSHOT/get-timestamped-snapshot-in-both-1.0-SNAPSHOT.jar";
         setupTestableManagedRepository( path );
         
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = createArtifactReference( "default", path );
 
-        expectedFile.delete();
-        assertFalse( expectedFile.exists() );
+        Files.delete(expectedFile);
+        assertFalse( Files.exists(expectedFile) );
 
         // Create customized proxy / target repository
         File targetProxyDir = saveTargetedRepositoryConfig( ID_PROXIED2_TARGET, REPOPATH_PROXIED2,
@@ -205,18 +209,18 @@ public class SnapshotTransferTest
         String path = "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
         setupTestableManagedRepository( path );
         
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        assertTrue( expectedFile.exists() );
+        assertTrue( Files.exists(expectedFile) );
 
-        File proxiedFile = new File( REPOPATH_PROXIED1, path );
-        proxiedFile.setLastModified( getFutureDate().getTime() );
+        Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
+        Files.setLastModifiedTime( proxiedFile, FileTime.from( getFutureDate().getTime(), TimeUnit.MILLISECONDS ));
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         assertFileEquals( expectedFile, downloadedFile, proxiedFile );
         assertNoTempFiles( expectedFile );
@@ -229,18 +233,18 @@ public class SnapshotTransferTest
         String path = "org/apache/maven/test/get-present-timestamped-snapshot/1.0-SNAPSHOT/get-present-timestamped-snapshot-1.0-SNAPSHOT.jar";
         setupTestableManagedRepository( path );
         
-        File expectedFile = new File( managedDefaultDir, path );
-        File remoteFile = new File( REPOPATH_PROXIED1, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
+        Path remoteFile = Paths.get(REPOPATH_PROXIED1, path);
 
         setManagedNewerThanRemote( expectedFile, remoteFile, 12000000 );
-        long expectedTimestamp = expectedFile.lastModified(); 
+        long expectedTimestamp = Files.getLastModifiedTime( expectedFile ).toMillis();
         
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         assertNotDownloaded( downloadedFile );
         assertNotModified( expectedFile, expectedTimestamp );
@@ -254,11 +258,11 @@ public class SnapshotTransferTest
         String path = "org/apache/maven/test/get-timestamped-snapshot/1.0-SNAPSHOT/get-timestamped-snapshot-1.0-SNAPSHOT.jar";
         setupTestableManagedRepository( path );
         
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        expectedFile.delete();
-        assertFalse( expectedFile.exists() );
+        Files.deleteIfExists(expectedFile);
+        assertFalse( Files.exists(expectedFile) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
@@ -266,9 +270,9 @@ public class SnapshotTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES , false);
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        File proxiedFile = new File( REPOPATH_PROXIED1, path );
+        Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile, proxiedFile );
         assertNoTempFiles( expectedFile );
     }
@@ -280,18 +284,18 @@ public class SnapshotTransferTest
         String path = "org/apache/maven/test/get-metadata-snapshot/1.0-SNAPSHOT/get-metadata-snapshot-1.0-20050831.101112-1.jar";
         setupTestableManagedRepository( path );
         
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        expectedFile.delete();
-        assertFalse( expectedFile.exists() );
+        Files.deleteIfExists(expectedFile);
+        assertFalse( Files.exists(expectedFile) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        File proxiedFile = new File( REPOPATH_PROXIED1, path );
+        Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile, proxiedFile );
         assertNoTempFiles( expectedFile );
     }
@@ -306,19 +310,19 @@ public class SnapshotTransferTest
         String path = "org/apache/maven/test/get-present-metadata-snapshot/1.0-SNAPSHOT/get-present-metadata-snapshot-1.0-20050831.101112-1.jar";
         setupTestableManagedRepository( path );
         
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        assertTrue( expectedFile.exists() );
+        assertTrue( Files.exists(expectedFile) );
 
-        expectedFile.setLastModified( getPastDate().getTime() );
+        Files.setLastModifiedTime( expectedFile, FileTime.from( getPastDate().getTime(), TimeUnit.MILLISECONDS ));
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        File proxiedFile = new File( REPOPATH_PROXIED1, path );
+        Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile, proxiedFile );
         assertNoTempFiles( expectedFile );
     }

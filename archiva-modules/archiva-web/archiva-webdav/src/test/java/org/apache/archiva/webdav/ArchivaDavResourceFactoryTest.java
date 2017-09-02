@@ -657,7 +657,7 @@ public class ArchivaDavResourceFactoryTest
 
             }
 
-            return new ProxyFetchResult( target, true );
+            return new ProxyFetchResult( target.toPath(), true );
         }
     }
 }

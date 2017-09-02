@@ -905,7 +905,7 @@ public class DefaultBrowseService
 
                 String path = managedRepositoryContent.toPath( archivaArtifact );
 
-                file = connectors.fetchFromProxies( managedRepositoryContent, path ).toPath();
+                file = connectors.fetchFromProxies( managedRepositoryContent, path );
 
                 if ( file != null && Files.exists(file) )
                 {

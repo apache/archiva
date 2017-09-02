@@ -33,7 +33,12 @@ import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.easymock.EasyMock;
 import org.junit.Test;
 
+
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.*;
 
@@ -64,7 +69,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.STOP );
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
@@ -79,7 +84,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.STOP );
         createMockedProxyConnector( ID_MOCKED_PROXIED2, NAME_MOCKED_PROXIED2, PropagateErrorsDownloadPolicy.STOP );
@@ -96,7 +101,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false );
 
@@ -110,7 +115,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.STOP );
 
@@ -126,7 +131,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.STOP );
 
@@ -142,7 +147,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false  );
 
@@ -156,7 +161,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.QUEUE );
 
@@ -174,7 +179,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.QUEUE );
 
@@ -192,7 +197,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.QUEUE );
 
@@ -210,7 +215,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.QUEUE );
 
@@ -226,7 +231,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.IGNORE );
 
@@ -242,7 +247,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false  );
 
@@ -256,7 +261,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.IGNORE );
 
@@ -274,7 +279,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.IGNORE );
 
@@ -292,7 +297,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.IGNORE );
 
@@ -310,7 +315,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.STOP,
                                     PropagateErrorsOnUpdateDownloadPolicy.ALWAYS );
@@ -327,7 +332,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_AND_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFilePresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFilePresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.STOP,
                                     PropagateErrorsOnUpdateDownloadPolicy.ALWAYS );
@@ -344,7 +349,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.QUEUE,
                                     PropagateErrorsOnUpdateDownloadPolicy.ALWAYS );
@@ -362,7 +367,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_AND_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFilePresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFilePresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.QUEUE,
                                     PropagateErrorsOnUpdateDownloadPolicy.ALWAYS );
@@ -380,7 +385,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.IGNORE,
                                     PropagateErrorsOnUpdateDownloadPolicy.ALWAYS );
@@ -398,7 +403,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_AND_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFilePresent( path );
+        Path  expectedFile = setupRepositoriesWithLocalFilePresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.IGNORE,
                                     PropagateErrorsOnUpdateDownloadPolicy.ALWAYS );
@@ -409,7 +414,7 @@ public class ErrorHandlingTest
         simulateGetIfNewerError( path, expectedFile, createTransferException() );
 
         confirmNotDownloadedNoError( path );
-        assertTrue( expectedFile.exists() );
+        assertTrue( Files.exists(expectedFile) );
     }
 
     @Test
@@ -417,7 +422,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.STOP,
                                     PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT );
@@ -434,7 +439,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_AND_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFilePresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFilePresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.STOP,
                                     PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT );
@@ -444,7 +449,7 @@ public class ErrorHandlingTest
         simulateGetIfNewerError( path, expectedFile, createTransferException() );
 
         confirmNotDownloadedNoError( path );
-        assertTrue( expectedFile.exists() );
+        assertTrue( Files.exists(expectedFile) );
     }
 
     @Test
@@ -452,7 +457,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.QUEUE,
                                     PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT );
@@ -470,7 +475,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_AND_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFilePresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFilePresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.QUEUE,
                                     PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT );
@@ -481,7 +486,7 @@ public class ErrorHandlingTest
         simulateGetIfNewerError( path, expectedFile, createTransferException() );
 
         confirmNotDownloadedNoError( path );
-        assertTrue( expectedFile.exists() );
+        assertTrue( Files.exists(expectedFile));
     }
 
     @Test
@@ -489,7 +494,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_NOT_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFileNotPresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.IGNORE,
                                     PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT );
@@ -507,7 +512,7 @@ public class ErrorHandlingTest
         throws Exception
     {
         String path = PATH_IN_BOTH_REMOTES_AND_LOCAL;
-        File expectedFile = setupRepositoriesWithLocalFilePresent( path );
+        Path expectedFile = setupRepositoriesWithLocalFilePresent( path );
 
         createMockedProxyConnector( ID_MOCKED_PROXIED1, NAME_MOCKED_PROXIED1, PropagateErrorsDownloadPolicy.IGNORE,
                                     PropagateErrorsOnUpdateDownloadPolicy.NOT_PRESENT );
@@ -518,7 +523,7 @@ public class ErrorHandlingTest
         simulateGetIfNewerError( path, expectedFile, createTransferException() );
 
         confirmNotDownloadedNoError( path );
-        assertTrue( expectedFile.exists() );
+        assertTrue( Files.exists(expectedFile));
     }
 
     // ------------------------------------------
@@ -539,47 +544,47 @@ public class ErrorHandlingTest
                        CachedFailuresPolicy.NO, errorPolicy, errorOnUpdatePolicy, false );
     }
 
-    private File setupRepositoriesWithLocalFileNotPresent( String path )
+    private Path setupRepositoriesWithLocalFileNotPresent( String path )
         throws Exception
     {
         setupTestableManagedRepository( path );
 
-        File file = new File( managedDefaultDir, path );
+        Path file = managedDefaultDir.resolve( path );
 
         assertNotExistsInManagedDefaultRepo( file );
 
         return file;
     }
 
-    private File setupRepositoriesWithLocalFilePresent( String path )
+    private Path setupRepositoriesWithLocalFilePresent( String path )
         throws Exception
     {
         setupTestableManagedRepository( path );
 
-        File file = new File( managedDefaultDir, path );
+        Path file = managedDefaultDir.resolve( path );
 
-        assertTrue( file.exists() );
+        assertTrue( Files.exists(file) );
 
         return file;
     }
 
-    private void simulateGetError( String path, File expectedFile, Exception throwable )
+    private void simulateGetError( String path, Path expectedFile, Exception throwable )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
         wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ));
         EasyMock.expectLastCall().andThrow(throwable );
     }
 
-    private void simulateGetIfNewerError( String path, File expectedFile, TransferFailedException exception )
-        throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
+    private void simulateGetIfNewerError( String path, Path expectedFile, TransferFailedException exception )
+        throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException, IOException
     {
-        wagonMock.getIfNewer( EasyMock.eq( path ), EasyMock.anyObject( File.class ), EasyMock.eq( expectedFile.lastModified() ));
+        wagonMock.getIfNewer( EasyMock.eq( path ), EasyMock.anyObject( File.class ), EasyMock.eq( Files.getLastModifiedTime( expectedFile ).toMillis() ));
         EasyMock.expectLastCall().andThrow( exception );
     }
 
-    private File createExpectedTempFile( File expectedFile )
+    private Path createExpectedTempFile( Path expectedFile )
     {
-        return new File( managedDefaultDir, expectedFile.getName() + ".tmp" ).getAbsoluteFile();
+        return managedDefaultDir.resolve(expectedFile.getFileName().toString() + ".tmp" ).toAbsolutePath();
     }
 
     private void confirmSingleFailure( String path, String id )
@@ -594,7 +599,7 @@ public class ErrorHandlingTest
         wagonMockControl.replay();
 
         // Attempt the proxy fetch.
-        File downloadedFile = null;
+        Path downloadedFile = null;
         try
         {
             downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository,
@@ -615,30 +620,30 @@ public class ErrorHandlingTest
         assertNotDownloaded( downloadedFile );
     }
 
-    private void confirmSuccess( String path, File expectedFile, String basedir )
+    private void confirmSuccess( String path, Path expectedFile, String basedir )
         throws Exception
     {
-        File downloadedFile = performDownload( path );
+        Path downloadedFile = performDownload( path );
 
-        File proxied1File = new File( basedir, path );
+        Path proxied1File = Paths.get( basedir, path );
         assertFileEquals( expectedFile, downloadedFile, proxied1File );
     }
 
     private void confirmNotDownloadedNoError( String path )
         throws Exception
     {
-        File downloadedFile = performDownload( path );
+        Path downloadedFile = performDownload( path );
 
         assertNotDownloaded( downloadedFile );
     }
 
-    private File performDownload( String path )
+    private Path performDownload( String path )
         throws ProxyDownloadException, LayoutException
     {
         wagonMockControl.replay();
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository,
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository,
                                                              managedDefaultRepository.toArtifactReference( path ) );
 
         wagonMockControl.verify();

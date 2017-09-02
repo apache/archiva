@@ -23,7 +23,7 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -45,7 +45,7 @@ public interface RepositoryProxyConnectors
      * @return the file that was obtained, or null if no content was obtained
      * @throws ProxyDownloadException if there was a problem fetching the content from the target repositories.
      */
-    File fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
+    Path fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
         throws ProxyDownloadException;
     
     /**
@@ -69,7 +69,7 @@ public interface RepositoryProxyConnectors
      * @param path the path of the resource to fetch
      * @return the file that was obtained, or null if no content was obtained
      */
-    File fetchFromProxies( ManagedRepositoryContent managedRepository, String path );
+    Path fetchFromProxies( ManagedRepositoryContent managedRepository, String path );
 
     /**
      * Get the List of {@link ProxyConnector} objects of the source repository.

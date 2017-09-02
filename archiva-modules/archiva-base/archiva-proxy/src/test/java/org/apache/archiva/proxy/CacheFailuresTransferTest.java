@@ -31,6 +31,9 @@ import org.easymock.EasyMock;
 import org.junit.Test;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import javax.inject.Inject;
 
 import static org.junit.Assert.assertFalse;
@@ -55,7 +58,7 @@ public class CacheFailuresTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
-        File expectedFile = new File( managedDefaultDir.getAbsoluteFile(), path );
+        Path expectedFile = managedDefaultDir.resolve( path );
         setupTestableManagedRepository( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
@@ -79,7 +82,7 @@ public class CacheFailuresTransferTest
 
         wagonMockControl.replay();
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         wagonMockControl.verify();
 
@@ -89,7 +92,7 @@ public class CacheFailuresTransferTest
         downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
         wagonMockControl.verify();
 
-        assertNotDownloaded( downloadedFile );
+        assertNotDownloaded( downloadedFile);
         assertNoTempFiles( expectedFile );
     }
 
@@ -98,7 +101,7 @@ public class CacheFailuresTransferTest
         throws Exception
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
-        File expectedFile = new File( managedDefaultDir.getAbsoluteFile(), path );
+        Path expectedFile = managedDefaultDir.resolve( path );
         setupTestableManagedRepository( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
@@ -120,7 +123,7 @@ public class CacheFailuresTransferTest
 
         wagonMockControl.replay();
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         wagonMockControl.verify();
 
@@ -146,11 +149,11 @@ public class CacheFailuresTransferTest
     {
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         setupTestableManagedRepository( path );
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path );
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        expectedFile.delete();
-        assertFalse( expectedFile.exists() );
+        Files.deleteIfExists(expectedFile);
+        assertFalse( Files.exists(expectedFile) );
 
         String url = PathUtil.toUrl( REPOPATH_PROXIED1 + "/" + path );
 
@@ -164,10 +167,10 @@ public class CacheFailuresTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied2", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES, false );
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         // Validate that file actually came from proxied2 (as intended).
-        File proxied2File = new File( REPOPATH_PROXIED2, path );
+        Path proxied2File = Paths.get( REPOPATH_PROXIED2, path );
         assertFileEquals( expectedFile, downloadedFile, proxied2File );
         assertNoTempFiles( expectedFile );
     }

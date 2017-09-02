@@ -47,6 +47,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -121,11 +123,11 @@ public class MetadataTransferTest
         assertResourceNotFound( requestedResource );
         assertNoRepoMetadata( ID_PROXIED1, requestedResource );
 
-        File expectedFile = new File( managedDefaultDir, requestedResource );
+        Path expectedFile = managedDefaultDir.resolve(requestedResource);
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        Path downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -155,7 +157,7 @@ public class MetadataTransferTest
         assertNoRepoMetadata( ID_PROXIED2, requestedResource );
 
         // ensure that a hard failure in the first proxy connector is skipped and the second repository checked
-        File expectedFile = new File( managedDefaultDir.getAbsoluteFile(),
+        Path expectedFile = managedDefaultDir.resolve(
                                       metadataTools.getRepositorySpecificName( "badproxied1", requestedResource ) );
 
         wagonMock.get( EasyMock.eq( requestedResource ), EasyMock.anyObject( File.class ));
@@ -984,11 +986,11 @@ public class MetadataTransferTest
     private void assertFetchProjectOrGroup( String requestedResource )
         throws Exception
     {
-        File expectedFile = new File( managedDefaultDir, requestedResource );
+        Path expectedFile = managedDefaultDir.resolve(requestedResource);
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        Path downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -1011,10 +1013,10 @@ public class MetadataTransferTest
     private void assertFetchProjectOrGroupFailed( String requestedResource )
         throws Exception
     {
-        File expectedFile = new File( managedDefaultDir, requestedResource );
+        Path expectedFile = managedDefaultDir.resolve(requestedResource);
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        Path downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -1031,11 +1033,11 @@ public class MetadataTransferTest
     private void assertFetchVersioned( String requestedResource )
         throws Exception
     {
-        File expectedFile = new File( managedDefaultDir, requestedResource );
+        Path expectedFile = managedDefaultDir.resolve(requestedResource);
 
         VersionedReference metadata = createVersionedReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        Path downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -1058,10 +1060,10 @@ public class MetadataTransferTest
     private void assertFetchVersionedFailed( String requestedResource )
         throws Exception
     {
-        File expectedFile = new File( managedDefaultDir, requestedResource );
+        Path expectedFile = managedDefaultDir.resolve(requestedResource);
         VersionedReference metadata = createVersionedReference( requestedResource );
 
-        File downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        Path downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -1078,19 +1080,19 @@ public class MetadataTransferTest
     private void assertResourceExists( String requestedResource )
         throws Exception
     {
-        File actualFile = new File( managedDefaultDir, requestedResource );
-        assertTrue( "Resource should exist: " + requestedResource, actualFile.exists() );
+        Path actualFile = managedDefaultDir.resolve(requestedResource);
+        assertTrue( "Resource should exist: " + requestedResource, Files.exists(actualFile) );
     }
 
-    private void assertMetadataEquals( String expectedMetadataXml, File actualFile )
+    private void assertMetadataEquals( String expectedMetadataXml, Path actualFile )
         throws Exception
     {
         assertNotNull( "Actual File should not be null.", actualFile );
 
-        assertTrue( "Actual file exists.", actualFile.exists() );
+        assertTrue( "Actual file exists.", Files.exists(actualFile) );
 
         StringWriter actualContents = new StringWriter();
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( actualFile );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( actualFile.toFile() );
         RepositoryMetadataWriter.write( metadata, actualContents );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadataXml, actualContents.toString() ) );
@@ -1111,8 +1113,8 @@ public class MetadataTransferTest
     private void assertNoMetadata( String requestedResource )
         throws Exception
     {
-        File expectedFile = new File( managedDefaultDir, requestedResource );
-        assertFalse( "metadata should not exist: " + expectedFile, expectedFile.exists() );
+        Path expectedFile = managedDefaultDir.resolve(requestedResource);
+        assertFalse( "metadata should not exist: " + expectedFile, Files.exists(expectedFile) );
     }
 
     /**
@@ -1126,15 +1128,15 @@ public class MetadataTransferTest
     {
         String proxiedFile = metadataTools.getRepositorySpecificName( proxiedRepoId, requestedResource );
 
-        File actualFile = new File( managedDefaultDir, proxiedFile );
-        assertFalse( "Repo specific metadata should not exist: " + actualFile, actualFile.exists() );
+        Path actualFile = managedDefaultDir.resolve(proxiedFile);
+        assertFalse( "Repo specific metadata should not exist: " + actualFile, Files.exists(actualFile) );
     }
 
     private void assertGroupMetadataContents( String requestedResource, String expectedPlugins[] )
         throws Exception
     {
-        File actualFile = new File( managedDefaultDir, requestedResource );
-        assertTrue( "Snapshot Metadata should exist: " + requestedResource, actualFile.exists() );
+        Path actualFile = managedDefaultDir.resolve(requestedResource);
+        assertTrue( "Snapshot Metadata should exist: " + requestedResource, Files.exists(actualFile) );
 
         ProjectReference actualMetadata = createGroupReference( requestedResource );
 
@@ -1156,15 +1158,15 @@ public class MetadataTransferTest
     {
         String proxiedFile = metadataTools.getRepositorySpecificName( proxiedRepoId, requestedResource );
 
-        File actualFile = new File( managedDefaultDir, proxiedFile );
-        assertTrue( "Repo Specific Group Metadata should exist: " + requestedResource, actualFile.exists() );
+        Path actualFile = managedDefaultDir.resolve(proxiedFile);
+        assertTrue( "Repo Specific Group Metadata should exist: " + requestedResource, Files.exists(actualFile) );
 
         ProjectReference actualMetadata = createGroupReference( requestedResource );
 
         assertGroupMetadata( actualFile, actualMetadata, expectedPlugins );
     }
 
-    private void assertGroupMetadata( File actualFile, ProjectReference actualMetadata, String expectedPlugins[] )
+    private void assertGroupMetadata( Path actualFile, ProjectReference actualMetadata, String expectedPlugins[] )
         throws Exception
     {
         // Build expected metadata XML
@@ -1198,8 +1200,8 @@ public class MetadataTransferTest
                                                 String latestVersion, String releaseVersion )
         throws Exception
     {
-        File actualFile = new File( managedDefaultDir, requestedResource );
-        assertTrue( actualFile.exists() );
+        Path actualFile = managedDefaultDir.resolve(requestedResource);
+        assertTrue( Files.exists(actualFile) );
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
@@ -1232,8 +1234,8 @@ public class MetadataTransferTest
     private void assertReleaseMetadataContents( String requestedResource )
         throws Exception
     {
-        File actualFile = new File( managedDefaultDir, requestedResource );
-        assertTrue( "Release Metadata should exist: " + requestedResource, actualFile.exists() );
+        Path actualFile = managedDefaultDir.resolve(requestedResource);
+        assertTrue( "Release Metadata should exist: " + requestedResource, Files.exists(actualFile) );
 
         VersionedReference metadata = createVersionedReference( requestedResource );
 
@@ -1263,8 +1265,8 @@ public class MetadataTransferTest
                                                  int expectedBuildnumber )
         throws Exception
     {
-        File actualFile = new File( managedDefaultDir, requestedResource );
-        assertTrue( "Snapshot Metadata should exist: " + requestedResource, actualFile.exists() );
+        Path actualFile = managedDefaultDir.resolve(requestedResource);
+        assertTrue( "Snapshot Metadata should exist: " + requestedResource, Files.exists(actualFile) );
 
         VersionedReference actualMetadata = createVersionedReference( requestedResource );
 
@@ -1288,15 +1290,15 @@ public class MetadataTransferTest
     {
         String proxiedFile = metadataTools.getRepositorySpecificName( proxiedRepoId, requestedResource );
 
-        File actualFile = new File( managedDefaultDir, proxiedFile );
-        assertTrue( "Repo Specific Snapshot Metadata should exist: " + requestedResource, actualFile.exists() );
+        Path actualFile = managedDefaultDir.resolve(proxiedFile);
+        assertTrue( "Repo Specific Snapshot Metadata should exist: " + requestedResource, Files.exists(actualFile) );
 
         VersionedReference actualMetadata = createVersionedReference( requestedResource );
 
         assertSnapshotMetadata( actualFile, actualMetadata, expectedDate, expectedTime, expectedBuildnumber );
     }
 
-    private void assertSnapshotMetadata( File actualFile, VersionedReference actualMetadata, String expectedDate,
+    private void assertSnapshotMetadata( Path actualFile, VersionedReference actualMetadata, String expectedDate,
                                          String expectedTime, int expectedBuildnumber )
         throws RepositoryMetadataException, Exception
     {
@@ -1338,8 +1340,8 @@ public class MetadataTransferTest
     {
         String proxiedFile = metadataTools.getRepositorySpecificName( proxiedRepoId, requestedResource );
 
-        File actualFile = new File( managedDefaultDir, proxiedFile );
-        assertTrue( actualFile.exists() );
+        Path actualFile = managedDefaultDir.resolve(proxiedFile);
+        assertTrue( Files.exists(actualFile) );
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
@@ -1372,8 +1374,8 @@ public class MetadataTransferTest
     {
         String proxiedFile = metadataTools.getRepositorySpecificName( proxiedRepoId, requestedResource );
 
-        File actualFile = new File( managedDefaultDir, proxiedFile );
-        assertTrue( "Release metadata for repo should exist: " + actualFile, actualFile.exists() );
+        Path actualFile = managedDefaultDir.resolve(proxiedFile);
+        assertTrue( "Release metadata for repo should exist: " + actualFile, Files.exists(actualFile) );
 
         VersionedReference metadata = createVersionedReference( requestedResource );
 
@@ -1398,8 +1400,8 @@ public class MetadataTransferTest
     private void assertResourceNotFound( String requestedResource )
         throws Exception
     {
-        File actualFile = new File( managedDefaultDir, requestedResource );
-        assertFalse( "Resource should not exist: " + requestedResource, actualFile.exists() );
+        Path actualFile = managedDefaultDir.resolve(requestedResource);
+        assertFalse( "Resource should not exist: " + requestedResource, Files.exists(actualFile) );
     }
 
 }

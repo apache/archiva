@@ -32,6 +32,11 @@ import org.junit.Test;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -48,7 +53,7 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Ensure file isn't present first.
@@ -59,7 +64,7 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, true );
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
         assertNull( "File should not have been downloaded", downloadedFile );
     }
 
@@ -70,7 +75,7 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Ensure file isn't present first.
@@ -81,9 +86,9 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        File sourceFile = new File( REPOPATH_PROXIED1, path );
+        Path sourceFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile, sourceFile );
         assertNoTempFiles( expectedFile );
     }
@@ -95,7 +100,7 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar.asc";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
 
         // Ensure file isn't present first.
         assertNotExistsInManagedDefaultRepo( expectedFile );
@@ -105,13 +110,13 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
 
-        File sourceFile = new File( REPOPATH_PROXIED1, path );
+        Path sourceFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile, sourceFile );
-        assertFalse( new File( downloadedFile.getParentFile(), downloadedFile.getName() + ".sha1" ).exists() );
-        assertFalse( new File( downloadedFile.getParentFile(), downloadedFile.getName() + ".md5" ).exists() );
-        assertFalse( new File( downloadedFile.getParentFile(), downloadedFile.getName() + ".asc" ).exists() );
+        assertFalse( Files.exists( downloadedFile.getParent().resolve(downloadedFile.getFileName() + ".sha1" )) );
+        assertFalse( Files.exists(downloadedFile.getParent().resolve(downloadedFile.getFileName() + ".md5" ) ));
+        assertFalse( Files.exists( downloadedFile.getParent().resolve(downloadedFile.getFileName() + ".asc" ) ));
         assertNoTempFiles( expectedFile );
     }
 
@@ -129,18 +134,18 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
 
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        assertTrue( expectedFile.exists() );
+        assertTrue( Files.exists(expectedFile) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ONCE, SnapshotsPolicy.ONCE,
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         assertFileEquals( expectedFile, downloadedFile, expectedFile );
         assertNoTempFiles( expectedFile );
@@ -160,21 +165,21 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar.asc";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
-        File remoteFile = new File( REPOPATH_PROXIED1, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
+        Path remoteFile = Paths.get(REPOPATH_PROXIED1, path);
 
-        assertTrue( expectedFile.exists() );
+        assertTrue( Files.exists(expectedFile) );
 
         // Set the managed File to be newer than local.
         setManagedOlderThanRemote( expectedFile, remoteFile );
-        long originalModificationTime = expectedFile.lastModified();
+        long originalModificationTime = Files.getLastModifiedTime(expectedFile).toMillis();
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ONCE, SnapshotsPolicy.ONCE,
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
 
         assertNotDownloaded( downloadedFile );
         assertNotModified( expectedFile, originalModificationTime );
@@ -204,23 +209,23 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
-        File remoteFile = new File( REPOPATH_PROXIED1, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
+        Path remoteFile = Paths.get(REPOPATH_PROXIED1, path);
 
         // Set the managed File to be newer than local.
         setManagedNewerThanRemote( expectedFile, remoteFile );
 
-        long originalModificationTime = expectedFile.lastModified();
+        long originalModificationTime = Files.getLastModifiedTime( expectedFile).toMillis();
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        assertTrue( expectedFile.exists() );
+        assertTrue( Files.exists(expectedFile) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         assertNotDownloaded( downloadedFile );
         assertNotModified( expectedFile, originalModificationTime );
@@ -250,24 +255,24 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
-        File remoteFile = new File( REPOPATH_PROXIED1, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
+        Path remoteFile = Paths.get(REPOPATH_PROXIED1, path);
 
         // Set the managed file to be newer than remote file.
         setManagedOlderThanRemote( expectedFile, remoteFile );
 
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        assertTrue( expectedFile.exists() );
+        assertTrue( Files.exists(expectedFile) );
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        File proxiedFile = new File( REPOPATH_PROXIED1, path );
+        Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile, proxiedFile );
         assertNoTempFiles( expectedFile );
     }
@@ -286,20 +291,20 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/get-default-layout-present/1.0/get-default-layout-present-1.0.jar";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
-        assertTrue( expectedFile.exists() );
-        expectedFile.setLastModified( getPastDate().getTime() );
+        assertTrue( Files.exists(expectedFile) );
+        Files.setLastModifiedTime( expectedFile, FileTime.from(getPastDate().getTime(), TimeUnit.MILLISECONDS ));
 
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FIX, ReleasesPolicy.DAILY, SnapshotsPolicy.DAILY,
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        File proxiedFile = new File( REPOPATH_PROXIED1, path );
+        Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
         assertFileEquals( expectedFile, downloadedFile, proxiedFile );
         assertNoTempFiles( expectedFile );
     }
@@ -311,7 +316,7 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/get-in-both-proxies/1.0/get-in-both-proxies-1.0.jar";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
@@ -321,16 +326,16 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        File proxied1File = new File( REPOPATH_PROXIED1, path );
-        File proxied2File = new File( REPOPATH_PROXIED2, path );
+        Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
+        Path proxied2File = Paths.get(REPOPATH_PROXIED2, path);
         assertFileEquals( expectedFile, downloadedFile, proxied1File );
         assertNoTempFiles( expectedFile );
 
         // TODO: is this check even needed if it passes above? 
-        String actualContents = FileUtils.readFileToString( downloadedFile, Charset.defaultCharset() );
-        String badContents = FileUtils.readFileToString( proxied2File, Charset.defaultCharset() );
+        String actualContents = FileUtils.readFileToString( downloadedFile.toFile(), Charset.defaultCharset() );
+        String badContents = FileUtils.readFileToString( proxied2File.toFile(), Charset.defaultCharset() );
         assertFalse( "Downloaded file contents should not be that of proxy 2",
                      StringUtils.equals( actualContents, badContents ) );
     }
@@ -342,7 +347,7 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
@@ -352,9 +357,9 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        File proxied2File = new File( REPOPATH_PROXIED2, path );
+        Path proxied2File = Paths.get(REPOPATH_PROXIED2, path);
         assertFileEquals( expectedFile, downloadedFile, proxied2File );
         assertNoTempFiles( expectedFile );
     }
@@ -366,7 +371,7 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/does-not-exist/1.0/does-not-exist-1.0.jar";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
@@ -376,7 +381,7 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         assertNull( "File returned was: " + downloadedFile + "; should have got a not found exception",
                     downloadedFile );
@@ -390,7 +395,7 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir, path );
+        Path expectedFile = managedDefaultDir.resolve(path);
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
@@ -407,11 +412,11 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         // Attempt the proxy fetch.
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         wagonMockControl.verify();
 
-        File proxied2File = new File( REPOPATH_PROXIED2, path );
+        Path proxied2File = Paths.get(REPOPATH_PROXIED2, path);
         assertFileEquals( expectedFile, downloadedFile, proxied2File );
         assertNoTempFiles( expectedFile );
     }
@@ -423,7 +428,7 @@ public class ManagedDefaultTransferTest
         String path = "org/apache/maven/test/get-in-second-proxy/1.0/get-in-second-proxy-1.0.jar";
         setupTestableManagedRepository( path );
 
-        File expectedFile = new File( managedDefaultDir.getAbsoluteFile(), path );
+        Path expectedFile = managedDefaultDir.resolve( path );
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         assertNotExistsInManagedDefaultRepo( expectedFile );
@@ -436,7 +441,7 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "badproxied1", false );
         saveConnector( ID_DEFAULT_MANAGED, "badproxied2", false );
 
-        File tmpFile = new File( expectedFile.getParentFile(), expectedFile.getName() + ".tmp" );
+        Path tmpFile = expectedFile.getParent().resolve(expectedFile.getFileName() + ".tmp" );
 
         wagonMock.get( EasyMock.eq( path ), EasyMock.anyObject( File.class ) );
         EasyMock.expectLastCall().andThrow( new ResourceDoesNotExistException( "Can't find resource." ) );
@@ -446,7 +451,7 @@ public class ManagedDefaultTransferTest
 
         wagonMockControl.replay();
 
-        File downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         assertNotDownloaded( downloadedFile );
 

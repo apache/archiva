@@ -105,6 +105,7 @@ import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -781,7 +782,7 @@ public class ArchivaDavResourceFactory
         String path = resource.getPath();
         if ( repositoryRequest.isSupportFile( path ) )
         {
-            File proxiedFile = connectors.fetchFromProxies( managedRepository, path );
+            Path proxiedFile = connectors.fetchFromProxies( managedRepository, path );
 
             return ( proxiedFile != null );
         }
@@ -796,7 +797,7 @@ public class ArchivaDavResourceFactory
         if ( repositoryRequest.isArchetypeCatalog( path ) )
         {
             // FIXME we must implement a merge of remote archetype catalog from remote servers.
-            File proxiedFile = connectors.fetchFromProxies( managedRepository, path );
+            Path proxiedFile = connectors.fetchFromProxies( managedRepository, path );
 
             return ( proxiedFile != null );
         }
@@ -815,7 +816,7 @@ public class ArchivaDavResourceFactory
                     this.applicationContext.getBean( "repositoryStorage#" + repositoryLayout, RepositoryStorage.class );
                 repositoryStorage.applyServerSideRelocation( managedRepository, artifact );
 
-                File proxiedFile = connectors.fetchFromProxies( managedRepository, artifact );
+                Path proxiedFile = connectors.fetchFromProxies( managedRepository, artifact );
 
                 resource.setPath( managedRepository.toPath( artifact ) );
 
