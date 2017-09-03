@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -82,18 +82,18 @@ public class DefaultLegacyRepositoryConverter
     }
 
     @Override
-    public void convertLegacyRepository( File legacyRepositoryDirectory, File repositoryDirectory,
+    public void convertLegacyRepository( Path legacyRepositoryDirectory, Path repositoryDirectory,
                                          List<String> fileExclusionPatterns )
         throws RepositoryConversionException
     {
         try
         {
-            String defaultRepositoryUrl = PathUtil.toUrl( repositoryDirectory );
+            String defaultRepositoryUrl = PathUtil.toUrl( repositoryDirectory.toFile() );
 
             ManagedRepository legacyRepository = new ManagedRepository();
             legacyRepository.setId( "legacy" );
             legacyRepository.setName( "Legacy Repository" );
-            legacyRepository.setLocation( legacyRepositoryDirectory.getAbsolutePath() );
+            legacyRepository.setLocation( legacyRepositoryDirectory.toAbsolutePath().toString() );
             legacyRepository.setLayout( "legacy" );
 
             ArtifactRepository repository =

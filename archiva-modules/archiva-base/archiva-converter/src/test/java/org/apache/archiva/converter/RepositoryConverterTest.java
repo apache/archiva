@@ -34,8 +34,10 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -77,20 +79,20 @@ public class RepositoryConverterTest
         ArtifactRepositoryLayout layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "legacy" );
             //(ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "legacy" );
 
-        File sourceBase = new File( "src/test/source-repository" );
-        sourceRepository = factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null,
+        Path sourceBase = Paths.get( "src/test/source-repository" );
+        sourceRepository = factory.createArtifactRepository( "source", sourceBase.toUri().toURL().toString(), layout, null,
                                                              null );
 
         layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );
             //(ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "default" );
 
-        File targetBase = new File( "target/test-target-repository" );
-        copyDirectoryStructure( new File( "src/test/target-repository" ), targetBase );
+        Path targetBase = Paths.get( "target/test-target-repository" );
+        copyDirectoryStructure( Paths.get( "src/test/target-repository" ), targetBase );
 
         targetRepository = new ManagedRepositoryConfiguration();
         targetRepository.setId( "target" );
         targetRepository.setName( "Target Repo" );
-        targetRepository.setLocation( targetBase.getAbsolutePath() );
+        targetRepository.setLocation( targetBase.toAbsolutePath().toString() );
         targetRepository.setLayout( "default" );
 
         //repositoryConverter = (LegacyRepositoryConverter) lookup( LegacyRepositoryConverter.ROLE, "default" );
@@ -103,49 +105,48 @@ public class RepositoryConverterTest
         super.tearDown();
     }
 
-    private void copyDirectoryStructure( File sourceDirectory, File destinationDirectory )
+    private void copyDirectoryStructure( Path sourceDirectory, Path destinationDirectory )
         throws IOException
     {
-        if ( !sourceDirectory.exists() )
+        if ( !Files.exists(sourceDirectory) )
         {
-            throw new IOException( "Source directory doesn't exists (" + sourceDirectory.getAbsolutePath() + ")." );
+            throw new IOException( "Source directory doesn't exists (" + sourceDirectory.toAbsolutePath() + ")." );
         }
 
-        File[] files = sourceDirectory.listFiles();
+        Path[] files = Files.list(sourceDirectory).toArray(Path[]::new);
 
-        String sourcePath = sourceDirectory.getAbsolutePath();
+        String sourcePath = sourceDirectory.toAbsolutePath().toString();
 
         for ( int i = 0; i < files.length; i++ )
         {
-            File file = files[i];
+            Path file = files[i];
 
-            String dest = file.getAbsolutePath();
+            String dest = file.toAbsolutePath().toString();
 
             dest = dest.substring( sourcePath.length() + 1 );
 
-            File destination = new File( destinationDirectory, dest );
+            Path destination = destinationDirectory.resolve( dest );
 
-            if ( file.isFile() )
+            if ( Files.isRegularFile(file) )
             {
-                destination = destination.getParentFile();
+                destination = destination.getParent();
 
-                FileUtils.copyFileToDirectory( file, destination );
+                FileUtils.copyFileToDirectory( file.toFile(), destination.toFile() );
             }
-            else if ( file.isDirectory() )
+            else if ( Files.isDirectory(file) )
             {
-                if ( !".svn".equals( file.getName() ) )
+                if ( !".svn".equals( file.getFileName().toString() ) )
                 {
-                    if ( !destination.exists() && !destination.mkdirs() )
+                    if ( !Files.exists(destination))
                     {
-                        throw new IOException( "Could not create destination directory '"
-                            + destination.getAbsolutePath() + "'." );
+                        Files.createDirectories( destination );
                     }
                     copyDirectoryStructure( file, destination );
                 }
             }
             else
             {
-                throw new IOException( "Unknown file type: " + file.getAbsolutePath() );
+                throw new IOException( "Unknown file type: " + file.toAbsolutePath() );
             }
         }
     }
@@ -154,8 +155,8 @@ public class RepositoryConverterTest
     public void testLegacyConversion()
         throws IOException, RepositoryConversionException
     {
-        File legacyRepoDir = new File( sourceRepository.getBasedir() );
-        File destRepoDir = new File( targetRepository.getLocation() );
+        Path legacyRepoDir = Paths.get( sourceRepository.getBasedir() );
+        Path destRepoDir = Paths.get( targetRepository.getLocation() );
         List<String> excludes = new ArrayList<>();
         repositoryConverter.convertLegacyRepository( legacyRepoDir, destRepoDir, excludes );
     }

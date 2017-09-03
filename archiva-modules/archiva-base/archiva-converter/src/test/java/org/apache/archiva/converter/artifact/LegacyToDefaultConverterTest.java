@@ -38,14 +38,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
 /**
@@ -86,17 +90,17 @@ public class LegacyToDefaultConverterTest
 
         ArtifactRepositoryLayout layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "legacy" );
 
-        File sourceBase = getTestFile( "src/test/source-repository" );
+        Path sourceBase = getTestFile( "src/test/source-repository" );
         sourceRepository =
-            factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null, null );
+            factory.createArtifactRepository( "source", sourceBase.toUri().toURL().toString(), layout, null, null );
 
         layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );
 
-        File targetBase = getTestFile( "target/test-target-repository" );
+        Path targetBase = getTestFile( "target/test-target-repository" );
         copyDirectoryStructure( getTestFile( "src/test/target-repository" ), targetBase );
 
         targetRepository =
-            factory.createArtifactRepository( "target", targetBase.toURL().toString(), layout, null, null );
+            factory.createArtifactRepository( "target", targetBase.toUri().toURL().toString(), layout, null, null );
 
         artifactConverter =
             applicationContext.getBean( "artifactConverter#legacy-to-default", ArtifactConverter.class );
@@ -105,54 +109,53 @@ public class LegacyToDefaultConverterTest
         artifactFactory = (ArtifactFactory) plexusSisuBridge.lookup( ArtifactFactory.class );
     }
 
-    public static File getTestFile( String path )
+    public static Path getTestFile( String path )
     {
-        return new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), path );
+        return Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), path );
     }
 
-    private void copyDirectoryStructure( File sourceDirectory, File destinationDirectory )
+    private void copyDirectoryStructure( Path sourceDirectory, Path destinationDirectory )
         throws IOException
     {
-        if ( !sourceDirectory.exists() )
+        if ( !Files.exists(sourceDirectory) )
         {
-            throw new IOException( "Source directory doesn't exists (" + sourceDirectory.getAbsolutePath() + ")." );
+            throw new IOException( "Source directory doesn't exists (" + sourceDirectory.toAbsolutePath()+ ")." );
         }
 
-        File[] files = sourceDirectory.listFiles();
+        Path[] files = Files.list( sourceDirectory ).toArray( Path[]::new );
 
-        String sourcePath = sourceDirectory.getAbsolutePath();
+        String sourcePath = sourceDirectory.toAbsolutePath().toString();
 
         for ( int i = 0; i < files.length; i++ )
         {
-            File file = files[i];
+            Path file = files[i];
 
-            String dest = file.getAbsolutePath();
+            String dest = file.toAbsolutePath().toString();
 
             dest = dest.substring( sourcePath.length() + 1 );
 
-            File destination = new File( destinationDirectory, dest );
+            Path destination = destinationDirectory.resolve( dest );
 
-            if ( file.isFile() )
+            if ( Files.isRegularFile( file ) )
             {
-                destination = destination.getParentFile();
+                destination = destination.getParent();
 
-                FileUtils.copyFileToDirectory( file, destination );
+                FileUtils.copyFileToDirectory( file.toFile(), destination.toFile() );
             }
-            else if ( file.isDirectory() )
+            else if ( Files.isDirectory( file ) )
             {
-                if ( !".svn".equals( file.getName() ) )
+                if ( !".svn".equals( file.getFileName().toString() ) )
                 {
-                    if ( !destination.exists() && !destination.mkdirs() )
+                    if ( !Files.exists(destination))
                     {
-                        throw new IOException(
-                            "Could not create destination directory '" + destination.getAbsolutePath() + "'." );
+                        Files.createDirectories( destination );
                     }
                     copyDirectoryStructure( file, destination );
                 }
             }
             else
             {
-                throw new IOException( "Unknown file type: " + file.getAbsolutePath() );
+                throw new IOException( "Unknown file type: " + file.toAbsolutePath() );
             }
         }
     }
@@ -165,38 +168,38 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "v4artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+        Path artifactMetadataFile = Paths.get( targetRepository.getBasedir(),
                                               targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
-        artifactMetadataFile.delete();
+        Files.deleteIfExists( artifactMetadataFile);
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(),
+        Path versionMetadataFile = Paths.get( targetRepository.getBasedir(),
                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
-        versionMetadataFile.delete();
+        Files.deleteIfExists(versionMetadataFile);
 
-        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        artifactFile.delete();
+        Path artifactFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Files.deleteIfExists(artifactFile);
 
         artifactConverter.convert( artifact, targetRepository );
         checkSuccess( artifactConverter );
 
-        assertTrue( "Check artifact created", artifactFile.exists() );
-        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+        assertTrue( "Check artifact created", Files.exists(artifactFile) );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile.toFile(), artifact.getFile() ) );
 
         artifact = createPomArtifact( artifact );
-        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
-        assertTrue( "Check POM created", pomFile.exists() );
+        Path pomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path sourcePomFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        assertTrue( "Check POM created", Files.exists(pomFile) );
 
         compareFiles( sourcePomFile, pomFile );
 
-        assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
+        assertTrue( "Check artifact metadata created", Files.exists(artifactMetadataFile) );
 
-        File expectedMetadataFile = getTestFile( "src/test/expected-files/v4-artifact-metadata.xml" );
+        Path expectedMetadataFile = getTestFile( "src/test/expected-files/v4-artifact-metadata.xml" );
 
         compareFiles( expectedMetadataFile, artifactMetadataFile );
 
-        assertTrue( "Check snapshot metadata created", versionMetadataFile.exists() );
+        assertTrue( "Check snapshot metadata created", Files.exists(versionMetadataFile) );
 
         expectedMetadataFile = getTestFile( "src/test/expected-files/v4-version-metadata.xml" );
 
@@ -211,36 +214,36 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "v3artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+        Path artifactMetadataFile = Paths.get( targetRepository.getBasedir(),
                                               targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
-        artifactMetadataFile.delete();
+        Files.deleteIfExists(artifactMetadataFile);
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(),
+        Path versionMetadataFile = Paths.get( targetRepository.getBasedir(),
                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
-        versionMetadataFile.delete();
+        Files.deleteIfExists(versionMetadataFile);
 
         artifactConverter.convert( artifact, targetRepository );
         checkSuccess( artifactConverter );
 
-        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        assertTrue( "Check artifact created", artifactFile.exists() );
-        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+        Path artifactFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", Files.exists(artifactFile) );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile.toFile(), artifact.getFile() ) );
 
         artifact = createPomArtifact( artifact );
-        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File expectedPomFile = getTestFile( "src/test/expected-files/converted-v3.pom" );
-        assertTrue( "Check POM created", pomFile.exists() );
+        Path pomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path expectedPomFile = getTestFile( "src/test/expected-files/converted-v3.pom" );
+        assertTrue( "Check POM created", Files.exists(pomFile) );
 
         compareFiles( expectedPomFile, pomFile );
 
-        assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
+        assertTrue( "Check artifact metadata created", Files.exists(artifactMetadataFile) );
 
-        File expectedMetadataFile = getTestFile( "src/test/expected-files/v3-artifact-metadata.xml" );
+        Path expectedMetadataFile = getTestFile( "src/test/expected-files/v3-artifact-metadata.xml" );
 
         compareFiles( expectedMetadataFile, artifactMetadataFile );
 
-        assertTrue( "Check snapshot metadata created", versionMetadataFile.exists() );
+        assertTrue( "Check snapshot metadata created", Files.exists(versionMetadataFile) );
 
         expectedMetadataFile = getTestFile( "src/test/expected-files/v3-version-metadata.xml" );
 
@@ -253,30 +256,30 @@ public class LegacyToDefaultConverterTest
     {
         Artifact artifact = createArtifact( "test", "relocated-v3artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+        Path artifactMetadataFile = Paths.get( targetRepository.getBasedir(),
                                               targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
-        artifactMetadataFile.delete();
+        Files.deleteIfExists(artifactMetadataFile);
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(),
+        Path versionMetadataFile = Paths.get( targetRepository.getBasedir(),
                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
-        versionMetadataFile.delete();
+        Files.deleteIfExists(versionMetadataFile);
 
         artifactConverter.convert( artifact, targetRepository );
         //checkSuccess();  --> commented until MNG-2100 is fixed
 
-        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        assertTrue( "Check if relocated artifact created", artifactFile.exists() );
+        Path artifactFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check if relocated artifact created", Files.exists(artifactFile) );
         assertTrue( "Check if relocated artifact matches",
-                    FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+                    FileUtils.contentEquals( artifactFile.toFile(), artifact.getFile() ) );
         Artifact pomArtifact = createArtifact( "relocated-test", "relocated-v3artifact", "1.0.0", "1.0.0", "pom" );
-        File pomFile = getTestFile( "src/test/expected-files/" + targetRepository.pathOf( pomArtifact ) );
-        File testFile = getTestFile( "target/test-target-repository/" + targetRepository.pathOf( pomArtifact ) );
+        Path pomFile = getTestFile( "src/test/expected-files/" + targetRepository.pathOf( pomArtifact ) );
+        Path testFile = getTestFile( "target/test-target-repository/" + targetRepository.pathOf( pomArtifact ) );
         compareFiles( pomFile, testFile );
 
         Artifact orig = createArtifact( "test", "relocated-v3artifact", "1.0.0", "1.0.0", "pom" );
-        artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( orig ) );
-        assertTrue( "Check if relocation artifact pom is created", artifactFile.exists() );
+        artifactFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( orig ) );
+        assertTrue( "Check if relocation artifact pom is created", Files.exists(artifactFile) );
         testFile = getTestFile( "src/test/expected-files/" + targetRepository.pathOf( orig ) );
         compareFiles( artifactFile, testFile );
     }
@@ -289,26 +292,26 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "v3-warnings-artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+        Path artifactMetadataFile = Paths.get( targetRepository.getBasedir(),
                                               targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
-        artifactMetadataFile.delete();
+        Files.deleteIfExists(artifactMetadataFile);
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(),
+        Path versionMetadataFile = Paths.get( targetRepository.getBasedir(),
                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
-        versionMetadataFile.delete();
+        Files.deleteIfExists(versionMetadataFile);
 
         artifactConverter.convert( artifact, targetRepository );
         checkWarnings( artifactConverter, 2 );
 
-        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        assertTrue( "Check artifact created", artifactFile.exists() );
-        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+        Path artifactFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", Files.exists(artifactFile) );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile.toFile(), artifact.getFile() ) );
 
         artifact = createPomArtifact( artifact );
-        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File expectedPomFile = getTestFile( "src/test/expected-files/converted-v3-warnings.pom" );
-        assertTrue( "Check POM created", pomFile.exists() );
+        Path pomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path expectedPomFile = getTestFile( "src/test/expected-files/converted-v3-warnings.pom" );
+        assertTrue( "Check POM created", Files.exists(pomFile) );
 
         compareFiles( expectedPomFile, pomFile );
 
@@ -322,36 +325,36 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "v4artifact", version );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+        Path artifactMetadataFile = Paths.get( targetRepository.getBasedir(),
                                               targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
-        artifactMetadataFile.delete();
+        Files.deleteIfExists(artifactMetadataFile);
 
         ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
+        Path snapshotMetadataFile = Paths.get( targetRepository.getBasedir(),
                                               targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
-        snapshotMetadataFile.delete();
+        Files.deleteIfExists(snapshotMetadataFile);
 
         artifactConverter.convert( artifact, targetRepository );
         checkSuccess( artifactConverter );
 
-        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        assertTrue( "Check artifact created", artifactFile.exists() );
-        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+        Path artifactFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", Files.exists(artifactFile) );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile.toFile(), artifact.getFile() ) );
 
         artifact = createPomArtifact( artifact );
-        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
-        assertTrue( "Check POM created", pomFile.exists() );
+        Path pomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path sourcePomFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        assertTrue( "Check POM created", Files.exists(pomFile) );
 
         compareFiles( sourcePomFile, pomFile );
 
-        assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
+        assertTrue( "Check artifact metadata created", Files.exists(artifactMetadataFile) );
 
-        File expectedMetadataFile = getTestFile( "src/test/expected-files/v4-snapshot-artifact-metadata.xml" );
+        Path expectedMetadataFile = getTestFile( "src/test/expected-files/v4-snapshot-artifact-metadata.xml" );
 
         compareFiles( expectedMetadataFile, artifactMetadataFile );
 
-        assertTrue( "Check snapshot metadata created", snapshotMetadataFile.exists() );
+        assertTrue( "Check snapshot metadata created", Files.exists(snapshotMetadataFile) );
 
         expectedMetadataFile = getTestFile( expectedMetadataFileName );
 
@@ -366,36 +369,36 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "v3artifact", "1.0.0-SNAPSHOT" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+        Path artifactMetadataFile = Paths.get( targetRepository.getBasedir(),
                                               targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
-        artifactMetadataFile.delete();
+        Files.deleteIfExists(artifactMetadataFile);
 
         ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
+        Path snapshotMetadataFile = Paths.get( targetRepository.getBasedir(),
                                               targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
-        snapshotMetadataFile.delete();
+        Files.deleteIfExists(snapshotMetadataFile);
 
         artifactConverter.convert( artifact, targetRepository );
         checkSuccess( artifactConverter );
 
-        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        assertTrue( "Check artifact created", artifactFile.exists() );
-        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+        Path artifactFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", Files.exists(artifactFile) );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile.toFile(), artifact.getFile() ) );
 
         artifact = createPomArtifact( artifact );
-        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File expectedPomFile = getTestFile( "src/test/expected-files/converted-v3-snapshot.pom" );
-        assertTrue( "Check POM created", pomFile.exists() );
+        Path pomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path expectedPomFile = getTestFile( "src/test/expected-files/converted-v3-snapshot.pom" );
+        assertTrue( "Check POM created", Files.exists(pomFile) );
 
         compareFiles( expectedPomFile, pomFile );
 
-        assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
+        assertTrue( "Check artifact metadata created", Files.exists(artifactMetadataFile) );
 
-        File expectedMetadataFile = getTestFile( "src/test/expected-files/v3-snapshot-artifact-metadata.xml" );
+        Path expectedMetadataFile = getTestFile( "src/test/expected-files/v3-snapshot-artifact-metadata.xml" );
 
         compareFiles( expectedMetadataFile, artifactMetadataFile );
 
-        assertTrue( "Check snapshot metadata created", snapshotMetadataFile.exists() );
+        assertTrue( "Check snapshot metadata created", Files.exists(snapshotMetadataFile) );
 
         expectedMetadataFile = getTestFile( "src/test/expected-files/v3-snapshot-metadata.xml" );
 
@@ -428,23 +431,23 @@ public class LegacyToDefaultConverterTest
         Artifact artifact =
             createArtifact( "org.apache.maven.plugins", "maven-foo-plugin", "1.0", "1.0", "maven-plugin" );
         artifact.setFile(
-            new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/source-repository/test/plugins/maven-foo-plugin-1.0.jar" ) );
+            Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/source-repository/test/plugins/maven-foo-plugin-1.0.jar" ).toFile() );
         artifactConverter.convert( artifact, targetRepository );
         // There is a warning but I can't figure out how to look at it. Eyeballing the results it appears
         // the plugin is being coverted correctly.
         //checkSuccess();
 
-        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        assertTrue( "Check artifact created", artifactFile.exists() );
-        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+        Path artifactFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", Files.exists(artifactFile) );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile.toFile(), artifact.getFile() ) );
 
         /*
          The POM isn't needed for Maven 1.x plugins but the raw conversion for  
 
          artifact = createPomArtifact( artifact );
-         File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+         Path pomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
          File expectedPomFile = getTestFile( "src/test/expected-files/maven-foo-plugin-1.0.pom" );
-         assertTrue( "Check POM created", pomFile.exists() );
+         assertTrue( "Check POM created", Files.exists(pomFile) );
          compareFiles( expectedPomFile, pomFile );
          */
     }
@@ -457,36 +460,36 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "v3artifact", "1.0.0-20060105.130101-3" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+        Path artifactMetadataFile = Paths.get( targetRepository.getBasedir(),
                                               targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
-        artifactMetadataFile.delete();
+        Files.deleteIfExists(artifactMetadataFile);
 
         ArtifactMetadata snapshotMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File snapshotMetadataFile = new File( targetRepository.getBasedir(),
+        Path snapshotMetadataFile = Paths.get( targetRepository.getBasedir(),
                                               targetRepository.pathOfRemoteRepositoryMetadata( snapshotMetadata ) );
-        snapshotMetadataFile.delete();
+        Files.deleteIfExists(snapshotMetadataFile);
 
         artifactConverter.convert( artifact, targetRepository );
         checkSuccess( artifactConverter );
 
-        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        assertTrue( "Check artifact created", artifactFile.exists() );
-        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+        Path artifactFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", Files.exists(artifactFile) );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile.toFile(), artifact.getFile() ) );
 
         artifact = createPomArtifact( artifact );
-        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File expectedPomFile = getTestFile( "src/test/expected-files/converted-v3-timestamped-snapshot.pom" );
-        assertTrue( "Check POM created", pomFile.exists() );
+        Path pomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path expectedPomFile = getTestFile( "src/test/expected-files/converted-v3-timestamped-snapshot.pom" );
+        assertTrue( "Check POM created", Files.exists(pomFile) );
 
         compareFiles( expectedPomFile, pomFile );
 
-        assertTrue( "Check artifact snapshotMetadata created", artifactMetadataFile.exists() );
+        assertTrue( "Check artifact snapshotMetadata created", Files.exists(artifactMetadataFile) );
 
-        File expectedMetadataFile = getTestFile( "src/test/expected-files/v3-snapshot-artifact-metadata.xml" );
+        Path expectedMetadataFile = getTestFile( "src/test/expected-files/v3-snapshot-artifact-metadata.xml" );
 
         compareFiles( expectedMetadataFile, artifactMetadataFile );
 
-        assertTrue( "Check snapshot snapshotMetadata created", snapshotMetadataFile.exists() );
+        assertTrue( "Check snapshot snapshotMetadata created", Files.exists(snapshotMetadataFile) );
 
         expectedMetadataFile = getTestFile( "src/test/expected-files/v3-timestamped-snapshot-metadata.xml" );
 
@@ -505,16 +508,16 @@ public class LegacyToDefaultConverterTest
 
         assertHasWarningReason( artifactConverter, Messages.getString( "warning.missing.pom" ) );
 
-        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        assertTrue( "Check artifact created", artifactFile.exists() );
-        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+        Path artifactFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", Files.exists(artifactFile) );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile.toFile(), artifact.getFile() ) );
 
         artifact = createPomArtifact( artifact );
-        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        Path pomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path sourcePomFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
 
-        assertFalse( "Check no POM created", pomFile.exists() );
-        assertFalse( "No source POM", sourcePomFile.exists() );
+        assertFalse( "Check no POM created", Files.exists(pomFile) );
+        assertFalse( "No source POM", Files.exists(sourcePomFile) );
     }
 
     @Test
@@ -524,20 +527,19 @@ public class LegacyToDefaultConverterTest
         // test that it fails when the source md5 is wrong
 
         Artifact artifact = createArtifact( "test", "incorrectMd5Artifact", "1.0.0" );
-        File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        file.delete();
+        Path file = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Files.deleteIfExists(file);
 
         artifactConverter.convert( artifact, targetRepository );
         checkWarnings( artifactConverter, 2 );
 
         assertHasWarningReason( artifactConverter, Messages.getString( "failure.incorrect.md5" ) );
 
-        assertFalse( "Check artifact not created", file.exists() );
+        assertFalse( "Check artifact not created", Files.exists(file) );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
-        assertFalse( "Check metadata not created", metadataFile.exists() );
+        Path metadataFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertFalse( "Check metadata not created", Files.exists(metadataFile) );
     }
 
     @Test
@@ -547,20 +549,19 @@ public class LegacyToDefaultConverterTest
         // test that it fails when the source sha1 is wrong
 
         Artifact artifact = createArtifact( "test", "incorrectSha1Artifact", "1.0.0" );
-        File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        file.delete();
+        Path file = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Files.deleteIfExists(file);
 
         artifactConverter.convert( artifact, targetRepository );
         checkWarnings( artifactConverter, 2 );
 
         assertHasWarningReason( artifactConverter, Messages.getString( "failure.incorrect.sha1" ) );
 
-        assertFalse( "Check artifact not created", file.exists() );
+        assertFalse( "Check artifact not created", Files.exists(file) );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
-        assertFalse( "Check metadata not created", metadataFile.exists() );
+        Path metadataFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertFalse( "Check metadata not created", Files.exists(metadataFile) );
     }
 
     @Test
@@ -572,19 +573,19 @@ public class LegacyToDefaultConverterTest
         Artifact artifact = createArtifact( "test", "unmodified-artifact", "1.0.0" );
         Artifact pomArtifact = createPomArtifact( artifact );
 
-        File sourceFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
-        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( pomArtifact ) );
-        File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
+        Path sourceFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        Path sourcePomFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( pomArtifact ) );
+        Path targetFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path targetPomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
 
-        assertTrue( "Check target file exists", targetFile.exists() );
-        assertTrue( "Check target POM exists", targetPomFile.exists() );
+        assertTrue( "Check target file exists", Files.exists(targetFile) );
+        assertTrue( "Check target POM exists", Files.exists(targetPomFile) );
 
-        sourceFile.setLastModified( System.currentTimeMillis() );
-        sourcePomFile.setLastModified( System.currentTimeMillis() );
+        Files.setLastModifiedTime( sourceFile, FileTime.from(System.currentTimeMillis(), TimeUnit.MILLISECONDS) );
+        Files.setLastModifiedTime( sourcePomFile, FileTime.from(System.currentTimeMillis(), TimeUnit.MILLISECONDS) );
 
-        long origTime = targetFile.lastModified();
-        long origPomTime = targetPomFile.lastModified();
+        long origTime = Files.getLastModifiedTime( targetFile ).toMillis();
+        long origPomTime = Files.getLastModifiedTime( targetPomFile ).toMillis();
 
         // Need to guarantee last modified is not equal
         Thread.sleep( SLEEP_MILLIS );
@@ -595,8 +596,8 @@ public class LegacyToDefaultConverterTest
         compareFiles( sourceFile, targetFile );
         compareFiles( sourcePomFile, targetPomFile );
 
-        assertEquals( "Check artifact unmodified", origTime, targetFile.lastModified() );
-        assertEquals( "Check POM unmodified", origPomTime, targetPomFile.lastModified() );
+        assertEquals( "Check artifact unmodified", origTime, Files.getLastModifiedTime( targetFile ).toMillis() );
+        assertEquals( "Check POM unmodified", origPomTime, Files.getLastModifiedTime( targetPomFile ).toMillis() );
     }
 
     @Test
@@ -609,19 +610,19 @@ public class LegacyToDefaultConverterTest
         Artifact artifact = createArtifact( "test", "modified-artifact", "1.0.0" );
         Artifact pomArtifact = createPomArtifact( artifact );
 
-        File sourceFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
-        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( pomArtifact ) );
-        File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
+        Path sourceFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        Path sourcePomFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( pomArtifact ) );
+        Path targetFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path targetPomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
 
-        assertTrue( "Check target file exists", targetFile.exists() );
-        assertTrue( "Check target POM exists", targetPomFile.exists() );
+        assertTrue( "Check target file exists", Files.exists(targetFile) );
+        assertTrue( "Check target POM exists", Files.exists(targetPomFile) );
 
-        sourceFile.setLastModified( System.currentTimeMillis() );
-        sourcePomFile.setLastModified( System.currentTimeMillis() );
+        Files.setLastModifiedTime(sourceFile, FileTime.from(System.currentTimeMillis() , TimeUnit.MILLISECONDS));
+        Files.setLastModifiedTime(sourcePomFile, FileTime.from(System.currentTimeMillis() , TimeUnit.MILLISECONDS));
 
-        long origTime = targetFile.lastModified();
-        long origPomTime = targetPomFile.lastModified();
+        long origTime = Files.getLastModifiedTime(targetFile).toMillis();
+        long origPomTime = Files.getLastModifiedTime(targetPomFile).toMillis();
 
         // Need to guarantee last modified is not equal
         Thread.sleep( SLEEP_MILLIS );
@@ -631,13 +632,12 @@ public class LegacyToDefaultConverterTest
 
         assertHasWarningReason( artifactConverter, Messages.getString( "failure.target.already.exists" ) );
 
-        assertEquals( "Check unmodified", origTime, targetFile.lastModified() );
-        assertEquals( "Check unmodified", origPomTime, targetPomFile.lastModified() );
+        assertEquals( "Check unmodified", origTime, Files.getLastModifiedTime(targetFile).toMillis() );
+        assertEquals( "Check unmodified", origPomTime, Files.getLastModifiedTime(targetPomFile).toMillis() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
-        assertFalse( "Check metadata not created", metadataFile.exists() );
+        Path metadataFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertFalse( "Check metadata not created", Files.exists(metadataFile) );
     }
 
     @Test
@@ -652,18 +652,18 @@ public class LegacyToDefaultConverterTest
         Artifact artifact = createArtifact( "test", "unmodified-artifact", "1.0.0" );
         Artifact pomArtifact = createPomArtifact( artifact );
 
-        File sourceFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
-        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( pomArtifact ) );
-        File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
+        Path sourceFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        Path sourcePomFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( pomArtifact ) );
+        Path targetFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path targetPomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
 
         SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd", Locale.getDefault() );
         long origTime = dateFormat.parse( "2006-03-03" ).getTime();
-        targetFile.setLastModified( origTime );
-        targetPomFile.setLastModified( origTime );
+        Files.setLastModifiedTime(targetFile, FileTime.from(origTime , TimeUnit.MILLISECONDS));
+        Files.setLastModifiedTime(targetPomFile, FileTime.from(origTime , TimeUnit.MILLISECONDS));
 
-        sourceFile.setLastModified( dateFormat.parse( "2006-01-01" ).getTime() );
-        sourcePomFile.setLastModified( dateFormat.parse( "2006-02-02" ).getTime() );
+        Files.setLastModifiedTime(sourceFile, FileTime.from(dateFormat.parse( "2006-01-01" ).getTime() , TimeUnit.MILLISECONDS));
+        Files.setLastModifiedTime(sourcePomFile, FileTime.from(dateFormat.parse( "2006-02-02" ).getTime() , TimeUnit.MILLISECONDS));
 
         artifactConverter.convert( artifact, targetRepository );
         checkSuccess( artifactConverter );
@@ -671,13 +671,12 @@ public class LegacyToDefaultConverterTest
         compareFiles( sourceFile, targetFile );
         compareFiles( sourcePomFile, targetPomFile );
 
-        assertFalse( "Check modified", origTime == targetFile.lastModified() );
-        assertFalse( "Check modified", origTime == targetPomFile.lastModified() );
+        assertFalse( "Check modified", origTime == Files.getLastModifiedTime(targetFile).toMillis() );
+        assertFalse( "Check modified", origTime == Files.getLastModifiedTime(targetPomFile).toMillis() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
-        assertTrue( "Check metadata created", metadataFile.exists() );
+        Path metadataFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertTrue( "Check metadata created", Files.exists(metadataFile) );
     }
 
     @Test
@@ -692,26 +691,25 @@ public class LegacyToDefaultConverterTest
         Artifact artifact = createArtifact( "test", "dryrun-artifact", "1.0.0" );
         Artifact pomArtifact = createPomArtifact( artifact );
 
-        File sourceFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
-        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( pomArtifact ) );
-        File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
+        Path sourceFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        Path sourcePomFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( pomArtifact ) );
+        Path targetFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path targetPomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
 
         // clear warning before test related to MRM-1638
         artifactConverter.clearWarnings();
         artifactConverter.convert( artifact, targetRepository );
         checkSuccess( artifactConverter );
 
-        assertTrue( "Check source file exists", sourceFile.exists() );
-        assertTrue( "Check source POM exists", sourcePomFile.exists() );
+        assertTrue( "Check source file exists", Files.exists(sourceFile) );
+        assertTrue( "Check source POM exists", Files.exists(sourcePomFile) );
 
-        assertFalse( "Check target file doesn't exist", targetFile.exists() );
-        assertFalse( "Check target POM doesn't exist", targetPomFile.exists() );
+        assertFalse( "Check target file doesn't exist", Files.exists(targetFile) );
+        assertFalse( "Check target POM doesn't exist", Files.exists(targetPomFile) );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
-        assertFalse( "Check metadata not created", metadataFile.exists() );
+        Path metadataFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertFalse( "Check metadata not created", Files.exists(metadataFile) );
     }
 
     @Test
@@ -726,19 +724,19 @@ public class LegacyToDefaultConverterTest
         Artifact artifact = createArtifact( "test", "modified-artifact", "1.0.0" );
         Artifact pomArtifact = createPomArtifact( artifact );
 
-        File sourceFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
-        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( pomArtifact ) );
-        File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File targetPomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
+        Path sourceFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        Path sourcePomFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( pomArtifact ) );
+        Path targetFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path targetPomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( pomArtifact ) );
 
-        assertTrue( "Check target file exists", targetFile.exists() );
-        assertTrue( "Check target POM exists", targetPomFile.exists() );
+        assertTrue( "Check target file exists", Files.exists(targetFile) );
+        assertTrue( "Check target POM exists", Files.exists(targetPomFile) );
 
-        sourceFile.setLastModified( System.currentTimeMillis() );
-        sourcePomFile.setLastModified( System.currentTimeMillis() );
+        Files.setLastModifiedTime(sourceFile, FileTime.from(System.currentTimeMillis() , TimeUnit.MILLISECONDS));
+        Files.setLastModifiedTime(sourcePomFile, FileTime.from(System.currentTimeMillis() , TimeUnit.MILLISECONDS));
 
-        long origTime = targetFile.lastModified();
-        long origPomTime = targetPomFile.lastModified();
+        long origTime = Files.getLastModifiedTime(targetFile).toMillis();
+        long origPomTime = Files.getLastModifiedTime(targetPomFile).toMillis();
 
         // Need to guarantee last modified is not equal
         Thread.sleep( SLEEP_MILLIS );
@@ -750,13 +748,12 @@ public class LegacyToDefaultConverterTest
 
         assertHasWarningReason( artifactConverter, Messages.getString( "failure.target.already.exists" ) );
 
-        assertEquals( "Check unmodified", origTime, targetFile.lastModified() );
-        assertEquals( "Check unmodified", origPomTime, targetPomFile.lastModified() );
+        assertEquals( "Check unmodified", origTime, Files.getLastModifiedTime(targetFile).toMillis() );
+        assertEquals( "Check unmodified", origPomTime, Files.getLastModifiedTime(targetPomFile).toMillis() );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
-        assertFalse( "Check metadata not created", metadataFile.exists() );
+        Path metadataFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertFalse( "Check metadata not created", Files.exists(metadataFile) );
     }
 
     @Test
@@ -767,15 +764,15 @@ public class LegacyToDefaultConverterTest
 
         Artifact artifact = createArtifact( "test", "rollback-created-artifact", "1.0.0" );
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+        Path artifactMetadataFile = Paths.get( targetRepository.getBasedir(),
                                               targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
-        FileUtils.deleteDirectory( artifactMetadataFile.getParentFile() );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( artifactMetadataFile.getParent() );
 
         ArtifactMetadata versionMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        File versionMetadataFile = new File( targetRepository.getBasedir(),
+        Path versionMetadataFile = Paths.get( targetRepository.getBasedir(),
                                              targetRepository.pathOfRemoteRepositoryMetadata( versionMetadata ) );
 
-        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path artifactFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
 
         artifactConverter.convert( artifact, targetRepository );
         checkWarnings( artifactConverter, 2 );
@@ -801,9 +798,9 @@ public class LegacyToDefaultConverterTest
 
         assertTrue( "Check failure message.", found );
 
-        assertFalse( "check artifact rolled back", artifactFile.exists() );
-        assertFalse( "check metadata rolled back", artifactMetadataFile.exists() );
-        assertFalse( "check metadata rolled back", versionMetadataFile.exists() );
+        assertFalse( "check artifact rolled back", Files.exists(artifactFile) );
+        assertFalse( "check metadata rolled back", Files.exists(artifactMetadataFile) );
+        assertFalse( "check metadata rolled back", Files.exists(versionMetadataFile) );
     }
 
     @Test
@@ -825,15 +822,15 @@ public class LegacyToDefaultConverterTest
 
         for ( Artifact artifact : artifacts )
         {
-            File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-            assertTrue( "Check artifact created", artifactFile.exists() );
-            assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+            Path artifactFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+            assertTrue( "Check artifact created", Files.exists(artifactFile) );
+            assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile.toFile(), artifact.getFile() ) );
 
             artifact = createPomArtifact( artifact );
-            File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-            File expectedPomFile =
+            Path pomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+            Path expectedPomFile =
                 getTestFile( "src/test/expected-files/converted-" + artifact.getArtifactId() + ".pom" );
-            assertTrue( "Check POM created", pomFile.exists() );
+            assertTrue( "Check POM created", Files.exists(pomFile) );
 
             compareFiles( expectedPomFile, pomFile );
         }
@@ -848,8 +845,8 @@ public class LegacyToDefaultConverterTest
         createModernSourceRepository();
 
         Artifact artifact = createArtifact( "test", "incorrectArtifactMetadata", "1.0.0" );
-        File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        file.delete();
+        Path file = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Files.deleteIfExists(file);
 
         artifactConverter.convert( artifact, targetRepository );
         checkWarnings( artifactConverter, 2 );
@@ -857,12 +854,11 @@ public class LegacyToDefaultConverterTest
         assertHasWarningReason( artifactConverter,
                                 Messages.getString( "failure.incorrect.artifactMetadata.versions" ) );
 
-        assertFalse( "Check artifact not created", file.exists() );
+        assertFalse( "Check artifact not created", Files.exists(file) );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
-        assertFalse( "Check metadata not created", metadataFile.exists() );
+        Path metadataFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertFalse( "Check metadata not created", Files.exists(metadataFile) );
     }
 
     @Test
@@ -874,8 +870,8 @@ public class LegacyToDefaultConverterTest
         createModernSourceRepository();
 
         Artifact artifact = createArtifact( "test", "incorrectSnapshotMetadata", "1.0.0-20060102.030405-6" );
-        File file = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        file.delete();
+        Path file = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Files.deleteIfExists(file);
 
         artifactConverter.convert( artifact, targetRepository );
         checkWarnings( artifactConverter, 2 );
@@ -883,12 +879,11 @@ public class LegacyToDefaultConverterTest
         assertHasWarningReason( artifactConverter,
                                 Messages.getString( "failure.incorrect.snapshotMetadata.snapshot" ) );
 
-        assertFalse( "Check artifact not created", file.exists() );
+        assertFalse( "Check artifact not created", Files.exists(file) );
 
         ArtifactRepositoryMetadata metadata = new ArtifactRepositoryMetadata( artifact );
-        File metadataFile =
-            new File( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
-        assertFalse( "Check metadata not created", metadataFile.exists() );
+        Path metadataFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOfRemoteRepositoryMetadata( metadata ) );
+        assertFalse( "Check metadata not created", Files.exists(metadataFile) );
     }
 
     @Test
@@ -901,23 +896,23 @@ public class LegacyToDefaultConverterTest
         artifactConverter.convert( artifact, targetRepository );
         checkSuccess( artifactConverter );
 
-        File artifactFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        assertTrue( "Check artifact created", artifactFile.exists() );
-        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile, artifact.getFile() ) );
+        Path artifactFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        assertTrue( "Check artifact created", Files.exists(artifactFile) );
+        assertTrue( "Check artifact matches", FileUtils.contentEquals( artifactFile.toFile(), artifact.getFile() ) );
 
         artifact = createPomArtifact( artifact );
-        File pomFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
-        File sourcePomFile = new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
-        assertTrue( "Check POM created", pomFile.exists() );
+        Path pomFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path sourcePomFile = Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) );
+        assertTrue( "Check POM created", Files.exists(pomFile) );
 
         compareFiles( sourcePomFile, pomFile );
 
         ArtifactMetadata artifactMetadata = new ArtifactRepositoryMetadata( artifact );
-        File artifactMetadataFile = new File( targetRepository.getBasedir(),
+        Path artifactMetadataFile = Paths.get( targetRepository.getBasedir(),
                                               targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
-        assertTrue( "Check artifact metadata created", artifactMetadataFile.exists() );
+        assertTrue( "Check artifact metadata created", Files.exists(artifactMetadataFile) );
 
-        File expectedMetadataFile = getTestFile( "src/test/expected-files/newversion-artifact-metadata.xml" );
+        Path expectedMetadataFile = getTestFile( "src/test/expected-files/newversion-artifact-metadata.xml" );
 
         compareFiles( expectedMetadataFile, artifactMetadataFile );
     }
@@ -970,7 +965,7 @@ public class LegacyToDefaultConverterTest
         Artifact artifact = artifactFactory.createArtifact( groupId, artifactId, version, null, type );
         artifact.setBaseVersion( baseVersion );
         artifact.setRepository( sourceRepository );
-        artifact.setFile( new File( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) ) );
+        artifact.setFile( Paths.get( sourceRepository.getBasedir(), sourceRepository.pathOf( artifact ) ).toFile() );
         return artifact;
     }
 
@@ -980,13 +975,13 @@ public class LegacyToDefaultConverterTest
                                artifact.getVersion(), "pom" );
     }
 
-    private static void compareFiles( File expectedPomFile, File pomFile )
+    private static void compareFiles( Path expectedPomFile, Path pomFile )
         throws IOException
     {
         String expectedContent = normalizeString(
-            org.apache.commons.io.FileUtils.readFileToString( expectedPomFile, Charset.defaultCharset() ) );
+            org.apache.archiva.common.utils.FileUtils.readFileToString( expectedPomFile, Charset.defaultCharset() ) );
         String targetContent =
-            normalizeString( org.apache.commons.io.FileUtils.readFileToString( pomFile, Charset.defaultCharset() ) );
+            normalizeString( org.apache.archiva.common.utils.FileUtils.readFileToString( pomFile, Charset.defaultCharset() ) );
         assertEquals( "Check file match between " + expectedPomFile + " and " + pomFile, expectedContent,
                       targetContent );
     }
@@ -1056,8 +1051,8 @@ public class LegacyToDefaultConverterTest
 
         ArtifactRepositoryLayout layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );
 
-        File sourceBase = getTestFile( "src/test/source-modern-repository" );
+        Path sourceBase = getTestFile( "src/test/source-modern-repository" );
         sourceRepository =
-            factory.createArtifactRepository( "source", sourceBase.toURL().toString(), layout, null, null );
+            factory.createArtifactRepository( "source", sourceBase.toUri().toURL().toString(), layout, null, null );
     }
 }

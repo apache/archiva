@@ -50,13 +50,14 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -178,12 +179,12 @@ public class LegacyToDefaultConverter
                                                               artifact.getVersion() );
         pom.setBaseVersion( artifact.getBaseVersion() );
         ArtifactRepository repository = artifact.getRepository();
-        File file = new File( repository.getBasedir(), repository.pathOf( pom ) );
+        Path file = Paths.get( repository.getBasedir(), repository.pathOf( pom ) );
 
         boolean result = true;
-        if ( file.exists() )
+        if ( Files.exists(file) )
         {
-            File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( pom ) );
+            Path targetFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( pom ) );
 
             String contents = null;
             boolean checksumsValid = false;
@@ -195,7 +196,7 @@ public class LegacyToDefaultConverter
                 }
 
                 // Even if the checksums for the POM are invalid we should still convert the POM
-                contents = FileUtils.readFileToString( file, Charset.defaultCharset() );
+                contents = org.apache.archiva.common.utils.FileUtils.readFileToString( file, Charset.defaultCharset() );
             }
             catch ( IOException e )
             {
@@ -206,23 +207,15 @@ public class LegacyToDefaultConverter
             if ( checksumsValid && contents.indexOf( "modelVersion" ) >= 0 ) //$NON-NLS-1$
             {
                 // v4 POM
-                try
+                boolean matching = false;
+                if ( !force && Files.exists( targetFile ) )
                 {
-                    boolean matching = false;
-                    if ( !force && targetFile.exists() )
-                    {
-                        String targetContents = FileUtils.readFileToString( targetFile, Charset.defaultCharset() );
-                        matching = targetContents.equals( contents );
-                    }
-                    if ( force || !matching )
-                    {
-                        transaction.createFile( contents, targetFile, digesters );
-                    }
+                    String targetContents = org.apache.archiva.common.utils.FileUtils.readFileToString( targetFile, Charset.defaultCharset( ) );
+                    matching = targetContents.equals( contents );
                 }
-                catch ( IOException e )
+                if ( force || !matching )
                 {
-                    throw new ArtifactConversionException(
-                        Messages.getString( "unable.to.write.target.pom", e.getMessage() ), e ); //$NON-NLS-1$
+                    transaction.createFile( contents, targetFile.toFile( ), digesters );
                 }
             }
             else
@@ -243,7 +236,7 @@ public class LegacyToDefaultConverter
                                 artifactFactory.createProjectArtifact( artifact.getGroupId(), artifact.getArtifactId(),
                                                                        artifact.getVersion() );
                             targetFile =
-                                new File( targetRepository.getBasedir(), targetRepository.pathOf( relocatedPom ) );
+                                Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( relocatedPom ) );
                         }
 
                         Model v4Model = translator.translate( v3Model );
@@ -254,7 +247,7 @@ public class LegacyToDefaultConverter
                         MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
                         xpp3Writer.write( writer, v4Model );
 
-                        transaction.createFile( writer.toString(), targetFile, digesters );
+                        transaction.createFile( writer.toString(), targetFile.toFile(), digesters );
 
                         List<String> warnings = translator.getWarnings();
 
@@ -290,13 +283,13 @@ public class LegacyToDefaultConverter
         return result;
     }
 
-    private boolean testChecksums( Artifact artifact, File file )
+    private boolean testChecksums( Artifact artifact, Path file )
         throws IOException
     {
         boolean result = true;
         for ( Digester digester : digesters )
         {
-            result &= verifyChecksum( file, file.getName() + "." + getDigesterFileExtension( digester ), digester,
+            result &= verifyChecksum( file, file.getFileName() + "." + getDigesterFileExtension( digester ), digester,
                                       //$NON-NLS-1$
                                       artifact,
                                       "failure.incorrect." + getDigesterFileExtension( digester ) ); //$NON-NLS-1$
@@ -304,18 +297,18 @@ public class LegacyToDefaultConverter
         return result;
     }
 
-    private boolean verifyChecksum( File file, String fileName, Digester digester, Artifact artifact, String key )
+    private boolean verifyChecksum( Path file, String fileName, Digester digester, Artifact artifact, String key )
         throws IOException
     {
         boolean result = true;
 
-        File checksumFile = new File( file.getParentFile(), fileName );
-        if ( checksumFile.exists() )
+        Path checksumFile = file.resolveSibling( fileName );
+        if ( Files.exists(checksumFile) )
         {
-            String checksum = FileUtils.readFileToString( checksumFile, Charset.defaultCharset() );
+            String checksum = org.apache.archiva.common.utils.FileUtils.readFileToString( checksumFile, Charset.defaultCharset() );
             try
             {
-                digester.verify( file, checksum );
+                digester.verify( file.toFile(), checksum );
             }
             catch ( DigesterException e )
             {
@@ -338,22 +331,22 @@ public class LegacyToDefaultConverter
     private boolean copyArtifact( Artifact artifact, ArtifactRepository targetRepository, FileTransaction transaction )
         throws ArtifactConversionException
     {
-        File sourceFile = artifact.getFile();
+        Path sourceFile = artifact.getFile().toPath();
 
-        if ( sourceFile.getAbsolutePath().indexOf( "/plugins/" ) > -1 ) //$NON-NLS-1$
+        if ( sourceFile.toAbsolutePath().toString().indexOf( "/plugins/" ) > -1 ) //$NON-NLS-1$
         {
             artifact.setArtifactHandler( artifactHandlerManager.getArtifactHandler( "maven-plugin" ) ); //$NON-NLS-1$
         }
 
-        File targetFile = new File( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
+        Path targetFile = Paths.get( targetRepository.getBasedir(), targetRepository.pathOf( artifact ) );
 
         boolean result = true;
         try
         {
             boolean matching = false;
-            if ( !force && targetFile.exists() )
+            if ( !force && Files.exists(targetFile) )
             {
-                matching = FileUtils.contentEquals( sourceFile, targetFile );
+                matching = FileUtils.contentEquals( sourceFile.toFile(), targetFile.toFile() );
                 if ( !matching )
                 {
                     addWarning( artifact, Messages.getString( "failure.target.already.exists" ) ); //$NON-NLS-1$
@@ -366,7 +359,7 @@ public class LegacyToDefaultConverter
                 {
                     if ( testChecksums( artifact, sourceFile ) )
                     {
-                        transaction.copyFile( sourceFile, targetFile, digesters );
+                        transaction.copyFile( sourceFile.toFile(), targetFile.toFile(), digesters );
                     }
                     else
                     {
@@ -390,12 +383,12 @@ public class LegacyToDefaultConverter
         return metadata;
     }
 
-    private Metadata readMetadata( File file )
+    private Metadata readMetadata( Path file )
         throws ArtifactConversionException
     {
         MetadataXpp3Reader reader = new MetadataXpp3Reader();
 
-        try (Reader fileReader = Files.newBufferedReader( file.toPath(), Charset.defaultCharset() ))
+        try (Reader fileReader = Files.newBufferedReader( file, Charset.defaultCharset() ))
         {
             return reader.read( fileReader );
         }
@@ -414,17 +407,16 @@ public class LegacyToDefaultConverter
         boolean result = true;
 
         RepositoryMetadata repositoryMetadata = new ArtifactRepositoryMetadata( artifact );
-        File file =
-            new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repositoryMetadata ) );
-        if ( file.exists() )
+        Path file = Paths.get( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repositoryMetadata ) );
+        if ( Files.exists(file) )
         {
             Metadata metadata = readMetadata( file );
             result = validateMetadata( metadata, repositoryMetadata, artifact );
         }
 
         repositoryMetadata = new SnapshotArtifactRepositoryMetadata( artifact );
-        file = new File( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repositoryMetadata ) );
-        if ( file.exists() )
+        file = Paths.get( repository.getBasedir(), repository.pathOfRemoteRepositoryMetadata( repositoryMetadata ) );
+        if ( Files.exists(file) )
         {
             Metadata metadata = readMetadata( file );
             result = result && validateMetadata( metadata, repositoryMetadata, artifact );
@@ -539,13 +531,13 @@ public class LegacyToDefaultConverter
                                  Metadata newMetadata, FileTransaction transaction )
         throws ArtifactConversionException
     {
-        File file = new File( targetRepository.getBasedir(),
+        Path file = Paths.get( targetRepository.getBasedir(),
                               targetRepository.pathOfRemoteRepositoryMetadata( artifactMetadata ) );
 
         Metadata metadata;
         boolean changed;
 
-        if ( file.exists() )
+        if ( Files.exists(file) )
         {
             metadata = readMetadata( file );
             changed = metadata.merge( newMetadata );
@@ -565,7 +557,7 @@ public class LegacyToDefaultConverter
 
                 mappingWriter.write( writer, metadata );
 
-                transaction.createFile( writer.toString(), file, digesters );
+                transaction.createFile( writer.toString(), file.toFile(), digesters );
             }
             catch ( IOException e )
             {
@@ -647,13 +639,13 @@ public class LegacyToDefaultConverter
         pom.setDistributionManagement( dMngt );
 
         Artifact artifact = artifactFactory.createBuildArtifact( groupId, artifactId, version, "pom" ); //$NON-NLS-1$
-        File pomFile = new File( repository.getBasedir(), repository.pathOf( artifact ) );
+        Path pomFile = Paths.get( repository.getBasedir(), repository.pathOf( artifact ) );
 
         StringWriter strWriter = new StringWriter();
         MavenXpp3Writer pomWriter = new MavenXpp3Writer();
         pomWriter.write( strWriter, pom );
 
-        transaction.createFile( strWriter.toString(), pomFile, digesters );
+        transaction.createFile( strWriter.toString(), pomFile.toFile(), digesters );
     }
 
     private void addWarning( Artifact artifact, String message )

@@ -19,12 +19,20 @@ package org.apache.archiva.common.utils;
  * under the License.
  */
 
+import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -102,12 +110,51 @@ public class FileUtilsTest
 
     }
 
-    @Test(expected = java.io.IOException.class)
-    public void testDeleteException() throws IOException
+    @Test
+    public void testDeleteNonExist() throws IOException
     {
         Path tf = Paths.get("aaserijdmcjdjhdejeidmdjdlasrjerjnbmckdkdk");
         assertFalse(Files.exists(tf));
         FileUtils.deleteDirectory( tf );
+    }
+
+    @Test(expected = IOException.class)
+    public void testDeleteWithException() throws IOException
+    {
+        Assume.assumeTrue( FileSystems.getDefault().supportedFileAttributeViews().contains("posix") );
+        Path tmpDir = Files.createTempDirectory( "FileUtilsTest" );
+        Path tmpDir2 = tmpDir.resolve("testdir1");
+        Files.createDirectories( tmpDir2 );
+        Path tmpFile = tmpDir2.resolve("testfile1.txt");
+        OutputStream stream = null;
+        try
+        {
+            stream = Files.newOutputStream( tmpFile, StandardOpenOption.APPEND, StandardOpenOption.CREATE );
+            stream.write( 1 );
+            stream.close( );
+            assertTrue( Files.exists( tmpFile ) );
+            stream = Files.newOutputStream( tmpFile, StandardOpenOption.APPEND, StandardOpenOption.CREATE );
+            stream.write( 1 );
+            Set<PosixFilePermission> perms = new HashSet<>( );
+            Files.setPosixFilePermissions( tmpFile, perms );
+            Files.setPosixFilePermissions( tmpDir2, perms );
+            FileUtils.deleteDirectory( tmpDir );
+            assertFalse( Files.exists( tmpDir ) );
+            assertFalse( Files.exists( tmpFile ) );
+        } finally {
+            if (stream!=null) {
+                stream.close();
+            }
+            Set<PosixFilePermission> perms = new HashSet<>( );
+            perms.add(PosixFilePermission.OWNER_READ);
+            perms.add(PosixFilePermission.OWNER_WRITE);
+            perms.add(PosixFilePermission.OWNER_EXECUTE);
+            Files.setPosixFilePermissions( tmpDir2, perms );
+            Files.setPosixFilePermissions( tmpFile, perms );
+            Files.deleteIfExists( tmpFile );
+            Files.deleteIfExists( tmpDir2 );
+            Files.deleteIfExists( tmpDir );
+        }
     }
 
 }

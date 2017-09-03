@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -71,23 +72,34 @@ public class FileUtils
 
     public static void deleteDirectory( Path dir ) throws IOException
     {
-        if (!Files.isDirectory( dir )) {
-            throw new IOException("Given path is not a directory ");
+        if (!Files.exists(dir)) {
+            return;
         }
-        boolean result = Files.walk(dir)
-            .sorted( Comparator.reverseOrder())
-            .map( file ->  {
-                try
+        if (!Files.isDirectory( dir )) {
+            throw new IOException("Given path is not a directory "+dir);
+        }
+        boolean result = true;
+        try
+        {
+            result = Files.walk( dir )
+                .sorted( Comparator.reverseOrder( ) )
+                .map( file ->
                 {
-                    Files.delete( file );
-                    return Optional.of(Boolean.TRUE);
-                }
-                catch ( IOException e )
-                {
-                    return Optional.empty();
-                }
+                    try
+                    {
+                        Files.delete( file );
+                        return Optional.of( Boolean.TRUE );
+                    }
+                    catch ( UncheckedIOException | IOException e )
+                    {
+                        log.warn( "File could not be deleted {}", file );
+                        return Optional.empty( );
+                    }
 
-            }).allMatch( Optional::isPresent );
+                } ).allMatch( Optional::isPresent );
+        } catch (UncheckedIOException e) {
+            throw new IOException("File deletion failed ", e);
+        }
         if (!result) {
             throw new IOException("Error during recursive delete of "+dir.toAbsolutePath());
         }
@@ -119,7 +131,7 @@ public class FileUtils
     }
 
     /**
-     * Return the base directory 
+     * Return the base directory
      * @return
      */
     public static String getBasedir()

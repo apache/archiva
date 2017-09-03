@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -263,9 +264,9 @@ public class ArchivaCli
             p.load( fis );
         }
 
-        File oldRepositoryPath = new File( p.getProperty( SOURCE_REPO_PATH ) );
+        Path oldRepositoryPath = Paths.get( p.getProperty( SOURCE_REPO_PATH ) );
 
-        File newRepositoryPath = new File( p.getProperty( TARGET_REPO_PATH ) );
+        Path newRepositoryPath = Paths.get( p.getProperty( TARGET_REPO_PATH ) );
 
         LOGGER.info( "Converting {} to {}", oldRepositoryPath, newRepositoryPath );
 

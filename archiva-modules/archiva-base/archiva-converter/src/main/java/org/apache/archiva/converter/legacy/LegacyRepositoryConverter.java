@@ -21,7 +21,7 @@ package org.apache.archiva.converter.legacy;
 
 import org.apache.archiva.converter.RepositoryConversionException;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -39,7 +39,7 @@ public interface LegacyRepositoryConverter
      * @param fileExclusionPatterns          the list of patterns to exclude from the conversion.
      * @throws RepositoryConversionException
      */
-    void convertLegacyRepository( File legacyRepositoryDirectory, File destinationRepositoryDirectory,
+    void convertLegacyRepository( Path legacyRepositoryDirectory, Path destinationRepositoryDirectory,
                                   List<String> fileExclusionPatterns )
         throws RepositoryConversionException;
 }
