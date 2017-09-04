@@ -82,7 +82,7 @@ public class DefaultRepositoryGroupAdmin
             for ( RepositoryGroup repositoryGroup : getRepositoriesGroups() )
             {
                 mergedRemoteIndexesScheduler.schedule( repositoryGroup,
-                                                       getMergedIndexDirectory( repositoryGroup.getId() ) );
+                                                       getMergedIndexDirectory( repositoryGroup.getId() ).toPath() );
                 // create the directory for each group if not exists
                 File groupPath = new File( groupsDirectory, repositoryGroup.getId() );
                 if ( !groupPath.exists() )
@@ -156,7 +156,7 @@ public class DefaultRepositoryGroupAdmin
         configuration.addRepositoryGroup( repositoryGroupConfiguration );
         saveConfiguration( configuration );
         triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.ADD_REPO_GROUP, auditInformation );
-        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ) );
+        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ).toPath() );
         return Boolean.TRUE;
     }
 
@@ -212,7 +212,7 @@ public class DefaultRepositoryGroupAdmin
             triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.MODIFY_REPO_GROUP, auditInformation );
         }
         mergedRemoteIndexesScheduler.unschedule( repositoryGroup );
-        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ) );
+        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ).toPath() );
         return Boolean.TRUE;
     }
 

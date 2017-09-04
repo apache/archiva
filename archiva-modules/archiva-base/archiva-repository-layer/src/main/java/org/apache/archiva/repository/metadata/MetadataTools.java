@@ -499,7 +499,7 @@ public class MetadataTools
                 {
                     try(Stream<Path> substream = Files.list(p))
                     {
-                        return substream.anyMatch( f -> Files.isRegularFile( f ) && f.endsWith( ".pom" ));
+                        return substream.anyMatch( f -> Files.isRegularFile( f ) && f.toString().endsWith( ".pom" ));
                     }
                     catch ( IOException e )
                     {

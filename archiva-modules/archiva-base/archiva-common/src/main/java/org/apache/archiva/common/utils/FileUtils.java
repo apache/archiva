@@ -144,4 +144,21 @@ public class FileUtils
 
         return basedir;
     }
+
+    /**
+     * This checks, if the given child is a absolute path. If this is the case
+     * the relative path is used.
+     *
+     * @param parent The parent directory
+     * @param child The child
+     * @return The path parent/child
+     */
+    public Path resolveNonAbsolute(Path parent, String child) {
+        Path childPath = Paths.get(child);
+        if (childPath.isAbsolute()) {
+            return parent.resolve(childPath.getNameCount()>0 ? childPath.subpath(0, childPath.getNameCount()) : Paths.get(""));
+        } else {
+            return parent.resolve(child);
+        }
+    }
 }

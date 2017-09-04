@@ -108,7 +108,7 @@ Virtual Repositories
   only those repositories which the user has an Obeserver role for). The first resource found for the requested artifact
   would be returned.
 
-  Prior to version 1.4-M2, Virtual repositories can return a Maven index in the path /.indexer path
+  Prior to version 1.4-M2, Virtual repositories can return a Maven index in the path .indexer path
 
 * Configuring Virtual Repositories
 

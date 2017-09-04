@@ -23,11 +23,11 @@ import junit.framework.TestCase;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.proxyconnector.DefaultProxyConnectorAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
@@ -48,6 +48,10 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 /**
@@ -98,11 +102,11 @@ public abstract class AbstractMavenRepositorySearch
     {
         super.setUp();
 
-        FileUtils.deleteDirectory( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 + "/.indexer" ) );
-        assertFalse( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 + "/.indexer" ).exists() );
+        FileUtils.deleteDirectory( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 + "/.indexer" ) );
+        assertFalse( Files.exists(Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 + "/.indexer" )) );
 
-        FileUtils.deleteDirectory( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ) );
-        assertFalse( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ).exists() );
+        FileUtils.deleteDirectory( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" ) );
+        assertFalse( Files.exists(Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 + "/.indexer" )) );
 
         archivaConfigControl = EasyMock.createControl();
 
@@ -136,11 +140,11 @@ public abstract class AbstractMavenRepositorySearch
             nexusIndexer.removeIndexingContext( indexingContext, true );
         }
 
-        FileUtils.deleteDirectory( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 ) );
-        assertFalse( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 ).exists() );
+        FileUtils.deleteDirectory( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 ) );
+        assertFalse( Files.exists(Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 )) );
 
-        FileUtils.deleteDirectory( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 ) );
-        assertFalse( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 ).exists() );
+        FileUtils.deleteDirectory( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 ) );
+        assertFalse( Files.exists(Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_2 )) );
 
         super.tearDown();
     }
@@ -150,10 +154,17 @@ public abstract class AbstractMavenRepositorySearch
         ManagedRepositoryConfiguration repositoryConfig = new ManagedRepositoryConfiguration();
         repositoryConfig.setId( repository );
         repositoryConfig.setLocation( org.apache.archiva.common.utils.FileUtils.getBasedir() + "/target/repos/" + repository );
-        File f = new File( repositoryConfig.getLocation() );
-        if ( !f.exists() )
+        Path f = Paths.get( repositoryConfig.getLocation() );
+        if ( !Files.exists(f) )
         {
-            f.mkdirs();
+            try
+            {
+                Files.createDirectories( f );
+            }
+            catch ( IOException e )
+            {
+                log.error("Could not create directories for {}", f);
+            }
         }
         repositoryConfig.setLayout( "default" );
         repositoryConfig.setName( repository );
@@ -164,7 +175,7 @@ public abstract class AbstractMavenRepositorySearch
         return repositoryConfig;
     }
 
-    protected void createIndex( String repository, List<File> filesToBeIndexed, boolean scan )
+    protected void createIndex( String repository, List<Path> filesToBeIndexed, boolean scan )
         throws Exception
     {
 
@@ -175,43 +186,43 @@ public abstract class AbstractMavenRepositorySearch
             nexusIndexer.removeIndexingContext( context, true );
         }
 
-        File indexerDirectory = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + repository + "/.indexer" );
+        Path indexerDirectory = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + repository + "/.indexer" );
 
-        if ( indexerDirectory.exists() )
+        if ( Files.exists(indexerDirectory) )
         {
             FileUtils.deleteDirectory( indexerDirectory );
         }
 
-        assertFalse( indexerDirectory.exists() );
+        assertFalse( Files.exists(indexerDirectory) );
 
-        File lockFile = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + repository + "/.indexer/write.lock" );
-        if ( lockFile.exists() )
+        Path lockFile = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + repository + "/.indexer/write.lock" );
+        if ( Files.exists(lockFile) )
         {
-            lockFile.delete();
+            Files.delete(lockFile);
         }
 
-        assertFalse( lockFile.exists() );
+        assertFalse( Files.exists(lockFile) );
 
-        File repo = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + repository );
-        assertTrue( repo.exists() );
-        File indexDirectory =
-            new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
-        indexDirectory.deleteOnExit();
+        Path repo = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + repository );
+        assertTrue( Files.exists(repo) );
+        Path indexDirectory =
+            Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
+        indexDirectory.toFile().deleteOnExit();
         FileUtils.deleteDirectory( indexDirectory );
 
-        context = nexusIndexer.addIndexingContext( repository, repository, repo, indexDirectory,
-                                                   repo.toURI().toURL().toExternalForm(),
-                                                   indexDirectory.toURI().toURL().toString(), indexCreators );
+        context = nexusIndexer.addIndexingContext( repository, repository, repo.toFile(), indexDirectory.toFile(),
+                                                   repo.toUri().toURL().toExternalForm(),
+                                                   indexDirectory.toUri().toURL().toString(), indexCreators );
 
         // minimize datas in memory
 //        context.getIndexWriter().setMaxBufferedDocs( -1 );
 //        context.getIndexWriter().setRAMBufferSizeMB( 1 );
-        for ( File artifactFile : filesToBeIndexed )
+        for ( Path artifactFile : filesToBeIndexed )
         {
-            assertTrue( "file not exists " + artifactFile.getPath(), artifactFile.exists() );
-            ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile );
+            assertTrue( "file not exists " + artifactFile, Files.exists(artifactFile) );
+            ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile.toFile() );
 
-            if ( artifactFile.getPath().endsWith( ".pom" ) )
+            if ( artifactFile.toString().endsWith( ".pom" ) )
             {
                 ac.getArtifactInfo().setFileExtension( "pom" );
                 ac.getArtifactInfo().setPackaging( "pom" );

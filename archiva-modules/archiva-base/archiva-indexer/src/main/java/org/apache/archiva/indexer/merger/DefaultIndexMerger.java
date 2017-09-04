@@ -18,7 +18,7 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
@@ -32,8 +32,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -85,15 +86,15 @@ public class DefaultIndexMerger
         stopWatch.reset();
         stopWatch.start();
 
-        File mergedIndexDirectory = indexMergerRequest.getMergedIndexDirectory();
+        Path mergedIndexDirectory = indexMergerRequest.getMergedIndexDirectory();
 
-        String tempRepoId = mergedIndexDirectory.getName();
+        String tempRepoId = mergedIndexDirectory.getFileName().toString();
 
         try
         {
-            File indexLocation = new File( mergedIndexDirectory, indexMergerRequest.getMergedIndexPath() );
+            Path indexLocation = mergedIndexDirectory.resolve( indexMergerRequest.getMergedIndexPath() );
             IndexingContext indexingContext =
-                indexer.addIndexingContext( tempRepoId, tempRepoId, mergedIndexDirectory, indexLocation, null, null,
+                indexer.addIndexingContext( tempRepoId, tempRepoId, mergedIndexDirectory.toFile(), indexLocation.toFile(), null, null,
                                             indexCreators );
 
             for ( String repoId : indexMergerRequest.getRepositoriesIds() )
@@ -111,7 +112,7 @@ public class DefaultIndexMerger
             {
                 IndexPackingRequest request = new IndexPackingRequest( indexingContext, //
                                                                        indexingContext.acquireIndexSearcher().getIndexReader(), //
-                                                                       indexLocation );
+                                                                       indexLocation.toFile() );
                 indexPacker.packIndex( request );
             }
 
@@ -151,8 +152,8 @@ public class DefaultIndexMerger
             {
                 indexer.removeIndexingContext( indexingContext, true );
             }
-            File directory = temporaryGroupIndex.getDirectory();
-            if ( directory != null && directory.exists() )
+            Path directory = temporaryGroupIndex.getDirectory();
+            if ( directory != null && Files.exists(directory) )
             {
                 FileUtils.deleteDirectory( directory );
             }

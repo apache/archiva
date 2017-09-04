@@ -44,7 +44,7 @@ public class RepositoryGroup
     /**
      * The path of the merged index.
      */
-    private String mergedIndexPath = "/.indexer";
+    private String mergedIndexPath = ".indexer";
 
     /**
      * The TTL (time to live) of the repo group's merged index.

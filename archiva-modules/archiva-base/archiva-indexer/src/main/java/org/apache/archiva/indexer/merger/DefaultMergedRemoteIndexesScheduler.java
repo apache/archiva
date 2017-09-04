@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,7 +57,7 @@ public class DefaultMergedRemoteIndexesScheduler
     private Map<String, ScheduledFuture> scheduledFutureMap = new ConcurrentHashMap<>();
 
     @Override
-    public void schedule( RepositoryGroup repositoryGroup, File directory )
+    public void schedule( RepositoryGroup repositoryGroup, Path directory )
     {
         if ( StringUtils.isEmpty( repositoryGroup.getCronExpression() ) )
         {

@@ -22,7 +22,7 @@ package org.apache.archiva.indexer.search;
 import org.easymock.EasyMock;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +39,7 @@ public class MavenRepositorySearchOSGITest
         throws Exception
     {
 
-        createIndex( TEST_REPO_1, Collections.<File>emptyList(), true );
+        createIndex( TEST_REPO_1, Collections.<Path>emptyList(), true );
 
         List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
 

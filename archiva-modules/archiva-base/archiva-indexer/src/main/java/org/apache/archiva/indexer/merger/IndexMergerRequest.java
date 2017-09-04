@@ -18,7 +18,7 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 
 /**
@@ -41,11 +41,11 @@ public class IndexMergerRequest
      */
     private String groupId;
 
-    private String mergedIndexPath = "/.indexer";
+    private String mergedIndexPath = ".indexer";
 
     private int mergedIndexTtl;
 
-    private File mergedIndexDirectory;
+    private Path mergedIndexDirectory;
 
     private boolean temporary;
 
@@ -119,17 +119,17 @@ public class IndexMergerRequest
         this.mergedIndexTtl = mergedIndexTtl;
     }
 
-    public File getMergedIndexDirectory()
+    public Path getMergedIndexDirectory()
     {
         return mergedIndexDirectory;
     }
 
-    public void setMergedIndexDirectory( File mergedIndexDirectory )
+    public void setMergedIndexDirectory( Path mergedIndexDirectory )
     {
         this.mergedIndexDirectory = mergedIndexDirectory;
     }
 
-    public IndexMergerRequest mergedIndexDirectory( File mergedIndexDirectory )
+    public IndexMergerRequest mergedIndexDirectory( Path mergedIndexDirectory )
     {
         this.mergedIndexDirectory = mergedIndexDirectory;
         return this;

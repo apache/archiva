@@ -70,7 +70,7 @@ public class RepositoryGroupAdminTest
 
             // verify if default values were saved
             assertEquals(30, repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getMergedIndexTtl() );
-            assertEquals("/.indexer", repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getMergedIndexPath() );
+            assertEquals(".indexer", repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getMergedIndexPath() );
 
             repositoryGroupAdmin.deleteRepositoryGroup( "repo-group-one", getFakeAuditInformation() );
 
@@ -264,7 +264,7 @@ public class RepositoryGroupAdminTest
 
             // verify if default values were saved
             assertEquals(30, repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getMergedIndexTtl() );
-            assertEquals("/.indexer", repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getMergedIndexPath() );
+            assertEquals(".indexer", repositoryGroupAdmin.getRepositoriesGroups().get( 0 ).getMergedIndexPath() );
 
             repositoryGroup = repositoryGroupAdmin.getRepositoryGroup( "repo-group-one" );
             assertNotNull( repositoryGroup );

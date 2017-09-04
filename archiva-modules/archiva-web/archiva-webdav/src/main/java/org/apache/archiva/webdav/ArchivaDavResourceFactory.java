@@ -1326,7 +1326,7 @@ public class ArchivaDavResourceFactory
 
             TemporaryGroupIndex tmp = temporaryGroupIndexMap.get( repositoryGroupConfiguration.getId() );
 
-            if ( tmp != null && tmp.getDirectory() != null && tmp.getDirectory().exists() )
+            if ( tmp != null && tmp.getDirectory() != null && Files.exists(tmp.getDirectory()))
             {
                 if ( System.currentTimeMillis() - tmp.getCreationTime() > (
                     repositoryGroupConfiguration.getMergedIndexTtl() * 60 * 1000 ) )
@@ -1339,7 +1339,7 @@ public class ArchivaDavResourceFactory
                 {
                     log.debug( MarkerFactory.getMarker( "group.merged.index" ),
                                "merged index for group '{}' found in cache", repositoryGroupConfiguration.getId() );
-                    return tmp.getDirectory();
+                    return tmp.getDirectory().toFile();
                 }
             }
 
@@ -1375,7 +1375,7 @@ public class ArchivaDavResourceFactory
                 new IndexMergerRequest( authzRepos, true, repositoryGroupConfiguration.getId(),
                                         repositoryGroupConfiguration.getMergedIndexPath(),
                                         repositoryGroupConfiguration.getMergedIndexTtl() ).mergedIndexDirectory(
-                    tempRepoFile ).temporary( true );
+                    tempRepoFile.toPath() ).temporary( true );
 
             MergedRemoteIndexesTaskRequest taskRequest =
                 new MergedRemoteIndexesTaskRequest( indexMergerRequest, indexMerger );
@@ -1386,7 +1386,7 @@ public class ArchivaDavResourceFactory
 
             File mergedRepoDir = indexingContext.getIndexDirectoryFile();
             TemporaryGroupIndex temporaryGroupIndex =
-                new TemporaryGroupIndex( mergedRepoDir, indexingContext.getId(), repositoryGroupConfiguration.getId(),
+                new TemporaryGroupIndex( mergedRepoDir.toPath(), indexingContext.getId(), repositoryGroupConfiguration.getId(),
                                          repositoryGroupConfiguration.getMergedIndexTtl() ) //
                     .setCreationTime( new Date().getTime() );
             temporaryGroupIndexMap.put( repositoryGroupConfiguration.getId(), temporaryGroupIndex );

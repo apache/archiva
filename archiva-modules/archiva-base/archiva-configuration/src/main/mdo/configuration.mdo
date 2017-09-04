@@ -860,7 +860,7 @@
           <version>1.2.0+</version>
           <type>String</type>
           <required>false</required>
-          <defaultValue>/.indexer</defaultValue>
+          <defaultValue>.indexer</defaultValue>
           <description>The path of the merged index.</description>
         </field>
         <field>
