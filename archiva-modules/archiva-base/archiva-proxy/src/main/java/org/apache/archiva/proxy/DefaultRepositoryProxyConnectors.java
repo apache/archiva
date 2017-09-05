@@ -991,9 +991,9 @@ public class DefaultRepositoryProxyConnectors
      * @param policies  the map of policies to execute. (Map of String policy keys, to {@link DownloadPolicy} objects)
      * @param settings  the map of settings for the policies to execute. (Map of String policy keys, to String policy
      *                  setting)
-     * @param request   the request properties (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, File)}
+     * @param request   the request properties (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, Path)}
      *                  )
-     * @param localFile the local file (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, File)})
+     * @param localFile the local file (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, Path)})
      * @throws PolicyViolationException
      */
     private void validatePolicies( Map<String, ? extends DownloadPolicy> policies, Map<String, String> settings,
@@ -1013,7 +1013,7 @@ public class DefaultRepositoryProxyConnectors
             log.debug( "Applying [{}] policy with [{}]", key, setting );
             try
             {
-                policy.applyPolicy( setting, request, localFile.toFile() );
+                policy.applyPolicy( setting, request, localFile );
             }
             catch ( PolicyConfigurationException e )
             {
@@ -1042,7 +1042,7 @@ public class DefaultRepositoryProxyConnectors
             try
             {
                 // all policies must approve the exception, any can cancel
-                process = policy.applyPolicy( setting, request, localFile.toFile(), exception, previousExceptions );
+                process = policy.applyPolicy( setting, request, localFile, exception, previousExceptions );
                 if ( !process )
                 {
                     break;

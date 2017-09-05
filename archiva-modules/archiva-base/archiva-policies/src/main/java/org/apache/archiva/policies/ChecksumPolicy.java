@@ -26,7 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -76,7 +78,7 @@ public class ChecksumPolicy
     }
 
     @Override
-    public void applyPolicy( String policySetting, Properties request, File localFile )
+    public void applyPolicy( String policySetting, Properties request, Path localFile )
         throws PolicyViolationException, PolicyConfigurationException
     {
         if ( "resource".equals( request.getProperty( "filetype" ) ) )
@@ -99,16 +101,16 @@ public class ChecksumPolicy
             return;
         }
 
-        if ( !localFile.exists() )
+        if ( !Files.exists(localFile) )
         {
             // Local File does not exist.
             throw new PolicyViolationException(
-                "Checksum policy failure, local file " + localFile.getAbsolutePath() + " does not exist to check." );
+                "Checksum policy failure, local file " + localFile.toAbsolutePath() + " does not exist to check." );
         }
 
         if ( FAIL.equals( policySetting ) )
         {
-            ChecksummedFile checksum = new ChecksummedFile( localFile.toPath() );
+            ChecksummedFile checksum = new ChecksummedFile( localFile );
             if ( checksum.isValidChecksums( algorithms ) )
             {
                 return;
@@ -116,22 +118,33 @@ public class ChecksumPolicy
 
             for ( ChecksumAlgorithm algorithm : algorithms )
             {
-                File file = new File( localFile.getAbsolutePath() + "." + algorithm.getExt() );
-                if ( file.exists() )
+                Path file = localFile.toAbsolutePath().resolveSibling( localFile.getFileName() + "." + algorithm.getExt() );
+                try
                 {
-                    file.delete();
+                    Files.deleteIfExists( file );
+                }
+                catch ( IOException e )
+                {
+                    log.error("Could not delete file {}", file);
                 }
             }
 
-            localFile.delete();
+            try
+            {
+                Files.deleteIfExists( localFile );
+            }
+            catch ( IOException e )
+            {
+                log.error("Could not delete file {}", localFile);
+            }
             throw new PolicyViolationException(
                 "Checksums do not match, policy set to FAIL, " + "deleting checksum files and local file "
-                    + localFile.getAbsolutePath() + "." );
+                    + localFile.toAbsolutePath() + "." );
         }
 
         if ( FIX.equals( policySetting ) )
         {
-            ChecksummedFile checksum = new ChecksummedFile( localFile.toPath() );
+            ChecksummedFile checksum = new ChecksummedFile( localFile );
             if ( checksum.fixChecksums( algorithms ) )
             {
                 log.debug( "Checksum policy set to FIX, checksum files have been updated." );
@@ -141,7 +154,7 @@ public class ChecksumPolicy
             {
                 throw new PolicyViolationException(
                     "Checksum policy set to FIX, " + "yet unable to update checksums for local file "
-                        + localFile.getAbsolutePath() + "." );
+                        + localFile.toAbsolutePath() + "." );
             }
         }
 

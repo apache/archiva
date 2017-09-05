@@ -49,7 +49,7 @@ public class MavenRepositoryMetadataReaderTest
     {
         File metadataFile = new File( defaultRepoDir, "org/apache/maven/plugins/maven-metadata.xml" );
 
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile.toPath() );
 
         assertNotNull( metadata );
         assertEquals( "org.apache.maven.plugins", metadata.getGroupId() );
@@ -84,7 +84,7 @@ public class MavenRepositoryMetadataReaderTest
     {
         File metadataFile = new File( defaultRepoDir, "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
 
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile.toPath() );
 
         assertNotNull( metadata );
         assertEquals( "org.apache.maven.shared", metadata.getGroupId() );
@@ -102,7 +102,7 @@ public class MavenRepositoryMetadataReaderTest
     {
         File metadataFile = new File( defaultRepoDir, "org/apache/apache/5-SNAPSHOT/maven-metadata.xml" );
 
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile.toPath() );
 
         assertNotNull( metadata );
         assertEquals( "org.apache", metadata.getGroupId() );

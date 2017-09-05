@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -64,7 +64,7 @@ public class CachedFailuresPolicy
     }
 
     @Override
-    public void applyPolicy( String policySetting, Properties request, File localFile )
+    public void applyPolicy( String policySetting, Properties request, Path localFile )
         throws PolicyViolationException, PolicyConfigurationException
     {
         if ( !options.contains( policySetting ) )

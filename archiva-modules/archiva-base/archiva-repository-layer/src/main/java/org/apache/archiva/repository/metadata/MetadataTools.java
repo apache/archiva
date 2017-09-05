@@ -376,7 +376,7 @@ public class MetadataTools
 
         try
         {
-            return MavenMetadataReader.read( metadataFile.toFile() );
+            return MavenMetadataReader.read( metadataFile );
         }
         catch ( XMLException e )
         {
@@ -401,7 +401,7 @@ public class MetadataTools
 
         try
         {
-            return MavenMetadataReader.read( metadataFile.toFile() );
+            return MavenMetadataReader.read( metadataFile );
         }
         catch ( XMLException e )
         {
@@ -426,7 +426,7 @@ public class MetadataTools
 
         try
         {
-            return MavenMetadataReader.read( metadataFile.toFile() );
+            return MavenMetadataReader.read( metadataFile );
         }
         catch ( XMLException e )
         {
@@ -524,7 +524,7 @@ public class MetadataTools
         {
             try
             {
-                ArchivaRepositoryMetadata existingMetadata = MavenMetadataReader.read( file.toFile() );
+                ArchivaRepositoryMetadata existingMetadata = MavenMetadataReader.read( file );
                 if ( existingMetadata != null )
                 {
                     metadatas.add( existingMetadata );
@@ -594,7 +594,7 @@ public class MetadataTools
         {
             try
             {
-                allPlugins = new LinkedHashSet<Plugin>( MavenMetadataReader.read( metadataFile.toFile() ).getPlugins() );
+                allPlugins = new LinkedHashSet<Plugin>( MavenMetadataReader.read( metadataFile ).getPlugins() );
             }
             catch ( XMLException e )
             {
@@ -755,7 +755,7 @@ public class MetadataTools
 
         try
         {
-            ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile.toFile() );
+            ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
 
             return getLastUpdated( metadata );
         }

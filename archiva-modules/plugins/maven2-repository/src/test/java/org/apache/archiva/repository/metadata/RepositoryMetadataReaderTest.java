@@ -45,7 +45,7 @@ public class RepositoryMetadataReaderTest
         File defaultRepoDir = new File( "src/test/repositories/default-repository" );
         File metadataFile = new File( defaultRepoDir, "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
 
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile.toPath() );
 
         assertNotNull( metadata );
         assertEquals( "Group Id", "org.apache.maven.shared", metadata.getGroupId() );
@@ -63,7 +63,7 @@ public class RepositoryMetadataReaderTest
         File defaultRepoDir = new File( "src/test/repositories/default-repository" );
         File metadataFile = new File( defaultRepoDir, "org/apache/maven/samplejar/maven-metadata.xml" );
 
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile.toPath() );
 
         assertNotNull( metadata );
         assertEquals( "Group Id", "org.apache.maven", metadata.getGroupId() );

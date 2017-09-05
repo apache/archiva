@@ -208,7 +208,7 @@ public class Maven2RepositoryStorage
                                                            METADATA_FILENAME );
                 try
                 {
-                    ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
+                    ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile.toPath() );
 
                     // re-adjust to timestamp if present, otherwise retain the original -SNAPSHOT filename
                     SnapshotVersion snapshotVersion = metadata.getSnapshotVersion();
@@ -820,7 +820,7 @@ public class Maven2RepositoryStorage
             {
                 return filePath;
             }
-            ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( metadataFile );
+            ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( metadataFile.toPath() );
             int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
             String timestamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
 
@@ -967,7 +967,7 @@ public class Maven2RepositoryStorage
         {
             try
             {
-                metadata = MavenMetadataReader.read( metadataFile );
+                metadata = MavenMetadataReader.read( metadataFile.toPath() );
             }
             catch ( XMLException e )
             {

@@ -312,7 +312,7 @@ public class Maven3DependencyTreeBuilder
                 {
                     try
                     {
-                        ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( metadataFile );
+                        ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( metadataFile.toPath() );
                         int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
                         String timeStamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
                         // rebuild file name with timestamped version and build number

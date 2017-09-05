@@ -28,8 +28,13 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
@@ -42,6 +47,9 @@ import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 public class ReleasePolicyTest
     extends TestCase
 {
+
+    private static final Charset FILE_ENCODING = Charset.forName( "UTF-8" );
+
     private static final String PATH_VERSION_METADATA = "org/apache/archiva/archiva-testable/1.0-SNAPSHOT/maven-metadata.xml";
 
     private static final String PATH_PROJECT_METADATA = "org/apache/archiva/archiva-testable/maven-metadata.xml";
@@ -333,19 +341,17 @@ public class ReleasePolicyTest
             request.setProperty( "version", "2.0" );
         }
 
-        File targetDir = ChecksumPolicyTest.getTestFile( "target/test-policy/" );
-        File localFile = new File( targetDir, path );
+        Path targetDir = ChecksumPolicyTest.getTestFile( "target/test-policy/" );
+        Path localFile = targetDir.resolve( path );
 
-        if ( localFile.exists() )
-        {
-            localFile.delete();
-        }
+        Files.deleteIfExists( localFile );
 
         if ( createLocalFile )
         {
-            localFile.getParentFile().mkdirs();
-            FileUtils.writeStringToFile( localFile, "random-junk" );
-            localFile.setLastModified( localFile.lastModified() - generatedLocalFileUpdateDelta );
+            Files.createDirectories(  localFile.getParent());
+            org.apache.archiva.common.utils.FileUtils.writeStringToFile( localFile, FILE_ENCODING, "random-junk" );
+            Files.setLastModifiedTime( localFile,
+                FileTime.fromMillis(Files.getLastModifiedTime(localFile).toMillis() - generatedLocalFileUpdateDelta));
         }
 
         policy.applyPolicy( setting, request, localFile );

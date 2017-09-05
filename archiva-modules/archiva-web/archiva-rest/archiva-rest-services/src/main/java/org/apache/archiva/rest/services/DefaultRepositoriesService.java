@@ -526,7 +526,7 @@ public class DefaultRepositoriesService
         {
             try
             {
-                metadata = MavenMetadataReader.read( metadataFile );
+                metadata = MavenMetadataReader.read( metadataFile.toPath() );
             }
             catch ( XMLException e )
             {

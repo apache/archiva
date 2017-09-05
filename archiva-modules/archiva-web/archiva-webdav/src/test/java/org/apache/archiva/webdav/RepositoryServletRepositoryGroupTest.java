@@ -264,7 +264,7 @@ public class RepositoryServletRepositoryGroupTest
 
         File returnedMetadata = new File( "target/test-classes/retrievedMetadataFile.xml" );
         FileUtils.writeStringToFile( returnedMetadata, response.getContentAsString() );
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( returnedMetadata );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( returnedMetadata.toPath() );
 
         assertResponseOK( response );
 

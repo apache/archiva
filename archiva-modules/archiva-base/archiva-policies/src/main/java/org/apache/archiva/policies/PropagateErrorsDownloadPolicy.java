@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +64,7 @@ public class PropagateErrorsDownloadPolicy
     }
 
     @Override
-    public boolean applyPolicy( String policySetting, Properties request, File localFile, Exception exception,
+    public boolean applyPolicy( String policySetting, Properties request, Path localFile, Exception exception,
                                 Map<String, Exception> previousExceptions )
         throws PolicyConfigurationException
     {

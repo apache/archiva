@@ -383,7 +383,7 @@ public class ArchivaDavResourceFactory
                             try
                             {
                                 File metadataFile = new File( resourceAbsPath );
-                                ArchivaRepositoryMetadata repoMetadata = MavenMetadataReader.read( metadataFile );
+                                ArchivaRepositoryMetadata repoMetadata = MavenMetadataReader.read( metadataFile.toPath() );
                                 mergedMetadata = RepositoryMetadataMerge.merge( mergedMetadata, repoMetadata );
                             }
                             catch ( XMLException e )

@@ -1092,7 +1092,7 @@ public class MetadataTransferTest
         assertTrue( "Actual file exists.", Files.exists(actualFile) );
 
         StringWriter actualContents = new StringWriter();
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( actualFile.toFile() );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( actualFile );
         RepositoryMetadataWriter.write( metadata, actualContents );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadataXml, actualContents.toString() ) );

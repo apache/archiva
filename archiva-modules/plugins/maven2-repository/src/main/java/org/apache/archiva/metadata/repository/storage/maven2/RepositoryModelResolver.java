@@ -169,7 +169,7 @@ public class RepositoryModelResolver
         {
             try
             {
-                ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( mavenMetadata );
+                ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( mavenMetadata.toPath() );
                 SnapshotVersion snapshotVersion = archivaRepositoryMetadata.getSnapshotVersion();
                 if ( snapshotVersion != null )
                 {
@@ -266,7 +266,7 @@ public class RepositoryModelResolver
 
                         log.debug( "Successfully downloaded metadata." );
 
-                        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( tmpMetadataResource );
+                        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( tmpMetadataResource.toPath() );
 
                         // re-adjust to timestamp if present, otherwise retain the original -SNAPSHOT filename
                         SnapshotVersion snapshotVersion = metadata.getSnapshotVersion();

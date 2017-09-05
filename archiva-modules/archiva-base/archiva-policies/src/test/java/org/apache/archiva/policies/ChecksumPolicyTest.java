@@ -27,8 +27,10 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -193,7 +195,7 @@ public class ChecksumPolicyTest
         throws Exception
     {
         PostDownloadPolicy policy = lookupPolicy();
-        File localFile = createTestableFiles( null, null );
+        Path localFile = createTestableFiles( null, null );
         Properties request = createRequest();
 
         policy.applyPolicy( ChecksumPolicy.IGNORE, request, localFile );
@@ -203,7 +205,7 @@ public class ChecksumPolicyTest
         throws Exception
     {
         PostDownloadPolicy policy = lookupPolicy();
-        File localFile = createTestableFiles( md5State, sha1State );
+        Path localFile = createTestableFiles( md5State, sha1State );
         Properties request = createRequest();
 
         boolean actualResult;
@@ -218,11 +220,11 @@ public class ChecksumPolicyTest
             actualResult = false;
             String msg = createMessage( ChecksumPolicy.FAIL, md5State, sha1State );
 
-            assertFalse( msg + " local file should not exist:", localFile.exists() );
-            File md5File = new File( localFile.getAbsolutePath() + ".sha1" );
-            File sha1File = new File( localFile.getAbsolutePath() + ".md5" );
-            assertFalse( msg + " local md5 file should not exist:", md5File.exists() );
-            assertFalse( msg + " local sha1 file should not exist:", sha1File.exists() );
+            assertFalse( msg + " local file should not exist:", Files.exists(localFile) );
+            Path md5File = localFile.toAbsolutePath().resolveSibling( localFile.getFileName() + ".sha1" );
+            Path sha1File = localFile.toAbsolutePath().resolveSibling( localFile.getFileName() + ".md5" );
+            assertFalse( msg + " local md5 file should not exist:", Files.exists(md5File) );
+            assertFalse( msg + " local sha1 file should not exist:", Files.exists(sha1File) );
         }
 
         assertEquals( createMessage( ChecksumPolicy.FAIL, md5State, sha1State ), expectedResult, actualResult );
@@ -232,7 +234,7 @@ public class ChecksumPolicyTest
         throws Exception
     {
         PostDownloadPolicy policy = lookupPolicy();
-        File localFile = createTestableFiles( md5State, sha1State );
+        Path localFile = createTestableFiles( md5State, sha1State );
         Properties request = createRequest();
 
         boolean actualResult;
@@ -250,11 +252,11 @@ public class ChecksumPolicyTest
         assertEquals( createMessage( ChecksumPolicy.FIX, md5State, sha1State ), expectedResult, actualResult );
 
         // End result should be legitimate SHA1 and MD5 files.
-        File md5File = new File( localFile.getAbsolutePath() + ".md5" );
-        File sha1File = new File( localFile.getAbsolutePath() + ".sha1" );
+        Path md5File = localFile.toAbsolutePath().resolveSibling( localFile.getFileName() + ".md5" );
+        Path sha1File = localFile.toAbsolutePath().resolveSibling( localFile.getFileName() + ".sha1" );
 
-        assertTrue( "ChecksumPolicy.apply(FIX) md5 should exist.", md5File.exists() && md5File.isFile() );
-        assertTrue( "ChecksumPolicy.apply(FIX) sha1 should exist.", sha1File.exists() && sha1File.isFile() );
+        assertTrue( "ChecksumPolicy.apply(FIX) md5 should exist.", Files.exists(md5File) && Files.isRegularFile(md5File) );
+        assertTrue( "ChecksumPolicy.apply(FIX) sha1 should exist.", Files.exists(sha1File) && Files.isRegularFile(sha1File) );
 
         String actualMd5Contents = readChecksumFile( md5File );
         String actualSha1Contents = readChecksumFile( sha1File );
@@ -269,7 +271,7 @@ public class ChecksumPolicyTest
     /**
      * Read the first line from the checksum file, and return it (trimmed).
      */
-    private String readChecksumFile( File checksumFile )
+    private String readChecksumFile( Path checksumFile )
         throws Exception
     {
         FileReader freader = null;
@@ -277,7 +279,7 @@ public class ChecksumPolicyTest
 
         try
         {
-            freader = new FileReader( checksumFile );
+            freader = new FileReader( checksumFile.toFile() );
             buf = new BufferedReader( freader );
             return buf.readLine();
         }
@@ -334,37 +336,37 @@ public class ChecksumPolicyTest
         return request;
     }
 
-    private File createTestableFiles( String md5State, String sha1State )
+    private Path createTestableFiles( String md5State, String sha1State )
         throws Exception
     {
-        File sourceDir = getTestFile( "src/test/resources/checksums/" );
-        File destDir = getTestFile( "target/checksum-tests/" + name.getMethodName() + "/" );
+        Path sourceDir = getTestFile( "src/test/resources/checksums/" );
+        Path destDir = getTestFile( "target/checksum-tests/" + name.getMethodName() + "/" );
 
-        FileUtils.copyFileToDirectory( new File( sourceDir, "artifact.jar" ), destDir );
+        FileUtils.copyFileToDirectory( sourceDir.resolve("artifact.jar" ).toFile(), destDir.toFile() );
 
         if ( md5State != null )
         {
-            File md5File = new File( sourceDir, "artifact.jar.md5-" + md5State );
-            assertTrue( "Testable file exists: " + md5File.getName() + ":", md5File.exists() && md5File.isFile() );
-            File destFile = new File( destDir, "artifact.jar.md5" );
-            FileUtils.copyFile( md5File, destFile );
+            Path md5File = sourceDir.resolve("artifact.jar.md5-" + md5State );
+            assertTrue( "Testable file exists: " + md5File.getFileName() + ":", Files.exists(md5File) && Files.isRegularFile(md5File) );
+            Path destFile = destDir.resolve("artifact.jar.md5" );
+            FileUtils.copyFile( md5File.toFile(), destFile.toFile() );
         }
 
         if ( sha1State != null )
         {
-            File sha1File = new File( sourceDir, "artifact.jar.sha1-" + sha1State );
-            assertTrue( "Testable file exists: " + sha1File.getName() + ":", sha1File.exists() && sha1File.isFile() );
-            File destFile = new File( destDir, "artifact.jar.sha1" );
-            FileUtils.copyFile( sha1File, destFile );
+            Path sha1File = sourceDir.resolve("artifact.jar.sha1-" + sha1State );
+            assertTrue( "Testable file exists: " + sha1File.getFileName() + ":", Files.exists(sha1File) && Files.isRegularFile(sha1File) );
+            Path destFile = destDir.resolve("artifact.jar.sha1" );
+            FileUtils.copyFile( sha1File.toFile(), destFile.toFile() );
         }
 
-        File localFile = new File( destDir, "artifact.jar" );
+        Path localFile = destDir.resolve("artifact.jar" );
         return localFile;
     }
 
-    public static File getTestFile( String path )
+    public static Path getTestFile( String path )
     {
-        return new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), path );
+        return Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), path );
     }
 
 }

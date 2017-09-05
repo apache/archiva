@@ -19,7 +19,7 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Properties;
 
 /**
@@ -40,6 +40,6 @@ public interface DownloadPolicy
      * 
      * @throws PolicyViolationException if the policy has been violated.
      */
-    void applyPolicy( String policySetting, Properties request, File localFile )
+    void applyPolicy( String policySetting, Properties request, Path localFile )
         throws PolicyViolationException, PolicyConfigurationException;
 }

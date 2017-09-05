@@ -517,7 +517,7 @@ public class DefaultFileUploadService
         {
             try
             {
-                metadata = MavenMetadataReader.read( metadataFile );
+                metadata = MavenMetadataReader.read( metadataFile.toPath() );
             }
             catch ( XMLException e )
             {

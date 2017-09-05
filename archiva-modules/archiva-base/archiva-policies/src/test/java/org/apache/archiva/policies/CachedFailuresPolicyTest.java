@@ -21,15 +21,16 @@ package org.apache.archiva.policies;
 
 import junit.framework.TestCase;
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * CachedFailuresPolicyTest
@@ -56,9 +57,9 @@ public class CachedFailuresPolicyTest
         return downloadPolicy;
     }
 
-    private File getFile()
+    private Path getFile()
     {
-        return new File( "target/cache-failures/" + getName() + ".txt" );
+        return Paths.get( "target/cache-failures/" + getName() + ".txt" );
     }
 
     private Properties createRequest()
@@ -73,7 +74,7 @@ public class CachedFailuresPolicyTest
         throws Exception
     {
         DownloadPolicy policy = lookupPolicy();
-        File localFile = getFile();
+        Path localFile = getFile();
         Properties request = createRequest();
 
         request.setProperty( "url", "http://a.bad.hostname.maven.org/path/to/resource.txt" );
@@ -87,7 +88,7 @@ public class CachedFailuresPolicyTest
     {
 
         DownloadPolicy policy = lookupPolicy();
-        File localFile = getFile();
+        Path localFile = getFile();
         Properties request = createRequest();
         // make unique name
         String url = "http://a.bad.hostname.maven.org/path/to/resource"+ System.currentTimeMillis() +".txt";
