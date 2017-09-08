@@ -31,21 +31,20 @@ import org.apache.commons.collections.Closure;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.functors.IfClosure;
 import org.apache.commons.lang.SystemUtils;
-import org.codehaus.plexus.util.DirectoryWalkListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * RepositoryScannerInstance
  */
 public class RepositoryScannerInstance
-    implements DirectoryWalkListener
+    implements FileVisitor<Path>
 {
     private Logger log = LoggerFactory.getLogger( RepositoryScannerInstance.class );
 
@@ -73,6 +72,17 @@ public class RepositoryScannerInstance
 
     private Map<String, Long> consumerCounts;
 
+
+    private List<String> fileNameIncludePattern = new ArrayList<>();
+    private List<String> fileNameExcludePattern = new ArrayList<>();
+
+    private List<PathMatcher> includeMatcher = new ArrayList<>();
+    private List<PathMatcher> excludeMatcher = new ArrayList<>();
+
+    private boolean isRunning = false;
+
+    Path basePath = null;
+
     public RepositoryScannerInstance( ManagedRepository repository,
                                       List<KnownRepositoryContentConsumer> knownConsumerList,
                                       List<InvalidRepositoryContentConsumer> invalidConsumerList )
@@ -80,6 +90,8 @@ public class RepositoryScannerInstance
         this.repository = repository;
         this.knownConsumers = knownConsumerList;
         this.invalidConsumers = invalidConsumerList;
+
+        addFileNameIncludePattern("**/*");
 
         consumerTimings = new HashMap<>();
         consumerCounts = new HashMap<>();
@@ -133,65 +145,6 @@ public class RepositoryScannerInstance
         return consumerCounts;
     }
 
-    @Override
-    public void directoryWalkStarting( File basedir )
-    {
-        log.info( "Walk Started: [{}] {}", this.repository.getId(), this.repository.getLocation() );
-        stats.triggerStart();
-    }
-
-    @Override
-    public void directoryWalkStep( int percentage, File file )
-    {
-        log.debug( "Walk Step: {}, {}", percentage, file );
-
-        stats.increaseFileCount();
-
-        // consume files regardless - the predicate will check the timestamp
-        BaseFile basefile = new BaseFile( repository.getLocation(), file );
-
-        // Timestamp finished points to the last successful scan, not this current one.
-        if ( file.lastModified() >= changesSince )
-        {
-            stats.increaseNewFileCount();
-        }
-
-        consumerProcessFile.setBasefile( basefile );
-        consumerWantsFile.setBasefile( basefile );
-
-        Closure processIfWanted = IfClosure.getInstance( consumerWantsFile, consumerProcessFile );
-        CollectionUtils.forAllDo( this.knownConsumers, processIfWanted );
-
-        if ( consumerWantsFile.getWantedFileCount() <= 0 )
-        {
-            // Nothing known processed this file.  It is invalid!
-            CollectionUtils.forAllDo( this.invalidConsumers, consumerProcessFile );
-        }
-    }
-
-    @Override
-    public void directoryWalkFinished()
-    {
-        TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure( repository, true );
-        CollectionUtils.forAllDo( knownConsumers, scanCompletedClosure );
-        CollectionUtils.forAllDo( invalidConsumers, scanCompletedClosure );
-
-        stats.setConsumerTimings( consumerTimings );
-        stats.setConsumerCounts( consumerCounts );
-
-        log.info( "Walk Finished: [{}] {}", this.repository.getId(), this.repository.getLocation() );
-        stats.triggerFinished();
-    }
-
-    /**
-     * Debug method from DirectoryWalker.
-     */
-    @Override
-    public void debug( String message )
-    {
-        log.debug( "Repository Scanner: {}", message );
-    }
-
     public ManagedRepository getRepository()
     {
         return repository;
@@ -205,5 +158,116 @@ public class RepositoryScannerInstance
     public long getChangesSince()
     {
         return changesSince;
+    }
+
+    public List<String> getFileNameIncludePattern() {
+        return fileNameIncludePattern;
+    }
+
+    public void setFileNameIncludePattern(List<String> fileNamePattern) {
+        this.fileNameIncludePattern = fileNamePattern;
+        FileSystem sys = FileSystems.getDefault();
+        this.includeMatcher = fileNamePattern.stream().map(ts ->sys
+                .getPathMatcher("glob:" + ts)).collect(Collectors.toList());
+    }
+
+    public void addFileNameIncludePattern(String fileNamePattern) {
+        if (! this.fileNameIncludePattern.contains(fileNamePattern)) {
+            this.fileNameIncludePattern.add(fileNamePattern);
+            this.includeMatcher.add(FileSystems.getDefault().getPathMatcher("glob:" + fileNamePattern));
+        }
+    }
+
+    public List<String> getFileNameExcludePattern() {
+        return fileNameExcludePattern;
+    }
+
+    public void setFileNameExcludePattern(List<String> fileNamePattern) {
+        this.fileNameExcludePattern = fileNamePattern;
+        FileSystem sys = FileSystems.getDefault();
+        this.excludeMatcher = fileNamePattern.stream().map(ts ->sys
+                .getPathMatcher("glob:" + ts)).collect(Collectors.toList());
+    }
+
+    public void addFileNameExcludePattern(String fileNamePattern) {
+        if (! this.fileNameExcludePattern.contains(fileNamePattern)) {
+            this.fileNameExcludePattern.add(fileNamePattern);
+            this.excludeMatcher.add(FileSystems.getDefault().getPathMatcher("glob:" + fileNamePattern));
+        }
+    }
+
+
+    @Override
+    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+        if (!isRunning) {
+            isRunning = true;
+            this.basePath = dir;
+            log.info( "Walk Started: [{}] {}", this.repository.getId(), this.repository.getLocation() );
+            stats.triggerStart();
+        }
+        return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+        if (excludeMatcher.stream().noneMatch(m -> m.matches(file)) && includeMatcher.stream().allMatch(m -> m.matches(file))) {
+            log.debug( "Walk Step: {}, {}", file );
+
+            stats.increaseFileCount();
+
+            // consume files regardless - the predicate will check the timestamp
+            BaseFile basefile = new BaseFile( repository.getLocation(), file.toFile() );
+
+            // Timestamp finished points to the last successful scan, not this current one.
+            if ( Files.getLastModifiedTime(file).toMillis() >= changesSince )
+            {
+                stats.increaseNewFileCount();
+            }
+
+            consumerProcessFile.setBasefile( basefile );
+            consumerWantsFile.setBasefile( basefile );
+
+            Closure processIfWanted = IfClosure.getInstance( consumerWantsFile, consumerProcessFile );
+            CollectionUtils.forAllDo( this.knownConsumers, processIfWanted );
+
+            if ( consumerWantsFile.getWantedFileCount() <= 0 )
+            {
+                // Nothing known processed this file.  It is invalid!
+                CollectionUtils.forAllDo( this.invalidConsumers, consumerProcessFile );
+            }
+
+        }
+        return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+        log.error("Error occured at {}: {}", file, exc.getMessage(), exc);
+        if (basePath!=null && Files.isSameFile(file, basePath)) {
+            finishWalk();
+        }
+        return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+        if (Files.isSameFile(dir, basePath)) {
+            finishWalk();
+        }
+        return FileVisitResult.CONTINUE;
+    }
+
+    private void finishWalk() {
+        this.isRunning = false;
+        TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure( repository, true );
+        CollectionUtils.forAllDo( knownConsumers, scanCompletedClosure );
+        CollectionUtils.forAllDo( invalidConsumers, scanCompletedClosure );
+
+        stats.setConsumerTimings( consumerTimings );
+        stats.setConsumerCounts( consumerCounts );
+
+        log.info( "Walk Finished: [{}] {}", this.repository.getId(), this.repository.getLocation() );
+        stats.triggerFinished();
+        this.basePath = null;
     }
 }

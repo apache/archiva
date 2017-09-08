@@ -44,9 +44,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -69,12 +70,12 @@ public class RepositoryContentConsumersTest
     @Inject
     ApplicationContext applicationContext;
 
-    protected ManagedRepository createRepository( String id, String name, File location )
+    protected ManagedRepository createRepository( String id, String name, Path location )
     {
         ManagedRepository repo = new ManagedRepository();
         repo.setId( id );
         repo.setName( name );
-        repo.setLocation( location.getAbsolutePath() );
+        repo.setLocation( location.toAbsolutePath().toString() );
         return repo;
     }
 
@@ -271,8 +272,8 @@ public class RepositoryContentConsumersTest
 
         consumers.setSelectedInvalidConsumers( Collections.singletonList( selectedInvalidConsumer ) );
 
-        ManagedRepository repo = createRepository( "id", "name", new File( "target/test-repo" ) );
-        File testFile = new File( "target/test-repo/path/to/test-file.txt" );
+        ManagedRepository repo = createRepository( "id", "name", Paths.get( "target/test-repo" ) );
+        Path testFile = Paths.get( "target/test-repo/path/to/test-file.txt" );
 
         Date startTime = new Date( System.currentTimeMillis() );
         startTime.setTime( 12345678 );
@@ -294,7 +295,7 @@ public class RepositoryContentConsumersTest
         knownControl.reset();
         invalidControl.reset();
 
-        File notIncludedTestFile = new File( "target/test-repo/path/to/test-file.xml" );
+        Path notIncludedTestFile = Paths.get( "target/test-repo/path/to/test-file.xml" );
 
         selectedKnownConsumer.beginScan( repo, startTime, false );
         expect( selectedKnownConsumer.getExcludes() ).andReturn( Collections.<String>emptyList() );
@@ -316,7 +317,7 @@ public class RepositoryContentConsumersTest
         knownControl.reset();
         invalidControl.reset();
 
-        File excludedTestFile = new File( "target/test-repo/path/to/test-file.txt" );
+        Path excludedTestFile = Paths.get( "target/test-repo/path/to/test-file.txt" );
 
         selectedKnownConsumer.beginScan( repo, startTime, false );
         expect( selectedKnownConsumer.getExcludes() ).andReturn( Collections.singletonList( "**/test-file.txt" ) );

@@ -32,9 +32,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,12 +57,12 @@ public class RepositoryScannerTest
     @Inject
     ApplicationContext applicationContext;
 
-    protected ManagedRepository createRepository( String id, String name, File location )
+    protected ManagedRepository createRepository( String id, String name, Path location )
     {
         ManagedRepository repo = new ManagedRepository();
         repo.setId( id );
         repo.setName( name );
-        repo.setLocation( location.getAbsolutePath() );
+        repo.setLocation( location.toAbsolutePath().toString());
         return repo;
     }
 
@@ -78,10 +80,10 @@ public class RepositoryScannerTest
 
     private ManagedRepository createDefaultRepository()
     {
-        File repoDir =
-            Paths.get( System.getProperty( "basedir" ), "src/test/repositories/default-repository" ).toFile();
+        Path repoDir =
+            Paths.get( System.getProperty( "basedir" ), "src/test/repositories/default-repository" );
 
-        assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
+        assertTrue( "Default Test Repository should exist.", Files.exists(repoDir) && Files.isDirectory(repoDir) );
 
         return createRepository( "testDefaultRepo", "Test Default Repository", repoDir );
     }
@@ -89,19 +91,19 @@ public class RepositoryScannerTest
     private ManagedRepository createSimpleRepository()
         throws IOException, ParseException
     {
-        File srcDir = Paths.get( System.getProperty( "basedir" ),  "src/test/repositories/simple-repository" ).toFile();
+        Path srcDir = Paths.get( System.getProperty( "basedir" ),  "src/test/repositories/simple-repository" );
 
-        File repoDir = Paths.get( System.getProperty( "basedir" ),  "target/test-repos/simple-repository" ).toFile();
+        Path repoDir = Paths.get( System.getProperty( "basedir" ),  "target/test-repos/simple-repository" );
 
-        FileUtils.deleteDirectory( repoDir );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoDir );
 
-        FileUtils.copyDirectory( srcDir, repoDir );
+        FileUtils.copyDirectory( srcDir.toFile(), repoDir.toFile() );
 
-        File repoFile = new File( repoDir,
+        Path repoFile = repoDir.resolve(
                                   "groupId/snapshot-artifact/1.0-alpha-1-SNAPSHOT/snapshot-artifact-1.0-alpha-1-20050611.202024-1.pom" );
-        repoFile.setLastModified( getTimestampAsMillis( "20050611.202024" ) );
+        Files.setLastModifiedTime(repoFile, FileTime.fromMillis(getTimestampAsMillis( "20050611.202024" ) ));
 
-        assertTrue( "Simple Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
+        assertTrue( "Simple Test Repository should exist.", Files.exists(repoDir) && Files.isDirectory(repoDir) );
 
         return createRepository( "testSimpleRepo", "Test Simple Repository", repoDir );
     }
@@ -116,9 +118,9 @@ public class RepositoryScannerTest
 
     private ManagedRepository createLegacyRepository()
     {
-        File repoDir = Paths.get( System.getProperty( "basedir" ),  "src/test/repositories/legacy-repository" ).toFile();
+        Path repoDir = Paths.get( System.getProperty( "basedir" ),  "src/test/repositories/legacy-repository" );
 
-        assertTrue( "Legacy Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
+        assertTrue( "Legacy Test Repository should exist.", Files.exists(repoDir) && Files.isDirectory(repoDir) );
 
         ManagedRepository repo = createRepository( "testLegacyRepo", "Test Legacy Repository", repoDir );
         repo.setLayout( "legacy" );

@@ -40,12 +40,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Path;
+import java.util.*;
 
 /**
  * RepositoryContentConsumerUtil
@@ -266,7 +262,7 @@ public class RepositoryContentConsumers
      * @param localFile              the local file to execute the consumers against.
      * @param updateRelatedArtifacts TODO
      */
-    public void executeConsumers( ManagedRepository repository, File localFile, boolean updateRelatedArtifacts )
+    public void executeConsumers(ManagedRepository repository, Path localFile, boolean updateRelatedArtifacts )
         throws RepositoryAdminException
     {
         List<KnownRepositoryContentConsumer> selectedKnownConsumers = null;
@@ -300,7 +296,7 @@ public class RepositoryContentConsumers
 
             // yuck. In case you can't read this, it says
             // "process the file if the consumer has it in the includes list, and not in the excludes list"
-            BaseFile baseFile = new BaseFile( repository.getLocation(), localFile );
+            BaseFile baseFile = new BaseFile( repository.getLocation(), localFile.toFile() );
             ConsumerWantsFilePredicate predicate = new ConsumerWantsFilePredicate( repository );
             predicate.setBasefile( baseFile );
             predicate.setCaseSensitive( false );

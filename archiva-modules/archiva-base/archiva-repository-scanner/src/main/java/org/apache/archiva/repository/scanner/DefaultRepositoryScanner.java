@@ -21,22 +21,22 @@ package org.apache.archiva.repository.scanner;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.commons.collections.CollectionUtils;
-import org.codehaus.plexus.util.DirectoryWalker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  * DefaultRepositoryScanner
@@ -47,6 +47,9 @@ import java.util.Set;
 public class DefaultRepositoryScanner
     implements RepositoryScanner
 {
+
+    private static final Logger log  = LoggerFactory.getLogger(DefaultRepositoryScanner.class);
+
     @Inject
     private FileTypes filetypes;
 
@@ -89,20 +92,23 @@ public class DefaultRepositoryScanner
             throw new IllegalArgumentException( "Unable to operate on a null repository." );
         }
 
-        File repositoryBase = new File( repository.getLocation() );
+        Path repositoryBase = Paths.get( repository.getLocation() );
 
         //MRM-1342 Repository statistics report doesn't appear to be working correctly
         //create the repo if not existing to have an empty stats
-        if ( !repositoryBase.exists() && !repositoryBase.mkdirs() )
+        if ( !Files.exists(repositoryBase))
         {
-            throw new UnsupportedOperationException(
-                "Unable to scan a repository, directory " + repositoryBase.getPath() + " does not exist." );
+            try {
+                Files.createDirectories(repositoryBase);
+            } catch (IOException e) {
+                throw new UnsupportedOperationException("Unable to scan a repository, directory " + repositoryBase + " does not exist." );
+            }
         }
 
-        if ( !repositoryBase.isDirectory() )
+        if ( !Files.isDirectory(repositoryBase) )
         {
             throw new UnsupportedOperationException(
-                "Unable to scan a repository, path " + repositoryBase.getPath() + " is not a directory." );
+                "Unable to scan a repository, path " + repositoryBase+ " is not a directory." );
         }
 
         // Setup Includes / Excludes.
@@ -118,34 +124,26 @@ public class DefaultRepositoryScanner
         // Scan All Content. (intentional)
         allIncludes.add( "**/*" );
 
-        // Setup Directory Walker
-        DirectoryWalker dirWalker = new DirectoryWalker();
-
-        dirWalker.setBaseDir( repositoryBase );
-
-        dirWalker.setIncludes( allIncludes );
-        dirWalker.setExcludes( allExcludes );
-
         // Setup the Scan Instance
         RepositoryScannerInstance scannerInstance =
             new RepositoryScannerInstance( repository, knownContentConsumers, invalidContentConsumers, changesSince );
 
+        scannerInstance.setFileNameIncludePattern(allIncludes);
+        scannerInstance.setFileNameExcludePattern(allExcludes);
         inProgressScans.add( scannerInstance );
 
-        RepositoryScanStatistics stats;
+        RepositoryScanStatistics stats = null;
         try
         {
-            dirWalker.addDirectoryWalkListener( scannerInstance );
-
-            // Execute scan.
-            dirWalker.scan();
+            Files.walkFileTree(repositoryBase, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, scannerInstance);
 
             stats = scannerInstance.getStatistics();
 
             stats.setKnownConsumers( gatherIds( knownContentConsumers ) );
             stats.setInvalidConsumers( gatherIds( invalidContentConsumers ) );
-        }
-        finally
+        } catch (IOException e) {
+            log.error("Could not scan directory {}", repositoryBase);
+        } finally
         {
             inProgressScans.remove( scannerInstance );
         }
