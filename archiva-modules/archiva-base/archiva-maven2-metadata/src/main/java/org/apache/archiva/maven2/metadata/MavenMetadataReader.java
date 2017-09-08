@@ -75,7 +75,7 @@ public class MavenMetadataReader
         throws XMLException
     {
 
-        XMLReader xml = new XMLReader( "metadata", metadataFile.toFile() );
+        XMLReader xml = new XMLReader( "metadata", metadataFile );
         // invoke this to remove namespaces, see MRM-1136
         xml.removeNamespaces();
 

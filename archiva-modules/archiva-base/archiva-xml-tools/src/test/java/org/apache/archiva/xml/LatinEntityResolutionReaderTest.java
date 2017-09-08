@@ -25,7 +25,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +33,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 
 /**
  * LatinEntityResolutionReaderTest
@@ -79,8 +79,8 @@ public class LatinEntityResolutionReaderTest
     private String toStringFromExample( String examplePath )
         throws IOException
     {
-        File exampleFile = getExampleXml( examplePath );
-        FileReader fileReader = new FileReader( exampleFile );
+        Path exampleFile = getExampleXml( examplePath );
+        FileReader fileReader = new FileReader( exampleFile.toFile() );
         BufferedReader lineReader = new BufferedReader( fileReader );
         StringBuilder sb = new StringBuilder();
 
@@ -105,9 +105,9 @@ public class LatinEntityResolutionReaderTest
     {
         try
         {
-            File inputFile = getExampleXml( sourcePath );
+            Path inputFile = getExampleXml( sourcePath );
 
-            FileReader fileReader = new FileReader( inputFile );
+            FileReader fileReader = new FileReader( inputFile.toFile() );
             LatinEntityResolutionReader testReader = new LatinEntityResolutionReader( fileReader );
 
             String actualOutput = toStringFromReader( testReader, bufsize );
@@ -125,9 +125,9 @@ public class LatinEntityResolutionReaderTest
     {
         try
         {
-            File inputFile = getExampleXml( sourcePath );
+            Path inputFile = getExampleXml( sourcePath );
 
-            FileReader fileReader = new FileReader( inputFile );
+            FileReader fileReader = new FileReader( inputFile.toFile() );
             LatinEntityResolutionReader testReader = new LatinEntityResolutionReader( fileReader );
 
             String actualOutput = toStringFromReader( testReader, bufSize );
@@ -208,11 +208,11 @@ public class LatinEntityResolutionReaderTest
     public void testReaderLeftOver()
         throws IOException
     {
-        File inputFile = getExampleXml( "maven-metadata-leftover.xml" );
+        Path inputFile = getExampleXml( "maven-metadata-leftover.xml" );
         //Bits from RepositoryMetadataReader.read
         InputStream in = null;
         SAXReader reader = new SAXReader();
-        URL url = inputFile.toURL();
+        URL url = inputFile.toUri().toURL();
         in = url.openStream();
         InputStreamReader inReader = new InputStreamReader( in, Charset.forName( "UTF-8" ) );
         LatinEntityResolutionReader latinReader = new LatinEntityResolutionReader( inReader );

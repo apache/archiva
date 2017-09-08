@@ -19,11 +19,13 @@ package org.apache.archiva.xml;
  * under the License.
  */
 
-import java.io.File;
-
 import junit.framework.TestCase;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.runner.RunWith;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * AbstractArchivaXmlTestCase 
@@ -42,17 +44,17 @@ public abstract class AbstractArchivaXmlTestCase
 
     protected static final String INFINITE_ARCHIVA = "The " + INFIN + " Archiva";
 
-    protected File getExampleXml( String filename )
+    protected Path getExampleXml(String filename )
     {
-        File examplesDir = new File( "src/test/examples" );
-        if ( !examplesDir.exists() )
+        Path examplesDir = Paths.get("src/test/examples");
+        if ( !Files.exists(examplesDir) )
         {
-            fail( "Missing the examples directory: " + examplesDir.getAbsolutePath() );
+            fail( "Missing the examples directory: " + examplesDir.toAbsolutePath() );
         }
-        File exampleFile = new File( examplesDir, filename );
-        if ( !exampleFile.exists() )
+        Path exampleFile = examplesDir.resolve( filename );
+        if ( !Files.exists(exampleFile) )
         {
-            fail( "Missing the example xml file: " + exampleFile.getAbsolutePath() );
+            fail( "Missing the example xml file: " + exampleFile.toAbsolutePath() );
         }
         return exampleFile;
     }

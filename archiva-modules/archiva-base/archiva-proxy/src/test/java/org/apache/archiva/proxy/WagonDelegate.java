@@ -19,7 +19,6 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
@@ -39,6 +38,8 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -60,7 +61,7 @@ public class WagonDelegate
     {
         log.debug( ".get({}, {})", resourceName, destination );
         delegate.get( resourceName, destination );
-        create( destination );
+        create( destination.toPath() );
     }
 
     @Override
@@ -70,7 +71,7 @@ public class WagonDelegate
         log.info( ".getIfNewer({}, {}, {})", resourceName, destination, timestamp );
 
         boolean result = delegate.getIfNewer( resourceName, destination, timestamp );
-        createIfMissing( destination );
+        createIfMissing( destination.toPath() );
         return result;
     }
 
@@ -254,28 +255,27 @@ public class WagonDelegate
         contentToGet = content;
     }
 
-    private void createIfMissing( File destination )
+    private void createIfMissing( Path destination )
     {
         // since the mock won't actually copy a file, create an empty one to simulate file existence
-        if ( !destination.exists() )
+        if ( !Files.exists(destination) )
         {
             create( destination );
         }
     }
 
-    private void create( File destination )
+    private void create( Path destination )
     {
         try
         {
-            destination.getParentFile().mkdirs();
+            Files.createDirectories(destination.getParent());
             if ( contentToGet == null )
             {
-                destination.createNewFile();
+                Files.createFile(destination);
             }
             else
             {
-                FileUtils.writeStringToFile( new File( destination.getAbsolutePath() ), contentToGet,
-                                             Charset.defaultCharset() );
+                org.apache.archiva.common.utils.FileUtils.writeStringToFile(destination, Charset.defaultCharset(), contentToGet);
             }
         }
         catch ( IOException e )

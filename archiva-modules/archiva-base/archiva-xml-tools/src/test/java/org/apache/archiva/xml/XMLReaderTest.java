@@ -19,7 +19,7 @@ package org.apache.archiva.xml;
  * under the License.
  */
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +55,7 @@ public class XMLReaderTest
     public void testNoPrologBasicRead()
         throws XMLException
     {
-        File xmlFile = getExampleXml( "no-prolog-basic.xml" );
+        Path xmlFile = getExampleXml( "no-prolog-basic.xml" );
         XMLReader reader = new XMLReader( "basic", xmlFile );
 
         List<Element> fruits = reader.getElementList( "//basic/fruits/fruit" );
@@ -66,7 +66,7 @@ public class XMLReaderTest
     public void testNoPrologEntitiesRead()
         throws XMLException
     {
-        File xmlFile = getExampleXml( "no-prolog-with-entities.xml" );
+        Path xmlFile = getExampleXml( "no-prolog-with-entities.xml" );
         XMLReader reader = new XMLReader( "basic", xmlFile );
 
         List<Element> names = reader.getElementList( "//basic/names/name" );
@@ -77,7 +77,7 @@ public class XMLReaderTest
     public void testNoPrologUtf8Read()
         throws XMLException
     {
-        File xmlFile = getExampleXml( "no-prolog-with-utf8.xml" );
+        Path xmlFile = getExampleXml( "no-prolog-with-utf8.xml" );
         XMLReader reader = new XMLReader( "basic", xmlFile );
 
         List<Element> names = reader.getElementList( "//basic/names/name" );
@@ -88,7 +88,7 @@ public class XMLReaderTest
     public void testPrologUtf8Read()
         throws XMLException
     {
-        File xmlFile = getExampleXml( "prolog-with-utf8.xml" );
+        Path xmlFile = getExampleXml( "prolog-with-utf8.xml" );
         XMLReader reader = new XMLReader( "basic", xmlFile );
 
         List<Element> names = reader.getElementList( "//basic/names/name" );
@@ -100,8 +100,8 @@ public class XMLReaderTest
     public void testProxiedMetadataRead()
         throws XMLException
     {
-        File xmlFile = getExampleXml( "maven-metadata-codehaus-snapshots.xml" );
-        XMLReader reader = new XMLReader( "metadata", xmlFile );        
+        Path xmlFile = getExampleXml( "maven-metadata-codehaus-snapshots.xml" );
+        XMLReader reader = new XMLReader( "metadata", xmlFile );
         reader.removeNamespaces();
         
         Element groupId = reader.getElement( "//metadata/groupId" );        

@@ -53,7 +53,6 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -63,12 +62,9 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -168,11 +164,11 @@ public abstract class AbstractProxyTestCase
 
         // Setup target (proxied to) repository.
         saveRemoteRepositoryConfig( ID_PROXIED1, "Proxied Repository 1",
-                                    new File( REPOPATH_PROXIED1 ).toURL().toExternalForm(), "default" );
+                                    Paths.get( REPOPATH_PROXIED1 ).toUri().toURL().toExternalForm(), "default" );
 
         // Setup target (proxied to) repository.
         saveRemoteRepositoryConfig( ID_PROXIED2, "Proxied Repository 2",
-                                    new File( REPOPATH_PROXIED2 ).toURL().toExternalForm(), "default" );
+                                    Paths.get( REPOPATH_PROXIED2 ).toUri().toURL().toExternalForm(), "default" );
 
         // Setup the proxy handler.
         //proxyHandler = applicationContext.getBean (RepositoryProxyConnectors) lookup( RepositoryProxyConnectors.class.getName() );
@@ -270,15 +266,19 @@ public abstract class AbstractProxyTestCase
             return;
         }
 
-        Collection<File> tmpFiles =
-            org.apache.commons.io.FileUtils.listFiles( workingDir.toFile(), new String[]{ "tmp" }, false );
-        if ( !tmpFiles.isEmpty() )
+        Collection<Path> tmpFiles = null;
+        try {
+            tmpFiles = Files.list(workingDir).filter(path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".tmp")).collect(Collectors.toList());
+        } catch (IOException e) {
+            log.error("Could not retrieve tmpFiles {}", workingDir);
+        }
+        if ( tmpFiles!=null && !tmpFiles.isEmpty() )
         {
             StringBuilder emsg = new StringBuilder();
             emsg.append( "Found Temp Files in dir: " ).append( workingDir.toString() );
-            for ( File tfile : tmpFiles )
+            for ( Path tfile : tmpFiles )
             {
-                emsg.append( "\n   " ).append( tfile.getName() );
+                emsg.append( "\n   " ).append( tfile.getFileName().toString());
             }
             fail( emsg.toString() );
         }
@@ -300,44 +300,43 @@ public abstract class AbstractProxyTestCase
             throw new IOException( "Source directory doesn't exists (" + sourceDirectory.toAbsolutePath() + ")." );
         }
 
-        File[] files = sourceDirectory.toFile().listFiles();
+        Path[] files = Files.list(sourceDirectory).filter(path -> Files.isRegularFile(path)).toArray(Path[]::new);
 
         String sourcePath = sourceDirectory.toAbsolutePath().toString();
 
         for ( int i = 0; i < files.length; i++ )
         {
-            File file = files[i];
+            Path file = files[i];
 
-            String dest = file.getAbsolutePath();
+            String dest = file.toAbsolutePath().toString();
 
             dest = dest.substring( sourcePath.length() + 1 );
 
-            File destination = new File( destDirectory.toFile(), dest );
+            Path destination = destDirectory.resolve( dest );
 
-            if ( file.isFile() )
+            if ( Files.isRegularFile(file) )
             {
-                destination = destination.getParentFile();
+                destination = destination.getParent();
 
-                org.apache.commons.io.FileUtils.copyFile( file, new File( destination, file.getName() ), false );
+                org.apache.commons.io.FileUtils.copyFile( file.toFile(), destination.resolve( file.getFileName() ).toFile(), false );
                 // TODO: Change when there is a FileUtils.copyFileToDirectory(file, destination, boolean) option
                 //FileUtils.copyFileToDirectory( file, destination );
             }
-            else if ( file.isDirectory() )
+            else if ( Files.isDirectory(file) )
             {
-                if ( !".svn".equals( file.getName() ) )
+                if ( !".svn".equals( file.getFileName().toString() ) )
                 {
-                    if ( !destination.exists() && !destination.mkdirs() )
+                    if ( !Files.exists(destination))
                     {
-                        throw new IOException(
-                            "Could not create destination directory '" + destination.getAbsolutePath() + "'." );
+                        Files.createDirectories(destination);
                     }
 
-                    copyDirectoryStructure( file.toPath(), destination.toPath() );
+                    copyDirectoryStructure( file, destination );
                 }
             }
             else
             {
-                throw new IOException( "Unknown file type: " + file.getAbsolutePath() );
+                throw new IOException( "Unknown file type: " + file.toAbsolutePath() );
             }
         }
     }

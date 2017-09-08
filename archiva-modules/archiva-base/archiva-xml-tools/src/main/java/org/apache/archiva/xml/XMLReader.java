@@ -20,28 +20,18 @@ package org.apache.archiva.xml;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.dom4j.Attribute;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.Namespace;
-import org.dom4j.Node;
-import org.dom4j.QName;
-import org.dom4j.XPath;
+import org.dom4j.*;
 import org.dom4j.io.SAXReader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 
 /**
  * XMLReader - a set of common xml utility methods for reading content out of an xml file.
@@ -56,27 +46,27 @@ public class XMLReader
 
     private Map<String, String> namespaceMap = new HashMap<>();
 
-    public XMLReader( String type, File file )
+    public XMLReader( String type, Path file )
         throws XMLException
     {
-        if ( !file.exists() )
+        if ( !Files.exists(file) )
         {
-            throw new XMLException( "file does not exist: " + file.getAbsolutePath() );
+            throw new XMLException( "file does not exist: " + file.toAbsolutePath() );
         }
 
-        if ( !file.isFile() )
+        if ( !Files.isRegularFile(file) )
         {
-            throw new XMLException( "path is not a file: " + file.getAbsolutePath() );
+            throw new XMLException( "path is not a file: " + file.toAbsolutePath() );
         }
 
-        if ( !file.canRead() )
+        if ( !Files.isReadable(file) )
         {
-            throw new XMLException( "Cannot read xml file due to permissions: " + file.getAbsolutePath() );
+            throw new XMLException( "Cannot read xml file due to permissions: " + file.toAbsolutePath() );
         }
 
         try
         {
-            init( type, file.toURL() );
+            init( type, file.toUri().toURL() );
         }
         catch ( MalformedURLException e )
         {
