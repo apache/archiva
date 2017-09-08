@@ -23,7 +23,6 @@ import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.scheduler.MergedRemoteIndexesScheduler;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.nio.file.Path;
 
 /**

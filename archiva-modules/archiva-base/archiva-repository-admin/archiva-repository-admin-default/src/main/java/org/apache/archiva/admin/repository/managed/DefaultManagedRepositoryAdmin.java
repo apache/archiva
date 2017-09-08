@@ -55,15 +55,11 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  * FIXME review the staging mechanism to have a per user session one
@@ -392,11 +388,8 @@ public class DefaultManagedRepositoryAdmin
         if ( deleteContent )
         {
             // TODO could be async ? as directory can be huge
-            File dir = new File( repository.getLocation() );
-            if ( !FileUtils.deleteQuietly( dir ) )
-            {
-                throw new RepositoryAdminException( "Cannot delete repository " + dir );
-            }
+            Path dir = Paths.get( repository.getLocation() );
+            org.apache.archiva.common.utils.FileUtils.deleteQuietly( dir );
         }
 
         // olamy: copy list for reading as a unit test in webapp fail with ConcurrentModificationException
@@ -530,8 +523,8 @@ public class DefaultManagedRepositoryAdmin
                 }
 
                 // delete directory too as only content is deleted
-                File indexDirectory = indexingContext.getIndexDirectoryFile();
-                FileUtils.deleteDirectory( indexDirectory );
+                Path indexDirectory = indexingContext.getIndexDirectoryFile().toPath();
+                org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDirectory );
 
                 createIndexContext( managedRepository );
             }
@@ -553,19 +546,19 @@ public class DefaultManagedRepositoryAdmin
         throws RepositoryAdminException, IOException
     {
         // Normalize the path
-        File file = new File( repository.getLocation() );
+        Path file = Paths.get( repository.getLocation() );
         if ( !file.isAbsolute() )
         {
             // add appserver.base/repositories
-            file = new File( getRegistry().getString( "appserver.base" ) + File.separatorChar + "repositories",
+            file = Paths.get( getRegistry().getString( "appserver.base" ),"repositories",
                              repository.getLocation() );
         }
-        repository.setLocation( file.getCanonicalPath() );
-        if ( !file.exists() )
+        repository.setLocation( file.normalize().toString() );
+        if ( !Files.exists(file) )
         {
-            file.mkdirs();
+            Files.createDirectories(file);
         }
-        if ( !file.exists() || !file.isDirectory() )
+        if ( !Files.exists(file) || !Files.isDirectory(file) )
         {
             throw new RepositoryAdminException(
                 "Unable to add repository - no write access, can not create the root directory: " + file );
@@ -589,18 +582,22 @@ public class DefaultManagedRepositoryAdmin
         }
 
         // take care first about repository location as can be relative
-        File repositoryDirectory = new File( repository.getLocation() );
+        Path repositoryDirectory = Paths.get( repository.getLocation() );
 
         if ( !repositoryDirectory.isAbsolute() )
         {
             repositoryDirectory =
-                new File( getRegistry().getString( "appserver.base" ) + File.separatorChar + "repositories",
+                Paths.get( getRegistry().getString( "appserver.base" ), "repositories",
                           repository.getLocation() );
         }
 
-        if ( !repositoryDirectory.exists() )
+        if ( !Files.exists(repositoryDirectory) )
         {
-            repositoryDirectory.mkdirs();
+            try {
+                Files.createDirectories(repositoryDirectory);
+            } catch (IOException e) {
+                log.error("Could not create directory {}", repositoryDirectory);
+            }
         }
 
         try
@@ -609,30 +606,30 @@ public class DefaultManagedRepositoryAdmin
             String indexDir = repository.getIndexDirectory();
             //File managedRepository = new File( repository.getLocation() );
 
-            File indexDirectory = null;
+            Path indexDirectory = null;
             if ( StringUtils.isNotBlank( indexDir ) )
             {
-                indexDirectory = new File( repository.getIndexDirectory() );
+                indexDirectory = Paths.get( repository.getIndexDirectory() );
                 // not absolute so create it in repository directory
                 if ( !indexDirectory.isAbsolute() )
                 {
-                    indexDirectory = new File( repositoryDirectory, repository.getIndexDirectory() );
+                    indexDirectory = repositoryDirectory.resolve(repository.getIndexDirectory() );
                 }
-                repository.setIndexDirectory( indexDirectory.getAbsolutePath() );
+                repository.setIndexDirectory( indexDirectory.toAbsolutePath().toString() );
             }
             else
             {
-                indexDirectory = new File( repositoryDirectory, ".indexer" );
+                indexDirectory = repositoryDirectory.resolve(".indexer" );
                 if ( !repositoryDirectory.isAbsolute() )
                 {
-                    indexDirectory = new File( repositoryDirectory, ".indexer" );
+                    indexDirectory = repositoryDirectory.resolve( ".indexer" );
                 }
-                repository.setIndexDirectory( indexDirectory.getAbsolutePath() );
+                repository.setIndexDirectory( indexDirectory.toAbsolutePath().toString() );
             }
 
-            if ( !indexDirectory.exists() )
+            if ( !Files.exists(indexDirectory) )
             {
-                indexDirectory.mkdirs();
+                Files.createDirectories(indexDirectory);
             }
 
             context = indexer.getIndexingContexts().get( repository.getId() );
@@ -641,10 +638,10 @@ public class DefaultManagedRepositoryAdmin
             {
                 try
                 {
-                    context = indexer.addIndexingContext( repository.getId(), repository.getId(), repositoryDirectory,
-                                                          indexDirectory,
-                                                          repositoryDirectory.toURI().toURL().toExternalForm(),
-                                                          indexDirectory.toURI().toURL().toString(), indexCreators );
+                    context = indexer.addIndexingContext( repository.getId(), repository.getId(), repositoryDirectory.toFile(),
+                                                          indexDirectory.toFile(),
+                                                          repositoryDirectory.toUri().toURL().toExternalForm(),
+                                                          indexDirectory.toUri().toURL().toString(), indexCreators );
 
                     context.setSearchable( repository.isScanned() );
                 }
@@ -654,11 +651,11 @@ public class DefaultManagedRepositoryAdmin
                     // delete it first then recreate it.
                     log.warn( "the index of repository {} is too old we have to delete and recreate it", //
                               repository.getId() );
-                    FileUtils.deleteDirectory( indexDirectory );
-                    context = indexer.addIndexingContext( repository.getId(), repository.getId(), repositoryDirectory,
-                                                          indexDirectory,
-                                                          repositoryDirectory.toURI().toURL().toExternalForm(),
-                                                          indexDirectory.toURI().toURL().toString(), indexCreators );
+                    org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDirectory );
+                    context = indexer.addIndexingContext( repository.getId(), repository.getId(), repositoryDirectory.toFile(),
+                                                          indexDirectory.toFile(),
+                                                          repositoryDirectory.toUri().toURL().toExternalForm(),
+                                                          indexDirectory.toUri().toURL().toString(), indexCreators );
 
                     context.setSearchable( repository.isScanned() );
                 }
@@ -687,7 +684,7 @@ public class DefaultManagedRepositoryAdmin
 
         if ( StringUtils.isNotBlank( repository.getIndexDir() ) )
         {
-            File indexDir = new File( repository.getIndexDir() );
+            Path indexDir = Paths.get( repository.getIndexDir() );
             // in case of absolute dir do not use the same
             if ( indexDir.isAbsolute() )
             {

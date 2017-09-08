@@ -40,8 +40,10 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -274,42 +276,35 @@ public class DefaultRemoteRepositoryAdmin
                 return indexingContext;
             }
             // create remote repository path
-            File repoDir = new File( appServerBase, "data/remotes/" + remoteRepository.getId() );
-            if ( !repoDir.exists() )
+            Path repoDir = Paths.get( appServerBase, "data/remotes/" + remoteRepository.getId() );
+            if ( !Files.exists(repoDir) )
             {
-                repoDir.mkdirs();
+                Files.createDirectories(repoDir);
             }
 
-            File indexDirectory = null;
+            Path indexDirectory = null;
 
             // is there configured indexDirectory ?
             String indexDirectoryPath = remoteRepository.getIndexDirectory();
 
             if ( StringUtils.isNotBlank( indexDirectoryPath ) )
             {
-                if ( new File( indexDirectoryPath ).isAbsolute() )
-                {
-                    indexDirectory = new File( indexDirectoryPath );
-                }
-                else
-                {
-                    indexDirectory = new File( repoDir, indexDirectoryPath );
-                }
+                repoDir.resolve( indexDirectoryPath );
             }
             // if not configured use a default value
             if ( indexDirectory == null )
             {
-                indexDirectory = new File( repoDir, ".index" );
+                indexDirectory = repoDir.resolve(".index" );
             }
-            if ( !indexDirectory.exists() )
+            if ( !Files.exists(indexDirectory) )
             {
-                indexDirectory.mkdirs();
+                Files.createDirectories(indexDirectory);
             }
 
             try
             {
 
-                return indexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir, indexDirectory,
+                return indexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir.toFile(), indexDirectory.toFile(),
                                                    remoteRepository.getUrl(), calculateIndexRemoteUrl( remoteRepository ),
                                                    indexCreators );
             }
@@ -319,8 +314,8 @@ public class DefaultRemoteRepositoryAdmin
                 // delete it first then recreate it.
                 log.warn( "the index of repository {} is too old we have to delete and recreate it", //
                           remoteRepository.getId() );
-                FileUtils.deleteDirectory( indexDirectory );
-                return indexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir, indexDirectory,
+                org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDirectory );
+                return indexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir.toFile(), indexDirectory.toFile(),
                                                    remoteRepository.getUrl(), calculateIndexRemoteUrl( remoteRepository ),
                                                    indexCreators );
 

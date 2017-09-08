@@ -31,7 +31,6 @@ import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.memory.SimpleUser;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -39,8 +38,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,15 +110,15 @@ public abstract class AbstractRepositoryAdminTest
                                       repoLocation + "/.index", false, 1, 2, true, false );
     }
 
-    protected File clearRepoLocation( String path )
+    protected Path clearRepoLocation(String path )
         throws Exception
     {
-        File repoDir = new File( path );
-        if ( repoDir.exists() )
+        Path repoDir = Paths.get( path );
+        if ( Files.exists(repoDir) )
         {
-            FileUtils.deleteDirectory( repoDir );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoDir );
         }
-        assertFalse( repoDir.exists() );
+        assertFalse( Files.exists(repoDir) );
         return repoDir;
     }
 

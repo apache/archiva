@@ -36,7 +36,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,16 +68,16 @@ public class DefaultRepositoryGroupAdmin
     @Inject
     private MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler;
 
-    private File groupsDirectory;
+    private Path groupsDirectory;
 
     @PostConstruct
     public void initialize()
     {
         String appServerBase = getRegistry().getString( "appserver.base" );
-        groupsDirectory = new File( appServerBase + File.separatorChar + "groups" );
-        if ( !groupsDirectory.exists() )
+        groupsDirectory = Paths.get( appServerBase, "groups" );
+        if ( !Files.exists(groupsDirectory) )
         {
-            groupsDirectory.mkdirs();
+            Files.exists(groupsDirectory);
         }
 
         try
@@ -82,12 +85,16 @@ public class DefaultRepositoryGroupAdmin
             for ( RepositoryGroup repositoryGroup : getRepositoriesGroups() )
             {
                 mergedRemoteIndexesScheduler.schedule( repositoryGroup,
-                                                       getMergedIndexDirectory( repositoryGroup.getId() ).toPath() );
+                                                       getMergedIndexDirectory( repositoryGroup.getId() ));
                 // create the directory for each group if not exists
-                File groupPath = new File( groupsDirectory, repositoryGroup.getId() );
-                if ( !groupPath.exists() )
+                Path groupPath = groupsDirectory.resolve(repositoryGroup.getId() );
+                if ( !Files.exists(groupPath) )
                 {
-                    groupPath.mkdirs();
+                    try {
+                        Files.createDirectories(groupPath);
+                    } catch (IOException e) {
+                        log.error("Could not create directory {}", groupPath);
+                    }
                 }
             }
         }
@@ -100,9 +107,9 @@ public class DefaultRepositoryGroupAdmin
 
 
     @Override
-    public File getMergedIndexDirectory( String repositoryGroupId )
+    public Path getMergedIndexDirectory( String repositoryGroupId )
     {
-        return new File( groupsDirectory, repositoryGroupId );
+        return groupsDirectory.resolve( repositoryGroupId );
     }
 
     @Override
@@ -156,7 +163,7 @@ public class DefaultRepositoryGroupAdmin
         configuration.addRepositoryGroup( repositoryGroupConfiguration );
         saveConfiguration( configuration );
         triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.ADD_REPO_GROUP, auditInformation );
-        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ).toPath() );
+        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ) );
         return Boolean.TRUE;
     }
 
@@ -212,7 +219,7 @@ public class DefaultRepositoryGroupAdmin
             triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.MODIFY_REPO_GROUP, auditInformation );
         }
         mergedRemoteIndexesScheduler.unschedule( repositoryGroup );
-        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ).toPath() );
+        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ) );
         return Boolean.TRUE;
     }
 

@@ -27,7 +27,7 @@ import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.junit.Test;
 
 import javax.inject.Inject;
-import java.io.File;
+import java.nio.file.Paths;
 import java.util.Arrays;
 
 /**
@@ -46,10 +46,10 @@ public class RepositoryGroupAdminTest
         try
         {
             ManagedRepository managedRepositoryOne =
-                getTestManagedRepository( "test-new-one", APPSERVER_BASE_PATH + File.separator + "test-new-one" );
+                getTestManagedRepository( "test-new-one", Paths.get(APPSERVER_BASE_PATH,"test-new-one" ).toString());
 
             ManagedRepository managedRepositoryTwo =
-                getTestManagedRepository( "test-new-two", APPSERVER_BASE_PATH + File.separator + "test-new-two" );
+                getTestManagedRepository( "test-new-two", Paths.get(APPSERVER_BASE_PATH, "test-new-two" ).toString());
 
             managedRepositoryAdmin.addManagedRepository( managedRepositoryOne, false, getFakeAuditInformation() );
 
@@ -96,10 +96,10 @@ public class RepositoryGroupAdminTest
         try
         {
             ManagedRepository managedRepositoryOne =
-                getTestManagedRepository( "test-new-one", APPSERVER_BASE_PATH + File.separator + "test-new-one" );
+                getTestManagedRepository( "test-new-one", Paths.get(APPSERVER_BASE_PATH,"test-new-one" ).toString());
 
             ManagedRepository managedRepositoryTwo =
-                getTestManagedRepository( "test-new-two", APPSERVER_BASE_PATH + File.separator + "test-new-two" );
+                getTestManagedRepository( "test-new-two", Paths.get(APPSERVER_BASE_PATH, "test-new-two" ).toString());
 
             managedRepositoryAdmin.addManagedRepository( managedRepositoryOne, false, getFakeAuditInformation() );
 
@@ -158,10 +158,10 @@ public class RepositoryGroupAdminTest
         try
         {
             ManagedRepository managedRepositoryOne =
-                getTestManagedRepository( "test-new-one", APPSERVER_BASE_PATH + File.separator + "test-new-one" );
+                getTestManagedRepository( "test-new-one", Paths.get(APPSERVER_BASE_PATH , "test-new-one" ).toString());
 
             ManagedRepository managedRepositoryTwo =
-                getTestManagedRepository( "test-new-two", APPSERVER_BASE_PATH + File.separator + "test-new-two" );
+                getTestManagedRepository( "test-new-two", Paths.get(APPSERVER_BASE_PATH ,"test-new-two" ).toString());
 
             managedRepositoryAdmin.addManagedRepository( managedRepositoryOne, false, getFakeAuditInformation() );
 
@@ -211,10 +211,10 @@ public class RepositoryGroupAdminTest
     public void testAddGroupWithInvalidMergedIndexTtl() throws Exception {
         try {
             ManagedRepository managedRepositoryOne =
-                    getTestManagedRepository( "test-new-one", APPSERVER_BASE_PATH + File.separator + "test-new-one" );
+                    getTestManagedRepository( "test-new-one", Paths.get(APPSERVER_BASE_PATH , "test-new-one" ).toString());
 
             ManagedRepository managedRepositoryTwo =
-                    getTestManagedRepository( "test-new-two", APPSERVER_BASE_PATH + File.separator + "test-new-two" );
+                    getTestManagedRepository( "test-new-two", Paths.get(APPSERVER_BASE_PATH , "test-new-two" ).toString());
 
             managedRepositoryAdmin.addManagedRepository( managedRepositoryOne, false, getFakeAuditInformation() );
 
@@ -240,10 +240,10 @@ public class RepositoryGroupAdminTest
     public void testAddAndUpdateGroupWithInvalidMergedIndexTtl() throws Exception {
         try {
             ManagedRepository managedRepositoryOne =
-                    getTestManagedRepository( "test-new-one", APPSERVER_BASE_PATH + File.separator + "test-new-one" );
+                    getTestManagedRepository( "test-new-one", Paths.get(APPSERVER_BASE_PATH , "test-new-one" ).toString());
 
             ManagedRepository managedRepositoryTwo =
-                    getTestManagedRepository( "test-new-two", APPSERVER_BASE_PATH + File.separator + "test-new-two" );
+                    getTestManagedRepository( "test-new-two", Paths.get(APPSERVER_BASE_PATH , "test-new-two" ).toString());
 
             managedRepositoryAdmin.addManagedRepository( managedRepositoryOne, false, getFakeAuditInformation() );
 
