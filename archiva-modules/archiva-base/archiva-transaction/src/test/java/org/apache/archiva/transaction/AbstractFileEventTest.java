@@ -25,8 +25,11 @@ import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.Md5Digester;
 import org.codehaus.plexus.digest.Sha1Digester;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
@@ -53,46 +56,47 @@ public abstract class AbstractFileEventTest
         digesters = Arrays.asList( (Digester) new Md5Digester(), (Digester) new Sha1Digester() );
     }
 
-    protected void assertChecksumExists( File file, String algorithm )
+    protected void assertChecksumExists(Path file, String algorithm )
     {
+
         assertChecksum( file, algorithm, true );
     }
 
-    protected void assertChecksumDoesNotExist( File file, String algorithm )
+    protected void assertChecksumDoesNotExist( Path file, String algorithm )
     {
         assertChecksum( file, algorithm, false );
     }
 
-    private void assertChecksum( File file, String algorithm, boolean exist )
+    private void assertChecksum( Path file, String algorithm, boolean exist )
     {
         String msg = exist ? "exists" : "does not exist";
-        File checksumFile = new File( file.getPath() + "." + algorithm );
-        assertEquals( "Test file " + algorithm + " checksum " + msg, exist, checksumFile.exists() );
+        Path checksumFile = Paths.get( file.toAbsolutePath() + "." + algorithm );
+        assertEquals( "Test file " + algorithm + " checksum " + msg, exist, Files.exists(checksumFile) );
     }
 
-    protected void assertChecksumCommit( File file )
+    protected void assertChecksumCommit( Path file )
         throws IOException
     {
         assertChecksumExists( file, "md5" );
         assertChecksumExists( file, "sha1" );
     }
 
-    protected void assertChecksumRollback( File file )
+    protected void assertChecksumRollback( Path file )
         throws IOException
     {
         assertChecksumDoesNotExist( file, "md5" );
         assertChecksumDoesNotExist( file, "sha1" );
     }
 
-    protected String readFile( File file )
+    protected String readFile( Path file )
         throws IOException
     {
-        return FileUtils.readFileToString( file );
+        return FileUtils.readFileToString( file.toFile() );
     }
 
-    protected void writeFile( File file, String content )
+    protected void writeFile( Path file, String content )
         throws IOException
     {
-        FileUtils.writeStringToFile( file, content );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( file, Charset.defaultCharset(), content );
     }
 }

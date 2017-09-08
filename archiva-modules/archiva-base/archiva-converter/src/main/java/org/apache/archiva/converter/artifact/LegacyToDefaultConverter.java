@@ -215,7 +215,7 @@ public class LegacyToDefaultConverter
                 }
                 if ( force || !matching )
                 {
-                    transaction.createFile( contents, targetFile.toFile( ), digesters );
+                    transaction.createFile( contents, targetFile, digesters );
                 }
             }
             else
@@ -247,7 +247,7 @@ public class LegacyToDefaultConverter
                         MavenXpp3Writer xpp3Writer = new MavenXpp3Writer();
                         xpp3Writer.write( writer, v4Model );
 
-                        transaction.createFile( writer.toString(), targetFile.toFile(), digesters );
+                        transaction.createFile( writer.toString(), targetFile, digesters );
 
                         List<String> warnings = translator.getWarnings();
 
@@ -359,7 +359,7 @@ public class LegacyToDefaultConverter
                 {
                     if ( testChecksums( artifact, sourceFile ) )
                     {
-                        transaction.copyFile( sourceFile.toFile(), targetFile.toFile(), digesters );
+                        transaction.copyFile( sourceFile, targetFile, digesters );
                     }
                     else
                     {
@@ -557,7 +557,7 @@ public class LegacyToDefaultConverter
 
                 mappingWriter.write( writer, metadata );
 
-                transaction.createFile( writer.toString(), file.toFile(), digesters );
+                transaction.createFile( writer.toString(), file, digesters );
             }
             catch ( IOException e )
             {
@@ -645,7 +645,7 @@ public class LegacyToDefaultConverter
         MavenXpp3Writer pomWriter = new MavenXpp3Writer();
         pomWriter.write( strWriter, pom );
 
-        transaction.createFile( strWriter.toString(), pomFile.toFile(), digesters );
+        transaction.createFile( strWriter.toString(), pomFile, digesters );
     }
 
     private void addWarning( Artifact artifact, String message )

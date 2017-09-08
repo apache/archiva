@@ -19,54 +19,56 @@ package org.apache.archiva.transaction;
  * under the License.
  */
 
-import java.io.File;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Test;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  */
 public class CreateFileEventTest
     extends AbstractFileEventTest
 {
-    private File testDir = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/transaction-tests/create-file" );
+    private Path testDir = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/transaction-tests/create-file" );
 
     @Test
     public void testCreateCommitRollback()
         throws Exception
     {
-        File testFile = new File( testDir, "test-file.txt" );
+        Path testFile = testDir.resolve("test-file.txt" );
 
         CreateFileEvent event = new CreateFileEvent( "file contents", testFile, digesters );
 
-        assertFalse( "Test file is not yet created", testFile.exists() );
+        assertFalse( "Test file is not yet created", Files.exists(testFile) );
 
         event.commit();
 
-        assertTrue( "Test file has been created", testFile.exists() );
+        assertTrue( "Test file has been created", Files.exists(testFile) );
 
         assertChecksumCommit( testFile );
 
         event.rollback();
 
-        assertFalse( "Test file is has been deleted after rollback", testFile.exists() );
+        assertFalse( "Test file is has been deleted after rollback", Files.exists(testFile) );
 
         assertChecksumRollback( testFile );
 
-        assertFalse( "Test file parent directories has been rolledback too", testDir.exists() );
-        assertTrue( "target directory still exists", new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target" ).exists() );
+        assertFalse( "Test file parent directories has been rolledback too", Files.exists(testDir) );
+        assertTrue( "target directory still exists", Files.exists(Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target" )) );
     }
 
     @Test
     public void testCreateCommitRollbackWithBackup()
         throws Exception
     {
-        File testFile = new File( testDir, "test-file.txt" );
+        Path testFile = testDir.resolve( "test-file.txt" );
 
-        testFile.getParentFile().mkdirs();
+        Files.createDirectories(testFile.getParent());
 
-        testFile.createNewFile();
+        Files.createFile(testFile);
 
         writeFile( testFile, "original contents" );
 
@@ -97,19 +99,19 @@ public class CreateFileEventTest
     public void testCreateRollbackCommit()
         throws Exception
     {
-        File testFile = new File( testDir, "test-file.txt" );
+        Path testFile = testDir.resolve( "test-file.txt" );
 
         CreateFileEvent event = new CreateFileEvent( "file contents", testFile, digesters );
 
-        assertFalse( "Test file is not yet created", testFile.exists() );
+        assertFalse( "Test file is not yet created", Files.exists(testFile) );
 
         event.rollback();
 
-        assertFalse( "Test file is not yet created", testFile.exists() );
+        assertFalse( "Test file is not yet created", Files.exists(testFile) );
 
         event.commit();
 
-        assertTrue( "Test file is not yet created", testFile.exists() );
+        assertTrue( "Test file is not yet created", Files.exists(testFile) );
 
         assertChecksumCommit( testFile );
     }
@@ -121,6 +123,6 @@ public class CreateFileEventTest
     {
         super.tearDown();
 
-        FileUtils.deleteDirectory( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/transaction-tests" ) );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/transaction-tests" ) );
     }
 }

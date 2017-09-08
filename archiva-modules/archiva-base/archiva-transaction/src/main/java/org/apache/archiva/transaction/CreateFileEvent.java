@@ -19,8 +19,9 @@ package org.apache.archiva.transaction;
  * under the License.
  */
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.codehaus.plexus.digest.Digester;
@@ -33,7 +34,7 @@ import org.codehaus.plexus.digest.Digester;
 public class CreateFileEvent
     extends AbstractTransactionEvent
 {
-    private final File destination;
+    private final Path destination;
 
     private final String content;
 
@@ -43,7 +44,7 @@ public class CreateFileEvent
      * @param destination
      * @param digesters {@link List}&lt;{@link Digester}&gt; digesters to use for checksumming 
      */
-    public CreateFileEvent( String content, File destination, List<? extends Digester> digesters )
+    public CreateFileEvent( String content, Path destination, List<? extends Digester> digesters )
     {
         super( digesters );
         this.content = content;
@@ -56,11 +57,11 @@ public class CreateFileEvent
     {
         createBackup( destination );
 
-        mkDirs( destination.getParentFile() );
+        mkDirs( destination.getParent() );
 
-        if ( !destination.exists() && !destination.createNewFile() )
+        if ( !Files.exists(destination))
         {
-            throw new IOException( "Unable to create new file" );
+            Files.createFile(destination);
         }
 
         writeStringToFile( destination, content );
@@ -72,7 +73,7 @@ public class CreateFileEvent
     public void rollback()
         throws IOException
     {
-        destination.delete();
+        Files.deleteIfExists(destination);
 
         revertFilesCreated();
 

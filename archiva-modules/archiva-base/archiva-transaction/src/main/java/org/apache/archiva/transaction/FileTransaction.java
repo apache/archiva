@@ -19,12 +19,12 @@ package org.apache.archiva.transaction;
  * under the License.
  */
 
-import java.io.File;
+import org.codehaus.plexus.digest.Digester;
+
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.codehaus.plexus.digest.Digester;
 
 /**
  * Implement commit/rollback semantics for a set of files.
@@ -79,7 +79,7 @@ public class FileTransaction
      * @param destination
      * @param digesters   {@link List}&lt;{@link org.codehaus.plexus.digest.Digester}&gt; digesters to use for checksumming
      */
-    public void copyFile( File source, File destination, List<? extends Digester> digesters )
+    public void copyFile(Path source, Path destination, List<? extends Digester> digesters )
     {
         events.add( new CopyFileEvent( source, destination, digesters ) );
     }
@@ -89,7 +89,7 @@ public class FileTransaction
      * @param destination
      * @param digesters   {@link List}&lt;{@link org.codehaus.plexus.digest.Digester}&gt; digesters to use for checksumming
      */
-    public void createFile( String content, File destination, List<? extends Digester> digesters )
+    public void createFile( String content, Path destination, List<? extends Digester> digesters )
     {
         events.add( new CreateFileEvent( content, destination, digesters ) );
     }

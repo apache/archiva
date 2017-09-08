@@ -19,26 +19,27 @@ package org.apache.archiva.transaction;
  * under the License.
  */
 
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  */
 public class CopyFileEventTest
     extends AbstractFileEventTest
 {
-    private File testDir = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/transaction-tests/copy-file" );
+    private Path testDir = Paths.get(org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/transaction-tests/copy-file");
 
-    private File testDest = new File( testDir, "test-file.txt" );
+    private Path testDest = testDir.resolve( "test-file.txt" );
 
-    private File testSource = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/transaction-tests/test-file.txt" );
+    private Path testSource = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/transaction-tests/test-file.txt" );
 
-    private File testDestChecksum;
+    private Path testDestChecksum;
 
     private String source, oldChecksum;
 
@@ -49,23 +50,23 @@ public class CopyFileEventTest
     {
         super.setUp();
 
-        testSource.getParentFile().mkdirs();
+        Files.createDirectories(testSource.getParent());
 
-        testSource.createNewFile();
+        Files.createFile(testSource);
 
         writeFile( testSource, "source contents" );
 
-        testDestChecksum = new File( testDest.getPath() + ".sha1" );
+        testDestChecksum = Paths.get( testDest.toAbsolutePath() + ".sha1" );
 
-        testDestChecksum.getParentFile().mkdirs();
+        Files.createDirectories(testDestChecksum.getParent());
 
-        testDestChecksum.createNewFile();
+        Files.createFile(testDestChecksum);
 
         writeFile( testDestChecksum, "this is the checksum" );
 
-        assertTrue( "Test if the source exists", testSource.exists() );
+        assertTrue( "Test if the source exists", Files.exists(testSource) );
 
-        assertTrue( "Test if the destination checksum exists", testDestChecksum.exists() );
+        assertTrue( "Test if the destination checksum exists", Files.exists(testDestChecksum) );
 
         source = readFile( testSource );
 
@@ -78,11 +79,11 @@ public class CopyFileEventTest
     {
         CopyFileEvent event = new CopyFileEvent( testSource, testDest, digesters );
 
-        assertFalse( "Test that the destination is not yet created", testDest.exists() );
+        assertFalse( "Test that the destination is not yet created", Files.exists(testDest) );
 
         event.commit();
 
-        assertTrue( "Test that the destination is created", testDest.exists() );
+        assertTrue( "Test that the destination is created", Files.exists(testDest) );
 
         assertChecksumCommit( testDest );
 
@@ -92,7 +93,7 @@ public class CopyFileEventTest
 
         event.rollback();
 
-        assertFalse( "Test that the destination file has been deleted", testDest.exists() );
+        assertFalse( "Test that the destination file has been deleted", Files.exists(testDest) );
 
         assertChecksumRollback( testDest );
     }
@@ -101,13 +102,13 @@ public class CopyFileEventTest
     public void testCopyCommitRollbackWithBackup()
         throws Exception
     {
-        testDest.getParentFile().mkdirs();
+        Files.createDirectories(testDest.getParent());
 
-        testDest.createNewFile();
+        Files.createFile(testDest);
 
         writeFile( testDest, "overwritten contents" );
 
-        assertTrue( "Test that the destination exists", testDest.exists() );
+        assertTrue( "Test that the destination exists", Files.exists(testDest) );
 
         CopyFileEvent event = new CopyFileEvent( testSource, testDest, digesters );
 
@@ -138,15 +139,15 @@ public class CopyFileEventTest
     {
         CopyFileEvent event = new CopyFileEvent( testSource, testDest, digesters );
 
-        assertFalse( "Test that the destination is not yet created", testDest.exists() );
+        assertFalse( "Test that the destination is not yet created", Files.exists(testDest) );
 
         event.rollback();
 
-        assertFalse( "Test that the destination file is not yet created", testDest.exists() );
+        assertFalse( "Test that the destination file is not yet created", Files.exists(testDest) );
 
         event.commit();
 
-        assertTrue( "Test that the destination is created", testDest.exists() );
+        assertTrue( "Test that the destination is created", Files.exists(testDest) );
 
         assertChecksumCommit( testDest );
 
@@ -162,11 +163,11 @@ public class CopyFileEventTest
     {
         super.tearDown();
 
-        FileUtils.deleteDirectory( new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/transaction-tests" ) );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/transaction-tests" ) );
     }
 
     @Override
-    protected void assertChecksumCommit( File file )
+    protected void assertChecksumCommit( Path  file )
         throws IOException
     {
         super.assertChecksumCommit( file );
@@ -177,7 +178,7 @@ public class CopyFileEventTest
     }
 
     @Override
-    protected void assertChecksumRollback( File file )
+    protected void assertChecksumRollback( Path file )
         throws IOException
     {
         assertChecksumDoesNotExist( file, "md5" );

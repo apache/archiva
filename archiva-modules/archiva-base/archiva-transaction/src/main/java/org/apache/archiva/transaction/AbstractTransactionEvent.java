@@ -23,14 +23,13 @@ import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Abstract class for the TransactionEvents
@@ -40,11 +39,11 @@ import java.util.Map;
 public abstract class AbstractTransactionEvent
     implements TransactionEvent
 {
-    private Map<File, File> backups = new HashMap<>();
+    private Map<Path, Path> backups = new HashMap<>();
 
-    private List<File> createdDirs = new ArrayList<>();
+    private List<Path> createdDirs = new ArrayList<>();
 
-    private List<File> createdFiles = new ArrayList<>();
+    private List<Path> createdFiles = new ArrayList<>();
 
     /**
      * {@link List}&lt;{@link Digester}&gt;
@@ -72,31 +71,24 @@ public abstract class AbstractTransactionEvent
      * @param dir The File directory to be created
      * @throws IOException when an unrecoverable error occurred
      */
-    protected void mkDirs( File dir )
+    protected void mkDirs( Path dir )
         throws IOException
     {
-        List<File> createDirs = new ArrayList<>();
+        List<Path> createDirs = new ArrayList<>();
 
-        File parent = dir;
-        while ( !parent.exists() || !parent.isDirectory() )
+        Path parent = dir;
+        while ( !Files.exists(parent) || !Files.isDirectory(parent) )
         {
             createDirs.add( parent );
 
-            parent = parent.getParentFile();
+            parent = parent.getParent();
         }
 
         while ( !createDirs.isEmpty() )
         {
-            File directory = createDirs.remove( createDirs.size() - 1 );
-
-            if ( directory.mkdir() )
-            {
-                createdDirs.add( directory );
-            }
-            else
-            {
-                throw new IOException( "Failed to create directory: " + directory.getAbsolutePath() );
-            }
+            Path directory = createDirs.remove( createDirs.size() - 1 );
+            Files.createDirectories(directory);
+            createdDirs.add( directory );
         }
     }
 
@@ -109,11 +101,15 @@ public abstract class AbstractTransactionEvent
 
             while ( !createdDirs.isEmpty() )
             {
-                File dir = (File) createdDirs.remove( 0 );
+                Path dir = createdDirs.remove( 0 );
 
-                if ( dir.isDirectory() && dir.list().length == 0 )
+                if ( Files.isDirectory(dir))
                 {
-                    FileUtils.deleteDirectory( dir );
+                    try(Stream<Path> str = Files.list(dir)) {
+                        if (str.count()==0) {
+                            org.apache.archiva.common.utils.FileUtils.deleteDirectory(dir);
+                        }
+                    }
                 }
                 else
                 {
@@ -127,25 +123,25 @@ public abstract class AbstractTransactionEvent
     protected void revertFilesCreated()
         throws IOException
     {
-        Iterator<File> it = createdFiles.iterator();
+        Iterator<Path> it = createdFiles.iterator();
         while ( it.hasNext() )
         {
-            File file = (File) it.next();
-            file.delete();
+            Path file = it.next();
+            Files.deleteIfExists(file);
             it.remove();
         }
     }
 
-    protected void createBackup( File file )
+    protected void createBackup( Path file )
         throws IOException
     {
-        if ( file.exists() && file.isFile() )
+        if ( Files.exists(file) && Files.isRegularFile(file) )
         {
-            File backup = File.createTempFile( "temp-", ".backup" );
+            Path backup = Files.createTempFile( "temp-", ".backup" );
 
-            FileUtils.copyFile( file, backup );
+            FileUtils.copyFile( file.toFile(), backup.toFile() );
 
-            backup.deleteOnExit();
+            backup.toFile().deleteOnExit();
 
             backups.put( file, backup );
         }
@@ -154,19 +150,19 @@ public abstract class AbstractTransactionEvent
     protected void restoreBackups()
         throws IOException
     {
-        for ( Map.Entry<File, File> entry : backups.entrySet() )
+        for ( Map.Entry<Path, Path> entry : backups.entrySet() )
         {
-            FileUtils.copyFile( entry.getValue(), entry.getKey() );
+            FileUtils.copyFile( entry.getValue().toFile(), entry.getKey().toFile() );
         }
     }
 
-    protected void restoreBackup( File file )
+    protected void restoreBackup( Path file )
         throws IOException
     {
-        File backup = (File) backups.get( file );
+        Path backup = backups.get( file );
         if ( backup != null )
         {
-            FileUtils.copyFile( backup, file );
+            FileUtils.copyFile( backup.toFile(), file.toFile() );
         }
     }
 
@@ -177,13 +173,13 @@ public abstract class AbstractTransactionEvent
      * @param force whether existing checksums should be overwritten or not
      * @throws IOException
      */
-    protected void createChecksums( File file, boolean force )
+    protected void createChecksums( Path file, boolean force )
         throws IOException
     {
         for ( Digester digester : getDigesters() )
         {
-            File checksumFile = new File( file.getAbsolutePath() + "." + getDigesterFileExtension( digester ) );
-            if ( checksumFile.exists() )
+            Path checksumFile = Paths.get(file.toAbsolutePath() + "." + getDigesterFileExtension( digester ) );
+            if ( Files.exists(checksumFile) )
             {
                 if ( !force )
                 {
@@ -198,7 +194,7 @@ public abstract class AbstractTransactionEvent
 
             try
             {
-                writeStringToFile( checksumFile, digester.calc( file ) );
+                writeStringToFile( checksumFile, digester.calc( file.toFile() ) );
             }
             catch ( DigesterException e )
             {
@@ -210,10 +206,10 @@ public abstract class AbstractTransactionEvent
     /**
      * TODO: Remove in favor of using FileUtils directly.
      */
-    protected void writeStringToFile( File file, String content )
+    protected void writeStringToFile( Path file, String content )
         throws IOException
     {
-        FileUtils.writeStringToFile( file, content );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( file, Charset.defaultCharset(), content );
     }
 
     /**

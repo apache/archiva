@@ -19,12 +19,14 @@ package org.apache.archiva.transaction;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.digest.Digester;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * Event to copy a file.
@@ -34,9 +36,9 @@ import org.codehaus.plexus.digest.Digester;
 public class CopyFileEvent
     extends AbstractTransactionEvent
 {
-    private final File source;
+    private final Path source;
 
-    private final File destination;
+    private final Path destination;
 
     /**
      * 
@@ -44,7 +46,7 @@ public class CopyFileEvent
      * @param destination
      * @param digesters {@link List}&lt;{@link Digester}&gt; digesters to use for checksumming 
      */
-    public CopyFileEvent( File source, File destination, List<? extends Digester> digesters )
+    public CopyFileEvent( Path source, Path destination, List<? extends Digester> digesters )
     {
         super( digesters );
         this.source = source;
@@ -57,9 +59,9 @@ public class CopyFileEvent
     {
         createBackup( destination );
 
-        mkDirs( destination.getParentFile() );
+        mkDirs( destination.getParent() );
 
-        FileUtils.copyFile( source, destination );
+        FileUtils.copyFile( source.toFile(), destination.toFile() );
 
         createChecksums( destination, true );
         copyChecksums();
@@ -91,11 +93,11 @@ public class CopyFileEvent
     private boolean copyChecksum( String extension )
         throws IOException
     {
-        File checksumSource = new File( source.getAbsolutePath() + "." + extension );
-        if ( checksumSource.exists() )
+        Path checksumSource = Paths.get( source.toAbsolutePath() + "." + extension );
+        if ( Files.exists(checksumSource) )
         {
-            File checksumDestination = new File( destination.getAbsolutePath() + "." + extension );
-            FileUtils.copyFile( checksumSource, checksumDestination );
+            Path checksumDestination = Paths.get( destination.toAbsolutePath() + "." + extension );
+            FileUtils.copyFile( checksumSource.toFile(), checksumDestination.toFile() );
             return true;
         }
         return false;
@@ -105,7 +107,7 @@ public class CopyFileEvent
     public void rollback()
         throws IOException
     {
-        destination.delete();
+        Files.deleteIfExists(destination);
 
         revertFilesCreated();
 
