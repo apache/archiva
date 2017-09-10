@@ -41,7 +41,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -164,7 +163,7 @@ public abstract class AbstractRepositoryPurgeTest
         config.setName( repoName );
         config.setDaysOlder( TEST_DAYS_OLDER );
         String path = AbstractRepositoryPurgeTest.fixPath(
-            new File( "target/test-" + getName() + "/" + repoId ).getAbsolutePath() );
+            Paths.get( "target/test-" + getName() + "/" + repoId ).toAbsolutePath().toString() );
         config.setLocation( path );
         config.setReleases( true );
         config.setSnapshots( true );
@@ -188,17 +187,17 @@ public abstract class AbstractRepositoryPurgeTest
 
     protected void assertDeleted( String path )
     {
-        assertFalse( "File should have been deleted: " + path, new File( path ).exists() );
+        assertFalse( "File should have been deleted: " + path, Files.exists(Paths.get( path )) );
     }
 
     protected void assertExists( String path )
     {
-        assertTrue( "File should exist: " + path, new File( path ).exists() );
+        assertTrue( "File should exist: " + path, Files.exists(Paths.get(path)) );
     }
 
-    protected File getTestRepoRoot()
+    protected Path getTestRepoRoot()
     {
-        return new File( "target/test-" + getName() + "/" + TEST_REPO_ID );
+        return Paths.get( "target/test-" + getName() + "/" + TEST_REPO_ID );
     }
 
     protected Path getTestRepoRootPath() {
@@ -209,20 +208,20 @@ public abstract class AbstractRepositoryPurgeTest
         throws Exception
     {
         removeMavenIndexes();
-        File testDir = new File( AbstractRepositoryPurgeTest.fixPath( getTestRepoRoot().getAbsolutePath() ) );
-        FileUtils.deleteDirectory( testDir );
-        File sourceDir = new File( new File( "target/test-classes/" + TEST_REPO_ID ).getAbsolutePath() );
-        FileUtils.copyDirectory( sourceDir, testDir );
+        Path testDir = Paths.get( AbstractRepositoryPurgeTest.fixPath( getTestRepoRoot().toAbsolutePath().toString() ) );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( testDir );
+        Path sourceDir = Paths.get( Paths.get( "target/test-classes/" + TEST_REPO_ID ).toAbsolutePath().toString() );
+        FileUtils.copyDirectory( sourceDir.toFile(), testDir.toFile() );
 
-        File releasesTestDir = new File( AbstractRepositoryPurgeTest.fixPath(
-            new File( "target/test-" + getName() + "/" + RELEASES_TEST_REPO_ID ).getAbsolutePath() ) );
+        Path releasesTestDir = Paths.get( AbstractRepositoryPurgeTest.fixPath(
+            Paths.get( "target/test-" + getName() + "/" + RELEASES_TEST_REPO_ID ).toAbsolutePath().toString() ) );
 
-        FileUtils.deleteDirectory( releasesTestDir );
-        File sourceReleasesDir =
-            new File( new File( "target/test-classes/" + RELEASES_TEST_REPO_ID ).getAbsolutePath() );
-        FileUtils.copyDirectory( sourceReleasesDir, releasesTestDir );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( releasesTestDir );
+        Path sourceReleasesDir =
+            Paths.get( Paths.get( "target/test-classes/" + RELEASES_TEST_REPO_ID ).toAbsolutePath().toString() );
+        FileUtils.copyDirectory( sourceReleasesDir.toFile(), releasesTestDir.toFile() );
 
-        return AbstractRepositoryPurgeTest.fixPath( testDir.getAbsolutePath() );
+        return AbstractRepositoryPurgeTest.fixPath( testDir.toAbsolutePath().toString() );
     }
 
     public String getName()

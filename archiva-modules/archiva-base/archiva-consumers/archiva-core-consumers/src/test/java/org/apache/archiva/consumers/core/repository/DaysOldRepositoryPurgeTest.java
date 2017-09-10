@@ -27,8 +27,11 @@ import org.junit.After;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
@@ -47,13 +50,13 @@ public class DaysOldRepositoryPurgeTest
 {
     private static final int OLD_TIMESTAMP = 1179382029;
 
-    private void setLastModified( String dirPath, long lastModified )
+    private void setLastModified( String dirPath, long lastModified ) throws IOException
     {
-        File dir = new File( dirPath );
-        File[] contents = dir.listFiles();
-        for ( File content : contents )
+        Path dir = Paths.get( dirPath );
+        Path[] contents = Files.list( dir ).toArray(Path[]::new );
+        for ( Path content : contents )
         {
-            content.setLastModified( lastModified );
+            Files.setLastModifiedTime( content, FileTime.fromMillis( lastModified ));
         }
     }
 
@@ -257,16 +260,16 @@ public class DaysOldRepositoryPurgeTest
 
         for ( int i = 5; i <= 7; i++ )
         {
-            File jarFile = new File( versionRoot, "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".jar" );
-            jarFile.createNewFile();
-            File pomFile = new File( versionRoot, "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".pom" );
-            pomFile.createNewFile();
+            Path jarFile = Paths.get( versionRoot, "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".jar" );
+            Files.createFile( jarFile );
+            Path pomFile = Paths.get( versionRoot, "/plexus-utils-1.4.3-" + timestamp + "-" + i + ".pom" );
+            Files.createFile(pomFile);
 
             // set timestamp to older than 100 days for the first build, but ensure the filename timestamp is honoured instead
             if ( i == 5 )
             {
-                jarFile.setLastModified( OLD_TIMESTAMP );
-                pomFile.setLastModified( OLD_TIMESTAMP );
+                Files.setLastModifiedTime( jarFile, FileTime.fromMillis( OLD_TIMESTAMP ));
+                Files.setLastModifiedTime( pomFile, FileTime.fromMillis( OLD_TIMESTAMP ));
             }
         }
 

@@ -35,9 +35,10 @@ import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -160,9 +161,9 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         assertExists( projectRoot + "/2.3/maven-plugin-plugin-2.3.pom.sha1" );
 
         // check if metadata file was updated
-        File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
+        Path artifactMetadataFile = Paths.get( projectRoot + "/maven-metadata.xml" );
 
-        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, Charset.defaultCharset() );
+        String metadataXml = org.apache.archiva.common.utils.FileUtils.readFileToString( artifactMetadataFile, Charset.defaultCharset() );
 
         String expectedVersions =
             "<expected><versions><version>2.2</version>" + "<version>2.3</version></versions></expected>";
@@ -188,20 +189,20 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         // test listeners for the correct artifacts
         listenerControl.replay();
 
-        File file = new File( repoRoot, INDEX_PATH );
-        if ( !file.exists() )
+        Path file = Paths.get(repoRoot, INDEX_PATH );
+        if ( !Files.exists(file) )
         {
             // help windauze to create directory with .
-            file.getParentFile().mkdirs();
-            file.createNewFile();
+            Files.createDirectories( file.getParent() );
+            Files.createFile( file );
         }
-        assertTrue( file.exists() );
+        assertTrue( Files.exists(file) );
 
         repoPurge.process( INDEX_PATH );
 
         listenerControl.verify();
 
-        assertTrue( file.exists() );
+        assertTrue( Files.exists(file) );
     }
 
     @Test
@@ -266,7 +267,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         assertDeleted( projectRoot + "/1.0-SNAPSHOT/released-artifact-in-diff-repo-1.0-SNAPSHOT.pom.sha1" );
 
         String releasesProjectRoot =
-            AbstractRepositoryPurgeTest.fixPath( new File( "target/test-" + getName() + "/releases-test-repo-one" ).getAbsolutePath()
+            AbstractRepositoryPurgeTest.fixPath( Paths.get( "target/test-" + getName() + "/releases-test-repo-one" ).toAbsolutePath().toString()
                 + "/org/apache/archiva/released-artifact-in-diff-repo" );
 
         // check if the released version was not removed
@@ -350,9 +351,9 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         assertExists( projectRoot + "/2.0.4-SNAPSHOT/maven-source-plugin-2.0.4-SNAPSHOT.pom.sha1" );
 
         // check if metadata file was not updated (because nothing was removed)
-        File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
+        Path artifactMetadataFile = Paths.get( projectRoot + "/maven-metadata.xml" );
 
-        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, Charset.defaultCharset() );
+        String metadataXml = org.apache.archiva.common.utils.FileUtils.readFileToString( artifactMetadataFile, Charset.defaultCharset() );
 
         String expectedVersions = "<expected><versions><version>2.0.3-SNAPSHOT</version>"
             + "<version>2.0.4-SNAPSHOT</version></versions></expected>";

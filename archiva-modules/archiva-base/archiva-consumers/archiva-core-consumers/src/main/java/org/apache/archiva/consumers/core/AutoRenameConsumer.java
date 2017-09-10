@@ -21,6 +21,7 @@ package org.apache.archiva.consumers.core;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
+import org.apache.archiva.consumers.Consumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.commons.io.FileUtils;
@@ -29,8 +30,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,7 +58,7 @@ public class AutoRenameConsumer
 
     private static final String RENAME_FAILURE = "rename_failure";
 
-    private File repositoryDir;
+    private Path repositoryDir;
 
     private List<String> includes = new ArrayList<>( 3 );
 
@@ -88,7 +91,7 @@ public class AutoRenameConsumer
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
-        this.repositoryDir = new File( repository.getLocation( ) );
+        this.repositoryDir = Paths.get( repository.getLocation( ) );
     }
 
     @Override
@@ -126,8 +129,8 @@ public class AutoRenameConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        File file = new File( this.repositoryDir, path );
-        if ( file.exists( ) )
+        Path file = this.repositoryDir.resolve( path );
+        if ( Files.exists(file) )
         {
             Iterator<String> itExtensions = this.extensionRenameMap.keySet( ).iterator( );
             while ( itExtensions.hasNext( ) )
@@ -137,11 +140,11 @@ public class AutoRenameConsumer
                 {
                     String fixedExtension = this.extensionRenameMap.get( extension );
                     String correctedPath = path.substring( 0, path.length( ) - extension.length( ) ) + fixedExtension;
-                    File to = new File( this.repositoryDir, correctedPath );
+                    Path to = repositoryDir.resolve(correctedPath);
                     try
                     {
                         // Rename the file.
-                        FileUtils.moveFile( file, to );
+                        FileUtils.moveFile( file.toFile(), to.toFile() );
                     }
                     catch ( IOException e )
                     {
@@ -152,9 +155,17 @@ public class AutoRenameConsumer
                 }
             }
 
-            log.info( "(Auto) Removing File: {} ", file.getAbsolutePath( ) );
-            triggerConsumerInfo( "(Auto) Removing File: " + file.getAbsolutePath( ) );
-            file.delete( );
+            log.info( "(Auto) Removing File: {} ", file.toAbsolutePath( ) );
+            triggerConsumerInfo( "(Auto) Removing File: " + file.toAbsolutePath( ) );
+            try
+            {
+                Files.delete( file );
+            }
+            catch ( IOException e )
+            {
+                log.error("Could not delete file {}: {}", file, e.getMessage(), e);
+                throw new ConsumerException( "File deletion failed "+file );
+            }
         }
     }
 

@@ -35,7 +35,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -74,7 +77,7 @@ public class AutoRemoveConsumer
     @Inject
     private FileTypes filetypes;
 
-    private File repositoryDir;
+    private Path repositoryDir;
 
     private List<String> includes = new ArrayList<>( 0 );
 
@@ -94,7 +97,7 @@ public class AutoRemoveConsumer
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
-        this.repositoryDir = new File( repository.getLocation( ) );
+        this.repositoryDir = Paths.get( repository.getLocation( ) );
     }
 
     @Override
@@ -132,12 +135,20 @@ public class AutoRemoveConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        File file = new File( this.repositoryDir, path );
-        if ( file.exists( ) )
+        Path file = this.repositoryDir.resolve(path );
+        if ( Files.exists(file) )
         {
-            log.info( "(Auto) Removing File: {}", file.getAbsolutePath( ) );
-            triggerConsumerInfo( "(Auto) Removing File: " + file.getAbsolutePath( ) );
-            file.delete( );
+            log.info( "(Auto) Removing File: {}", file.toAbsolutePath( ) );
+            triggerConsumerInfo( "(Auto) Removing File: " + file.toAbsolutePath( ) );
+            try
+            {
+                Files.deleteIfExists( file );
+            }
+            catch ( IOException e )
+            {
+                log.error("Could not delete file {}: {}", file, e.getMessage(), e);
+                throw new ConsumerException( "Could not delete file "+file );
+            }
         }
     }
 

@@ -28,7 +28,6 @@ import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
 import org.junit.After;
@@ -39,8 +38,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -58,7 +59,7 @@ public class NexusIndexerConsumerTest
     private final class ArchivaTaskSchedulerStub
         implements ArchivaTaskScheduler<ArtifactIndexingTask>
     {
-        Set<File> indexed = new HashSet<>();
+        Set<Path> indexed = new HashSet<>();
 
         @Override
         public void queueTask( ArtifactIndexingTask task )
@@ -67,7 +68,7 @@ public class NexusIndexerConsumerTest
             switch ( task.getAction() )
             {
                 case ADD:
-                    indexed.add( task.getResourceFile() );
+                    indexed.add( task.getResourceFile().toPath() );
                     break;
                 case DELETE:
                     indexed.remove( task.getResourceFile() );
@@ -141,13 +142,13 @@ public class NexusIndexerConsumerTest
         throws Exception
     {
         // delete created index in the repository
-        File indexDir = new File( repositoryConfig.getLocation(), ".indexer" );
-        FileUtils.deleteDirectory( indexDir );
-        assertFalse( indexDir.exists() );
+        Path indexDir = Paths.get( repositoryConfig.getLocation(), ".indexer" );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDir );
+        assertFalse( Files.exists(indexDir) );
 
-        indexDir = new File( repositoryConfig.getLocation(), ".index" );
-        FileUtils.deleteDirectory( indexDir );
-        assertFalse( indexDir.exists() );
+        indexDir = Paths.get( repositoryConfig.getLocation(), ".index" );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDir );
+        assertFalse( Files.exists(indexDir) );
 
         super.tearDown();
     }
@@ -156,7 +157,7 @@ public class NexusIndexerConsumerTest
     public void testIndexerIndexArtifact()
         throws Exception
     {
-        File artifactFile = new File( repositoryConfig.getLocation(),
+        Path artifactFile = Paths.get( repositoryConfig.getLocation(),
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
         // begin scan
@@ -173,7 +174,7 @@ public class NexusIndexerConsumerTest
     public void testIndexerArtifactAlreadyIndexed()
         throws Exception
     {
-        File artifactFile = new File( repositoryConfig.getLocation(),
+        Path artifactFile = Paths.get( repositoryConfig.getLocation(),
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
         // begin scan
@@ -199,7 +200,7 @@ public class NexusIndexerConsumerTest
     public void testIndexerIndexArtifactThenPom()
         throws Exception
     {
-        File artifactFile = new File( repositoryConfig.getLocation(),
+        Path artifactFile = Paths.get( repositoryConfig.getLocation(),
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
         // begin scan
@@ -212,7 +213,7 @@ public class NexusIndexerConsumerTest
         assertTrue( scheduler.indexed.contains( artifactFile ) );
 
         artifactFile =
-            new File( repositoryConfig.getLocation(), "org/apache/archiva/archiva-index-methods-jar-test/1.0/pom.xml" );
+            Paths.get( repositoryConfig.getLocation(), "org/apache/archiva/archiva-index-methods-jar-test/1.0/pom.xml" );
 
         // scan and index again
         now = Calendar.getInstance().getTime();

@@ -9,7 +9,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,7 +49,7 @@ public class ArtifactMissingChecksumsConsumerTest
         repoConfig.setId( "test-repo" );
         repoConfig.setName( "Test Repository" );
         repoConfig.setLayout( "default" );
-        repoConfig.setLocation( new File( "target/test-classes/test-repo/" ).getPath() );
+        repoConfig.setLocation( Paths.get( "target/test-classes/test-repo/" ).toString() );
 
         consumer = applicationContext.getBean( "knownRepositoryContentConsumer#create-missing-checksums",
                                                KnownRepositoryContentConsumer.class );
@@ -60,7 +59,7 @@ public class ArtifactMissingChecksumsConsumerTest
     public void testNoExistingChecksums()
         throws Exception
     {
-        String path = "/no-checksums-artifact/1.0/no-checksums-artifact-1.0.jar";
+        String path = "no-checksums-artifact/1.0/no-checksums-artifact-1.0.jar";
 
         Path sha1Path = Paths.get( repoConfig.getLocation(), path + ".sha1" );
         Path md5FilePath = Paths.get( repoConfig.getLocation(), path + ".md5" );
@@ -94,12 +93,12 @@ public class ArtifactMissingChecksumsConsumerTest
     public void testExistingIncorrectChecksums()
         throws Exception
     {
-        File newLocation = new File( "target/test-repo" );
-        FileUtils.deleteDirectory( newLocation );
-        FileUtils.copyDirectory( new File( repoConfig.getLocation() ), newLocation );
-        repoConfig.setLocation( newLocation.getAbsolutePath() );
+        Path newLocation = Paths.get( "target/test-repo" );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( newLocation );
+        FileUtils.copyDirectory( Paths.get(repoConfig.getLocation() ).toFile(), newLocation.toFile() );
+        repoConfig.setLocation( newLocation.toAbsolutePath().toString() );
 
-        String path = "/incorrect-checksums/1.0/incorrect-checksums-1.0.jar";
+        String path = "incorrect-checksums/1.0/incorrect-checksums-1.0.jar";
 
         Path sha1Path = Paths.get( repoConfig.getLocation(), path + ".sha1" );
 

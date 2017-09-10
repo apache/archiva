@@ -40,8 +40,10 @@ import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -93,9 +95,9 @@ public class CleanupReleasedSnapshotsRepositoryPurge
     {
         try
         {
-            File artifactFile = new File( repository.getRepoRoot( ), path );
+            Path artifactFile = Paths.get( repository.getRepoRoot( ), path );
 
-            if ( !artifactFile.exists( ) )
+            if ( !Files.exists(artifactFile) )
             {
                 // Nothing to do here, file doesn't exist, skip it.
                 return;
@@ -164,7 +166,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                 {
                     listener.deleteArtifact( metadataRepository, repository.getId( ), artifactRef.getGroupId( ),
                         artifactRef.getArtifactId( ), artifactRef.getVersion( ),
-                        artifactFile.getName( ) );
+                        artifactFile.getFileName().toString() );
                 }
                 metadataRepository.removeProjectVersion( repository.getId( ), artifactRef.getGroupId( ),
                     artifactRef.getArtifactId( ), artifactRef.getVersion( ) );

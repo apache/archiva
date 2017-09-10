@@ -34,7 +34,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 
 import static org.mockito.Mockito.*;
@@ -69,16 +72,16 @@ public class SimpleArtifactConsumerTest
     }
 
     private void setUpMockRepository()
-        throws RepositoryAdminException
+        throws RepositoryAdminException, IOException
     {
-        File repoDir = new File( "target/test-consumer-repo" );
-        repoDir.mkdirs();
-        repoDir.deleteOnExit();
+        Path repoDir = Paths.get( "target/test-consumer-repo" );
+        Files.createDirectories( repoDir );
+        repoDir.toFile().deleteOnExit();
 
         testRepository = new ManagedRepository();
         testRepository.setName( "Test-Consumer-Repository" );
         testRepository.setId( "test-consumer-repository" );
-        testRepository.setLocation( repoDir.getAbsolutePath() );
+        testRepository.setLocation( repoDir.toAbsolutePath().toString() );
 
         when( managedRepositoryAdmin.getManagedRepository( testRepository.getId() ) ).thenReturn( testRepository );
     }

@@ -43,8 +43,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -89,7 +91,7 @@ public class MetadataUpdaterConsumer
 
     private ManagedRepositoryContent repository;
 
-    private File repositoryDir;
+    private Path repositoryDir;
 
     private List<String> includes = new ArrayList<>( 0 );
 
@@ -119,7 +121,7 @@ public class MetadataUpdaterConsumer
         try
         {
             this.repository = repositoryFactory.getManagedRepositoryContent( repoConfig.getId( ) );
-            this.repositoryDir = new File( repository.getRepoRoot( ) );
+            this.repositoryDir = Paths.get( repository.getRepoRoot( ) );
             this.scanStartTimestamp = System.currentTimeMillis( );
         }
         catch ( RepositoryNotFoundException e )
@@ -200,9 +202,9 @@ public class MetadataUpdaterConsumer
         {
             String metadataPath = this.metadataTools.toPath( projectRef );
 
-            File projectMetadata = new File( this.repositoryDir, metadataPath );
+            Path projectMetadata = this.repositoryDir.resolve( metadataPath );
 
-            if ( projectMetadata.exists( ) && ( projectMetadata.lastModified( ) >= this.scanStartTimestamp ) )
+            if ( Files.exists(projectMetadata) && ( Files.getLastModifiedTime( projectMetadata).toMillis() >= this.scanStartTimestamp ) )
             {
                 // This metadata is up to date. skip it.
                 log.debug( "Skipping uptodate metadata: {}", this.metadataTools.toPath( projectRef ) );
@@ -251,9 +253,9 @@ public class MetadataUpdaterConsumer
         {
             String metadataPath = this.metadataTools.toPath( versionRef );
 
-            File projectMetadata = new File( this.repositoryDir, metadataPath );
+            Path projectMetadata = this.repositoryDir.resolve( metadataPath );
 
-            if ( projectMetadata.exists( ) && ( projectMetadata.lastModified( ) >= this.scanStartTimestamp ) )
+            if ( Files.exists(projectMetadata) && ( Files.getLastModifiedTime( projectMetadata ).toMillis() >= this.scanStartTimestamp ) )
             {
                 // This metadata is up to date. skip it.
                 log.debug( "Skipping uptodate metadata: {}", this.metadataTools.toPath( versionRef ) );

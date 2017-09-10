@@ -29,7 +29,9 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.layout.LayoutException;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -57,9 +59,9 @@ public class RetentionCountRepositoryPurge
     {
         try
         {
-            File artifactFile = new File( repository.getRepoRoot( ), path );
+            Path artifactFile = Paths.get( repository.getRepoRoot( ), path );
 
-            if ( !artifactFile.exists( ) )
+            if ( !Files.exists(artifactFile) )
             {
                 return;
             }

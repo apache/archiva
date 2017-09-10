@@ -33,17 +33,21 @@ import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.mock.MockRepositorySessionFactory;
-import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -60,6 +64,8 @@ import static org.mockito.Mockito.*;
 public class RepositoryPurgeConsumerTest
     extends AbstractRepositoryPurgeTest
 {
+    private static final Logger log = LoggerFactory.getLogger( RepositoryPurgeConsumerTest.class );
+
     @Before
     @Override
     public void setUp()
@@ -124,24 +130,33 @@ public class RepositoryPurgeConsumerTest
             applicationContext.getBean( "knownRepositoryContentConsumer#repository-purge",
                                         KnownRepositoryContentConsumer.class );
 
-        File repoLocation = new File( "target/test-" + getName() + "/test-repo" );
+        Path repoLocation = Paths.get( "target/test-" + getName() + "/test-repo" );
 
-        File localFile = new File( repoLocation, path );
+        Path localFile = repoLocation.resolve( path );
 
         ConsumerWantsFilePredicate predicate = new ConsumerWantsFilePredicate();
-        BaseFile baseFile = new BaseFile( repoLocation, localFile );
+        BaseFile baseFile = new BaseFile( repoLocation.toFile(), localFile.toFile() );
         predicate.setBasefile( baseFile );
 
         assertFalse( predicate.evaluate( repoPurgeConsumer ) );
     }
 
-    private void setLastModified( String path )
+    private void setLastModified( String path ) throws IOException
     {
-        File dir = new File( path );
-        File[] contents = dir.listFiles();
+        Path dir = Paths.get( path );
+        Path[] contents = new Path[0];
+        try
+        {
+            contents = Files.list( dir ).toArray(Path[]::new);
+        }
+        catch ( IOException e )
+        {
+            log.error("Could not list files {}: {}", dir, e.getMessage(), e);
+            contents = new Path[0];
+        }
         for ( int i = 0; i < contents.length; i++ )
         {
-            contents[i].setLastModified( 1179382029 );
+            Files.setLastModifiedTime( contents[i], FileTime.fromMillis( 1179382029 ) );
         }
     }
 
@@ -400,9 +415,9 @@ public class RepositoryPurgeConsumerTest
         assertExists( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.sha1" );
 
         // check if metadata file wasn't updated
-        File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
+        Path artifactMetadataFile = Paths.get( projectRoot + "/maven-metadata.xml" );
 
-        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, Charset.defaultCharset() );
+        String metadataXml = org.apache.archiva.common.utils.FileUtils.readFileToString( artifactMetadataFile, Charset.defaultCharset() );
 
         String expectedVersions = "<expected><versions><version>2.3-SNAPSHOT</version></versions></expected>";
 
@@ -459,9 +474,9 @@ public class RepositoryPurgeConsumerTest
         assertDeleted( projectRoot + "/2.3-SNAPSHOT/maven-plugin-plugin-2.3-SNAPSHOT.pom.sha1" );
 
         // check if metadata file was updated
-        File artifactMetadataFile = new File( projectRoot + "/maven-metadata.xml" );
+        Path artifactMetadataFile = Paths.get( projectRoot + "/maven-metadata.xml" );
 
-        String metadataXml = FileUtils.readFileToString( artifactMetadataFile, Charset.defaultCharset() );
+        String metadataXml = org.apache.archiva.common.utils.FileUtils.readFileToString( artifactMetadataFile, Charset.defaultCharset() );
 
         String expectedVersions =
             "<expected><versions><version>2.2</version>" + "<version>2.3</version></versions></expected>";

@@ -37,7 +37,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -46,7 +48,7 @@ import static org.junit.Assert.assertFalse;
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public abstract class AbstractArtifactConsumerTest
 {
-    private File repoLocation;
+    private Path repoLocation;
 
     protected KnownRepositoryContentConsumer consumer;
 
@@ -69,7 +71,7 @@ public abstract class AbstractArtifactConsumerTest
         assertEquals( FileTypes.ARTIFACTS, fileType.getId() );
         fileType.addPattern( "**/*.xml" );
 
-        repoLocation = new File( "target/test-" + getName() + "/test-repo" );
+        repoLocation = Paths.get( "target/test-" + getName() + "/test-repo" );
     }
 
     @After
@@ -86,11 +88,11 @@ public abstract class AbstractArtifactConsumerTest
     @Test
     public void testConsumption()
     {
-        File localFile =
-            new File( repoLocation, "org/apache/maven/plugins/maven-plugin-plugin/2.4.1/maven-metadata.xml" );
+        Path localFile =
+            repoLocation.resolve( "org/apache/maven/plugins/maven-plugin-plugin/2.4.1/maven-metadata.xml" );
 
         ConsumerWantsFilePredicate predicate = new ConsumerWantsFilePredicate();
-        BaseFile baseFile = new BaseFile( repoLocation, localFile );
+        BaseFile baseFile = new BaseFile( repoLocation.toFile(), localFile.toFile() );
         predicate.setBasefile( baseFile );
 
         assertFalse( predicate.evaluate( consumer ) );
@@ -99,11 +101,11 @@ public abstract class AbstractArtifactConsumerTest
     @Test
     public void testConsumptionOfOtherMetadata()
     {
-        File localFile =
-            new File( repoLocation, "org/apache/maven/plugins/maven-plugin-plugin/2.4.1/maven-metadata-central.xml" );
+        Path localFile =
+            repoLocation.resolve( "org/apache/maven/plugins/maven-plugin-plugin/2.4.1/maven-metadata-central.xml" );
 
         ConsumerWantsFilePredicate predicate = new ConsumerWantsFilePredicate();
-        BaseFile baseFile = new BaseFile( repoLocation, localFile );
+        BaseFile baseFile = new BaseFile( repoLocation.toFile(), localFile.toFile() );
         predicate.setBasefile( baseFile );
 
         assertFalse( predicate.evaluate( consumer ) );

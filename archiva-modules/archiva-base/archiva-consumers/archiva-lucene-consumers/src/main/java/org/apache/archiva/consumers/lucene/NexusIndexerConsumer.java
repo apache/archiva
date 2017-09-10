@@ -44,7 +44,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -65,7 +66,7 @@ public class NexusIndexerConsumer
 
     private FileTypes filetypes;
 
-    private File managedRepository;
+    private Path managedRepository;
 
     private ArchivaTaskScheduler<ArtifactIndexingTask> scheduler;
 
@@ -112,7 +113,7 @@ public class NexusIndexerConsumer
         throws ConsumerException
     {
         this.repository = repository;
-        managedRepository = new File( repository.getLocation() );
+        managedRepository = Paths.get( repository.getLocation() );
 
         try
         {
@@ -136,7 +137,7 @@ public class NexusIndexerConsumer
         else
         {
             this.repository = repository;
-            managedRepository = new File( repository.getLocation() );
+            managedRepository = Paths.get( repository.getLocation() );
         }
     }
 
@@ -144,10 +145,10 @@ public class NexusIndexerConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        File artifactFile = new File( managedRepository, path );
+        Path artifactFile = managedRepository.resolve(path);
 
         ArtifactIndexingTask task =
-            new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD, getIndexingContext() );
+            new ArtifactIndexingTask( repository, artifactFile.toFile(), ArtifactIndexingTask.Action.ADD, getIndexingContext() );
         try
         {
             log.debug( "Queueing indexing task '{}' to add or update the artifact in the index.", task );
@@ -169,11 +170,11 @@ public class NexusIndexerConsumer
         }
         else
         {
-            File artifactFile = new File( managedRepository, path );
+            Path artifactFile = managedRepository.resolve(path);
 
             // specify in indexing task that this is not a repo scan request!
             ArtifactIndexingTask task =
-                new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD,
+                new ArtifactIndexingTask( repository, artifactFile.toFile(), ArtifactIndexingTask.Action.ADD,
                                           getIndexingContext(), false );
             // only update index we don't need to scan the full repo here
             task.setOnlyUpdate( true );

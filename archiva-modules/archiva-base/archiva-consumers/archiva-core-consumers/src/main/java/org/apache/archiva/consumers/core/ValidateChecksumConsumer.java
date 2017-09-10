@@ -36,9 +36,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -76,7 +77,7 @@ public class ValidateChecksumConsumer
     @Inject
     private DigesterUtils digesterUtils;
 
-    private File repositoryDir;
+    private Path repositoryDir;
 
     private List<String> includes;
 
@@ -96,7 +97,7 @@ public class ValidateChecksumConsumer
     public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
-        this.repositoryDir = new File( repository.getLocation( ) );
+        this.repositoryDir = Paths.get( repository.getLocation( ) );
     }
 
     @Override
@@ -134,10 +135,10 @@ public class ValidateChecksumConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        File checksumFile = new File( this.repositoryDir, path );
+        Path checksumFile = this.repositoryDir.resolve( path );
         try
         {
-            if ( !checksum.isValidChecksum( checksumFile ) )
+            if ( !checksum.isValidChecksum( checksumFile.toFile() ) )
             {
                 log.warn( "The checksum for {} is invalid.", checksumFile );
                 triggerConsumerWarning( NOT_VALID_CHECKSUM, "The checksum for " + checksumFile + " is invalid." );

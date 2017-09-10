@@ -30,10 +30,10 @@ import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.commons.lang.time.DateUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,9 +73,9 @@ public class DaysOldRepositoryPurge
     {
         try
         {
-            File artifactFile = new File( repository.getRepoRoot( ), path );
+            Path artifactFile = Paths.get( repository.getRepoRoot( ), path );
 
-            if ( !artifactFile.exists( ) )
+            if ( !Files.exists(artifactFile) )
             {
                 return;
             }
@@ -112,7 +112,7 @@ public class DaysOldRepositoryPurge
                 }
 
                 ArtifactReference newArtifactReference = repository.toArtifactReference(
-                    artifactFile.getAbsolutePath( ) );
+                    artifactFile.toAbsolutePath( ).toString() );
                 newArtifactReference.setVersion( version );
 
                 Path newArtifactFile = repository.toFile( newArtifactReference );
