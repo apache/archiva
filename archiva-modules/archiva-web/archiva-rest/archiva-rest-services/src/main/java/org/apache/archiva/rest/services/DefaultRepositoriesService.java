@@ -503,7 +503,7 @@ public class DefaultRepositoriesService
     {
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
-        task.setResourceFile( localFile );
+        task.setResourceFile( localFile.toPath() );
         task.setUpdateRelatedArtifacts( true );
         //task.setScanAll( true );
 

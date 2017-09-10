@@ -43,8 +43,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 /**
  * ArchivaIndexingTaskExecutor Executes all indexing tasks. Adding, updating and removing artifacts from the index are
@@ -115,7 +115,7 @@ public class ArchivaIndexingTaskExecutor
                     log.debug( "Creating indexing context on resource: {}", //
                                ( indexingTask.getResourceFile() == null
                                    ? "none"
-                                   : indexingTask.getResourceFile().getPath() ) );
+                                   : indexingTask.getResourceFile() ) );
                     context = managedRepositoryAdmin.createIndexContext( repository );
                 }
                 catch ( RepositoryAdminException e )
@@ -132,20 +132,20 @@ public class ArchivaIndexingTaskExecutor
 
             try
             {
-                File artifactFile = indexingTask.getResourceFile();
+                Path artifactFile = indexingTask.getResourceFile();
                 if ( artifactFile == null )
                 {
                     log.debug( "no artifact pass in indexing task so skip it" );
                 }
                 else
                 {
-                    ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile );
+                    ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile.toFile() );
 
                     if ( ac != null )
                     {
                         // MRM-1779 pom must be indexed too
                         // TODO make that configurable?
-                        if ( artifactFile.getPath().endsWith( ".pom" ) )
+                        if ( artifactFile.getFileName().toString().endsWith( ".pom" ) )
                         {
                             ac.getArtifactInfo().setFileExtension( "pom" );
                             ac.getArtifactInfo().setPackaging( "pom" );
@@ -205,7 +205,7 @@ public class ArchivaIndexingTaskExecutor
                 if ( !indexingTask.isExecuteOnEntireRepo() )
                 {
                     log.debug( "Finishing indexing task on resource file : {}", indexingTask.getResourceFile() != null
-                        ? indexingTask.getResourceFile().getPath()
+                        ? indexingTask.getResourceFile()
                         : " none " );
                     finishIndexingTask( indexingTask, repository, context );
                 }

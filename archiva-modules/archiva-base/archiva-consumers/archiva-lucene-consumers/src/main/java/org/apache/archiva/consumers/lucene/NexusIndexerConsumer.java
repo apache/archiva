@@ -148,7 +148,7 @@ public class NexusIndexerConsumer
         Path artifactFile = managedRepository.resolve(path);
 
         ArtifactIndexingTask task =
-            new ArtifactIndexingTask( repository, artifactFile.toFile(), ArtifactIndexingTask.Action.ADD, getIndexingContext() );
+            new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD, getIndexingContext() );
         try
         {
             log.debug( "Queueing indexing task '{}' to add or update the artifact in the index.", task );
@@ -174,7 +174,7 @@ public class NexusIndexerConsumer
 
             // specify in indexing task that this is not a repo scan request!
             ArtifactIndexingTask task =
-                new ArtifactIndexingTask( repository, artifactFile.toFile(), ArtifactIndexingTask.Action.ADD,
+                new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD,
                                           getIndexingContext(), false );
             // only update index we don't need to scan the full repo here
             task.setOnlyUpdate( true );

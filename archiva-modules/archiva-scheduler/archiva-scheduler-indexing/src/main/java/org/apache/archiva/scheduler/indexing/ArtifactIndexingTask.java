@@ -23,7 +23,8 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.redback.components.taskqueue.Task;
 import org.apache.maven.index.context.IndexingContext;
 
-import java.io.File;
+import java.nio.file.Path;
+
 
 public class ArtifactIndexingTask
     implements Task
@@ -37,7 +38,7 @@ public class ArtifactIndexingTask
 
     private final ManagedRepository repository;
 
-    private final File resourceFile;
+    private final Path resourceFile;
 
     private final Action action;
 
@@ -50,7 +51,7 @@ public class ArtifactIndexingTask
      */
     private boolean onlyUpdate = false;
 
-    public ArtifactIndexingTask( ManagedRepository repository, File resourceFile, Action action,
+    public ArtifactIndexingTask( ManagedRepository repository, Path resourceFile, Action action,
                                  IndexingContext context )
     {
         this.repository = repository;
@@ -59,14 +60,14 @@ public class ArtifactIndexingTask
         this.context = context;
     }
 
-    public ArtifactIndexingTask( ManagedRepository repository, File resourceFile, Action action,
+    public ArtifactIndexingTask( ManagedRepository repository, Path resourceFile, Action action,
                                  IndexingContext context, boolean executeOnEntireRepo )
     {
         this( repository, resourceFile, action, context );
         this.executeOnEntireRepo = executeOnEntireRepo;
     }
 
-    public ArtifactIndexingTask( ManagedRepository repository, File resourceFile, Action action,
+    public ArtifactIndexingTask( ManagedRepository repository, Path resourceFile, Action action,
                                  IndexingContext context, boolean executeOnEntireRepo, boolean onlyUpdate )
     {
         this( repository, resourceFile, action, context, executeOnEntireRepo );
@@ -95,7 +96,7 @@ public class ArtifactIndexingTask
         return 0;
     }
 
-    public File getResourceFile()
+    public Path getResourceFile()
     {
         return resourceFile;
     }

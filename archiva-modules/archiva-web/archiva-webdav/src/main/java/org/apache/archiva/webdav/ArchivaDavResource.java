@@ -713,7 +713,7 @@ public class ArchivaDavResource
     {
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repository.getId() );
-        task.setResourceFile( localFile );
+        task.setResourceFile( localFile.toPath() );
         task.setUpdateRelatedArtifacts( false );
         task.setScanAll( false );
 

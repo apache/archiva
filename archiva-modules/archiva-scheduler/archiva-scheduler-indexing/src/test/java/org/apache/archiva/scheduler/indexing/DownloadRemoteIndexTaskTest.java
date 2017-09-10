@@ -45,8 +45,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -83,17 +85,17 @@ public class DownloadRemoteIndexTaskTest
         server = new Server( );
         serverConnector = new ServerConnector( server, new HttpConnectionFactory());
         server.addConnector( serverConnector );
-        createContext( server, new File( "src/test/" ) );
+        createContext( server, Paths.get( "src/test/" ) );
         this.server.start();
         this.port = serverConnector.getLocalPort();
         log.info( "start server on port {}", this.port );
     }
 
-    protected void createContext( Server server, File repositoryDirectory )
+    protected void createContext( Server server, Path repositoryDirectory )
         throws IOException
     {
         ServletContextHandler context = new ServletContextHandler();
-        context.setResourceBase( repositoryDirectory.getAbsolutePath() );
+        context.setResourceBase( repositoryDirectory.toAbsolutePath().toString() );
         context.setContextPath( "/" );
         ServletHolder sh = new ServletHolder( DefaultServlet.class );
         context.addServlet( sh, "/" );
@@ -141,16 +143,16 @@ public class DownloadRemoteIndexTaskTest
     }
 
 
-    protected RemoteRepository getRemoteRepository()
+    protected RemoteRepository getRemoteRepository() throws IOException
     {
         RemoteRepository remoteRepository = new RemoteRepository();
-        File indexDirectory =
-            new File( FileUtils.getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
-        indexDirectory.mkdirs();
-        indexDirectory.deleteOnExit();
+        Path indexDirectory =
+            Paths.get( FileUtils.getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
+        Files.createDirectories( indexDirectory );
+        indexDirectory.toFile().deleteOnExit();
 
         remoteRepository.setName( "foo" );
-        remoteRepository.setIndexDirectory( indexDirectory.getAbsolutePath() );
+        remoteRepository.setIndexDirectory( indexDirectory.toAbsolutePath().toString() );
         remoteRepository.setDownloadRemoteIndex( true );
         remoteRepository.setId( "test-repo" );
         remoteRepository.setUrl( "http://localhost:" + port );

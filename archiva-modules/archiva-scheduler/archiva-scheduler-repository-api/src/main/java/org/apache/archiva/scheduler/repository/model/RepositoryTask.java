@@ -2,7 +2,8 @@ package org.apache.archiva.scheduler.repository.model;
 
 import org.apache.archiva.redback.components.taskqueue.Task;
 
-import java.io.File;
+import java.nio.file.Path;
+
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -32,7 +33,7 @@ public class RepositoryTask
 {
     private String repositoryId;
 
-    private File resourceFile;
+    private Path resourceFile;
 
     private boolean updateRelatedArtifacts;
 
@@ -80,12 +81,12 @@ public class RepositoryTask
         return 0;
     }
 
-    public File getResourceFile()
+    public Path getResourceFile()
     {
         return resourceFile;
     }
 
-    public void setResourceFile( File resourceFile )
+    public void setResourceFile( Path resourceFile )
     {
         this.resourceFile = resourceFile;
     }

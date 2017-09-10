@@ -28,7 +28,10 @@ import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -72,20 +75,20 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
 //        assertEquals( 5, newStats.getTotalProjectCount() );
 //        assertEquals( 14159, newStats.getTotalArtifactFileSize() );
 
-        File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
-        assertFalse( "newArtifactGroup should not exist.", newArtifactGroup.exists() );
+        Path newArtifactGroup = repoDir.resolve( "org/apache/archiva" );
+        assertFalse( "newArtifactGroup should not exist.", Files.exists(newArtifactGroup) );
 
-        FileUtils.copyDirectoryStructure( new File( "target/test-classes/test-repo/org/apache/archiva" ),
-                                          newArtifactGroup );
+        FileUtils.copyDirectoryStructure( Paths.get( "target/test-classes/test-repo/org/apache/archiva" ).toFile(),
+                                          newArtifactGroup.toFile() );
 
         // update last modified date
-        new File( newArtifactGroup, "archiva-index-methods-jar-test/1.0/pom.xml" ).setLastModified(
-            Calendar.getInstance().getTimeInMillis() + 1000 );
-        new File( newArtifactGroup,
-                  "archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" ).setLastModified(
-            Calendar.getInstance().getTimeInMillis() + 1000 );
+        Files.setLastModifiedTime(newArtifactGroup.resolve( "archiva-index-methods-jar-test/1.0/pom.xml" ), FileTime.fromMillis(
+            Calendar.getInstance().getTimeInMillis() + 1000 ));
+        Files.setLastModifiedTime( newArtifactGroup.resolve(
+                  "archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" ), FileTime.fromMillis(
+            Calendar.getInstance().getTimeInMillis() + 1000 ));
 
-        assertTrue( newArtifactGroup.exists() );
+        assertTrue( Files.exists(newArtifactGroup) );
 
         taskExecutor.executeTask( repoTask );
 
@@ -117,20 +120,20 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
 
         createAndSaveTestStats();
 
-        File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
-        assertFalse( "newArtifactGroup should not exist.", newArtifactGroup.exists() );
+        Path newArtifactGroup = repoDir.resolve( "org/apache/archiva" );
+        assertFalse( "newArtifactGroup should not exist.", Files.exists(newArtifactGroup) );
 
-        FileUtils.copyDirectoryStructure( new File( "target/test-classes/test-repo/org/apache/archiva" ),
-                                          newArtifactGroup );
+        FileUtils.copyDirectoryStructure( Paths.get( "target/test-classes/test-repo/org/apache/archiva" ).toFile(),
+                                          newArtifactGroup.toFile() );
 
         // update last modified date, placing shortly after last scan
-        new File( newArtifactGroup, "archiva-index-methods-jar-test/1.0/pom.xml" ).setLastModified(
-            Calendar.getInstance().getTimeInMillis() + 1000 );
-        new File( newArtifactGroup,
-                  "archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" ).setLastModified(
-            Calendar.getInstance().getTimeInMillis() + 1000 );
+        Files.setLastModifiedTime(newArtifactGroup.resolve("archiva-index-methods-jar-test/1.0/pom.xml" ), FileTime.fromMillis(
+            Calendar.getInstance().getTimeInMillis() + 1000 ));
+        Files.setLastModifiedTime( newArtifactGroup.resolve(
+                  "archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" ), FileTime.fromMillis(
+            Calendar.getInstance().getTimeInMillis() + 1000 ));
 
-        assertTrue( newArtifactGroup.exists() );
+        assertTrue( Files.exists(newArtifactGroup) );
 
         // scan using the really long previous duration
         taskExecutor.executeTask( repoTask );
@@ -164,20 +167,20 @@ public class ArchivaRepositoryScanningTaskExecutorPhase2Test
 
         createAndSaveTestStats();
 
-        File newArtifactGroup = new File( repoDir, "org/apache/archiva" );
-        assertFalse( "newArtifactGroup should not exist.", newArtifactGroup.exists() );
+        Path newArtifactGroup = repoDir.resolve( "org/apache/archiva" );
+        assertFalse( "newArtifactGroup should not exist.", Files.exists(newArtifactGroup) );
 
-        FileUtils.copyDirectoryStructure( new File( "target/test-classes/test-repo/org/apache/archiva" ),
-                                          newArtifactGroup );
+        FileUtils.copyDirectoryStructure( Paths.get( "target/test-classes/test-repo/org/apache/archiva" ).toFile(),
+                                          newArtifactGroup.toFile() );
 
         // update last modified date, placing in middle of last scan
-        new File( newArtifactGroup, "archiva-index-methods-jar-test/1.0/pom.xml" ).setLastModified(
-            Calendar.getInstance().getTimeInMillis() - 50000 );
-        new File( newArtifactGroup,
-                  "archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" ).setLastModified(
-            Calendar.getInstance().getTimeInMillis() - 50000 );
+        Files.setLastModifiedTime( newArtifactGroup.resolve("archiva-index-methods-jar-test/1.0/pom.xml" ), FileTime.fromMillis(
+            Calendar.getInstance().getTimeInMillis() - 50000 ));
+        Files.setLastModifiedTime( newArtifactGroup.resolve(
+                  "archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" ), FileTime.fromMillis(
+                      Calendar.getInstance().getTimeInMillis() - 50000 ));
 
-        assertTrue( newArtifactGroup.exists() );
+        assertTrue( Files.exists(newArtifactGroup) );
 
         // scan using the really long previous duration
         taskExecutor.executeTask( repoTask );

@@ -23,7 +23,6 @@ import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.updater.IndexUpdateRequest;
@@ -45,12 +44,13 @@ import org.apache.maven.wagon.shared.http.HttpMethodConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -106,7 +106,7 @@ public class DownloadRemoteIndexTask
             }
             this.runningRemoteDownloadIds.add( this.remoteRepository.getId() );
         }
-        File tempIndexDirectory = null;
+        Path tempIndexDirectory = null;
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         try
@@ -115,15 +115,15 @@ public class DownloadRemoteIndexTask
             IndexingContext indexingContext = remoteRepositoryAdmin.createIndexContext( this.remoteRepository );
 
             // create a temp directory to download files
-            tempIndexDirectory = new File( indexingContext.getIndexDirectoryFile().getParent(), ".tmpIndex" );
-            File indexCacheDirectory = new File( indexingContext.getIndexDirectoryFile().getParent(), ".indexCache" );
-            indexCacheDirectory.mkdirs();
-            if ( tempIndexDirectory.exists() )
+            tempIndexDirectory = Paths.get(indexingContext.getIndexDirectoryFile().getParent(), ".tmpIndex" );
+            Path indexCacheDirectory = Paths.get( indexingContext.getIndexDirectoryFile().getParent(), ".indexCache" );
+            Files.createDirectories( indexCacheDirectory );
+            if ( Files.exists(tempIndexDirectory) )
             {
-                FileUtils.deleteDirectory( tempIndexDirectory );
+                org.apache.archiva.common.utils.FileUtils.deleteDirectory( tempIndexDirectory );
             }
-            tempIndexDirectory.mkdirs();
-            tempIndexDirectory.deleteOnExit();
+            Files.createDirectories( tempIndexDirectory );
+            tempIndexDirectory.toFile().deleteOnExit();
             String baseIndexUrl = indexingContext.getIndexUpdateUrl();
 
             String wagonProtocol = new URL( this.remoteRepository.getUrl() ).getProtocol();
@@ -167,17 +167,17 @@ public class DownloadRemoteIndexTask
             wagon.connect( new Repository( this.remoteRepository.getId(), baseIndexUrl ), authenticationInfo,
                            proxyInfo );
 
-            File indexDirectory = indexingContext.getIndexDirectoryFile();
-            if ( !indexDirectory.exists() )
+            Path indexDirectory = indexingContext.getIndexDirectoryFile().toPath();
+            if ( !Files.exists(indexDirectory) )
             {
-                indexDirectory.mkdirs();
+                Files.createDirectories( indexDirectory );
             }
 
             ResourceFetcher resourceFetcher =
                 new WagonResourceFetcher( log, tempIndexDirectory, wagon, remoteRepository );
             IndexUpdateRequest request = new IndexUpdateRequest( indexingContext, resourceFetcher );
             request.setForceFullUpdate( this.fullDownload );
-            request.setLocalIndexCacheDir( indexCacheDirectory );
+            request.setLocalIndexCacheDir( indexCacheDirectory.toFile() );
 
             this.indexUpdater.fetchAndUpdateIndex( request );
             stopWatch.stop();
@@ -204,11 +204,11 @@ public class DownloadRemoteIndexTask
         log.info( "end download remote index for remote repository {}", this.remoteRepository.getId() );
     }
 
-    private void deleteDirectoryQuiet( File f )
+    private void deleteDirectoryQuiet( Path f )
     {
         try
         {
-            FileUtils.deleteDirectory( f );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( f );
         }
         catch ( IOException e )
         {
@@ -280,13 +280,13 @@ public class DownloadRemoteIndexTask
 
         Logger log;
 
-        File tempIndexDirectory;
+        Path tempIndexDirectory;
 
         Wagon wagon;
 
         RemoteRepository remoteRepository;
 
-        private WagonResourceFetcher( Logger log, File tempIndexDirectory, Wagon wagon,
+        private WagonResourceFetcher( Logger log, Path tempIndexDirectory, Wagon wagon,
                                       RemoteRepository remoteRepository )
         {
             this.log = log;
@@ -316,11 +316,11 @@ public class DownloadRemoteIndexTask
             try
             {
                 log.info( "index update retrieve file, name:{}", name );
-                File file = new File( tempIndexDirectory, name );
-                Files.deleteIfExists( file.toPath() );
-                file.deleteOnExit();
-                wagon.get( addParameters( name, this.remoteRepository ), file );
-                return Files.newInputStream( file.toPath() );
+                Path file = tempIndexDirectory.resolve( name );
+                Files.deleteIfExists( file );
+                file.toFile().deleteOnExit();
+                wagon.get( addParameters( name, this.remoteRepository ), file.toFile() );
+                return Files.newInputStream( file );
             }
             catch ( AuthorizationException | TransferFailedException e )
             {

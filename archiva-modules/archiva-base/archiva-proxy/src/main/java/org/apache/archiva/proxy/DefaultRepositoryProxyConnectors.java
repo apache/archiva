@@ -807,7 +807,7 @@ public class DefaultRepositoryProxyConnectors
     {
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
-        task.setResourceFile( localFile.toFile() );
+        task.setResourceFile( localFile );
         task.setUpdateRelatedArtifacts( true );
         task.setScanAll( true );
 

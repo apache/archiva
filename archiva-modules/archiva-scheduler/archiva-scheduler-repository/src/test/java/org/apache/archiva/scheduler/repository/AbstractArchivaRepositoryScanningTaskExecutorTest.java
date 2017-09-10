@@ -36,8 +36,17 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.Calendar;
+import java.util.Comparator;
+import java.util.stream.Stream;
 
 import static org.mockito.Mockito.mock;
 
@@ -70,7 +79,7 @@ public abstract class AbstractArchivaRepositoryScanningTaskExecutorTest
     @Named( value = "repositorySessionFactory#mock" )
     private MockRepositorySessionFactory factory;
 
-    protected File repoDir;
+    protected Path repoDir;
 
     protected static final String TEST_REPO_ID = "testRepo";
 
@@ -83,28 +92,40 @@ public abstract class AbstractArchivaRepositoryScanningTaskExecutorTest
     {
         super.setUp();
 
-        File sourceRepoDir = new File( "./src/test/repositories/default-repository" );
-        repoDir = new File( "./target/default-repository" );
+        Path sourceRepoDir = Paths.get( "src/test/repositories/default-repository" );
+        repoDir = Paths.get( "target/default-repository" );
 
-        FileUtils.deleteDirectory( repoDir );
-        assertFalse( "Default Test Repository should not exist.", repoDir.exists() );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoDir );
+        assertFalse( "Default Test Repository should not exist.", Files.exists(repoDir) );
 
-        repoDir.mkdir();
+        Files.createDirectories(repoDir);
 
-        FileUtils.copyDirectoryStructure( sourceRepoDir, repoDir );
+        FileUtils.copyDirectoryStructure( sourceRepoDir.toFile(), repoDir.toFile() );
         // set the timestamps to a time well in the past
         Calendar cal = Calendar.getInstance();
         cal.add( Calendar.YEAR, -1 );
-        FileUtils.getFiles( repoDir, "**", null ) //
-            .stream().forEach( file -> file.setLastModified( cal.getTimeInMillis() ) );
-
-        // TODO: test they are excluded instead
-        for ( String dir : FileUtils.getDirectoryNames( repoDir, "**/.svn", null, false ) )
-        {
-            FileUtils.deleteDirectory( new File( repoDir, dir ) );
+        try(Stream<Path> stream = Files.walk( repoDir,FileVisitOption.FOLLOW_LINKS)) {
+            stream.forEach( path ->
+            {
+                try
+                {
+                    Files.setLastModifiedTime( path, FileTime.fromMillis( cal.getTimeInMillis( ) ) );
+                }
+                catch ( IOException e )
+                {
+                    e.printStackTrace( );
+                }
+            } );
         }
+        PathMatcher m = FileSystems.getDefault().getPathMatcher( "glob:**/.svn" );
+        Files.walk(repoDir, FileVisitOption.FOLLOW_LINKS).filter(Files::isDirectory)
+            .sorted( Comparator.reverseOrder( ))
+            .filter( path -> m.matches( path ) )
+            .forEach( path ->
+                org.apache.archiva.common.utils.FileUtils.deleteQuietly( path )
+            );
 
-        assertTrue( "Default Test Repository should exist.", repoDir.exists() && repoDir.isDirectory() );
+        assertTrue( "Default Test Repository should exist.", Files.exists(repoDir) && Files.isDirectory( repoDir) );
 
         assertNotNull( archivaConfig );
 
@@ -112,7 +133,7 @@ public abstract class AbstractArchivaRepositoryScanningTaskExecutorTest
         ManagedRepositoryConfiguration repositoryConfiguration = new ManagedRepositoryConfiguration();
         repositoryConfiguration.setId( TEST_REPO_ID );
         repositoryConfiguration.setName( "Test Repository" );
-        repositoryConfiguration.setLocation( repoDir.getAbsolutePath() );
+        repositoryConfiguration.setLocation( repoDir.toAbsolutePath().toString() );
         archivaConfig.getConfiguration().getManagedRepositories().clear();
         archivaConfig.getConfiguration().addManagedRepository( repositoryConfiguration );
 
@@ -126,9 +147,9 @@ public abstract class AbstractArchivaRepositoryScanningTaskExecutorTest
     public void tearDown()
         throws Exception
     {
-        FileUtils.deleteDirectory( repoDir );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoDir );
 
-        assertFalse( repoDir.exists() );
+        assertFalse( Files.exists(repoDir) );
 
         super.tearDown();
     }

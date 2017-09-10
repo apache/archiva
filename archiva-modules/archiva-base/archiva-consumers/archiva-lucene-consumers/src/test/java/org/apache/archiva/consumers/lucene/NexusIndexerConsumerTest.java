@@ -68,7 +68,7 @@ public class NexusIndexerConsumerTest
             switch ( task.getAction() )
             {
                 case ADD:
-                    indexed.add( task.getResourceFile().toPath() );
+                    indexed.add( task.getResourceFile() );
                     break;
                 case DELETE:
                     indexed.remove( task.getResourceFile() );
