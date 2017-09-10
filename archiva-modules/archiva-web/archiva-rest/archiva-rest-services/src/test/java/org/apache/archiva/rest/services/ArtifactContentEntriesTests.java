@@ -23,11 +23,9 @@ import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;

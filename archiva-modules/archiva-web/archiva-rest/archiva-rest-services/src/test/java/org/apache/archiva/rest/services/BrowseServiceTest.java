@@ -38,9 +38,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
-import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -491,7 +494,7 @@ public class BrowseServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( TEST_REPO_ID, new File( getBasedir(), "src/test/repo-with-osgi" ).getAbsolutePath(),
+        createAndIndexRepo( TEST_REPO_ID, getBasedir().resolve( "src/test/repo-with-osgi" ).toAbsolutePath().toString(),
                             false );
 
         waitForScanToComplete( TEST_REPO_ID );

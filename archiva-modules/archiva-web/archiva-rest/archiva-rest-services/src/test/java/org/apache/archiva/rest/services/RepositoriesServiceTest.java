@@ -33,7 +33,9 @@ import org.junit.Test;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.core.Response;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -162,10 +164,10 @@ public class RepositoriesServiceTest
 
         try
         {
-            File artifactFile = new File(
+            Path artifactFile = Paths.get(
                 "target/test-origin-repo/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.jar" );
 
-            assertTrue( "artifact not exists:" + artifactFile.getPath(), artifactFile.exists() );
+            assertTrue( "artifact not exists:" + artifactFile, Files.exists(artifactFile) );
 
             Artifact artifact = new Artifact();
             artifact.setGroupId( "org.apache.karaf.features" );
@@ -177,7 +179,7 @@ public class RepositoriesServiceTest
 
             repositoriesService.deleteArtifact( artifact );
 
-            assertFalse( "artifact not deleted exists:" + artifactFile.getPath(), artifactFile.exists() );
+            assertFalse( "artifact not deleted exists:" + artifactFile, Files.exists(artifactFile) );
 
             artifacts =
                 browseService.getArtifactDownloadInfos( "org.apache.karaf.features", "org.apache.karaf.features.core",
@@ -223,10 +225,10 @@ public class RepositoriesServiceTest
 
         try
         {
-            File artifactFile = new File(
+            Path artifactFile = Paths.get(
                 "target/test-origin-repo/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.jar" );
 
-            assertTrue( "artifact not exists:" + artifactFile.getPath(), artifactFile.exists() );
+            assertTrue( "artifact not exists:" + artifactFile.toString(), Files.exists(artifactFile) );
 
             Artifact artifact = new Artifact();
             artifact.setGroupId( "org.apache.karaf.features" );
@@ -239,7 +241,7 @@ public class RepositoriesServiceTest
 
             repositoriesService.deleteArtifact( artifact );
 
-            assertFalse( "artifact not deleted exists:" + artifactFile.getPath(), artifactFile.exists() );
+            assertFalse( "artifact not deleted exists:" + artifactFile, Files.exists(artifactFile) );
 
             artifacts =
                 browseService.getArtifactDownloadInfos( "org.apache.karaf.features", "org.apache.karaf.features.core",
@@ -280,19 +282,19 @@ public class RepositoriesServiceTest
 
         try
         {
-            File artifactFile = new File(
+            Path artifactFile = Paths.get(
                 "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1-javadoc.jar" );
 
-            File artifactFilemd5 = new File(
+            Path artifactFilemd5 = Paths.get(
                 "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1-javadoc.jar.md5" );
 
-            File artifactFilesha1 = new File(
+            Path artifactFilesha1 = Paths.get(
                 "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1-javadoc.jar.sha1" );
 
-            assertTrue( "artifact not exists:" + artifactFile.getPath(), artifactFile.exists() );
+            assertTrue( "artifact not exists:" + artifactFile, Files.exists(artifactFile) );
 
-            assertTrue( "md5 not exists:" + artifactFilemd5.getPath(), artifactFilemd5.exists() );
-            assertTrue( "sha1 not exists:" + artifactFilesha1.getPath(), artifactFilesha1.exists() );
+            assertTrue( "md5 not exists:" + artifactFilemd5, Files.exists(artifactFilemd5) );
+            assertTrue( "sha1 not exists:" + artifactFilesha1, Files.exists(artifactFilesha1) );
 
             Artifact artifact = new Artifact();
             artifact.setGroupId( "commons-logging" );
@@ -306,9 +308,9 @@ public class RepositoriesServiceTest
 
             repositoriesService.deleteArtifact( artifact );
 
-            assertFalse( "artifact not deleted exists:" + artifactFile.getPath(), artifactFile.exists() );
-            assertFalse( "md5 still exists:" + artifactFilemd5.getPath(), artifactFilemd5.exists() );
-            assertFalse( "sha1 still exists:" + artifactFilesha1.getPath(), artifactFilesha1.exists() );
+            assertFalse( "artifact not deleted exists:" + artifactFile, Files.exists(artifactFile) );
+            assertFalse( "md5 still exists:" + artifactFilemd5, Files.exists(artifactFilemd5) );
+            assertFalse( "sha1 still exists:" + artifactFilesha1, Files.exists(artifactFilesha1) );
 
             artifacts =
                 browseService.getArtifactDownloadInfos( "commons-logging", "commons-logging", "1.0.1", SOURCE_REPO_ID );
@@ -350,15 +352,15 @@ public class RepositoriesServiceTest
                 new BrowseResultEntry( "org.apache.karaf.features.org.apache.karaf.features.command", true ),
                 new BrowseResultEntry( "org.apache.karaf.features.org.apache.karaf.features.core", true ) );
 
-            File directory =
-                new File( "target/test-origin-repo/org/apache/karaf/features/org.apache.karaf.features.command" );
+            Path directory =
+                Paths.get( "target/test-origin-repo/org/apache/karaf/features/org.apache.karaf.features.command" );
 
-            assertTrue( "directory not exists", directory.exists() );
+            assertTrue( "directory not exists", Files.exists(directory) );
 
             RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
             repositoriesService.deleteGroupId( "org.apache.karaf", SOURCE_REPO_ID );
 
-            assertFalse( "directory not exists", directory.exists() );
+            assertFalse( "directory not exists", Files.exists(directory) );
 
             browseResult = browseService.browseGroupId( "org.apache.karaf.features", SOURCE_REPO_ID );
 
@@ -430,7 +432,7 @@ public class RepositoriesServiceTest
     public void deleteSnapshot()
         throws Exception
     {
-        File targetRepo = initSnapshotRepo();
+        Path targetRepo = initSnapshotRepo();
         try
         {
 
@@ -446,18 +448,18 @@ public class RepositoriesServiceTest
 
             assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 10 );
 
-            File artifactFile = new File( targetRepo,
+            Path artifactFile = targetRepo.resolve(
                                           "org/apache/archiva/redback/components/spring-quartz/2.0-SNAPSHOT/spring-quartz-2.0-20120618.214127-1.jar" );
 
-            File artifactFilemd5 = new File( targetRepo,
+            Path artifactFilemd5 = targetRepo.resolve(
                                              "org/apache/archiva/redback/components/spring-quartz/2.0-SNAPSHOT/spring-quartz-2.0-20120618.214127-1.jar.md5" );
 
-            File artifactFilepom = new File( targetRepo,
+            Path artifactFilepom = targetRepo.resolve(
                                              "org/apache/archiva/redback/components/spring-quartz/2.0-SNAPSHOT/spring-quartz-2.0-20120618.214127-1.pom" );
 
-            assertThat( artifactFile ).exists();
-            assertThat( artifactFilemd5 ).exists();
-            assertThat( artifactFilepom ).exists();
+            assertTrue( Files.exists(artifactFile) );
+            assertTrue( Files.exists(artifactFilemd5) );
+            assertTrue( Files.exists(artifactFilepom ));
 
             // we delete only one snapshot
             Artifact artifact =
@@ -476,9 +478,9 @@ public class RepositoriesServiceTest
 
             assertThat( artifacts ).isNotNull().isNotEmpty().hasSize( 8 );
 
-            assertThat( artifactFile ).doesNotExist();
-            assertThat( artifactFilemd5 ).doesNotExist();
-            assertThat( artifactFilepom ).doesNotExist();
+            assertFalse( Files.exists(artifactFile) );
+            assertFalse( Files.exists(artifactFilemd5 ));
+            assertFalse( Files.exists(artifactFilepom ));
         }
         catch ( Exception e )
         {
@@ -491,18 +493,18 @@ public class RepositoriesServiceTest
         }
     }
 
-    protected File initSnapshotRepo()
+    protected Path initSnapshotRepo()
         throws Exception
     {
-        File targetRepo = new File( getBasedir(), "target/repo-with-snapshots" );
-        if ( targetRepo.exists() )
+        Path targetRepo = getBasedir().resolve( "target/repo-with-snapshots" );
+        if ( Files.exists(targetRepo) )
         {
-            FileUtils.deleteDirectory( targetRepo );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( targetRepo );
         }
-        assertFalse( targetRepo.exists() );
+        assertFalse( Files.exists(targetRepo) );
 
-        FileUtils.copyDirectoryToDirectory( new File( getBasedir(), "src/test/repo-with-snapshots" ),
-                                            targetRepo.getParentFile() );
+        FileUtils.copyDirectoryToDirectory( getBasedir().resolve( "src/test/repo-with-snapshots" ).toFile(),
+                                            targetRepo.getParent().toFile() );
 
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SNAPSHOT_REPO_ID ) != null )
         {
@@ -541,7 +543,7 @@ public class RepositoriesServiceTest
 
     protected ManagedRepository getTestManagedRepository( String id, String path )
     {
-        String location = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/" + path ).getAbsolutePath();
+        String location = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/" + path ).toAbsolutePath().toString();
         return new ManagedRepository( id, id, location, "default", true, true, true, "2 * * * * ?", null, false, 80, 80,
                                       true, false );
     }

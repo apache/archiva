@@ -18,13 +18,12 @@ package org.apache.archiva.rest.services.utils;
  * under the License.
  */
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.io.File;
-import java.nio.file.Paths;
-
 import org.easymock.TestSubject;
 import org.junit.Test;
+
+import java.nio.file.Paths;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ArtifactBuilderTest
 {

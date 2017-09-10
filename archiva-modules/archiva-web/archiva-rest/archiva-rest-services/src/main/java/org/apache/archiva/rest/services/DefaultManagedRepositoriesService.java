@@ -35,7 +35,8 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.List;
@@ -151,7 +152,7 @@ public class DefaultManagedRepositoriesService
         throws ArchivaRestServiceException
     {
         String location = repositoryCommonValidator.removeExpressions( fileLocation );
-        return new File( location ).exists();
+        return Files.exists( Paths.get( location ));
     }
 
     @Override

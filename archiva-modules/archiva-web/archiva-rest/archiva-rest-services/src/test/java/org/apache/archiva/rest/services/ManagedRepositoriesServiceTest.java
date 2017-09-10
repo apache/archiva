@@ -25,7 +25,9 @@ import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 
 /**
  * @author Olivier Lamy
@@ -118,9 +120,9 @@ public class ManagedRepositoriesServiceTest
         throws Exception
     {
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
-        File target = new File( "target" );
+        Path target = Paths.get( "target" );
 
-        assertTrue( service.fileLocationExists( target.getCanonicalPath() ) );
+        assertTrue( service.fileLocationExists( target.toAbsolutePath().toString() ) );
 
         // normally should not exists :-)
         assertFalse( service.fileLocationExists( "/fooofofof/foddfdofd/dedede/kdeo" ) );
@@ -142,7 +144,7 @@ public class ManagedRepositoriesServiceTest
         RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
 
         createAndIndexRepo( testRepoId,
-                            new File( System.getProperty( "basedir" ), "src/test/repo-with-osgi" ).getAbsolutePath() );
+                            Paths.get( System.getProperty( "basedir" ), "src/test/repo-with-osgi" ).toAbsolutePath().toString() );
 
         repositoriesService.scanRepositoryDirectoriesNow( testRepoId );
 

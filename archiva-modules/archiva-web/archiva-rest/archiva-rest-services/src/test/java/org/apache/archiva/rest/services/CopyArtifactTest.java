@@ -20,12 +20,13 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.rest.api.model.ArtifactTransferRequest;
 import org.apache.archiva.rest.api.services.RepositoriesService;
-import org.assertj.core.api.Assertions;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.ws.rs.InternalServerErrorException;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author Olivier Lamy
@@ -62,13 +63,13 @@ public class CopyArtifactTest
             String targetRepoPath = getManagedRepositoriesService( authorizationHeader ).getManagedRepository(
                 TARGET_REPO_ID ).getLocation();
 
-            File artifact = new File( targetRepoPath,
+            Path artifact = Paths.get( targetRepoPath,
                                       "/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.jar" );
-            assertTrue( artifact.exists() );
-            File pom = new File( targetRepoPath,
+            assertTrue( Files.exists(artifact) );
+            Path pom = Paths.get( targetRepoPath,
                                  "/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.pom" );
 
-            assertTrue( "not exists " + pom.getPath(), pom.exists() );
+            assertTrue( "not exists " + pom, Files.exists(pom) );
             // TODO find a way to force metadata generation and test it !!
         }
         finally

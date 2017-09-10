@@ -21,13 +21,16 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.rest.api.services.MergeRepositoriesService;
 import org.apache.commons.io.FileUtils;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -38,9 +41,9 @@ public class MergeRepositoriesServiceTest
 
     private static final String TEST_REPOSITORY = "test-repository";
 
-    private File repo = new File( System.getProperty( "builddir" ), "test-repository" );
+    private Path repo = Paths.get( System.getProperty( "builddir" ), "test-repository" );
 
-    private File repoStage = new File( System.getProperty( "builddir" ), "test-repository-stage" );
+    private Path repoStage = Paths.get( System.getProperty( "builddir" ), "test-repository-stage" );
 
     @Test
     public void getMergeConflictedArtifacts()
@@ -65,15 +68,15 @@ public class MergeRepositoriesServiceTest
         String mergedArtifactPomPath =
             "org/apache/felix/org.apache.felix.bundlerepository/1.6.4/org.apache.felix.bundlerepository-1.6.4.pom";
 
-        assertTrue( new File( repoStage, mergedArtifactPath ).exists() );
-        assertTrue( new File( repoStage, mergedArtifactPomPath ).exists() );
+        assertTrue( Files.exists(repoStage.resolve(mergedArtifactPath)) );
+        assertTrue( Files.exists(repoStage.resolve(mergedArtifactPomPath)) );
 
         MergeRepositoriesService service = getMergeRepositoriesService( authorizationHeader );
 
         service.mergeRepositories( TEST_REPOSITORY + "-stage", TEST_REPOSITORY, true );
 
-        assertTrue( new File( repo, mergedArtifactPath ).exists() );
-        assertTrue( new File( repo, mergedArtifactPomPath ).exists() );
+        assertTrue( Files.exists(repo.resolve(mergedArtifactPath)) );
+        assertTrue( Files.exists(repo.resolve(mergedArtifactPomPath)) );
     }
 
     @After
@@ -84,18 +87,18 @@ public class MergeRepositoriesServiceTest
 
         deleteTestRepo( TEST_REPOSITORY );
 
-        FileUtils.deleteDirectory( repo );
-        FileUtils.deleteDirectory( repoStage );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( repo );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoStage );
     }
 
     @Before
     public void createStageRepo()
         throws Exception
     {
-        FileUtils.copyDirectory( new File( System.getProperty( "basedir" ), "src/test/repo-with-osgi" ), repo );
-        FileUtils.copyDirectory( new File( System.getProperty( "basedir" ), "src/test/repo-with-osgi-stage" ),
-                                 repoStage );
+        FileUtils.copyDirectory( Paths.get( System.getProperty( "basedir" ), "src/test/repo-with-osgi" ).toFile(), repo.toFile() );
+        FileUtils.copyDirectory( Paths.get( System.getProperty( "basedir" ), "src/test/repo-with-osgi-stage" ).toFile(),
+                                 repoStage.toFile() );
 
-        createStagedNeededRepo( TEST_REPOSITORY, repo.getAbsolutePath(), true );
+        createStagedNeededRepo( TEST_REPOSITORY, repo.toAbsolutePath().toString(), true );
     }
 }

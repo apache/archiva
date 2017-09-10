@@ -88,9 +88,11 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -395,9 +397,9 @@ public class DefaultRepositoriesService
                                                        null );
             }
 
-            File artifactFile = new File( source.getLocation(), artifactSourcePath );
+            Path artifactFile = Paths.get( source.getLocation(), artifactSourcePath );
 
-            if ( !artifactFile.exists() )
+            if ( !Files.exists(artifactFile) )
             {
                 log.error( "cannot find artifact {}", artifactTransferRequest );
                 throw new ArchivaRestServiceException( "cannot find artifact " + artifactTransferRequest.toString(),
@@ -412,18 +414,18 @@ public class DefaultRepositoriesService
             int lastIndex = artifactPath.lastIndexOf( '/' );
 
             String path = artifactPath.substring( 0, lastIndex );
-            File targetPath = new File( target.getLocation(), path );
+            Path targetPath = Paths.get( target.getLocation(), path );
 
             Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
             int newBuildNumber = 1;
             String timestamp = null;
 
-            File versionMetadataFile = new File( targetPath, MetadataTools.MAVEN_METADATA );
+            Path versionMetadataFile = targetPath.resolve( MetadataTools.MAVEN_METADATA );
             /* unused */ getMetadata( versionMetadataFile );
 
-            if ( !targetPath.exists() )
+            if ( !Files.exists(targetPath) )
             {
-                targetPath.mkdirs();
+                Files.createDirectories( targetPath );
             }
 
             String filename = artifactPath.substring( lastIndex + 1 );
@@ -431,8 +433,8 @@ public class DefaultRepositoriesService
             boolean fixChecksums =
                 !( archivaAdministration.getKnownContentConsumers().contains( "create-missing-checksums" ) );
 
-            File targetFile = new File( targetPath, filename );
-            if ( targetFile.exists() && target.isBlockRedeployments() )
+            Path targetFile = targetPath.resolve( filename );
+            if ( Files.exists(targetFile) && target.isBlockRedeployments() )
             {
                 throw new ArchivaRestServiceException(
                     "artifact already exists in target repo: " + artifactTransferRequest.getTargetRepositoryId()
@@ -453,14 +455,14 @@ public class DefaultRepositoriesService
             }
             pomFilename = FilenameUtils.removeExtension( pomFilename ) + ".pom";
 
-            File pomFile = new File(
-                new File( source.getLocation(), artifactSourcePath.substring( 0, artifactPath.lastIndexOf( '/' ) ) ),
+            Path pomFile = Paths.get(source.getLocation(),
+                artifactSourcePath.substring( 0, artifactPath.lastIndexOf( '/' ) ) ,
                 pomFilename );
 
-            if ( pomFile != null && pomFile.length() > 0 )
+            if ( pomFile != null && Files.size( pomFile ) > 0 )
             {
                 copyFile( pomFile, targetPath, pomFilename, fixChecksums );
-                queueRepositoryTask( target.getId(), new File( targetPath, pomFilename ) );
+                queueRepositoryTask( target.getId(), targetPath.resolve( pomFilename ) );
 
 
             }
@@ -468,7 +470,7 @@ public class DefaultRepositoriesService
             // explicitly update only if metadata-updater consumer is not enabled!
             if ( !archivaAdministration.getKnownContentConsumers().contains( "metadata-updater" ) )
             {
-                updateProjectMetadata( targetPath.getAbsolutePath(), lastUpdatedTimestamp, timestamp, newBuildNumber,
+                updateProjectMetadata( targetPath.toAbsolutePath().toString(), lastUpdatedTimestamp, timestamp, newBuildNumber,
                                        fixChecksums, artifactTransferRequest );
 
 
@@ -499,11 +501,11 @@ public class DefaultRepositoriesService
         return true;
     }
 
-    private void queueRepositoryTask( String repositoryId, File localFile )
+    private void queueRepositoryTask( String repositoryId, Path localFile )
     {
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
-        task.setResourceFile( localFile.toPath() );
+        task.setResourceFile( localFile );
         task.setUpdateRelatedArtifacts( true );
         //task.setScanAll( true );
 
@@ -514,19 +516,19 @@ public class DefaultRepositoriesService
         catch ( TaskQueueException e )
         {
             log.error( "Unable to queue repository task to execute consumers on resource file ['{}"
-                           + "'].", localFile.getName() );
+                           + "'].", localFile.getFileName());
         }
     }
 
-    private ArchivaRepositoryMetadata getMetadata( File metadataFile )
+    private ArchivaRepositoryMetadata getMetadata( Path metadataFile )
         throws RepositoryMetadataException
     {
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
-        if ( metadataFile.exists() )
+        if ( Files.exists(metadataFile) )
         {
             try
             {
-                metadata = MavenMetadataReader.read( metadataFile.toPath() );
+                metadata = MavenMetadataReader.read( metadataFile );
             }
             catch ( XMLException e )
             {
@@ -536,28 +538,28 @@ public class DefaultRepositoriesService
         return metadata;
     }
 
-    private File getMetadata( String targetPath )
+    private Path getMetadata( String targetPath )
     {
-        String artifactPath = targetPath.substring( 0, targetPath.lastIndexOf( File.separatorChar ) );
+        String artifactPath = targetPath.substring( 0, targetPath.lastIndexOf( FileSystems.getDefault().getSeparator() ));
 
-        return new File( artifactPath, MetadataTools.MAVEN_METADATA );
+        return Paths.get( artifactPath, MetadataTools.MAVEN_METADATA );
     }
 
-    private void copyFile( File sourceFile, File targetPath, String targetFilename, boolean fixChecksums )
+    private void copyFile( Path sourceFile, Path targetPath, String targetFilename, boolean fixChecksums )
         throws IOException
     {
-        Files.copy( sourceFile.toPath(), new File( targetPath, targetFilename ).toPath(), StandardCopyOption.REPLACE_EXISTING,
+        Files.copy( sourceFile, targetPath.resolve( targetFilename ), StandardCopyOption.REPLACE_EXISTING,
                     StandardCopyOption.COPY_ATTRIBUTES );
 
         if ( fixChecksums )
         {
-            fixChecksums( new File( targetPath, targetFilename ) );
+            fixChecksums( targetPath.resolve( targetFilename ) );
         }
     }
 
-    private void fixChecksums( File file )
+    private void fixChecksums( Path file )
     {
-        ChecksummedFile checksum = new ChecksummedFile( file.toPath() );
+        ChecksummedFile checksum = new ChecksummedFile( file );
         checksum.fixChecksums( algorithms );
     }
 
@@ -568,12 +570,12 @@ public class DefaultRepositoriesService
         List<String> availableVersions = new ArrayList<>();
         String latestVersion = artifactTransferRequest.getVersion();
 
-        File projectDir = new File( targetPath ).getParentFile();
-        File projectMetadataFile = new File( projectDir, MetadataTools.MAVEN_METADATA );
+        Path projectDir = Paths.get( targetPath ).getParent();
+        Path projectMetadataFile = projectDir.resolve( MetadataTools.MAVEN_METADATA );
 
         ArchivaRepositoryMetadata projectMetadata = getMetadata( projectMetadataFile );
 
-        if ( projectMetadataFile.exists() )
+        if ( Files.exists(projectMetadataFile) )
         {
             availableVersions = projectMetadata.getAvailableVersions();
 
@@ -613,7 +615,7 @@ public class DefaultRepositoriesService
             projectMetadata.setReleasedVersion( latestVersion );
         }
 
-        RepositoryMetadataWriter.write( projectMetadata, projectMetadataFile.toPath() );
+        RepositoryMetadataWriter.write( projectMetadata, projectMetadataFile);
 
         if ( fixChecksums )
         {
@@ -813,9 +815,9 @@ public class DefaultRepositoriesService
 
                 int index = path.lastIndexOf( '/' );
                 path = path.substring( 0, index );
-                File targetPath = new File( repoConfig.getLocation(), path );
+                Path targetPath = Paths.get( repoConfig.getLocation(), path );
 
-                if ( !targetPath.exists() )
+                if ( !Files.exists(targetPath) )
                 {
                     //throw new ContentNotFoundException(
                     //    artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() );
@@ -837,7 +839,7 @@ public class DefaultRepositoriesService
                         repository.deleteArtifact( artifactRef );
                     }
                 }
-                File metadataFile = getMetadata( targetPath.getAbsolutePath() );
+                Path metadataFile = getMetadata( targetPath.toAbsolutePath().toString() );
                 ArchivaRepositoryMetadata metadata = getMetadata( metadataFile );
 
                 updateMetadata( metadata, metadataFile, lastUpdatedTimestamp, artifact );
@@ -1136,14 +1138,14 @@ public class DefaultRepositoriesService
      *
      * @param metadata
      */
-    private void updateMetadata( ArchivaRepositoryMetadata metadata, File metadataFile, Date lastUpdatedTimestamp,
+    private void updateMetadata( ArchivaRepositoryMetadata metadata, Path metadataFile, Date lastUpdatedTimestamp,
                                  Artifact artifact )
         throws RepositoryMetadataException
     {
         List<String> availableVersions = new ArrayList<>();
         String latestVersion = "";
 
-        if ( metadataFile.exists() )
+        if ( Files.exists(metadataFile) )
         {
             if ( metadata.getAvailableVersions() != null )
             {
@@ -1187,8 +1189,8 @@ public class DefaultRepositoriesService
         metadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
         metadata.setAvailableVersions( availableVersions );
 
-        RepositoryMetadataWriter.write( metadata, metadataFile.toPath() );
-        ChecksummedFile checksum = new ChecksummedFile( metadataFile.toPath() );
+        RepositoryMetadataWriter.write( metadata, metadataFile);
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
         checksum.fixChecksums( algorithms );
     }
 
