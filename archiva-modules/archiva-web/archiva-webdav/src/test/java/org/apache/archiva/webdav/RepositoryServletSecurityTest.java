@@ -45,6 +45,7 @@ import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
@@ -60,15 +61,16 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
-import org.junit.Rule;
 
 /**
  * RepositoryServletSecurityTest Test the flow of the authentication and authorization checks. This does not necessarily
@@ -112,11 +114,11 @@ public class RepositoryServletSecurityTest
         super.setUp();
 
         String appserverBase =
-            System.getProperty( "appserver.base", new File( "target/appserver-base" ).getAbsolutePath() );
+            System.getProperty( "appserver.base", Paths.get( "target/appserver-base" ).toAbsolutePath().toString() );
 
-        File testConf = new File( "src/test/resources/repository-archiva.xml" );
-        File testConfDest = new File( appserverBase, "conf/archiva.xml" );
-        FileUtils.copyFile( testConf, testConfDest );
+        Path testConf = Paths.get( "src/test/resources/repository-archiva.xml" );
+        Path testConfDest = Paths.get(appserverBase, "conf/archiva.xml" );
+        FileUtils.copyFile( testConf.toFile(), testConfDest.toFile() );
         
         
  
@@ -168,12 +170,12 @@ public class RepositoryServletSecurityTest
         servlet.init( mockServletConfig );
     }
 
-    protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location )
+    protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, Path location )
     {
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
         repo.setId( id );
         repo.setName( name );
-        repo.setLocation( location.getAbsolutePath() );
+        repo.setLocation( location.toAbsolutePath().toString() );
         return repo;
     }
 
@@ -397,7 +399,7 @@ public class RepositoryServletSecurityTest
     public void testPutWithValidUserWithWriteAccess()
         throws Exception
     {
-        assertTrue( repoRootInternal.getRoot().exists() );
+        assertTrue( Files.exists(repoRootInternal.getRoot()) );
 
         MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
         String putUrl = "http://machine.com/repository/internal/path/to/artifact.jar";
@@ -473,10 +475,10 @@ public class RepositoryServletSecurityTest
         String commonsLangJar = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
         String expectedArtifactContents = "dummy-commons-lang-artifact";
 
-        File artifactFile = new File( repoRootInternal.getRoot(), commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootInternal.getRoot().resolve( commonsLangJar );
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( artifactFile, Charset.defaultCharset() , expectedArtifactContents);
 
         servlet.setDavSessionProvider( davSessionProvider );
 
@@ -545,10 +547,10 @@ public class RepositoryServletSecurityTest
         String commonsLangJar = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
         String expectedArtifactContents = "dummy-commons-lang-artifact";
 
-        File artifactFile = new File( repoRootInternal.getRoot(), commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootInternal.getRoot().resolve( commonsLangJar );
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( artifactFile, Charset.defaultCharset() , expectedArtifactContents);
 
         servlet.setDavSessionProvider( davSessionProvider );
 
@@ -591,10 +593,10 @@ public class RepositoryServletSecurityTest
         String commonsLangJar = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
         String expectedArtifactContents = "dummy-commons-lang-artifact";
 
-        File artifactFile = new File( repoRootInternal.getRoot(), commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootInternal.getRoot().resolve( commonsLangJar );
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( artifactFile, Charset.defaultCharset() , expectedArtifactContents);
 
         servlet.setDavSessionProvider( davSessionProvider );
 
@@ -657,10 +659,10 @@ public class RepositoryServletSecurityTest
         String commonsLangJar = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
         String expectedArtifactContents = "dummy-commons-lang-artifact";
 
-        File artifactFile = new File( repoRootInternal.getRoot(), commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootInternal.getRoot().resolve( commonsLangJar );
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( artifactFile, Charset.defaultCharset() , expectedArtifactContents);
 
         servlet.setDavSessionProvider( davSessionProvider );
 

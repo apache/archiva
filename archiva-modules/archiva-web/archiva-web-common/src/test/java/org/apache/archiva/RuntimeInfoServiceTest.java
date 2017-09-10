@@ -29,7 +29,9 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.runner.RunWith;
@@ -46,13 +48,13 @@ public class RuntimeInfoServiceTest
     public void startServer()
         throws Exception
     {
-        File appServerBase = new File( System.getProperty( "appserver.base" ) );
+        Path appServerBase = Paths.get( System.getProperty( "appserver.base" ) );
 
-        File jcrDirectory = new File( appServerBase, "jcr" );
+        Path jcrDirectory =  appServerBase.resolve( "jcr" );
 
-        if ( jcrDirectory.exists() )
+        if ( Files.exists(jcrDirectory) )
         {
-            FileUtils.deleteDirectory( jcrDirectory );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( jcrDirectory );
         }
 
         super.startServer();

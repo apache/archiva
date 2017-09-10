@@ -23,16 +23,16 @@ package org.apache.archiva.webdav;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.File;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 
 /**
  * RepositoryServletTest
@@ -57,10 +57,10 @@ public class RepositoryServletNoProxyTest
     {
         String commonsLangSha1 = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar.sha1";
 
-        File checksumFile = new File( repoRootInternal, commonsLangSha1 );
-        checksumFile.getParentFile().mkdirs();
+        Path checksumFile = repoRootInternal.resolve( commonsLangSha1 );
+        Files.createDirectories(checksumFile.getParent());
 
-        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( checksumFile, Charset.defaultCharset(), "dummy-checksum" );
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangSha1 );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangSha1 );
@@ -73,10 +73,10 @@ public class RepositoryServletNoProxyTest
     {
         String commonsLangSha1 = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar.sha1";
 
-        File checksumFile = new File( repoRootInternal, commonsLangSha1 );
-        checksumFile.getParentFile().mkdirs();
+        Path checksumFile = repoRootInternal.resolve(commonsLangSha1);
+        Files.createDirectories(checksumFile.getParent());
 
-        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( checksumFile, Charset.defaultCharset(), "dummy-checksum");
 
         //WebRequest request = new WebRequest( "http://machine.com/repository/internal/" + commonsLangSha1 );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangSha1 );
@@ -91,10 +91,10 @@ public class RepositoryServletNoProxyTest
     {
         String commonsLangSha1 = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar.sha1";
 
-        File checksumFile = new File( repoRootInternal, commonsLangSha1 );
-        checksumFile.getParentFile().mkdirs();
+        Path checksumFile = repoRootInternal.resolve(commonsLangSha1);
+        Files.createDirectories(checksumFile.getParent());
 
-        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( checksumFile, Charset.defaultCharset() , "dummy-checksum");
 
         //WebRequest request = new GetMethodWebRequest(
         //    "http://machine.com/repository/internal/" + "commons-lang/jars/commons-lang-2.1.jar.sha1" );
@@ -110,10 +110,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangMetadata = "commons-lang/commons-lang/2.1/maven-metadata.xml";
         String expectedMetadataContents = "dummy-versioned-metadata";
 
-        File metadataFile = new File( repoRootInternal, commonsLangMetadata );
-        metadataFile.getParentFile().mkdirs();
+        Path metadataFile = repoRootInternal.resolve(commonsLangMetadata);
+        Files.createDirectories(metadataFile.getParent());
 
-        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( metadataFile, Charset.defaultCharset(), expectedMetadataContents );
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangMetadata );
@@ -129,10 +129,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangMetadata = "commons-lang/commons-lang/maven-metadata.xml";
         String expectedMetadataContents = "dummy-project-metadata";
 
-        File metadataFile = new File( repoRootInternal, commonsLangMetadata );
-        metadataFile.getParentFile().mkdirs();
+        Path metadataFile = repoRootInternal.resolve(commonsLangMetadata);
+        Files.createDirectories(metadataFile.getParent());
 
-        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( metadataFile, Charset.defaultCharset(), expectedMetadataContents );
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangMetadata );
@@ -148,10 +148,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangMetadata = "commons-lang/maven-metadata.xml";
         String expectedMetadataContents = "dummy-group-metadata";
 
-        File metadataFile = new File( repoRootInternal, commonsLangMetadata );
-        metadataFile.getParentFile().mkdirs();
+        Path metadataFile = repoRootInternal.resolve(commonsLangMetadata);
+        Files.createDirectories(metadataFile.getParent());
 
-        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( metadataFile, Charset.defaultCharset(), expectedMetadataContents );
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangMetadata );
@@ -167,10 +167,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangJar = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
         String expectedArtifactContents = "dummy-commons-lang-artifact";
 
-        File artifactFile = new File( repoRootInternal, commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootInternal.resolve(commonsLangJar);
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( artifactFile, Charset.defaultCharset(), expectedArtifactContents );
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangJar );
@@ -186,10 +186,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangJar = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
         String expectedArtifactContents = "dummy-commons-lang-artifact";
 
-        File artifactFile = new File( repoRootInternal, commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootInternal.resolve(commonsLangJar);
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( artifactFile, Charset.defaultCharset(), expectedArtifactContents );
 
         //WebRequest request = new GetMethodWebRequest(
         //    "http://machine.com/repository/internal/" + "commons-lang/jars/commons-lang-2.1.jar" );
@@ -205,10 +205,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangJar = "commons-lang/commons-lang/2.1-SNAPSHOT/commons-lang-2.1-SNAPSHOT.jar";
         String expectedArtifactContents = "dummy-commons-lang-snapshot-artifact";
 
-        File artifactFile = new File( repoRootInternal, commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootInternal.resolve(commonsLangJar);
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( artifactFile, Charset.defaultCharset() , expectedArtifactContents);
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangJar );
@@ -224,10 +224,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangJar = "commons-lang/commons-lang/2.1-SNAPSHOT/commons-lang-2.1-SNAPSHOT.jar";
         String expectedArtifactContents = "dummy-commons-lang-snapshot-artifact";
 
-        File artifactFile = new File( repoRootInternal, commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootInternal.resolve(commonsLangJar);
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( artifactFile, Charset.defaultCharset() , expectedArtifactContents);
 
         //WebRequest request = new GetMethodWebRequest(
         //    "http://machine.com/repository/internal/" + "commons-lang/jars/commons-lang-2.1-SNAPSHOT.jar" );
@@ -242,10 +242,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangJar = "commons-lang/commons-lang/2.1-SNAPSHOT/commons-lang-2.1-20050821.023400-1.jar";
         String expectedArtifactContents = "dummy-commons-lang-snapshot-artifact";
 
-        File artifactFile = new File( repoRootInternal, commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootInternal.resolve(commonsLangJar);
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(artifactFile, Charset.defaultCharset(), expectedArtifactContents);
 
         //WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangJar );
         WebResponse response = getWebResponse( "/repository/internal/" + commonsLangJar );
@@ -261,10 +261,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangJar = "commons-lang/commons-lang/2.1-SNAPSHOT/commons-lang-2.1-20050821.023400-1.jar";
         String expectedArtifactContents = "dummy-commons-lang-snapshot-artifact";
 
-        File artifactFile = new File( repoRootInternal, commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootInternal.resolve(commonsLangJar);
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(artifactFile, Charset.defaultCharset(), expectedArtifactContents);
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/internal/" + "commons-lang/jars/commons-lang-2.1-20050821.023400-1.jar" );
@@ -282,10 +282,10 @@ public class RepositoryServletNoProxyTest
         String expectedContents = "the-contents-of-the-dual-extension";
         String dualExtensionPath = "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip";
 
-        File checksumFile = new File( repoRootInternal, dualExtensionPath );
-        checksumFile.getParentFile().mkdirs();
+        Path checksumFile = repoRootInternal.resolve(dualExtensionPath);
+        Files.createDirectories(checksumFile.getParent());
 
-        FileUtils.writeStringToFile( checksumFile, expectedContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(checksumFile, Charset.defaultCharset(), expectedContents);
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + dualExtensionPath );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -301,10 +301,10 @@ public class RepositoryServletNoProxyTest
         String expectedContents = "the-contents-of-the-dual-extension";
         String dualExtensionPath = "org/project/example-presentation/3.2/example-presentation-3.2.zip";
 
-        File checksumFile = new File( repoRootInternal, dualExtensionPath );
-        checksumFile.getParentFile().mkdirs();
+        Path checksumFile = repoRootInternal.resolve(dualExtensionPath);
+        Files.createDirectories(checksumFile.getParent());
 
-        FileUtils.writeStringToFile( checksumFile, expectedContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(checksumFile, Charset.defaultCharset(), expectedContents);
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/internal/" + "org.project/distributions/example-presentation-3.2.zip" );
@@ -319,10 +319,10 @@ public class RepositoryServletNoProxyTest
     {
         String commonsLangSha1 = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar.sha1";
 
-        File checksumFile = new File( repoRootLegacy, "commons-lang/jars/commons-lang-2.1.jar.sha1" );
-        checksumFile.getParentFile().mkdirs();
+        Path checksumFile = repoRootLegacy.resolve( "commons-lang/jars/commons-lang-2.1.jar.sha1" );
+        Files.createDirectories(checksumFile.getParent());
 
-        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( checksumFile, Charset.defaultCharset(), "dummy-checksum" );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangSha1 );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -334,10 +334,10 @@ public class RepositoryServletNoProxyTest
         throws Exception
     {
         String commonsLangSha1 = "commons-lang/jars/commons-lang-2.1.jar.sha1";
-        File checksumFile = new File( repoRootLegacy, commonsLangSha1 );
-        checksumFile.getParentFile().mkdirs();
+        Path checksumFile = repoRootLegacy.resolve(commonsLangSha1);
+        Files.createDirectories(checksumFile.getParent());
 
-        FileUtils.writeStringToFile( checksumFile, "dummy-checksum", Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(checksumFile, Charset.defaultCharset(), "dummy-checksum");
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangSha1 );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -352,10 +352,10 @@ public class RepositoryServletNoProxyTest
         String expectedMetadataContents = "dummy-versioned-metadata";
 
         // TODO: find out what this should be from maven-artifact
-        File metadataFile = new File( repoRootLegacy, commonsLangMetadata );
-        metadataFile.getParentFile().mkdirs();
+        Path metadataFile = repoRootLegacy.resolve(commonsLangMetadata);
+        Files.createDirectories(metadataFile.getParent());
 
-        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(metadataFile, Charset.defaultCharset(), expectedMetadataContents);
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -370,10 +370,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangMetadata = "commons-lang/commons-lang/maven-metadata.xml";
         String expectedMetadataContents = "dummy-project-metadata";
 
-        File metadataFile = new File( repoRootLegacy, commonsLangMetadata );
-        metadataFile.getParentFile().mkdirs();
+        Path metadataFile = repoRootLegacy.resolve(commonsLangMetadata);
+        Files.createDirectories(metadataFile.getParent());
 
-        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(metadataFile, Charset.defaultCharset(), expectedMetadataContents);
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -387,10 +387,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangMetadata = "commons-lang/maven-metadata.xml";
         String expectedMetadataContents = "dummy-group-metadata";
 
-        File metadataFile = new File( repoRootLegacy, commonsLangMetadata );
-        metadataFile.getParentFile().mkdirs();
+        Path metadataFile = repoRootLegacy.resolve(commonsLangMetadata);
+        Files.createDirectories(metadataFile.getParent());
 
-        FileUtils.writeStringToFile( metadataFile, expectedMetadataContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(metadataFile, Charset.defaultCharset(), expectedMetadataContents);
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -404,10 +404,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangJar = "commons-lang/commons-lang/2.1/commons-lang-2.1.jar";
         String expectedArtifactContents = "dummy-commons-lang-artifact";
 
-        File artifactFile = new File( repoRootLegacy, "commons-lang/jars/commons-lang-2.1.jar" );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootLegacy.resolve("commons-lang/jars/commons-lang-2.1.jar" );
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(artifactFile, Charset.defaultCharset(), expectedArtifactContents);
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -421,10 +421,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangJar = "commons-lang/jars/commons-lang-2.1.jar";
         String expectedArtifactContents = "dummy-commons-lang-artifact";
 
-        File artifactFile = new File( repoRootLegacy, commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootLegacy.resolve(commonsLangJar);
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(artifactFile, Charset.defaultCharset(), expectedArtifactContents);
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -438,10 +438,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangJar = "commons-lang/commons-lang/2.1-SNAPSHOT/commons-lang-2.1-SNAPSHOT.jar";
         String expectedArtifactContents = "dummy-commons-lang-snapshot-artifact";
 
-        File artifactFile = new File( repoRootLegacy, "commons-lang/jars/commons-lang-2.1-SNAPSHOT.jar" );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootLegacy.resolve( "commons-lang/jars/commons-lang-2.1-SNAPSHOT.jar" );
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(artifactFile, Charset.defaultCharset(), expectedArtifactContents);
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -455,10 +455,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangJar = "commons-lang/jars/commons-lang-2.1-SNAPSHOT.jar";
         String expectedArtifactContents = "dummy-commons-lang-snapshot-artifact";
 
-        File artifactFile = new File( repoRootLegacy, commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootLegacy.resolve(commonsLangJar);
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(artifactFile, Charset.defaultCharset(), expectedArtifactContents);
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -473,10 +473,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangJar = "commons-lang/commons-lang/2.1-SNAPSHOT/" + filename;
         String expectedArtifactContents = "dummy-commons-lang-snapshot-artifact";
 
-        File artifactFile = new File( repoRootLegacy, "commons-lang/jars/" + filename );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootLegacy.resolve( "commons-lang/jars/" + filename );
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(artifactFile, Charset.defaultCharset(), expectedArtifactContents);
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -490,10 +490,10 @@ public class RepositoryServletNoProxyTest
         String commonsLangJar = "commons-lang/jars/commons-lang-2.1-20050821.023400-1.jar";
         String expectedArtifactContents = "dummy-commons-lang-snapshot-artifact";
 
-        File artifactFile = new File( repoRootLegacy, commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
+        Path artifactFile = repoRootLegacy.resolve(commonsLangJar);
+        Files.createDirectories(artifactFile.getParent());
 
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(artifactFile, Charset.defaultCharset(), expectedArtifactContents);
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + commonsLangJar );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -510,10 +510,10 @@ public class RepositoryServletNoProxyTest
         String expectedContents = "the-contents-of-the-dual-extension";
         String dualExtensionPath = "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip";
 
-        File checksumFile = new File( repoRootLegacy, "org.project/distributions/example-presentation-3.2.xml.zip" );
-        checksumFile.getParentFile().mkdirs();
+        Path checksumFile = repoRootLegacy.resolve( "org.project/distributions/example-presentation-3.2.xml.zip" );
+        Files.createDirectories(checksumFile.getParent());
 
-        FileUtils.writeStringToFile( checksumFile, expectedContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(checksumFile, Charset.defaultCharset(), expectedContents);
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + dualExtensionPath );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -527,10 +527,10 @@ public class RepositoryServletNoProxyTest
         String expectedContents = "the-contents-of-the-dual-extension";
         String dualExtensionPath = "org.project/distributions/example-presentation-3.2.zip";
 
-        File checksumFile = new File( repoRootLegacy, dualExtensionPath );
-        checksumFile.getParentFile().mkdirs();
+        Path checksumFile = repoRootLegacy.resolve(dualExtensionPath);
+        Files.createDirectories(checksumFile.getParent());
 
-        FileUtils.writeStringToFile( checksumFile, expectedContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(checksumFile, Charset.defaultCharset(), expectedContents);
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/legacy/" + dualExtensionPath );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -548,13 +548,13 @@ public class RepositoryServletNoProxyTest
 
         archivaConfiguration.getConfiguration().getWebapp().getUi().setApplicationUrl("http://localhost");
 
-        File artifactFile = new File( repoRootInternal, commonsLangJar );
-        artifactFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( artifactFile, expectedArtifactContents, Charset.defaultCharset() );
+        Path artifactFile = repoRootInternal.resolve(commonsLangJar);
+        Files.createDirectories(artifactFile.getParent());
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(artifactFile, Charset.defaultCharset(), expectedArtifactContents);
 
-        File metadataFile = new File( repoRootInternal, commonsLangMetadata );
-        metadataFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( metadataFile, createVersionMetadata("commons-lang", "commons-lang",
+        Path metadataFile = repoRootInternal.resolve(commonsLangMetadata);
+        Files.createDirectories(metadataFile.getParent());
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( metadataFile, Charset.defaultCharset(), createVersionMetadata("commons-lang", "commons-lang",
                 "2.1-SNAPSHOT", "20050821.023400", "1", "20050821.023400"));
 
         WebRequest webRequest = new GetMethodWebRequest(

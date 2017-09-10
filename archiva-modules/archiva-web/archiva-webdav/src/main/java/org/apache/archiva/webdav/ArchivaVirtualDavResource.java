@@ -19,6 +19,8 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.webdav.util.IndexWriter;
+import org.apache.archiva.webdav.util.MimeTypes;
 import org.apache.jackrabbit.util.Text;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
@@ -40,14 +42,13 @@ import org.apache.jackrabbit.webdav.property.DavPropertyNameSet;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
 import org.apache.jackrabbit.webdav.property.ResourceType;
-import org.apache.archiva.webdav.util.IndexWriter;
-import org.apache.archiva.webdav.util.MimeTypes;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -72,9 +73,9 @@ public class ArchivaVirtualDavResource
 
     private static final String METHODS = "OPTIONS, GET, HEAD, POST, TRACE, PROPFIND, PROPPATCH, MKCOL";
 
-    private final List<File> localResources;
+    private final List<Path> localResources;
 
-    public ArchivaVirtualDavResource( List<File> localResources, String logicalResource, MimeTypes mimeTypes,
+    public ArchivaVirtualDavResource( List<Path> localResources, String logicalResource, MimeTypes mimeTypes,
                                       ArchivaDavResourceLocator locator, DavResourceFactory factory )
     {
         this.localResources = localResources;
@@ -91,11 +92,11 @@ public class ArchivaVirtualDavResource
         if ( outputContext.hasStream() )
         {
             Collections.sort( localResources );
-            List<File> localResourceFiles = new ArrayList<>();
+            List<Path> localResourceFiles = new ArrayList<>();
 
-            for ( File resourceFile : localResources )
+            for ( Path resourceFile : localResources )
             {
-                if ( resourceFile.exists() )
+                if ( Files.exists(resourceFile) )
                 {
                     localResourceFiles.add( resourceFile );
                 }

@@ -26,7 +26,9 @@ import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 
 /**
@@ -169,13 +171,13 @@ public class RepositoryServletProxiedPluginSnapshotPolicyTest
         String resourcePath = "org/apache/archiva/archivatest-maven-plugin/4.0-alpha-1-SNAPSHOT/archivatest-maven-plugin-4.0-alpha-1-20070822.033400-42.jar";
         String expectedRemoteContents = "archivatest-maven-plugin-4.0-alpha-1-20070822.033400-42|jar-remote-contents";
         String expectedManagedContents = null;
-        File remoteFile = populateRepo( remoteSnapshots, resourcePath, expectedRemoteContents );
+        Path remoteFile = populateRepo( remoteSnapshots, resourcePath, expectedRemoteContents );
 
         if ( hasManagedCopy )
         {
             expectedManagedContents = "archivatest-maven-plugin-4.0-alpha-1-20070822.033400-42|jar-managed-contents";
-            File managedFile = populateRepo( repoRootInternal, resourcePath, expectedManagedContents );
-            managedFile.setLastModified( remoteFile.lastModified() + deltaManagedToRemoteTimestamp );
+            Path managedFile = populateRepo( repoRootInternal, resourcePath, expectedManagedContents );
+            Files.setLastModifiedTime( managedFile, FileTime.fromMillis( Files.getLastModifiedTime( remoteFile).toMillis() + deltaManagedToRemoteTimestamp ));
         }
 
         archivaConfiguration.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>( 0 ) );

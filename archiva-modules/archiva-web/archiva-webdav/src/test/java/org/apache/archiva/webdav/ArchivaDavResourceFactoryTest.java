@@ -44,7 +44,6 @@ import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResourceLocator;
 import org.apache.jackrabbit.webdav.DavServletRequest;
 import org.apache.jackrabbit.webdav.DavServletResponse;
-
 import org.easymock.IMocksControl;
 import org.junit.After;
 import org.junit.Before;
@@ -54,8 +53,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,13 +150,13 @@ public class ArchivaDavResourceFactoryTest
         if ( defaultManagedRepositoryAdmin.getManagedRepository( RELEASES_REPO ) == null )
         {
             defaultManagedRepositoryAdmin.addManagedRepository(
-                createManagedRepository( RELEASES_REPO, new File( "target/test-classes/" + RELEASES_REPO ).getPath(),
+                createManagedRepository( RELEASES_REPO, Paths.get( "target/test-classes/" + RELEASES_REPO ).toString(),
                                          "default" ), false, null );
         }
         if ( defaultManagedRepositoryAdmin.getManagedRepository( INTERNAL_REPO ) == null )
         {
             defaultManagedRepositoryAdmin.addManagedRepository(
-                createManagedRepository( INTERNAL_REPO, new File( "target/test-classes/" + INTERNAL_REPO ).getPath(),
+                createManagedRepository( INTERNAL_REPO, Paths.get( "target/test-classes/" + INTERNAL_REPO ).toString(),
                                          "default" ), false, null );
         }
         RepositoryGroup repoGroupConfig = new RepositoryGroup();
@@ -255,8 +255,8 @@ public class ArchivaDavResourceFactoryTest
 
             expect( repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar",
                                               internalRepo ) ).andReturn(
-                new File( config.findManagedRepositoryById( INTERNAL_REPO ).getLocation(),
-                          "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
+                Paths.get( config.findManagedRepositoryById( INTERNAL_REPO ).getLocation(),
+                          "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).toString());
 
             expect( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ) ).andReturn( internalRepo );
 
@@ -335,8 +335,8 @@ public class ArchivaDavResourceFactoryTest
 
             expect( repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar",
                                               internalRepo ) ).andReturn(
-                new File( config.findManagedRepositoryById( INTERNAL_REPO ).getLocation(),
-                          "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
+                Paths.get( config.findManagedRepositoryById( INTERNAL_REPO ).getLocation(),
+                          "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).toString());
 
 
             expect( repoRequest.isArchetypeCatalog(
@@ -370,7 +370,7 @@ public class ArchivaDavResourceFactoryTest
                                                                     new ArchivaDavLocatorFactory() );
 
         defaultManagedRepositoryAdmin.addManagedRepository(
-            createManagedRepository( LOCAL_MIRROR_REPO, new File( "target/test-classes/local-mirror" ).getPath(),
+            createManagedRepository( LOCAL_MIRROR_REPO, Paths.get( "target/test-classes/local-mirror" ).toString(),
                                      "default" ), false, null );
 
         List<RepositoryGroupConfiguration> repoGroups = new ArrayList<>();
@@ -417,13 +417,13 @@ public class ArchivaDavResourceFactoryTest
 
             expect( repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar",
                                               internalRepo ) ).andReturn(
-                new File( config.findManagedRepositoryById( INTERNAL_REPO ).getLocation(),
-                          "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
+                Paths.get( config.findManagedRepositoryById( INTERNAL_REPO ).getLocation(),
+                          "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).toString() );
 
             expect( repoRequest.toNativePath( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar",
                                               localMirrorRepo ) )
-                .andReturn( new File( config.findManagedRepositoryById( LOCAL_MIRROR_REPO ).getLocation(),
-                                      "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).getPath() );
+                .andReturn( Paths.get( config.findManagedRepositoryById( LOCAL_MIRROR_REPO ).getLocation(),
+                                      "target/test-classes/internal/org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ).toString());
 
             expect( repoRequest.isArchetypeCatalog( "org/apache/archiva/archiva/1.2-SNAPSHOT/archiva-1.2-SNAPSHOT.jar" ) ).andReturn( false ).times( 2 );
             archivaConfigurationControl.replay();
@@ -562,7 +562,7 @@ public class ArchivaDavResourceFactoryTest
         throws Exception
     {
         defaultManagedRepositoryAdmin.addManagedRepository(
-            createManagedRepository( LEGACY_REPO, new File( "target/test-classes/" + LEGACY_REPO ).getPath(),
+            createManagedRepository( LEGACY_REPO, Paths.get( "target/test-classes/" + LEGACY_REPO ).toString(),
                                      "legacy" ), false, null );
         DavResourceLocator locator =
             new ArchivaDavResourceLocator( "", "/repository/" + LEGACY_REPO + "/eclipse/maven-metadata.xml",
@@ -647,17 +647,17 @@ public class ArchivaDavResourceFactoryTest
         @Override
         public ProxyFetchResult fetchMetadataFromProxies( ManagedRepositoryContent repository, String logicalPath )
         {
-            File target = new File( repository.getRepoRoot(), logicalPath );
+            Path target = Paths.get(repository.getRepoRoot(), logicalPath );
             try
             {
-                FileUtils.copyFile( new File( "target/test-classes/maven-metadata.xml" ), target );
+                FileUtils.copyFile( Paths.get( "target/test-classes/maven-metadata.xml" ).toFile(), target.toFile() );
             }
             catch ( IOException e )
             {
 
             }
 
-            return new ProxyFetchResult( target.toPath(), true );
+            return new ProxyFetchResult( target, true );
         }
     }
 }

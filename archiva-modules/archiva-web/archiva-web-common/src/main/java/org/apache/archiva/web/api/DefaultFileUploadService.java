@@ -24,12 +24,12 @@ import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.SnapshotVersion;
@@ -65,11 +65,12 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -136,13 +137,13 @@ public class DefaultFileUploadService
             //Content-Disposition: form-data; name="files[]"; filename="org.apache.karaf.features.command-2.2.2.jar"
             String fileName = file.getContentDisposition().getParameter( "filename" );
 
-            File tmpFile = File.createTempFile( "upload-artifact", ".tmp" );
-            tmpFile.deleteOnExit();
-            IOUtils.copy( file.getDataHandler().getInputStream(), new FileOutputStream( tmpFile ) );
-            FileMetadata fileMetadata = new FileMetadata( fileName, tmpFile.length(), "theurl" );
-            fileMetadata.setServerFileName( tmpFile.getPath() );
+            Path tmpFile = Files.createTempFile( "upload-artifact", ".tmp" );
+            tmpFile.toFile().deleteOnExit();
+            IOUtils.copy( file.getDataHandler().getInputStream(), new FileOutputStream( tmpFile.toFile() ) );
+            FileMetadata fileMetadata = new FileMetadata( fileName, Files.size(tmpFile), "theurl" );
+            fileMetadata.setServerFileName( tmpFile.toString() );
             fileMetadata.setClassifier( classifier );
-            fileMetadata.setDeleteUrl( tmpFile.getName() );
+            fileMetadata.setDeleteUrl( tmpFile.getFileName().toString() );
             fileMetadata.setPomFile( pomFile );
             fileMetadata.setPackaging( packaging );
 
@@ -183,17 +184,21 @@ public class DefaultFileUploadService
     public Boolean deleteFile( String fileName )
         throws ArchivaRestServiceException
     {
-        File file = new File( SystemUtils.getJavaIoTmpDir(), fileName );
-        log.debug( "delete file:{},exists:{}", file.getPath(), file.exists() );
+        Path file = SystemUtils.getJavaIoTmpDir().toPath().resolve( fileName );
+        log.debug( "delete file:{},exists:{}", file, Files.exists(file) );
         boolean removed = getSessionFileMetadatas().remove( new FileMetadata( fileName ) );
         // try with full name as ui only know the file name
         if ( !removed )
         {
-            /* unused */ getSessionFileMetadatas().remove( new FileMetadata( file.getPath() ) );
+            /* unused */ getSessionFileMetadatas().remove( new FileMetadata( file.toString() ) );
         }
-        if ( file.exists() )
+        try
         {
-            return file.delete();
+            Files.deleteIfExists( file );
+        }
+        catch ( IOException e )
+        {
+            log.error("Could not delete file {}: {}", file, e.getMessage(), e);
         }
         return Boolean.FALSE;
     }
@@ -205,7 +210,7 @@ public class DefaultFileUploadService
         List<FileMetadata> fileMetadatas = new ArrayList( getSessionFileMetadatas() );
         for ( FileMetadata fileMetadata : fileMetadatas )
         {
-            deleteFile( new File( fileMetadata.getServerFileName() ).getPath() );
+            deleteFile( Paths.get( fileMetadata.getServerFileName() ).toString() );
         }
         getSessionFileMetadatas().clear();
         return Boolean.TRUE;
@@ -331,7 +336,7 @@ public class DefaultFileUploadService
             int lastIndex = artifactPath.lastIndexOf( '/' );
 
             String path = artifactPath.substring( 0, lastIndex );
-            File targetPath = new File( repoConfig.getLocation(), path );
+            Path targetPath = Paths.get( repoConfig.getLocation(), path );
 
             String pomFilename = artifactPath.substring( lastIndex + 1 );
             if ( StringUtils.isNotEmpty( fileMetadata.getClassifier() ) )
@@ -340,9 +345,9 @@ public class DefaultFileUploadService
             }
             pomFilename = FilenameUtils.removeExtension( pomFilename ) + ".pom";
 
-            copyFile( new File( fileMetadata.getServerFileName() ), targetPath, pomFilename, fixChecksums );
+            copyFile( Paths.get( fileMetadata.getServerFileName() ), targetPath, pomFilename, fixChecksums );
             triggerAuditEvent( repoConfig.getId(), path + "/" + pomFilename, AuditEvent.UPLOAD_FILE );
-            queueRepositoryTask( repoConfig.getId(), new File( targetPath, pomFilename ) );
+            queueRepositoryTask( repoConfig.getId(), targetPath.resolve(pomFilename ) );
         }
         catch ( IOException ie )
         {
@@ -385,7 +390,7 @@ public class DefaultFileUploadService
             int lastIndex = artifactPath.lastIndexOf( '/' );
 
             String path = artifactPath.substring( 0, lastIndex );
-            File targetPath = new File( repoConfig.getLocation(), path );
+            Path targetPath = Paths.get( repoConfig.getLocation(), path );
 
             log.debug( "artifactPath: {} found targetPath: {}", artifactPath, targetPath );
 
@@ -393,7 +398,7 @@ public class DefaultFileUploadService
             int newBuildNumber = -1;
             String timestamp = null;
 
-            File versionMetadataFile = new File( targetPath, MetadataTools.MAVEN_METADATA );
+            Path versionMetadataFile = targetPath.resolve( MetadataTools.MAVEN_METADATA );
             ArchivaRepositoryMetadata versionMetadata = getMetadata( versionMetadataFile );
 
             if ( VersionUtil.isSnapshot( version ) )
@@ -412,9 +417,9 @@ public class DefaultFileUploadService
                 }
             }
 
-            if ( !targetPath.exists() )
+            if ( !Files.exists(targetPath) )
             {
-                targetPath.mkdirs();
+                Files.createDirectories( targetPath );
             }
 
             String filename = artifactPath.substring( lastIndex + 1 );
@@ -428,8 +433,8 @@ public class DefaultFileUploadService
 
             try
             {
-                File targetFile = new File( targetPath, filename );
-                if ( targetFile.exists() && !VersionUtil.isSnapshot( version ) && repoConfig.isBlockRedeployments() )
+                Path targetFile = targetPath.resolve( filename );
+                if ( Files.exists(targetFile) && !VersionUtil.isSnapshot( version ) && repoConfig.isBlockRedeployments() )
                 {
                     throw new ArchivaRestServiceException(
                         "Overwriting released artifacts in repository '" + repoConfig.getId() + "' is not allowed.",
@@ -437,7 +442,7 @@ public class DefaultFileUploadService
                 }
                 else
                 {
-                    copyFile( new File( fileMetadata.getServerFileName() ), targetPath, filename, fixChecksums );
+                    copyFile( Paths.get( fileMetadata.getServerFileName() ), targetPath, filename, fixChecksums );
                     triggerAuditEvent( repository.getId(), path + "/" + filename, AuditEvent.UPLOAD_FILE );
                     queueRepositoryTask( repository.getId(), targetFile );
                 }
@@ -461,7 +466,7 @@ public class DefaultFileUploadService
 
                 try
                 {
-                    File generatedPomFile =
+                    Path generatedPomFile =
                         createPom( targetPath, pomFilename, fileMetadata, groupId, artifactId, version, packaging );
                     triggerAuditEvent( repoConfig.getId(), path + "/" + pomFilename, AuditEvent.UPLOAD_FILE );
                     if ( fixChecksums )
@@ -481,7 +486,7 @@ public class DefaultFileUploadService
             // explicitly update only if metadata-updater consumer is not enabled!
             if ( !archivaAdministration.getKnownContentConsumers().contains( "metadata-updater" ) )
             {
-                updateProjectMetadata( targetPath.getAbsolutePath(), lastUpdatedTimestamp, timestamp, newBuildNumber,
+                updateProjectMetadata( targetPath.toAbsolutePath().toString(), lastUpdatedTimestamp, timestamp, newBuildNumber,
                                        fixChecksums, fileMetadata, groupId, artifactId, version, packaging );
 
                 if ( VersionUtil.isSnapshot( version ) )
@@ -507,17 +512,22 @@ public class DefaultFileUploadService
             throw new ArchivaRestServiceException( "RepositoryAdmin exception: " + e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
+        catch ( IOException e )
+        {
+            throw new ArchivaRestServiceException("Repository exception "+ e.getMessage(),
+                Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e);
+        }
     }
 
-    private ArchivaRepositoryMetadata getMetadata( File metadataFile )
+    private ArchivaRepositoryMetadata getMetadata( Path metadataFile )
         throws RepositoryMetadataException
     {
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
-        if ( metadataFile.exists() )
+        if ( Files.exists(metadataFile) )
         {
             try
             {
-                metadata = MavenMetadataReader.read( metadataFile.toPath() );
+                metadata = MavenMetadataReader.read( metadataFile );
             }
             catch ( XMLException e )
             {
@@ -527,7 +537,7 @@ public class DefaultFileUploadService
         return metadata;
     }
 
-    private File createPom( File targetPath, String filename, FileMetadata fileMetadata, String groupId,
+    private Path createPom( Path targetPath, String filename, FileMetadata fileMetadata, String groupId,
                             String artifactId, String version, String packaging )
         throws IOException
     {
@@ -538,10 +548,10 @@ public class DefaultFileUploadService
         projectModel.setVersion( version );
         projectModel.setPackaging( packaging );
 
-        File pomFile = new File( targetPath, filename );
+        Path pomFile = targetPath.resolve( filename );
         MavenXpp3Writer writer = new MavenXpp3Writer();
 
-        try (FileWriter w = new FileWriter( pomFile ))
+        try (FileWriter w = new FileWriter( pomFile.toFile() ))
         {
             writer.write( w, projectModel );
         }
@@ -549,17 +559,17 @@ public class DefaultFileUploadService
         return pomFile;
     }
 
-    private void fixChecksums( File file )
+    private void fixChecksums( Path file )
     {
-        ChecksummedFile checksum = new ChecksummedFile( file.toPath() );
+        ChecksummedFile checksum = new ChecksummedFile( file );
         checksum.fixChecksums( algorithms );
     }
 
-    private void queueRepositoryTask( String repositoryId, File localFile )
+    private void queueRepositoryTask( String repositoryId, Path localFile )
     {
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
-        task.setResourceFile( localFile.toPath() );
+        task.setResourceFile( localFile );
         task.setUpdateRelatedArtifacts( true );
         task.setScanAll( false );
 
@@ -570,20 +580,20 @@ public class DefaultFileUploadService
         catch ( TaskQueueException e )
         {
             log.error( "Unable to queue repository task to execute consumers on resource file ['{}"
-                           + "'].", localFile.getName() );
+                           + "'].", localFile.getFileName() );
         }
     }
 
-    private void copyFile( File sourceFile, File targetPath, String targetFilename, boolean fixChecksums )
+    private void copyFile( Path sourceFile, Path targetPath, String targetFilename, boolean fixChecksums )
         throws IOException
     {
 
-        Files.copy( sourceFile.toPath(), new File( targetPath, targetFilename ).toPath(), StandardCopyOption.REPLACE_EXISTING,
+        Files.copy( sourceFile, targetPath.resolve( targetFilename ), StandardCopyOption.REPLACE_EXISTING,
                     StandardCopyOption.COPY_ATTRIBUTES );
 
         if ( fixChecksums )
         {
-            fixChecksums( new File( targetPath, targetFilename ) );
+            fixChecksums( targetPath.resolve( targetFilename ) );
         }
     }
 
@@ -598,12 +608,12 @@ public class DefaultFileUploadService
         List<String> availableVersions = new ArrayList<>();
         String latestVersion = version;
 
-        File projectDir = new File( targetPath ).getParentFile();
-        File projectMetadataFile = new File( projectDir, MetadataTools.MAVEN_METADATA );
+        Path projectDir = Paths.get(targetPath).getParent();
+        Path projectMetadataFile = projectDir.resolve( MetadataTools.MAVEN_METADATA );
 
         ArchivaRepositoryMetadata projectMetadata = getMetadata( projectMetadataFile );
 
-        if ( projectMetadataFile.exists() )
+        if ( Files.exists(projectMetadataFile) )
         {
             availableVersions = projectMetadata.getAvailableVersions();
 
@@ -643,7 +653,7 @@ public class DefaultFileUploadService
             projectMetadata.setReleasedVersion( latestVersion );
         }
 
-        RepositoryMetadataWriter.write( projectMetadata, projectMetadataFile.toPath() );
+        RepositoryMetadataWriter.write( projectMetadata, projectMetadataFile );
 
         if ( fixChecksums )
         {
@@ -655,13 +665,13 @@ public class DefaultFileUploadService
      * Update version level metadata for snapshot artifacts. If it does not exist, create the metadata and fix checksums
      * if necessary.
      */
-    private void updateVersionMetadata( ArchivaRepositoryMetadata metadata, File metadataFile,
+    private void updateVersionMetadata( ArchivaRepositoryMetadata metadata, Path metadataFile,
                                         Date lastUpdatedTimestamp, String timestamp, int buildNumber,
                                         boolean fixChecksums, FileMetadata fileMetadata, String groupId,
                                         String artifactId, String version, String packaging )
         throws RepositoryMetadataException
     {
-        if ( !metadataFile.exists() )
+        if ( !Files.exists(metadataFile) )
         {
             metadata.setGroupId( groupId );
             metadata.setArtifactId( artifactId );
@@ -677,7 +687,7 @@ public class DefaultFileUploadService
         metadata.getSnapshotVersion().setTimestamp( timestamp );
         metadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
 
-        RepositoryMetadataWriter.write( metadata, metadataFile.toPath() );
+        RepositoryMetadataWriter.write( metadata, metadataFile );
 
         if ( fixChecksums )
         {

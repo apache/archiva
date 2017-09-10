@@ -34,8 +34,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -72,7 +73,7 @@ public class RemoteRepositoryConnectivityCheckTest
     {
 
         Server repoServer =
-            buildStaticServer( new File( System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" ) );
+            buildStaticServer( Paths.get( System.getProperty( "basedir" ),  "src/test/repositories/test-repo" ) );
 
         ServerConnector serverConnector = new ServerConnector( repoServer, new HttpConnectionFactory());
         repoServer.addConnector( serverConnector );
@@ -107,7 +108,7 @@ public class RemoteRepositoryConnectivityCheckTest
         throws Exception
     {
 
-        File tmpDir = Files.createTempDirectory( "test" ).toFile();
+        Path tmpDir = Files.createTempDirectory( "test" );
         Server repoServer = buildStaticServer( tmpDir );
         ServerConnector serverConnector = new ServerConnector( repoServer, new HttpConnectionFactory());
         repoServer.addConnector( serverConnector );
@@ -133,7 +134,7 @@ public class RemoteRepositoryConnectivityCheckTest
         finally
         {
             service.deleteRemoteRepository( "id-new" );
-            FileUtils.deleteQuietly( tmpDir );
+            org.apache.archiva.common.utils.FileUtils.deleteQuietly( tmpDir );
             repoServer.stop();
         }
     }
@@ -165,14 +166,14 @@ public class RemoteRepositoryConnectivityCheckTest
         }
     }
 
-    protected Server buildStaticServer( File path )
+    protected Server buildStaticServer( Path path )
     {
         Server repoServer = new Server(  );
 
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setDirectoriesListed( true );
         resourceHandler.setWelcomeFiles( new String[]{ "index.html" } );
-        resourceHandler.setResourceBase( path.getAbsolutePath() );
+        resourceHandler.setResourceBase( path.toAbsolutePath().toString() );
 
         HandlerList handlers = new HandlerList();
         handlers.setHandlers( new Handler[]{ resourceHandler, new DefaultHandler() } );

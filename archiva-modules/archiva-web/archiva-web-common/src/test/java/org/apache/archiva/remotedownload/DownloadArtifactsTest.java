@@ -43,9 +43,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -169,24 +170,21 @@ public class DownloadArtifactsTest
 
         getUserService( authorizationHeader ).removeFromCache( "guest" );
 
-        File file = new File( "target/junit-4.9.jar" );
-        if ( file.exists() )
-        {
-            file.delete();
-        }
+        Path file = Paths.get( "target/junit-4.9.jar" );
+        Files.deleteIfExists( file );
 
         HttpWagon httpWagon = new HttpWagon();
         httpWagon.connect( new Repository( "foo", "http://localhost:" + port ) );
 
-        httpWagon.get( "repository/internal/junit/junit/4.9/junit-4.9.jar", file );
+        httpWagon.get( "repository/internal/junit/junit/4.9/junit-4.9.jar", file.toFile() );
 
-        ZipFile zipFile = new ZipFile( file );
+        ZipFile zipFile = new ZipFile( file.toFile() );
         List<String> entries = getZipEntriesNames( zipFile );
         ZipEntry zipEntry = zipFile.getEntry( "org/junit/runners/JUnit4.class" );
         assertNotNull( "cannot find zipEntry org/junit/runners/JUnit4.class, entries: " + entries + ", content is: "
-                           + FileUtils.readFileToString( file ), zipEntry );
+                           + FileUtils.readFileToString( file.toFile() ), zipEntry );
         zipFile.close();
-        file.deleteOnExit();
+        file.toFile().deleteOnExit();
     }
 
 
@@ -217,8 +215,8 @@ public class DownloadArtifactsTest
         protected void doGet( HttpServletRequest req, HttpServletResponse resp )
             throws ServletException, IOException
         {
-            File jar = new File( System.getProperty( "basedir" ), "src/test/junit-4.9.jar" );
-            Files.copy( jar.toPath(), resp.getOutputStream() );
+            Path jar = Paths.get( System.getProperty( "basedir" ), "src/test/junit-4.9.jar" );
+            Files.copy( jar, resp.getOutputStream() );
 
         }
     }

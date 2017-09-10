@@ -28,7 +28,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 
 /**
@@ -191,13 +193,13 @@ public class RepositoryServletProxiedSnapshotPolicyTest
         String resourcePath = "org/apache/archiva/test/2.0-SNAPSHOT/test-2.0-SNAPSHOT.jar";
         String expectedRemoteContents = "archiva-test-2.0-SNAPSHOT|jar-remote-contents";
         String expectedManagedContents = null;
-        File remoteFile = populateRepo( remoteSnapshots, resourcePath, expectedRemoteContents );
+        Path remoteFile = populateRepo( remoteSnapshots, resourcePath, expectedRemoteContents );
 
         if ( hasManagedCopy )
         {
             expectedManagedContents = "archiva-test-2.0-SNAPSHOT|jar-managed-contents";
-            File managedFile = populateRepo( repoRootInternal, resourcePath, expectedManagedContents );
-            managedFile.setLastModified( remoteFile.lastModified() + deltaManagedToRemoteTimestamp );
+            Path managedFile = populateRepo( repoRootInternal, resourcePath, expectedManagedContents );
+            Files.setLastModifiedTime( managedFile, FileTime.fromMillis(Files.getLastModifiedTime( remoteFile ).toMillis() + deltaManagedToRemoteTimestamp ));
         }
 
         setupSnapshotConnector( REPOID_INTERNAL, remoteSnapshots, snapshotsPolicy );

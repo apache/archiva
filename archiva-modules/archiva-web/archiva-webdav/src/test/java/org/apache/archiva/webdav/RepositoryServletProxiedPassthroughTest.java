@@ -19,13 +19,16 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import java.io.File;
 
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 
 /**
  * RepositoryServlet Tests, Proxied, Get of resources that are not artifacts or metadata, with varying policy settings.
@@ -136,13 +139,13 @@ public class RepositoryServletProxiedPassthroughTest
 
         String expectedRemoteContents = contents;
         String expectedManagedContents = null;
-        File remoteFile = populateRepo( remoteCentral, path, expectedRemoteContents );
+        Path remoteFile = populateRepo( remoteCentral, path, expectedRemoteContents );
 
         if ( hasManagedCopy )
         {
             expectedManagedContents = contents;
-            File managedFile = populateRepo( repoRootInternal, path, expectedManagedContents );
-            managedFile.setLastModified( remoteFile.lastModified() + deltaManagedToRemoteTimestamp );
+            Path managedFile = populateRepo( repoRootInternal, path, expectedManagedContents );
+            Files.setLastModifiedTime( managedFile, FileTime.fromMillis( Files.getLastModifiedTime( remoteFile ).toMillis() + deltaManagedToRemoteTimestamp ));
         }
 
         setupConnector( REPOID_INTERNAL, remoteCentral );

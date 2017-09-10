@@ -21,9 +21,10 @@ package org.apache.archiva.webdav;
 
 import junit.framework.TestCase;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.commons.io.FileUtils;
+import org.apache.archiva.repository.events.AuditListener;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.archiva.webdav.util.MimeTypes;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
 import org.apache.jackrabbit.webdav.DavResourceFactory;
@@ -37,7 +38,6 @@ import org.apache.jackrabbit.webdav.lock.LockManager;
 import org.apache.jackrabbit.webdav.lock.Scope;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.jackrabbit.webdav.lock.Type;
-import org.apache.archiva.webdav.util.MimeTypes;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,9 +45,10 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
@@ -66,11 +67,11 @@ public class DavResourceTest
 
     private DavResourceFactory resourceFactory;
 
-    private File baseDir;
+    private Path baseDir;
 
     private final String REPOPATH = "myresource.jar";
 
-    private File myResource;
+    private Path myResource;
 
     private DavResource resource;
 
@@ -85,10 +86,10 @@ public class DavResourceTest
     {
         super.setUp();
         session = new ArchivaDavSession();
-        baseDir = new File( "target/DavResourceTest" );
-        baseDir.mkdirs();
-        myResource = new File( baseDir, "myresource.jar" );
-        assertTrue( "Could not create " + myResource.getAbsolutePath(), myResource.createNewFile() );
+        baseDir = Paths.get( "target/DavResourceTest" );
+        Files.createDirectories( baseDir );
+        myResource = baseDir.resolve( "myresource.jar" );
+        Files.createFile(myResource);
         resourceFactory = new RootContextDavResourceFactory();
         
         resourceLocator =
@@ -104,12 +105,12 @@ public class DavResourceTest
         throws Exception
     {
         super.tearDown();
-        FileUtils.deleteDirectory( baseDir );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( baseDir );
     }
 
-    private DavResource getDavResource( String logicalPath, File file )
+    private DavResource getDavResource( String logicalPath, Path file )
     {
-        return new ArchivaDavResource( file.getAbsolutePath(), logicalPath, repository, session, resourceLocator,
+        return new ArchivaDavResource( file.toAbsolutePath().toString(), logicalPath, repository, session, resourceLocator,
                                        resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(), null, fileLockManager );
     }
 
@@ -117,7 +118,7 @@ public class DavResourceTest
     public void testDeleteNonExistantResourceShould404()
         throws Exception
     {
-        File dir = new File( baseDir, "testdir" );
+        Path dir = baseDir.resolve( "testdir" );
         try
         {
             DavResource directoryResource = getDavResource( "/testdir", dir );
@@ -134,17 +135,17 @@ public class DavResourceTest
     public void testDeleteCollection()
         throws Exception
     {
-        File dir = new File( baseDir, "testdir" );
+        Path dir = baseDir.resolve( "testdir" );
         try
         {
-            assertTrue( dir.mkdir() );
+            assertNotNull( Files.createDirectories(dir) );
             DavResource directoryResource = getDavResource( "/testdir", dir );
             directoryResource.getCollection().removeMember( directoryResource );
-            assertFalse( dir.exists() );
+            assertFalse( Files.exists(dir) );
         }
         finally
         {
-            FileUtils.deleteDirectory( dir );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( dir );
         }
     }
 
@@ -152,9 +153,9 @@ public class DavResourceTest
     public void testDeleteResource()
         throws Exception
     {
-        assertTrue( myResource.exists() );
+        assertTrue( Files.exists(myResource) );
         resource.getCollection().removeMember( resource );
-        assertFalse( myResource.exists() );
+        assertFalse( Files.exists(myResource) );
     }
 
     @Test
@@ -329,7 +330,7 @@ public class DavResourceTest
         public DavResource createResource( DavResourceLocator locator, DavSession session )
             throws DavException
         {
-            return new ArchivaDavResource( baseDir.getAbsolutePath(), "/", repository, session, resourceLocator,
+            return new ArchivaDavResource( baseDir.toAbsolutePath().toString(), "/", repository, session, resourceLocator,
                                            resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(),
                                            null, fileLockManager );
         }

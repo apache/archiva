@@ -39,7 +39,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,8 +62,8 @@ public class DownloadMergedIndexTest
     {
         previousAppServerBase = System.getProperty( "appserver.base" );
         System.setProperty( "appserver.base",
-                            new File( System.getProperty( "java.io.tmpdir" ) ).getCanonicalPath() + "/target/"
-                                + DownloadMergedIndexTest.class.getName()
+                            Paths.get(System.getProperty( "java.io.tmpdir" ) ).toAbsolutePath().resolve( "target").resolve(
+                                DownloadMergedIndexTest.class.getName()).toString()
         );
     }
 
@@ -85,10 +84,10 @@ public class DownloadMergedIndexTest
         throws Exception
     {
         super.tearDown();
-        File tmpIndexDir = new File( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex" );
-        if ( tmpIndexDir.exists() )
+        Path tmpIndexDir = Paths.get( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex" );
+        if ( Files.exists(tmpIndexDir) )
         {
-            FileUtils.deleteDirectory( tmpIndexDir );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( tmpIndexDir );
         }
     }
 

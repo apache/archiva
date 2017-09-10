@@ -28,7 +28,10 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -94,12 +97,12 @@ public class RepositoryServletTest
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
         repo.setId( NEW_REPOSITORY_ID );
         repo.setName( NEW_REPOSITORY_NAME );
-        File repoRoot = new File( "target/test-repository-root" );
-        if ( !repoRoot.exists() )
+        Path repoRoot = Paths.get( "target/test-repository-root" );
+        if ( !Files.exists(repoRoot) )
         {
-            repoRoot.mkdirs();
+            Files.createDirectories( repoRoot );
         }
-        repo.setLocation( repoRoot.getAbsolutePath() );
+        repo.setLocation( repoRoot.toAbsolutePath().toString() );
         c.addManagedRepository( repo );
         saveConfiguration( archivaConfiguration );
 

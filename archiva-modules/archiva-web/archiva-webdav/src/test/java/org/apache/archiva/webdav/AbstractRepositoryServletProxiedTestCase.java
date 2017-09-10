@@ -39,8 +39,9 @@ import org.junit.After;
 import org.junit.Before;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Rule;
@@ -61,7 +62,7 @@ public abstract class AbstractRepositoryServletProxiedTestCase
 
         public Server server;
 
-        public File root;
+        public Path root;
 
         public RemoteRepositoryConfiguration config;
     }
@@ -128,15 +129,15 @@ public abstract class AbstractRepositoryServletProxiedTestCase
             "temp" ).toFile();*/// new File( System.getProperty( "basedir" ) + "target/remote-repos/" + id + "/" );
 
         // Remove exising root contents.
-        if ( repo.root.exists() )
+        if ( Files.exists(repo.root) )
         {
-            FileUtils.deleteDirectory( repo.root );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( repo.root );
         }
 
         // Establish root directory.
-        if ( !repo.root.exists() )
+        if ( !Files.exists(repo.root) )
         {
-            repo.root.mkdirs();
+            Files.createDirectories( repo.root );
         }
 
         repo.server = new Server( );
@@ -147,7 +148,7 @@ public abstract class AbstractRepositoryServletProxiedTestCase
 
         ServletContextHandler context = new ServletContextHandler();
         context.setContextPath( repo.context );
-        context.setResourceBase( repo.root.getAbsolutePath() );
+        context.setResourceBase( repo.root.toAbsolutePath().toString() );
         context.setAttribute( "dirAllowed", true );
         context.setAttribute( "maxCacheSize", 0 );
 
@@ -215,16 +216,16 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         }
     }
 
-    protected File populateRepo( RemoteRepoInfo remoteRepo, String path, String contents )
+    protected Path populateRepo( RemoteRepoInfo remoteRepo, String path, String contents )
         throws Exception
     {
-        File destFile = new File( remoteRepo.root, path );
-        if ( destFile.exists() )
+        Path destFile = remoteRepo.root.resolve( path );
+        if ( Files.exists(destFile) )
         {
-            destFile.delete();
+            Files.delete(destFile);
         }
-        destFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( destFile, contents, Charset.defaultCharset() );
+        Files.createDirectories( destFile.getParent());
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( destFile, Charset.defaultCharset(), contents);
         return destFile;
     }
 

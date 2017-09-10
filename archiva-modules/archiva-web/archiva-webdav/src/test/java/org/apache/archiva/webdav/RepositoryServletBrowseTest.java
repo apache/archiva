@@ -31,7 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,10 +48,10 @@ public class RepositoryServletBrowseTest
     {
         super.setUp();
 
-        new File( repoRootInternal, "org/apache/archiva" ).mkdirs();
-        new File( repoRootInternal, "org/codehaus/mojo/" ).mkdirs();
-        new File( repoRootInternal, "net/sourceforge" ).mkdirs();
-        new File( repoRootInternal, "commons-lang" ).mkdirs();
+        Files.createDirectories( repoRootInternal.resolve( "org/apache/archiva" ));
+        Files.createDirectories( repoRootInternal.resolve( "org/codehaus/mojo/" ));
+        Files.createDirectories( repoRootInternal.resolve("net/sourceforge" ));
+        Files.createDirectories( repoRootInternal.resolve("commons-lang" ));
 
         startRepository();
     }
@@ -94,8 +94,8 @@ public class RepositoryServletBrowseTest
     public void testGetDirectoryWhichHasMatchingFile() //MRM-893
         throws Exception
     {
-        new File( repoRootInternal, "org/apache/archiva/artifactId/1.0" ).mkdirs();
-        new File( repoRootInternal, "org/apache/archiva/artifactId/1.0/artifactId-1.0.jar" ).createNewFile();
+        Files.createDirectories( repoRootInternal.resolve("org/apache/archiva/artifactId/1.0" ));
+        Files.createFile( repoRootInternal.resolve("org/apache/archiva/artifactId/1.0/artifactId-1.0.jar" ));
 
         WebRequest request =
             new GetMethodWebRequest( "http://machine.com/repository/internal/org/apache/archiva/artifactId" );

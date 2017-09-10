@@ -21,12 +21,12 @@ package org.apache.archiva.webdav;
 
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
-import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * RepositoryServletTest
@@ -50,10 +50,10 @@ public class RepositoryServletNoProxyMetadataTest
         String commonsLangMetadata = "commons-lang/commons-lang/2.1/maven-metadata.xml";
         String expectedMetadataContents = "metadata-for-commons-lang-version-2.1";
 
-        File checksumFile = new File( repoRootInternal, commonsLangMetadata );
-        checksumFile.getParentFile().mkdirs();
+        Path checksumFile = repoRootInternal.resolve(commonsLangMetadata);
+        Files.createDirectories(checksumFile.getParent());
 
-        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( checksumFile, Charset.defaultCharset(), expectedMetadataContents );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -69,10 +69,10 @@ public class RepositoryServletNoProxyMetadataTest
         String commonsLangMetadata = "commons-lang/commons-lang/maven-metadata.xml";
         String expectedMetadataContents = "metadata-for-commons-lang-version-for-project";
 
-        File checksumFile = new File( repoRootInternal, commonsLangMetadata );
-        checksumFile.getParentFile().mkdirs();
+        Path checksumFile = repoRootInternal.resolve(commonsLangMetadata);
+        Files.createDirectories(checksumFile.getParent());
 
-        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( checksumFile, Charset.defaultCharset(), expectedMetadataContents );
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -88,10 +88,10 @@ public class RepositoryServletNoProxyMetadataTest
         String commonsLangMetadata = "commons-lang/maven-metadata.xml";
         String expectedMetadataContents = "metadata-for-commons-lang-group";
 
-        File checksumFile = new File( repoRootInternal, commonsLangMetadata );
-        checksumFile.getParentFile().mkdirs();
+        Path checksumFile = repoRootInternal.resolve(commonsLangMetadata);
+        Files.createDirectories(checksumFile.getParent());
 
-        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( checksumFile, Charset.defaultCharset() , expectedMetadataContents);
 
         WebRequest request = new GetMethodWebRequest( "http://machine.com/repository/internal/" + commonsLangMetadata );
         WebResponse response = getServletUnitClient().getResponse( request );
@@ -108,10 +108,10 @@ public class RepositoryServletNoProxyMetadataTest
             "org/apache/maven/plugins/maven-assembly-plugin/2.2-beta-2-SNAPSHOT/maven-metadata.xml";
         String expectedMetadataContents = "metadata-for-assembly-plugin-version-2.2-beta-2-SNAPSHOT";
 
-        File checksumFile = new File( repoRootInternal, assemblyPluginMetadata );
-        checksumFile.getParentFile().mkdirs();
+        Path checksumFile = repoRootInternal.resolve(assemblyPluginMetadata);
+        Files.createDirectories(checksumFile.getParent());
 
-        FileUtils.writeStringToFile( checksumFile, expectedMetadataContents, Charset.defaultCharset() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( checksumFile, Charset.defaultCharset(), expectedMetadataContents );
 
         WebRequest request =
             new GetMethodWebRequest( "http://machine.com/repository/internal/" + assemblyPluginMetadata );

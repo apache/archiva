@@ -66,13 +66,15 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
@@ -88,9 +90,9 @@ public abstract class AbstractRepositoryServletTestCase
 {
     protected static final String REPOID_INTERNAL = "internal";
 
-    protected File repoRootInternal;
+    protected Path repoRootInternal;
 
-    protected File repoRootLegacy;
+    protected Path repoRootLegacy;
 
     @Inject
     protected ArchivaConfiguration archivaConfiguration;
@@ -118,19 +120,19 @@ public abstract class AbstractRepositoryServletTestCase
 
         super.setUp();
 
-        String appserverBase = new File( "target/appserver-base" ).getAbsolutePath();
+        String appserverBase = Paths.get( "target/appserver-base" ).toAbsolutePath().toString();
         System.setProperty( "appserver.base", appserverBase );
 
-        File testConf = new File( "src/test/resources/repository-archiva.xml" );
-        File testConfDest = new File( appserverBase, "conf/archiva.xml" );
-        if ( testConfDest.exists() )
+        Path testConf = Paths.get( "src/test/resources/repository-archiva.xml" );
+        Path testConfDest = Paths.get(appserverBase, "conf/archiva.xml" );
+        if ( Files.exists(testConfDest) )
         {
-            FileUtils.deleteQuietly( testConfDest );
+            org.apache.archiva.common.utils.FileUtils.deleteQuietly( testConfDest );
         }
-        FileUtils.copyFile( testConf, testConfDest );
+        FileUtils.copyFile( testConf.toFile(), testConfDest.toFile() );
 
-        repoRootInternal = new File( appserverBase, "data/repositories/internal" );
-        repoRootLegacy = new File( appserverBase, "data/repositories/legacy" );
+        repoRootInternal = Paths.get( appserverBase, "data/repositories/internal" );
+        repoRootLegacy = Paths.get( appserverBase, "data/repositories/legacy" );
         Configuration config = archivaConfiguration.getConfiguration();
 
         config.getManagedRepositories().clear();
@@ -674,29 +676,30 @@ public abstract class AbstractRepositoryServletTestCase
         throws Exception
     {
 
-        if ( repoRootInternal.exists() )
+        if ( Files.exists(repoRootInternal) )
         {
-            FileUtils.deleteDirectory( repoRootInternal );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoRootInternal );
         }
 
-        if ( repoRootLegacy.exists() )
+        if ( Files.exists(repoRootLegacy) )
         {
-            FileUtils.deleteDirectory( repoRootLegacy );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoRootLegacy );
         }
 
     }
 
 
-    protected void assertFileContents( String expectedContents, File repoRoot, String path )
+    protected void assertFileContents( String expectedContents, Path repoRoot, String subpath )
         throws IOException
     {
-        File actualFile = new File( repoRoot, path );
-        assertTrue( "File <" + actualFile.getAbsolutePath() + "> should exist.", actualFile.exists() );
-        assertTrue( "File <" + actualFile.getAbsolutePath() + "> should be a file (not a dir/link/device/etc).",
-                    actualFile.isFile() );
+        String path = Paths.get(subpath).isAbsolute() ? subpath.substring( 1,subpath.length() ) : subpath;
+        Path actualFile = repoRoot.resolve( path );
+        assertTrue( "File <" + actualFile.toAbsolutePath() + "> should exist.", Files.exists(actualFile) );
+        assertTrue( "File <" + actualFile.toAbsolutePath() + "> should be a file (not a dir/link/device/etc).",
+                    Files.isRegularFile( actualFile ) );
 
-        String actualContents = FileUtils.readFileToString( actualFile, Charset.defaultCharset() );
-        assertEquals( "File Contents of <" + actualFile.getAbsolutePath() + ">", expectedContents, actualContents );
+        String actualContents = org.apache.archiva.common.utils.FileUtils.readFileToString( actualFile, Charset.defaultCharset() );
+        assertEquals( "File Contents of <" + actualFile.toAbsolutePath() + ">", expectedContents, actualContents );
     }
 
     protected void assertRepositoryValid( RepositoryServlet servlet, String repoId )
@@ -704,9 +707,9 @@ public abstract class AbstractRepositoryServletTestCase
     {
         ManagedRepository repository = servlet.getRepository( repoId );
         assertNotNull( "Archiva Managed Repository id:<" + repoId + "> should exist.", repository );
-        File repoRoot = new File( repository.getLocation() );
+        Path repoRoot = Paths.get( repository.getLocation() );
         assertTrue( "Archiva Managed Repository id:<" + repoId + "> should have a valid location on disk.",
-                    repoRoot.exists() && repoRoot.isDirectory() );
+                    Files.exists(repoRoot) && Files.isDirectory(repoRoot) );
     }
 
     protected void assertResponseOK( WebResponse response )
@@ -745,19 +748,19 @@ public abstract class AbstractRepositoryServletTestCase
                              response.getStatusCode() );
     }
 
-    protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location,
+    protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, Path location,
                                                                       boolean blockRedeployments )
     {
         ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration();
         repo.setId( id );
         repo.setName( name );
-        repo.setLocation( location.getAbsolutePath() );
+        repo.setLocation( location.toAbsolutePath().toString() );
         repo.setBlockRedeployments( blockRedeployments );
 
         return repo;
     }
 
-    protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, File location,
+    protected ManagedRepositoryConfiguration createManagedRepository( String id, String name, Path location,
                                                                       String layout, boolean blockRedeployments )
     {
         ManagedRepositoryConfiguration repo = createManagedRepository( id, name, location, blockRedeployments );
@@ -781,21 +784,21 @@ public abstract class AbstractRepositoryServletTestCase
     }
 
 
-    protected void setupCleanRepo( File repoRootDir )
+    protected void setupCleanRepo( Path repoRootDir )
         throws IOException
     {
-        FileUtils.deleteDirectory( repoRootDir );
-        if ( !repoRootDir.exists() )
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoRootDir );
+        if ( !Files.exists(repoRootDir) )
         {
-            repoRootDir.mkdirs();
+            Files.createDirectories( repoRootDir );
         }
     }
 
-    protected void assertManagedFileNotExists( File repoRootInternal, String resourcePath )
+    protected void assertManagedFileNotExists( Path repoRootInternal, String resourcePath )
     {
-        File repoFile = new File( repoRootInternal, resourcePath );
-        assertFalse( "Managed Repository File <" + repoFile.getAbsolutePath() + "> should not exist.",
-                     repoFile.exists() );
+        Path repoFile =  repoRootInternal.resolve( resourcePath );
+        assertFalse( "Managed Repository File <" + repoFile.toAbsolutePath() + "> should not exist.",
+                     Files.exists(repoFile) );
     }
 
     protected void setupCleanInternalRepo()
@@ -804,12 +807,12 @@ public abstract class AbstractRepositoryServletTestCase
         setupCleanRepo( repoRootInternal );
     }
 
-    protected File populateRepo( File repoRootManaged, String path, String contents )
+    protected Path populateRepo( Path repoRootManaged, String path, String contents )
         throws Exception
     {
-        File destFile = new File( repoRootManaged, path );
-        destFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( destFile, contents, Charset.defaultCharset() );
+        Path destFile = repoRootManaged.resolve( path );
+        Files.createDirectories( destFile.getParent() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( destFile, Charset.defaultCharset(), contents );
         return destFile;
     }
 }

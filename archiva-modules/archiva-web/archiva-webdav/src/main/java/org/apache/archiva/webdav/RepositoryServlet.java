@@ -49,8 +49,10 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 /**
@@ -186,13 +188,16 @@ public class RepositoryServlet
 
         for ( ManagedRepository repo : repositoryMap.values() )
         {
-            File repoDir = new File( repo.getLocation() );
+            Path repoDir = Paths.get( repo.getLocation() );
 
-            if ( !repoDir.exists() )
+            if ( !Files.exists(repoDir) )
             {
-                if ( !repoDir.mkdirs() )
+                try
                 {
-                    // Skip invalid directories.
+                    Files.createDirectories( repoDir );
+                }
+                catch ( IOException e )
+                {
                     log.info( "Unable to create missing directory for {}", repo.getLocation() );
                     continue;
                 }

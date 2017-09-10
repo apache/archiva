@@ -25,7 +25,9 @@ import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.junit.Test;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 
 /**
@@ -165,13 +167,14 @@ public class RepositoryServletProxiedReleasePolicyTest
         String resourcePath = "org/apache/archiva/test/1.0/test-1.0.jar";
         String expectedRemoteContents = "archiva-test-1.0|jar-remote-contents";
         String expectedManagedContents = null;
-        File remoteFile = populateRepo( remoteCentral, resourcePath, expectedRemoteContents );
+        Path remoteFile = populateRepo( remoteCentral, resourcePath, expectedRemoteContents );
 
         if ( hasManagedCopy )
         {
             expectedManagedContents = "archiva-test-1.0|jar-managed-contents";
-            File managedFile = populateRepo( repoRootInternal, resourcePath, expectedManagedContents );
-            managedFile.setLastModified( remoteFile.lastModified() + deltaManagedToRemoteTimestamp );
+            Path managedFile = populateRepo( repoRootInternal, resourcePath, expectedManagedContents );
+            Files.setLastModifiedTime(
+                managedFile, FileTime.fromMillis( Files.getLastModifiedTime( remoteFile ).toMillis() + deltaManagedToRemoteTimestamp ));
         }
 
         archivaConfiguration.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>() );

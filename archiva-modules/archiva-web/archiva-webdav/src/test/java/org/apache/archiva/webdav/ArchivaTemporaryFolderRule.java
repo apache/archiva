@@ -15,37 +15,36 @@
  */
 package org.apache.archiva.webdav;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import org.apache.commons.io.FileUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Rule to help creating folder for repository based on testmethod name
  * @author Eric
  */
 public class ArchivaTemporaryFolderRule implements TestRule {
-    private File d;
+    private Path d;
     private Description desc = Description.EMPTY;
 
     public void before() throws IOException {
         // hard coded maven target file
-        File f1 = new File("target" + File.separator + "archivarepo" + File.separator + ArchivaTemporaryFolderRule.resumepackage(desc.getClassName()) + File.separator + desc.getMethodName());
-        f1.mkdirs();
-        Path p = Files.createDirectories(f1.toPath());
-        d = p.toFile();
+        Path f1 = Paths.get("target", "archivarepo", ArchivaTemporaryFolderRule.resumepackage(desc.getClassName()), desc.getMethodName());
+        d = Files.createDirectories( f1 );
     }
 
-    public File getRoot() {
+    public Path getRoot() {
         return d;
     }
 
     public void after() throws IOException {
-        FileUtils.deleteDirectory(getRoot());
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory(getRoot());
     }
 
     @Override
@@ -77,7 +76,7 @@ public class ArchivaTemporaryFolderRule implements TestRule {
         String[] p = packagename.split("\\.");
         for (int i = 0; i < p.length - 2; i++) 
         {
-            sb.append(p[i].charAt(0)).append(File.separator);
+            sb.append(p[i].charAt(0)).append( FileSystems.getDefault( ).getSeparator());
         }
         sb.append(p[p.length - 1]);
         return sb.toString();

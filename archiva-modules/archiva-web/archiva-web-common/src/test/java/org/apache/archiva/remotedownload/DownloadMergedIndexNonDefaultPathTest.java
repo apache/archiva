@@ -32,17 +32,19 @@ import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.apache.commons.io.FileUtils;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -76,10 +78,10 @@ public class DownloadMergedIndexNonDefaultPathTest
         throws Exception
     {
         super.tearDown();
-        File tmpIndexDir = new File( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex" );
-        if ( tmpIndexDir.exists() )
+        Path tmpIndexDir = Paths.get( System.getProperty( "java.io.tmpdir" ),  "tmpIndex" );
+        if ( Files.exists(tmpIndexDir) )
         {
-            FileUtils.deleteDirectory( tmpIndexDir );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( tmpIndexDir );
         }
     }
 
@@ -88,10 +90,10 @@ public class DownloadMergedIndexNonDefaultPathTest
     public void downloadMergedIndexWithNonDefaultPath()
         throws Exception
     {
-        File tmpIndexDir = new File( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex" );
-        if ( tmpIndexDir.exists() )
+        Path tmpIndexDir = Paths.get( System.getProperty( "java.io.tmpdir" ),  "tmpIndex" );
+        if ( Files.exists(tmpIndexDir) )
         {
-            FileUtils.deleteDirectory( tmpIndexDir );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( tmpIndexDir );
         }
         String id = Long.toString( System.currentTimeMillis() );
         ManagedRepository managedRepository = new ManagedRepository();

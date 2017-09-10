@@ -27,18 +27,20 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.commons.io.FileUtils;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 /**
@@ -59,11 +61,11 @@ import java.util.List;
 public class RepositoryServletRepositoryGroupTest
     extends AbstractRepositoryServletTestCase
 {
-    protected File repoRootFirst;
+    protected Path repoRootFirst;
 
-    protected File repoRootLast;
+    protected Path repoRootLast;
 
-    protected File repoRootInvalid;
+    protected Path repoRootInvalid;
 
     protected static final String MANAGED_REPO_FIRST = "first";
 
@@ -87,8 +89,8 @@ public class RepositoryServletRepositoryGroupTest
 
         Configuration configuration = archivaConfiguration.getConfiguration();
 
-        repoRootFirst = new File( appserverBase, "data/repositories/" + MANAGED_REPO_FIRST );
-        repoRootLast = new File( appserverBase, "data/repositories/" + MANAGED_REPO_LAST );
+        repoRootFirst = Paths.get( appserverBase, "data/repositories/" + MANAGED_REPO_FIRST );
+        repoRootLast = Paths.get( appserverBase, "data/repositories/" + MANAGED_REPO_LAST );
 
         configuration.addManagedRepository(
             createManagedRepository( MANAGED_REPO_FIRST, "First Test Repo", repoRootFirst, true ) );
@@ -102,7 +104,7 @@ public class RepositoryServletRepositoryGroupTest
         configuration.addRepositoryGroup( createRepositoryGroup( REPO_GROUP_WITH_VALID_REPOS, managedRepoIds ) );
 
         // Create the repository group with an invalid managed repository
-        repoRootInvalid = new File( appserverBase, "data/repositories/" + MANAGED_REPO_INVALID );
+        repoRootInvalid = Paths.get( appserverBase, "data/repositories/" + MANAGED_REPO_INVALID );
         ManagedRepositoryConfiguration managedRepositoryConfiguration =
             createManagedRepository( MANAGED_REPO_INVALID, "Invalid Test Repo", repoRootInvalid, true );
 
@@ -121,7 +123,7 @@ public class RepositoryServletRepositoryGroupTest
             createRepositoryGroup( REPO_GROUP_WITH_INVALID_REPOS, invalidManagedRepoIds ) );
 
         configuration.removeManagedRepository( managedRepositoryConfiguration );
-        FileUtils.deleteDirectory( repoRootInvalid );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoRootInvalid );
 
         saveConfiguration( archivaConfiguration );
 
@@ -148,9 +150,9 @@ public class RepositoryServletRepositoryGroupTest
     {
         String resourceName = "dummy/dummy-first-resource/1.0/dummy-first-resource-1.0.txt";
 
-        File dummyInternalResourceFile = new File( repoRootFirst, resourceName );
-        dummyInternalResourceFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( dummyInternalResourceFile, "first", Charset.defaultCharset() );
+        Path dummyInternalResourceFile = repoRootFirst.resolve( resourceName );
+        Files.createDirectories( dummyInternalResourceFile.getParent() );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( dummyInternalResourceFile, Charset.defaultCharset(), "first" );
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/" + resourceName );
@@ -169,9 +171,9 @@ public class RepositoryServletRepositoryGroupTest
     {
         String resourceName = "dummy/dummy-last-resource/1.0/dummy-last-resource-1.0.txt";
 
-        File dummyReleasesResourceFile = new File( repoRootLast, resourceName );
-        dummyReleasesResourceFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( dummyReleasesResourceFile, "last", Charset.defaultCharset() );
+        Path dummyReleasesResourceFile = repoRootLast.resolve( resourceName );
+        Files.createDirectories(dummyReleasesResourceFile.getParent());
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(dummyReleasesResourceFile, Charset.defaultCharset(), "last");
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/" + resourceName );
@@ -239,32 +241,32 @@ public class RepositoryServletRepositoryGroupTest
         // first metadata file        
         String resourceName = "dummy/dummy-merged-metadata-resource/maven-metadata.xml";
 
-        File dummyInternalResourceFile = new File( repoRootFirst, resourceName );
-        dummyInternalResourceFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( dummyInternalResourceFile, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        Path dummyInternalResourceFile =  repoRootFirst.resolve( resourceName );
+        Files.createDirectories(dummyInternalResourceFile.getParent());
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( dummyInternalResourceFile,
+            Charset.defaultCharset(),  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
             + "<metadata>\n<groupId>dummy</groupId>\n<artifactId>dummy-merged-metadata-resource</artifactId>\n"
             + "<versioning>\n<latest>1.0</latest>\n<release>1.0</release>\n<versions>\n<version>1.0</version>\n"
-            + "<version>2.5</version>\n</versions>\n<lastUpdated>20080708095554</lastUpdated>\n</versioning>\n</metadata>",
-                                     Charset.defaultCharset() );
+            + "<version>2.5</version>\n</versions>\n<lastUpdated>20080708095554</lastUpdated>\n</versioning>\n</metadata>" );
 
         //second metadata file
         resourceName = "dummy/dummy-merged-metadata-resource/maven-metadata.xml";
-        dummyInternalResourceFile = new File( repoRootLast, resourceName );
-        dummyInternalResourceFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( dummyInternalResourceFile, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+        dummyInternalResourceFile = repoRootLast.resolve( resourceName );
+        Files.createDirectories(dummyInternalResourceFile.getParent());
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( dummyInternalResourceFile, Charset.defaultCharset(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
             + "<metadata><groupId>dummy</groupId><artifactId>dummy-merged-metadata-resource</artifactId>"
             + "<versioning><latest>2.0</latest><release>2.0</release><versions><version>1.0</version>"
             + "<version>1.5</version><version>2.0</version></versions><lastUpdated>20080709095554</lastUpdated>"
-            + "</versioning></metadata>", Charset.defaultCharset() );
+            + "</versioning></metadata>" );
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/"
                 + "dummy-merged-metadata-resource/maven-metadata.xml" );
         WebResponse response = getServletUnitClient().getResource( request );
 
-        File returnedMetadata = new File( "target/test-classes/retrievedMetadataFile.xml" );
-        FileUtils.writeStringToFile( returnedMetadata, response.getContentAsString() );
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( returnedMetadata.toPath() );
+        Path returnedMetadata = Paths.get( "target/test-classes/retrievedMetadataFile.xml" );
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile( returnedMetadata, Charset.defaultCharset(), response.getContentAsString() );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( returnedMetadata );
 
         assertResponseOK( response );
 
@@ -273,13 +275,13 @@ public class RepositoryServletRepositoryGroupTest
 
 
         //check if the checksum files were generated
-        File checksumFileSha1 = new File( repoRootFirst, resourceName + ".sha1" );
-        checksumFileSha1.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( checksumFileSha1, "3290853214d3687134", Charset.defaultCharset() );
+        Path checksumFileSha1 = repoRootFirst.resolve( resourceName + ".sha1" );
+        Files.createDirectories(checksumFileSha1.getParent());
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(checksumFileSha1, Charset.defaultCharset(), "3290853214d3687134");
 
-        File checksumFileMd5 = new File( repoRootFirst, resourceName + ".md5" );
-        checksumFileMd5.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( checksumFileMd5, "98745897234eda12836423", Charset.defaultCharset() );
+        Path checksumFileMd5 = repoRootFirst.resolve( resourceName + ".md5" );
+        Files.createDirectories(checksumFileMd5.getParent());
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(checksumFileMd5, Charset.defaultCharset(), "98745897234eda12836423");
 
         // request the sha1 checksum of the metadata
         request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/"
@@ -309,15 +311,15 @@ public class RepositoryServletRepositoryGroupTest
     {
         String resourceName = "dummy/dummy-artifact/1.0/dummy-artifact-1.0.txt";
 
-        File dummyInternalResourceFile = new File( repoRootFirst, resourceName );
-        dummyInternalResourceFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( dummyInternalResourceFile, "first", Charset.defaultCharset() );
+        Path dummyInternalResourceFile = repoRootFirst.resolve( resourceName );
+        Files.createDirectories(dummyInternalResourceFile.getParent());
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(dummyInternalResourceFile, Charset.defaultCharset(), "first");
 
         resourceName = "dummy/dummy-artifact/2.0/dummy-artifact-2.0.txt";
 
-        File dummyReleasesResourceFile = new File( repoRootLast, resourceName );
-        dummyReleasesResourceFile.getParentFile().mkdirs();
-        FileUtils.writeStringToFile( dummyReleasesResourceFile, "last", Charset.defaultCharset() );
+        Path dummyReleasesResourceFile = repoRootLast.resolve( resourceName );
+        Files.createDirectories(dummyReleasesResourceFile.getParent());
+        org.apache.archiva.common.utils.FileUtils.writeStringToFile(dummyReleasesResourceFile, Charset.defaultCharset(), "last");
 
         WebRequest request = new GetMethodWebRequest(
             "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/dummy-artifact/" );

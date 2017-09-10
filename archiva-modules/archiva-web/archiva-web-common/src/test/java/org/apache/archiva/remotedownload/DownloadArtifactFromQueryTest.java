@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 
 import javax.ws.rs.RedirectionException;
 import javax.ws.rs.core.Response;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -54,8 +53,8 @@ public class DownloadArtifactFromQueryTest
     {
         previousAppServerBase = System.getProperty( "appserver.base" );
         System.setProperty( "appserver.base",
-                            new File( System.getProperty( "java.io.tmpdir" ) ).getCanonicalPath() + "/target/"
-                                + DownloadArtifactFromQueryTest.class.getName() );
+                            Paths.get( System.getProperty( "java.io.tmpdir" ) ).toAbsolutePath().resolve("target")
+                                .resolve(DownloadArtifactFromQueryTest.class.getName() ).toString());
     }
 
     @AfterClass

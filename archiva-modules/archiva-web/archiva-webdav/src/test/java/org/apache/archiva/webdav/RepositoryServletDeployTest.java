@@ -19,8 +19,10 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -237,8 +239,8 @@ public class RepositoryServletDeployTest
         
         assertEquals(HttpServletResponse.SC_CONFLICT, response.getStatusCode());
         
-        File mkColLocalPath = new File(repoRootInternal, "path/to/");
-        assertFalse(mkColLocalPath.exists());
+        Path mkColLocalPath = repoRootInternal.resolve( "path/to/");
+        assertFalse( Files.exists(mkColLocalPath));
     }
 
     @Test

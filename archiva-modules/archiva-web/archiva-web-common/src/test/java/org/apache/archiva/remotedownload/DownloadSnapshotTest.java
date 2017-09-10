@@ -34,7 +34,9 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -74,10 +76,10 @@ public class DownloadSnapshotTest
         throws Exception
     {
 
-        File tmpIndexDir = new File( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex" );
-        if ( tmpIndexDir.exists() )
+        Path tmpIndexDir = Paths.get( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex" );
+        if ( Files.exists(tmpIndexDir) )
         {
-            FileUtils.deleteDirectory( tmpIndexDir );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( tmpIndexDir );
         }
         String id = Long.toString( System.currentTimeMillis() );
         ManagedRepository managedRepository = new ManagedRepository();
@@ -111,24 +113,21 @@ public class DownloadSnapshotTest
 
         getUserService( authorizationHeader ).removeFromCache( "guest" );
 
-        File file = new File( "target/archiva-model-1.4-M4-SNAPSHOT.jar" );
-        if ( file.exists() )
-        {
-            file.delete();
-        }
+        Path file = Paths.get( "target/archiva-model-1.4-M4-SNAPSHOT.jar" );
+        Files.deleteIfExists(file);
 
         HttpWagon httpWagon = new HttpWagon();
         httpWagon.connect( new Repository( "foo", "http://localhost:" + port ) );
 
-        httpWagon.get( "/repository/"+ id +"/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-SNAPSHOT.jar", file );
+        httpWagon.get( "/repository/"+ id +"/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-SNAPSHOT.jar", file.toFile() );
 
-        ZipFile zipFile = new ZipFile( file );
+        ZipFile zipFile = new ZipFile( file.toFile() );
         List<String> entries = getZipEntriesNames( zipFile );
         ZipEntry zipEntry = zipFile.getEntry( "org/apache/archiva/model/ArchivaArtifact.class" );
         assertNotNull( "cannot find zipEntry org/apache/archiva/model/ArchivaArtifact.class, entries: " + entries + ", content is: "
-                           + FileUtils.readFileToString( file ), zipEntry );
+                           + FileUtils.readFileToString( file.toFile() ), zipEntry );
         zipFile.close();
-        file.deleteOnExit();
+        file.toFile().deleteOnExit();
 
 
 

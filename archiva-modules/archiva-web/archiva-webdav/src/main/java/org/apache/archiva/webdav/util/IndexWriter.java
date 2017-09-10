@@ -22,9 +22,14 @@ package org.apache.archiva.webdav.util;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavResource;
 import org.apache.jackrabbit.webdav.io.OutputContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,18 +39,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  */
 public class IndexWriter
 {
+
+    private static final Logger log = LoggerFactory.getLogger( IndexWriter.class );
+
     private final String logicalResource;
 
-    private final List<File> localResources;
+    private final List<Path> localResources;
 
     private final boolean isVirtual;
 
-    public IndexWriter( DavResource resource, File localResource, String logicalResource )
+    public IndexWriter( DavResource resource, Path localResource, String logicalResource )
     {
         this.localResources = new ArrayList<>();
         this.localResources.add( localResource );
@@ -53,7 +62,7 @@ public class IndexWriter
         this.isVirtual = false;
     }
 
-    public IndexWriter( DavResource resource, List<File> localResources, String logicalResource )
+    public IndexWriter( DavResource resource, List<Path> localResources, String logicalResource )
     {
         this.logicalResource = logicalResource;
         this.localResources = localResources;
@@ -69,7 +78,14 @@ public class IndexWriter
         {
             PrintWriter writer = new PrintWriter( outputContext.getOutputStream() );
             writeDocumentStart( writer );
-            writeHyperlinks( writer );
+            try
+            {
+                writeHyperlinks( writer );
+            }
+            catch ( IOException e )
+            {
+                log.error("Could not write hyperlinks {}", e.getMessage(), e);
+            }
             writeDocumentEnd( writer );
             writer.flush();
             writer.close();
@@ -111,8 +127,8 @@ public class IndexWriter
         //Check if not root
         if ( logicalResource != null && logicalResource.length() > 0 )
         {
-            File file = new File( logicalResource );
-            String parentName = file.getParent() == null ? "/" : file.getParent();
+            Path file = Paths.get( logicalResource );
+            String parentName = file.getParent() == null ? "/" : file.getParent().toString();
 
             //convert to unix path in case archiva is hosted on windows
             parentName = StringUtils.replace( parentName, "\\", "/" );
@@ -133,18 +149,19 @@ public class IndexWriter
         writer.println( "</html>" );
     }
 
-    private void writeHyperlinks( PrintWriter writer )
+    private void writeHyperlinks( PrintWriter writer ) throws IOException
     {
         if ( !isVirtual )
         {
-            for ( File localResource : localResources )
+            for ( Path localResource : localResources )
             {
-                List<File> files = new ArrayList<>( Arrays.asList( localResource.listFiles() ) );
+                List<Path> files = Files.list(localResource).collect( Collectors.toList( ) );
                 Collections.sort( files );
 
-                for ( File file : files )
+                for ( Path file : files )
                 {
-                    writeHyperlink( writer, file.getName(), file.lastModified(), file.length(), file.isDirectory() );
+                    writeHyperlink( writer, file.getFileName().toString(), Files.getLastModifiedTime( file ).toMillis(), Files.size(file),
+                        Files.isDirectory( file ) );
                 }
             }
         }
@@ -153,26 +170,26 @@ public class IndexWriter
             // virtual repository - filter unique directories
             Map<String, List<String>> uniqueChildFiles = new HashMap<>();
             List<String> sortedList = new ArrayList<>();
-            for ( File resource : localResources )
+            for ( Path resource : localResources )
             {
-                List<File> files = new ArrayList<>( Arrays.asList( resource.listFiles() ) );
-                for ( File file : files )
+                List<Path> files = Files.list(resource).collect( Collectors.toList() );
+                for ( Path file : files )
                 {
                     List<String> mergedChildFiles = new ArrayList<>();
-                    if ( uniqueChildFiles.get( file.getName() ) == null )
+                    if ( uniqueChildFiles.get( file.getFileName() ) == null )
                     {
-                        mergedChildFiles.add( file.getAbsolutePath() );
+                        mergedChildFiles.add( file.toAbsolutePath().toString() );
                     }
                     else
                     {
-                        mergedChildFiles = uniqueChildFiles.get( file.getName() );
-                        if ( !mergedChildFiles.contains( file.getAbsolutePath() ) )
+                        mergedChildFiles = uniqueChildFiles.get( file.getFileName() );
+                        if ( !mergedChildFiles.contains( file.toAbsolutePath().toString() ) )
                         {
-                            mergedChildFiles.add( file.getAbsolutePath() );
+                            mergedChildFiles.add( file.toAbsolutePath().toString() );
                         }
                     }
-                    uniqueChildFiles.put( file.getName(), mergedChildFiles );
-                    sortedList.add( file.getName() );
+                    uniqueChildFiles.put( file.getFileName().toString(), mergedChildFiles );
+                    sortedList.add( file.getFileName().toString() );
                 }
             }
 
@@ -183,11 +200,12 @@ public class IndexWriter
                 List<String> childFilesFromMap = uniqueChildFiles.get( fileName );
                 for ( String childFilePath : childFilesFromMap )
                 {
-                    File childFile = new File( childFilePath );
-                    if ( !written.contains( childFile.getName() ) )
+                    Path childFile = Paths.get( childFilePath );
+                    if ( !written.contains( childFile.getFileName().toString() ) )
                     {
-                        written.add( childFile.getName() );
-                        writeHyperlink( writer, fileName, childFile.lastModified(), childFile.length(), childFile.isDirectory() );
+                        written.add( childFile.getFileName().toString() );
+                        writeHyperlink( writer, fileName, Files.getLastModifiedTime( childFile).toMillis(),
+                            Files.size(childFile), Files.isDirectory( childFile) );
                     }
                 }
             }

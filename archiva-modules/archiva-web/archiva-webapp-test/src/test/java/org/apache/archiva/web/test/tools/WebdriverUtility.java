@@ -33,7 +33,6 @@ import org.openqa.selenium.safari.SafariDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -210,9 +209,8 @@ public class WebdriverUtility
             FileUtils.writeStringToFile( htmlFile.toFile(), pageSource, encoding);
             try
             {
-                File scrs = ((TakesScreenshot)driver).getScreenshotAs( OutputType.FILE );
-                result = scrs.toPath();
-                Files.copy(result, screenShotFile);
+                Path scrs = ((TakesScreenshot)driver).getScreenshotAs( OutputType.FILE ).toPath();
+                Files.copy(scrs, screenShotFile);
             }
             catch ( Exception e )
             {
