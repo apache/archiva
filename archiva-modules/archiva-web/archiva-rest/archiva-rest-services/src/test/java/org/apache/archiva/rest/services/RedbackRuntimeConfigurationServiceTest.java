@@ -22,11 +22,12 @@ import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.rest.api.model.RBACManagerImplementationInformation;
 import org.apache.archiva.rest.api.model.UserManagerImplementationInformation;
 import org.apache.archiva.rest.api.services.RedbackRuntimeConfigurationService;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Olivier Lamy

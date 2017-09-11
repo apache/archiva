@@ -35,11 +35,7 @@ import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.rss.processor.RssFeedProcessor;
-import org.apache.archiva.security.AccessDeniedException;
-import org.apache.archiva.security.ArchivaSecurityException;
-import org.apache.archiva.security.PrincipalNotFoundException;
-import org.apache.archiva.security.ServletAuthenticator;
-import org.apache.archiva.security.UserRepositories;
+import org.apache.archiva.security.*;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.codec.Decoder;
 import org.apache.commons.codec.DecoderException;
@@ -56,11 +52,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Servlet for handling rss feed requests.

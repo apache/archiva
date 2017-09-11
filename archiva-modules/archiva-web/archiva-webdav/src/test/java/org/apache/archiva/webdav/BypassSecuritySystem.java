@@ -19,21 +19,21 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import org.apache.archiva.redback.authentication.AuthenticationException;
-import org.apache.archiva.redback.keys.KeyManager;
-import org.apache.archiva.redback.policy.AccountLockedException;
-import org.apache.archiva.redback.policy.UserSecurityPolicy;
-import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.authentication.AuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
 import org.apache.archiva.redback.authorization.AuthorizationResult;
+import org.apache.archiva.redback.keys.KeyManager;
 import org.apache.archiva.redback.keys.memory.MemoryKeyManager;
+import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.DefaultUserSecurityPolicy;
+import org.apache.archiva.redback.policy.UserSecurityPolicy;
 import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.DefaultSecuritySystem;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.system.SecuritySystem;
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.redback.users.memory.MemoryUserManager;
 import org.springframework.stereotype.Service;

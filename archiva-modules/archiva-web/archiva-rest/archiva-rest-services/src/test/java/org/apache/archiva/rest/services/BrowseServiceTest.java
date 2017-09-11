@@ -23,12 +23,7 @@ import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.redback.rest.api.model.Role;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
-import org.apache.archiva.rest.api.model.ArtifactContentEntry;
-import org.apache.archiva.rest.api.model.BrowseResult;
-import org.apache.archiva.rest.api.model.BrowseResultEntry;
-import org.apache.archiva.rest.api.model.Entry;
-import org.apache.archiva.rest.api.model.MetadataAddRequest;
-import org.apache.archiva.rest.api.model.VersionsList;
+import org.apache.archiva.rest.api.model.*;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -39,11 +34,7 @@ import org.junit.Test;
 
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

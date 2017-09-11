@@ -18,29 +18,22 @@ package org.apache.archiva.web.test;
  * under the License.
  */
 
-import org.fluentlenium.adapter.junit.After;
-import org.junit.Assert;
 import org.apache.archiva.web.test.tools.WebdriverUtility;
-import org.apache.commons.io.FileUtils;
 import org.fluentlenium.adapter.junit.FluentTest;
 import org.fluentlenium.configuration.ConfigurationProperties;
 import org.fluentlenium.configuration.FluentConfiguration;
 import org.fluentlenium.core.domain.FluentList;
 import org.fluentlenium.core.domain.FluentWebElement;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 

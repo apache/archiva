@@ -19,8 +19,6 @@ package org.apache.archiva.security;
  * under the License.
  */
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
@@ -28,6 +26,8 @@ import org.apache.archiva.redback.authorization.UnauthorizedException;
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.system.SecuritySession;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @version

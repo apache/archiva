@@ -21,12 +21,12 @@ package org.apache.archiva.security;
 
 import junit.framework.TestCase;
 import org.apache.archiva.redback.role.RoleManager;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * RoleProfilesTest 

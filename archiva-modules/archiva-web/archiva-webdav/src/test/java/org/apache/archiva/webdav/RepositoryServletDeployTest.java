@@ -19,19 +19,17 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import javax.servlet.http.HttpServletResponse;
-
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 
 /**

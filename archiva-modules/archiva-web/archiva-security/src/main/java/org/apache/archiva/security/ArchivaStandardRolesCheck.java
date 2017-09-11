@@ -19,18 +19,17 @@ package org.apache.archiva.security;
  * under the License.
  */
 
-import java.util.List;
-
+import org.apache.archiva.redback.rbac.RBACManager;
 import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.system.check.EnvironmentCheck;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.archiva.redback.rbac.RBACManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.List;
 
 /**
  * ArchivaStandardRolesCheck tests for the existance of expected / standard roles and permissions.

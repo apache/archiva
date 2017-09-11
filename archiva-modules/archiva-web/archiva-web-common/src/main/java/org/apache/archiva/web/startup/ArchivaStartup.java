@@ -20,14 +20,12 @@ package org.apache.archiva.web.startup;
  */
 
 import org.apache.archiva.common.ArchivaException;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.redback.components.scheduler.DefaultScheduler;
+import org.apache.archiva.redback.components.taskqueue.Task;
+import org.apache.archiva.redback.components.taskqueue.execution.ThreadedTaskQueueExecutor;
 import org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.archiva.redback.components.taskqueue.Task;
-import org.apache.archiva.redback.components.taskqueue.execution.ThreadedTaskQueueExecutor;
 import org.quartz.SchedulerException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;

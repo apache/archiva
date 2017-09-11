@@ -18,7 +18,7 @@ package org.apache.archiva.rest.services;
  * specific language governing permissions and limitations
  * under the License.
  */
-import static junit.framework.TestCase.assertEquals;
+
 import org.apache.archiva.rest.api.services.PluginsService;
 import org.junit.Test;
 

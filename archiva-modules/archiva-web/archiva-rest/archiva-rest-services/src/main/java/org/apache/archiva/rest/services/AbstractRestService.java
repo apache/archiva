@@ -25,12 +25,11 @@ import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
-import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.configuration.UserConfiguration;
@@ -40,9 +39,9 @@ import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.services.utils.ArtifactBuilder;
-import org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.security.AccessDeniedException;
@@ -63,13 +62,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * abstract class with common utilities methods

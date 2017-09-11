@@ -22,18 +22,19 @@ package org.apache.archiva.security;
 import com.google.common.collect.Lists;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
-import org.apache.archiva.redback.rbac.RBACManager;
-import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
-import org.apache.archiva.redback.role.RoleManager;
-import org.apache.archiva.redback.users.User;
-import org.apache.archiva.redback.users.UserManagerException;
-import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.apache.archiva.redback.rbac.UserAssignment;
+import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.system.SecuritySystem;
+import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.redback.users.UserManagerException;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -42,9 +43,9 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
-
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * AbstractSecurityTest
@@ -88,7 +89,7 @@ public abstract class AbstractSecurityTest
         ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
         repoConfig.setId( repoId );
         repoConfig.setName( "Testable repo <" + repoId + ">" );
-        repoConfig.setLocation( new File( "./target/test-repo/" + repoId ).getPath() );
+        repoConfig.setLocation( Paths.get( "target/test-repo/" + repoId ).toString() );
         if ( !archivaConfiguration.getConfiguration().getManagedRepositoriesAsMap().containsKey( repoId ) )
         {
             archivaConfiguration.getConfiguration().addManagedRepository( repoConfig );
@@ -124,13 +125,13 @@ public abstract class AbstractSecurityTest
     {
         super.setUp();
 
-        File srcConfig = new File( "./src/test/resources/repository-archiva.xml" );
-        File destConfig = new File( "./target/test-conf/archiva.xml" );
+        Path srcConfig = Paths.get( "src/test/resources/repository-archiva.xml" );
+        Path destConfig = Paths.get( "target/test-conf/archiva.xml" );
 
-        destConfig.getParentFile().mkdirs();
-        destConfig.delete();
+        Files.createDirectories(destConfig.getParent());
+        Files.deleteIfExists(destConfig);
 
-        FileUtils.copyFile( srcConfig, destConfig );
+        FileUtils.copyFile( srcConfig.toFile(), destConfig.toFile() );
 
         // Some basic asserts.
         assertNotNull( securitySystem );

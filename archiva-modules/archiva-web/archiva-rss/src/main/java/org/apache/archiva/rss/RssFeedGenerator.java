@@ -19,20 +19,14 @@ package org.apache.archiva.rss;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.sun.syndication.feed.synd.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndContentImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndFeedImpl;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Generates RSS feeds.

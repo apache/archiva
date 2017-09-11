@@ -20,19 +20,19 @@ package org.apache.archiva.webdav;
  */
 
 import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authorization.UnauthorizedException;
+import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
+import org.apache.archiva.redback.policy.AccountLockedException;
+import org.apache.archiva.redback.policy.MustChangePasswordException;
+import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.security.ServletAuthenticator;
+import org.apache.archiva.webdav.util.RepositoryPathUtil;
+import org.apache.archiva.webdav.util.WebdavMethodUtil;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.apache.jackrabbit.webdav.WebdavRequest;
-import org.apache.archiva.webdav.util.RepositoryPathUtil;
-import org.apache.archiva.webdav.util.WebdavMethodUtil;
-import org.apache.archiva.redback.authentication.AuthenticationResult;
-import org.apache.archiva.redback.authorization.UnauthorizedException;
-import org.apache.archiva.redback.policy.AccountLockedException;
-import org.apache.archiva.redback.policy.MustChangePasswordException;
-import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 
 /**
  */

@@ -21,7 +21,6 @@ package org.apache.archiva.remotedownload;
 
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
-import org.apache.commons.io.FileUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConnectionFactory;

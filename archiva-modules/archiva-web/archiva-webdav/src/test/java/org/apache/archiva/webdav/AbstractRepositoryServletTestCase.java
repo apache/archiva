@@ -19,11 +19,7 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.gargoylesoftware.htmlunit.HttpMethod;
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.WebResponse;
+import com.gargoylesoftware.htmlunit.*;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
@@ -37,6 +33,7 @@ import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
 import org.apache.archiva.webdav.util.MavenIndexerCleaner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -77,7 +74,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * AbstractRepositoryServletTestCase

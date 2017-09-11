@@ -18,8 +18,8 @@ package org.apache.archiva.web.api;
  * under the License.
  */
 
-import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

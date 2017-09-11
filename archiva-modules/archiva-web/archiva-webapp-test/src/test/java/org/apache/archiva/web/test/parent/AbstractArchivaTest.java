@@ -7,8 +7,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.io.File;
-import java.io.IOException;
+import java.nio.file.Paths;
+
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -62,7 +62,7 @@ public abstract class AbstractArchivaTest
 
         if ( basedir == null )
         {
-            basedir = new File( "" ).getAbsolutePath();
+            basedir = Paths.get("").toAbsolutePath().toString();
         }
 
         return basedir;

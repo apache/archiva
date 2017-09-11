@@ -19,8 +19,8 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import org.apache.archiva.security.ArchivaServletAuthenticator;
 import org.apache.archiva.redback.authorization.UnauthorizedException;
+import org.apache.archiva.security.ArchivaServletAuthenticator;
 
 public class MockServletAuthenticator
     extends ArchivaServletAuthenticator

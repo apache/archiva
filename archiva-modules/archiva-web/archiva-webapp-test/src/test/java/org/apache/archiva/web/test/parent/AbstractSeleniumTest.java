@@ -23,27 +23,26 @@ import org.apache.archiva.web.test.tools.ArchivaSeleniumExecutionRule;
 import org.apache.archiva.web.test.tools.WebdriverUtility;
 import org.junit.Assert;
 import org.junit.Rule;
+import org.openqa.selenium.*;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
-import org.openqa.selenium.*;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto:evenisse@apache.org">Emmanuel Venisse</a>
@@ -813,7 +812,7 @@ public abstract class AbstractSeleniumTest
     {
         SimpleDateFormat sdf = new SimpleDateFormat( "yyyy.MM.dd-HH_mm_ss" );
         String time = sdf.format( new Date() );
-        File targetPath = new File( "target", "screenshots" );
+        Path targetPath = Paths.get( "target", "screenshots" );
 
         int lineNumber = 0;
 
@@ -826,13 +825,17 @@ public abstract class AbstractSeleniumTest
             }
         }
 
-        targetPath.mkdirs();
+        try {
+            Files.createDirectories(targetPath);
+        } catch (IOException e) {
+            logger.error("Could not create directory {}: {}", targetPath, e.getMessage(), e);
+        }
         if (getWebDriver()!=null)
         {
             String fileBaseName = methodName + "_" + className + ".java_" + lineNumber + "-" + time;
-            File fileName = new File( targetPath, fileBaseName + ".png" );
-            Path screenshot = WebdriverUtility.takeScreenShot( fileName.getName(), getWebDriver());
-            return fileName.getAbsolutePath();
+            Path fileName = targetPath.resolve( fileBaseName + ".png" );
+            Path screenshot = WebdriverUtility.takeScreenShot( fileName.getFileName().toString(), getWebDriver());
+            return fileName.toAbsolutePath().toString();
         } else {
             return "";
         }

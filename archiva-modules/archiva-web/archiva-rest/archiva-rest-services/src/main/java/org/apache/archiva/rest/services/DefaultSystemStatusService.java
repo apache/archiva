@@ -38,13 +38,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Olivier Lamy

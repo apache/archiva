@@ -21,12 +21,7 @@ package org.apache.archiva.web.security;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.components.cache.Cache;
-import org.apache.archiva.redback.users.AbstractUserManager;
-import org.apache.archiva.redback.users.User;
-import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.redback.users.UserManagerException;
-import org.apache.archiva.redback.users.UserNotFoundException;
-import org.apache.archiva.redback.users.UserQuery;
+import org.apache.archiva.redback.users.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 

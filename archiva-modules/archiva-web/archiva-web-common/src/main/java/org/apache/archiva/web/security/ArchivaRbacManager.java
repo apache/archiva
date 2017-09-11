@@ -21,29 +21,14 @@ package org.apache.archiva.web.security;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
 import org.apache.archiva.redback.components.cache.Cache;
-import org.apache.archiva.redback.rbac.AbstractRBACManager;
-import org.apache.archiva.redback.rbac.Operation;
-import org.apache.archiva.redback.rbac.Permission;
-import org.apache.archiva.redback.rbac.RBACManager;
-import org.apache.archiva.redback.rbac.RbacManagerException;
-import org.apache.archiva.redback.rbac.RbacObjectInvalidException;
-import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
-import org.apache.archiva.redback.rbac.Resource;
-import org.apache.archiva.redback.rbac.Role;
-import org.apache.archiva.redback.rbac.UserAssignment;
+import org.apache.archiva.redback.rbac.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Olivier Lamy

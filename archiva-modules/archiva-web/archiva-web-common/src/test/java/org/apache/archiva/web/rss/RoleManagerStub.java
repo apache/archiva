@@ -18,8 +18,8 @@ package org.apache.archiva.web.rss;
  * under the License.
  */
 
-import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.redback.role.RoleManager;
+import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.redback.role.model.RedbackRoleModel;
 import org.springframework.stereotype.Service;
 

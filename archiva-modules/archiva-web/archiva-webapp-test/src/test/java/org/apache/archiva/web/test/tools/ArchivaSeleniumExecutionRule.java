@@ -18,7 +18,6 @@ package org.apache.archiva.web.test.tools;
  * under the License.
  */
 
-import com.thoughtworks.selenium.Selenium;
 import org.apache.archiva.web.test.parent.AbstractSeleniumTest;
 import org.junit.rules.MethodRule;
 import org.junit.runner.Description;

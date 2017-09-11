@@ -22,7 +22,6 @@ import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;

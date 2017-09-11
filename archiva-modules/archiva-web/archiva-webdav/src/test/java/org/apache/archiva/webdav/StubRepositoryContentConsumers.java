@@ -20,9 +20,9 @@ package org.apache.archiva.webdav;
  */
 
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
-import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 
 import java.util.List;
 

@@ -19,22 +19,21 @@ package org.apache.archiva;
  */
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.archiva.web.api.RuntimeInfoService;
 import org.apache.archiva.web.model.ApplicationRuntimeInfo;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
-import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
-import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.junit.runner.RunWith;
 
 /**
  * @author Olivier Lamy

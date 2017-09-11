@@ -21,9 +21,9 @@ package org.apache.archiva.webdav;
 
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavServletRequest;
-import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 

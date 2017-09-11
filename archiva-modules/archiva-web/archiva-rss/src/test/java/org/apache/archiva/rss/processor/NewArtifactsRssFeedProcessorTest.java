@@ -19,16 +19,9 @@ package org.apache.archiva.rss.processor;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
 import junit.framework.TestCase;
-
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
 import org.apache.archiva.rss.RssFeedGenerator;
@@ -37,8 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
+import java.util.*;
 
 @RunWith (ArchivaBlockJUnit4ClassRunner.class)
 public class NewArtifactsRssFeedProcessorTest
