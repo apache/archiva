@@ -19,16 +19,17 @@ package org.apache.archiva.metadata.repository.file;
  * under the License.
  */
 
-import org.apache.archiva.metadata.model.MetadataFacetFactory;
-import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.junit.Before;
 import org.junit.Ignore;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
@@ -45,10 +46,10 @@ public class FileMetadataRepositoryTest
     {
         super.setUp();
 
-        File directory = new File( "target/test-repositories" );
-        if (directory.exists())
+        Path directory = Paths.get( "target/test-repositories" );
+        if (Files.exists(directory))
         {
-            FileUtils.deleteDirectory( directory );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
         }
         ArchivaConfiguration config = createTestConfiguration( directory );
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
@@ -152,7 +153,7 @@ public class FileMetadataRepositoryTest
         // TODO not implemented
     }
 
-    protected static ArchivaConfiguration createTestConfiguration( File directory )
+    protected static ArchivaConfiguration createTestConfiguration( Path directory )
     {
         ArchivaConfiguration config = mock( ArchivaConfiguration.class );
         Configuration configData = new Configuration();
@@ -162,11 +163,11 @@ public class FileMetadataRepositoryTest
         return config;
     }
 
-    private static ManagedRepositoryConfiguration createManagedRepository( String repoId, File directory )
+    private static ManagedRepositoryConfiguration createManagedRepository( String repoId, Path directory )
     {
         ManagedRepositoryConfiguration managedRepository = new ManagedRepositoryConfiguration();
         managedRepository.setId( repoId );
-        managedRepository.setLocation( new File( directory, repoId ).getAbsolutePath() );
+        managedRepository.setLocation( directory.resolve( repoId ).toAbsolutePath().toString() );
         return managedRepository;
     }
 }

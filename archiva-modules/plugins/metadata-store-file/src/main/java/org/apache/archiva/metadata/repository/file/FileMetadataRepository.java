@@ -21,47 +21,21 @@ package org.apache.archiva.metadata.repository.file;
 
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.CiManagement;
-import org.apache.archiva.metadata.model.Dependency;
-import org.apache.archiva.metadata.model.IssueManagement;
-import org.apache.archiva.metadata.model.License;
-import org.apache.archiva.metadata.model.MailingList;
-import org.apache.archiva.metadata.model.MetadataFacet;
-import org.apache.archiva.metadata.model.MetadataFacetFactory;
-import org.apache.archiva.metadata.model.Organization;
-import org.apache.archiva.metadata.model.ProjectMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionReference;
-import org.apache.archiva.metadata.model.Scm;
+import org.apache.archiva.metadata.model.*;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.nio.file.*;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FileMetadataRepository
     implements MetadataRepository
@@ -87,7 +61,7 @@ public class FileMetadataRepository
         this.configuration = configuration;
     }
 
-    private File getBaseDirectory( String repoId )
+    private Path getBaseDirectory(String repoId )
         throws IOException
     {
         // TODO: should be configurable, like the index
@@ -95,16 +69,16 @@ public class FileMetadataRepository
             configuration.getConfiguration().getManagedRepositoriesAsMap().get( repoId );
         if ( managedRepositoryConfiguration == null )
         {
-            return Files.createTempDirectory( repoId ).toFile();
+            return Files.createTempDirectory( repoId );
         }
         String basedir = managedRepositoryConfiguration.getLocation();
-        return new File( basedir, ".archiva" );
+        return Paths.get( basedir, ".archiva" );
     }
 
-    private File getDirectory( String repoId )
+    private Path getDirectory( String repoId )
         throws IOException
     {
-        return new File( getBaseDirectory( repoId ), "content" );
+        return getBaseDirectory( repoId ).resolve( "content" );
     }
 
     @Override
@@ -120,16 +94,15 @@ public class FileMetadataRepository
 
         try
         {
-            File namespaceDirectory = new File( getDirectory( repoId ), namespace );
+            Path namespaceDirectory = getDirectory( repoId ).resolve( namespace );
             Properties properties = new Properties();
             properties.setProperty( "namespace", namespace );
             properties.setProperty( "id", id );
-            writeProperties( properties, new File( namespaceDirectory, id ), PROJECT_METADATA_KEY );
+            writeProperties( properties, namespaceDirectory.resolve( id ), PROJECT_METADATA_KEY );
         }
         catch ( IOException e )
         {
-            // TODO!
-            log.error( e.getMessage(), e );
+            log.error( "Could not update project {}, {}, {}: {}", repoId, namespace, id, e.getMessage(), e );
         }
     }
 
@@ -142,8 +115,8 @@ public class FileMetadataRepository
         {
             updateProject( repoId, namespace, projectId );
 
-            File directory =
-                new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + versionMetadata.getId() );
+            Path directory =
+                getDirectory( repoId ).resolve( namespace + "/" + projectId + "/" + versionMetadata.getId() );
 
             Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
             // remove properties that are not references or artifacts
@@ -235,8 +208,7 @@ public class FileMetadataRepository
         }
         catch ( IOException e )
         {
-            // TODO
-            log.error( e.getMessage(), e );
+            log.error( "Could not update project version {}, {}, {}: {}", repoId, namespace, versionMetadata.getId(), e.getMessage(), e );
         }
     }
 
@@ -278,7 +250,7 @@ public class FileMetadataRepository
     {
         try
         {
-            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
+            Path directory = getDirectory( repoId ).resolve( namespace + "/" + projectId + "/" + projectVersion );
 
             Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
             int i = Integer.parseInt( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
@@ -292,8 +264,7 @@ public class FileMetadataRepository
         }
         catch ( IOException e )
         {
-            // TODO
-            log.error( e.getMessage(), e );
+            log.error( "Could not update project reference {}, {}, {}, {}: {}", repoId, namespace, projectId, projectVersion, e.getMessage(), e );
         }
     }
 
@@ -302,7 +273,7 @@ public class FileMetadataRepository
     {
         try
         {
-            File namespaceDirectory = new File( getDirectory( repoId ), namespace );
+            Path namespaceDirectory = getDirectory( repoId ).resolve( namespace );
             Properties properties = new Properties();
             properties.setProperty( "namespace", namespace );
             writeProperties( properties, namespaceDirectory, NAMESPACE_METADATA_KEY );
@@ -310,8 +281,7 @@ public class FileMetadataRepository
         }
         catch ( IOException e )
         {
-            // TODO!
-            log.error( e.getMessage(), e );
+            log.error( "Could not update namespace of {}, {}: {}", repoId, namespace, e.getMessage(), e );
         }
     }
 
@@ -321,9 +291,16 @@ public class FileMetadataRepository
     {
         try
         {
-            File directory = getMetadataDirectory( repoId, facetId );
-            List<String> facets = new ArrayList<>();
-            recurse( facets, "", directory );
+            Path directory = getMetadataDirectory( repoId, facetId );
+            if (!(Files.exists(directory) && Files.isDirectory(directory))) {
+                return Collections.emptyList();
+            }
+            List<String> facets;
+            final String searchFile = METADATA_KEY + ".properties";
+            try(Stream<Path> fs = Files.walk(directory, FileVisitOption.FOLLOW_LINKS) ) {
+                facets = fs.filter(Files::isDirectory).filter(path -> Files.exists(path.resolve(searchFile)))
+                        .map(path -> directory.relativize(path).toString()).collect(Collectors.toList());
+            }
             return facets;
         }
         catch ( IOException e )
@@ -336,28 +313,23 @@ public class FileMetadataRepository
     public boolean hasMetadataFacet( String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
-        // TODO could be improved a bit
-        return !getMetadataFacets( repositoryId, facetId ).isEmpty();
+
+        try {
+            Path directory = getMetadataDirectory(repositoryId, facetId);
+            if (!(Files.exists(directory) && Files.isDirectory(directory))) {
+                return false;
+            }
+            final String searchFile = METADATA_KEY + ".properties";
+            try (Stream<Path> fs = Files.walk(directory, FileVisitOption.FOLLOW_LINKS)) {
+                return fs.filter(Files::isDirectory).anyMatch(path -> Files.exists(path.resolve(searchFile)));
+            }
+        } catch (IOException e) {
+            log.error("Could not retrieve facet metatadata {}, {}: {}", repositoryId, facetId, e.getMessage(), e);
+            throw new MetadataRepositoryException(e.getMessage(), e);
+        }
+
     }
 
-    private void recurse( List<String> facets, String prefix, File directory )
-    {
-        File[] list = directory.listFiles();
-        if ( list != null )
-        {
-            for ( File dir : list )
-            {
-                if ( dir.isDirectory() )
-                {
-                    recurse( facets, prefix + "/" + dir.getName(), dir );
-                }
-                else if ( dir.getName().equals( METADATA_KEY + ".properties" ) )
-                {
-                    facets.add( prefix.substring( 1 ) );
-                }
-            }
-        }
-    }
 
     @Override
     public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
@@ -366,16 +338,15 @@ public class FileMetadataRepository
         try
         {
             properties =
-                readProperties( new File( getMetadataDirectory( repositoryId, facetId ), name ), METADATA_KEY );
+                readProperties( getMetadataDirectory( repositoryId, facetId ).resolve( name ), METADATA_KEY );
         }
-        catch ( FileNotFoundException e )
+        catch ( NoSuchFileException | FileNotFoundException e )
         {
             return null;
         }
         catch ( IOException e )
         {
-            // TODO
-            log.error( e.getMessage(), e );
+            log.error( "Could not read properties from {}, {}: {}", repositoryId, facetId, e.getMessage(), e );
             return null;
         }
         MetadataFacet metadataFacet = null;
@@ -402,8 +373,8 @@ public class FileMetadataRepository
 
         try
         {
-            File directory =
-                new File( getMetadataDirectory( repositoryId, metadataFacet.getFacetId() ), metadataFacet.getName() );
+            Path directory =
+                getMetadataDirectory( repositoryId, metadataFacet.getFacetId() ).resolve( metadataFacet.getName() );
             writeProperties( properties, directory, METADATA_KEY );
         }
         catch ( IOException e )
@@ -419,8 +390,8 @@ public class FileMetadataRepository
     {
         try
         {
-            File dir = getMetadataDirectory( repositoryId, facetId );
-            FileUtils.deleteDirectory( dir );
+            Path dir = getMetadataDirectory( repositoryId, facetId );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( dir );
         }
         catch ( IOException e )
         {
@@ -434,8 +405,8 @@ public class FileMetadataRepository
     {
         try
         {
-            File dir = new File( getMetadataDirectory( repoId, facetId ), name );
-            FileUtils.deleteDirectory( dir );
+            Path dir = getMetadataDirectory( repoId, facetId ).resolve( name );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( dir );
         }
         catch ( IOException e )
         {
@@ -509,7 +480,7 @@ public class FileMetadataRepository
         {
             Map<String, ArtifactMetadata> artifacts = new HashMap<>();
 
-            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
+            Path directory = getDirectory( repoId ).resolve( namespace + "/" + projectId + "/" + projectVersion );
 
             Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
@@ -689,8 +660,8 @@ public class FileMetadataRepository
     {
         try
         {
-            File namespaceDirectory = new File( getDirectory( repositoryId ), project );
-            FileUtils.deleteDirectory( namespaceDirectory );
+            Path namespaceDirectory = getDirectory( repositoryId ).resolve( project );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( namespaceDirectory );
             //Properties properties = new Properties();
             //properties.setProperty( "namespace", namespace );
             //writeProperties( properties, namespaceDirectory, NAMESPACE_METADATA_KEY );
@@ -709,7 +680,7 @@ public class FileMetadataRepository
 
         try
         {
-            File directory = new File( getDirectory( artifactMetadata.getRepositoryId() ),
+            Path directory = getDirectory( artifactMetadata.getRepositoryId() ).resolve(
                                        artifactMetadata.getNamespace() + "/" + artifactMetadata.getProject() + "/"
                                            + baseVersion );
 
@@ -750,7 +721,7 @@ public class FileMetadataRepository
     {
         try
         {
-            File directory = new File( getDirectory( repoId ), namespace + "/" + project + "/" + version );
+            Path directory = getDirectory( repoId ).resolve( namespace + "/" + project + "/" + version );
 
             Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
@@ -772,7 +743,7 @@ public class FileMetadataRepository
                 }
             }
 
-            FileUtils.deleteDirectory( directory );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
             //writeProperties( properties, directory, PROJECT_VERSION_METADATA_KEY );
         }
         catch ( IOException e )
@@ -805,8 +776,8 @@ public class FileMetadataRepository
     {
         try
         {
-            File dir = getDirectory( repoId );
-            FileUtils.deleteDirectory( dir );
+            Path dir = getDirectory( repoId );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( dir );
         }
         catch ( IOException e )
         {
@@ -866,10 +837,10 @@ public class FileMetadataRepository
         throw new UnsupportedOperationException( "getArtifactsByProperty not yet implemented in File backend" );
     }
 
-    private File getMetadataDirectory( String repoId, String facetId )
+    private Path getMetadataDirectory( String repoId, String facetId )
         throws IOException
     {
-        return new File( getBaseDirectory( repoId ), "facets/" + facetId );
+        return getBaseDirectory( repoId ).resolve( "facets/" + facetId );
     }
 
     private String join( Collection<String> ids )
@@ -905,7 +876,7 @@ public class FileMetadataRepository
             metadata.setId( projectVersion );
             updateProjectVersion( repoId, namespace, projectId, metadata );
 
-            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
+            Path directory = getDirectory( repoId ).resolve( namespace + "/" + projectId + "/" + projectVersion );
 
             Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
@@ -944,7 +915,7 @@ public class FileMetadataRepository
         }
     }
 
-    private Properties readOrCreateProperties( File directory, String propertiesKey )
+    private Properties readOrCreateProperties( Path directory, String propertiesKey )
     {
         try
         {
@@ -962,11 +933,11 @@ public class FileMetadataRepository
         return new Properties();
     }
 
-    private Properties readProperties( File directory, String propertiesKey )
+    private Properties readProperties( Path directory, String propertiesKey )
         throws IOException
     {
         Properties properties = new Properties();
-        try (InputStream in = Files.newInputStream( new File( directory, propertiesKey + ".properties" ).toPath() ))
+        try (InputStream in = Files.newInputStream( directory.resolve( propertiesKey + ".properties" )))
         {
 
             properties.load( in );
@@ -980,7 +951,7 @@ public class FileMetadataRepository
     {
         try
         {
-            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId );
+            Path directory = getDirectory( repoId ).resolve( namespace + "/" + projectId );
 
             Properties properties = readOrCreateProperties( directory, PROJECT_METADATA_KEY );
 
@@ -1009,7 +980,7 @@ public class FileMetadataRepository
     {
         try
         {
-            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
+            Path directory = getDirectory( repoId ).resolve( namespace + "/" + projectId + "/" + projectVersion );
 
             Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
             String id = properties.getProperty( "id" );
@@ -1191,7 +1162,7 @@ public class FileMetadataRepository
     {
         try
         {
-            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
+            Path directory = getDirectory( repoId ).resolve( namespace + "/" + projectId + "/" + projectVersion );
 
             Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
@@ -1219,7 +1190,7 @@ public class FileMetadataRepository
     {
         try
         {
-            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
+            Path directory = getDirectory( repoId ).resolve( namespace + "/" + projectId + "/" + projectVersion );
 
             Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
             int numberOfRefs = Integer.parseInt( properties.getProperty( "ref:lastReferenceNum", "-1" ) ) + 1;
@@ -1256,18 +1227,16 @@ public class FileMetadataRepository
     {
         try
         {
-            List<String> allNamespaces = new ArrayList<>();
-            File directory = getDirectory( repoId );
-            File[] files = directory.listFiles();
-            if ( files != null )
-            {
-                for ( File namespace : files )
-                {
-                    if ( new File( namespace, NAMESPACE_METADATA_KEY + ".properties" ).exists() )
-                    {
-                        allNamespaces.add( namespace.getName() );
-                    }
-                }
+            List<String> allNamespaces;
+            Path directory = getDirectory( repoId );
+            if (!(Files.exists(directory) && Files.isDirectory(directory))) {
+                return Collections.emptyList();
+            }
+            final String searchFile = NAMESPACE_METADATA_KEY + ".properties";
+            try(Stream<Path> fs = Files.list(directory)) {
+                allNamespaces = fs.filter(Files::isDirectory).filter(path ->
+                        Files.exists(path.resolve(searchFile))
+                ).map(path -> path.getFileName().toString()).collect(Collectors.toList());
             }
 
             Set<String> namespaces = new LinkedHashSet<>();
@@ -1301,19 +1270,18 @@ public class FileMetadataRepository
     {
         try
         {
-            List<String> projects = new ArrayList<>();
-            File directory = new File( getDirectory( repoId ), namespace );
-            File[] files = directory.listFiles();
-            if ( files != null )
-            {
-                for ( File project : files )
-                {
-                    if ( new File( project, PROJECT_METADATA_KEY + ".properties" ).exists() )
-                    {
-                        projects.add( project.getName() );
-                    }
-                }
+            List<String> projects;
+            Path directory = getDirectory( repoId ).resolve( namespace );
+            if (!(Files.exists(directory) && Files.isDirectory(directory))) {
+                return Collections.emptyList();
             }
+            final String searchFile = PROJECT_METADATA_KEY + ".properties";
+            try(Stream<Path> fs = Files.list(directory)) {
+                projects = fs.filter(Files::isDirectory).filter(path ->
+                        Files.exists(path.resolve(searchFile))
+                ).map(path -> path.getFileName().toString()).collect(Collectors.toList());
+            }
+
             return projects;
         }
         catch ( IOException e )
@@ -1328,18 +1296,16 @@ public class FileMetadataRepository
     {
         try
         {
-            List<String> projectVersions = new ArrayList<>();
-            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId );
-            File[] files = directory.listFiles();
-            if ( files != null )
-            {
-                for ( File projectVersion : files )
-                {
-                    if ( new File( projectVersion, PROJECT_VERSION_METADATA_KEY + ".properties" ).exists() )
-                    {
-                        projectVersions.add( projectVersion.getName() );
-                    }
-                }
+            List<String> projectVersions;
+            Path directory = getDirectory( repoId ).resolve( namespace + "/" + projectId );
+            if (!(Files.exists(directory) && Files.isDirectory(directory))) {
+                return Collections.emptyList();
+            }
+            final String searchFile = PROJECT_VERSION_METADATA_KEY + ".properties";
+            try(Stream<Path> fs = Files.list(directory)) {
+                projectVersions = fs.filter(Files::isDirectory).filter(path ->
+                        Files.exists(path.resolve(searchFile))
+                ).map(path -> path.getFileName().toString()).collect(Collectors.toList());
             }
             return projectVersions;
         }
@@ -1355,8 +1321,8 @@ public class FileMetadataRepository
     {
         try
         {
-            File directory = new File( getDirectory( repositoryId ), namespace + "/" + projectId );
-            FileUtils.deleteDirectory( directory );
+            Path directory = getDirectory( repositoryId ).resolve( namespace + "/" + projectId );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
         }
         catch ( IOException e )
         {
@@ -1370,8 +1336,8 @@ public class FileMetadataRepository
     {
         try
         {
-            File directory = new File( getDirectory( repoId ), namespace + "/" + projectId + "/" + projectVersion );
-            FileUtils.deleteDirectory( directory );
+            Path directory = getDirectory( repoId ).resolve( namespace + "/" + projectId + "/" + projectVersion );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
         }
         catch ( IOException e )
         {
@@ -1380,11 +1346,11 @@ public class FileMetadataRepository
 
     }
 
-    private void writeProperties( Properties properties, File directory, String propertiesKey )
+    private void writeProperties( Properties properties, Path directory, String propertiesKey )
         throws IOException
     {
-        directory.mkdirs();
-        try (OutputStream os = Files.newOutputStream( new File( directory, propertiesKey + ".properties" ).toPath() ))
+        Files.createDirectories(directory);
+        try (OutputStream os = Files.newOutputStream( directory.resolve( propertiesKey + ".properties" )))
         {
             properties.store( os, null );
         }
