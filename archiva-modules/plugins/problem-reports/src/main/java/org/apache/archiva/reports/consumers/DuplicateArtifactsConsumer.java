@@ -29,6 +29,7 @@ import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -36,7 +37,6 @@ import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
-import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,13 +46,10 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  * Search the artifact repository of known SHA1 Checksums for potential duplicate artifacts.
@@ -85,7 +82,7 @@ public class DuplicateArtifactsConsumer
 
     private List<String> includes = new ArrayList<>();
 
-    private File repositoryDir;
+    private Path repositoryDir;
 
     private String repoId;
 
@@ -127,7 +124,7 @@ public class DuplicateArtifactsConsumer
         throws ConsumerException
     {
         repoId = repo.getId();
-        this.repositoryDir = new File( repo.getLocation() );
+        this.repositoryDir = Paths.get( repo.getLocation() );
         repositorySession = repositorySessionFactory.createSession();
     }
 
@@ -142,14 +139,14 @@ public class DuplicateArtifactsConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        File artifactFile = new File( this.repositoryDir, path );
+        Path artifactFile = this.repositoryDir.resolve( path );
 
         // TODO: would be quicker to somehow make sure it ran after the update database consumer, or as a part of that
         //  perhaps could use an artifact context that is retained for all consumers? First in can set the SHA-1
         //  alternatively this could come straight from the storage resolver, which could populate the artifact metadata
         //  in the later parse call with the desired checksum and use that
         String checksumSha1;
-        ChecksummedFile checksummedFile = new ChecksummedFile( artifactFile.toPath() );
+        ChecksummedFile checksummedFile = new ChecksummedFile( artifactFile);
         try
         {
             checksumSha1 = checksummedFile.calculateChecksum( ChecksumAlgorithm.SHA1 );

@@ -27,7 +27,6 @@ import org.apache.archiva.metadata.repository.jcr.JcrMetadataRepository;
 import org.apache.archiva.metadata.repository.jcr.RepositoryFactory;
 import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.junit.After;
@@ -41,15 +40,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import javax.jcr.ImportUUIDBehavior;
-import javax.jcr.Node;
-import javax.jcr.Repository;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
+import javax.jcr.*;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -84,13 +81,13 @@ public class JcrRepositoryStatisticsGatheringTest
     public static void setupSpec()
         throws IOException, InvalidFileStoreVersionException
     {
-        File directory = new File( "target/test-repositories" );
-        if ( directory.exists() )
+        Path directory = Paths.get( "target/test-repositories" );
+        if ( Files.exists(directory) )
         {
-            FileUtils.deleteDirectory( directory );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
         }
         RepositoryFactory factory = new RepositoryFactory();
-        factory.setRepositoryPath( directory.getPath() );
+        factory.setRepositoryPath( directory.toString() );
         factory.setStoreType( RepositoryFactory.StoreType.IN_MEMORY_TYPE );
         jcrRepository = factory.createRepository();
     }

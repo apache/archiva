@@ -34,7 +34,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,22 +86,22 @@ public class Maven2RepositoryMergerTest
     public void testMerge()
         throws Exception
     {
-        String targetRepoPath = "target" + File.separatorChar + "test-repository-target";
-        File mergedArtifact = new File( targetRepoPath,
+        String targetRepoPath = "target/test-repository-target";
+        Path mergedArtifact = Paths.get( targetRepoPath,
                                         "com/example/test/test-artifact/1.0-SNAPSHOT/test-artifact-1.0-20100308.230825-1.jar" );
 
-        File mavenMetadata = new File( targetRepoPath, "com/example/test/test-artifact/maven-metadata.xml" );
+        Path mavenMetadata = Paths.get( targetRepoPath, "com/example/test/test-artifact/maven-metadata.xml" );
 
-        File pom = new File( targetRepoPath,
+        Path pom = Paths.get( targetRepoPath,
                              "com/example/test/test-artifact/1.0-SNAPSHOT/test-artifact-1.0-20100308.230825-1.pom" );
 
-        assertFalse( mergedArtifact.exists() );
-        assertFalse( mavenMetadata.exists() );
-        assertFalse( pom.exists() );
+        assertFalse( Files.exists(mergedArtifact) );
+        assertFalse( Files.exists(mavenMetadata) );
+        assertFalse( Files.exists(pom) );
         Configuration c = new Configuration();
         ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
-        testRepo.setLocation( "target" + File.separatorChar + "test-repository" );
+        testRepo.setLocation( "target/test-repository" );
 
         RepositoryScanningConfiguration repoScanConfig = new RepositoryScanningConfiguration();
         List<String> knownContentConsumers = new ArrayList<>();
@@ -117,9 +119,9 @@ public class Maven2RepositoryMergerTest
         when( metadataRepository.getArtifacts( TEST_REPO_ID ) ).thenReturn( getArtifacts() );
         repositoryMerger.merge( metadataRepository, TEST_REPO_ID, "target-rep" );
         verify( metadataRepository ).getArtifacts( TEST_REPO_ID );
-        assertTrue( mergedArtifact.exists() );
-        assertTrue( mavenMetadata.exists() );
-        assertTrue( pom.exists() );
+        assertTrue( Files.exists(mergedArtifact) );
+        assertTrue( Files.exists(mavenMetadata) );
+        assertTrue( Files.exists(pom) );
     }
 
     @Test
@@ -142,10 +144,9 @@ public class Maven2RepositoryMergerTest
         Configuration c = new Configuration();
         ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
-        testRepo.setLocation( "target" + File.separatorChar + "test-repository" );
+        testRepo.setLocation( "target/test-repository" );
 
-        String sourceRepo = "src" + File.separatorChar + "test" + File.separatorChar + "resources" + File.separatorChar
-            + "test-repository-with-conflict-artifacts";
+        String sourceRepo = "src/test/resources/test-repository-with-conflict-artifacts";
         ManagedRepositoryConfiguration testRepoWithConflicts = new ManagedRepositoryConfiguration();
         testRepoWithConflicts.setId( sourceRepoId );
         testRepoWithConflicts.setLocation( sourceRepo );
@@ -160,9 +161,9 @@ public class Maven2RepositoryMergerTest
         c.addManagedRepository( testRepoWithConflicts );
         configuration.save( c );
 
-        File targetRepoFile = new File(
+        Path targetRepoFile = Paths.get(
             "/target/test-repository/com/example/test/test-artifact/1.0-SNAPSHOT/test-artifact-1.0-20100308.230825-1.jar" );
-        targetRepoFile.setReadOnly();
+        targetRepoFile.toFile().setReadOnly();
 
         when( metadataRepository.getArtifacts( sourceRepoId ) ).thenReturn( sourceRepoArtifactsList );
         when( metadataRepository.getArtifacts( TEST_REPO_ID ) ).thenReturn( targetRepoArtifactsList );

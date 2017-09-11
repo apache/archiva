@@ -21,7 +21,6 @@ package org.apache.archiva.metadata.repository.jcr;
 
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
-import org.apache.commons.io.FileUtils;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.junit.After;
 import org.junit.Before;
@@ -32,8 +31,10 @@ import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 public class JcrMetadataRepositoryTest
@@ -49,13 +50,13 @@ public class JcrMetadataRepositoryTest
     @BeforeClass
     public static void setupSpec() throws IOException, InvalidFileStoreVersionException
     {
-        File directory = new File( "target/test-repositories" );
-        if ( directory.exists() )
+        Path directory = Paths.get( "target/test-repositories" );
+        if (Files.exists(directory) )
         {
-            FileUtils.deleteDirectory( directory );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
         }
         RepositoryFactory factory = new RepositoryFactory();
-        factory.setRepositoryPath( directory.getPath() );
+        factory.setRepositoryPath( directory.toString());
         jcrRepository = factory.createRepository();
     }
 

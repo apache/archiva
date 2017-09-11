@@ -22,15 +22,15 @@ package org.apache.archiva.metadata.repository.cassandra;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
 import org.apache.archiva.metadata.repository.cassandra.model.ProjectVersionMetadataModel;
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,10 +54,10 @@ public class CassandraMetadataRepositoryTest
     {
         super.setUp();
 
-        File directory = new File( "target/test-repositories" );
-        if ( directory.exists() )
+        Path directory = Paths.get( "target/test-repositories" );
+        if ( Files.exists(directory) )
         {
-            FileUtils.deleteDirectory( directory );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( directory );
         }
 
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();

@@ -26,11 +26,7 @@ import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.api.Type;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.plugins.index.IndexUtils;
-import org.apache.jackrabbit.oak.plugins.index.lucene.ExtractedTextCache;
-import org.apache.jackrabbit.oak.plugins.index.lucene.IndexCopier;
-import org.apache.jackrabbit.oak.plugins.index.lucene.IndexTracker;
-import org.apache.jackrabbit.oak.plugins.index.lucene.LuceneIndexEditorProvider;
-import org.apache.jackrabbit.oak.plugins.index.lucene.LuceneIndexProvider;
+import org.apache.jackrabbit.oak.plugins.index.lucene.*;
 import org.apache.jackrabbit.oak.plugins.index.lucene.hybrid.DocumentQueue;
 import org.apache.jackrabbit.oak.plugins.index.lucene.hybrid.LocalIndexObserver;
 import org.apache.jackrabbit.oak.plugins.index.lucene.hybrid.NRTIndexFactory;
@@ -52,7 +48,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.jcr.Repository;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -207,9 +202,9 @@ public class RepositoryFactory
 
         StatisticsProvider statsProvider = StatisticsProvider.NOOP;
         int queueSize = Integer.getInteger( "queueSize", 10000 );
-        File indexDir = Files.createTempDirectory( "archiva_index" ).toFile();
+        Path indexDir = Files.createTempDirectory( "archiva_index" );
         log.info( "Queue Index {}", indexDir.toString() );
-        IndexCopier indexCopier = new IndexCopier( executorService, indexDir, true );
+        IndexCopier indexCopier = new IndexCopier( executorService, indexDir.toFile(), true );
         NRTIndexFactory nrtIndexFactory = new NRTIndexFactory( indexCopier, statsProvider );
         MountInfoProvider mountInfoProvider = Mounts.defaultMountInfoProvider();
         IndexTracker tracker =
