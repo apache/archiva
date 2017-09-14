@@ -42,17 +42,13 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -176,20 +172,20 @@ public class Maven2RepositoryMerger
         String artifactPath = pathTranslator.toPath( artifactMetadata.getNamespace(), artifactMetadata.getProject(),
                                                      artifactMetadata.getProjectVersion(), artifactMetadata.getId() );
 
-        File sourceArtifactFile = new File( sourceRepoPath, artifactPath );
+        Path sourceArtifactFile = Paths.get( sourceRepoPath, artifactPath );
 
-        File targetArtifactFile = new File( targetRepoPath, artifactPath );
+        Path targetArtifactFile = Paths.get( targetRepoPath, artifactPath );
 
         log.debug( "artifactPath {}", artifactPath );
 
         int lastIndex = artifactPath.lastIndexOf( RepositoryPathTranslator.PATH_SEPARATOR );
 
-        File targetFile = new File( targetRepoPath, artifactPath.substring( 0, lastIndex ) );
+        Path targetFile = Paths.get( targetRepoPath, artifactPath.substring( 0, lastIndex ) );
 
-        if ( !targetFile.exists() )
+        if ( !Files.exists(targetFile) )
         {
             // create the folder structure when it does not exist
-            targetFile.mkdirs();
+            Files.createDirectories(targetFile);
         }
         // artifact copying
         copyFile( sourceArtifactFile, targetArtifactFile );
@@ -209,14 +205,14 @@ public class Maven2RepositoryMerger
 
         String index = artifactPath.substring( lastIndex + 1 );
         int last = index.lastIndexOf( '.' );
-        File sourcePomFile = new File( sourceRepoPath,
+        Path sourcePomFile = Paths.get( sourceRepoPath,
                                        artifactPath.substring( 0, lastIndex ) + "/" + artifactPath.substring(
                                            lastIndex + 1 ).substring( 0, last ) + ".pom" );
-        File targetPomFile = new File( targetRepoPath,
+        Path targetPomFile = Paths.get( targetRepoPath,
                                        artifactPath.substring( 0, lastIndex ) + "/" + artifactPath.substring(
                                            lastIndex + 1 ).substring( 0, last ) + ".pom" );
 
-        if ( !targetPomFile.exists() && sourcePomFile.exists() )
+        if ( !Files.exists(targetPomFile) && Files.exists(sourcePomFile) )
         {
             copyFile( sourcePomFile, targetPomFile );
         }
@@ -226,18 +222,18 @@ public class Maven2RepositoryMerger
         {
 
             // updating version metadata files
-            File versionMetaDataFileInSourceRepo =
+            Path versionMetaDataFileInSourceRepo =
                 pathTranslator.toFile( Paths.get( sourceRepoPath ), artifactMetadata.getNamespace(),
                                        artifactMetadata.getProject(), artifactMetadata.getVersion(),
-                                       METADATA_FILENAME ).toFile();
+                                       METADATA_FILENAME );
 
-            if ( versionMetaDataFileInSourceRepo.exists() )
+            if ( Files.exists(versionMetaDataFileInSourceRepo) )
             {//Pattern quote for windows path
                 String relativePathToVersionMetadataFile =
-                    versionMetaDataFileInSourceRepo.getAbsolutePath().split( Pattern.quote( sourceRepoPath ) )[1];
-                File versionMetaDataFileInTargetRepo = new File( targetRepoPath, relativePathToVersionMetadataFile );
+                    versionMetaDataFileInSourceRepo.toAbsolutePath().toString().split( Pattern.quote( sourceRepoPath ) )[1];
+                Path versionMetaDataFileInTargetRepo = Paths.get( targetRepoPath, relativePathToVersionMetadataFile );
 
-                if ( !versionMetaDataFileInTargetRepo.exists() )
+                if ( !Files.exists(versionMetaDataFileInTargetRepo) )
                 {
                     copyFile( versionMetaDataFileInSourceRepo, versionMetaDataFileInTargetRepo );
                 }
@@ -249,16 +245,16 @@ public class Maven2RepositoryMerger
             }
 
             // updating project meta data file
-            String projectDirectoryInSourceRepo = new File( versionMetaDataFileInSourceRepo.getParent() ).getParent();
-            File projectMetadataFileInSourceRepo = new File( projectDirectoryInSourceRepo, METADATA_FILENAME );
+            Path projectDirectoryInSourceRepo = versionMetaDataFileInSourceRepo.getParent().getParent();
+            Path projectMetadataFileInSourceRepo = projectDirectoryInSourceRepo.resolve(METADATA_FILENAME );
 
-            if ( projectMetadataFileInSourceRepo.exists() )
+            if ( Files.exists(projectMetadataFileInSourceRepo) )
             {
                 String relativePathToProjectMetadataFile =
-                    projectMetadataFileInSourceRepo.getAbsolutePath().split( Pattern.quote( sourceRepoPath ) )[1];
-                File projectMetadataFileInTargetRepo = new File( targetRepoPath, relativePathToProjectMetadataFile );
+                    projectMetadataFileInSourceRepo.toAbsolutePath().toString().split( Pattern.quote( sourceRepoPath ) )[1];
+                Path projectMetadataFileInTargetRepo = Paths.get( targetRepoPath, relativePathToProjectMetadataFile );
 
-                if ( !projectMetadataFileInTargetRepo.exists() )
+                if ( !Files.exists(projectMetadataFileInTargetRepo) )
                 {
 
                     copyFile( projectMetadataFileInSourceRepo, projectMetadataFileInTargetRepo );
@@ -273,15 +269,15 @@ public class Maven2RepositoryMerger
 
     }
 
-    private void copyFile( File sourceFile, File targetFile )
+    private void copyFile( Path sourceFile, Path targetFile )
         throws IOException
     {
 
-        FileUtils.copyFile( sourceFile, targetFile );
+        FileUtils.copyFile( sourceFile.toFile(), targetFile.toFile() );
 
     }
 
-    private void updateProjectMetadata( File projectMetaDataFileIntargetRepo, ArtifactMetadata artifactMetadata,
+    private void updateProjectMetadata( Path projectMetaDataFileIntargetRepo, ArtifactMetadata artifactMetadata,
                                         Date lastUpdatedTimestamp, String timestamp )
         throws RepositoryMetadataException
     {
@@ -290,7 +286,7 @@ public class Maven2RepositoryMerger
 
         ArchivaRepositoryMetadata projectMetadata = getMetadata( projectMetaDataFileIntargetRepo );
 
-        if ( projectMetaDataFileIntargetRepo.exists() )
+        if ( Files.exists(projectMetaDataFileIntargetRepo) )
         {
             availableVersions = (ArrayList<String>) projectMetadata.getAvailableVersions();
 
@@ -330,16 +326,16 @@ public class Maven2RepositoryMerger
             projectMetadata.setReleasedVersion( latestVersion );
         }
 
-        RepositoryMetadataWriter.write( projectMetadata, projectMetaDataFileIntargetRepo.toPath() );
+        RepositoryMetadataWriter.write( projectMetadata, projectMetaDataFileIntargetRepo );
 
     }
 
-    private void updateVersionMetadata( File versionMetaDataFileInTargetRepo, ArtifactMetadata artifactMetadata,
+    private void updateVersionMetadata( Path versionMetaDataFileInTargetRepo, ArtifactMetadata artifactMetadata,
                                         Date lastUpdatedTimestamp )
         throws RepositoryMetadataException
     {
         ArchivaRepositoryMetadata versionMetadata = getMetadata( versionMetaDataFileInTargetRepo );
-        if ( !versionMetaDataFileInTargetRepo.exists() )
+        if ( !Files.exists(versionMetaDataFileInTargetRepo) )
         {
             versionMetadata.setGroupId( artifactMetadata.getNamespace() );
             versionMetadata.setArtifactId( artifactMetadata.getProject() );
@@ -347,18 +343,18 @@ public class Maven2RepositoryMerger
         }
 
         versionMetadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
-        RepositoryMetadataWriter.write( versionMetadata, versionMetaDataFileInTargetRepo.toPath() );
+        RepositoryMetadataWriter.write( versionMetadata, versionMetaDataFileInTargetRepo );
     }
 
-    private ArchivaRepositoryMetadata getMetadata( File metadataFile )
+    private ArchivaRepositoryMetadata getMetadata( Path metadataFile )
         throws RepositoryMetadataException
     {
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
-        if ( metadataFile.exists() )
+        if ( Files.exists(metadataFile) )
         {
             try
             {
-                metadata = MavenMetadataReader.read( metadataFile.toPath() );
+                metadata = MavenMetadataReader.read( metadataFile );
             }
             catch ( XMLException e )
             {
