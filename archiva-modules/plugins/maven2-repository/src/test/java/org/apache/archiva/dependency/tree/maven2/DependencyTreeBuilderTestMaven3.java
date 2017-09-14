@@ -27,7 +27,6 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,9 +34,11 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
@@ -74,7 +75,7 @@ public class DependencyTreeBuilderTestMaven3
         Configuration configuration = new Configuration();
         ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
         repoConfig.setId( TEST_REPO_ID );
-        repoConfig.setLocation( new File( "target/test-repository" ).getAbsolutePath() );
+        repoConfig.setLocation(Paths.get("target/test-repository").toAbsolutePath().toString() );
         configuration.addManagedRepository( repoConfig );
         config.save( configuration );
 

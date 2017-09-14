@@ -44,6 +44,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -226,9 +227,9 @@ public class Maven2RepositoryMerger
 
             // updating version metadata files
             File versionMetaDataFileInSourceRepo =
-                pathTranslator.toFile( new File( sourceRepoPath ), artifactMetadata.getNamespace(),
+                pathTranslator.toFile( Paths.get( sourceRepoPath ), artifactMetadata.getNamespace(),
                                        artifactMetadata.getProject(), artifactMetadata.getVersion(),
-                                       METADATA_FILENAME );
+                                       METADATA_FILENAME ).toFile();
 
             if ( versionMetaDataFileInSourceRepo.exists() )
             {//Pattern quote for windows path

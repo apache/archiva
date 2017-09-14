@@ -31,7 +31,6 @@ import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.archiva.xml.XMLException;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.building.FileModelSource;
@@ -50,16 +49,17 @@ import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
 public class RepositoryModelResolver
     implements ModelResolver
 {
-    private File basedir;
+    private Path basedir;
 
     private RepositoryPathTranslator pathTranslator;
 
@@ -78,7 +78,7 @@ public class RepositoryModelResolver
 
     private ManagedRepository managedRepository;
 
-    public RepositoryModelResolver( File basedir, RepositoryPathTranslator pathTranslator )
+    public RepositoryModelResolver( Path basedir, RepositoryPathTranslator pathTranslator )
     {
         this.basedir = basedir;
 
@@ -89,7 +89,7 @@ public class RepositoryModelResolver
                                     WagonFactory wagonFactory, List<RemoteRepository> remoteRepositories,
                                     Map<String, NetworkProxy> networkProxiesMap, ManagedRepository targetRepository )
     {
-        this( new File( managedRepository.getLocation() ), pathTranslator );
+        this( Paths.get( managedRepository.getLocation() ), pathTranslator );
 
         this.managedRepository = managedRepository;
 
@@ -109,9 +109,9 @@ public class RepositoryModelResolver
         String filename = artifactId + "-" + version + ".pom";
         // TODO: we need to convert 1.0-20091120.112233-1 type paths to baseVersion for the below call - add a test
 
-        File model = pathTranslator.toFile( basedir, groupId, artifactId, version, filename );
+        Path model = pathTranslator.toFile( basedir, groupId, artifactId, version, filename );
 
-        if ( !model.exists() )
+        if ( !Files.exists(model) )
         {
             /**
              *
@@ -119,10 +119,10 @@ public class RepositoryModelResolver
             // is a SNAPSHOT ? so we can try to find locally before asking remote repositories.
             if ( StringUtils.contains( version, VersionUtil.SNAPSHOT ) )
             {
-                File localSnapshotModel = findTimeStampedSnapshotPom( groupId, artifactId, version, model.getParent() );
+                Path localSnapshotModel = findTimeStampedSnapshotPom( groupId, artifactId, version, model.getParent().toString() );
                 if ( localSnapshotModel != null )
                 {
-                    return new FileModelSource( localSnapshotModel );
+                    return new FileModelSource( localSnapshotModel.toFile() );
                 }
 
             }
@@ -132,10 +132,10 @@ public class RepositoryModelResolver
                 try
                 {
                     boolean success = getModelFromProxy( remoteRepository, groupId, artifactId, version, filename );
-                    if ( success && model.exists() )
+                    if ( success && Files.exists(model) )
                     {
                         log.info( "Model '{}' successfully retrieved from remote repository '{}'",
-                                  model.getAbsolutePath(), remoteRepository.getId() );
+                                  model.toAbsolutePath(), remoteRepository.getId() );
                         break;
                     }
                 }
@@ -143,33 +143,33 @@ public class RepositoryModelResolver
                 {
                     log.info(
                         "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
-                        model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() );
+                        model.toAbsolutePath(), remoteRepository.getId(), e.getMessage() );
                 }
                 catch ( Exception e )
                 {
                     log.warn(
                         "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
-                        model.getAbsolutePath(), remoteRepository.getId(), e.getMessage() );
+                        model.toAbsolutePath(), remoteRepository.getId(), e.getMessage() );
 
                     continue;
                 }
             }
         }
 
-        return new FileModelSource( model );
+        return new FileModelSource( model.toFile() );
     }
 
-    protected File findTimeStampedSnapshotPom( String groupId, String artifactId, String version,
+    protected Path findTimeStampedSnapshotPom( String groupId, String artifactId, String version,
                                                String parentDirectory )
     {
 
         // reading metadata if there
-        File mavenMetadata = new File( parentDirectory, METADATA_FILENAME );
-        if ( mavenMetadata.exists() )
+        Path mavenMetadata = Paths.get( parentDirectory, METADATA_FILENAME );
+        if ( Files.exists(mavenMetadata) )
         {
             try
             {
-                ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( mavenMetadata.toPath() );
+                ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( mavenMetadata);
                 SnapshotVersion snapshotVersion = archivaRepositoryMetadata.getSnapshotVersion();
                 if ( snapshotVersion != null )
                 {
@@ -183,9 +183,9 @@ public class RepositoryModelResolver
                     log.debug( "use snapshot path {} for maven coordinate {}:{}:{}", snapshotPath, groupId, artifactId,
                                version );
 
-                    File model = new File( basedir, snapshotPath );
+                    Path model = basedir.resolve( snapshotPath );
                     //model = pathTranslator.toFile( basedir, groupId, artifactId, lastVersion, filename );
-                    if ( model.exists() )
+                    if ( Files.exists(model) )
                     {
                         return model;
                     }
@@ -193,7 +193,7 @@ public class RepositoryModelResolver
             }
             catch ( XMLException e )
             {
-                log.warn( "fail to read {}, {}", mavenMetadata.getAbsolutePath(), e.getCause() );
+                log.warn( "fail to read {}, {}", mavenMetadata.toAbsolutePath(), e.getCause() );
             }
         }
 
@@ -224,13 +224,13 @@ public class RepositoryModelResolver
         XMLException, IOException
     {
         boolean success = false;
-        File tmpMd5 = null;
-        File tmpSha1 = null;
-        File tmpResource = null;
+        Path tmpMd5 = null;
+        Path tmpSha1 = null;
+        Path tmpResource = null;
         String artifactPath = pathTranslator.toPath( groupId, artifactId, version, filename );
-        File resource = new File( targetRepository.getLocation(), artifactPath );
+        Path resource = Paths.get( targetRepository.getLocation(), artifactPath );
 
-        File workingDirectory = createWorkingDirectory( targetRepository.getLocation() );
+        Path workingDirectory = createWorkingDirectory( targetRepository.getLocation() );
         try
         {
             Wagon wagon = null;
@@ -252,21 +252,21 @@ public class RepositoryModelResolver
                 boolean connected = connectToRepository( wagon, remoteRepository );
                 if ( connected )
                 {
-                    tmpResource = new File( workingDirectory, filename );
+                    tmpResource = workingDirectory.resolve( filename );
 
                     if ( VersionUtil.isSnapshot( version ) )
                     {
                         // get the metadata first!
-                        File tmpMetadataResource = new File( workingDirectory, METADATA_FILENAME );
+                        Path tmpMetadataResource = workingDirectory.resolve( METADATA_FILENAME );
 
                         String metadataPath =
                             StringUtils.substringBeforeLast( artifactPath, "/" ) + "/" + METADATA_FILENAME;
 
-                        wagon.get( addParameters( metadataPath, remoteRepository ), tmpMetadataResource );
+                        wagon.get( addParameters( metadataPath, remoteRepository ), tmpMetadataResource.toFile() );
 
                         log.debug( "Successfully downloaded metadata." );
 
-                        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( tmpMetadataResource.toPath() );
+                        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( tmpMetadataResource );
 
                         // re-adjust to timestamp if present, otherwise retain the original -SNAPSHOT filename
                         SnapshotVersion snapshotVersion = metadata.getSnapshotVersion();
@@ -288,7 +288,7 @@ public class RepositoryModelResolver
 
                     log.info( "Retrieving {} from {}", artifactPath, remoteRepository.getName() );
 
-                    wagon.get( addParameters( artifactPath, remoteRepository ), tmpResource );
+                    wagon.get( addParameters( artifactPath, remoteRepository ), tmpResource.toFile() );
 
                     log.debug( "Downloaded successfully." );
 
@@ -315,9 +315,9 @@ public class RepositoryModelResolver
 
             if ( resource != null )
             {
-                synchronized ( resource.getAbsolutePath().intern() )
+                synchronized ( resource.toAbsolutePath().toString().intern() )
                 {
-                    File directory = resource.getParentFile();
+                    Path directory = resource.getParent();
                     moveFileIfExists( tmpMd5, directory );
                     moveFileIfExists( tmpSha1, directory );
                     moveFileIfExists( tmpResource, directory );
@@ -327,7 +327,7 @@ public class RepositoryModelResolver
         }
         finally
         {
-            FileUtils.deleteQuietly( workingDirectory );
+            org.apache.archiva.common.utils.FileUtils.deleteQuietly( workingDirectory );
         }
 
         // do we still need to execute the consumers?
@@ -426,17 +426,17 @@ public class RepositoryModelResolver
      * @throws TransferFailedException
      * @throws ResourceDoesNotExistException
      */
-    private File transferChecksum( final Wagon wagon, final RemoteRepository remoteRepository,
-                                   final String remotePath, final File resource,
-                                   final File workingDir, final String ext )
+    private Path transferChecksum( final Wagon wagon, final RemoteRepository remoteRepository,
+                                   final String remotePath, final Path resource,
+                                   final Path workingDir, final String ext )
         throws AuthorizationException, TransferFailedException, ResourceDoesNotExistException
     {
-        File destFile = new File( workingDir, resource.getName() + ext );
+        Path destFile = workingDir.resolve( resource.getFileName() + ext );
         String remoteChecksumPath = remotePath + ext;
 
         log.info( "Retrieving {} from {}", remoteChecksumPath, remoteRepository.getName() );
 
-        wagon.get( addParameters( remoteChecksumPath, remoteRepository ), destFile );
+        wagon.get( addParameters( remoteChecksumPath, remoteRepository ), destFile.toFile() );
 
         log.debug( "Downloaded successfully." );
 
@@ -450,49 +450,45 @@ public class RepositoryModelResolver
         return protocol;
     }
 
-    private File createWorkingDirectory( String targetRepository )
+    private Path createWorkingDirectory( String targetRepository )
         throws IOException
     {
-        return Files.createTempDirectory( "temp" ).toFile();
+        return Files.createTempDirectory( "temp" );
     }
 
-    private void moveFileIfExists( File fileToMove, File directory )
+    private void moveFileIfExists( Path fileToMove, Path directory )
     {
-        if ( fileToMove != null && fileToMove.exists() )
+        if ( fileToMove != null && Files.exists(fileToMove) )
         {
-            File newLocation = new File( directory, fileToMove.getName() );
-            if ( newLocation.exists() && !newLocation.delete() )
-            {
+            Path newLocation = directory.resolve( fileToMove.getFileName() );
+            try {
+                Files.deleteIfExists(newLocation);
+            } catch (IOException e) {
                 throw new RuntimeException(
-                    "Unable to overwrite existing target file: " + newLocation.getAbsolutePath() );
+                        "Unable to overwrite existing target file: " + newLocation.toAbsolutePath(), e );
             }
 
-            newLocation.getParentFile().mkdirs();
-            if ( !fileToMove.renameTo( newLocation ) )
-            {
-                log.warn( "Unable to rename tmp file to its final name... resorting to copy command." );
-
-                try
-                {
-                    FileUtils.copyFile( fileToMove, newLocation );
-                }
-                catch ( IOException e )
-                {
-                    if ( newLocation.exists() )
-                    {
+            try {
+                Files.createDirectories(newLocation.getParent());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                Files.move(fileToMove, newLocation );
+            } catch (IOException e) {
+                try {
+                    Files.copy(fileToMove, newLocation);
+                } catch (IOException e1) {
+                    if (Files.exists(newLocation)) {
                         log.error( "Tried to copy file {} to {} but file with this name already exists.",
-                                   fileToMove.getName(), newLocation.getAbsolutePath() );
-                    }
-                    else
-                    {
+                                fileToMove.getFileName(), newLocation.toAbsolutePath() );
+                    } else {
                         throw new RuntimeException(
-                            "Cannot copy tmp file " + fileToMove.getAbsolutePath() + " to its final location", e );
+                                "Cannot copy tmp file " + fileToMove.toAbsolutePath() + " to its final location", e );
                     }
                 }
-                finally
-                {
-                    FileUtils.deleteQuietly( fileToMove );
-                }
+            } finally {
+                org.apache.archiva.common.utils.FileUtils.deleteQuietly(fileToMove);
             }
         }
     }

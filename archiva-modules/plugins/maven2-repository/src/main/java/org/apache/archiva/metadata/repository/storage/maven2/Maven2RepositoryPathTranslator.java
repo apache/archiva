@@ -19,17 +19,17 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
+import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.archiva.common.utils.VersionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -78,15 +78,15 @@ public class Maven2RepositoryPathTranslator
     }
 
     @Override
-    public File toFile( File basedir, String namespace, String projectId, String projectVersion, String filename )
+    public Path toFile(Path basedir, String namespace, String projectId, String projectVersion, String filename )
     {
-        return new File( basedir, toPath( namespace, projectId, projectVersion, filename ) );
+        return basedir.resolve( toPath( namespace, projectId, projectVersion, filename ) );
     }
 
     @Override
-    public File toFile( File basedir, String namespace, String projectId, String projectVersion )
+    public Path toFile( Path basedir, String namespace, String projectId, String projectVersion )
     {
-        return new File( basedir, toPath( namespace, projectId, projectVersion ) );
+        return basedir.resolve( toPath( namespace, projectId, projectVersion ) );
     }
 
     @Override
@@ -148,15 +148,15 @@ public class Maven2RepositoryPathTranslator
     }
 
     @Override
-    public File toFile( File basedir, String namespace, String projectId )
+    public Path toFile( Path basedir, String namespace, String projectId )
     {
-        return new File( basedir, toPath( namespace, projectId ) );
+        return basedir.resolve( toPath( namespace, projectId ) );
     }
 
     @Override
-    public File toFile( File basedir, String namespace )
+    public Path toFile( Path basedir, String namespace )
     {
-        return new File( basedir, toPath( namespace ) );
+        return basedir.resolve( toPath( namespace ) );
     }
 
     private String formatAsDirectory( String directory )

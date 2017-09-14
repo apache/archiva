@@ -30,6 +30,7 @@ import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.archiva.common.Try;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -37,13 +38,7 @@ import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.filter.Filter;
-import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
-import org.apache.archiva.metadata.repository.storage.RelocationException;
-import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
-import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
-import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
-import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
+import org.apache.archiva.metadata.repository.storage.*;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.SnapshotVersion;
@@ -56,22 +51,8 @@ import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.model.CiManagement;
-import org.apache.maven.model.Dependency;
-import org.apache.maven.model.DistributionManagement;
-import org.apache.maven.model.IssueManagement;
-import org.apache.maven.model.License;
-import org.apache.maven.model.MailingList;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.Organization;
-import org.apache.maven.model.Relocation;
-import org.apache.maven.model.Scm;
-import org.apache.maven.model.building.DefaultModelBuilderFactory;
-import org.apache.maven.model.building.DefaultModelBuildingRequest;
-import org.apache.maven.model.building.ModelBuilder;
-import org.apache.maven.model.building.ModelBuildingException;
-import org.apache.maven.model.building.ModelBuildingRequest;
-import org.apache.maven.model.building.ModelProblem;
+import org.apache.maven.model.*;
+import org.apache.maven.model.building.*;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
@@ -82,22 +63,20 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+// import java.io.FileNotFoundException;
 
 /**
  * <p>
@@ -200,15 +179,15 @@ public class Maven2RepositoryStorage
                     }
                 }
             }
-            File basedir = new File( managedRepository.getLocation() );
+            Path basedir = Paths.get( managedRepository.getLocation() );
             if ( VersionUtil.isSnapshot( artifactVersion ) )
             {
-                File metadataFile = pathTranslator.toFile( basedir, readMetadataRequest.getNamespace(),
+                Path metadataFile = pathTranslator.toFile( basedir, readMetadataRequest.getNamespace(),
                                                            readMetadataRequest.getProjectId(), artifactVersion,
                                                            METADATA_FILENAME );
                 try
                 {
-                    ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile.toPath() );
+                    ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
 
                     // re-adjust to timestamp if present, otherwise retain the original -SNAPSHOT filename
                     SnapshotVersion snapshotVersion = metadata.getSnapshotVersion();
@@ -229,15 +208,15 @@ public class Maven2RepositoryStorage
 
             // TODO: won't work well with some other layouts, might need to convert artifact parts to ID by path translator
             String id = readMetadataRequest.getProjectId() + "-" + artifactVersion + ".pom";
-            File file =
+            Path file =
                 pathTranslator.toFile( basedir, readMetadataRequest.getNamespace(), readMetadataRequest.getProjectId(),
                                        readMetadataRequest.getProjectVersion(), id );
 
-            if ( !file.exists() )
+            if ( !Files.exists(file) )
             {
                 // metadata could not be resolved
                 throw new RepositoryStorageMetadataNotFoundException(
-                    "The artifact's POM file '" + file.getAbsolutePath() + "' was missing" );
+                    "The artifact's POM file '" + file.toAbsolutePath() + "' was missing" );
             }
 
             // TODO: this is a workaround until we can properly resolve using proxies as well - this doesn't cache
@@ -278,7 +257,7 @@ public class Maven2RepositoryStorage
             }
 
             ModelBuildingRequest req =
-                new DefaultModelBuildingRequest().setProcessPlugins( false ).setPomFile( file ).setTwoPhaseBuilding(
+                new DefaultModelBuildingRequest().setProcessPlugins( false ).setPomFile( file.toFile() ).setTwoPhaseBuilding(
                     false ).setValidationLevel( ModelBuildingRequest.VALIDATION_LEVEL_MINIMAL );
 
             //MRM-1607. olamy this will resolve jdk profiles on the current running archiva jvm
@@ -306,7 +285,9 @@ public class Maven2RepositoryStorage
                     // olamy really hackhish but fail with java profile so use error message
                     // || ( StringUtils.startsWith( problem.getMessage(), "Failed to determine Java version for profile" ) )
                     // but setTwoPhaseBuilding(true) fix that
-                    if ( ( problem.getException() instanceof FileNotFoundException && e.getModelId() != null &&
+                    if ( ( (problem.getException() instanceof FileNotFoundException
+                        || problem.getException() instanceof NoSuchFileException
+                    ) && e.getModelId() != null &&
                         !e.getModelId().equals( problem.getModelId() ) ) )
                     {
                         LOGGER.warn( "The artifact's parent POM file '{}' cannot be resolved. "
@@ -511,35 +492,35 @@ public class Maven2RepositoryStorage
     public Collection<String> listRootNamespaces( String repoId, Filter<String> filter )
         throws RepositoryStorageRuntimeException
     {
-        File dir = getRepositoryBasedir( repoId );
+        Path dir = getRepositoryBasedir( repoId );
 
         return getSortedFiles( dir, filter );
     }
 
-    private static Collection<String> getSortedFiles( File dir, Filter<String> filter )
+    private static Collection<String> getSortedFiles( Path dir, Filter<String> filter )
     {
-        List<String> fileNames;
-        String[] files = dir.list( new DirectoryFilter( filter ) );
-        if ( files != null )
-        {
-            fileNames = new ArrayList<>( Arrays.asList( files ) );
-            Collections.sort( fileNames );
+
+        try(Stream<Path> stream = Files.list(dir)) {
+            final Predicate<Path> dFilter = new DirectoryFilter( filter );
+            return stream.filter(Files::isDirectory)
+                    .filter(dFilter)
+                    .map(path -> path.getFileName().toString())
+                    .sorted().collect(Collectors.toList());
+
+        } catch (IOException e) {
+            LOGGER.error("Could not read directory list {}: {}", dir, e.getMessage(),e);
+            return Collections.emptyList();
         }
-        else
-        {
-            fileNames = Collections.emptyList();
-        }
-        return fileNames;
     }
 
-    private File getRepositoryBasedir( String repoId )
+    private Path getRepositoryBasedir( String repoId )
         throws RepositoryStorageRuntimeException
     {
         try
         {
             ManagedRepository repositoryConfiguration = managedRepositoryAdmin.getManagedRepository( repoId );
 
-            return new File( repositoryConfiguration.getLocation() );
+            return Paths.get( repositoryConfiguration.getLocation() );
         }
         catch ( RepositoryAdminException e )
         {
@@ -551,47 +532,39 @@ public class Maven2RepositoryStorage
     public Collection<String> listNamespaces( String repoId, String namespace, Filter<String> filter )
         throws RepositoryStorageRuntimeException
     {
-        File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
-
-        // scan all the directories which are potential namespaces. Any directories known to be projects are excluded
-        List<String> namespaces = new ArrayList<>();
-        File[] files = dir.listFiles( new DirectoryFilter( filter ) );
-        if ( files != null )
-        {
-            for ( File file : files )
-            {
-                if ( !isProject( file, filter ) )
-                {
-                    namespaces.add( file.getName() );
-                }
-            }
+        Path dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
+        if (!(Files.exists(dir) && Files.isDirectory(dir))) {
+            return Collections.emptyList();
         }
-        Collections.sort( namespaces );
-        return namespaces;
+        // scan all the directories which are potential namespaces. Any directories known to be projects are excluded
+        Predicate<Path> dFilter = new DirectoryFilter(filter);
+        try(Stream<Path> stream = Files.list(dir)) {
+            return stream.filter(dFilter).filter(path -> !isProject(path, filter)).map(path -> path.getFileName().toString())
+                    .sorted().collect(Collectors.toList());
+        } catch (IOException e) {
+            LOGGER.error("Could not read directory {}: {}", dir, e.getMessage(), e);
+            return Collections.emptyList();
+        }
     }
 
     @Override
     public Collection<String> listProjects( String repoId, String namespace, Filter<String> filter )
         throws RepositoryStorageRuntimeException
     {
-        File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
-
-        // scan all directories in the namespace, and only include those that are known to be projects
-        List<String> projects = new ArrayList<>();
-
-        File[] files = dir.listFiles( new DirectoryFilter( filter ) );
-        if ( files != null )
-        {
-            for ( File file : files )
-            {
-                if ( isProject( file, filter ) )
-                {
-                    projects.add( file.getName() );
-                }
-            }
+        Path dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace );
+        if (!(Files.exists(dir) && Files.isDirectory(dir))) {
+            return Collections.emptyList();
         }
-        Collections.sort( projects );
-        return projects;
+        // scan all directories in the namespace, and only include those that are known to be projects
+        final Predicate<Path> dFilter = new DirectoryFilter(filter);
+        try(Stream<Path> stream = Files.list(dir)) {
+            return stream.filter(dFilter).filter(path -> isProject(path, filter)).map(path -> path.getFileName().toString())
+                    .sorted().collect(Collectors.toList());
+        } catch (IOException e) {
+            LOGGER.error("Could not read directory {}: {}", dir, e.getMessage(), e);
+            return Collections.emptyList();
+        }
+
     }
 
     @Override
@@ -599,7 +572,10 @@ public class Maven2RepositoryStorage
                                                    Filter<String> filter )
         throws RepositoryStorageRuntimeException
     {
-        File dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace, projectId );
+        Path dir = pathTranslator.toFile( getRepositoryBasedir( repoId ), namespace, projectId );
+        if (!(Files.exists(dir) && Files.isDirectory(dir))) {
+            return Collections.emptyList();
+        }
 
         // all directories in a project directory can be considered a version
         return getSortedFiles( dir, filter );
@@ -609,38 +585,44 @@ public class Maven2RepositoryStorage
     public Collection<ArtifactMetadata> readArtifactsMetadata( ReadMetadataRequest readMetadataRequest )
         throws RepositoryStorageRuntimeException
     {
-        File dir = pathTranslator.toFile( getRepositoryBasedir( readMetadataRequest.getRepositoryId() ),
+        Path dir = pathTranslator.toFile( getRepositoryBasedir( readMetadataRequest.getRepositoryId() ),
                                           readMetadataRequest.getNamespace(), readMetadataRequest.getProjectId(),
                                           readMetadataRequest.getProjectVersion() );
+        if (!(Files.exists(dir) && Files.isDirectory(dir))) {
+            return Collections.emptyList();
+        }
 
         // all files that are not metadata and not a checksum / signature are considered artifacts
-        File[] files = dir.listFiles( new ArtifactDirectoryFilter( readMetadataRequest.getFilter() ) );
-
-        List<ArtifactMetadata> artifacts = new ArrayList<>();
-        if ( files != null )
-        {
-            int errorCount=0;
-            for ( File file : files )
-            {
-                try {
-                    ArtifactMetadata metadata =
-                            getArtifactFromFile(readMetadataRequest.getRepositoryId(), readMetadataRequest.getNamespace(),
+        final Predicate<Path> dFilter = new ArtifactDirectoryFilter(readMetadataRequest.getFilter());
+        try(Stream<Path> stream = Files.list(dir)) {
+            // Returns a map TRUE -> (success values), FALSE -> (Exceptions)
+            Map<Boolean, List<Try<ArtifactMetadata>>> result = stream.filter(dFilter).map(path -> {
+                        try {
+                            return Try.success(getArtifactFromFile(readMetadataRequest.getRepositoryId(), readMetadataRequest.getNamespace(),
                                     readMetadataRequest.getProjectId(), readMetadataRequest.getProjectVersion(),
-                                    file);
-                    artifacts.add(metadata);
-                } catch (Exception ex) {
-                    LOGGER.error("Error while retrieving metadata of file {} (Project: {}, Repository: {}): {}",
-                            file.getName(), readMetadataRequest.getProjectId(), readMetadataRequest.getRepositoryId(),
-                            ex.getMessage());
-                    errorCount++;
-                }
-            }
-            // We throw only an error, if the number of errors equals the number of files
-            if (errorCount>0 && errorCount==files.length) {
+                                    path));
+                        } catch (Exception e) {
+                            LOGGER.debug("Could not create metadata for {}:  {}", path, e.getMessage(), e);
+                            return Try.<ArtifactMetadata>failure(e);
+                        }
+                    }
+            ).collect(Collectors.groupingBy(Try::isSuccess));
+            if (result.containsKey(Boolean.FALSE) && result.get(Boolean.FALSE).size()>0 && (!result.containsKey(Boolean.TRUE) || result.get(Boolean.TRUE).size()==0)) {
+                LOGGER.error("Could not get artifact metadata. Directory: {}. Number of errors {}.", dir, result.get(Boolean.FALSE).size());
+                Try<ArtifactMetadata> failure = result.get(Boolean.FALSE).get(0);
+                LOGGER.error("Sample exception {}", failure.getError().getMessage(), failure.getError());
                 throw new RepositoryStorageRuntimeException(readMetadataRequest.getRepositoryId(), "Could not retrieve metadata of the files");
+            } else {
+                if (!result.containsKey(Boolean.TRUE) || result.get(Boolean.TRUE) == null) {
+                    return Collections.emptyList();
+                }
+                return result.get(Boolean.TRUE).stream().map(tr -> tr.get()).collect(Collectors.toList());
             }
+        } catch (IOException e) {
+            LOGGER.error("Could not read directory {}: {}", dir, e.getMessage(), e);
         }
-        return artifacts;
+        return Collections.emptyList();
+
     }
 
     @Override
@@ -649,16 +631,19 @@ public class Maven2RepositoryStorage
     {
         ArtifactMetadata metadata = pathTranslator.getArtifactForPath( repoId, path );
 
-        populateArtifactMetadataFromFile( metadata, new File( getRepositoryBasedir( repoId ), path ) );
+        try {
+            populateArtifactMetadataFromFile( metadata, getRepositoryBasedir( repoId ).resolve( path ) );
+        } catch (IOException e) {
+            throw new RepositoryStorageRuntimeException(repoId, "Error during metadata retrieval of "+path+" :"+e.getMessage(), e);
+        }
 
         return metadata;
     }
 
     private ArtifactMetadata getArtifactFromFile( String repoId, String namespace, String projectId,
-                                                  String projectVersion, File file )
-    {
+                                                  String projectVersion, Path file ) throws IOException {
         ArtifactMetadata metadata =
-            pathTranslator.getArtifactFromId( repoId, namespace, projectId, projectVersion, file.getName() );
+            pathTranslator.getArtifactFromId( repoId, namespace, projectId, projectVersion, file.getFileName().toString() );
 
         populateArtifactMetadataFromFile( metadata, file );
 
@@ -810,17 +795,17 @@ public class Maven2RepositoryStorage
         if ( StringUtils.endsWith( artifactReference.getVersion(), VersionUtil.SNAPSHOT ) )
         {
             // read maven metadata to get last timestamp
-            File metadataDir = new File( managedRepositoryContent.getRepoRoot(), filePath ).getParentFile();
-            if ( !metadataDir.exists() )
+            Path metadataDir = Paths.get( managedRepositoryContent.getRepoRoot(), filePath ).getParent();
+            if ( !Files.exists(metadataDir) )
             {
                 return filePath;
             }
-            File metadataFile = new File( metadataDir, METADATA_FILENAME );
-            if ( !metadataFile.exists() )
+            Path metadataFile = metadataDir.resolve( METADATA_FILENAME );
+            if ( !Files.exists(metadataFile) )
             {
                 return filePath;
             }
-            ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( metadataFile.toPath() );
+            ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( metadataFile );
             int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
             String timestamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
 
@@ -879,11 +864,10 @@ public class Maven2RepositoryStorage
         return joinedString;
     }
 
-    private static void populateArtifactMetadataFromFile( ArtifactMetadata metadata, File file )
-    {
+    private static void populateArtifactMetadataFromFile( ArtifactMetadata metadata, Path file ) throws IOException {
         metadata.setWhenGathered( new Date() );
-        metadata.setFileLastModified( file.lastModified() );
-        ChecksummedFile checksummedFile = new ChecksummedFile( file.toPath() );
+        metadata.setFileLastModified( Files.getLastModifiedTime(file).toMillis() );
+        ChecksummedFile checksummedFile = new ChecksummedFile( file );
         try
         {
             metadata.setMd5( checksummedFile.calculateChecksum( ChecksumAlgorithm.MD5 ) );
@@ -900,27 +884,26 @@ public class Maven2RepositoryStorage
         {
             LOGGER.error( "Unable to checksum file {}: {},SHA1", file, e.getMessage() );
         }
-        metadata.setSize( file.length() );
+        metadata.setSize( Files.size(file) );
     }
 
-    private boolean isProject( File dir, Filter<String> filter )
+    private boolean isProject( Path dir, Filter<String> filter )
     {
         // scan directories for a valid project version subdirectory, meaning this must be a project directory
-        File[] files = dir.listFiles( new DirectoryFilter( filter ) );
-        if ( files != null )
-        {
-            for ( File file : files )
-            {
-                if ( isProjectVersion( file ) )
-                {
-                    return true;
-                }
+        final Predicate<Path> dFilter = new DirectoryFilter(filter);
+        try(Stream<Path> stream = Files.list(dir)) {
+            boolean projFound = stream.filter(dFilter)
+                    .anyMatch(path -> isProjectVersion(path));
+            if (projFound) {
+                return true;
             }
+        } catch (IOException e) {
+            LOGGER.error("Could not read directory list {}: {}", dir, e.getMessage(), e);
         }
 
         // if a metadata file is present, check if this is the "artifactId" directory, marking it as a project
         ArchivaRepositoryMetadata metadata = readMetadata( dir );
-        if ( metadata != null && dir.getName().equals( metadata.getArtifactId() ) )
+        if ( metadata != null && dir.getFileName().toString().equals( metadata.getArtifactId() ) )
         {
             return true;
         }
@@ -928,25 +911,29 @@ public class Maven2RepositoryStorage
         return false;
     }
 
-    private boolean isProjectVersion( File dir )
+    private boolean isProjectVersion( Path dir )
     {
-        final String artifactId = dir.getParentFile().getName();
-        final String projectVersion = dir.getName();
+        final String artifactId = dir.getParent().getFileName().toString();
+        final String projectVersion = dir.getFileName().toString();
 
         // check if there is a POM artifact file to ensure it is a version directory
-        File[] files;
+
+        Predicate<Path> filter;
         if ( VersionUtil.isSnapshot( projectVersion ) )
         {
-            files = dir.listFiles( new PomFilenameFilter( artifactId, projectVersion ) );
+            filter = new PomFilenameFilter(artifactId, projectVersion);
         }
         else
         {
             final String pomFile = artifactId + "-" + projectVersion + ".pom";
-            files = dir.listFiles( new PomFileFilter( pomFile ) );
+            filter = new PomFileFilter(pomFile);
         }
-        if ( files != null && files.length > 0 )
-        {
-            return true;
+        try(Stream<Path> stream = Files.list(dir)) {
+            if (stream.filter(Files::isRegularFile).anyMatch(filter)){
+                return true;
+            }
+        } catch (IOException e) {
+            LOGGER.error("Could not list directory {}: {}", dir, e.getMessage(), e);
         }
 
         // if a metadata file is present, check if this is the "version" directory, marking it as a project version
@@ -959,15 +946,15 @@ public class Maven2RepositoryStorage
         return false;
     }
 
-    private ArchivaRepositoryMetadata readMetadata( File directory )
+    private ArchivaRepositoryMetadata readMetadata( Path directory )
     {
         ArchivaRepositoryMetadata metadata = null;
-        File metadataFile = new File( directory, METADATA_FILENAME );
-        if ( metadataFile.exists() )
+        Path metadataFile = directory.resolve( METADATA_FILENAME );
+        if ( Files.exists(metadataFile) )
         {
             try
             {
-                metadata = MavenMetadataReader.read( metadataFile.toPath() );
+                metadata = MavenMetadataReader.read( metadataFile );
             }
             catch ( XMLException e )
             {
@@ -978,7 +965,7 @@ public class Maven2RepositoryStorage
     }
 
     private static class DirectoryFilter
-        implements FilenameFilter
+        implements Predicate<Path>
     {
         private final Filter<String> filter;
 
@@ -988,8 +975,9 @@ public class Maven2RepositoryStorage
         }
 
         @Override
-        public boolean accept( File dir, String name )
+        public boolean test( Path dir )
         {
+            final String name = dir.getFileName().toString();
             if ( !filter.accept( name ) )
             {
                 return false;
@@ -998,7 +986,7 @@ public class Maven2RepositoryStorage
             {
                 return false;
             }
-            else if ( !new File( dir, name ).isDirectory() )
+            else if ( !Files.isDirectory(dir))
             {
                 return false;
             }
@@ -1007,7 +995,7 @@ public class Maven2RepositoryStorage
     }
 
     private static class ArtifactDirectoryFilter
-        implements FilenameFilter
+        implements Predicate<Path>
     {
         private final Filter<String> filter;
 
@@ -1017,8 +1005,9 @@ public class Maven2RepositoryStorage
         }
 
         @Override
-        public boolean accept( File dir, String name )
+        public boolean test( Path dir )
         {
+            final String name = dir.getFileName().toString();
             // TODO compare to logic in maven-repository-layer
             if ( !filter.accept( name ) )
             {
@@ -1036,7 +1025,7 @@ public class Maven2RepositoryStorage
             {
                 return false;
             }
-            else if ( new File( dir, name ).isDirectory() )
+            else if ( Files.isDirectory(dir) )
             {
                 return false;
             }
@@ -1053,7 +1042,7 @@ public class Maven2RepositoryStorage
 
 
     private static final class PomFilenameFilter
-        implements FilenameFilter
+        implements Predicate<Path>
     {
 
         private final String artifactId, projectVersion;
@@ -1065,8 +1054,9 @@ public class Maven2RepositoryStorage
         }
 
         @Override
-        public boolean accept( File dir, String name )
+        public boolean test( Path  dir )
         {
+            final String name = dir.getFileName().toString();
             if ( name.startsWith( artifactId + "-" ) && name.endsWith( ".pom" ) )
             {
                 String v = name.substring( artifactId.length() + 1, name.length() - 4 );
@@ -1078,10 +1068,11 @@ public class Maven2RepositoryStorage
             }
             return false;
         }
+
     }
 
     private static class PomFileFilter
-        implements FilenameFilter
+        implements Predicate<Path>
     {
         private final String pomFile;
 
@@ -1091,9 +1082,9 @@ public class Maven2RepositoryStorage
         }
 
         @Override
-        public boolean accept( File dir, String name )
+        public boolean test( Path dir )
         {
-            return pomFile.equals( name );
+            return pomFile.equals( dir.getFileName().toString());
         }
     }
 

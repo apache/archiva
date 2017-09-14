@@ -21,15 +21,15 @@ package org.apache.archiva.repository;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.File;
 import javax.inject.Inject;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import java.nio.file.Path;
 
 /**
  * AbstractRepositoryLayerTestCase
@@ -46,12 +46,12 @@ public abstract class AbstractRepositoryLayerTestCase
     @Inject
     protected ApplicationContext applicationContext;
 
-    protected ManagedRepository createRepository( String id, String name, File location )
+    protected ManagedRepository createRepository( String id, String name, Path location )
     {
         ManagedRepository repo = new ManagedRepository();
         repo.setId( id );
         repo.setName( name );
-        repo.setLocation( location.getAbsolutePath() );
+        repo.setLocation( location.toAbsolutePath().toString() );
         return repo;
     }
 
@@ -64,14 +64,14 @@ public abstract class AbstractRepositoryLayerTestCase
         return repo;
     }
 
-    protected ManagedRepositoryContent createManagedRepositoryContent( String id, String name, File location,
+    protected ManagedRepositoryContent createManagedRepositoryContent( String id, String name, Path location,
                                                                        String layout )
         throws Exception
     {
         ManagedRepository repo = new ManagedRepository();
         repo.setId( id );
         repo.setName( name );
-        repo.setLocation( location.getAbsolutePath() );
+        repo.setLocation( location.toAbsolutePath().toString() );
         repo.setLayout( layout );
 
         ManagedRepositoryContent repoContent =

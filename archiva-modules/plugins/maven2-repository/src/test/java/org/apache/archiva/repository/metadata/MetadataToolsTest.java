@@ -22,6 +22,7 @@ package org.apache.archiva.repository.metadata;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.metadata.repository.storage.maven2.conf.MockConfiguration;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.policies.CachedFailuresPolicy;
@@ -30,7 +31,6 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.metadata.repository.storage.maven2.conf.MockConfiguration;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.commons.io.FileUtils;
@@ -44,9 +44,11 @@ import org.xml.sax.SAXException;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -353,7 +355,7 @@ public class MetadataToolsTest
     private void assertSnapshotVersions( String artifactId, String version, String[] expectedVersions )
         throws Exception
     {
-        File repoRootDir = new File( "src/test/repositories/metadata-repository" );
+        Path repoRootDir = Paths.get( "src/test/repositories/metadata-repository" );
 
         VersionedReference reference = new VersionedReference();
         reference.setGroupId( "org.apache.archiva.metadata.tests" );
@@ -387,8 +389,8 @@ public class MetadataToolsTest
                                  ProjectReference reference )
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
-        File metadataFile = new File( repository.getRepoRoot(), tools.toPath( reference ) );
-        String actualMetadata = FileUtils.readFileToString( metadataFile, Charset.defaultCharset() );
+        Path metadataFile = Paths.get( repository.getRepoRoot(), tools.toPath( reference ) );
+        String actualMetadata = org.apache.archiva.common.utils.FileUtils.readFileToString( metadataFile, Charset.defaultCharset() );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
         if ( !detailedDiff.similar() )
@@ -402,8 +404,8 @@ public class MetadataToolsTest
                                  VersionedReference reference )
         throws LayoutException, IOException, SAXException, ParserConfigurationException
     {
-        File metadataFile = new File( repository.getRepoRoot(), tools.toPath( reference ) );
-        String actualMetadata = FileUtils.readFileToString( metadataFile, Charset.defaultCharset() );
+        Path metadataFile = Paths.get( repository.getRepoRoot(), tools.toPath( reference ) );
+        String actualMetadata = org.apache.archiva.common.utils.FileUtils.readFileToString( metadataFile, Charset.defaultCharset() );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadata, actualMetadata ) );
         if ( !detailedDiff.similar() )
@@ -604,13 +606,13 @@ public class MetadataToolsTest
     private ManagedRepositoryContent createTestRepoContent()
         throws Exception
     {
-        File repoRoot = new File( "target/metadata-tests/" + name.getMethodName() );
-        if ( repoRoot.exists() )
+        Path repoRoot = Paths.get( "target/metadata-tests/" + name.getMethodName() );
+        if ( Files.exists(repoRoot) )
         {
-            FileUtils.deleteDirectory( repoRoot );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoRoot );
         }
 
-        repoRoot.mkdirs();
+        Files.createDirectories(repoRoot);
 
         ManagedRepository repoConfig =
             createRepository( "test-repo", "Test Repository: " + name.getMethodName(), repoRoot );
@@ -627,14 +629,14 @@ public class MetadataToolsTest
         String groupDir = StringUtils.replaceChars( reference.getGroupId(), '.', '/' );
         String path = groupDir + "/" + reference.getArtifactId();
 
-        File srcRepoDir = new File( "src/test/repositories/metadata-repository" );
-        File srcDir = new File( srcRepoDir, path );
-        File destDir = new File( repo.getRepoRoot(), path );
+        Path srcRepoDir = Paths.get( "src/test/repositories/metadata-repository" );
+        Path srcDir = srcRepoDir.resolve( path );
+        Path destDir = Paths.get( repo.getRepoRoot(), path );
 
-        assertTrue( "Source Dir exists: " + srcDir, srcDir.exists() );
-        destDir.mkdirs();
+        assertTrue( "Source Dir exists: " + srcDir, Files.exists(srcDir) );
+        Files.createDirectories(destDir);
 
-        FileUtils.copyDirectory( srcDir, destDir );
+        FileUtils.copyDirectory( srcDir.toFile(), destDir.toFile() );
     }
 
     private void prepTestRepo( ManagedRepositoryContent repo, VersionedReference reference )

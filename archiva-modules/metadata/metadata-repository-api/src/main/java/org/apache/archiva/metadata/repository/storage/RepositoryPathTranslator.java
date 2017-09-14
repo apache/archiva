@@ -21,7 +21,7 @@ package org.apache.archiva.metadata.repository.storage;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public interface RepositoryPathTranslator
 {
@@ -31,13 +31,13 @@ public interface RepositoryPathTranslator
 
     String toPath( String namespace, String projectId );
 
-    File toFile( File basedir, String namespace, String projectId, String projectVersion, String filename );
+    Path toFile( Path basedir, String namespace, String projectId, String projectVersion, String filename );
 
-    File toFile( File basedir, String namespace, String projectId );
+    Path toFile( Path basedir, String namespace, String projectId );
 
-    File toFile( File basedir, String namespace );
+    Path toFile(Path basedir, String namespace );
 
-    File toFile( File basedir, String namespace, String projectId, String projectVersion );
+    Path toFile( Path basedir, String namespace, String projectId, String projectVersion );
 
     ArtifactMetadata getArtifactForPath( String repoId, String relativePath );
 

@@ -22,12 +22,13 @@ package org.apache.archiva.repository.metadata;
 import junit.framework.TestCase;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.archiva.xml.XMLException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.File;
-import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * RepositoryMetadataReaderTest
@@ -42,10 +43,10 @@ public class RepositoryMetadataReaderTest
     public void testLoadSimple()
         throws XMLException
     {
-        File defaultRepoDir = new File( "src/test/repositories/default-repository" );
-        File metadataFile = new File( defaultRepoDir, "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
+        Path defaultRepoDir = Paths.get( "src/test/repositories/default-repository" );
+        Path metadataFile = defaultRepoDir.resolve( "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
 
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile.toPath() );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile);
 
         assertNotNull( metadata );
         assertEquals( "Group Id", "org.apache.maven.shared", metadata.getGroupId() );
@@ -60,10 +61,10 @@ public class RepositoryMetadataReaderTest
     public void testLoadComplex()
         throws XMLException
     {
-        File defaultRepoDir = new File( "src/test/repositories/default-repository" );
-        File metadataFile = new File( defaultRepoDir, "org/apache/maven/samplejar/maven-metadata.xml" );
+        Path defaultRepoDir = Paths.get( "src/test/repositories/default-repository" );
+        Path metadataFile = defaultRepoDir.resolve( "org/apache/maven/samplejar/maven-metadata.xml" );
 
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile.toPath() );
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
 
         assertNotNull( metadata );
         assertEquals( "Group Id", "org.apache.maven", metadata.getGroupId() );

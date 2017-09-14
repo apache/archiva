@@ -35,7 +35,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.*;
 
@@ -368,7 +369,7 @@ public class RepositoryRequestTest
     private ManagedRepositoryContent createManagedRepo( String layout )
         throws Exception
     {
-        File repoRoot = new File( FileUtils.getBasedir() + "/target/test-repo" );
+        Path repoRoot = Paths.get( FileUtils.getBasedir() + "/target/test-repo" );
         return createManagedRepositoryContent( "test-internal", "Internal Test Repo", repoRoot, layout );
     }
 
@@ -509,14 +510,14 @@ public class RepositoryRequestTest
         }
     }
 
-    protected ManagedRepositoryContent createManagedRepositoryContent( String id, String name, File location,
+    protected ManagedRepositoryContent createManagedRepositoryContent( String id, String name, Path location,
                                                                        String layout )
         throws Exception
     {
         ManagedRepository repo = new ManagedRepository();
         repo.setId( id );
         repo.setName( name );
-        repo.setLocation( location.getAbsolutePath() );
+        repo.setLocation( location.toAbsolutePath().toString() );
         repo.setLayout( layout );
 
         ManagedRepositoryContent repoContent =

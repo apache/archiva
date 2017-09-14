@@ -20,16 +20,8 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.Dependency;
-import org.apache.archiva.metadata.model.License;
-import org.apache.archiva.metadata.model.MailingList;
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.configuration.*;
+import org.apache.archiva.metadata.model.*;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.ExcludesFilter;
@@ -49,19 +41,13 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -117,7 +103,7 @@ public class Maven2RepositoryMetadataResolverTest
         c = new Configuration();
         testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
-        testRepo.setLocation( new File( "target/test-repository" ).getAbsolutePath() );
+        testRepo.setLocation( Paths.get( "target/test-repository" ).toAbsolutePath().toString() );
         testRepo.setReleases( true );
         testRepo.setSnapshots( true );
         c.addManagedRepository( testRepo );
@@ -771,33 +757,33 @@ public class Maven2RepositoryMetadataResolverTest
     {
         for ( String path : pathsToBeDeleted )
         {
-            File dir = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), path );
-            FileUtils.deleteDirectory( dir );
+            Path dir = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), path );
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( dir );
 
-            assertFalse( dir.exists() );
+            assertFalse( Files.exists(dir) );
         }
-        File dest = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-repository/com/example/test/test-artifact-module-a" );
-        File parentPom =
-            new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-repository/com/example/test/test-artifact-parent" );
-        File rootPom = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-repository/com/example/test/test-artifact-root" );
+        Path dest = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-repository/com/example/test/test-artifact-module-a" );
+        Path parentPom =
+            Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-repository/com/example/test/test-artifact-parent" );
+        Path rootPom = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-repository/com/example/test/test-artifact-root" );
 
-        FileUtils.deleteDirectory( dest );
-        FileUtils.deleteDirectory( parentPom );
-        FileUtils.deleteDirectory( rootPom );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( dest );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( parentPom );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( rootPom );
 
-        assertFalse( dest.exists() );
-        assertFalse( parentPom.exists() );
-        assertFalse( rootPom.exists() );
+        assertFalse( Files.exists(dest) );
+        assertFalse( Files.exists(parentPom) );
+        assertFalse( Files.exists(rootPom) );
     }
 
-    private File copyTestArtifactWithParent( String srcPath, String destPath )
+    private Path copyTestArtifactWithParent( String srcPath, String destPath )
         throws IOException
     {
-        File src = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), srcPath );
-        File dest = new File( org.apache.archiva.common.utils.FileUtils.getBasedir(), destPath );
+        Path src = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), srcPath );
+        Path dest = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), destPath );
 
-        FileUtils.copyDirectory( src, dest );
-        assertTrue( dest.exists() );
+        FileUtils.copyDirectory( src.toFile(), dest.toFile() );
+        assertTrue( Files.exists(dest) );
         return dest;
     }
 

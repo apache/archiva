@@ -93,16 +93,20 @@ public class DaysOldRepositoryPurgeTest
         setLastModified( projectRoot + "/" + projectVersion + "/", OLD_TIMESTAMP );
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
-                                 "maven-install-plugin", "2.2-SNAPSHOT", "maven-install-plugin-2.2-SNAPSHOT.jar" );
-        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
-                                 "maven-install-plugin", "2.2-SNAPSHOT", "maven-install-plugin-2.2-SNAPSHOT.pom" );
-        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
-                                 "maven-install-plugin", "2.2-20061118.060401-2",
-                                 "maven-install-plugin-2.2-20061118.060401-2.jar" );
-        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
-                                 "maven-install-plugin", "2.2-20061118.060401-2",
-                                 "maven-install-plugin-2.2-20061118.060401-2.pom" );
+        String[] exts = {".md5",".sha1",""};
+        for (int i=0; i<exts.length; i++) {
+
+            listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                    "maven-install-plugin", "2.2-SNAPSHOT", "maven-install-plugin-2.2-SNAPSHOT.jar"+exts[i]);
+            listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                    "maven-install-plugin", "2.2-SNAPSHOT", "maven-install-plugin-2.2-SNAPSHOT.pom"+exts[i]);
+            listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                    "maven-install-plugin", "2.2-20061118.060401-2",
+                    "maven-install-plugin-2.2-20061118.060401-2.jar"+exts[i]);
+            listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                    "maven-install-plugin", "2.2-20061118.060401-2",
+                    "maven-install-plugin-2.2-20061118.060401-2.pom"+exts[i]);
+        }
         listenerControl.replay();
 
         // Provide the metadata list
@@ -178,12 +182,15 @@ public class DaysOldRepositoryPurgeTest
         setLastModified( projectRoot + "/" + projectVersion + "/", OLD_TIMESTAMP );
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
-                                 "maven-assembly-plugin", "1.1.2-20070427.065136-1",
-                                 "maven-assembly-plugin-1.1.2-20070427.065136-1.jar" );
-        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
-                                 "maven-assembly-plugin", "1.1.2-20070427.065136-1",
-                                 "maven-assembly-plugin-1.1.2-20070427.065136-1.pom" );
+        String[] exts = {".md5",".sha1",""};
+        for (int i=0; i<exts.length; i++) {
+            listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                    "maven-assembly-plugin", "1.1.2-20070427.065136-1",
+                    "maven-assembly-plugin-1.1.2-20070427.065136-1.jar"+exts[i]);
+            listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.apache.maven.plugins",
+                    "maven-assembly-plugin", "1.1.2-20070427.065136-1",
+                    "maven-assembly-plugin-1.1.2-20070427.065136-1.pom"+exts[i]);
+        }
         listenerControl.replay();
 
         // Provide the metadata list
@@ -274,10 +281,14 @@ public class DaysOldRepositoryPurgeTest
         }
 
         // test listeners for the correct artifacts
-        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.plexus", "plexus-utils",
-                                 "1.4.3-20070113.163208-4", "plexus-utils-1.4.3-20070113.163208-4.jar" );
-        listener.deleteArtifact( metadataRepository, getRepository().getId(), "org.codehaus.plexus", "plexus-utils",
-                                 "1.4.3-20070113.163208-4", "plexus-utils-1.4.3-20070113.163208-4.pom" );
+        String[] exts = {".sha1",""};
+        for (int i=0; i<exts.length; i++) {
+
+            listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.codehaus.plexus", "plexus-utils",
+                    "1.4.3-20070113.163208-4", "plexus-utils-1.4.3-20070113.163208-4.jar"+exts[i]);
+            listener.deleteArtifact(metadataRepository, getRepository().getId(), "org.codehaus.plexus", "plexus-utils",
+                    "1.4.3-20070113.163208-4", "plexus-utils-1.4.3-20070113.163208-4.pom"+exts[i]);
+        }
         listenerControl.replay();
 
         // Provide the metadata list

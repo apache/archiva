@@ -34,12 +34,9 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -65,7 +62,7 @@ public class ManagedDefaultRepositoryContentTest
     public void setUp()
         throws Exception
     {
-        File repoDir = new File( "src/test/repositories/default-repository" );
+        Path repoDir = Paths.get( "src/test/repositories/default-repository" );
 
         ManagedRepository repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
 
@@ -178,8 +175,8 @@ public class ManagedDefaultRepositoryContentTest
 
         // Use the test metadata-repository, which is already setup for
         // These kind of version tests.
-        File repoDir = new File( "src/test/repositories/metadata-repository" );
-        repoContent.getRepository().setLocation( repoDir.getAbsolutePath() );
+        Path repoDir = Paths.get( "src/test/repositories/metadata-repository" );
+        repoContent.getRepository().setLocation( repoDir.toAbsolutePath().toString() );
 
         // Request the versions.
         Set<String> testedVersionSet = repoContent.getVersions( reference );
@@ -203,8 +200,8 @@ public class ManagedDefaultRepositoryContentTest
 
         // Use the test metadata-repository, which is already setup for
         // These kind of version tests.
-        File repoDir = new File( "src/test/repositories/metadata-repository" );
-        repoContent.getRepository().setLocation( repoDir.getAbsolutePath() );
+        Path repoDir = Paths.get( "src/test/repositories/metadata-repository" );
+        repoContent.getRepository().setLocation( repoDir.toAbsolutePath().toString() );
 
         // Request the versions.
         Set<String> testedVersionSet = repoContent.getVersions( reference );

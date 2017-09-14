@@ -62,7 +62,6 @@ import org.sonatype.aether.impl.VersionRangeResolver;
 import org.sonatype.aether.impl.VersionResolver;
 import org.sonatype.aether.impl.internal.DefaultServiceLocator;
 import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
-import org.sonatype.aether.repository.LocalRepository;
 import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.graph.selector.AndDependencySelector;
@@ -72,7 +71,9 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -294,25 +295,25 @@ public class Maven3DependencyTreeBuilder
         {
             ManagedRepository managedRepository = managedRepositoryAdmin.getManagedRepository( repoId );
 
-            File repoDir = new File( managedRepository.getLocation() );
-            File file = pathTranslator.toFile( repoDir, projectArtifact.getGroupId(), projectArtifact.getArtifactId(),
+            Path repoDir = Paths.get( managedRepository.getLocation() );
+            Path file = pathTranslator.toFile( repoDir, projectArtifact.getGroupId(), projectArtifact.getArtifactId(),
                                                projectArtifact.getBaseVersion(),
                                                projectArtifact.getArtifactId() + "-" + projectArtifact.getVersion()
                                                    + ".pom" );
 
-            if ( file.exists() )
+            if ( Files.exists(file) )
             {
                 return managedRepository;
             }
             // try with snapshot version
             if ( StringUtils.endsWith( projectArtifact.getBaseVersion(), VersionUtil.SNAPSHOT ) )
             {
-                File metadataFile = new File( file.getParent(), MetadataTools.MAVEN_METADATA );
-                if ( metadataFile.exists() )
+                Path metadataFile = file.getParent().resolve( MetadataTools.MAVEN_METADATA );
+                if ( Files.exists(metadataFile) )
                 {
                     try
                     {
-                        ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( metadataFile.toPath() );
+                        ArchivaRepositoryMetadata archivaRepositoryMetadata = MavenMetadataReader.read( metadataFile);
                         int buildNumber = archivaRepositoryMetadata.getSnapshotVersion().getBuildNumber();
                         String timeStamp = archivaRepositoryMetadata.getSnapshotVersion().getTimestamp();
                         // rebuild file name with timestamped version and build number
@@ -322,9 +323,9 @@ public class Maven3DependencyTreeBuilder
                                                     "-" + VersionUtil.SNAPSHOT ) ).append( '-' ).append(
                                 timeStamp ).append( '-' ).append( Integer.toString( buildNumber ) ).append(
                                 ".pom" ).toString();
-                        File timeStampFile = new File( file.getParent(), timeStampFileName );
-                        log.debug( "try to find timestamped snapshot version file: {}", timeStampFile.getPath() );
-                        if ( timeStampFile.exists() )
+                        Path timeStampFile = file.getParent().resolve( timeStampFileName );
+                        log.debug( "try to find timestamped snapshot version file: {}", timeStampFile);
+                        if ( Files.exists(timeStampFile) )
                         {
                             return managedRepository;
                         }

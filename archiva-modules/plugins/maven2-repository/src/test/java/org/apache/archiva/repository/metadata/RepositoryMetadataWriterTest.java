@@ -22,14 +22,14 @@ package org.apache.archiva.repository.metadata;
 import junit.framework.TestCase;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.File;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * RepositoryMetadataWriterTest
@@ -43,9 +43,9 @@ public class RepositoryMetadataWriterTest
     public void testWriteSimple()
         throws Exception
     {
-        File defaultRepoDir = new File( "src/test/repositories/default-repository" );
-        File expectedFile = new File( defaultRepoDir, "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
-        String expectedContent = FileUtils.readFileToString( expectedFile, Charset.defaultCharset() );
+        Path defaultRepoDir = Paths.get( "src/test/repositories/default-repository" );
+        Path expectedFile = defaultRepoDir.resolve( "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
+        String expectedContent = org.apache.archiva.common.utils.FileUtils.readFileToString( expectedFile, Charset.defaultCharset() );
 
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
 
