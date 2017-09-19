@@ -33,8 +33,9 @@ INSTANCE_NAME="archiva-webtest"
 PORT_MAPPING="4444:4444"
 NETWORK_TYPE="host"
 
-export SCREEN_WIDTH="1600"
-export SCREEN_HEIGHT="1200"
+# Using high screen resolution to avoid scrolling bar in browser
+export SCREEN_WIDTH="3840"
+export SCREEN_HEIGHT="2160"
 
 HERE=`dirname $0`
 
