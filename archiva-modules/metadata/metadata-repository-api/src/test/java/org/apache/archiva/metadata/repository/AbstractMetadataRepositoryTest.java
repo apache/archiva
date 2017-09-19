@@ -19,39 +19,11 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
-
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.generic.GenericMetadataFacetFactory;
-import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.model.CiManagement;
-import org.apache.archiva.metadata.model.Dependency;
-import org.apache.archiva.metadata.model.IssueManagement;
-import org.apache.archiva.metadata.model.License;
-import org.apache.archiva.metadata.model.MailingList;
-import org.apache.archiva.metadata.model.MetadataFacet;
-import org.apache.archiva.metadata.model.MetadataFacetFactory;
-import org.apache.archiva.metadata.model.Organization;
-import org.apache.archiva.metadata.model.ProjectMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.model.ProjectVersionReference;
-import org.apache.archiva.metadata.model.Scm;
+import org.apache.archiva.metadata.model.*;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.assertj.core.util.Sets;
 import org.junit.Test;
@@ -59,6 +31,11 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath*:/spring-context.xml" } )
@@ -100,6 +77,46 @@ public abstract class AbstractMetadataRepositoryTest
     private static final String TEST_METADATA_VALUE = "testmetadata";
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
+
+    /*
+     * Used by tryAssert to allow to throw exceptions in the lambda expression.
+     */
+    @FunctionalInterface
+    private interface AssertFunction {
+        void accept() throws Exception;
+    }
+
+    private void tryAssert(AssertFunction func) throws Exception {
+        tryAssert(func, 5, 500);
+    }
+
+    /*
+     * Runs the assert method until the assert is successful or the number of retries
+      * is reached. Needed because the JCR Oak index update is asynchronous, so updates
+      * may not be visible immediately after the modification.
+     */
+    private void tryAssert(AssertFunction func, int retries, int sleepMillis) throws Exception {
+        Throwable t = null;
+        int retry = retries;
+        while(retry-->0) {
+            try {
+                func.accept();
+                return;
+            } catch (Exception|AssertionError e ) {
+                t = e;
+                Thread.currentThread().sleep(sleepMillis);
+                log.warn("Retrying assert "+retry);
+            }
+        }
+        if (retry<=0 && t!=null) {
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException)t;
+            } else if (t instanceof Exception) {
+                throw (Exception)t;
+            }
+        }
+    }
+
 
     public static Map<String, MetadataFacetFactory> createTestMetadataFacetFactories()
     {
@@ -895,7 +912,7 @@ public abstract class AbstractMetadataRepositoryTest
 
         List<ArtifactMetadata> artifacts = repository.getArtifactsByDateRange( TEST_REPO_ID, null, null );
 
-        assertEquals( Collections.singletonList( artifact ), artifacts );
+        tryAssert(()->assertEquals( Collections.singletonList( artifact ), artifacts ));
     }
 
     @Test
@@ -981,9 +998,10 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
         repository.save();
 
-        List<ArtifactMetadata> artifacts = repository.getArtifacts( TEST_REPO_ID );
-
-        assertEquals( Collections.singletonList( artifact ), artifacts );
+        tryAssert(()-> {
+            List<ArtifactMetadata> artifacts = repository.getArtifacts(TEST_REPO_ID);
+            assertEquals(Collections.singletonList(artifact), artifacts);
+        });
     }
 
     @Test
@@ -999,9 +1017,10 @@ public abstract class AbstractMetadataRepositoryTest
         repository.save();
 
         // test it restricts to the appropriate repository
-        assertEquals( Collections.singletonList( artifact ), repository.getArtifacts( TEST_REPO_ID ) );
-        assertEquals( Collections.singletonList( secondArtifact ), repository.getArtifacts( OTHER_REPO_ID ) );
+        tryAssert(() -> assertEquals( Collections.singletonList( artifact ), repository.getArtifacts( TEST_REPO_ID ) ));
+        tryAssert(() -> assertEquals( Collections.singletonList( secondArtifact ), repository.getArtifacts( OTHER_REPO_ID ) ));
     }
+
 
     @Test
     public void testGetArtifactsByDateRangeMultipleCopies()
@@ -1154,10 +1173,10 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, namespace, TEST_PROJECT, TEST_PROJECT_VERSION, artifact );
         repository.save();
 
-        assertEquals( Collections.singletonList( artifact ),
-                      new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) ) );
-        assertEquals( Collections.singletonList( artifact ),
-                      new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) ) );
+        tryAssert(()->assertEquals( Collections.singletonList( artifact ),
+                      new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) ) ));
+        tryAssert(()->assertEquals( Collections.singletonList( artifact ),
+                      new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) ) ) );
     }
 
     @Test
@@ -1173,14 +1192,18 @@ public abstract class AbstractMetadataRepositoryTest
         repository.updateArtifact( TEST_REPO_ID, TEST_NAMESPACE, newProjectId, TEST_PROJECT_VERSION, artifact2 );
         repository.save();
 
-        List<ArtifactMetadata> artifacts =
-            new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_SHA1 ) );
-        Collections.sort( artifacts, new ArtifactMetadataComparator() );
-        assertEquals( Arrays.asList( artifact2, artifact1 ), artifacts );
+        tryAssert(()-> {
+                    List<ArtifactMetadata> artifacts =
+                            new ArrayList<>(repository.getArtifactsByChecksum(TEST_REPO_ID, TEST_SHA1));
+                    Collections.sort(artifacts, new ArtifactMetadataComparator());
+                    assertEquals(Arrays.asList(artifact2, artifact1), artifacts);
+                });
 
-        artifacts = new ArrayList<>( repository.getArtifactsByChecksum( TEST_REPO_ID, TEST_MD5 ) );
-        Collections.sort( artifacts, new ArtifactMetadataComparator() );
-        assertEquals( Arrays.asList( artifact2, artifact1 ), artifacts );
+        tryAssert(() -> {
+            ArrayList<ArtifactMetadata> artifacts = new ArrayList<>(repository.getArtifactsByChecksum(TEST_REPO_ID, TEST_MD5));
+            Collections.sort(artifacts, new ArtifactMetadataComparator());
+            assertEquals(Arrays.asList(artifact2, artifact1), artifacts);
+        });
     }
 
     @Test
@@ -1235,16 +1258,18 @@ public abstract class AbstractMetadataRepositoryTest
         throws Exception
     {
         createArtifactWithMavenArtifactFacet();
-        Collection<ArtifactMetadata> artifactsByMetadata =
-            repository.getArtifactsByMetadata( "foo", TEST_METADATA_VALUE, null );
-        assertThat( artifactsByMetadata ).hasSize( 1 );
-        ArtifactMetadata artifactMetadata = artifactsByMetadata.iterator().next();
-        assertThat( artifactMetadata.getId() ).isEqualTo( "projectId-1.0.jar" );
-        assertThat( artifactMetadata.getSha1() ).isEqualTo( TEST_SHA1 );
-        assertThat( artifactMetadata.getRepositoryId() ).isEqualTo( TEST_REPO_ID );
-        MetadataFacet facet = artifactMetadata.getFacet( TEST_FACET_ID );
-        assertThat( facet ).isNotNull();
-        assertThat( facet.toProperties() ).isEqualTo( Collections.singletonMap( "foo", TEST_METADATA_VALUE ) );
+        tryAssert(()-> {
+            Collection<ArtifactMetadata> artifactsByMetadata =
+                    repository.getArtifactsByMetadata("foo", TEST_METADATA_VALUE, null);
+            assertThat(artifactsByMetadata).hasSize(1);
+            ArtifactMetadata artifactMetadata = artifactsByMetadata.iterator().next();
+            assertThat(artifactMetadata.getId()).isEqualTo("projectId-1.0.jar");
+            assertThat(artifactMetadata.getSha1()).isEqualTo(TEST_SHA1);
+            assertThat(artifactMetadata.getRepositoryId()).isEqualTo(TEST_REPO_ID);
+            MetadataFacet facet = artifactMetadata.getFacet(TEST_FACET_ID);
+            assertThat(facet).isNotNull();
+            assertThat(facet.toProperties()).isEqualTo(Collections.singletonMap("foo", TEST_METADATA_VALUE));
+        });
     }
 
     @Test
@@ -1288,11 +1313,13 @@ public abstract class AbstractMetadataRepositoryTest
         List<ArtifactMetadata> expected = Arrays.asList( artifact1, artifact2 );
         Collections.sort( expected, new ArtifactMetadataComparator() );
 
-        List<ArtifactMetadata> actual =
-            new ArrayList<>( repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ) );
-        Collections.sort( actual, new ArtifactMetadataComparator() );
 
-        assertEquals( expected, actual );
+        tryAssert(()-> {
+            List<ArtifactMetadata> actual =
+                    new ArrayList<>( repository.getArtifactsByDateRange( TEST_REPO_ID, null, null ) );
+            Collections.sort( actual, new ArtifactMetadataComparator() );
+            assertEquals(expected, actual);
+        });
 
         repository.removeRepository( TEST_REPO_ID );
 
@@ -1527,8 +1554,10 @@ public abstract class AbstractMetadataRepositoryTest
         throws Exception
     {
         createArtifactWithGenericMetadataFacet();
-        Collection<ArtifactMetadata> artifactsByProperty = repository.searchArtifacts( TEST_METADATA_KEY, TEST_METADATA_VALUE, null, false );
-        assertThat( artifactsByProperty ).isNotNull().isNotEmpty();
+        tryAssert(()-> {
+            Collection<ArtifactMetadata> artifactsByProperty = repository.searchArtifacts( TEST_METADATA_KEY, TEST_METADATA_VALUE, null, false );
+            assertThat( artifactsByProperty ).isNotNull().isNotEmpty();
+        });
     }
 
     @Test
