@@ -19,8 +19,8 @@ package org.apache.archiva.common.filelock;
  * under the License.
  */
 
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
 
 /**
  * @author Olivier Lamy
@@ -35,7 +35,7 @@ public interface FileLockManager
      * @throws FileLockException
      * @throws FileLockTimeoutException
      */
-    Lock writeFileLock( File file )
+    Lock writeFileLock( Path file )
         throws FileLockException, FileLockTimeoutException;
 
     /**
@@ -45,7 +45,7 @@ public interface FileLockManager
      * @throws FileLockException
      * @throws FileLockTimeoutException
      */
-    Lock readFileLock( File file )
+    Lock readFileLock( Path file )
         throws FileLockException, FileLockTimeoutException;
 
     void release( Lock lock )

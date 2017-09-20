@@ -212,8 +212,8 @@ public class ArchivaDavResource
         {
             if ( !isCollection() && outputContext.hasStream() )
             {
-                Lock lock = fileLockManager.readFileLock( localResource.toFile() );
-                try (InputStream is = Files.newInputStream( lock.getFile().toPath() ))
+                Lock lock = fileLockManager.readFileLock( localResource );
+                try (InputStream is = Files.newInputStream( lock.getFile()))
                 {
                     IOUtils.copy( is, outputContext.getOutputStream() );
                 }

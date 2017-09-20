@@ -29,11 +29,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystemException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 
 /**
  * @author Olivier Lamy
@@ -65,16 +62,16 @@ public class DefaultFileLockManagerTimeoutTest
     {
 
             try {
-                File file = new File(System.getProperty("buildDirectory"), "foo.txt");
+                Path file = Paths.get(System.getProperty("buildDirectory"), "foo.txt");
 
-                Files.deleteIfExists(file.toPath());
+                Files.deleteIfExists(file);
 
-                File largeJar = new File(System.getProperty("basedir"), "src/test/cassandra-all-2.0.3.jar");
+                Path largeJar = Paths.get(System.getProperty("basedir"), "src/test/cassandra-all-2.0.3.jar");
 
                 Lock lock = fileLockManager.writeFileLock(file);
 
                 try {
-                    Files.copy(largeJar.toPath(), lock.getFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(largeJar, lock.getFile(), StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
                     logger.warn("Copy failed {}", e.getMessage());
                     // On windows a FileSystemException is thrown

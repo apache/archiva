@@ -20,12 +20,11 @@ package org.apache.archiva.common.filelock;
  */
 
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Lock
 {
-    private File file;
+    private Path file;
 
     private AtomicBoolean write;
 
@@ -45,25 +44,22 @@ public class Lock
 
     private FileLock fileLock;
 
-    private RandomAccessFile randomAccessFile;
-
     private FileChannel fileChannel;
 
-    public Lock( File file )
+    public Lock( Path file )
     {
         this.file = file;
     }
 
-    public Lock( File file, boolean write )
-        throws FileNotFoundException
+    public Lock( Path file, boolean write )
+            throws IOException
     {
         this.file = file;
         this.write = new AtomicBoolean( write );
-        randomAccessFile = new RandomAccessFile( file, write ? "rw" : "r" );
-        fileChannel = randomAccessFile.getChannel();
+        fileChannel = write ? FileChannel.open(file, StandardOpenOption.WRITE, StandardOpenOption.READ) : FileChannel.open(file, StandardOpenOption.READ);
     }
 
-    public File getFile()
+    public Path getFile()
     {
         return file;
     }
@@ -73,7 +69,7 @@ public class Lock
         return write;
     }
 
-    public void setFile( File file )
+    public void setFile( Path file )
     {
         this.file = file;
     }
@@ -122,7 +118,6 @@ public class Lock
         }
 
         closeQuietly( fileChannel );
-        closeQuietly( randomAccessFile );
 
         fileClients.remove( Thread.currentThread() );
 
@@ -144,10 +139,7 @@ public class Lock
 
     }
 
-    protected RandomAccessFile getRandomAccessFile()
-    {
-        return randomAccessFile;
-    }
+
 
     private void closeQuietly( Closeable closeable )
     {

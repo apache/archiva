@@ -32,11 +32,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -66,9 +62,9 @@ public class DefaultFileLockManagerTest {
 
         FileLockManager fileLockManager;
 
-        File file = new File(System.getProperty("buildDirectory"), "foo.txt");
+        Path file = Paths.get(System.getProperty("buildDirectory"), "foo.txt");
 
-        File largeJar = new File(System.getProperty("basedir"), "src/test/cassandra-all-2.0.3.jar");
+        Path largeJar = Paths.get(System.getProperty("basedir"), "src/test/cassandra-all-2.0.3.jar");
 
         ConcurrentFileWrite(FileLockManager fileLockManager)
                 throws IOException {
@@ -104,8 +100,8 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread1");
                 Lock lock = fileLockManager.writeFileLock(this.file);
                 try {
-                    lock.getFile().delete();
-                    copyFile(largeJar.toPath(), lock.getFile().toPath());
+                    Files.deleteIfExists(lock.getFile());
+                    copyFile(largeJar, lock.getFile());
                 } finally {
                     fileLockManager.release(lock);
                 }
@@ -124,8 +120,8 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread2");
                 Lock lock = fileLockManager.writeFileLock(this.file);
                 try {
-                    lock.getFile().delete();
-                    copyFile(largeJar.toPath(), lock.getFile().toPath());
+                    Files.deleteIfExists(lock.getFile());
+                    copyFile(largeJar, lock.getFile());
                 } finally {
                     fileLockManager.release(lock);
                 }
@@ -147,7 +143,7 @@ public class DefaultFileLockManagerTest {
                 Path outFile = null;
                 try {
                     outFile = Files.createTempFile("foo", ".jar");
-                    Files.copy(Paths.get(lock.getFile().getPath()),
+                    Files.copy(lock.getFile(),
                             Files.newOutputStream(outFile));
                 } finally {
                     fileLockManager.release(lock);
@@ -169,8 +165,8 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread4");
                 Lock lock = fileLockManager.writeFileLock(this.file);
                 try {
-                    lock.getFile().delete();
-                    copyFile(largeJar.toPath(), lock.getFile().toPath());
+                    Files.deleteIfExists(lock.getFile());
+                    copyFile(largeJar, lock.getFile());
                 } finally {
                     fileLockManager.release(lock);
                 }
@@ -190,8 +186,8 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread5");
                 Lock lock = fileLockManager.writeFileLock(this.file);
                 try {
-                    lock.getFile().delete();
-                    copyFile(largeJar.toPath(), lock.getFile().toPath());
+                    Files.deleteIfExists(lock.getFile());
+                    copyFile(largeJar, lock.getFile());
                 } finally {
                     fileLockManager.release(lock);
                 }
@@ -213,7 +209,7 @@ public class DefaultFileLockManagerTest {
                 Path outFile = null;
                 try {
                     outFile = Files.createTempFile("foo", ".jar");
-                    Files.copy(lock.getFile().toPath(), Files.newOutputStream( outFile ));
+                    Files.copy(lock.getFile(), Files.newOutputStream( outFile ));
                 } finally {
                     fileLockManager.release(lock);
                     if (outFile!=null) Files.delete( outFile );
@@ -234,8 +230,8 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread7");
                 Lock lock = fileLockManager.writeFileLock(this.file);
                 try {
-                    lock.getFile().delete();
-                    copyFile(largeJar.toPath(), lock.getFile().toPath());
+                    Files.deleteIfExists(lock.getFile());
+                    copyFile(largeJar, lock.getFile());
                 } finally {
                     fileLockManager.release(lock);
                 }
@@ -257,7 +253,7 @@ public class DefaultFileLockManagerTest {
                 Path outFile = null;
                 try {
                     outFile = Files.createTempFile("foo", ".jar");
-                    Files.copy(lock.getFile().toPath(), Files.newOutputStream( outFile ));
+                    Files.copy(lock.getFile(), Files.newOutputStream( outFile ));
                 } finally {
                     fileLockManager.release(lock);
                     if (outFile!=null) Files.delete( outFile );
@@ -278,8 +274,8 @@ public class DefaultFileLockManagerTest {
                 logger.info("thread9");
                 Lock lock = fileLockManager.writeFileLock(this.file);
                 try {
-                    lock.getFile().delete();
-                    copyFile(largeJar.toPath(), lock.getFile().toPath());
+                    Files.deleteIfExists(lock.getFile());
+                    copyFile(largeJar, lock.getFile());
                 } finally {
                     fileLockManager.release(lock);
                 }
@@ -300,7 +296,7 @@ public class DefaultFileLockManagerTest {
                 Path outFile = null;
                 try {
                     outFile = Files.createTempFile("foo", ".jar");
-                    Files.copy(lock.getFile().toPath(), Files.newOutputStream( outFile ));
+                    Files.copy(lock.getFile(), Files.newOutputStream( outFile ));
                 } finally {
                     fileLockManager.release(lock);
                     if (outFile!=null) Files.delete(outFile);

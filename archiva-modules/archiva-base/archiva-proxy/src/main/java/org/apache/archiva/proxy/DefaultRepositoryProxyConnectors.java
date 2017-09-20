@@ -1089,17 +1089,22 @@ public class DefaultRepositoryProxyConnectors
         Lock lock;
         try
         {
-            lock = fileLockManager.writeFileLock( target.toFile() );
-            if ( lock.getFile().exists() && !lock.getFile().delete() )
-            {
+            lock = fileLockManager.writeFileLock( target );
+            try {
+                Files.deleteIfExists(lock.getFile());
+            } catch (IOException e) {
                 throw new ProxyException( "Unable to overwrite existing target file: " + target.toAbsolutePath() );
             }
 
-            lock.getFile().getParentFile().mkdirs();
+            try {
+                Files.createDirectories(lock.getFile().getParent());
+            } catch (IOException e) {
+                throw new ProxyException("Unable to create parent directory "+lock.getFile().getParent());
+            }
 
             try
             {
-                Files.move(temp, lock.getFile().toPath() );
+                Files.move(temp, lock.getFile() );
             }
             catch ( IOException e )
             {
@@ -1107,14 +1112,14 @@ public class DefaultRepositoryProxyConnectors
 
                 try
                 {
-                    Files.copy( temp, lock.getFile().toPath() );
+                    Files.copy( temp, lock.getFile());
                 }
                 catch ( IOException e2 )
                 {
-                    if ( lock.getFile().exists() )
+                    if ( Files.exists(lock.getFile()) )
                     {
                         log.debug( "Tried to copy file {} to {} but file with this name already exists.",
-                            temp.getFileName(), lock.getFile().getAbsolutePath() );
+                            temp.getFileName(), lock.getFile().toAbsolutePath() );
                     }
                     else
                     {

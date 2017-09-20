@@ -24,11 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.channels.ClosedChannelException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -43,7 +44,7 @@ public class DefaultFileLockManager
     // TODO currently we create lock for read and write!!
     // the idea could be to store lock here with various clients read/write
     // only read could be a more simple lock and acquire a write lock means waiting the end of all reading threads
-    private static final ConcurrentMap<File, Lock> lockFiles = new ConcurrentHashMap<File, Lock>( 64 );
+    private static final ConcurrentMap<Path, Lock> lockFiles = new ConcurrentHashMap<Path, Lock>( 64 );
 
     private boolean skipLocking = true;
 
@@ -53,7 +54,7 @@ public class DefaultFileLockManager
 
 
     @Override
-    public Lock readFileLock( File file )
+    public Lock readFileLock( Path file )
         throws FileLockException, FileLockTimeoutException
     {
         if ( skipLocking )
@@ -63,7 +64,11 @@ public class DefaultFileLockManager
         }
         StopWatch stopWatch = new StopWatch();
         boolean acquired = false;
-        mkdirs( file.getParentFile() );
+        try {
+            mkdirs(file.getParent());
+        } catch (IOException e) {
+            throw new FileLockException("Could not create directories "+file.getParent(), e);
+        }
 
         Lock lock = null;
 
@@ -116,14 +121,9 @@ public class DefaultFileLockManager
                     lock=null;
                 }
             }
-            catch ( FileNotFoundException e )
+            catch ( FileNotFoundException | NoSuchFileException e )
             {
-                // can happen if an other thread has deleted the file
-                // close RandomAccessFile!!!
-                if ( lock != null )
-                {
-                    closeQuietly( lock.getRandomAccessFile() );
-                }
+
                 log.debug( "read Lock skip: {} try to create file", e.getMessage() );
                 createNewFileQuietly( file );
             }
@@ -143,7 +143,7 @@ public class DefaultFileLockManager
 
 
     @Override
-    public Lock writeFileLock( File file )
+    public Lock writeFileLock( Path file )
         throws FileLockException, FileLockTimeoutException
     {
         if ( skipLocking )
@@ -151,7 +151,11 @@ public class DefaultFileLockManager
             return new Lock( file );
         }
 
-        mkdirs( file.getParentFile() );
+        try {
+            mkdirs( file.getParent() );
+        } catch (IOException e) {
+            throw new FileLockException("Could not create directory "+file.getParent(), e);
+        }
 
         StopWatch stopWatch = new StopWatch();
         boolean acquired = false;
@@ -207,14 +211,9 @@ public class DefaultFileLockManager
                     lock=null;
                 }
             }
-            catch ( FileNotFoundException e )
+            catch ( FileNotFoundException | NoSuchFileException e )
             {
-                // can happen if an other thread has deleted the file
-                // close RandomAccessFile!!!
-                if ( lock != null )
-                {
-                    closeQuietly( lock.getRandomAccessFile() );
-                }
+
                 log.debug( "write Lock skip: {} try to create file", e.getMessage() );
                 createNewFileQuietly( file );
             }
@@ -233,28 +232,11 @@ public class DefaultFileLockManager
 
     }
 
-    private void closeQuietly( RandomAccessFile randomAccessFile )
-    {
-        if ( randomAccessFile == null )
-        {
-            return;
-        }
-
-        try
-        {
-            randomAccessFile.close();
-        }
-        catch ( IOException e )
-        {
-            // ignore
-        }
-    }
-
-    private void createNewFileQuietly( File file )
+     private void createNewFileQuietly( Path file )
     {
         try
         {
-            file.createNewFile();
+            Files.createFile(file);
         }
         catch ( IOException e )
         {
@@ -297,9 +279,8 @@ public class DefaultFileLockManager
         lockFiles.clear();
     }
 
-    private boolean mkdirs( File directory )
-    {
-        return directory.mkdirs();
+    private Path mkdirs( Path directory ) throws IOException {
+        return Files.createDirectories(directory);
     }
 
     @Override
