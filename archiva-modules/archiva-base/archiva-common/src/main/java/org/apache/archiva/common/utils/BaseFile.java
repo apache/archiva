@@ -21,6 +21,7 @@ package org.apache.archiva.common.utils;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.file.Paths;
 
 /**
  * BaseFile - convenient File object that tracks the Base Directory and can provide relative path values
@@ -40,7 +41,7 @@ public class BaseFile
 
     public BaseFile( File repoDir, File pathFile )
     {
-        this( repoDir, PathUtil.getRelative( repoDir.getAbsolutePath(), pathFile ) );
+        this( repoDir, PathUtil.getRelative(repoDir.getAbsolutePath(), pathFile.toPath() ) );
     }
 
     public BaseFile( File parent, String child )
@@ -89,7 +90,7 @@ public class BaseFile
 
     public String getRelativePath()
     {
-        return PathUtil.getRelative( this.baseDir.getAbsolutePath(), this );
+        return PathUtil.getRelative( this.baseDir.getAbsolutePath(), this.toPath() );
     }
 
     public void setBaseDir( File baseDir )

@@ -21,8 +21,9 @@ package org.apache.archiva.common.utils;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.io.File;
 import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * PathUtil - simple utility methods for path manipulation.
@@ -39,18 +40,18 @@ public class PathUtil
             return path;
         }
 
-        return toUrl( new File( path ) );
+        return toUrl( Paths.get( path ) );
     }
 
-    public static String toUrl( File file )
+    public static String toUrl( Path file )
     {
         try
         {
-            return file.toURI().toURL().toExternalForm();
+            return file.toUri().toURL().toExternalForm();
         }
         catch ( MalformedURLException e )
         {
-            String pathCorrected = StringUtils.replaceChars( file.getAbsolutePath(), '\\', '/' );
+            String pathCorrected = StringUtils.replaceChars( file.toAbsolutePath().toString(), '\\', '/' );
             if ( pathCorrected.startsWith( "file:/" ) )
             {
                 return pathCorrected;
@@ -65,11 +66,21 @@ public class PathUtil
      *
      * @param basedir the basedir.
      * @param file    the file to get the relative path for.
-     * @return the relative path to the child. (NOTE: this path will NOT start with a {@link File#separator} character)
+     * @return the relative path to the child. (NOTE: this path will NOT start with a file separator character)
      */
-    public static String getRelative( String basedir, File file )
+    public static String getRelative( Path basedir, Path file )
     {
-        return getRelative( basedir, file.getAbsolutePath() );
+        if (basedir.isAbsolute() && !file.isAbsolute()) {
+            return basedir.normalize().relativize(file.toAbsolutePath()).toString();
+        } else if (!basedir.isAbsolute() && file.isAbsolute()) {
+            return basedir.toAbsolutePath().relativize(file.normalize()).toString();
+        } else {
+            return basedir.normalize().relativize(file.normalize()).toString();
+        }
+    }
+
+    public static String getRelative(String basedir, Path file) {
+        return getRelative(Paths.get(basedir), file);
     }
 
     /**
@@ -77,30 +88,11 @@ public class PathUtil
      *
      * @param basedir the basedir.
      * @param child   the child path (can be a full path)
-     * @return the relative path to the child. (NOTE: this path will NOT start with a {@link File#separator} character)
+     * @return the relative path to the child. (NOTE: this path will NOT start with a file separator character)
      */
     public static String getRelative( String basedir, String child )
     {
-        if ( basedir.endsWith( "/" ) || basedir.endsWith( "\\" ) )
-        {
-            basedir = basedir.substring( 0, basedir.length() - 1 );
-        }
 
-        if ( child.startsWith( basedir ) )
-        {
-            // simple solution.
-            return child.substring( basedir.length() + 1 );
-        }
-
-        String absoluteBasedir = new File( basedir ).getAbsolutePath();
-        if ( child.startsWith( absoluteBasedir ) )
-        {
-            // resolved basedir solution.
-            return child.substring( absoluteBasedir.length() + 1 );
-        }
-
-        // File is not within basedir.
-        throw new IllegalStateException(
-            "Unable to obtain relative path of file " + child + ", it is not within basedir " + basedir + "." );
+        return getRelative(basedir, Paths.get(child));
     }
 }

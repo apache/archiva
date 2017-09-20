@@ -88,7 +88,7 @@ public class DefaultLegacyRepositoryConverter
     {
         try
         {
-            String defaultRepositoryUrl = PathUtil.toUrl( repositoryDirectory.toFile() );
+            String defaultRepositoryUrl = PathUtil.toUrl( repositoryDirectory );
 
             ManagedRepository legacyRepository = new ManagedRepository();
             legacyRepository.setId( "legacy" );

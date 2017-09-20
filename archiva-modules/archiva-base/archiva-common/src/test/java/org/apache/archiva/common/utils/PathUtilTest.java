@@ -19,11 +19,11 @@ package org.apache.archiva.common.utils;
  * under the License.
  */
 
+import junit.framework.TestCase;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.File;
-
-import junit.framework.TestCase;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * PathUtilTest 
@@ -47,9 +47,9 @@ public class PathUtilTest
 
     public void testToUrlRelativePath()
     {
-        File workingDir = new File( "." );
+        Path workingDir = Paths.get( "" );
 
-        String workingDirname = StringUtils.replaceChars( workingDir.getAbsolutePath(), '\\', '/' );
+        String workingDirname = StringUtils.replaceChars( workingDir.toAbsolutePath().toString(), '\\', '/' );
 
         // Some JVM's retain the "." at the end of the path.  Drop it.
         if ( workingDirname.endsWith( "/." ) )
@@ -70,9 +70,9 @@ public class PathUtilTest
 
     public void testToUrlUsingFileUrl()
     {
-        File workingDir = new File( "." );
+        Path workingDir = Paths.get( "." );
 
-        String workingDirname = StringUtils.replaceChars( workingDir.getAbsolutePath(), '\\', '/' );
+        String workingDirname = StringUtils.replaceChars( workingDir.toAbsolutePath().toString(), '\\', '/' );
 
         // Some JVM's retain the "." at the end of the path.  Drop it.
         if ( workingDirname.endsWith( "/." ) )

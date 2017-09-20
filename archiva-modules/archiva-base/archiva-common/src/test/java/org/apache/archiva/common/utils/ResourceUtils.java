@@ -21,9 +21,10 @@ package org.apache.archiva.common.utils;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * <code>ResourceUtils</code>
@@ -42,7 +43,7 @@ public class ResourceUtils
      * @param resourcePath the path to the resource relative to the root of the classpath
      * @return File a file object pointing to the resource on the classpath or null if the resource cannot be found
      */
-    public static File getResource( String resourcePath )
+    public static Path getResource(String resourcePath )
         throws IOException
     {
         return getResource( resourcePath, null );
@@ -61,10 +62,10 @@ public class ResourceUtils
      * @param classloader the classloader who's classpath should be searched for the resource
      * @return File a file object pointing to the resource on the classpath or null if the resource cannot be found
      */
-    public static File getResource( String resourcePath, ClassLoader classloader )
+    public static Path getResource( String resourcePath, ClassLoader classloader )
         throws IOException
     {
-        File testResource = null;
+        Path testResource = null;
 
         if ( StringUtils.isNotBlank( resourcePath ) )
         {
@@ -76,7 +77,7 @@ public class ResourceUtils
             {
                 throw new IOException( "Could not find test resource at path '" + resourcePath + "'" );
             }
-            testResource = new File( resourceUrl.getFile() );
+            testResource = Paths.get( resourceUrl.getFile() );
         }
 
         return testResource;

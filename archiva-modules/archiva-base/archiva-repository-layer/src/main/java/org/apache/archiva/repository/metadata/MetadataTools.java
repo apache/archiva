@@ -30,12 +30,7 @@ import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
-import org.apache.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.model.Plugin;
-import org.apache.archiva.model.ProjectReference;
-import org.apache.archiva.model.SnapshotVersion;
-import org.apache.archiva.model.VersionedReference;
+import org.apache.archiva.model.*;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.repository.ContentNotFoundException;
@@ -60,19 +55,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
@@ -964,7 +947,7 @@ public class MetadataTools
 
         try(Stream<Path> stream = Files.list(repoDir)) {
             String result = stream.filter(  Files::isRegularFile ).map( path1 ->
-                PathUtil.getRelative( managedRepository.getRepoRoot(), path1.toFile() )
+                PathUtil.getRelative( managedRepository.getRepoRoot(), path1 )
             ).filter( filetypes::matchesArtifactPattern ).findFirst().orElse( null );
             if (result!=null) {
                 return managedRepository.toArtifactReference( result );

@@ -36,7 +36,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -168,7 +167,7 @@ public class ArchivaCli
         throws ConsumerException, MalformedURLException
     {
         ManagedRepository repo = new ManagedRepository();
-        repo.setId( new File( path ).getName() );
+        repo.setId( Paths.get( path ).getFileName().toString());
         repo.setName( "Archiva CLI Provided Repo" );
         repo.setLocation( path );
 

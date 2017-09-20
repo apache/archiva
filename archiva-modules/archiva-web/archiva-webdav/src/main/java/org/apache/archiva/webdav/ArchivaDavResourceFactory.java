@@ -707,7 +707,7 @@ public class ArchivaDavResourceFactory
                         log.error("Could not create directory {}: {}", destDir, e.getMessage(), e);
                         throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not create directory "+destDir );
                     }
-                    String relPath = PathUtil.getRelative( rootDirectory.toAbsolutePath().toString(), destDir.toFile() );
+                    String relPath = PathUtil.getRelative( rootDirectory.toAbsolutePath().toString(), destDir );
 
                     log.debug( "Creating destination directory '{}' (current user '{}')", destDir.getFileName(),
                                activePrincipal );

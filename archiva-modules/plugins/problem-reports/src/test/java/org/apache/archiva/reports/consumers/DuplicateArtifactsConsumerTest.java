@@ -41,8 +41,8 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.File;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -97,7 +97,7 @@ public class DuplicateArtifactsConsumerTest
 
         config = new ManagedRepository();
         config.setId( TEST_REPO );
-        config.setLocation( new File( "target/test-repository" ).getAbsolutePath() );
+        config.setLocation( Paths.get( "target/test-repository" ).toAbsolutePath().toString() );
 
         metadataRepository = mock( MetadataRepository.class );
 
