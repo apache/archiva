@@ -26,7 +26,11 @@ import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryProvider;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,6 +39,8 @@ import java.util.Set;
  */
 public class MavenRepositoryProvider implements RepositoryProvider
 {
+    private static final Logger log = LoggerFactory.getLogger( MavenRepositoryProvider.class );
+
     static final Set<RepositoryType> TYPES = new HashSet<>(  );
     static {
         TYPES.add( RepositoryType.MAVEN);
@@ -50,6 +56,21 @@ public class MavenRepositoryProvider implements RepositoryProvider
     public ManagedRepository createManagedInstance( ManagedRepositoryConfiguration cfg )
     {
         MavenManagedRepository repo = new MavenManagedRepository(cfg.getId() ,cfg.getName());
+        try
+        {
+            if (cfg.getLocation().startsWith("file:")) {
+                    repo.setLocation( new URI(cfg.getLocation()) );
+            } else {
+                repo.setLocation( new URI("file://"+cfg.getLocation()) );
+            }
+        }
+        catch ( URISyntaxException e )
+        {
+            log.error("Could not set repository uri "+cfg.getLocation());
+        }
+        cfg.getRefreshCronExpression()
+
+
         StagingRepositoryFeature feature = repo.getFeature( StagingRepositoryFeature.class ).get();
         return null;
     }
