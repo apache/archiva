@@ -53,15 +53,15 @@ public class DaysOldRepositoryPurge
 {
     private SimpleDateFormat timestampParser;
 
-    private int daysOlder;
+    private int retentionTime;
 
     private int retentionCount;
 
-    public DaysOldRepositoryPurge( ManagedRepositoryContent repository, int daysOlder, int retentionCount,
+    public DaysOldRepositoryPurge( ManagedRepositoryContent repository, int retentionTime, int retentionCount,
                                    RepositorySession repositorySession, List<RepositoryListener> listeners )
     {
         super( repository, repositorySession, listeners );
-        this.daysOlder = daysOlder;
+        this.retentionTime = retentionTime;
         this.retentionCount = retentionCount;
         timestampParser = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
         timestampParser.setTimeZone( DateUtils.UTC_TIME_ZONE );
@@ -83,7 +83,7 @@ public class DaysOldRepositoryPurge
             ArtifactReference artifact = repository.toArtifactReference( path );
 
             Calendar olderThanThisDate = Calendar.getInstance( DateUtils.UTC_TIME_ZONE );
-            olderThanThisDate.add( Calendar.DATE, -daysOlder );
+            olderThanThisDate.add( Calendar.DATE, -retentionTime );
 
             // respect retention count
             VersionedReference reference = new VersionedReference( );

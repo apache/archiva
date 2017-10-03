@@ -103,7 +103,7 @@
 <managedRepository>
 <location>${appserver.base}/data/repositories/internal</location>
 <blockRedeployments>true</blockRedeployments>
-<daysOlder>30</daysOlder>
+<retentionTime>30</retentionTime>
 <id>internal</id>
 <name>Archiva Managed Internal Repository</name>
 </managedRepository>
@@ -112,7 +112,7 @@
 <releases>false</releases>
 <snapshots>true</snapshots>
 <refreshCronExpression>0 0\,30 * * * ?</refreshCronExpression>
-<daysOlder>30</daysOlder>
+<retentionTime>30</retentionTime>
 <id>snapshots</id>
 <name>Archiva Managed Snapshot Repository</name>
 </managedRepository>

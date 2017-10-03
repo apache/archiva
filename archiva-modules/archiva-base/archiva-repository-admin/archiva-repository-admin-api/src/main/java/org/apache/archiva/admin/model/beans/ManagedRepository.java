@@ -57,7 +57,7 @@ public class ManagedRepository
     /**
      * default model value
      */
-    private int daysOlder = 100;
+    private int retentionTime = 100;
 
     /**
      * default model value
@@ -82,7 +82,7 @@ public class ManagedRepository
 
     public ManagedRepository( String id, String name, String location, String layout, boolean snapshots,
                               boolean releases, boolean blockRedeployments, String cronExpression, String indexDir,
-                              boolean scanned, int daysOlder, int retentionCount, boolean deleteReleasedSnapshots,
+                              boolean scanned, int retentionTime, int retentionCount, boolean deleteReleasedSnapshots,
                               boolean stageRepoNeeded )
     {
         super( id, name, layout );
@@ -94,7 +94,7 @@ public class ManagedRepository
         this.setCronExpression( cronExpression );
         this.setIndexDirectory( indexDir );
         this.scanned = scanned;
-        this.daysOlder = daysOlder;
+        this.retentionTime = retentionTime;
         this.retentionCount = retentionCount;
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
         this.stageRepoNeeded = stageRepoNeeded;
@@ -105,11 +105,11 @@ public class ManagedRepository
      */
     public ManagedRepository( String id, String name, String location, String layout, boolean snapshots,
                               boolean releases, boolean blockRedeployments, String cronExpression, String indexDir,
-                              boolean scanned, int daysOlder, int retentionCount, boolean deleteReleasedSnapshots,
+                              boolean scanned, int retentionTime, int retentionCount, boolean deleteReleasedSnapshots,
                               boolean stageRepoNeeded, String description, boolean skipPackedIndexCreation )
     {
         this( id, name, location, layout, snapshots, releases, blockRedeployments, cronExpression, indexDir, scanned,
-              daysOlder, retentionCount, deleteReleasedSnapshots, stageRepoNeeded );
+              retentionTime, retentionCount, deleteReleasedSnapshots, stageRepoNeeded );
         setDescription( description );
         setSkipPackedIndexCreation( skipPackedIndexCreation );
     }
@@ -194,12 +194,12 @@ public class ManagedRepository
 
     public int getDaysOlder()
     {
-        return daysOlder;
+        return retentionTime;
     }
 
-    public void setDaysOlder( int daysOlder )
+    public void setDaysOlder( int retentionTime )
     {
-        this.daysOlder = daysOlder;
+        this.retentionTime = retentionTime;
     }
 
     public int getRetentionCount()
@@ -265,7 +265,7 @@ public class ManagedRepository
         sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
         sb.append( ", stagingRepository=" ).append( stagingRepository );
         sb.append( ", scanned=" ).append( scanned );
-        sb.append( ", daysOlder=" ).append( daysOlder );
+        sb.append( ", retentionTime=" ).append( retentionTime );
         sb.append( ", retentionCount=" ).append( retentionCount );
         sb.append( ", deleteReleasedSnapshots=" ).append( deleteReleasedSnapshots );
         sb.append( ", stageRepoNeeded=" ).append( stageRepoNeeded );

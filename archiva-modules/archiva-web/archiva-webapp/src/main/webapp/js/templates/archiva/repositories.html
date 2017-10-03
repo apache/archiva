@@ -282,14 +282,14 @@
         </div>
       </div>
       <div class="control-group">
-        <label class="control-label" for="daysOlder">${$.i18n.prop('daysOlder')}</label>
+        <label class="control-label" for="retentionTime">${$.i18n.prop('retentionTime')}</label>
 
         <div class="controls">
-          <input type="text" id="daysOlder" class="digits" name="daysOlder" size="5"
-                 data-bind="value: managedRepository.daysOlder"/>
-          <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-daysOlder-info-button"
-             data-original-title="${$.i18n.prop('managedRepository.daysOlder.help.title')}"
-             data-content="${$.i18n.prop('managedRepository.daysOlder.help.content')}">
+          <input type="text" id="retentionTime" class="digits" name="retentionTime" size="5"
+                 data-bind="value: managedRepository.retentionTime"/>
+          <a class="btn btn-warning btn-mini popover-doc" id="managedRepository-retentionTime-info-button"
+             data-original-title="${$.i18n.prop('managedRepository.retentionTime.help.title')}"
+             data-content="${$.i18n.prop('managedRepository.retentionTime.help.content')}">
             <i class="icon-question-sign icon-white"></i>
           </a>
         </div>
@@ -604,7 +604,7 @@
         <label class="control-label" for="timeout">${$.i18n.prop('timeout')}</label>
 
         <div class="controls">
-          <input type="text" id="timeout" class="digits" name="daysOlder" size="5"
+          <input type="text" id="timeout" class="digits" name="retentionTime" size="5"
                  data-bind="value: remoteRepository.timeout"/>
           <a class="btn btn-warning btn-mini popover-doc" id="remoteRepository-timeout-info-button"
              data-original-title="${$.i18n.prop('remoteRepository.timeout.help.title')}"

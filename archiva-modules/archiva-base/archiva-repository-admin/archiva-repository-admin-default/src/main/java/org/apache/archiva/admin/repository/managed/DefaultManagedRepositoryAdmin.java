@@ -158,7 +158,7 @@ public class DefaultManagedRepositoryAdmin
                 new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
                                        repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
                                        repoConfig.isBlockRedeployments(), repoConfig.getRefreshCronExpression(),
-                                       repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getDaysOlder(),
+                                       repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getRetentionTime(),
                                        repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots(),
                                        repoConfig.isStageRepoNeeded() );
             repo.setDescription( repoConfig.getDescription() );
@@ -225,7 +225,7 @@ public class DefaultManagedRepositoryAdmin
                                                                  String location, boolean blockRedeployments,
                                                                  boolean releasesIncluded, boolean snapshotsIncluded,
                                                                  boolean stageRepoNeeded, String cronExpression,
-                                                                 String indexDir, int daysOlder, int retentionCount,
+                                                                 String indexDir, int retentionTime, int retentionCount,
                                                                  boolean deteleReleasedSnapshots, String description,
                                                                  boolean skipPackedIndexCreation, boolean scanned,
                                                                  AuditInformation auditInformation,
@@ -245,7 +245,7 @@ public class DefaultManagedRepositoryAdmin
         repository.setLayout( layout );
         repository.setRefreshCronExpression( cronExpression );
         repository.setIndexDir( indexDir );
-        repository.setDaysOlder( daysOlder );
+        repository.setRetentionTime( retentionTime );
         repository.setRetentionCount( retentionCount );
         repository.setDeleteReleasedSnapshots( deteleReleasedSnapshots );
         repository.setIndexDir( indexDir );
@@ -675,7 +675,7 @@ public class DefaultManagedRepositoryAdmin
         stagingRepository.setLayout( repository.getLayout() );
         stagingRepository.setName( repository.getName() + STAGE_REPO_ID_END );
         stagingRepository.setBlockRedeployments( repository.isBlockRedeployments() );
-        stagingRepository.setDaysOlder( repository.getDaysOlder() );
+        stagingRepository.setRetentionTime( repository.getRetentionTime() );
         stagingRepository.setDeleteReleasedSnapshots( repository.isDeleteReleasedSnapshots() );
 
         String path = repository.getLocation();

@@ -32,7 +32,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
             ];
 
   ManagedRepository=function(id,name,layout,indexDirectory,location,snapshots,releases,blockRedeployments,cronExpression,
-                             scanned,daysOlder,retentionCount,deleteReleasedSnapshots,stageRepoNeeded,description,
+                             scanned,retentionTime,retentionCount,deleteReleasedSnapshots,stageRepoNeeded,description,
                              skipPackedIndexCreation,feedsUrl,url){
 
     var self=this;
@@ -63,9 +63,9 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
 
     //private ManagedRepository stagingRepository;
 
-    //private int daysOlder = 100;
-    this.daysOlder=ko.observable(daysOlder);
-    this.daysOlder.subscribe(function(newValue){self.modified(true)});
+    //private int retentionTime = 100;
+    this.retentionTime=ko.observable(retentionTime);
+    this.retentionTime.subscribe(function(newValue){self.modified(true)});
 
     //private int retentionCount = 2;
     this.retentionCount=ko.observable(retentionCount);
@@ -167,7 +167,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
     return new ManagedRepository(data.id,data.name,data.layout,data.indexDirectory,data.location,data.snapshots
                                  ,data.releases,
                                  data.blockRedeployments,data.cronExpression,
-                                 data.scanned,data.daysOlder,data.retentionCount,data.deleteReleasedSnapshots,
+                                 data.scanned,data.retentionTime,data.retentionCount,data.deleteReleasedSnapshots,
                                  data.stageRepoNeeded,data.description,data.skipPackedIndexCreation);
   }
 
@@ -298,7 +298,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
   activateManagedRepositoryFormValidation=function(){
     var validator = $("#main-content" ).find("#managed-repository-edit-form").validate({
       rules: {
-        daysOlder : {
+        retentionTime : {
           digits: true,
           min: 1
         },

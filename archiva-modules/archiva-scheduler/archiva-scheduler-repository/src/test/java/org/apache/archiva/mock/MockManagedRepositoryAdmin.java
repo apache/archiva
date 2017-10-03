@@ -55,7 +55,7 @@ public class MockManagedRepositoryAdmin
                 new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
                                        repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
                                        repoConfig.isBlockRedeployments(), repoConfig.getRefreshCronExpression(),
-                                       repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getDaysOlder(),
+                                       repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getRetentionTime(),
                                        repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots(), true );
 
             managedRepos.add( repo );

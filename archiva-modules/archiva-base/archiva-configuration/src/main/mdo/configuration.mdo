@@ -709,7 +709,7 @@
           <defaultValue>2</defaultValue>
         </field>
         <field>
-          <name>daysOlder</name>
+          <name>retentionTime</name>
           <version>1.0.0+</version>
           <type>int</type>
           <description>

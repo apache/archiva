@@ -157,7 +157,7 @@ public class MockRepoAdmin
                                               repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
                                               repoConfig.isBlockRedeployments(), repoConfig.getRefreshCronExpression(),
                                               repoConfig.getIndexDir(), repoConfig.isScanned(),
-                                              repoConfig.getDaysOlder(), repoConfig.getRetentionCount(),
+                                              repoConfig.getRetentionTime(), repoConfig.getRetentionCount(),
                                               repoConfig.isDeleteReleasedSnapshots(), false );
             }
         }
