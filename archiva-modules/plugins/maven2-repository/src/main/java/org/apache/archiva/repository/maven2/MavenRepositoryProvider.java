@@ -25,6 +25,7 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryProvider;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.features.StagingRepositoryFeature;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -46,9 +47,10 @@ public class MavenRepositoryProvider implements RepositoryProvider
     }
 
     @Override
-    public ManagedRepository createManagedInstance( ManagedRepositoryConfiguration configuration )
+    public ManagedRepository createManagedInstance( ManagedRepositoryConfiguration cfg )
     {
-        MavenManagedRepository repo = new MavenManagedRepository(  null, null ,null );
+        MavenManagedRepository repo = new MavenManagedRepository(cfg.getId() ,cfg.getName());
+        StagingRepositoryFeature feature = repo.getFeature( StagingRepositoryFeature.class ).get();
         return null;
     }
 

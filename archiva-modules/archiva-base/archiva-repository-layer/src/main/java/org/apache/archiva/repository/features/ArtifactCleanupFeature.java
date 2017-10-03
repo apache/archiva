@@ -33,6 +33,10 @@ public class ArtifactCleanupFeature implements RepositoryFeature<ArtifactCleanup
     private Period retentionTime = Period.ofDays(100);
     private int retentionCount = 2;
 
+    public ArtifactCleanupFeature() {
+
+    }
+
     public ArtifactCleanupFeature(boolean deleteReleasedSnapshots, Period retentionTime, int retentionCount) {
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
         this.retentionTime = retentionTime;
@@ -40,7 +44,7 @@ public class ArtifactCleanupFeature implements RepositoryFeature<ArtifactCleanup
     }
 
     @Override
-    public ArtifactCleanupFeature getFeature() {
+    public ArtifactCleanupFeature get() {
         return this;
     }
 

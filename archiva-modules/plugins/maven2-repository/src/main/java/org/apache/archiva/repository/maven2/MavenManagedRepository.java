@@ -25,8 +25,10 @@ import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryCapabilities;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.StandardCapabilities;
+import org.apache.archiva.repository.UnsupportedFeatureException;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
+import org.apache.archiva.repository.features.RepositoryFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 
 import java.util.Locale;
@@ -39,6 +41,9 @@ public class MavenManagedRepository extends AbstractManagedRepository
     public static final String DEFAULT_LAYOUT = "default";
     public static final String LEGACY_LAYOUT = "legacy";
     private ManagedRepositoryContent content;
+    private ArtifactCleanupFeature artifactCleanupFeature = new ArtifactCleanupFeature( );
+    private IndexCreationFeature indexCreationFeature = new IndexCreationFeature(  );
+    private StagingRepositoryFeature stagingRepositoryFeature = new StagingRepositoryFeature(  );
 
     private static final RepositoryCapabilities CAPABILITIES = new StandardCapabilities(
         new ReleaseScheme[] { ReleaseScheme.RELEASE, ReleaseScheme.SNAPSHOT },
@@ -53,14 +58,14 @@ public class MavenManagedRepository extends AbstractManagedRepository
         false
     );
 
-    public MavenManagedRepository( RepositoryType type, String id, String name )
+    public MavenManagedRepository( String id, String name )
     {
-        super( type, id, name );
+        super( RepositoryType.MAVEN, id, name );
     }
 
-    public MavenManagedRepository( Locale primaryLocale, RepositoryType type, String id, String name )
+    public MavenManagedRepository( Locale primaryLocale, String id, String name )
     {
-        super( primaryLocale, type, id, name );
+        super( primaryLocale, RepositoryType.MAVEN, id, name );
     }
 
     protected void setContent(ManagedRepositoryContent content) {
@@ -77,5 +82,31 @@ public class MavenManagedRepository extends AbstractManagedRepository
     public RepositoryCapabilities getCapabilities( )
     {
         return CAPABILITIES;
+    }
+
+    @Override
+    public <T extends RepositoryFeature<T>> RepositoryFeature<T> getFeature( Class<T> clazz ) throws UnsupportedFeatureException
+    {
+        if (ArtifactCleanupFeature.class.equals( clazz ))
+        {
+            return (RepositoryFeature<T>) artifactCleanupFeature;
+        } else if (IndexCreationFeature.class.equals(clazz)) {
+            return (RepositoryFeature<T>) indexCreationFeature;
+        } else if (StagingRepositoryFeature.class.equals(clazz)) {
+            return (RepositoryFeature<T>) stagingRepositoryFeature;
+        } else {
+            throw new UnsupportedFeatureException(  );
+        }
+    }
+
+    @Override
+    public <T extends RepositoryFeature<T>> boolean supportsFeature( Class<T> clazz )
+    {
+        if (ArtifactCleanupFeature.class.equals(clazz) ||
+            IndexCreationFeature.class.equals(clazz) ||
+            StagingRepositoryFeature.class.equals(clazz)) {
+            return true;
+        }
+        return false;
     }
 }

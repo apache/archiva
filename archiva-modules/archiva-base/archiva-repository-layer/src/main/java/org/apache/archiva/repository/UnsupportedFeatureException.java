@@ -21,9 +21,10 @@ package org.apache.archiva.repository;
 
 /**
  * This exception is thrown if a given feature is not supported by the repository.
+ * This is a runtime exception.
  *
  */
-public class UnsupportedFeatureException extends Exception {
+public class UnsupportedFeatureException extends RuntimeException {
 
     public UnsupportedFeatureException() {
     }

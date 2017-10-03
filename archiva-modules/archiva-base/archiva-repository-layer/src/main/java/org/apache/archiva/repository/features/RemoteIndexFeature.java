@@ -33,7 +33,7 @@ public class RemoteIndexFeature implements RepositoryFeature<RemoteIndexFeature>
 
 
     @Override
-    public RemoteIndexFeature getFeature() {
+    public RemoteIndexFeature get() {
         return this;
     }
 

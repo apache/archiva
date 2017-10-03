@@ -29,12 +29,16 @@ public class IndexCreationFeature implements RepositoryFeature<IndexCreationFeat
 
     private boolean skipPackedIndexCreation = false;
 
+    public IndexCreationFeature() {
+
+    }
+
     public IndexCreationFeature(boolean skipPackedIndexCreation) {
         this.skipPackedIndexCreation = skipPackedIndexCreation;
     }
 
     @Override
-    public IndexCreationFeature getFeature() {
+    public IndexCreationFeature get() {
         return this;
     }
 

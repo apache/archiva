@@ -37,5 +37,5 @@ public interface RepositoryFeature<T extends RepositoryFeature<T>> {
         return this.getClass().equals(clazz);
     }
 
-    T getFeature();
+    T get();
 }

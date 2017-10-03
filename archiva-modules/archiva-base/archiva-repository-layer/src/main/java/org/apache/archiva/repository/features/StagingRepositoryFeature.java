@@ -31,13 +31,17 @@ public class StagingRepositoryFeature implements RepositoryFeature<StagingReposi
     private ManagedRepository stagingRepository = null;
     private boolean stageRepoNeeded = false;
 
+    public StagingRepositoryFeature() {
+
+    }
+
     public StagingRepositoryFeature(ManagedRepository stagingRepository, boolean stageRepoNeeded) {
         this.stagingRepository = stagingRepository;
         this.stageRepoNeeded = stageRepoNeeded;
     }
 
     @Override
-    public StagingRepositoryFeature getFeature() {
+    public StagingRepositoryFeature get() {
         return this;
     }
 
