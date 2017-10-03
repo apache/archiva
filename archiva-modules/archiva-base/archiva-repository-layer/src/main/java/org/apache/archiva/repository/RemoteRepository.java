@@ -42,25 +42,12 @@ public interface RemoteRepository extends Repository {
     RepositoryCredentials getLoginCredentials();
 
     /**
-     * Sets the login credentials for login to the remote repository.
-     * @param credentials
-     */
-    void setCredentials(RepositoryCredentials credentials);
-
-    /**
      * Returns the path relative to the root url of the repository that should be used
      * to check the availability of the repository.
      * @return The check path, null if not set.
      */
     String getCheckPath();
 
-    /**
-     * Sets the path relative to the root url of the repository that should be used to check
-     * the availability of the repository.
-     *
-     * @param path The path string.
-     */
-    void setCheckPath(String path);
 
     /**
      * Returns additional parameters, that are used for accessing the remote repository.
@@ -68,36 +55,12 @@ public interface RemoteRepository extends Repository {
      */
     Map<String,String> getExtraParameters();
 
-    /**
-     * Sets additional parameters to be used to access the remote repository.
-     * @param params A map of parameters, may not be null.
-     */
-    void setExtraParameters(Map<String,String> params);
-
-    /**
-     * Adds an additional parameter.
-     * @param key The key of the parameter
-     * @param value The value of the parameter
-     */
-    void addExtraParameter(String key, String value);
 
     /**
      * Returns extra headers that are added to the request to the remote repository.
      * @return
      */
     Map<String,String> getExtraHeaders();
-
-    /**
-     * Sets the extra headers, that are added to the requests to the remote repository.
-     */
-    void setExtraHeaders(Map<String,String> headers);
-
-    /**
-     * Adds an extra header.
-     * @param header The header name
-     * @param value The header value
-     */
-    void addExtraHeader(String header, String value);
 
     /**
      * Returns the time duration, after that the request is aborted and a error is returned, if the remote repository
@@ -107,24 +70,10 @@ public interface RemoteRepository extends Repository {
     Duration getTimeout();
 
     /**
-     * Sets the timeout for requests to the remote repository.
-     *
-     * @param duration The amount of time, after that the request is aborted.
-     */
-    void setTimeout(Duration duration);
-
-    /**
      * Returns the time duration after that downloads from the remote repository are aborted.
      * @return
      */
     Duration getDownloadTimeout();
-
-    /**
-     * Sets the maximum duration for downloads from the remote repository.
-     *
-     * @param duration The amount of time after that a download is aborted.
-     */
-    void setDownloadTimeout(Duration duration);
 
     /**
      * Returns the id of the proxy, that is used for accessing the remote repository.
@@ -132,10 +81,4 @@ public interface RemoteRepository extends Repository {
      */
     String getProxyId();
 
-    /**
-     * Sets the proxy id that is used for requests to the remote repository.
-     *
-     * @param proxyId The id of the proxy.
-     */
-    void setProxyId(String proxyId);
 }
