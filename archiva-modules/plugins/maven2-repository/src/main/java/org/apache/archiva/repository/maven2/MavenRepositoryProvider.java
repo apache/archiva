@@ -68,7 +68,7 @@ public class MavenRepositoryProvider implements RepositoryProvider
         {
             log.error("Could not set repository uri "+cfg.getLocation());
         }
-        cfg.getRefreshCronExpression()
+        cfg.getRefreshCronExpression();
 
 
         StagingRepositoryFeature feature = repo.getFeature( StagingRepositoryFeature.class ).get();
