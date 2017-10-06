@@ -19,6 +19,10 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import com.cronutils.model.CronType;
+import com.cronutils.model.definition.CronDefinition;
+import com.cronutils.model.definition.CronDefinitionBuilder;
+import com.cronutils.parser.CronParser;
 import org.apache.archiva.repository.features.RepositoryFeature;
 
 import java.net.URI;
@@ -49,13 +53,13 @@ public abstract class AbstractRepository implements EditableRepository
     private Set<URI> failoverLocations = new HashSet<>(  );
     private Set<URI> uFailoverLocations = Collections.unmodifiableSet( failoverLocations );
     private boolean scanned = true;
-    private List<ScheduleDefinition> schedulingTimes = new ArrayList<>(  );
-    private List<ScheduleDefinition> uSchedulingTimes = Collections.unmodifiableList( schedulingTimes );
+    String schedulingDefinition = "0 0 02 * *";
     private boolean index;
     private URI indexPath;
     private String layout;
     private Set<ReleaseScheme> activeReleaseSchemes = new HashSet<>(  );
     private Set<ReleaseScheme> uActiveReleaseSchemes = Collections.unmodifiableSet( activeReleaseSchemes );
+    public static final CronDefinition CRON_DEFINITION = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
 
     public AbstractRepository(RepositoryType type, String id, String name) {
         this.id = id;
@@ -129,9 +133,9 @@ public abstract class AbstractRepository implements EditableRepository
     }
 
     @Override
-    public List<ScheduleDefinition> getSchedulingTimes( )
+    public String getSchedulingDefinition( )
     {
-        return uSchedulingTimes;
+        return schedulingDefinition;
     }
 
     @Override
@@ -222,35 +226,6 @@ public abstract class AbstractRepository implements EditableRepository
     }
 
     @Override
-    public void addSchedulingTime( int index, ScheduleDefinition scheduleDefinition )
-    {
-        this.schedulingTimes.add( index, scheduleDefinition );
-    }
-
-    @Override
-    public void addSchedulingTime( ScheduleDefinition scheduleDefinition )
-    {
-        this.schedulingTimes.add(scheduleDefinition);
-    }
-
-    @Override
-    public void removeSchedulingTime( ScheduleDefinition scheduleDefinition )
-    {
-        this.schedulingTimes.remove(scheduleDefinition);
-    }
-
-    @Override
-    public void removeSchedulingTime(int index) {
-        this.schedulingTimes.remove(index);
-    }
-
-    @Override
-    public void clearSchedulingTimes( )
-    {
-        this.schedulingTimes.clear();
-    }
-
-    @Override
     public void setIndex( boolean hasIndex )
     {
         this.index = hasIndex;
@@ -286,5 +261,10 @@ public abstract class AbstractRepository implements EditableRepository
         this.activeReleaseSchemes.clear();
     }
 
-
+    @Override
+    public void setSchedulingDefinition(String cronExpression) {
+        CronParser parser = new CronParser(CRON_DEFINITION);
+        parser.parse(cronExpression).validate();
+        this.schedulingDefinition = cronExpression;
+    }
 }

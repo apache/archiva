@@ -98,10 +98,14 @@ public interface Repository {
     boolean isScanned();
 
     /**
-     * The definition when the scheduler should run to scan this repository.
+     * Returns the definition, when the repository jobs are executed.
+     * This must return a valid a cron string.
+     *
+     * @See http://www.quartz-scheduler.org/api/2.2.1/org/quartz/CronExpression.html
+     *
      * @return
      */
-    List<ScheduleDefinition> getSchedulingTimes();
+    String getSchedulingDefinition();
 
     /**
      * Returns true, if this repository has a index available

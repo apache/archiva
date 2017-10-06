@@ -95,35 +95,16 @@ public interface EditableRepository extends Repository
     void setScanned(boolean scanned);
 
     /**
-     * Adds a scheduling time at the given index.
-     * @param index the index where time should be set
-     * @param scheduleDefinition the scheduling definition to add
-     */
-    void addSchedulingTime(int index, ScheduleDefinition scheduleDefinition);
-
-    /**
-     * Adds a scheduling time to the end of the list.
-     * @param scheduleDefinition the scheduling definition to set
-     */
-    void addSchedulingTime(ScheduleDefinition scheduleDefinition);
-
-    /**
-     * Removes the scheduling time definition from the list.
-     * @param scheduleDefinition the scheduling definition to remove.
-     */
-    void removeSchedulingTime(ScheduleDefinition scheduleDefinition);
-
-    /**
-     * Removes the scheduling time definition add the given index.
+     * Sets the scheduling definition, that defines the times, when the regular repository
+     * jobs are started. The <code>cronExpression</code> must be a valid
+     * quartz cron definition.
      *
-     * @param index the index to remove
+     * @See http://www.quartz-scheduler.org/api/2.2.1/org/quartz/CronExpression.html
+     *
+     * @param cronExpression the cron expression.
+     * @throws IllegalArgumentException if the cron expression is not valid.
      */
-    void removeSchedulingTime(int index);
-
-    /**
-     * Clears the list of scheduling definitions.
-     */
-    void clearSchedulingTimes();
+    void setSchedulingDefinition(String cronExpression) throws IllegalArgumentException;
 
     /**
      * Set true, if the repository has indexes stored.
