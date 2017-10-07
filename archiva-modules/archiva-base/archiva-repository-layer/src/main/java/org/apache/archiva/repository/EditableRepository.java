@@ -34,6 +34,7 @@ import java.util.Locale;
  */
 public interface EditableRepository extends Repository
 {
+
     /**
      * Returns the primary locale used for setting the default values for
      * name and description.

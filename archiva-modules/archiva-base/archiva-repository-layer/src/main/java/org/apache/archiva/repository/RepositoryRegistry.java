@@ -22,6 +22,9 @@ package org.apache.archiva.repository;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.repository.features.StagingRepositoryFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -39,6 +42,9 @@ import java.util.Map;
 @Service("repositoryRegistry")
 public class RepositoryRegistry
 {
+
+    private static final Logger log = LoggerFactory.getLogger( RepositoryRegistry.class );
+
     /**
      * We inject all repository providers
      */
@@ -47,6 +53,9 @@ public class RepositoryRegistry
 
     @Inject
     ArchivaConfiguration archivaConfiguration;
+
+    @Inject
+    RepositoryContentFactory repositoryContentFactory;
 
     private Map<String, ManagedRepository> managedRepositories = new HashMap<>(  );
     private Map<String, RemoteRepository> remoteRepositories = new HashMap<>(  );
@@ -69,7 +78,8 @@ public class RepositoryRegistry
         return map;
     }
 
-    private Map<String,ManagedRepository> getManagedRepositoriesFromConfig() {
+    private Map<String,ManagedRepository> getManagedRepositoriesFromConfig()
+    {
         List<ManagedRepositoryConfiguration> managedRepoConfigs =
             getArchivaConfiguration().getConfiguration().getManagedRepositories();
 
@@ -85,11 +95,35 @@ public class RepositoryRegistry
         {
             RepositoryType repositoryType = RepositoryType.valueOf( repoConfig.getType( ) );
             if (providerMap.containsKey( repositoryType )) {
-                managedRepos.put(repoConfig.getId(), providerMap.get(repositoryType).createManagedInstance( repoConfig ));
+                try
+                {
+                    ManagedRepository repo = createNewManagedRepository( providerMap.get( repositoryType ), repoConfig );
+                    managedRepos.put(repo.getId(), repo);
+                } catch (Exception e) {
+                    log.error("Could not create managed repository "+repoConfig.getId(), e);
+                }
             }
         }
 
         return managedRepos;
+    }
+
+    private ManagedRepository createNewManagedRepository(RepositoryProvider provider, ManagedRepositoryConfiguration cfg) throws RepositoryException
+    {
+        ManagedRepository repo = provider.createManagedInstance( cfg );
+        if (repo.supportsFeature( StagingRepositoryFeature.class )) {
+            StagingRepositoryFeature feature = repo.getFeature( StagingRepositoryFeature.class ).get();
+            if (feature.isStageRepoNeeded()) {
+                ManagedRepository stageRepo = getManagedRepository( repo.getId()+StagingRepositoryFeature.STAGING_REPO_POSTFIX );
+                feature.setStagingRepository( stageRepo );
+            }
+        }
+        if (repo instanceof EditableManagedRepository)
+        {
+            ((EditableManagedRepository)repo).setContent( repositoryContentFactory.getManagedRepositoryContent( repo.getId( ) ) );
+        }
+        return repo;
+
     }
 
     private Map<String,RemoteRepository> getRemoteRepositoriesFromConfig() {

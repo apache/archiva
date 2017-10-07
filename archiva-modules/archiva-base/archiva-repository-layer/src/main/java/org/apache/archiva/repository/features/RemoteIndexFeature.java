@@ -21,6 +21,7 @@ package org.apache.archiva.repository.features;
 
 
 import java.net.URI;
+import java.time.Duration;
 
 /**
  * Feature for remote index download.
@@ -30,6 +31,8 @@ public class RemoteIndexFeature implements RepositoryFeature<RemoteIndexFeature>
     private boolean downloadRemoteIndex = false;
     private URI indexUri;
     private boolean downloadRemoteIndexOnStartup = false;
+    private Duration downloadTimeout = Duration.ofSeconds( 600 );
+    private String proxyId = "";
 
 
     @Override
@@ -84,5 +87,39 @@ public class RemoteIndexFeature implements RepositoryFeature<RemoteIndexFeature>
      */
     public void setDownloadRemoteIndexOnStartup(boolean downloadRemoteIndexOnStartup) {
         this.downloadRemoteIndexOnStartup = downloadRemoteIndexOnStartup;
+    }
+
+    /**
+     * Returns the timeout after that the remote index download is aborted.
+     * @return the time duration after that, the download is aborted.
+     */
+    public Duration getDownloadTimeout() {
+        return this.downloadTimeout;
+    }
+
+    /**
+     * Sets the timeout after that a remote index download will be aborted.
+     * @param timeout The duration
+     */
+    public void setDownloadTimeout(Duration timeout) {
+        this.downloadTimeout = timeout;
+    }
+
+    /**
+     * Returns the id of the proxy, that should be used to download the remote index.
+     * @return The proxy id
+     */
+    public String getProxyId( )
+    {
+        return proxyId;
+    }
+
+    /**
+     * Sets the id of the proxy that should be used to download the remote index.
+     * @param proxyId
+     */
+    public void setProxyId( String proxyId )
+    {
+        this.proxyId = proxyId;
     }
 }

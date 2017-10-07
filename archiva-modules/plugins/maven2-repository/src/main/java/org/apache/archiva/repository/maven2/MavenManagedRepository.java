@@ -20,7 +20,6 @@ package org.apache.archiva.repository.maven2;
  */
 
 import org.apache.archiva.repository.AbstractManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryCapabilities;
 import org.apache.archiva.repository.RepositoryType;
@@ -40,7 +39,6 @@ public class MavenManagedRepository extends AbstractManagedRepository
 {
     public static final String DEFAULT_LAYOUT = "default";
     public static final String LEGACY_LAYOUT = "legacy";
-    private ManagedRepositoryContent content;
     private ArtifactCleanupFeature artifactCleanupFeature = new ArtifactCleanupFeature( );
     private IndexCreationFeature indexCreationFeature = new IndexCreationFeature(  );
     private StagingRepositoryFeature stagingRepositoryFeature = new StagingRepositoryFeature(  );
@@ -66,16 +64,6 @@ public class MavenManagedRepository extends AbstractManagedRepository
     public MavenManagedRepository( Locale primaryLocale, String id, String name )
     {
         super( primaryLocale, RepositoryType.MAVEN, id, name );
-    }
-
-    protected void setContent(ManagedRepositoryContent content) {
-        this.content = content;
-    }
-
-    @Override
-    public ManagedRepositoryContent getContent( )
-    {
-        return content;
     }
 
     @Override

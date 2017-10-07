@@ -40,9 +40,6 @@ import java.util.Locale;
 public class MavenRemoteRepository extends AbstractRemoteRepository
     implements RemoteRepository
 {
-    private ArtifactCleanupFeature artifactCleanupFeature = new ArtifactCleanupFeature( );
-    private IndexCreationFeature indexCreationFeature = new IndexCreationFeature(  );
-    private StagingRepositoryFeature stagingRepositoryFeature = new StagingRepositoryFeature(  );
     private RemoteIndexFeature remoteIndexFeature = new RemoteIndexFeature();
 
     private static final RepositoryCapabilities CAPABILITIES = new StandardCapabilities(
@@ -77,13 +74,7 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
     @Override
     public <T extends RepositoryFeature<T>> RepositoryFeature<T> getFeature( Class<T> clazz ) throws UnsupportedFeatureException
     {
-        if (ArtifactCleanupFeature.class.equals(clazz)) {
-            return (RepositoryFeature<T>) artifactCleanupFeature;
-        } else if (IndexCreationFeature.class.equals(clazz)) {
-            return (RepositoryFeature<T>) indexCreationFeature;
-        } else if (StagingRepositoryFeature.class.equals(clazz)) {
-            return (RepositoryFeature<T>) stagingRepositoryFeature;
-        } else if (RemoteIndexFeature.class.equals( clazz )) {
+        if (RemoteIndexFeature.class.equals( clazz )) {
             return (RepositoryFeature<T>) remoteIndexFeature;
         } else {
             throw new UnsupportedFeatureException(  );
@@ -93,10 +84,7 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
     @Override
     public <T extends RepositoryFeature<T>> boolean supportsFeature( Class<T> clazz )
     {
-        if (ArtifactCleanupFeature.class.equals(clazz) ||
-            IndexCreationFeature.class.equals(clazz) ||
-            StagingRepositoryFeature.class.equals(clazz) ||
-            RemoteIndexFeature.class.equals(clazz)) {
+        if ( RemoteIndexFeature.class.equals(clazz)) {
             return true;
         } else {
             return false;

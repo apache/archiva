@@ -69,16 +69,5 @@ public interface RemoteRepository extends Repository {
      */
     Duration getTimeout();
 
-    /**
-     * Returns the time duration after that downloads from the remote repository are aborted.
-     * @return
-     */
-    Duration getDownloadTimeout();
-
-    /**
-     * Returns the id of the proxy, that is used for accessing the remote repository.
-     * @return The proxy id.
-     */
-    String getProxyId();
 
 }

@@ -28,6 +28,8 @@ import org.apache.archiva.repository.ManagedRepository;
  */
 public class StagingRepositoryFeature implements RepositoryFeature<StagingRepositoryFeature> {
 
+    public static final String STAGING_REPO_POSTFIX = "-stage";
+
     private ManagedRepository stagingRepository = null;
     private boolean stageRepoNeeded = false;
 

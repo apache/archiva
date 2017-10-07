@@ -24,4 +24,8 @@ package org.apache.archiva.repository;
  * Credentials used to login to a remote repository.
  */
 public interface RepositoryCredentials {
+
+
 }
+
+

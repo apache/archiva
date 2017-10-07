@@ -75,17 +75,8 @@ public interface EditableRemoteRepository extends EditableRepository, RemoteRepo
     void setTimeout(Duration duration);
 
     /**
-     * Sets the maximum duration for downloads from the remote repository.
-     *
-     * @param duration The amount of time after that a download is aborted.
+     * Sets the content.
+     * @param content
      */
-    void setDownloadTimeout(Duration duration);
-
-    /**
-     * Sets the proxy id that is used for requests to the remote repository.
-     *
-     * @param proxyId The id of the proxy.
-     */
-    void setProxyId(String proxyId);
-
+    void setContent(RemoteRepositoryContent content);
 }

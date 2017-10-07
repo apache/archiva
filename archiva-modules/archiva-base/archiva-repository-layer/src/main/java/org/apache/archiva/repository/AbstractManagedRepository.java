@@ -46,7 +46,8 @@ public abstract class AbstractManagedRepository extends AbstractRepository imple
         return content;
     }
 
-    protected void setContent(ManagedRepositoryContent content) {
+    @Override
+    public void setContent(ManagedRepositoryContent content) {
         this.content = content;
     }
 

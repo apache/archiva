@@ -20,19 +20,30 @@ package org.apache.archiva.repository;
  */
 
 /**
- * The editable part of a managed repository.
+ * Simple credentials that hold username and password
  */
-public interface EditableManagedRepository extends EditableRepository, ManagedRepository
+public class PasswordCredentials implements RepositoryCredentials
 {
-    /**
-     * If true, the repository blocks redeployments of artifacts with the same version.
-     * @param blocksRedeployment The flag for blocking redeployments.
-     */
-    void setBlocksRedeployment(boolean blocksRedeployment);
+    String username;
+    char[] password;
 
-    /**
-     * Sets the content
-     * @param content
-     */
-    void setContent(ManagedRepositoryContent content);
+    public String getUsername( )
+    {
+        return username;
+    }
+
+    public void setUsername( String username )
+    {
+        this.username = username;
+    }
+
+    public char[] getPassword( )
+    {
+        return password;
+    }
+
+    public void setPassword( char[] password )
+    {
+        this.password = password;
+    }
 }

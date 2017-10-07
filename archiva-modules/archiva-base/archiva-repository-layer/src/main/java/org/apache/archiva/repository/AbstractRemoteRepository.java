@@ -40,7 +40,6 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
     private Map<String,String> extraHeaders = new HashMap<>(  );
     private Map<String,String> uExtraHeaders = Collections.unmodifiableMap( extraHeaders );
     private Duration timeout;
-    private Duration downloadTimeout;
     private String proxyId;
     private RemoteRepositoryContent content;
 
@@ -99,24 +98,13 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
     }
 
     @Override
-    public void setDownloadTimeout( Duration duration )
-    {
-        this.downloadTimeout=duration;
-    }
-
-    @Override
-    public void setProxyId( String proxyId )
-    {
-        this.proxyId = proxyId;
-    }
-
-    @Override
     public RemoteRepositoryContent getContent( )
     {
         return content;
     }
 
-    protected void setContent(RemoteRepositoryContent content) {
+    @Override
+    public void setContent(RemoteRepositoryContent content) {
         this.content = content;
     }
 
@@ -150,15 +138,4 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
         return timeout;
     }
 
-    @Override
-    public Duration getDownloadTimeout( )
-    {
-        return downloadTimeout;
-    }
-
-    @Override
-    public String getProxyId( )
-    {
-        return proxyId;
-    }
 }
