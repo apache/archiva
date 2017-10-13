@@ -20,6 +20,8 @@ package org.apache.archiva.repository;
  */
 
 
+import java.util.Set;
+
 /**
  * Represents a managed repository, that is readable and writable.
  */
@@ -37,4 +39,11 @@ public interface ManagedRepository extends Repository {
      * @return
      */
     boolean blocksRedeployments();
+
+    /**
+     * Returns the release schemes that are active by this repository. E.g. for maven repositories
+     * this may either be a release repository, a snapshot repository or a combined repository.
+     * @return
+     */
+    Set<ReleaseScheme> getActiveReleaseSchemes();
 }

@@ -35,4 +35,22 @@ public interface EditableManagedRepository extends EditableRepository, ManagedRe
      * @param content
      */
     void setContent(ManagedRepositoryContent content);
+
+    /**
+     * Adds an active release scheme. Release schemes may be combined.
+     * @param scheme the scheme to add.
+     */
+    void addActiveReleaseScheme(ReleaseScheme scheme);
+
+    /**
+     * Removes an active release scheme from the set.
+     * @param scheme the scheme to remove.
+     */
+    void removeActiveReleaseScheme(ReleaseScheme scheme);
+
+    /**
+     * Clears all active release schemes.
+     */
+    void clearActiveReleaseSchemes();
+
 }

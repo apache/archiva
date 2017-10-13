@@ -114,33 +114,10 @@ public interface EditableRepository extends Repository
     void setIndex(boolean hasIndex);
 
     /**
-     * Sets the path to the index directory. May be a relative or absolute URI.
-     * @param indexPath the path
-     */
-    void setIndexPath(URI indexPath);
-
-    /**
      * Sets the layout string.
      * @param layout
      */
     void setLayout(String layout);
-
-    /**
-     * Adds an active release scheme. Release schemes may be combined.
-     * @param scheme the scheme to add.
-     */
-    void addActiveReleaseScheme(ReleaseScheme scheme);
-
-    /**
-     * Removes an active release scheme from the set.
-     * @param scheme the scheme to remove.
-     */
-    void removeActiveReleaseScheme(ReleaseScheme scheme);
-
-    /**
-     * Clears all active release schemes.
-     */
-    void clearActiveReleaseSchemes();
 
 
 }

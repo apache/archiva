@@ -30,7 +30,10 @@ import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RepositoryFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Maven2 managed repository implementation.
@@ -97,4 +100,8 @@ public class MavenManagedRepository extends AbstractManagedRepository
         }
         return false;
     }
+
+
+
+
 }

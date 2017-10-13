@@ -20,6 +20,8 @@ package org.apache.archiva.repository.features;
  */
 
 
+import java.net.URI;
+
 /**
  *
  * This feature provides some information about index creation.
@@ -28,6 +30,8 @@ package org.apache.archiva.repository.features;
 public class IndexCreationFeature implements RepositoryFeature<IndexCreationFeature> {
 
     private boolean skipPackedIndexCreation = false;
+
+    private URI indexPath;
 
     public IndexCreationFeature() {
 
@@ -58,4 +62,24 @@ public class IndexCreationFeature implements RepositoryFeature<IndexCreationFeat
     public void setSkipPackedIndexCreation(boolean skipPackedIndexCreation) {
         this.skipPackedIndexCreation = skipPackedIndexCreation;
     }
+
+    /**
+     * Returns the path that is used to store the index.
+     * @return the uri (may be relative or absolute)
+     */
+    public URI getIndexPath( )
+    {
+        return indexPath;
+    }
+
+    /**
+     * Sets the path that is used to store the index.
+     * @param indexPath the uri to the index path (may be relative)
+     */
+    public void setIndexPath( URI indexPath )
+    {
+        this.indexPath = indexPath;
+    }
+
+
 }

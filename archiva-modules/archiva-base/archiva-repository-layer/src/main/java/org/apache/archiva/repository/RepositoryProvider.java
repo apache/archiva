@@ -34,7 +34,7 @@ public interface RepositoryProvider
 {
     Set<RepositoryType> provides();
 
-    ManagedRepository createManagedInstance( ManagedRepositoryConfiguration configuration);
+    ManagedRepository createManagedInstance( ManagedRepositoryConfiguration configuration) throws RepositoryException;
 
-    RemoteRepository createRemoteInstance( RemoteRepositoryConfiguration configuration);
+    RemoteRepository createRemoteInstance( RemoteRepositoryConfiguration configuration) throws RepositoryException;
 }

@@ -100,7 +100,7 @@ public class RepositoryRegistry
                     ManagedRepository repo = createNewManagedRepository( providerMap.get( repositoryType ), repoConfig );
                     managedRepos.put(repo.getId(), repo);
                 } catch (Exception e) {
-                    log.error("Could not create managed repository "+repoConfig.getId(), e);
+                    log.error("Could not create managed repository {}: {}", repoConfig.getId(), e.getMessage(), e);
                 }
             }
         }
@@ -142,7 +142,14 @@ public class RepositoryRegistry
         {
             RepositoryType repositoryType = RepositoryType.valueOf( repoConfig.getType( ) );
             if (providerMap.containsKey( repositoryType )) {
-                remoteRepos.put(repoConfig.getId(), providerMap.get(repositoryType).createRemoteInstance( repoConfig ));
+                try
+                {
+                    remoteRepos.put(repoConfig.getId(), providerMap.get(repositoryType).createRemoteInstance( repoConfig ));
+                }
+                catch ( Exception e )
+                {
+                    log.error("Could not create repository {} from config: {}", repoConfig.getId(), e.getMessage(), e);
+                }
             }
         }
 

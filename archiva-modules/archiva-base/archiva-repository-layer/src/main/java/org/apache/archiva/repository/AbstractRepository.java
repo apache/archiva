@@ -26,11 +26,9 @@ import com.cronutils.parser.CronParser;
 import org.apache.archiva.repository.features.RepositoryFeature;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -54,11 +52,8 @@ public abstract class AbstractRepository implements EditableRepository
     private Set<URI> uFailoverLocations = Collections.unmodifiableSet( failoverLocations );
     private boolean scanned = true;
     String schedulingDefinition = "0 0 02 * *";
-    private boolean index;
-    private URI indexPath;
+    private boolean index = true;
     private String layout;
-    private Set<ReleaseScheme> activeReleaseSchemes = new HashSet<>(  );
-    private Set<ReleaseScheme> uActiveReleaseSchemes = Collections.unmodifiableSet( activeReleaseSchemes );
     public static final CronDefinition CRON_DEFINITION = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
 
     public AbstractRepository(RepositoryType type, String id, String name) {
@@ -145,21 +140,9 @@ public abstract class AbstractRepository implements EditableRepository
     }
 
     @Override
-    public URI getIndexPath( )
-    {
-        return indexPath;
-    }
-
-    @Override
     public String getLayout( )
     {
         return layout;
-    }
-
-    @Override
-    public Set<ReleaseScheme> getActiveReleaseSchemes( )
-    {
-        return uActiveReleaseSchemes;
     }
 
     @Override
@@ -232,33 +215,9 @@ public abstract class AbstractRepository implements EditableRepository
     }
 
     @Override
-    public void setIndexPath( URI indexPath )
-    {
-        this.indexPath = indexPath;
-    }
-
-    @Override
     public void setLayout( String layout )
     {
         this.layout = layout;
-    }
-
-    @Override
-    public void addActiveReleaseScheme( ReleaseScheme scheme )
-    {
-        this.activeReleaseSchemes.add(scheme);
-    }
-
-    @Override
-    public void removeActiveReleaseScheme( ReleaseScheme scheme )
-    {
-        this.activeReleaseSchemes.remove(scheme);
-    }
-
-    @Override
-    public void clearActiveReleaseSchemes( )
-    {
-        this.activeReleaseSchemes.clear();
     }
 
     @Override

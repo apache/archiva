@@ -20,7 +20,10 @@ package org.apache.archiva.repository;
  */
 
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Simple implementation of a managed repository.
@@ -29,6 +32,8 @@ public abstract class AbstractManagedRepository extends AbstractRepository imple
 {
     private boolean blocksRedeployment = false;
     private ManagedRepositoryContent content;
+    private Set<ReleaseScheme> activeReleaseSchemes = new HashSet<>(  );
+    private Set<ReleaseScheme> uActiveReleaseSchemes = Collections.unmodifiableSet( activeReleaseSchemes );
 
     public AbstractManagedRepository( RepositoryType type, String id, String name )
     {
@@ -61,5 +66,29 @@ public abstract class AbstractManagedRepository extends AbstractRepository imple
     public boolean blocksRedeployments( )
     {
         return blocksRedeployment;
+    }
+
+    @Override
+    public Set<ReleaseScheme> getActiveReleaseSchemes( )
+    {
+        return uActiveReleaseSchemes;
+    }
+
+    @Override
+    public void addActiveReleaseScheme( ReleaseScheme scheme )
+    {
+        this.activeReleaseSchemes.add(scheme);
+    }
+
+    @Override
+    public void removeActiveReleaseScheme( ReleaseScheme scheme )
+    {
+        this.activeReleaseSchemes.remove(scheme);
+    }
+
+    @Override
+    public void clearActiveReleaseSchemes( )
+    {
+        this.activeReleaseSchemes.clear();
     }
 }

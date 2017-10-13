@@ -27,7 +27,7 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.PasswordCredentials;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RemoteRepository;
-import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryProvider;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
@@ -46,6 +46,7 @@ import java.time.Period;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Provider for the maven2 repository implementations
@@ -53,6 +54,7 @@ import java.util.Set;
 @Service("mavenRepositoryProvider")
 public class MavenRepositoryProvider implements RepositoryProvider
 {
+
     private static final Logger log = LoggerFactory.getLogger( MavenRepositoryProvider.class );
 
     static final Set<RepositoryType> TYPES = new HashSet<>(  );
@@ -66,22 +68,37 @@ public class MavenRepositoryProvider implements RepositoryProvider
         return TYPES;
     }
 
-    @Override
-    public ManagedRepository createManagedInstance( ManagedRepositoryConfiguration cfg )
-    {
-        MavenManagedRepository repo = new MavenManagedRepository(cfg.getId() ,cfg.getName());
-        try
-        {
-            if (cfg.getLocation().startsWith("file:")) {
-                    repo.setLocation( new URI(cfg.getLocation()) );
-            } else {
-                repo.setLocation( new URI("file://"+cfg.getLocation()) );
+    private URI getURIFromConfig(String config) throws RepositoryException {
+        URI uri;
+        try {
+            uri = new URI(config);
+            if (uri.getScheme()==null) {
+                uri = new URI("file://"+config);
+            }
+            if (!"file".equals(uri.getScheme())) {
+                log.error("Bad URI scheme found: {}, URI={}", uri.getScheme(), uri);
+                throw new RepositoryException("The uri "+config+" is not valid. Only file:// URI is allowed for maven.");
+            }
+        } catch (URISyntaxException e) {
+            String newCfg = "file://"+config;
+            try
+            {
+                uri = new URI(newCfg);
+            }
+            catch ( URISyntaxException e1 )
+            {
+                log.error("Could not create URI from {} -> ", config, newCfg);
+                throw new RepositoryException( "The config entry "+config+" cannot be converted to URI." );
             }
         }
-        catch ( URISyntaxException e )
-        {
-            log.error("Could not set repository uri "+cfg.getLocation());
-        }
+        return uri;
+    }
+
+    @Override
+    public ManagedRepository createManagedInstance( ManagedRepositoryConfiguration cfg ) throws RepositoryException
+    {
+        MavenManagedRepository repo = new MavenManagedRepository(cfg.getId() ,cfg.getName());
+        repo.setLocation( getURIFromConfig( cfg.getLocation() ) );
         setBaseConfig( repo, cfg );
         repo.setSchedulingDefinition(cfg.getRefreshCronExpression());
         repo.setBlocksRedeployment( cfg.isBlockRedeployments() );
@@ -101,6 +118,7 @@ public class MavenRepositoryProvider implements RepositoryProvider
 
         IndexCreationFeature indexCreationFeature = repo.getFeature( IndexCreationFeature.class ).get( );
         indexCreationFeature.setSkipPackedIndexCreation( cfg.isSkipPackedIndexCreation() );
+        indexCreationFeature.setIndexPath( getURIFromConfig( cfg.getIndexDir() ) );
 
         ArtifactCleanupFeature artifactCleanupFeature = repo.getFeature( ArtifactCleanupFeature.class ).get();
 
@@ -110,6 +128,8 @@ public class MavenRepositoryProvider implements RepositoryProvider
 
         return repo;
     }
+
+
 
     @Override
     public RemoteRepository createRemoteInstance( RemoteRepositoryConfiguration cfg )
@@ -147,9 +167,14 @@ public class MavenRepositoryProvider implements RepositoryProvider
         repo.setExtraHeaders( cfg.getExtraHeaders() );
         repo.setExtraParameters( cfg.getExtraParameters() );
         PasswordCredentials credentials = new PasswordCredentials();
-        credentials.setPassword( cfg.getPassword().toCharArray() );
-        credentials.setUsername( cfg.getUsername() );
-        repo.setCredentials( credentials );
+        if (cfg.getPassword()!=null && cfg.getUsername()!=null)
+        {
+            credentials.setPassword( cfg.getPassword( ).toCharArray( ) );
+            credentials.setUsername( cfg.getUsername() );
+            repo.setCredentials( credentials );
+        } else {
+            credentials.setPassword( new char[0] );
+        }
 
         return repo;
     }
@@ -161,20 +186,19 @@ public class MavenRepositoryProvider implements RepositoryProvider
         {
             if ( StringUtils.isEmpty( indexDir )) {
                 repo.setIndex( false );
-                repo.setIndexPath( null );
             } else
             {
                 if ( indexDir.startsWith( "file://" ) )
                 {
-                    repo.setIndexPath( new URI( indexDir ) );
+                    //repo.setIndexPath( new URI( indexDir ) );
                 }
                 else
                 {
-                    repo.setIndexPath( new URI( "file://" + indexDir ) );
+                    //repo.setIndexPath( new URI( "file://" + indexDir ) );
                 }
             }
         }
-        catch ( URISyntaxException e )
+        catch ( Exception e )
         {
             log.error("Could not set index path "+cfg.getIndexDir());
             repo.setIndex(false);
