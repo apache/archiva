@@ -39,7 +39,7 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
     private Map<String,String> uExtraParameters = Collections.unmodifiableMap( extraParameters );
     private Map<String,String> extraHeaders = new HashMap<>(  );
     private Map<String,String> uExtraHeaders = Collections.unmodifiableMap( extraHeaders );
-    private Duration timeout;
+    private Duration timeout = Duration.ofSeconds( 60 );
     private String proxyId;
     private RemoteRepositoryContent content;
 

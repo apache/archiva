@@ -52,7 +52,6 @@ public abstract class AbstractRepository implements EditableRepository
     private Set<URI> uFailoverLocations = Collections.unmodifiableSet( failoverLocations );
     private boolean scanned = true;
     String schedulingDefinition = "0 0 02 * *";
-    private boolean index = true;
     private String layout;
     public static final CronDefinition CRON_DEFINITION = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
 
@@ -134,10 +133,7 @@ public abstract class AbstractRepository implements EditableRepository
     }
 
     @Override
-    public boolean hasIndex( )
-    {
-        return index;
-    }
+    public abstract boolean hasIndex( );
 
     @Override
     public String getLayout( )
@@ -206,12 +202,6 @@ public abstract class AbstractRepository implements EditableRepository
     public void setScanned( boolean scanned )
     {
         this.scanned = scanned;
-    }
-
-    @Override
-    public void setIndex( boolean hasIndex )
-    {
-        this.index = hasIndex;
     }
 
     @Override

@@ -20,6 +20,8 @@ package org.apache.archiva.repository.features;
  */
 
 
+import org.apache.commons.lang.StringUtils;
+
 import java.net.URI;
 
 /**
@@ -82,4 +84,7 @@ public class IndexCreationFeature implements RepositoryFeature<IndexCreationFeat
     }
 
 
+    public boolean hasIndex() {
+        return this.indexPath!=null && !StringUtils.isEmpty( this.indexPath.getPath() );
+    }
 }

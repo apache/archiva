@@ -20,6 +20,8 @@ package org.apache.archiva.repository.features;
  */
 
 
+import org.apache.commons.lang.StringUtils;
+
 import java.net.URI;
 import java.time.Duration;
 
@@ -121,5 +123,14 @@ public class RemoteIndexFeature implements RepositoryFeature<RemoteIndexFeature>
     public void setProxyId( String proxyId )
     {
         this.proxyId = proxyId;
+    }
+
+    /**
+     * Returns true, if there is a index available.
+     *
+     * @return
+     */
+    public boolean hasIndex() {
+        return this.indexUri!=null && !StringUtils.isEmpty( this.indexUri.getPath() );
     }
 }

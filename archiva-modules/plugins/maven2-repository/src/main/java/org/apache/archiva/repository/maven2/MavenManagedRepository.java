@@ -101,7 +101,9 @@ public class MavenManagedRepository extends AbstractManagedRepository
         return false;
     }
 
-
-
-
+    @Override
+    public boolean hasIndex( )
+    {
+        return indexCreationFeature.hasIndex();
+    }
 }

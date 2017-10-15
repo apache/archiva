@@ -36,5 +36,11 @@ public interface RepositoryProvider
 
     ManagedRepository createManagedInstance( ManagedRepositoryConfiguration configuration) throws RepositoryException;
 
+    ManagedRepository createStagingInstance(ManagedRepositoryConfiguration baseConfiguration) throws RepositoryException;
+
     RemoteRepository createRemoteInstance( RemoteRepositoryConfiguration configuration) throws RepositoryException;
+
+    RemoteRepositoryConfiguration getRemoteConfiguration(RemoteRepository remoteRepository) throws RepositoryException;
+
+    ManagedRepositoryConfiguration getManagedConfiguration(ManagedRepository managedRepository) throws RepositoryException;
 }

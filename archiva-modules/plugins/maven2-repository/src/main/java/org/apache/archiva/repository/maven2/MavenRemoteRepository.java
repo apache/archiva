@@ -40,13 +40,14 @@ import java.util.Locale;
 public class MavenRemoteRepository extends AbstractRemoteRepository
     implements RemoteRepository
 {
-    private RemoteIndexFeature remoteIndexFeature = new RemoteIndexFeature();
+    final private RemoteIndexFeature remoteIndexFeature = new RemoteIndexFeature();
+    final private IndexCreationFeature indexCreationFeature = new IndexCreationFeature(  );
 
     private static final RepositoryCapabilities CAPABILITIES = new StandardCapabilities(
         new ReleaseScheme[] { ReleaseScheme.RELEASE, ReleaseScheme.SNAPSHOT },
         new String[] { MavenManagedRepository.DEFAULT_LAYOUT, MavenManagedRepository.LEGACY_LAYOUT},
         new String[] {},
-        new String[] {RemoteIndexFeature.class.getName()},
+        new String[] {RemoteIndexFeature.class.getName(), IndexCreationFeature.class.getName()},
         true,
         true,
         true,
@@ -65,6 +66,12 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
     }
 
     @Override
+    public boolean hasIndex( )
+    {
+        return remoteIndexFeature.hasIndex();
+    }
+
+    @Override
     public RepositoryCapabilities getCapabilities( )
     {
         return CAPABILITIES;
@@ -75,6 +82,8 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
     {
         if (RemoteIndexFeature.class.equals( clazz )) {
             return (RepositoryFeature<T>) remoteIndexFeature;
+        } else if (IndexCreationFeature.class.equals(clazz)) {
+            return (RepositoryFeature<T>) indexCreationFeature;
         } else {
             throw new UnsupportedFeatureException(  );
         }
@@ -83,7 +92,7 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
     @Override
     public <T extends RepositoryFeature<T>> boolean supportsFeature( Class<T> clazz )
     {
-        if ( RemoteIndexFeature.class.equals(clazz)) {
+        if ( RemoteIndexFeature.class.equals(clazz) || IndexCreationFeature.class.equals(clazz)) {
             return true;
         } else {
             return false;

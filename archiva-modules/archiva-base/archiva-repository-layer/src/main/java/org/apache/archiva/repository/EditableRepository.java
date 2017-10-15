@@ -108,12 +108,6 @@ public interface EditableRepository extends Repository
     void setSchedulingDefinition(String cronExpression) throws IllegalArgumentException;
 
     /**
-     * Set true, if the repository has indexes stored.
-     * @param hasIndex true, if the repository has indexes, otherwise false.
-     */
-    void setIndex(boolean hasIndex);
-
-    /**
      * Sets the layout string.
      * @param layout
      */

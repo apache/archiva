@@ -23,6 +23,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.PasswordCredentials;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryType;
@@ -35,25 +36,26 @@ import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.sonatype.aether.util.layout.RepositoryLayout;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.net.URI;
+import java.time.Duration;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-@RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-no-mock-conf.xml" }  )
 public class MavenRepositoryProviderTest
 {
-
-    @Inject
-    @Named( "archivaConfiguration#default" )
-    ArchivaConfiguration archivaConfiguration;
 
     MavenRepositoryProvider provider;
 
@@ -75,32 +77,51 @@ public class MavenRepositoryProviderTest
     @Test
     public void createManagedInstance( ) throws Exception
     {
-        assertNotNull(archivaConfiguration);
-        assertNotNull(archivaConfiguration.getConfiguration());
-        ManagedRepositoryConfiguration repo = archivaConfiguration.getConfiguration().getManagedRepositories().get(0);
+        ManagedRepositoryConfiguration repo = new ManagedRepositoryConfiguration( );
+        repo.setId("testm001");
+        repo.setName("Managed Test Repo 001");
+        repo.setDescription( "This is a managed test" );
+        repo.setRetentionTime( 37 );
+        repo.setLocation( "file:///test/dir/repository" );
+        repo.setSnapshots( true );
+        repo.setReleases( true );
+        repo.setRefreshCronExpression( "4 0 0 ? * TUE" );
+        repo.setScanned( true );
+        repo.setBlockRedeployments( true );
+        repo.setDeleteReleasedSnapshots( true );
+        repo.setRetentionCount( 33 );
+        repo.setSkipPackedIndexCreation( true );
+        repo.setStageRepoNeeded( true );
+        repo.setIndexDir( "testmanaged/.index" );
+        repo.setLayout( "maven2" );
+        repo.setType( RepositoryType.MAVEN.toString() );
+
+
         ManagedRepository mr = provider.createManagedInstance( repo );
         assertNotNull(mr.getLocation());
-        assertTrue(mr.getLocation().toString().endsWith( "/repositories/internal" ));
-        assertEquals("Archiva Managed Internal Repository", mr.getName());
-        assertEquals(1, mr.getActiveReleaseSchemes().size());
-        assertEquals( ReleaseScheme.RELEASE, mr.getActiveReleaseSchemes().iterator().next());
-        assertEquals("internal", mr.getId());
+        assertEquals("file:///test/dir/repository", mr.getLocation().toString());
+        assertEquals("This is a managed test", mr.getDescription());
+        assertEquals("Managed Test Repo 001", mr.getName());
+        assertEquals(2, mr.getActiveReleaseSchemes().size());
+        assertTrue( mr.getActiveReleaseSchemes().contains( ReleaseScheme.RELEASE ));
+        assertTrue( mr.getActiveReleaseSchemes().contains( ReleaseScheme.SNAPSHOT));
+        assertEquals("testm001", mr.getId());
         assertTrue(mr.blocksRedeployments());
-        assertEquals("0 0 * * * ?", mr.getSchedulingDefinition());
+        assertEquals("4 0 0 ? * TUE", mr.getSchedulingDefinition());
         assertTrue(mr.isScanned());
         ArtifactCleanupFeature artifactCleanupFeature = mr.getFeature( ArtifactCleanupFeature.class ).get();
-        assertEquals( Period.ofDays( 30), artifactCleanupFeature.getRetentionTime());
-        assertFalse(artifactCleanupFeature.isDeleteReleasedSnapshots());
-        assertEquals(2, artifactCleanupFeature.getRetentionCount());
+        assertEquals( Period.ofDays( 37), artifactCleanupFeature.getRetentionTime());
+        assertTrue(artifactCleanupFeature.isDeleteReleasedSnapshots());
+        assertEquals(33, artifactCleanupFeature.getRetentionCount());
 
         IndexCreationFeature indexCreationFeature = mr.getFeature( IndexCreationFeature.class ).get();
         assertNotNull(indexCreationFeature.getIndexPath());
-        assertTrue(indexCreationFeature.getIndexPath().toString().endsWith("/repositories/internal/.indexer"));
-        assertTrue(indexCreationFeature.getIndexPath().isAbsolute());
-        assertFalse(indexCreationFeature.isSkipPackedIndexCreation());
+        assertEquals("testmanaged/.index", indexCreationFeature.getIndexPath().toString());
+        assertFalse(indexCreationFeature.getIndexPath().isAbsolute());
+        assertTrue(indexCreationFeature.isSkipPackedIndexCreation());
 
         StagingRepositoryFeature stagingRepositoryFeature = mr.getFeature( StagingRepositoryFeature.class ).get();
-        assertFalse(stagingRepositoryFeature.isStageRepoNeeded());
+        assertTrue(stagingRepositoryFeature.isStageRepoNeeded());
         assertNull(stagingRepositoryFeature.getStagingRepository());
 
 
@@ -109,17 +130,51 @@ public class MavenRepositoryProviderTest
     @Test
     public void createRemoteInstance( ) throws Exception
     {
-        assertNotNull(archivaConfiguration);
-        assertNotNull(archivaConfiguration.getConfiguration());
-        RemoteRepositoryConfiguration repo = archivaConfiguration.getConfiguration().getRemoteRepositories().get(0);
+        RemoteRepositoryConfiguration repo = new RemoteRepositoryConfiguration( );
+        repo.setUsername("testuser001");
+        repo.setPassword( "pwd0000abc" );
+        repo.setCheckPath( "test/check.html" );
+        repo.setTimeout( 50 );
+        repo.setUrl( "https://repo.maven.apache.org/maven2/test" );
+        repo.setDownloadRemoteIndex( true );
+        repo.setDownloadRemoteIndexOnStartup( true );
+        Map header = new HashMap(  );
+        header.put("header1","value1");
+        header.put("header2","value2");
+        repo.setExtraHeaders( header );
+        Map params = new HashMap(  );
+        params.put("param1","pval1");
+        params.put("param2","pval2");
+        repo.setExtraParameters( params );
+        repo.setRefreshCronExpression( "0 1 07 ? * MON" );
+        repo.setRemoteDownloadTimeout( 333 );
+        repo.setRemoteIndexUrl( "testremote/.index" );
+        repo.setDescription( "This is a test" );
+        repo.setId( "test001" );
+        repo.setName( "Remote Test Repo 001" );
+        repo.setIndexDir( "testindex/.index" );
+        repo.setLayout( "maven2" );
+        repo.setType( RepositoryType.MAVEN.toString() );
+        repo.setIndexDir( "local/.index" );
+
         RemoteRepository mr = provider.createRemoteInstance( repo );
+        assertEquals("test001", mr.getId());
+        assertEquals("This is a test", mr.getDescription());
         assertNotNull(mr.getLocation());
-        assertEquals("https://repo.maven.apache.org/maven2", mr.getLocation().toString());
-        assertEquals("Central Repository", mr.getName());
-        assertEquals("central", mr.getId());
-        assertEquals("0 0 08 ? * SUN", mr.getSchedulingDefinition());
+        assertEquals("https://repo.maven.apache.org/maven2/test", mr.getLocation().toString());
+        assertEquals("Remote Test Repo 001", mr.getName());
+        assertEquals("test001", mr.getId());
+        assertEquals("0 1 07 ? * MON", mr.getSchedulingDefinition());
+        assertEquals(50, mr.getTimeout().get( ChronoUnit.SECONDS ));
         assertTrue(mr.isScanned());
-        assertNull(mr.getLoginCredentials());
+        assertNotNull(mr.getLoginCredentials());
+        assertTrue(mr.getLoginCredentials() instanceof PasswordCredentials);
+        PasswordCredentials creds = (PasswordCredentials) mr.getLoginCredentials();
+        assertEquals("testuser001", creds.getUsername());
+        assertEquals("pwd0000abc", new String(creds.getPassword()));
+        assertEquals("value1", mr.getExtraHeaders().get("header1"));
+        assertEquals("pval2", mr.getExtraParameters().get("param2"));
+        assertEquals( "maven2", mr.getLayout());
         try
         {
             ArtifactCleanupFeature artifactCleanupFeature = mr.getFeature( ArtifactCleanupFeature.class ).get( );
@@ -128,13 +183,8 @@ public class MavenRepositoryProviderTest
             // correct
         }
 
-        try
-        {
-            IndexCreationFeature indexCreationFeature = mr.getFeature( IndexCreationFeature.class ).get( );
-            throw new Exception("indexCreationFeature should not be available");
-        } catch (UnsupportedFeatureException e) {
-            // correct
-        }
+        IndexCreationFeature indexCreationFeature = mr.getFeature( IndexCreationFeature.class ).get( );
+        assertEquals("local/.index", indexCreationFeature.getIndexPath().toString());
         try
         {
             StagingRepositoryFeature stagingRepositoryFeature = mr.getFeature( StagingRepositoryFeature.class ).get( );
@@ -144,6 +194,86 @@ public class MavenRepositoryProviderTest
         }
         RemoteIndexFeature remoteIndexFeature = mr.getFeature( RemoteIndexFeature.class ).get();
         assertNull(remoteIndexFeature.getProxyId());
+    }
+
+    @Test
+    public void getManagedConfiguration() throws Exception {
+        MavenManagedRepository repo = new MavenManagedRepository( "test01", "My Test repo" );
+
+        repo.setLocation( new URI("https://this.is/a/test") );
+        repo.setScanned( true );
+        repo.setDescription( repo.getPrimaryLocale(), "This is a description" );
+        repo.setLayout( "maven2" );
+        repo.setBlocksRedeployment( true );
+        repo.setName( repo.getPrimaryLocale(), "test0002" );
+        repo.setSchedulingDefinition( "0 0 05 ? * WED" );
+        repo.addActiveReleaseScheme( ReleaseScheme.RELEASE );
+        repo.addActiveReleaseScheme( ReleaseScheme.SNAPSHOT );
+        StagingRepositoryFeature stagingFeat = repo.getFeature( StagingRepositoryFeature.class ).get( );
+        stagingFeat.setStageRepoNeeded( true );
+        IndexCreationFeature indexCreationFeature = repo.getFeature( IndexCreationFeature.class ).get();
+        indexCreationFeature.setIndexPath( new URI("test/.indexes") );
+        indexCreationFeature.setSkipPackedIndexCreation( true );
+        ArtifactCleanupFeature artifactCleanupFeature = repo.getFeature( ArtifactCleanupFeature.class ).get();
+        artifactCleanupFeature.setRetentionTime( Period.ofDays( 5 ) );
+        artifactCleanupFeature.setRetentionCount( 7 );
+        artifactCleanupFeature.setDeleteReleasedSnapshots( true );
+
+        ManagedRepositoryConfiguration cfg = provider.getManagedConfiguration( repo );
+        assertEquals("https://this.is/a/test", cfg.getLocation());
+        assertTrue(cfg.isScanned());
+        assertEquals( "This is a description", cfg.getDescription() );
+        assertEquals("maven2", cfg.getLayout());
+        assertTrue(cfg.isBlockRedeployments());
+        assertEquals("test0002", cfg.getName());
+        assertEquals("0 0 05 ? * WED", cfg.getRefreshCronExpression());
+        assertTrue(cfg.isStageRepoNeeded());
+        assertEquals("test/.indexes", cfg.getIndexDir());
+        assertTrue(cfg.isSkipPackedIndexCreation());
+        assertEquals(5, cfg.getRetentionTime());
+        assertEquals(7, cfg.getRetentionCount());
+        assertTrue(cfg.isDeleteReleasedSnapshots());
+        assertTrue(cfg.isReleases());
+        assertTrue(cfg.isSnapshots());
+        assertTrue(cfg.isScanned());
+
+
+
+    }
+
+    @Test
+    public void getRemoteConfiguration() throws Exception {
+        MavenRemoteRepository repo = new MavenRemoteRepository( "test01", "My Test repo" );
+
+        repo.setLocation( new URI("https://this.is/a/test") );
+        repo.setScanned( true );
+        repo.setDescription( repo.getPrimaryLocale(), "This is a description" );
+        repo.setLayout( "maven2" );
+        repo.setName( repo.getPrimaryLocale(), "test0003" );
+        repo.setSchedulingDefinition( "0 0 05 ? * WED" );
+        RemoteIndexFeature remoteIndexFeature = repo.getFeature( RemoteIndexFeature.class ).get();
+        remoteIndexFeature.setProxyId( "proxyabc" );
+        remoteIndexFeature.setDownloadTimeout( Duration.ofSeconds( 54 ) );
+        remoteIndexFeature.setDownloadRemoteIndex( false );
+        remoteIndexFeature.setIndexUri( new URI("/this/remote/.index") );
+        remoteIndexFeature.setDownloadRemoteIndexOnStartup( true );
+        IndexCreationFeature indexCreationFeature = repo.getFeature( IndexCreationFeature.class ).get();
+        indexCreationFeature.setIndexPath( new URI("/this/local/.index") );
+
+        RemoteRepositoryConfiguration cfg = provider.getRemoteConfiguration( repo );
+        assertEquals("https://this.is/a/test", cfg.getUrl());
+        assertEquals( "This is a description", cfg.getDescription() );
+        assertEquals("maven2", cfg.getLayout());
+        assertEquals("test0003", cfg.getName());
+        assertEquals("0 0 05 ? * WED", cfg.getRefreshCronExpression());
+        assertEquals("/this/remote/.index", cfg.getRemoteIndexUrl());
+        assertEquals("proxyabc", cfg.getRemoteDownloadNetworkProxyId());
+        assertEquals(54, cfg.getRemoteDownloadTimeout());
+        assertFalse(cfg.isDownloadRemoteIndex());
+        assertTrue(cfg.isDownloadRemoteIndexOnStartup());
+        assertEquals("/this/local/.index", cfg.getIndexDir());
+
+
     }
 
 }
