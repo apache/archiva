@@ -20,29 +20,35 @@ package org.apache.archiva.repository;
  */
 
 import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Registry for repositories
+ * Registry for repositories. This is the central entry point for repositories. It provides methods for
+ * retrieving, adding and removing repositories.
+ *
+ * The modification methods addXX and removeXX persist the changes immediately to the configuration. If the
+ * configuration save fails the changes are rolled back.
  */
 @Service( "repositoryRegistry" )
 public class RepositoryRegistry
@@ -87,7 +93,7 @@ public class RepositoryRegistry
         }
     }
 
-    private Map<RepositoryType, RepositoryProvider> getProviderMap( )
+    private Map<RepositoryType, RepositoryProvider> createProviderMap( )
     {
         Map<RepositoryType, RepositoryProvider> map = new HashMap<>( );
         if ( repositoryProviders != null )
@@ -103,36 +109,47 @@ public class RepositoryRegistry
         return map;
     }
 
+    private RepositoryProvider getProvider( RepositoryType type ) throws RepositoryException
+    {
+        return repositoryProviders.stream( ).filter( repositoryProvider -> repositoryProvider.provides( ).contains( type ) ).findFirst( ).orElseThrow( ( ) -> new RepositoryException( "Repository type cannot be handled: " + type ) );
+    }
+
     private Map<String, ManagedRepository> getManagedRepositoriesFromConfig( )
     {
-        List<ManagedRepositoryConfiguration> managedRepoConfigs =
-            getArchivaConfiguration( ).getConfiguration( ).getManagedRepositories( );
-
-        if ( managedRepoConfigs == null )
+        try
         {
-            return Collections.emptyMap( );
-        }
+            List<ManagedRepositoryConfiguration> managedRepoConfigs =
+                getArchivaConfiguration( ).getConfiguration( ).getManagedRepositories( );
 
-        Map<String, ManagedRepository> managedRepos = new LinkedHashMap<>( managedRepoConfigs.size( ) );
-
-        Map<RepositoryType, RepositoryProvider> providerMap = getProviderMap( );
-        for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
-        {
-            RepositoryType repositoryType = RepositoryType.valueOf( repoConfig.getType( ) );
-            if ( providerMap.containsKey( repositoryType ) )
+            if ( managedRepoConfigs == null )
             {
-                try
+                return Collections.EMPTY_MAP;
+            }
+
+            Map<String, ManagedRepository> managedRepos = new LinkedHashMap<>( managedRepoConfigs.size( ) );
+
+            Map<RepositoryType, RepositoryProvider> providerMap = createProviderMap( );
+            for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
+            {
+                RepositoryType repositoryType = RepositoryType.valueOf( repoConfig.getType( ) );
+                if ( providerMap.containsKey( repositoryType ) )
                 {
-                    ManagedRepository repo = createNewManagedRepository( providerMap.get( repositoryType ), repoConfig );
-                    managedRepos.put(repo.getId(), repo);
-                }
-                catch ( Exception e )
-                {
-                    log.error( "Could not create managed repository {}: {}", repoConfig.getId( ), e.getMessage( ), e );
+                    try
+                    {
+                        ManagedRepository repo = createNewManagedRepository( providerMap.get( repositoryType ), repoConfig );
+                        managedRepos.put( repo.getId( ), repo );
+                    }
+                    catch ( Exception e )
+                    {
+                        log.error( "Could not create managed repository {}: {}", repoConfig.getId( ), e.getMessage( ), e );
+                    }
                 }
             }
+            return managedRepos;
+        } catch (Throwable e) {
+            log.error("Could not initialize repositories from config: {}",e.getMessage(), e );
+            return Collections.EMPTY_MAP;
         }
-        return managedRepos;
     }
 
     private ManagedRepository createNewManagedRepository( RepositoryProvider provider, ManagedRepositoryConfiguration cfg ) throws RepositoryException
@@ -168,34 +185,40 @@ public class RepositoryRegistry
 
     private Map<String, RemoteRepository> getRemoteRepositoriesFromConfig( )
     {
-        List<RemoteRepositoryConfiguration> remoteRepoConfigs =
-            getArchivaConfiguration( ).getConfiguration( ).getRemoteRepositories( );
-
-        if ( remoteRepoConfigs == null )
+        try
         {
-            return Collections.emptyMap( );
-        }
+            List<RemoteRepositoryConfiguration> remoteRepoConfigs =
+                getArchivaConfiguration( ).getConfiguration( ).getRemoteRepositories( );
 
-        Map<String, RemoteRepository> remoteRepos = new LinkedHashMap<>( remoteRepoConfigs.size( ) );
-
-        Map<RepositoryType, RepositoryProvider> providerMap = getProviderMap( );
-        for ( RemoteRepositoryConfiguration repoConfig : remoteRepoConfigs )
-        {
-            RepositoryType repositoryType = RepositoryType.valueOf( repoConfig.getType( ) );
-            if ( providerMap.containsKey( repositoryType ) )
+            if ( remoteRepoConfigs == null )
             {
-                try
+                return Collections.EMPTY_MAP;
+            }
+
+            Map<String, RemoteRepository> remoteRepos = new LinkedHashMap<>( remoteRepoConfigs.size( ) );
+
+            Map<RepositoryType, RepositoryProvider> providerMap = createProviderMap( );
+            for ( RemoteRepositoryConfiguration repoConfig : remoteRepoConfigs )
+            {
+                RepositoryType repositoryType = RepositoryType.valueOf( repoConfig.getType( ) );
+                if ( providerMap.containsKey( repositoryType ) )
                 {
-                    remoteRepos.put( repoConfig.getId( ), providerMap.get( repositoryType ).createRemoteInstance( repoConfig ) );
-                }
-                catch ( Exception e )
-                {
-                    log.error( "Could not create repository {} from config: {}", repoConfig.getId( ), e.getMessage( ), e );
+                    try
+                    {
+                        remoteRepos.put( repoConfig.getId( ), providerMap.get( repositoryType ).createRemoteInstance( repoConfig ) );
+                    }
+                    catch ( Exception e )
+                    {
+                        log.error( "Could not create repository {} from config: {}", repoConfig.getId( ), e.getMessage( ), e );
+                    }
                 }
             }
-        }
 
-        return remoteRepos;
+            return remoteRepos;
+        } catch (Throwable e) {
+            log.error("Could not initialize remote repositories from config: {}", e.getMessage(), e);
+            return Collections.EMPTY_MAP;
+        }
     }
 
     private ArchivaConfiguration getArchivaConfiguration( )
@@ -203,6 +226,11 @@ public class RepositoryRegistry
         return this.archivaConfiguration;
     }
 
+    /**
+     * Returns all repositories that are registered. There is no defined order of the returned repositories.
+     *
+     * @return a list of managed and remote repositories
+     */
     public Collection<Repository> getRepositories( )
     {
         rwLock.readLock( ).lock( );
@@ -216,16 +244,47 @@ public class RepositoryRegistry
         }
     }
 
+    /**
+     * Returns only the managed repositories. There is no defined order of the returned repositories.
+     *
+     * @return a list of managed repositories
+     */
     public Collection<ManagedRepository> getManagedRepositories( )
     {
-        return uManagedRepository.values( );
+        rwLock.readLock().lock();
+        try
+        {
+            return uManagedRepository.values( );
+        } finally
+        {
+            rwLock.readLock().unlock();
+        }
     }
 
+    /**
+     * Returns only the remote repositories. There is no defined order of the returned repositories.
+     *
+     * @return a list of remote repositories
+     */
     public Collection<RemoteRepository> getRemoteRepositories( )
     {
-        return uRemoteRepositories.values( );
+        rwLock.readLock().lock();
+        try
+        {
+            return uRemoteRepositories.values( );
+        } finally
+        {
+            rwLock.readLock().unlock();
+        }
     }
 
+    /**
+     * Returns the repository with the given id. The returned repository may be a managed or remote repository.
+     * It returns null, if no repository is registered with the given id.
+     *
+     * @param repoId the repository id
+     * @return the repository if found, otherwise null
+     */
     public Repository getRepository( String repoId )
     {
         rwLock.readLock( ).lock( );
@@ -246,36 +305,86 @@ public class RepositoryRegistry
         }
     }
 
+    /**
+     * Convenience method, that returns the managed repository with the given id.
+     * It returns null, if no managed repository is registered with this id.
+     *
+     * @param repoId the repository id
+     * @return the managed repository if found, otherwise null
+     */
     public ManagedRepository getManagedRepository( String repoId )
     {
-        rwLock.readLock().lock();
+        rwLock.readLock( ).lock( );
         try
         {
             return managedRepositories.get( repoId );
-        } finally
+        }
+        finally
         {
-            rwLock.readLock().unlock();
+            rwLock.readLock( ).unlock( );
         }
     }
 
+    /**
+     * Convenience method, that returns the remote repository with the given id.
+     * It returns null, if no remote repository is registered with this id.
+     *
+     * @param repoId the repository id
+     * @return the remote repository if found, otherwise null
+     */
     public RemoteRepository getRemoteRepository( String repoId )
     {
-        rwLock.readLock().lock();
+        rwLock.readLock( ).lock( );
         try
         {
             return remoteRepositories.get( repoId );
-        } finally
+        }
+        finally
         {
-            rwLock.readLock().unlock();
+            rwLock.readLock( ).unlock( );
         }
     }
 
-    public void addRepository( ManagedRepository managedRepository )
+    /**
+     * Adds a new repository to the current list, or overwrites the repository definition with
+     * the same id, if it exists already.
+     * The change is saved to the configuration immediately.
+     *
+     * @param managedRepository the new repository.
+     * @throws RepositoryException if the new repository could not be saved to the configuration.
+     */
+    public void addRepository( ManagedRepository managedRepository ) throws RepositoryException
     {
         rwLock.writeLock( ).lock( );
         try
         {
-            managedRepositories.put( managedRepository.getId( ), managedRepository );
+            final String id = managedRepository.getId();
+            ManagedRepository originRepo = managedRepositories.put( id, managedRepository );
+            ManagedRepositoryConfiguration originCfg = null;
+            List<ManagedRepositoryConfiguration> cfgList = null;
+            int index = 0;
+            try
+            {
+                ManagedRepositoryConfiguration newCfg = getProvider( managedRepository.getType( ) ).getManagedConfiguration( managedRepository );
+                Configuration configuration = getArchivaConfiguration( ).getConfiguration( );
+                ManagedRepositoryConfiguration oldCfg = configuration.findManagedRepositoryById( id );
+                if (oldCfg!=null) {
+                    configuration.removeManagedRepository( oldCfg );
+                }
+                configuration.addManagedRepository( newCfg );
+                getArchivaConfiguration( ).save( configuration );
+            }
+            catch ( Exception e )
+            {
+                // Rollback
+                if ( originRepo != null )
+                {
+                    managedRepositories.put( id, originRepo );
+                } else {
+                    managedRepositories.remove(id);
+                }
+                throw new RepositoryException( "Could not save the configuration: " + e.getMessage( ) );
+            }
         }
         finally
         {
@@ -283,17 +392,140 @@ public class RepositoryRegistry
         }
     }
 
-    public void addRepository( RemoteRepository remoteRepository )
+    /**
+     * Adds a remote repository, or overwrites the repository definition with the same id, if it exists already.
+     * The modification is saved to the configuration immediately.
+     *
+     * @param remoteRepository the remote repository to add
+     * @throws RepositoryException if an error occurs during configuration save
+     */
+    public void addRepository( RemoteRepository remoteRepository ) throws RepositoryException
     {
         rwLock.writeLock( ).lock( );
         try
         {
-            remoteRepositories.put( remoteRepository.getId( ), remoteRepository );
+            final String id = remoteRepository.getId();
+            RemoteRepository originRepo = remoteRepositories.put( id, remoteRepository );
+            RemoteRepositoryConfiguration originCfg = null;
+            List<RemoteRepositoryConfiguration> cfgList = null;
+            int index = 0;
+            try
+            {
+                RemoteRepositoryConfiguration newCfg = getProvider( remoteRepository.getType( ) ).getRemoteConfiguration( remoteRepository );
+                Configuration configuration = getArchivaConfiguration( ).getConfiguration( );
+                RemoteRepositoryConfiguration oldCfg = configuration.findRemoteRepositoryById( id );
+                if (oldCfg!=null) {
+                    configuration.removeRemoteRepository( oldCfg );
+                }
+                configuration.addRemoteRepository( newCfg );
+                getArchivaConfiguration( ).save( configuration );
+            }
+            catch ( Exception e )
+            {
+                // Rollback
+                if ( originRepo != null )
+                {
+                    remoteRepositories.put( id, originRepo );
+                } else {
+                    remoteRepositories.remove( id);
+                }
+                throw new RepositoryException( "Could not save the configuration: " + e.getMessage( ) );
+            }
         }
         finally
         {
             rwLock.writeLock( ).unlock( );
         }
     }
+
+    /**
+     * Removes a managed repository from the registry and configuration, if it exists.
+     * The change is saved to the configuration immediately.
+     *
+     * @param managedRepository the managed repository to remove
+     * @throws RepositoryException if a error occurs during configuration save
+     */
+    public void removeRepository( ManagedRepository managedRepository ) throws RepositoryException
+    {
+        final String id = managedRepository.getId();
+        ManagedRepository repo = getManagedRepository( id );
+        if (repo!=null) {
+            rwLock.writeLock().lock();
+            try {
+                repo = managedRepositories.remove( id );
+                if (repo!=null) {
+                    Configuration configuration = getArchivaConfiguration().getConfiguration();
+                    ManagedRepositoryConfiguration cfg = configuration.findManagedRepositoryById( id );
+                    if (cfg!=null) {
+                        configuration.removeManagedRepository( cfg );
+                    }
+                    getArchivaConfiguration().save( configuration );
+                }
+
+            }
+            catch ( RegistryException | IndeterminateConfigurationException e )
+            {
+                // Rollback
+                log.error("Could not save config after repository removal: {}", e.getMessage(), e);
+                if (repo!=null) {
+                    managedRepositories.put(repo.getId(), repo);
+                }
+                throw new RepositoryException( "Could not save configuration after repository removal: "+e.getMessage() );
+            }
+            finally
+            {
+                rwLock.writeLock().unlock();
+            }
+        }
+    }
+
+    /**
+     * Removes the remote repository from the registry and configuration.
+     * The change is saved to the configuration immediately.
+     *
+     * @param remoteRepository the remote repository to remove
+     * @throws RepositoryException if a error occurs during configuration save
+     */
+    public void removeRepository( RemoteRepository remoteRepository ) throws RepositoryException
+    {
+        final String id = remoteRepository.getId();
+        RemoteRepository repo = getRemoteRepository( id );
+        if (repo!=null) {
+            rwLock.writeLock().lock();
+            try {
+                repo = remoteRepositories.remove( id );
+                if (repo!=null) {
+                    Configuration configuration = getArchivaConfiguration().getConfiguration();
+                    RemoteRepositoryConfiguration cfg = configuration.findRemoteRepositoryById( id );
+                    if (cfg!=null) {
+                        configuration.removeRemoteRepository( cfg );
+                    }
+                    getArchivaConfiguration().save( configuration );
+                }
+
+            }
+            catch ( RegistryException | IndeterminateConfigurationException e )
+            {
+                // Rollback
+                log.error("Could not save config after repository removal: {}", e.getMessage(), e);
+                if (repo!=null) {
+                    remoteRepositories.put(repo.getId(), repo);
+                }
+                throw new RepositoryException( "Could not save configuration after repository removal: "+e.getMessage() );
+            }
+            finally
+            {
+                rwLock.writeLock().unlock();
+            }
+        }
+    }
+
+    /**
+     * Reloads the registry from the configuration.
+     */
+    public void reload() {
+        initialize();
+    }
+
 
 }
