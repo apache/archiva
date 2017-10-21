@@ -19,13 +19,35 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-public interface RepositorySessionFactory
-{
-    public void open();
+import java.util.concurrent.atomic.AtomicBoolean;
 
-    public boolean isOpen();
+/**
+ * Implements just the open/close methods in a concurrent safe manner.
+ */
+public abstract class AbstractRepositorySessionFactory implements RepositorySessionFactory {
 
-    RepositorySession createSession();
+    AtomicBoolean open = new AtomicBoolean();
 
-    void close();
+    protected abstract void initialize();
+
+    protected abstract void shutdown();
+
+    @Override
+    public void open() {
+        if (open.compareAndSet(false,true)) {
+            initialize();
+        }
+    }
+
+    @Override
+    public boolean isOpen() {
+        return open.get();
+    }
+
+    @Override
+    public void close() {
+        if(open.compareAndSet(true,false)) {
+            shutdown();
+        }
+    }
 }

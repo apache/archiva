@@ -34,6 +34,10 @@ public interface RepositoryProvider
 {
     Set<RepositoryType> provides();
 
+    EditableManagedRepository createManagedInstance(String id, String name);
+
+    EditableRemoteRepository createRemoteInstance(String id, String name);
+
     ManagedRepository createManagedInstance( ManagedRepositoryConfiguration configuration) throws RepositoryException;
 
     ManagedRepository createStagingInstance(ManagedRepositoryConfiguration baseConfiguration) throws RepositoryException;

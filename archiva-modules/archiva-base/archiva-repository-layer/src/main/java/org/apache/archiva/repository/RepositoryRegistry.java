@@ -19,11 +19,7 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.*;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.slf4j.Logger;
@@ -32,13 +28,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -51,8 +41,7 @@ import java.util.stream.Stream;
  * configuration save fails the changes are rolled back.
  */
 @Service( "repositoryRegistry" )
-public class RepositoryRegistry
-{
+public class RepositoryRegistry implements ConfigurationListener {
 
     private static final Logger log = LoggerFactory.getLogger( RepositoryRegistry.class );
 
@@ -86,6 +75,8 @@ public class RepositoryRegistry
             managedRepositories.putAll( getManagedRepositoriesFromConfig( ) );
             remoteRepositories.clear( );
             remoteRepositories.putAll( getRemoteRepositoriesFromConfig( ) );
+            // archivaConfiguration.addChangeListener(this);
+            archivaConfiguration.addListener(this);
         }
         finally
         {
@@ -160,7 +151,7 @@ public class RepositoryRegistry
             StagingRepositoryFeature feature = repo.getFeature( StagingRepositoryFeature.class ).get( );
             if ( feature.isStageRepoNeeded( ) )
             {
-                ManagedRepository stageRepo = getStageRepository( provider, cfg );
+                ManagedRepository stageRepo = getStagingRepository( provider, cfg );
                 feature.setStagingRepository( stageRepo );
             }
         }
@@ -172,7 +163,7 @@ public class RepositoryRegistry
 
     }
 
-    private ManagedRepository getStageRepository( RepositoryProvider provider, ManagedRepositoryConfiguration baseRepoCfg ) throws RepositoryException
+    private ManagedRepository getStagingRepository(RepositoryProvider provider, ManagedRepositoryConfiguration baseRepoCfg ) throws RepositoryException
     {
         ManagedRepository stageRepo = getManagedRepository( baseRepoCfg.getId( ) + StagingRepositoryFeature.STAGING_REPO_POSTFIX );
         if ( stageRepo == null )
@@ -181,6 +172,8 @@ public class RepositoryRegistry
         }
         return stageRepo;
     }
+
+
 
 
     private Map<String, RemoteRepository> getRemoteRepositoriesFromConfig( )
@@ -528,4 +521,64 @@ public class RepositoryRegistry
     }
 
 
+    /**
+     * Creates a new repository instance with the same settings as this one. The cloned repository is not
+     * registered or saved to the configuration.
+     *
+     * @param repo The origin repository
+     * @return The cloned repository.
+     */
+    public ManagedRepository clone(ManagedRepository repo, String newId) throws RepositoryException
+    {
+        if (managedRepositories.containsKey(newId) || remoteRepositories.containsKey(newId)) {
+            throw new RepositoryException("The given id exists already "+newId);
+        }
+        RepositoryProvider provider = getProvider(repo.getType());
+        ManagedRepositoryConfiguration cfg = provider.getManagedConfiguration(repo);
+        cfg.setId(newId);
+        ManagedRepository cloned = provider.createManagedInstance(cfg);
+        return cloned;
+    }
+
+    public <T extends Repository> Repository clone(T repo, String newId) throws RepositoryException {
+        if (repo instanceof RemoteRepository) {
+            return this.clone((RemoteRepository)repo, newId);
+        } else if (repo instanceof ManagedRepository) {
+            return this.clone((ManagedRepository)repo, newId);
+        } else {
+            throw new RepositoryException("This repository class is not supported "+ repo.getClass().getName());
+        }
+    }
+
+    /**
+     * Creates a new repository instance with the same settings as this one. The cloned repository is not
+     * registered or saved to the configuration.
+     *
+     * @param repo The origin repository
+     * @return The cloned repository.
+     */
+    public RemoteRepository clone(RemoteRepository repo, String newId) throws RepositoryException
+    {
+        if (managedRepositories.containsKey(newId) || remoteRepositories.containsKey(newId)) {
+            throw new RepositoryException("The given id exists already "+newId);
+        }
+        RepositoryProvider provider = getProvider(repo.getType());
+        RemoteRepositoryConfiguration cfg = provider.getRemoteConfiguration(repo);
+        cfg.setId(newId);
+        RemoteRepository cloned = provider.createRemoteInstance(cfg);
+        return cloned;
+    }
+
+    public EditableManagedRepository createNewManaged(RepositoryType type, String id, String name) throws RepositoryException {
+        return getProvider(type).createManagedInstance(id, name);
+    }
+
+    public EditableRemoteRepository createNewRemote(RepositoryType type, String id, String name) throws RepositoryException {
+        return getProvider(type).createRemoteInstance(id, name);
+    }
+
+    @Override
+    public void configurationEvent(ConfigurationEvent event) {
+
+    }
 }

@@ -20,10 +20,7 @@ package org.apache.archiva.metadata.repository.file;
  */
 
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataResolver;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -39,7 +36,7 @@ import java.util.Map;
  *
  */
 @Service( "repositorySessionFactory#file" )
-public class FileRepositorySessionFactory
+public class FileRepositorySessionFactory extends AbstractRepositorySessionFactory
     implements RepositorySessionFactory
 {
     private Map<String, MetadataFacetFactory> metadataFacetFactories;
@@ -54,7 +51,6 @@ public class FileRepositorySessionFactory
     @Inject
     private ApplicationContext applicationContext;
 
-    @PostConstruct
     public void initialize()
     {
         Map<String, MetadataFacetFactory> tmpMetadataFacetFactories =
@@ -72,6 +68,11 @@ public class FileRepositorySessionFactory
     }
 
     @Override
+    protected void shutdown() {
+        // do nothing
+    }
+
+    @Override
     public RepositorySession createSession()
     {
         MetadataRepository metadataRepository = new FileMetadataRepository( metadataFacetFactories, configuration );
@@ -79,9 +80,4 @@ public class FileRepositorySessionFactory
         return new RepositorySession( metadataRepository, metadataResolver );
     }
 
-    @Override
-    public void close()
-    {
-        // no op
-    }
 }

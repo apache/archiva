@@ -20,23 +20,20 @@ package org.apache.archiva.metadata.repository.jcr;
  */
 
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataResolver;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.metadata.repository.RepositorySessionFactoryBean;
+import org.apache.archiva.metadata.repository.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
+import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -46,7 +43,7 @@ import java.util.Map;
  *
  */
 @Service( "repositorySessionFactory#jcr" )
-public class JcrRepositorySessionFactory
+public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactory
     implements RepositorySessionFactory
 {
 
@@ -98,13 +95,11 @@ public class JcrRepositorySessionFactory
         return this.metadataResolver;
     }
 
-    @PostConstruct
     public void initialize()
-        throws Exception
     {
 
         // skip initialisation if not jcr
-        if ( !StringUtils.equals( repositorySessionFactoryBean.getId(), "jcr" ) )
+        if ( repositorySessionFactoryBean!=null && !StringUtils.equals( repositorySessionFactoryBean.getId(), "jcr" ) )
         {
             return;
         }
@@ -134,7 +129,12 @@ public class JcrRepositorySessionFactory
             // FIXME this need to be configurable
             Path directoryPath = Paths.get( System.getProperty( "appserver.base" ), "data/jcr" );
             repositoryFactory.setRepositoryPath( directoryPath );
-            repository = repositoryFactory.createRepository();
+            try {
+                repository = repositoryFactory.createRepository();
+            } catch (InvalidFileStoreVersionException | IOException e) {
+                logger.error("Repository creation failed {}", e.getMessage());
+                throw new RuntimeException("Fatal error. Could not create metadata repository.");
+            }
             metadataRepository = new JcrMetadataRepository( metadataFacetFactories, repository );
             JcrMetadataRepository.initialize( metadataRepository.getJcrSession() );
         }
@@ -146,7 +146,11 @@ public class JcrRepositorySessionFactory
         {
             if ( metadataRepository != null )
             {
-                metadataRepository.close();
+                try {
+                    metadataRepository.close();
+                } catch (MetadataRepositoryException e) {
+                    logger.error("Close of metadata repository failed {}", e.getMessage());
+                }
             }
         }
 
@@ -154,9 +158,14 @@ public class JcrRepositorySessionFactory
         logger.info( "time to initialize JcrRepositorySessionFactory: {}", stopWatch.getTime() );
     }
 
+    @Override
+    protected void shutdown() {
+        repositoryFactory.close();
+    }
+
     @PreDestroy
     public void close()
     {
-        repositoryFactory.close();
+        super.close();
     }
 }

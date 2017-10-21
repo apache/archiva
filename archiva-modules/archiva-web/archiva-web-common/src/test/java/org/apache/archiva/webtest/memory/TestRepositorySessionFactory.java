@@ -37,6 +37,16 @@ public class TestRepositorySessionFactory
     }
 
     @Override
+    public void open() {
+
+    }
+
+    @Override
+    public boolean isOpen() {
+        return false;
+    }
+
+    @Override
     public RepositorySession createSession()
     {
         return repositorySession != null ? repositorySession : new RepositorySession( new TestMetadataRepository(),

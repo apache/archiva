@@ -21,6 +21,7 @@ package org.apache.archiva.metadata.repository.cassandra;
 
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.repository.AbstractRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
@@ -33,13 +34,14 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Olivier Lamy
  * @since 2.0.0
  */
 @Service("repositorySessionFactory#cassandra")
-public class CassandraRepositorySessionFactory
+public class CassandraRepositorySessionFactory extends AbstractRepositorySessionFactory
     implements RepositorySessionFactory
 {
 
@@ -58,7 +60,6 @@ public class CassandraRepositorySessionFactory
     @Inject
     private CassandraArchivaManager cassandraArchivaManager;
 
-    @PostConstruct
     public void initialize()
     {
         Map<String, MetadataFacetFactory> tmpMetadataFacetFactories =
@@ -73,6 +74,11 @@ public class CassandraRepositorySessionFactory
         }
     }
 
+    @Override
+    protected void shutdown() {
+        cassandraArchivaManager.shutdown();
+    }
+
 
     @Override
     public RepositorySession createSession()
@@ -82,10 +88,4 @@ public class CassandraRepositorySessionFactory
         return new RepositorySession( metadataRepository, metadataResolver );
     }
 
-
-    @Override
-    public void close()
-    {
-        cassandraArchivaManager.shutdown();
-    }
 }

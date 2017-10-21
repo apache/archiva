@@ -19,18 +19,14 @@ package org.apache.archiva.mock;
  * under the License.
  */
 
-import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataResolver;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.*;
 import org.springframework.stereotype.Service;
 
 /**
  * @author Olivier Lamy
  */
 @Service( "repositorySessionFactory#mock" )
-public class MockRepositorySessionFactory
+public class MockRepositorySessionFactory extends AbstractRepositorySessionFactory
     implements RepositorySessionFactory
 {
     private MetadataRepository repository = new AbstractMetadataRepository()
@@ -75,8 +71,14 @@ public class MockRepositorySessionFactory
     }
 
     @Override
-    public void close()
-    {
-        // no op
+    protected void initialize() {
+        // noop
     }
+
+    @Override
+    protected void shutdown() {
+        // noop
+    }
+
+
 }

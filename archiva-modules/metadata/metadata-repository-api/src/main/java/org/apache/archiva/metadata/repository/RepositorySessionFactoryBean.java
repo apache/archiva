@@ -68,6 +68,9 @@ public class RepositorySessionFactoryBean
         logger.info( "create RepositorySessionFactory with id {} instance of {}", //
                      id, //
                      repositorySessionFactory.getClass().getName() );
+        if (!repositorySessionFactory.isOpen()) {
+            repositorySessionFactory.open();
+        }
         return repositorySessionFactory;
     }
 

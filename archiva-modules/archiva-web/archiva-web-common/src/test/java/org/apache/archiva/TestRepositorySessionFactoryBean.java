@@ -56,6 +56,9 @@ public class TestRepositorySessionFactoryBean
         RepositorySessionFactory repositorySessionFactory =
             getBeanFactory().getBean( "repositorySessionFactory#" + this.beanId, RepositorySessionFactory.class );
         logger.info( "create RepositorySessionFactory instance of {}", repositorySessionFactory.getClass().getName() );
+        if (!repositorySessionFactory.isOpen()) {
+            repositorySessionFactory.open();
+        }
         return repositorySessionFactory;
     }
 

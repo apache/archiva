@@ -22,21 +22,12 @@ package org.apache.archiva.repository.maven2;
 import org.apache.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.repository.EditableRepository;
-import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.PasswordCredentials;
-import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.RemoteRepository;
-import org.apache.archiva.repository.RepositoryCredentials;
-import org.apache.archiva.repository.RepositoryException;
-import org.apache.archiva.repository.RepositoryProvider;
-import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -49,7 +40,6 @@ import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -70,6 +60,16 @@ public class MavenRepositoryProvider implements RepositoryProvider
     public Set<RepositoryType> provides( )
     {
         return TYPES;
+    }
+
+    @Override
+    public EditableManagedRepository createManagedInstance(String id, String name) {
+        return new MavenManagedRepository(id, name);
+    }
+
+    @Override
+    public EditableRemoteRepository createRemoteInstance(String id, String name) {
+        return new MavenRemoteRepository(id, name);
     }
 
     private URI getURIFromString( String uriStr) throws RepositoryException {
@@ -110,7 +110,6 @@ public class MavenRepositoryProvider implements RepositoryProvider
         repo.setSchedulingDefinition(cfg.getRefreshCronExpression());
         repo.setBlocksRedeployment( cfg.isBlockRedeployments() );
         repo.setScanned( cfg.isScanned() );
-        Set<ReleaseScheme> schemes = new HashSet<>(  );
         if (cfg.isReleases()) {
             repo.addActiveReleaseScheme(ReleaseScheme.RELEASE);
         }
