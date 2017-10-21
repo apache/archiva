@@ -215,50 +215,6 @@ public class DefaultArchivaConfiguration
 
         config.getRepositoryGroups();
         config.getRepositoryGroupsAsMap();
-        if ( !config.getRepositories().isEmpty() )
-        {
-            for ( V1RepositoryConfiguration r : config.getRepositories() )
-            {
-                r.setScanned( r.isIndexed() );
-
-                if ( StringUtils.startsWith( r.getUrl(), "file://" ) )
-                {
-                    r.setLocation( r.getUrl().substring( 7 ) );
-                    config.addManagedRepository( r );
-                }
-                else if ( StringUtils.startsWith( r.getUrl(), "file:" ) )
-                {
-                    r.setLocation( r.getUrl().substring( 5 ) );
-                    config.addManagedRepository( r );
-                }
-                else if ( StringUtils.isEmpty( r.getUrl() ) )
-                {
-                    // in case of empty url we can consider it as a managed one
-                    // check if location is null
-                    //file://${appserver.base}/repositories/${id}
-                    if ( StringUtils.isEmpty( r.getLocation() ) )
-                    {
-                        r.setLocation( "file://${appserver.base}/repositories/" + r.getId() );
-                    }
-                    config.addManagedRepository( r );
-                }
-                else
-                {
-                    RemoteRepositoryConfiguration repo = new RemoteRepositoryConfiguration();
-                    repo.setId( r.getId() );
-                    repo.setLayout( r.getLayout() );
-                    repo.setName( r.getName() );
-                    repo.setUrl( r.getUrl() );
-                    config.addRemoteRepository( repo );
-                }
-            }
-
-            // Prevent duplicate repositories from showing up.
-            config.getRepositories().clear();
-
-            registry.removeSubset( KEY + ".repositories" );
-        }
-
         if ( !CollectionUtils.isEmpty( config.getRemoteRepositories() ) )
         {
             List<RemoteRepositoryConfiguration> remoteRepos = config.getRemoteRepositories();

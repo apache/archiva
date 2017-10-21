@@ -527,27 +527,6 @@ public class ArchivaConfigurationTest
         // Expected Path is: Should not have thrown an exception.
     }
 
-    @Test
-    public void testConfigurationUpgradeFrom09()
-        throws Exception
-    {
-        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-upgrade-09" );
-
-        // we just use the defaults when upgrading from 0.9 at this point.
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        // test-upgrade-09 contains a managed with id: local so it's 3 managed
-        assertConfiguration( configuration, 3, 1, 1 );
-        assertEquals( "check network proxies", 0, configuration.getNetworkProxies().size() );
-
-        ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
-
-        assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
-                      repository.getLocation() );
-        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
-        assertEquals( "check managed repositories", "internal", repository.getId() );
-        assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isScanned() );
-    }
 
     @Test
     public void testConfigurationUpgradeFrom13()
@@ -583,93 +562,6 @@ public class ArchivaConfigurationTest
             configuration.getRepositoryScanning().getKnownContentConsumers().contains( "duplicate-artifacts" ) );
     }
 
-    @Test
-    public void testAutoDetectV1()
-        throws Exception
-    {
-        // Setup the autodetect-v1.xml file in the target directory (so we can save/load it)
-        Path userFile = getTestFile( "target/test-autodetect-v1/archiva-user.xml" );
-        Files.deleteIfExists(userFile);
-        assertFalse( Files.exists(userFile) );
-
-        Files.createDirectories(userFile.getParent());
-        FileUtils.copyFile( getTestFile( "src/test/conf/autodetect-v1.xml" ).toFile(), userFile.toFile());
-
-        // Load the original (unconverted) archiva.xml
-        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-autodetect-v1" );
-
-        archivaConfiguration.reload();
-
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        assertConfiguration( configuration, 2, 2, 2 );
-        assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
-
-        ManagedRepositoryConfiguration repository = configuration.getManagedRepositories().get( 0 );
-
-        assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
-                      repository.getLocation() );
-        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
-        assertEquals( "check managed repositories", "internal", repository.getId() );
-        assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isScanned() );
-
-        // Test that only 1 set of repositories exist.
-        assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositories().size() );
-        assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositories().size() );
-        assertEquals( "check v1 repositories size.", 0, configuration.getRepositories().size() );
-
-        // Save the file.
-        archivaConfiguration.save( configuration );
-
-        // Reload.
-        archivaConfiguration = lookup( ArchivaConfiguration.class, "test-autodetect-v1" );
-        configuration = archivaConfiguration.getConfiguration();
-
-        // Test that only 1 set of repositories exist.
-        assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositories().size() );
-        assertEquals( "check managed repositories size.", 2, configuration.getManagedRepositoriesAsMap().size() );
-        assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositories().size() );
-        assertEquals( "check remote repositories size.", 2, configuration.getRemoteRepositoriesAsMap().size() );
-        assertEquals( "check v1 repositories size.", 0, configuration.getRepositories().size() );
-
-        String actualXML = FileUtils.readFileToString( userFile.toFile(), Charset.forName( "UTF-8" ) );
-        XMLAssert.assertXpathNotExists( "//configuration/repositories/repository", actualXML );
-        XMLAssert.assertXpathNotExists( "//configuration/repositories", actualXML );
-    }
-
-    @Test
-    public void testArchivaV1()
-        throws Exception
-    {
-        ArchivaConfiguration archivaConfiguration = lookup( ArchivaConfiguration.class, "test-archiva-v1" );
-
-        Configuration configuration = archivaConfiguration.getConfiguration();
-        assertConfiguration( configuration, 2, 2, 2 );
-        assertEquals( "check network proxies", 1, configuration.getNetworkProxies().size() );
-
-        assertEquals( "check managed repositories", 2, configuration.getManagedRepositories().size() );
-        assertEquals( "check v1 repositories size.", 0, configuration.getRepositories().size() );
-
-        Map<String, ManagedRepositoryConfiguration> map = configuration.getManagedRepositoriesAsMap();
-
-        ManagedRepositoryConfiguration repository = map.get( "internal" );
-        assertEquals( "check managed repositories", "${appserver.base}/repositories/internal",
-                      repository.getLocation() );
-        assertEquals( "check managed repositories", "Archiva Managed Internal Repository", repository.getName() );
-        assertEquals( "check managed repositories", "internal", repository.getId() );
-        assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertTrue( "check managed repositories", repository.isScanned() );
-        assertFalse( "check managed repositories", repository.isSnapshots() );
-
-        repository = map.get( "snapshots" );
-        assertEquals( "check managed repositories", "${appserver.base}/repositories/snapshots",
-                      repository.getLocation() );
-        assertEquals( "check managed repositories", "Archiva Managed Snapshot Repository", repository.getName() );
-        assertEquals( "check managed repositories", "snapshots", repository.getId() );
-        assertEquals( "check managed repositories", "default", repository.getLayout() );
-        assertFalse( "check managed repositories", repository.isScanned() );
-        assertTrue( "check managed repositories", repository.isSnapshots() );
-    }
 
     @Test
     public void testCronExpressionsWithComma()
