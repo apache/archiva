@@ -48,6 +48,7 @@ public abstract class AbstractRepository implements EditableRepository
 
     private Locale primaryLocale = new Locale("en_US");
     private URI location;
+    private URI baseUri;
     private Set<URI> failoverLocations = new HashSet<>(  );
     private Set<URI> uFailoverLocations = Collections.unmodifiableSet( failoverLocations );
     private boolean scanned = true;
@@ -112,6 +113,10 @@ public abstract class AbstractRepository implements EditableRepository
     public URI getLocation( )
     {
         return location;
+    }
+
+    public URI getAbsoluteLocation() {
+        return baseUri.resolve( location );
     }
 
     @Override
@@ -208,6 +213,11 @@ public abstract class AbstractRepository implements EditableRepository
     public void setLayout( String layout )
     {
         this.layout = layout;
+    }
+
+    @Override
+    public void setBaseUri(URI baseUri) {
+        this.baseUri = baseUri;
     }
 
     @Override

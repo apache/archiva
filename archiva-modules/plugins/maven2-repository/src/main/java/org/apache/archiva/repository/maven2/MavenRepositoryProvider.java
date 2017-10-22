@@ -20,9 +20,21 @@ package org.apache.archiva.repository.maven2;
  */
 
 import org.apache.archiva.configuration.AbstractRepositoryConfiguration;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.EditableManagedRepository;
+import org.apache.archiva.repository.EditableRemoteRepository;
+import org.apache.archiva.repository.EditableRepository;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.PasswordCredentials;
+import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.RepositoryCredentials;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryProvider;
+import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.UnsupportedURIException;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
@@ -32,8 +44,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -48,6 +63,10 @@ import java.util.Set;
 @Service("mavenRepositoryProvider")
 public class MavenRepositoryProvider implements RepositoryProvider
 {
+
+
+    @Inject
+    private ArchivaConfiguration archivaConfiguration;
 
     private static final Logger log = LoggerFactory.getLogger( MavenRepositoryProvider.class );
 
@@ -105,13 +124,39 @@ public class MavenRepositoryProvider implements RepositoryProvider
     public ManagedRepository createManagedInstance( ManagedRepositoryConfiguration cfg ) throws RepositoryException
     {
         MavenManagedRepository repo = new MavenManagedRepository(cfg.getId() ,cfg.getName());
-        repo.setLocation( getURIFromString( cfg.getLocation() ) );
+        updateManagedInstance( repo, cfg );
+        return repo;
+    }
+
+    @Override
+    public void updateManagedInstance( EditableManagedRepository repo , ManagedRepositoryConfiguration cfg ) throws RepositoryException
+    {
+        try
+        {
+            repo.setLocation( getURIFromString( cfg.getLocation() ) );
+        }
+        catch ( UnsupportedURIException e )
+        {
+            throw new RepositoryException( "The location entry is not a valid uri: "+cfg.getLocation() );
+        }
         setBaseConfig( repo, cfg );
+        Path repoDir = Paths.get(repo.getAbsoluteLocation());
+        if (!Files.exists(repoDir)) {
+            try
+            {
+                Files.createDirectories( repoDir );
+            }
+            catch ( IOException e )
+            {
+                log.error("Could not create directory {} for repository {}", repo.getAbsoluteLocation(), repo.getId(), e);
+                throw new RepositoryException( "Could not create directory for repository "+repo.getAbsoluteLocation() );
+            }
+        }
         repo.setSchedulingDefinition(cfg.getRefreshCronExpression());
         repo.setBlocksRedeployment( cfg.isBlockRedeployments() );
         repo.setScanned( cfg.isScanned() );
         if (cfg.isReleases()) {
-            repo.addActiveReleaseScheme(ReleaseScheme.RELEASE);
+            repo.addActiveReleaseScheme( ReleaseScheme.RELEASE);
         }
         if (cfg.isSnapshots()) {
             repo.addActiveReleaseScheme(ReleaseScheme.SNAPSHOT);
@@ -129,9 +174,8 @@ public class MavenRepositoryProvider implements RepositoryProvider
         artifactCleanupFeature.setDeleteReleasedSnapshots( cfg.isDeleteReleasedSnapshots() );
         artifactCleanupFeature.setRetentionCount( cfg.getRetentionCount() );
         artifactCleanupFeature.setRetentionTime( Period.ofDays( cfg.getRetentionTime() ) );
-
-        return repo;
     }
+
 
     @Override
     public ManagedRepository createStagingInstance( ManagedRepositoryConfiguration baseConfiguration ) throws RepositoryException
@@ -144,6 +188,13 @@ public class MavenRepositoryProvider implements RepositoryProvider
     public RemoteRepository createRemoteInstance( RemoteRepositoryConfiguration cfg ) throws RepositoryException
     {
         MavenRemoteRepository repo = new MavenRemoteRepository( cfg.getId( ), cfg.getName( ) );
+        updateRemoteInstance( repo, cfg );
+        return repo;
+    }
+
+    @Override
+    public void updateRemoteInstance( EditableRemoteRepository repo, RemoteRepositoryConfiguration cfg ) throws RepositoryException
+    {
         setBaseConfig( repo, cfg );
         repo.setCheckPath( cfg.getCheckPath() );
         repo.setSchedulingDefinition( cfg.getRefreshCronExpression() );
@@ -151,9 +202,10 @@ public class MavenRepositoryProvider implements RepositoryProvider
         {
             repo.setLocation(new URI(cfg.getUrl()));
         }
-        catch ( URISyntaxException e )
+        catch ( UnsupportedURIException | URISyntaxException e )
         {
             log.error("Could not set remote url "+cfg.getUrl());
+            throw new RepositoryException( "The url config is not a valid uri: "+cfg.getUrl() );
         }
         repo.setTimeout( Duration.ofSeconds( cfg.getTimeout() ) );
         RemoteIndexFeature remoteIndexFeature = repo.getFeature( RemoteIndexFeature.class ).get();
@@ -189,8 +241,6 @@ public class MavenRepositoryProvider implements RepositoryProvider
             IndexCreationFeature indexCreationFeature = repo.getFeature( IndexCreationFeature.class ).get();
             indexCreationFeature.setIndexPath( getURIFromString( cfg.getIndexDir() ) );
         }
-
-        return repo;
     }
 
     @Override
@@ -321,9 +371,30 @@ public class MavenRepositoryProvider implements RepositoryProvider
         return stagingRepository;
     }
 
-    private void setBaseConfig( EditableRepository repo, AbstractRepositoryConfiguration cfg) {
+    private void setBaseConfig( EditableRepository repo, AbstractRepositoryConfiguration cfg) throws RepositoryException {
+        final String baseUriStr = archivaConfiguration.getConfiguration().getArchivaRuntimeConfiguration().getRepositoryBaseDirectory();
+        try
+        {
+            URI baseUri = new URI(baseUriStr);
+            repo.setBaseUri( baseUri );
+        }
+        catch ( URISyntaxException e )
+        {
+            log.error("Could not set base URI {}: {}", baseUriStr, e.getMessage(), e);
+            throw new RepositoryException( "Could not set base URI "+ baseUriStr);
+        }
         repo.setDescription( repo.getPrimaryLocale(), cfg.getDescription() );
         repo.setLayout( cfg.getLayout() );
 
+    }
+
+    public ArchivaConfiguration getArchivaConfiguration( )
+    {
+        return archivaConfiguration;
+    }
+
+    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
+    {
+        this.archivaConfiguration = archivaConfiguration;
     }
 }

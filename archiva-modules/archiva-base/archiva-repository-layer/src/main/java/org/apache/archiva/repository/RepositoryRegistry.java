@@ -19,7 +19,13 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.configuration.*;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ConfigurationEvent;
+import org.apache.archiva.configuration.ConfigurationListener;
+import org.apache.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.slf4j.Logger;
@@ -28,7 +34,12 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -139,6 +150,7 @@ public class RepositoryRegistry implements ConfigurationListener {
             return managedRepos;
         } catch (Throwable e) {
             log.error("Could not initialize repositories from config: {}",e.getMessage(), e );
+            //noinspection unchecked
             return Collections.EMPTY_MAP;
         }
     }
@@ -185,6 +197,7 @@ public class RepositoryRegistry implements ConfigurationListener {
 
             if ( remoteRepoConfigs == null )
             {
+                //noinspection unchecked
                 return Collections.EMPTY_MAP;
             }
 
@@ -210,6 +223,7 @@ public class RepositoryRegistry implements ConfigurationListener {
             return remoteRepos;
         } catch (Throwable e) {
             log.error("Could not initialize remote repositories from config: {}", e.getMessage(), e);
+            //noinspection unchecked
             return Collections.EMPTY_MAP;
         }
     }
@@ -339,23 +353,20 @@ public class RepositoryRegistry implements ConfigurationListener {
     }
 
     /**
-     * Adds a new repository to the current list, or overwrites the repository definition with
+     * Adds a new repository to the current list, or replaces the repository definition with
      * the same id, if it exists already.
      * The change is saved to the configuration immediately.
      *
      * @param managedRepository the new repository.
      * @throws RepositoryException if the new repository could not be saved to the configuration.
      */
-    public void addRepository( ManagedRepository managedRepository ) throws RepositoryException
+    public void putRepository( ManagedRepository managedRepository ) throws RepositoryException
     {
         rwLock.writeLock( ).lock( );
         try
         {
             final String id = managedRepository.getId();
             ManagedRepository originRepo = managedRepositories.put( id, managedRepository );
-            ManagedRepositoryConfiguration originCfg = null;
-            List<ManagedRepositoryConfiguration> cfgList = null;
-            int index = 0;
             try
             {
                 ManagedRepositoryConfiguration newCfg = getProvider( managedRepository.getType( ) ).getManagedConfiguration( managedRepository );
@@ -386,22 +397,104 @@ public class RepositoryRegistry implements ConfigurationListener {
     }
 
     /**
+     * Adds a new repository or updates the repository with the same id, if it exists already.
+     * The configuration is saved immediately.
+     *
+     * @param managedRepositoryConfiguration the repository configuration
+     * @return the updated or created repository
+     * @throws RepositoryException if an error occurs, or the configuration is not valid.
+     */
+    public ManagedRepository putRepository( ManagedRepositoryConfiguration managedRepositoryConfiguration) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            final String id = managedRepositoryConfiguration.getId();
+            final RepositoryType repositoryType = RepositoryType.valueOf( managedRepositoryConfiguration.getType() );
+            Configuration configuration = getArchivaConfiguration().getConfiguration();
+            ManagedRepository repo = managedRepositories.get(id);
+            ManagedRepositoryConfiguration oldCfg = repo!=null ? getProvider( repositoryType ).getManagedConfiguration( repo ) : null;
+            repo = putRepository( managedRepositoryConfiguration, configuration );
+            try
+            {
+                getArchivaConfiguration().save(configuration);
+            }
+            catch ( IndeterminateConfigurationException | RegistryException e )
+            {
+                if (oldCfg!=null) {
+                    getProvider( repositoryType ).updateManagedInstance( (EditableManagedRepository)repo, oldCfg );
+                }
+                log.error("Could not save the configuration for repository {}: {}", id, e.getMessage(),e );
+                throw new RepositoryException( "Could not save the configuration for repository "+id+": "+e.getMessage() );
+            }
+            return repo;
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
+        }
+
+    }
+
+    /**
+     * Adds a new repository or updates the repository with the same id. The given configuration object is updated, but
+     * the configuration is not saved.
+     *
+     * @param managedRepositoryConfiguration the new or changed repository configuration
+     * @param configuration the configuration object
+     * @return the new or updated repository
+     * @throws RepositoryException if the configuration cannot be saved or updated
+     */
+    public ManagedRepository putRepository( ManagedRepositoryConfiguration managedRepositoryConfiguration, Configuration configuration) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            final String id = managedRepositoryConfiguration.getId();
+            final RepositoryType repoType = RepositoryType.valueOf( managedRepositoryConfiguration.getType() );
+            ManagedRepository repo;
+            if (managedRepositories.containsKey( id )) {
+                repo = managedRepositories.get(id);
+                if (repo instanceof EditableManagedRepository)
+                {
+                    getProvider( repoType ).updateManagedInstance( (EditableManagedRepository) repo, managedRepositoryConfiguration );
+                } else {
+                    throw new RepositoryException( "The repository is not editable "+id );
+                }
+            } else
+            {
+                repo = getProvider( repoType ).createManagedInstance( managedRepositoryConfiguration );
+                managedRepositories.put(id, repo);
+            }
+            ManagedRepositoryConfiguration oldCfg;
+            if ((oldCfg = configuration.findManagedRepositoryById( id ))!=null) {
+                configuration.removeManagedRepository( oldCfg );
+            }
+            configuration.addManagedRepository( managedRepositoryConfiguration );
+            return repo;
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
+        }
+
+
+    }
+
+    /**
      * Adds a remote repository, or overwrites the repository definition with the same id, if it exists already.
      * The modification is saved to the configuration immediately.
      *
      * @param remoteRepository the remote repository to add
      * @throws RepositoryException if an error occurs during configuration save
      */
-    public void addRepository( RemoteRepository remoteRepository ) throws RepositoryException
+    public void putRepository( RemoteRepository remoteRepository ) throws RepositoryException
     {
         rwLock.writeLock( ).lock( );
         try
         {
             final String id = remoteRepository.getId();
             RemoteRepository originRepo = remoteRepositories.put( id, remoteRepository );
-            RemoteRepositoryConfiguration originCfg = null;
-            List<RemoteRepositoryConfiguration> cfgList = null;
-            int index = 0;
             try
             {
                 RemoteRepositoryConfiguration newCfg = getProvider( remoteRepository.getType( ) ).getRemoteConfiguration( remoteRepository );
@@ -429,6 +522,91 @@ public class RepositoryRegistry implements ConfigurationListener {
         {
             rwLock.writeLock( ).unlock( );
         }
+    }
+
+    /**
+     * Adds a new repository or updates the repository with the same id, if it exists already.
+     * The configuration is saved immediately.
+     *
+     * @param remoteRepositoryConfiguration the repository configuration
+     * @return the updated or created repository
+     * @throws RepositoryException if an error occurs, or the configuration is not valid.
+     */
+    public RemoteRepository putRepository( RemoteRepositoryConfiguration remoteRepositoryConfiguration) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            final String id = remoteRepositoryConfiguration.getId();
+            final RepositoryType repositoryType = RepositoryType.valueOf( remoteRepositoryConfiguration.getType() );
+            Configuration configuration = getArchivaConfiguration().getConfiguration();
+            RemoteRepository repo = remoteRepositories.get(id);
+            RemoteRepositoryConfiguration oldCfg = repo!=null ? getProvider( repositoryType ).getRemoteConfiguration( repo ) : null;
+            repo = putRepository( remoteRepositoryConfiguration, configuration );
+            try
+            {
+                getArchivaConfiguration().save(configuration);
+            }
+            catch ( IndeterminateConfigurationException | RegistryException e )
+            {
+                if (oldCfg!=null) {
+                    getProvider( repositoryType ).updateRemoteInstance( (EditableRemoteRepository)repo, oldCfg );
+                }
+                log.error("Could not save the configuration for repository {}: {}", id, e.getMessage(),e );
+                throw new RepositoryException( "Could not save the configuration for repository "+id+": "+e.getMessage() );
+            }
+            return repo;
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
+        }
+
+    }
+
+    /**
+     * Adds a new repository or updates the repository with the same id. The given configuration object is updated, but
+     * the configuration is not saved.
+     *
+     * @param remoteRepositoryConfiguration the new or changed repository configuration
+     * @param configuration the configuration object
+     * @return the new or updated repository
+     * @throws RepositoryException if the configuration cannot be saved or updated
+     */
+    public RemoteRepository putRepository( RemoteRepositoryConfiguration remoteRepositoryConfiguration, Configuration configuration) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            final String id = remoteRepositoryConfiguration.getId();
+            final RepositoryType repoType = RepositoryType.valueOf( remoteRepositoryConfiguration.getType() );
+            RemoteRepository repo;
+            if (remoteRepositories.containsKey( id )) {
+                repo = remoteRepositories.get(id);
+                if (repo instanceof EditableRemoteRepository)
+                {
+                    getProvider( repoType ).updateRemoteInstance( (EditableRemoteRepository) repo, remoteRepositoryConfiguration );
+                } else {
+                    throw new RepositoryException( "The repository is not editable "+id );
+                }
+            } else
+            {
+                repo = getProvider( repoType ).createRemoteInstance( remoteRepositoryConfiguration );
+                remoteRepositories.put(id, repo);
+            }
+            RemoteRepositoryConfiguration oldCfg;
+            if ((oldCfg = configuration.findRemoteRepositoryById( id ))!=null) {
+                configuration.removeRemoteRepository( oldCfg );
+            }
+            configuration.addRemoteRepository( remoteRepositoryConfiguration );
+            return repo;
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
+        }
+
+
     }
 
     /**
@@ -460,9 +638,7 @@ public class RepositoryRegistry implements ConfigurationListener {
             {
                 // Rollback
                 log.error("Could not save config after repository removal: {}", e.getMessage(), e);
-                if (repo!=null) {
-                    managedRepositories.put(repo.getId(), repo);
-                }
+                managedRepositories.put(repo.getId(), repo);
                 throw new RepositoryException( "Could not save configuration after repository removal: "+e.getMessage() );
             }
             finally
@@ -501,9 +677,7 @@ public class RepositoryRegistry implements ConfigurationListener {
             {
                 // Rollback
                 log.error("Could not save config after repository removal: {}", e.getMessage(), e);
-                if (repo!=null) {
-                    remoteRepositories.put(repo.getId(), repo);
-                }
+                remoteRepositories.put(repo.getId(), repo);
                 throw new RepositoryException( "Could not save configuration after repository removal: "+e.getMessage() );
             }
             finally

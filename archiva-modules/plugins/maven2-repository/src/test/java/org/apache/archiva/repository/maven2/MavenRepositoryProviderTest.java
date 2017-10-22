@@ -19,9 +19,18 @@ package org.apache.archiva.repository.maven2;
  * under the License.
  */
 
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ArchivaRuntimeConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ConfigurationListener;
+import org.apache.archiva.configuration.DefaultArchivaConfiguration;
+import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.metadata.repository.storage.maven2.conf.MockConfiguration;
+import org.apache.archiva.redback.components.registry.RegistryException;
+import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.PasswordCredentials;
 import org.apache.archiva.repository.ReleaseScheme;
@@ -33,6 +42,7 @@ import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +52,8 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
@@ -59,12 +71,25 @@ public class MavenRepositoryProviderTest
 
     MavenRepositoryProvider provider;
 
+    Path repoLocation;
+
 
     @Before
     public void setUp()
         throws Exception
     {
-        provider = new MavenRepositoryProvider();
+        provider = new MavenRepositoryProvider( );
+        MockConfiguration mockConfiguration =new MockConfiguration();
+        mockConfiguration.getConfiguration().setArchivaRuntimeConfiguration( new ArchivaRuntimeConfiguration() );
+        mockConfiguration.getConfiguration().getArchivaRuntimeConfiguration().setRepositoryBaseDirectory( "repositories" );
+        provider.setArchivaConfiguration( mockConfiguration );
+    }
+
+    @After
+    public void cleanUp() {
+        if (repoLocation!=null && Files.exists( repoLocation )) {
+            FileUtils.deleteQuietly( repoLocation );
+        }
     }
 
     @Test
@@ -82,7 +107,8 @@ public class MavenRepositoryProviderTest
         repo.setName("Managed Test Repo 001");
         repo.setDescription( "This is a managed test" );
         repo.setRetentionTime( 37 );
-        repo.setLocation( "file:///test/dir/repository" );
+        repoLocation = Files.createTempDirectory( "test-repo-001");
+        repo.setLocation( repoLocation.toAbsolutePath().toString() );
         repo.setSnapshots( true );
         repo.setReleases( true );
         repo.setRefreshCronExpression( "4 0 0 ? * TUE" );
@@ -99,7 +125,10 @@ public class MavenRepositoryProviderTest
 
         ManagedRepository mr = provider.createManagedInstance( repo );
         assertNotNull(mr.getLocation());
-        assertEquals("file:///test/dir/repository", mr.getLocation().toString());
+        String repoUri = repoLocation.toUri().toString();
+        assertTrue(Files.exists(repoLocation));
+        repoUri = repoUri.substring( 0, repoUri.length()-1 );
+        assertEquals(repoUri, mr.getLocation().toString());
         assertEquals("This is a managed test", mr.getDescription());
         assertEquals("Managed Test Repo 001", mr.getName());
         assertEquals(2, mr.getActiveReleaseSchemes().size());

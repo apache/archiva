@@ -68,6 +68,13 @@ public interface EditableRepository extends Repository
     void setLocation(URI location) throws UnsupportedURIException;
 
     /**
+     * Sets the base uri for relative location uris.
+     *
+     * @param baseUri
+     */
+    void setBaseUri(URI baseUri);
+
+    /**
      * Adds a failover location for the repository.
      *
      * @param location The location that should be used as failover.
