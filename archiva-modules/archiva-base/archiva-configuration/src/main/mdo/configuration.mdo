@@ -742,28 +742,6 @@
         </field>
       </fields>
     </class>
-    <class>
-      <name>V1RepositoryConfiguration</name>
-      <version>1.0.0+</version>
-      <superClass>ManagedRepositoryConfiguration</superClass>
-      <fields>
-        <field>
-          <name>url</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>true</required>
-          <description>
-            The URL for this repository.
-          </description>
-        </field>
-        <field>
-          <name>indexed</name>
-          <version>1.0.0+</version>
-          <type>boolean</type>
-          <required>true</required>
-        </field>
-      </fields>
-    </class>
 
     <class>
       <name>LegacyArtifactPath</name>
@@ -1552,6 +1530,20 @@
             <type>FileLockConfiguration</type>
           </association>
         </field>
+        <field>
+          <name>dataDirectory</name>
+          <version>3.0.0+</version>
+          <description>The base directory where the archiva data is stored. If not set, the appserver.base is used.</description>
+          <type>String</type>
+          <required>false</required>
+        </field>
+        <field>
+          <name>repositoryBaseDirectory</name>
+          <version>3.0.0+</version>
+          <description>The base directory for local storage of repository data. If not set, it's ${dataDirectory}/repositories.</description>
+          <type>String</type>
+          <required>false</required>
+        </field>
       </fields>
     </class>
 
@@ -1559,7 +1551,7 @@
       <name>RedbackRuntimeConfiguration</name>
       <version>1.4.0+</version>
       <description>
-        The runtime configuration.
+        The redback runtime configuration.
       </description>
       <fields>
         <field>

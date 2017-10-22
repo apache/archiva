@@ -202,16 +202,25 @@ public class DefaultArchivaConfiguration
         Registry subset = registry.getSubset( KEY );
         if ( subset.getString( "version" ) == null )
         {
-            // a little autodetection of v1, even if version is omitted (this was previously allowed)
             if ( subset.getSubset( "repositoryScanning" ).isEmpty() )
             {
-                // only for empty, or v < 1
+                // only for empty
                 subset = readDefaultConfiguration();
+            } else
+            {
+                throw new RuntimeException( "No version tag found in configuration. Archiva configuration version 1.x is not longer supported." );
             }
         }
 
         Configuration config = new ConfigurationRegistryReader().read( subset );
-
+        if (StringUtils.isEmpty( config.getArchivaRuntimeConfiguration().getDataDirectory() )) {
+            Path appserverBaseDir = Paths.get(registry.getString("appserver.base", ""));
+            config.getArchivaRuntimeConfiguration().setDataDirectory( appserverBaseDir.normalize().toString() );
+        }
+        if (StringUtils.isEmpty( config.getArchivaRuntimeConfiguration().getRepositoryBaseDirectory())) {
+            Path baseDir = Paths.get(config.getArchivaRuntimeConfiguration().getDataDirectory());
+            config.getArchivaRuntimeConfiguration().setRepositoryBaseDirectory( baseDir.resolve("repositories").toString() );
+        }
 
         config.getRepositoryGroups();
         config.getRepositoryGroupsAsMap();

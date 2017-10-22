@@ -19,7 +19,7 @@
   -->
 
 <configuration>
-
+  <version>3.0.0</version>
   <repositoryScanning>
     <fileTypes>
       <fileType>
