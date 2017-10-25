@@ -22,6 +22,9 @@ package org.apache.archiva.configuration;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 
+import java.util.List;
+import java.util.Locale;
+
 /**
  * Configuration holder for the model read from the registry.
  */
@@ -85,5 +88,9 @@ public interface ArchivaConfiguration
      * @since 1.4-M1
      */
     void reload();
+
+    public Locale getDefaultLocale();
+
+    public List<Locale.LanguageRange> getLanguagePriorities();
 }
 

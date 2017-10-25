@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -168,6 +169,15 @@ public class DefaultArchivaConfiguration
 
     // Section used for default only configuration
     private static final String KEY_DEFAULT_ONLY = "org.apache.archiva_default";
+
+    private Locale defaultLocale = Locale.getDefault();
+
+    private List<Locale.LanguageRange> languagePriorities = new ArrayList<>(  );
+
+    @PostConstruct
+    private void init() {
+        languagePriorities = Locale.LanguageRange.parse( "en,fr,de" );
+    }
 
     @Override
     public Configuration getConfiguration()
@@ -341,8 +351,8 @@ public class DefaultArchivaConfiguration
             }
         }
 
-
-
+        this.defaultLocale = Locale.forLanguageTag( config.getArchivaRuntimeConfiguration().getDefaultLanguage() );
+        this.languagePriorities = Locale.LanguageRange.parse(config.getArchivaRuntimeConfiguration().getLanguageRange());
         return config;
     }
 
@@ -867,6 +877,18 @@ public class DefaultArchivaConfiguration
             throw new ConfigurationRuntimeException( e.getMessage(), e );
         }
         this.initialize();
+    }
+
+    @Override
+    public Locale getDefaultLocale( )
+    {
+        return defaultLocale;
+    }
+
+    @Override
+    public List<Locale.LanguageRange> getLanguagePriorities( )
+    {
+        return languagePriorities;
     }
 
     @Override

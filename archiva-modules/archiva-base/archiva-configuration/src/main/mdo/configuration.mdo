@@ -465,6 +465,7 @@
           <name>indexDir</name>
           <version>1.0.0+</version>
           <type>String</type>
+          <defaultValue></defaultValue>
           <description>
             The directory for the indexes of this repository.
           </description>
@@ -473,6 +474,7 @@
           <name>description</name>
           <version>1.0.0+</version>
           <type>String</type>
+          <defaultValue></defaultValue>
           <description>
             The description of this repository.
           </description>
@@ -1543,6 +1545,18 @@
           <description>The base directory for local storage of repository data. If not set, it's ${dataDirectory}/repositories.</description>
           <type>String</type>
           <required>false</required>
+        </field>
+        <field>
+          <name>defaultLanguage</name>
+          <type>String</type>
+          <version>3.0.0+</version>
+          <description>The default language used for setting internationalized strings.</description>
+        </field>
+        <field>
+          <name>languageRange</name>
+          <type>String</type>
+          <version>3.0.0+</version>
+          <description>Comma separated list of language patterns. Sorted by priority descending. Used for display of internationalized strings.</description>
         </field>
       </fields>
     </class>
