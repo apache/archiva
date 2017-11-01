@@ -23,6 +23,9 @@ import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Locale;
+
 @Service("archivaConfiguration#mocked")
 public class StubConfiguration
     implements ArchivaConfiguration
@@ -76,5 +79,17 @@ public class StubConfiguration
     public void reload()
     {
         // no op
+    }
+
+    @Override
+    public Locale getDefaultLocale( )
+    {
+        return Locale.getDefault();
+    }
+
+    @Override
+    public List<Locale.LanguageRange> getLanguagePriorities( )
+    {
+        return Locale.LanguageRange.parse( "en,fr,de" );
     }
 }
