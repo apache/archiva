@@ -10,7 +10,7 @@
       <snapshots>false</snapshots>
       <scanned>true</scanned>
       <refreshCronExpression>0 0 * * * ?</refreshCronExpression>
-      <retentionTime>30</retentionTime>
+      <retentionPeriod>30</retentionPeriod>
     </managedRepository>
     <managedRepository>
       <id>snapshots</id>
@@ -21,7 +21,7 @@
       <snapshots>true</snapshots>
       <scanned>true</scanned>
       <refreshCronExpression>0 0\,30 * * * ?</refreshCronExpression>
-      <retentionTime>30</retentionTime>
+      <retentionPeriod>30</retentionPeriod>
     </managedRepository>
   </managedRepositories>
   <remoteRepositories>

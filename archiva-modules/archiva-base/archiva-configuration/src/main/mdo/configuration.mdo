@@ -707,11 +707,11 @@
           <defaultValue>2</defaultValue>
         </field>
         <field>
-          <name>retentionTime</name>
+          <name>retentionPeriod</name>
           <version>1.0.0+</version>
           <type>int</type>
           <description>
-            The number of days old which will be the basis for removing a snapshot.
+            The number of days after which snapshots will be removed.
           </description>
           <defaultValue>100</defaultValue>
         </field>
@@ -1550,12 +1550,14 @@
           <name>defaultLanguage</name>
           <type>String</type>
           <version>3.0.0+</version>
+          <defaultValue>en-US</defaultValue>
           <description>The default language used for setting internationalized strings.</description>
         </field>
         <field>
           <name>languageRange</name>
           <type>String</type>
           <version>3.0.0+</version>
+          <defaultValue>en,fr,de</defaultValue>
           <description>Comma separated list of language patterns. Sorted by priority descending. Used for display of internationalized strings.</description>
         </field>
       </fields>
