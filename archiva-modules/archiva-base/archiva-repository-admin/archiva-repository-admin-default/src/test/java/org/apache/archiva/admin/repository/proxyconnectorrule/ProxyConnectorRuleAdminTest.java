@@ -26,6 +26,7 @@ import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * @author Olivier Lamy
@@ -74,7 +75,7 @@ public class ProxyConnectorRuleAdminTest
     public void addProxyConnectorRuleWithTwoProxyConnectors()
         throws Exception
     {
-        RemoteRepository remoteRepository = new RemoteRepository();
+        RemoteRepository remoteRepository = new RemoteRepository(Locale.getDefault());
         remoteRepository.setId( "archiva" );
         remoteRepository.setName( "archiva rocks" );
         remoteRepository.setUrl( "http://wine.org" );
@@ -120,7 +121,7 @@ public class ProxyConnectorRuleAdminTest
     public void updateProxyConnectorRuleWithTwoProxyConnectors()
         throws Exception
     {
-        RemoteRepository remoteRepository = new RemoteRepository();
+        RemoteRepository remoteRepository = new RemoteRepository( Locale.getDefault( ));
         remoteRepository.setId( "archiva" );
         remoteRepository.setName( "archiva rocks" );
         remoteRepository.setUrl( "http://wine.org" );

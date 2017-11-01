@@ -25,11 +25,15 @@ import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.NetworkProxyConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +46,9 @@ public class DefaultNetworkProxyAdmin
     extends AbstractRepositoryAdmin
     implements NetworkProxyAdmin
 {
+
+    @Inject
+    RepositoryRegistry repositoryRegistry;
 
     @Override
     public List<NetworkProxy> getNetworkProxies()
@@ -130,11 +137,20 @@ public class DefaultNetworkProxyAdmin
         NetworkProxyConfiguration networkProxyConfiguration = getNetworkProxyConfiguration( networkProxy );
         configuration.removeNetworkProxy( networkProxyConfiguration );
 
-        for ( RemoteRepositoryConfiguration rrc : configuration.getRemoteRepositories() )
-        {
-            if ( StringUtils.equals( rrc.getRemoteDownloadNetworkProxyId(), networkProxyId ) )
-            {
-                rrc.setRemoteDownloadNetworkProxyId( null );
+        for ( RemoteRepository repo : repositoryRegistry.getRemoteRepositories()) {
+            if (repo.supportsFeature( RemoteIndexFeature.class )) {
+                RemoteIndexFeature rif = repo.getFeature( RemoteIndexFeature.class ).get();
+                if (networkProxyId.equals(rif.getProxyId())) {
+                    rif.setProxyId( null );
+                    try
+                    {
+                        repositoryRegistry.putRepository( repo, configuration);
+                    }
+                    catch ( RepositoryException e )
+                    {
+                        log.error("Could not update repository {}", repo.getId(), e);
+                    }
+                }
             }
         }
 

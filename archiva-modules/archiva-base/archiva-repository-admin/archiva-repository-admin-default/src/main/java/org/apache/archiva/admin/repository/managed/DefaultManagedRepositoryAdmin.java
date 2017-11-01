@@ -24,6 +24,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
@@ -34,13 +35,19 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
 import org.apache.archiva.redback.components.cache.Cache;
+import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.role.RoleManagerException;
+import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.features.ArtifactCleanupFeature;
+import org.apache.archiva.repository.features.IndexCreationFeature;
+import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
@@ -56,10 +63,15 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * FIXME review the staging mechanism to have a per user session one
@@ -75,6 +87,10 @@ public class DefaultManagedRepositoryAdmin
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     public static final String STAGE_REPO_ID_END = "-stage";
+
+
+    @Inject
+    private RepositoryRegistry repositoryRegistry;
 
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
@@ -110,6 +126,7 @@ public class DefaultManagedRepositoryAdmin
         // initialize index context on start and check roles here
         for ( ManagedRepository managedRepository : getManagedRepositories() )
         {
+            log.debug("Initializating {}", managedRepository.getId());
             createIndexContext( managedRepository );
             addRepositoryRoles( managedRepository.getId() );
 
@@ -138,63 +155,80 @@ public class DefaultManagedRepositoryAdmin
         }
     }
 
+    /*
+     * Conversion between the repository from the registry and the serialized DTO for the admin API
+     */
+    private ManagedRepository convertRepo( org.apache.archiva.repository.ManagedRepository repo ) {
+        if (repo==null) {
+            return null;
+        }
+        ManagedRepository adminRepo = new ManagedRepository( getArchivaConfiguration().getDefaultLocale() );
+        setBaseRepoAttributes( adminRepo, repo );
+        adminRepo.setLocation( convertUriToString( repo.getLocation()) );
+        adminRepo.setReleases(repo.getActiveReleaseSchemes().contains( ReleaseScheme.RELEASE ));
+        adminRepo.setSnapshots( repo.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT) );
+        adminRepo.setBlockRedeployments( repo.blocksRedeployments() );
+        adminRepo.setCronExpression( repo.getSchedulingDefinition() );
+        if (repo.supportsFeature( IndexCreationFeature.class )) {
+            IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class ).get();
+            adminRepo.setIndexDirectory(convertUriToString( icf.getIndexPath() ));
+            adminRepo.setSkipPackedIndexCreation( icf.isSkipPackedIndexCreation() );
+        }
+        adminRepo.setScanned( repo.isScanned() );
+        if (repo.supportsFeature( ArtifactCleanupFeature.class) ) {
+            ArtifactCleanupFeature acf = repo.getFeature( ArtifactCleanupFeature.class ).get();
+            adminRepo.setRetentionPeriod( acf.getRetentionPeriod().getDays() );
+            adminRepo.setRetentionCount( acf.getRetentionCount() );
+            adminRepo.setDeleteReleasedSnapshots( acf.isDeleteReleasedSnapshots() );
+
+        }
+        if (repo.supportsFeature( StagingRepositoryFeature.class )) {
+            StagingRepositoryFeature stf = repo.getFeature( StagingRepositoryFeature.class ).get();
+            adminRepo.setStageRepoNeeded( stf.isStageRepoNeeded() );
+            if (stf.getStagingRepository()!=null) {
+                adminRepo.setStagingRepository( convertRepo( stf.getStagingRepository() ) );
+            }
+        }
+        return adminRepo;
+    }
+
+    private ManagedRepositoryConfiguration getRepositoryConfiguration(ManagedRepository repo) {
+        ManagedRepositoryConfiguration repoConfig = new ManagedRepositoryConfiguration();
+        setBaseRepoAttributes( repoConfig, repo );
+        repoConfig.setBlockRedeployments( repo.isBlockRedeployments( ) );
+        repoConfig.setReleases( repo.isReleases() );
+        repoConfig.setSnapshots( repo.isSnapshots() );
+        repoConfig.setScanned( repo.isScanned() );
+        repoConfig.setLocation( getRepositoryCommonValidator().removeExpressions( repo.getLocation() ) );
+        repoConfig.setRefreshCronExpression( repo.getCronExpression() );
+        repoConfig.setRetentionPeriod( repo.getRetentionPeriod() );
+        repoConfig.setRetentionCount( repo.getRetentionCount());
+        repoConfig.setDeleteReleasedSnapshots( repo.isDeleteReleasedSnapshots() );
+        repoConfig.setSkipPackedIndexCreation( repo.isSkipPackedIndexCreation());
+        repoConfig.setStageRepoNeeded( repo.isStageRepoNeeded() );
+        return repoConfig;
+    }
+
     @Override
     public List<ManagedRepository> getManagedRepositories()
         throws RepositoryAdminException
     {
-        List<ManagedRepositoryConfiguration> managedRepoConfigs =
-            getArchivaConfiguration().getConfiguration().getManagedRepositories();
 
-        if ( managedRepoConfigs == null )
-        {
-            return Collections.emptyList();
-        }
-
-        List<ManagedRepository> managedRepos = new ArrayList<ManagedRepository>( managedRepoConfigs.size() );
-
-        for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
-        {
-            ManagedRepository repo =
-                new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
-                                       repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
-                                       repoConfig.isBlockRedeployments(), repoConfig.getRefreshCronExpression(),
-                                       repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getRetentionTime(),
-                                       repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots(),
-                                       repoConfig.isStageRepoNeeded() );
-            repo.setDescription( repoConfig.getDescription() );
-            repo.setSkipPackedIndexCreation( repoConfig.isSkipPackedIndexCreation() );
-            managedRepos.add( repo );
-        }
-
-        return managedRepos;
+        return repositoryRegistry.getManagedRepositories().stream().map( rep -> this.convertRepo( rep ) ).collect( Collectors.toList());
     }
 
     @Override
     public Map<String, ManagedRepository> getManagedRepositoriesAsMap()
         throws RepositoryAdminException
     {
-        List<ManagedRepository> managedRepositories = getManagedRepositories();
-        Map<String, ManagedRepository> repositoriesMap = new HashMap<>( managedRepositories.size() );
-        for ( ManagedRepository managedRepository : managedRepositories )
-        {
-            repositoriesMap.put( managedRepository.getId(), managedRepository );
-        }
-        return repositoriesMap;
+        return repositoryRegistry.getManagedRepositories().stream().collect( Collectors.toMap( e -> e.getId(), e -> convertRepo( e ) ) );
     }
 
     @Override
     public ManagedRepository getManagedRepository( String repositoryId )
         throws RepositoryAdminException
     {
-        List<ManagedRepository> repos = getManagedRepositories();
-        for ( ManagedRepository repo : repos )
-        {
-            if ( StringUtils.equals( repo.getId(), repositoryId ) )
-            {
-                return repo;
-            }
-        }
-        return null;
+        return convertRepo( repositoryRegistry.getManagedRepository( repositoryId ) );
     }
 
     @Override
@@ -202,105 +236,66 @@ public class DefaultManagedRepositoryAdmin
                                          AuditInformation auditInformation )
         throws RepositoryAdminException
     {
+        log.debug("addManagedRepository {}, {}, {}", managedRepository.getId(), needStageRepo, auditInformation);
 
         getRepositoryCommonValidator().basicValidation( managedRepository, false );
         getRepositoryCommonValidator().validateManagedRepository( managedRepository );
         triggerAuditEvent( managedRepository.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );
-        Boolean res =
-            addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
-                                  managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
-                                  managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
-                                  managedRepository.getCronExpression(), managedRepository.getIndexDirectory(),
-                                  managedRepository.getDaysOlder(), managedRepository.getRetentionCount(),
-                                  managedRepository.isDeleteReleasedSnapshots(), managedRepository.getDescription(),
-                                  managedRepository.isSkipPackedIndexCreation(), managedRepository.isScanned(),
-                                  auditInformation, getArchivaConfiguration().getConfiguration() ) != null;
-
-        createIndexContext( managedRepository );
-        return res;
-
-    }
-
-    private ManagedRepositoryConfiguration addManagedRepository( String repoId, String layout, String name,
-                                                                 String location, boolean blockRedeployments,
-                                                                 boolean releasesIncluded, boolean snapshotsIncluded,
-                                                                 boolean stageRepoNeeded, String cronExpression,
-                                                                 String indexDir, int retentionTime, int retentionCount,
-                                                                 boolean deteleReleasedSnapshots, String description,
-                                                                 boolean skipPackedIndexCreation, boolean scanned,
-                                                                 AuditInformation auditInformation,
-                                                                 Configuration config )
-        throws RepositoryAdminException
-    {
-
-        ManagedRepositoryConfiguration repository = new ManagedRepositoryConfiguration();
-
-        repository.setId( repoId );
-        repository.setBlockRedeployments( blockRedeployments );
-        repository.setReleases( releasesIncluded );
-        repository.setSnapshots( snapshotsIncluded );
-        repository.setScanned( scanned );
-        repository.setName( name );
-        repository.setLocation( getRepositoryCommonValidator().removeExpressions( location ) );
-        repository.setLayout( layout );
-        repository.setRefreshCronExpression( cronExpression );
-        repository.setIndexDir( indexDir );
-        repository.setRetentionTime( retentionTime );
-        repository.setRetentionCount( retentionCount );
-        repository.setDeleteReleasedSnapshots( deteleReleasedSnapshots );
-        repository.setIndexDir( indexDir );
-        repository.setDescription( description );
-        repository.setSkipPackedIndexCreation( skipPackedIndexCreation );
-        repository.setStageRepoNeeded( stageRepoNeeded );
-
+        ManagedRepositoryConfiguration repoConfig = getRepositoryConfiguration( managedRepository );
+        if (needStageRepo) {
+            repoConfig.setStageRepoNeeded( true );
+        }
+        Configuration configuration = getArchivaConfiguration().getConfiguration();
         try
         {
-            addRepository( repository, config );
-            addRepositoryRoles( repository.getId() );
-
-            if ( stageRepoNeeded )
-            {
-                ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( repository );
-                addRepository( stagingRepository, config );
-                addRepositoryRoles( stagingRepository.getId() );
-                triggerAuditEvent( stagingRepository.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );
+            org.apache.archiva.repository.ManagedRepository newRepo = repositoryRegistry.putRepository( repoConfig, configuration );
+            log.debug("Added new repository {}", newRepo.getId());
+            org.apache.archiva.repository.ManagedRepository stagingRepo = null;
+            addRepositoryRoles( newRepo.getId() );
+            if ( newRepo.supportsFeature( StagingRepositoryFeature.class )) {
+                StagingRepositoryFeature stf = newRepo.getFeature( StagingRepositoryFeature.class ).get();
+                stagingRepo = stf.getStagingRepository();
+                if (stf.isStageRepoNeeded() && stagingRepo != null) {
+                    addRepositoryRoles( stagingRepo.getId() );
+                    triggerAuditEvent( stagingRepo.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );
+                }
             }
+            saveConfiguration( configuration );
+            //MRM-1342 Repository statistics report doesn't appear to be working correctly
+            //scan repository when adding of repository is successful
+            try
+            {
+                if ( newRepo.isScanned())
+                {
+                    scanRepository( newRepo.getId(), true );
+                }
+
+                if ( stagingRepo!=null && stagingRepo.isScanned() )
+                {
+                    scanRepository( stagingRepo.getId(), true );
+                }
+            }
+            catch ( Exception e )
+            {
+                log.warn("Unable to scan repository [{}]: {}", newRepo.getId(), e.getMessage(), e);
+            }
+        }
+        catch ( RepositoryException e )
+        {
+            log.error("Could not add managed repository {}"+managedRepository);
+            throw new RepositoryAdminException( "Could not add repository "+e.getMessage() );
         }
         catch ( RoleManagerException e )
         {
-            throw new RepositoryAdminException( "failed to add repository roles " + e.getMessage(), e );
+            log.error("Could not add repository roles for repository [{}]: {}", managedRepository.getId(), e.getMessage(), e);
+            throw new RepositoryAdminException( "Could not add roles to repository "+e.getMessage() );
         }
-        catch ( IOException e )
-        {
-            throw new RepositoryAdminException( "failed to add repository " + e.getMessage(), e );
-        }
+        createIndexContext( managedRepository );
+        return Boolean.TRUE;
 
-        saveConfiguration( config );
-
-        //MRM-1342 Repository statistics report doesn't appear to be working correctly
-        //scan repository when adding of repository is successful
-        try
-        {
-            if ( scanned )
-            {
-                scanRepository( repoId, true );
-            }
-
-            // TODO need a better to define scanning or not for staged repo
-            if ( stageRepoNeeded && scanned )
-            {
-                ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( repository );
-                scanRepository( stagingRepository.getId(), true );
-            }
-        }
-        catch ( Exception e )
-        {
-            log.warn( new StringBuilder( "Unable to scan repository [" ).append( repoId ).append( "]: " ).append(
-                e.getMessage() ).toString(), e );
-        }
-
-        return repository;
     }
+
+
 
     @Override
     public Boolean deleteManagedRepository( String repositoryId, AuditInformation auditInformation,
@@ -308,25 +303,53 @@ public class DefaultManagedRepositoryAdmin
         throws RepositoryAdminException
     {
         Configuration config = getArchivaConfiguration().getConfiguration();
+        ManagedRepositoryConfiguration repoConfig=config.findManagedRepositoryById( repositoryId );
 
-        ManagedRepositoryConfiguration repository = config.findManagedRepositoryById( repositoryId );
+        log.debug("Repo location "+repoConfig.getLocation());
 
-        if ( repository == null )
-        {
+        org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository( repositoryId );
+        org.apache.archiva.repository.ManagedRepository stagingRepository = null;
+        if (repo!=null) {
+            try
+            {
+                if (repo.supportsFeature( StagingRepositoryFeature.class )) {
+                    stagingRepository = repo.getFeature( StagingRepositoryFeature.class ).get().getStagingRepository();
+                }
+                repositoryRegistry.removeRepository( repo, config );
+            }
+            catch ( RepositoryException e )
+            {
+                log.error("Removal of repository {} failed: {}", repositoryId, e.getMessage(), e);
+                throw new RepositoryAdminException( "Removal of repository "+repositoryId+" failed." );
+            }
+        } else {
             throw new RepositoryAdminException( "A repository with that id does not exist" );
         }
 
         triggerAuditEvent( repositoryId, null, AuditEvent.DELETE_MANAGED_REPO, auditInformation );
+        if (repoConfig!=null)
+        {
+            deleteManagedRepository( repoConfig, deleteContent, config, false );
+        }
 
-        deleteManagedRepository( repository, deleteContent, config, false );
 
         // stage repo exists ?
-        ManagedRepositoryConfiguration stagingRepository =
-            getArchivaConfiguration().getConfiguration().findManagedRepositoryById( repositoryId + STAGE_REPO_ID_END );
         if ( stagingRepository != null )
         {
             // do not trigger event when deleting the staged one
-            deleteManagedRepository( stagingRepository, deleteContent, config, true );
+            ManagedRepositoryConfiguration stagingRepositoryConfig = config.findManagedRepositoryById( stagingRepository.getId( ) );
+            try
+            {
+                repositoryRegistry.removeRepository( stagingRepository );
+                if (stagingRepositoryConfig!=null)
+                {
+                    deleteManagedRepository( stagingRepositoryConfig, deleteContent, config, true );
+                }
+            }
+            catch ( RepositoryException e )
+            {
+                log.error("Removal of staging repository {} failed: {}", stagingRepository.getId(), e.getMessage(), e);
+            }
         }
 
         try
@@ -383,7 +406,6 @@ public class DefaultManagedRepositoryAdmin
                 repositorySession.close();
             }
         }
-        config.removeManagedRepository( repository );
 
         if ( deleteContent )
         {
@@ -455,50 +477,63 @@ public class DefaultManagedRepositoryAdmin
 
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
-        ManagedRepositoryConfiguration toremove = configuration.findManagedRepositoryById( managedRepository.getId() );
+        ManagedRepositoryConfiguration updatedRepoConfig = getRepositoryConfiguration( managedRepository );
+        updatedRepoConfig.setStageRepoNeeded( needStageRepo );
 
-        boolean updateIndexContext = false;
-
-        if ( toremove != null )
-        {
-            configuration.removeManagedRepository( toremove );
-
-            updateIndexContext = !StringUtils.equals( toremove.getIndexDir(), managedRepository.getIndexDirectory() );
+        org.apache.archiva.repository.ManagedRepository oldRepo = repositoryRegistry.getManagedRepository( managedRepository.getId( ) );
+        boolean stagingExists = false;
+        if (oldRepo.supportsFeature( StagingRepositoryFeature.class ) ){
+            stagingExists = oldRepo.getFeature( StagingRepositoryFeature.class ).get().getStagingRepository() != null;
         }
-
-        ManagedRepositoryConfiguration stagingRepository = getStageRepoConfig( toremove );
+        boolean updateIndexContext = !StringUtils.equals( updatedRepoConfig.getIndexDir(), managedRepository.getIndexDirectory() );
 
         // TODO remove content from old if path has changed !!!!!
-
-        if ( stagingRepository != null )
+        try
         {
-            configuration.removeManagedRepository( stagingRepository );
-        }
+            org.apache.archiva.repository.ManagedRepository newRepo = repositoryRegistry.putRepository( updatedRepoConfig, configuration );
+            if (newRepo.supportsFeature( StagingRepositoryFeature.class )) {
+                org.apache.archiva.repository.ManagedRepository stagingRepo = newRepo.getFeature( StagingRepositoryFeature.class ).get( ).getStagingRepository( );
+                if (stagingRepo!=null && !stagingExists)
+                {
+                    triggerAuditEvent( stagingRepo.getId(), null, AuditEvent.ADD_MANAGED_REPO, auditInformation );
+                    addRepositoryRoles( stagingRepo.getId( ) );
+                }
+            }
 
-        ManagedRepositoryConfiguration managedRepositoryConfiguration =
-            addManagedRepository( managedRepository.getId(), managedRepository.getLayout(), managedRepository.getName(),
-                                  managedRepository.getLocation(), managedRepository.isBlockRedeployments(),
-                                  managedRepository.isReleases(), managedRepository.isSnapshots(), needStageRepo,
-                                  managedRepository.getCronExpression(), managedRepository.getIndexDirectory(),
-                                  managedRepository.getDaysOlder(), managedRepository.getRetentionCount(),
-                                  managedRepository.isDeleteReleasedSnapshots(), managedRepository.getDescription(),
-                                  managedRepository.isSkipPackedIndexCreation(), managedRepository.isScanned(),
-                                  auditInformation, getArchivaConfiguration().getConfiguration() );
+
+        }
+        catch ( RepositoryException e )
+        {
+            log.error("Could not update repository {}: {}", managedRepository.getId(), e.getMessage(), e);
+            throw new RepositoryAdminException( "Could not update repository "+managedRepository.getId());
+        }
+        catch ( RoleManagerException e ) {
+            log.error("Error during role update of stage repo {}", managedRepository.getId(), e);
+            throw new RepositoryAdminException( "Could not update repository "+managedRepository.getId());
+        }
+        triggerAuditEvent( managedRepository.getId(), null, AuditEvent.MODIFY_MANAGED_REPO,
+            auditInformation );
+        try
+        {
+            getArchivaConfiguration().save(configuration);
+        }
+        catch ( RegistryException | IndeterminateConfigurationException e )
+        {
+            log.error("Could not save repository configuration: {}", e.getMessage(), e);
+            throw new RepositoryAdminException( "Could not save repository configuration: "+e.getMessage() );
+        }
 
         // Save the repository configuration.
         RepositorySession repositorySession = getRepositorySessionFactory().createSession();
 
         try
         {
-            triggerAuditEvent( managedRepositoryConfiguration.getId(), null, AuditEvent.MODIFY_MANAGED_REPO,
-                               auditInformation );
 
-            saveConfiguration( this.getArchivaConfiguration().getConfiguration() );
             if ( resetStats )
             {
                 log.debug( "call repositoryStatisticsManager.deleteStatistics" );
                 getRepositoryStatisticsManager().deleteStatistics( repositorySession.getRepository(),
-                                                                   managedRepositoryConfiguration.getId() );
+                                                                   managedRepository.getId() );
                 repositorySession.save();
             }
 
@@ -545,27 +580,20 @@ public class DefaultManagedRepositoryAdmin
     protected void addRepository( ManagedRepositoryConfiguration repository, Configuration configuration )
         throws RepositoryAdminException, IOException
     {
-        // Normalize the path
-        Path file = Paths.get( repository.getLocation() );
-        if ( !file.isAbsolute() )
+        try
         {
-            // add appserver.base/repositories
-            file = Paths.get( getRegistry().getString( "appserver.base" ),"repositories",
-                             repository.getLocation() );
+            getRepositoryRegistry().putRepository( repository, configuration );
         }
-        repository.setLocation( file.normalize().toString() );
-        if ( !Files.exists(file) )
+        catch ( RepositoryException e )
         {
-            Files.createDirectories(file);
-        }
-        if ( !Files.exists(file) || !Files.isDirectory(file) )
-        {
-            throw new RepositoryAdminException(
-                "Unable to add repository - no write access, can not create the root directory: " + file );
+            throw new RepositoryAdminException( "Could not add the repository to the registry. Cause: "+e.getMessage() );
         }
 
-        configuration.addManagedRepository( repository );
+    }
 
+    public IndexingContext createIndexContext( org.apache.archiva.repository.ManagedRepository repository) throws RepositoryAdminException
+    {
+        return createIndexContext( convertRepo( repository ) );
     }
 
     @Override
@@ -666,44 +694,6 @@ public class DefaultManagedRepositoryAdmin
         {
             throw new RepositoryAdminException( e.getMessage(), e );
         }
-    }
-
-    private ManagedRepositoryConfiguration getStageRepoConfig( ManagedRepositoryConfiguration repository )
-    {
-        ManagedRepositoryConfiguration stagingRepository = new ManagedRepositoryConfiguration();
-        stagingRepository.setId( repository.getId() + STAGE_REPO_ID_END );
-        stagingRepository.setLayout( repository.getLayout() );
-        stagingRepository.setName( repository.getName() + STAGE_REPO_ID_END );
-        stagingRepository.setBlockRedeployments( repository.isBlockRedeployments() );
-        stagingRepository.setRetentionTime( repository.getRetentionTime() );
-        stagingRepository.setDeleteReleasedSnapshots( repository.isDeleteReleasedSnapshots() );
-
-        String path = repository.getLocation();
-        int lastIndex = path.replace( '\\', '/' ).lastIndexOf( '/' );
-        stagingRepository.setLocation( path.substring( 0, lastIndex ) + "/" + stagingRepository.getId() );
-
-        if ( StringUtils.isNotBlank( repository.getIndexDir() ) )
-        {
-            Path indexDir = Paths.get( repository.getIndexDir() );
-            // in case of absolute dir do not use the same
-            if ( indexDir.isAbsolute() )
-            {
-                stagingRepository.setIndexDir( stagingRepository.getLocation() + "/.index" );
-            }
-            else
-            {
-                stagingRepository.setIndexDir( repository.getIndexDir() );
-            }
-        }
-        stagingRepository.setRefreshCronExpression( repository.getRefreshCronExpression() );
-        stagingRepository.setReleases( repository.isReleases() );
-        stagingRepository.setRetentionCount( repository.getRetentionCount() );
-        stagingRepository.setScanned( repository.isScanned() );
-        stagingRepository.setSnapshots( repository.isSnapshots() );
-        stagingRepository.setSkipPackedIndexCreation( repository.isSkipPackedIndexCreation() );
-        // do not duplicate description
-        //stagingRepository.getDescription("")
-        return stagingRepository;
     }
 
     public Boolean scanRepository( String repositoryId, boolean fullScan )
@@ -827,5 +817,15 @@ public class DefaultManagedRepositoryAdmin
     public void setIndexCreators( List<? extends IndexCreator> indexCreators )
     {
         this.indexCreators = indexCreators;
+    }
+
+    public RepositoryRegistry getRepositoryRegistry( )
+    {
+        return repositoryRegistry;
+    }
+
+    public void setRepositoryRegistry( RepositoryRegistry repositoryRegistry )
+    {
+        this.repositoryRegistry = repositoryRegistry;
     }
 }

@@ -31,7 +31,10 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.admin.mock"/>
+  <context:component-scan base-package="org.apache.archiva.admin.mock,org.apache.archiva.repository.content.maven2"/>
+
+  <alias name="managedRepositoryContent#maven" alias="managedRepositoryContent#default" />
+  <alias name="remoteRepositoryContent#maven" alias="remoteRepositoryContent#default" />
 
   <bean name="scheduler" class="org.apache.archiva.redback.components.scheduler.DefaultScheduler">
     <property name="properties">

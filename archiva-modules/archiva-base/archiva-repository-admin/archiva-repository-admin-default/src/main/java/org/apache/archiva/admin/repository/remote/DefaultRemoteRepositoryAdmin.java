@@ -20,7 +20,6 @@ package org.apache.archiva.admin.repository.remote;
 
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.configuration.Configuration;
@@ -28,7 +27,12 @@ import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryCheckPath;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.commons.io.FileUtils;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.PasswordCredentials;
+import org.apache.archiva.repository.RepositoryCredentials;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
@@ -48,6 +52,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Olivier Lamy
@@ -60,6 +65,9 @@ public class DefaultRemoteRepositoryAdmin
 {
 
     @Inject
+    RepositoryRegistry repositoryRegistry;
+
+    @Inject
     private List<? extends IndexCreator> indexCreators;
 
     @Inject
@@ -69,7 +77,7 @@ public class DefaultRemoteRepositoryAdmin
     private void initialize()
         throws RepositoryAdminException
     {
-        for ( RemoteRepository remoteRepository : getRemoteRepositories() )
+        for ( org.apache.archiva.admin.model.beans.RemoteRepository remoteRepository : getRemoteRepositories() )
         {
             createIndexContext( remoteRepository );
         }
@@ -81,9 +89,9 @@ public class DefaultRemoteRepositoryAdmin
     {
         try
         {
-            List<RemoteRepository> remoteRepositories = getRemoteRepositories();
+            List<org.apache.archiva.admin.model.beans.RemoteRepository> remoteRepositories = getRemoteRepositories();
             // close index on shutdown
-            for ( RemoteRepository remoteRepository : remoteRepositories )
+            for ( org.apache.archiva.admin.model.beans.RemoteRepository remoteRepository : remoteRepositories )
             {
                 IndexingContext context = indexer.getIndexingContexts().get( remoteRepository.getId() );
                 if ( context != null )
@@ -99,53 +107,74 @@ public class DefaultRemoteRepositoryAdmin
     }
 
 
-    @Override
-    public List<RemoteRepository> getRemoteRepositories()
-        throws RepositoryAdminException
-    {
-        List<RemoteRepository> remoteRepositories =
-            new ArrayList<>( getArchivaConfiguration().getConfiguration().getRemoteRepositories().size() );
-        for ( RemoteRepositoryConfiguration repositoryConfiguration : getArchivaConfiguration().getConfiguration().getRemoteRepositories() )
-        {
-            RemoteRepository remoteRepository =
-                new RemoteRepository( repositoryConfiguration.getId(), repositoryConfiguration.getName(),
-                                      repositoryConfiguration.getUrl(), repositoryConfiguration.getLayout(),
-                                      repositoryConfiguration.getUsername(), repositoryConfiguration.getPassword(),
-                                      repositoryConfiguration.getTimeout() );
-            remoteRepository.setDownloadRemoteIndex( repositoryConfiguration.isDownloadRemoteIndex() );
-            remoteRepository.setRemoteIndexUrl( repositoryConfiguration.getRemoteIndexUrl() );
-            remoteRepository.setCronExpression( repositoryConfiguration.getRefreshCronExpression() );
-            remoteRepository.setIndexDirectory( repositoryConfiguration.getIndexDir() );
-            remoteRepository.setRemoteDownloadNetworkProxyId(
-                repositoryConfiguration.getRemoteDownloadNetworkProxyId() );
-            remoteRepository.setRemoteDownloadTimeout( repositoryConfiguration.getRemoteDownloadTimeout() );
-            remoteRepository.setDownloadRemoteIndexOnStartup(
-                repositoryConfiguration.isDownloadRemoteIndexOnStartup() );
-            remoteRepository.setDescription( repositoryConfiguration.getDescription() );
-            remoteRepository.setExtraHeaders( repositoryConfiguration.getExtraHeaders() );
-            remoteRepository.setExtraParameters( repositoryConfiguration.getExtraParameters() );
-            remoteRepository.setCheckPath(repositoryConfiguration.getCheckPath());
-            remoteRepositories.add( remoteRepository );
+    /*
+ * Conversion between the repository from the registry and the serialized DTO for the admin API
+ */
+    private org.apache.archiva.admin.model.beans.RemoteRepository convertRepo( RemoteRepository repo ) {
+        if (repo==null) {
+            return null;
         }
-        return remoteRepositories;
+        org.apache.archiva.admin.model.beans.RemoteRepository adminRepo = new org.apache.archiva.admin.model.beans.RemoteRepository( getArchivaConfiguration().getDefaultLocale() );
+        setBaseRepoAttributes( adminRepo, repo );
+        adminRepo.setUrl( convertUriToString( repo.getLocation() ));
+        adminRepo.setCronExpression( repo.getSchedulingDefinition() );
+        adminRepo.setCheckPath( repo.getCheckPath() );
+        adminRepo.setExtraHeaders( repo.getExtraHeaders() );
+        adminRepo.setExtraParameters( repo.getExtraParameters() );
+        adminRepo.setTimeout( (int) repo.getTimeout().getSeconds() );
+        RepositoryCredentials creds = repo.getLoginCredentials();
+        if (creds!=null && creds instanceof PasswordCredentials) {
+            PasswordCredentials pCreds = (PasswordCredentials) creds;
+            adminRepo.setUserName( pCreds.getUsername() );
+            adminRepo.setPassword( new String(pCreds.getPassword()!=null ? pCreds.getPassword() : new char[0]) );
+        }
+        if (repo.supportsFeature( RemoteIndexFeature.class )) {
+            RemoteIndexFeature rif = repo.getFeature( RemoteIndexFeature.class ).get();
+            adminRepo.setRemoteIndexUrl( convertUriToString( rif.getIndexUri() ) );
+            adminRepo.setDownloadRemoteIndex( rif.isDownloadRemoteIndex() );
+            adminRepo.setRemoteDownloadNetworkProxyId( rif.getProxyId() );
+            adminRepo.setDownloadRemoteIndexOnStartup( rif.isDownloadRemoteIndexOnStartup() );
+            adminRepo.setRemoteDownloadTimeout( (int) rif.getDownloadTimeout().getSeconds() );
+        }
+        return adminRepo;
+    }
+
+    private RemoteRepositoryConfiguration getRepositoryConfiguration( org.apache.archiva.admin.model.beans.RemoteRepository repo) {
+        RemoteRepositoryConfiguration repoConfig = new RemoteRepositoryConfiguration();
+        setBaseRepoAttributes( repoConfig, repo );
+        repoConfig.setUrl( getRepositoryCommonValidator().removeExpressions( repo.getUrl() ) );
+        repoConfig.setRefreshCronExpression( repo.getCronExpression() );
+        repoConfig.setCheckPath( repo.getCheckPath() );
+        repoConfig.setExtraHeaders( repo.getExtraHeaders() );
+        repoConfig.setExtraParameters( repo.getExtraParameters() );
+        repoConfig.setUsername( repo.getUserName() );
+        repoConfig.setPassword( repo.getPassword() );
+        repoConfig.setTimeout( repo.getTimeout() );
+        repoConfig.setRemoteIndexUrl( repo.getRemoteIndexUrl() );
+        repoConfig.setDownloadRemoteIndex( repo.isDownloadRemoteIndex() );
+        repoConfig.setRemoteDownloadNetworkProxyId( repo.getRemoteDownloadNetworkProxyId() );
+        repoConfig.setDownloadRemoteIndexOnStartup( repo.isDownloadRemoteIndexOnStartup() );
+        repoConfig.setRemoteDownloadTimeout( repo.getRemoteDownloadTimeout() );
+        return repoConfig;
     }
 
     @Override
-    public RemoteRepository getRemoteRepository( String repositoryId )
+    public List<org.apache.archiva.admin.model.beans.RemoteRepository> getRemoteRepositories()
         throws RepositoryAdminException
     {
-        for ( RemoteRepository remoteRepository : getRemoteRepositories() )
-        {
-            if ( StringUtils.equals( repositoryId, remoteRepository.getId() ) )
-            {
-                return remoteRepository;
-            }
-        }
-        return null;
+
+        return repositoryRegistry.getRemoteRepositories().stream().map( repo -> convertRepo( repo ) ).collect( Collectors.toList());
     }
 
     @Override
-    public Boolean addRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
+    public org.apache.archiva.admin.model.beans.RemoteRepository getRemoteRepository( String repositoryId )
+        throws RepositoryAdminException
+    {
+        return convertRepo( repositoryRegistry.getRemoteRepository( repositoryId ));
+    }
+
+    @Override
+    public Boolean addRemoteRepository( org.apache.archiva.admin.model.beans.RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
         triggerAuditEvent( remoteRepository.getId(), null, AuditEvent.ADD_REMOTE_REPO, auditInformation );
@@ -172,11 +201,21 @@ public class DefaultRemoteRepositoryAdmin
             }
         }
 
-        RemoteRepositoryConfiguration remoteRepositoryConfiguration =
-            getRemoteRepositoryConfiguration( remoteRepository );
-
         Configuration configuration = getArchivaConfiguration().getConfiguration();
-        configuration.addRemoteRepository( remoteRepositoryConfiguration );
+        RemoteRepositoryConfiguration remoteRepositoryConfiguration =
+            getRepositoryConfiguration( remoteRepository );
+
+        try
+        {
+            repositoryRegistry.putRepository( remoteRepositoryConfiguration, configuration );
+        }
+        catch ( RepositoryException e )
+        {
+            log.error("Could not add remote repository {}: {}", remoteRepositoryConfiguration.getId(), e.getMessage(), e);
+            throw new RepositoryAdminException( "Adding of remote repository failed"+(e.getMessage()==null?"":": "+e.getMessage()) );
+
+        }
+
         saveConfiguration( configuration );
 
         return Boolean.TRUE;
@@ -191,15 +230,19 @@ public class DefaultRemoteRepositoryAdmin
 
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
-        RemoteRepositoryConfiguration remoteRepositoryConfiguration =
-            configuration.getRemoteRepositoriesAsMap().get( repositoryId );
-        if ( remoteRepositoryConfiguration == null )
-        {
-            throw new RepositoryAdminException(
-                "remoteRepository with id " + repositoryId + " not exist cannot remove it" );
+        RemoteRepository repo = repositoryRegistry.getRemoteRepository( repositoryId );
+        if (repo==null) {
+            throw new RepositoryAdminException( "Could not delete repository "+repositoryId+". The repository does not exist." );
         }
-
-        configuration.removeRemoteRepository( remoteRepositoryConfiguration );
+        try
+        {
+            repositoryRegistry.removeRepository( repo, configuration );
+        }
+        catch ( RepositoryException e )
+        {
+            log.error("Deletion of remote repository failed {}: {}", repo.getId(), e.getMessage(), e);
+            throw new RepositoryAdminException( "Could not delete remote repository"+(e.getMessage()==null?"":": "+e.getMessage()) );
+        }
 
         // TODO use ProxyConnectorAdmin interface ?
         // [MRM-520] Proxy Connectors are not deleted with the deletion of a Repository.
@@ -218,7 +261,7 @@ public class DefaultRemoteRepositoryAdmin
     }
 
     @Override
-    public Boolean updateRemoteRepository( RemoteRepository remoteRepository, AuditInformation auditInformation )
+    public Boolean updateRemoteRepository( org.apache.archiva.admin.model.beans.RemoteRepository remoteRepository, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
 
@@ -230,30 +273,27 @@ public class DefaultRemoteRepositoryAdmin
 
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
-        RemoteRepositoryConfiguration remoteRepositoryConfiguration =
-            configuration.getRemoteRepositoriesAsMap().get( repositoryId );
-        if ( remoteRepositoryConfiguration == null )
+        RemoteRepositoryConfiguration remoteRepositoryConfiguration = getRepositoryConfiguration( remoteRepository );
+        try
         {
-            throw new RepositoryAdminException(
-                "remoteRepository with id " + repositoryId + " not exist cannot remove it" );
+            repositoryRegistry.putRepository( remoteRepositoryConfiguration, configuration );
         }
-
-        configuration.removeRemoteRepository( remoteRepositoryConfiguration );
-
-        remoteRepositoryConfiguration = getRemoteRepositoryConfiguration( remoteRepository );
-        configuration.addRemoteRepository( remoteRepositoryConfiguration );
+        catch ( RepositoryException e )
+        {
+            log.error("Could not update remote repository {}: {}", remoteRepositoryConfiguration.getId(), e.getMessage(), e);
+            throw new RepositoryAdminException( "Update of remote repository failed"+(e.getMessage()==null?"":": "+e.getMessage()) );
+        }
         saveConfiguration( configuration );
-
         return Boolean.TRUE;
     }
 
     @Override
-    public Map<String, RemoteRepository> getRemoteRepositoriesAsMap()
+    public Map<String, org.apache.archiva.admin.model.beans.RemoteRepository> getRemoteRepositoriesAsMap()
         throws RepositoryAdminException
     {
-        java.util.Map<String, RemoteRepository> map = new HashMap<>();
+        java.util.Map<String, org.apache.archiva.admin.model.beans.RemoteRepository> map = new HashMap<>();
 
-        for ( RemoteRepository repo : getRemoteRepositories() )
+        for ( org.apache.archiva.admin.model.beans.RemoteRepository repo : getRemoteRepositories() )
         {
             map.put( repo.getId(), repo );
         }
@@ -262,7 +302,7 @@ public class DefaultRemoteRepositoryAdmin
     }
 
     @Override
-    public IndexingContext createIndexContext( RemoteRepository remoteRepository )
+    public IndexingContext createIndexContext( org.apache.archiva.admin.model.beans.RemoteRepository remoteRepository )
         throws RepositoryAdminException
     {
         try
@@ -328,7 +368,7 @@ public class DefaultRemoteRepositoryAdmin
 
     }
 
-    protected String calculateIndexRemoteUrl( RemoteRepository remoteRepository )
+    protected String calculateIndexRemoteUrl( org.apache.archiva.admin.model.beans.RemoteRepository remoteRepository )
     {
         if ( StringUtils.startsWith( remoteRepository.getRemoteIndexUrl(), "http" ) )
         {
@@ -345,30 +385,6 @@ public class DefaultRemoteRepositoryAdmin
 
     }
 
-    private RemoteRepositoryConfiguration getRemoteRepositoryConfiguration( RemoteRepository remoteRepository )
-    {
-        RemoteRepositoryConfiguration remoteRepositoryConfiguration = new RemoteRepositoryConfiguration();
-        remoteRepositoryConfiguration.setId( remoteRepository.getId() );
-        remoteRepositoryConfiguration.setPassword( remoteRepository.getPassword() );
-        remoteRepositoryConfiguration.setTimeout( remoteRepository.getTimeout() );
-        remoteRepositoryConfiguration.setUrl( remoteRepository.getUrl() );
-        remoteRepositoryConfiguration.setUsername( remoteRepository.getUserName() );
-        remoteRepositoryConfiguration.setLayout( remoteRepository.getLayout() );
-        remoteRepositoryConfiguration.setName( remoteRepository.getName() );
-        remoteRepositoryConfiguration.setDownloadRemoteIndex( remoteRepository.isDownloadRemoteIndex() );
-        remoteRepositoryConfiguration.setRemoteIndexUrl( remoteRepository.getRemoteIndexUrl() );
-        remoteRepositoryConfiguration.setRefreshCronExpression( remoteRepository.getCronExpression() );
-        remoteRepositoryConfiguration.setIndexDir( remoteRepository.getIndexDirectory() );
-        remoteRepositoryConfiguration.setRemoteDownloadNetworkProxyId(
-            remoteRepository.getRemoteDownloadNetworkProxyId() );
-        remoteRepositoryConfiguration.setRemoteDownloadTimeout( remoteRepository.getRemoteDownloadTimeout() );
-        remoteRepositoryConfiguration.setDownloadRemoteIndexOnStartup(
-            remoteRepository.isDownloadRemoteIndexOnStartup() );
-        remoteRepositoryConfiguration.setDescription( remoteRepository.getDescription() );
-        remoteRepositoryConfiguration.setExtraHeaders( remoteRepository.getExtraHeaders() );
-        remoteRepositoryConfiguration.setExtraParameters( remoteRepository.getExtraParameters() );
-        remoteRepositoryConfiguration.setCheckPath(remoteRepository.getCheckPath());
-        return remoteRepositoryConfiguration;
-    }
+
 
 }

@@ -43,6 +43,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -106,8 +107,9 @@ public abstract class AbstractRepositoryAdminTest
 
     protected ManagedRepository getTestManagedRepository( String repoId, String repoLocation )
     {
-        return new ManagedRepository( repoId, "test repo", repoLocation, "default", false, true, true, "0 0 * * * ?",
-                                      repoLocation + "/.index", false, 1, 2, true, false );
+        String repoLocationStr = Paths.get(repoLocation, ".index").toString();
+        return new ManagedRepository( Locale.getDefault( ), repoId, "test repo", repoLocation, "default", false, true, true, "0 0 * * * ?",
+                                      repoLocationStr, false, 1, 2, true, false );
     }
 
     protected Path clearRepoLocation(String path )
@@ -141,7 +143,7 @@ public abstract class AbstractRepositoryAdminTest
 
     protected RemoteRepository getRemoteRepository( String id )
     {
-        RemoteRepository remoteRepository = new RemoteRepository();
+        RemoteRepository remoteRepository = new RemoteRepository(Locale.getDefault());
         remoteRepository.setUrl( "http://foo.com/maven-it-rocks" );
         remoteRepository.setTimeout( 10 );
         remoteRepository.setName( "maven foo" );

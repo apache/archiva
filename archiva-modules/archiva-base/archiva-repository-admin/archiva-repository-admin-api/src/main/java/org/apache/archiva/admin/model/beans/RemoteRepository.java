@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -104,22 +105,25 @@ public class RemoteRepository
      */
     private List<PropertyEntry> extraHeadersEntries;
 
-
-    public RemoteRepository()
-    {
-        // no op
+    public RemoteRepository() {
+        super(Locale.getDefault());
     }
 
-    public RemoteRepository( String id, String name, String url, String layout )
+    public RemoteRepository(Locale locale)
     {
-        super( id, name, layout );
+        super(locale);
+    }
+
+    public RemoteRepository( Locale locale, String id, String name, String url, String layout )
+    {
+        super( locale, id, name, layout );
         this.url = url;
     }
 
-    public RemoteRepository( String id, String name, String url, String layout, String userName, String password,
+    public RemoteRepository( Locale locale, String id, String name, String url, String layout, String userName, String password,
                              int timeout )
     {
-        super( id, name, layout );
+        super( locale, id, name, layout );
         this.url = StringUtils.stripEnd(url,"/");
         this.userName = userName;
         this.password = password;
@@ -129,10 +133,10 @@ public class RemoteRepository
     /**
      * @since 1.4-M3
      */
-    public RemoteRepository( String id, String name, String url, String layout, String userName, String password,
+    public RemoteRepository( Locale locale, String id, String name, String url, String layout, String userName, String password,
                              int timeout, String description )
     {
-        this( id, name, url, layout, userName, password, timeout );
+        this( locale, id, name, url, layout, userName, password, timeout );
         setDescription( description );
     }
 

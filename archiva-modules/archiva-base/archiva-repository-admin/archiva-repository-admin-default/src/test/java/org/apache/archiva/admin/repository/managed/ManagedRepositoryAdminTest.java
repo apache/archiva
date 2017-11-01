@@ -20,14 +20,25 @@ package org.apache.archiva.admin.repository.managed;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
+import org.apache.archiva.common.utils.FileUtils;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
+import org.junit.Before;
 import org.junit.Test;
 
+import javax.inject.Inject;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Olivier Lamy
@@ -35,12 +46,33 @@ import java.util.List;
 public class ManagedRepositoryAdminTest
     extends AbstractRepositoryAdminTest
 {
+    @Inject
+    private ArchivaConfiguration archivaConfiguration;
+
+    @Inject
+    private RepositoryRegistry repositoryRegistry;
+
     public static final String STAGE_REPO_ID_END = DefaultManagedRepositoryAdmin.STAGE_REPO_ID_END;
 
 
     String repoId = "test-new-one";
 
     String repoLocation = Paths.get(APPSERVER_BASE_PATH, repoId).toString();
+
+    @Before
+    public void setup() throws IOException, URISyntaxException
+    {
+        Path archivaCfg1 = Paths.get( System.getProperty( "user.home" ), ".m2", "archiva.xml" );
+        Files.deleteIfExists( archivaCfg1 );
+        Path archivaCfg2 = Paths.get(APPSERVER_BASE_PATH, "conf/archiva.xml");
+        Files.deleteIfExists( archivaCfg2 );
+        Files.createDirectories( archivaCfg2.getParent() );
+        URL url = Thread.currentThread().getContextClassLoader().getResource( "default-archiva.xml" );
+        Path defaultCfg = Paths.get(url.toURI());
+        Files.copy( defaultCfg, archivaCfg2, StandardCopyOption.REPLACE_EXISTING );
+        archivaConfiguration.reload();
+        repositoryRegistry.reload();
+    }
 
     @Test
     public void getAllManagedRepos()
@@ -83,7 +115,7 @@ public class ManagedRepositoryAdminTest
         int initialSize = repos.size();
         assertTrue( initialSize > 0 );
 
-        ManagedRepository repo = new ManagedRepository();
+        ManagedRepository repo = new ManagedRepository( Locale.getDefault());
         repo.setId( repoId );
         repo.setName( "test repo" );
         repo.setLocation( repoLocation );
@@ -135,7 +167,7 @@ public class ManagedRepositoryAdminTest
         int initialSize = repos.size();
         assertTrue( initialSize > 0 );
 
-        ManagedRepository repo = new ManagedRepository();
+        ManagedRepository repo = new ManagedRepository(Locale.getDefault());
         repo.setId( repoId );
         repo.setName( "test repo" );
         repo.setLocation( repoLocation );
@@ -200,7 +232,7 @@ public class ManagedRepositoryAdminTest
         int initialSize = repos.size();
         assertTrue( initialSize > 0 );
 
-        ManagedRepository repo = new ManagedRepository();
+        ManagedRepository repo = new ManagedRepository(Locale.getDefault());
         repo.setId( repoId );
         repo.setName( "test repo" );
         repo.setLocation( repoLocation );
@@ -250,6 +282,7 @@ public class ManagedRepositoryAdminTest
         String stageRepoLocation = Paths.get(APPSERVER_BASE_PATH, repoId).toString();
 
         Path repoDir = clearRepoLocation( repoLocation );
+        clearRepoLocation( repoLocation+STAGE_REPO_ID_END );
 
         mockAuditListener.clearEvents();
         List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories();
@@ -284,16 +317,17 @@ public class ManagedRepositoryAdminTest
         managedRepositoryAdmin.updateManagedRepository( repo, true, getFakeAuditInformation(), false );
 
         repo = managedRepositoryAdmin.getManagedRepository( repoId );
+        System.err.println("REPOSITORY "+repo.getLocation());
         assertNotNull( repo );
         assertEquals( newName, repo.getName() );
-        assertEquals( Paths.get( repoLocation ).normalize(), Paths.get( repo.getLocation() ).normalize() );
+        assertEquals( Paths.get( repoLocation ).toAbsolutePath(), Paths.get( repo.getLocation() ).toAbsolutePath() );
         assertTrue( Files.exists( Paths.get(repoLocation )) );
         assertEquals( getTestManagedRepository( repoId, repoLocation ).getCronExpression(), repo.getCronExpression() );
         assertEquals( getTestManagedRepository( repoId, repoLocation ).getLayout(), repo.getLayout() );
         assertEquals( getTestManagedRepository( repoId, repoLocation ).getId(), repo.getId() );
         assertEquals( getTestManagedRepository( repoId, repoLocation ).getIndexDirectory(), repo.getIndexDirectory() );
 
-        assertEquals( getTestManagedRepository( repoId, repoLocation ).getDaysOlder(), repo.getDaysOlder() );
+        assertEquals( getTestManagedRepository( repoId, repoLocation ).getRetentionPeriod(), repo.getRetentionPeriod() );
         assertEquals( getTestManagedRepository( repoId, repoLocation ).getRetentionCount(), repo.getRetentionCount() );
         assertEquals( getTestManagedRepository( repoId, repoLocation ).isDeleteReleasedSnapshots(),
                       repo.isDeleteReleasedSnapshots() );
@@ -319,7 +353,7 @@ public class ManagedRepositoryAdminTest
 
         mockAuditListener.clearEvents();
 
-        Files.deleteIfExists(Paths.get( repoLocation + STAGE_REPO_ID_END ));
+        FileUtils.deleteQuietly( Paths.get( repoLocation + STAGE_REPO_ID_END ));
         assertFalse( Files.exists(Paths.get( repoLocation + STAGE_REPO_ID_END )) );
     }
 

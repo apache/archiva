@@ -30,6 +30,10 @@
   <name>Archiva Base :: Repository Admin Api</name>
   <dependencies>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-repository-layer</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
     </dependency>

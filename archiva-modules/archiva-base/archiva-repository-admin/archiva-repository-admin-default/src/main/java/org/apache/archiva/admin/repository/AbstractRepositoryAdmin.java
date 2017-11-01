@@ -21,13 +21,18 @@ package org.apache.archiva.admin.repository;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.RepositoryCommonValidator;
+import org.apache.archiva.admin.model.beans.AbstractRepository;
+import org.apache.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.components.registry.Registry;
+import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.events.AuditListener;
+import org.apache.archiva.repository.features.IndexCreationFeature;
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
@@ -36,6 +41,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.net.URI;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,6 +98,43 @@ public abstract class AbstractRepositoryAdmin
             throw new RepositoryAdminException(
                 "Error occurred while saving the configuration: " + e.getLocalizedMessage(), e );
         }
+    }
+
+    protected String convertUriToString( URI uri ) {
+        if (uri==null) {
+            return "";
+        }
+        String result;
+        if (uri.getScheme()==null) {
+            result = uri.getPath();
+        } else if ("file".equals(uri.getScheme())) {
+            result = Paths.get(uri).normalize().toString();
+        } else {
+            result = uri.toString();
+        }
+        log.debug("Converted uri {} -> {}", uri, result);
+        return result;
+    }
+
+    protected void setBaseRepoAttributes( AbstractRepository adminRepo, Repository repo){
+        adminRepo.setId(repo.getId());
+        adminRepo.setName( repo.getName() );
+        adminRepo.setLayout( repo.getLayout( ) );
+        adminRepo.setDescription( repo.getDescription() );
+        adminRepo.setType(repo.getType()==null?"MAVEN": repo.getType().name());
+        if (repo.supportsFeature( IndexCreationFeature.class )) {
+            IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class ).get();
+            adminRepo.setIndexDirectory( convertUriToString( icf.getIndexPath() ) );
+        }
+    }
+
+    protected void setBaseRepoAttributes( AbstractRepositoryConfiguration repoConfig, AbstractRepository repo) {
+        repoConfig.setId( repo.getId() );
+        repoConfig.setName( repo.getName() );
+        repoConfig.setLayout( repo.getLayout() );
+        repoConfig.setDescription( repo.getDescription() );
+        repoConfig.setIndexDir( repo.getIndexDirectory() );
+        repoConfig.setType( StringUtils.isEmpty( repo.getType() ) ? "MAVEN" : repo.getType() );
     }
 
     private static class ModelMapperHolder

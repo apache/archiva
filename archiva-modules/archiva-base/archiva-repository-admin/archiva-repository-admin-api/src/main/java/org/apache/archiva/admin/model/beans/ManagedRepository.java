@@ -21,6 +21,7 @@ package org.apache.archiva.admin.model.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
+import java.util.Locale;
 
 /**
  * @author Olivier Lamy
@@ -57,7 +58,7 @@ public class ManagedRepository
     /**
      * default model value
      */
-    private int retentionTime = 100;
+    private int retentionPeriod = 100;
 
     /**
      * default model value
@@ -75,17 +76,22 @@ public class ManagedRepository
      */
     private boolean skipPackedIndexCreation;
 
-    public ManagedRepository()
-    {
-        // no op
+    public ManagedRepository() {
+        super(Locale.getDefault());
     }
 
-    public ManagedRepository( String id, String name, String location, String layout, boolean snapshots,
+    public ManagedRepository(Locale defaultLocale)
+    {
+        super(defaultLocale);
+    }
+
+
+    public ManagedRepository( Locale defaultLocale, String id, String name, String location, String layout, boolean snapshots,
                               boolean releases, boolean blockRedeployments, String cronExpression, String indexDir,
-                              boolean scanned, int retentionTime, int retentionCount, boolean deleteReleasedSnapshots,
+                              boolean scanned, int retentionPeriod, int retentionCount, boolean deleteReleasedSnapshots,
                               boolean stageRepoNeeded )
     {
-        super( id, name, layout );
+        super( defaultLocale, id, name, layout );
 
         this.location = location;
         this.snapshots = snapshots;
@@ -94,7 +100,7 @@ public class ManagedRepository
         this.setCronExpression( cronExpression );
         this.setIndexDirectory( indexDir );
         this.scanned = scanned;
-        this.retentionTime = retentionTime;
+        this.retentionPeriod = retentionPeriod;
         this.retentionCount = retentionCount;
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
         this.stageRepoNeeded = stageRepoNeeded;
@@ -103,13 +109,13 @@ public class ManagedRepository
     /**
      * @since 1.4-M3
      */
-    public ManagedRepository( String id, String name, String location, String layout, boolean snapshots,
+    public ManagedRepository( Locale defaultLocale, String id, String name, String location, String layout, boolean snapshots,
                               boolean releases, boolean blockRedeployments, String cronExpression, String indexDir,
-                              boolean scanned, int retentionTime, int retentionCount, boolean deleteReleasedSnapshots,
+                              boolean scanned, int retentionPeriod, int retentionCount, boolean deleteReleasedSnapshots,
                               boolean stageRepoNeeded, String description, boolean skipPackedIndexCreation )
     {
-        this( id, name, location, layout, snapshots, releases, blockRedeployments, cronExpression, indexDir, scanned,
-              retentionTime, retentionCount, deleteReleasedSnapshots, stageRepoNeeded );
+        this( defaultLocale, id, name, location, layout, snapshots, releases, blockRedeployments, cronExpression, indexDir, scanned,
+            retentionPeriod, retentionCount, deleteReleasedSnapshots, stageRepoNeeded );
         setDescription( description );
         setSkipPackedIndexCreation( skipPackedIndexCreation );
     }
@@ -192,14 +198,14 @@ public class ManagedRepository
     }
 
 
-    public int getDaysOlder()
+    public int getRetentionPeriod()
     {
-        return retentionTime;
+        return retentionPeriod;
     }
 
-    public void setDaysOlder( int retentionTime )
+    public void setRetentionPeriod( int periodInDays )
     {
-        this.retentionTime = retentionTime;
+        this.retentionPeriod = periodInDays;
     }
 
     public int getRetentionCount()
@@ -265,7 +271,7 @@ public class ManagedRepository
         sb.append( ", cronExpression='" ).append( cronExpression ).append( '\'' );
         sb.append( ", stagingRepository=" ).append( stagingRepository );
         sb.append( ", scanned=" ).append( scanned );
-        sb.append( ", retentionTime=" ).append( retentionTime );
+        sb.append( ", retentionPeriod=" ).append( retentionPeriod );
         sb.append( ", retentionCount=" ).append( retentionCount );
         sb.append( ", deleteReleasedSnapshots=" ).append( deleteReleasedSnapshots );
         sb.append( ", stageRepoNeeded=" ).append( stageRepoNeeded );

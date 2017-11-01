@@ -68,4 +68,5 @@ public interface ManagedRepositoryAdmin
             throws RepositoryAdminException;
 
 
+    IndexingContext createIndexContext( org.apache.archiva.repository.ManagedRepository repository) throws RepositoryAdminException;
 }
