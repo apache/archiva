@@ -22,6 +22,7 @@ package org.apache.archiva.common.utils;
 import org.apache.commons.lang.StringUtils;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -94,5 +95,23 @@ public class PathUtil
     {
 
         return getRelative(basedir, Paths.get(child));
+    }
+
+    /**
+     * Returns a path object from the given URI. If the URI has no scheme, the path of the URI is used
+     * for creating the filesystem path.
+     *
+     * @param uri the uri to convert
+     * @return a path object with the given path
+     * @throws java.nio.file.FileSystemNotFoundException if the uri scheme is not known.
+     */
+    public static Path getPathFromUri( URI uri) {
+        if (uri==null) {
+            return Paths.get("");
+        } else if (uri.getScheme()==null) {
+            return Paths.get(uri.getPath());
+        } else {
+            return Paths.get(uri);
+        }
     }
 }
