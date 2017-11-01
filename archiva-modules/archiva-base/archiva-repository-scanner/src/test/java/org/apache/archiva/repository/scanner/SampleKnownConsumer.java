@@ -19,10 +19,10 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.repository.ManagedRepository;
 
 import java.util.Date;
 import java.util.List;

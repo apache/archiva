@@ -26,6 +26,7 @@ import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.converter.RepositoryConversionException;
+import org.apache.archiva.repository.BasicManagedRepository;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * DefaultLegacyRepositoryConverter
@@ -90,10 +92,8 @@ public class DefaultLegacyRepositoryConverter
         {
             String defaultRepositoryUrl = PathUtil.toUrl( repositoryDirectory );
 
-            ManagedRepository legacyRepository = new ManagedRepository();
-            legacyRepository.setId( "legacy" );
-            legacyRepository.setName( "Legacy Repository" );
-            legacyRepository.setLocation( legacyRepositoryDirectory.toAbsolutePath().toString() );
+            BasicManagedRepository legacyRepository = new BasicManagedRepository( "legacy", "Legacy Repository");
+            legacyRepository.setLocation( legacyRepositoryDirectory.toAbsolutePath().toUri() );
             legacyRepository.setLayout( "legacy" );
 
             ArtifactRepository repository =

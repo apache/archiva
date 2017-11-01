@@ -28,7 +28,10 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.metadata.repository"/>
+  <context:component-scan base-package="org.apache.archiva.metadata.repository,org.apache.archiva.repository.content.maven2,org.apache.archiva.proxy,org.apache.archiva.repository.mock"/>
+  <alias name="managedRepositoryContent#maven" alias="managedRepositoryContent#default" />
+  <alias name="remoteRepositoryContent#maven" alias="remoteRepositoryContent#default" />
+  <alias name="mockRepositoryProvider" alias="mavenRepositoryProvider" />
 
   <alias name="archivaConfiguration#mock" alias="archivaConfiguration#default"/>
   <alias name="archivaConfiguration#mock" alias="archivaConfiguration"/>

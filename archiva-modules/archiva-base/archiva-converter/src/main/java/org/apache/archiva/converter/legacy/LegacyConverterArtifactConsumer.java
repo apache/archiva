@@ -19,7 +19,6 @@ package org.apache.archiva.converter.legacy;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
@@ -28,6 +27,7 @@ import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.converter.artifact.ArtifactConversionException;
 import org.apache.archiva.converter.artifact.ArtifactConverter;
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
@@ -85,7 +85,7 @@ public class LegacyConverterArtifactConsumer
     }
 
     @Override
-    public void beginScan( ManagedRepository repository, Date whenGathered )
+    public void beginScan( org.apache.archiva.repository.ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
         this.managedRepository = new ManagedDefaultRepositoryContent();

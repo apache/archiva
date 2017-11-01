@@ -19,7 +19,7 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.commons.collections.CollectionUtils;
 
 import javax.xml.bind.annotation.XmlRootElement;

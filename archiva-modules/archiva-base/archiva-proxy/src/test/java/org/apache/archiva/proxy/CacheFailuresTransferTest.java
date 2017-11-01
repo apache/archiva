@@ -112,6 +112,7 @@ public class CacheFailuresTransferTest
         saveRemoteRepositoryConfig( "badproxied1", "Bad Proxied 1", "test://bad.machine.com/repo/", "default" );
         saveRemoteRepositoryConfig( "badproxied2", "Bad Proxied 2", "test://bad.machine.com/anotherrepo/", "default" );
 
+
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, "badproxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );

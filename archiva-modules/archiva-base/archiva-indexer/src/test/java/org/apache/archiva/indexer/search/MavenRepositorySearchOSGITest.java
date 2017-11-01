@@ -26,6 +26,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Olivier Lamy
@@ -44,7 +45,8 @@ public class MavenRepositorySearchOSGITest
         List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
 
         // search artifactId
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 

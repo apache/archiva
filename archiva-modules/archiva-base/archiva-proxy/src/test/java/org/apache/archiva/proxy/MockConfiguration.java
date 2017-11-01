@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 
@@ -144,5 +145,17 @@ public class MockConfiguration
     public void reload()
     {
         // no op
+    }
+
+    @Override
+    public Locale getDefaultLocale( )
+    {
+        return Locale.getDefault();
+    }
+
+    @Override
+    public List<Locale.LanguageRange> getLanguagePriorities( )
+    {
+        return Locale.LanguageRange.parse( "en,fr,de" );
     }
 }

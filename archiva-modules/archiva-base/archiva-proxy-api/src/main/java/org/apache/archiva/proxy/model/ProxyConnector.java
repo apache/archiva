@@ -137,7 +137,7 @@ public class ProxyConnector
 
         sb.append( "ProxyConnector[\n" );
         sb.append( "  source: [managed] " ).append( this.sourceRepository.getRepoRoot() ).append( "\n" );
-        sb.append( "  target: [remote] " ).append( this.targetRepository.getRepository().getUrl() ).append( "\n" );
+        sb.append( "  target: [remote] " ).append( this.targetRepository.getRepository().getLocation() ).append( "\n" );
         sb.append( "  proxyId:" ).append( this.proxyId ).append( "\n" );
 
         Iterator<String> keys = this.policies.keySet().iterator();

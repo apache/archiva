@@ -19,11 +19,12 @@ package org.apache.archiva.repository.scanner;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.BaseFile;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerBeginScanClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
@@ -216,7 +217,8 @@ public class RepositoryScannerInstance
             stats.increaseFileCount();
 
             // consume files regardless - the predicate will check the timestamp
-            BaseFile basefile = new BaseFile( repository.getLocation(), file.toFile() );
+            Path repoPath = PathUtil.getPathFromUri( repository.getLocation() );
+            BaseFile basefile = new BaseFile( repoPath.toString(), file.toFile() );
 
             // Timestamp finished points to the last successful scan, not this current one.
             if ( Files.getLastModifiedTime(file).toMillis() >= changesSince )

@@ -26,7 +26,9 @@ import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.index.ArtifactContext;
@@ -52,6 +54,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Olivier Lamy
@@ -77,6 +80,9 @@ public abstract class AbstractMavenRepositorySearch
 
     @Inject
     ArtifactContextProducer artifactContextProducer;
+
+    @Inject
+    RepositoryRegistry repositoryRegistry;
 
     IMocksControl archivaConfigControl;
 
@@ -116,17 +122,28 @@ public abstract class AbstractMavenRepositorySearch
 
         DefaultProxyConnectorAdmin defaultProxyConnectorAdmin = new DefaultProxyConnectorAdmin();
         defaultProxyConnectorAdmin.setArchivaConfiguration( archivaConfig );
+        repositoryRegistry.setArchivaConfiguration( archivaConfig );
 
         search = new MavenRepositorySearch( nexusIndexer, defaultManagedRepositoryAdmin, defaultProxyConnectorAdmin,
                                             queryCreator );
 
         defaultManagedRepositoryAdmin.setIndexer( nexusIndexer );
         defaultManagedRepositoryAdmin.setIndexCreators( indexCreators );
+        assertNotNull( repositoryRegistry );
+        defaultManagedRepositoryAdmin.setRepositoryRegistry( repositoryRegistry );
 
         config = new Configuration();
         config.addManagedRepository( createRepositoryConfig( TEST_REPO_1 ) );
         config.addManagedRepository( createRepositoryConfig( TEST_REPO_2 ) );
         config.addManagedRepository( createRepositoryConfig( REPO_RELEASE ) );
+
+
+        archivaConfig.addListener( EasyMock.anyObject( ConfigurationListener.class ) );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn(config).anyTimes();
+        archivaConfigControl.replay();
+        repositoryRegistry.reload();
+        archivaConfigControl.reset();
     }
 
     @After

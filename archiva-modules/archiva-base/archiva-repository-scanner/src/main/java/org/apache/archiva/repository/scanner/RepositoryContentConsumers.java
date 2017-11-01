@@ -21,13 +21,14 @@ package org.apache.archiva.repository.scanner;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.BaseFile;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerBeginScanClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
@@ -41,6 +42,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -262,7 +264,7 @@ public class RepositoryContentConsumers
      * @param localFile              the local file to execute the consumers against.
      * @param updateRelatedArtifacts TODO
      */
-    public void executeConsumers(ManagedRepository repository, Path localFile, boolean updateRelatedArtifacts )
+    public void executeConsumers( ManagedRepository repository, Path localFile, boolean updateRelatedArtifacts )
         throws RepositoryAdminException
     {
         List<KnownRepositoryContentConsumer> selectedKnownConsumers = null;
@@ -296,7 +298,8 @@ public class RepositoryContentConsumers
 
             // yuck. In case you can't read this, it says
             // "process the file if the consumer has it in the includes list, and not in the excludes list"
-            BaseFile baseFile = new BaseFile( repository.getLocation(), localFile.toFile() );
+            Path repoPath = PathUtil.getPathFromUri( repository.getLocation() );
+            BaseFile baseFile = new BaseFile( repoPath.toString(), localFile.toFile() );
             ConsumerWantsFilePredicate predicate = new ConsumerWantsFilePredicate( repository );
             predicate.setBasefile( baseFile );
             predicate.setCaseSensitive( false );

@@ -36,6 +36,8 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.index.NexusIndexer;
@@ -55,6 +57,7 @@ import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -117,8 +120,7 @@ public abstract class AbstractProxyTestCase
 
     WagonDelegate delegate;
 
-    @Inject
-    protected ManagedRepositoryAdmin managedRepositoryAdmin;
+    protected RepositoryRegistry repositoryRegistry;
 
     @Inject
     protected NexusIndexer nexusIndexer;
@@ -143,37 +145,43 @@ public abstract class AbstractProxyTestCase
 
         managedDefaultDir = Paths.get( managedDefaultRepository.getRepoRoot() );
 
-        ManagedRepository repoConfig = managedDefaultRepository.getRepository();
+        org.apache.archiva.repository.ManagedRepository repoConfig = managedDefaultRepository.getRepository();
 
         ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
             ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( config );
 
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository( repoConfig, false, null );
+        applicationContext.getBean( RepositoryRegistry.class ).putRepository( repoConfig );
 
         // to prevent windauze file leaking
         removeMavenIndexes();
 
-        ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
-
-        if ( managedRepositoryAdmin.getManagedRepository( repoConfig.getId() ) != null )
-        {
-            managedRepositoryAdmin.deleteManagedRepository( repoConfig.getId(), null, true );
-        }
-
-        managedRepositoryAdmin.addManagedRepository( repoConfig, false, null );
+        repositoryRegistry = applicationContext.getBean( RepositoryRegistry.class );
+        repositoryRegistry.setArchivaConfiguration( config );
 
         // Setup target (proxied to) repository.
         saveRemoteRepositoryConfig( ID_PROXIED1, "Proxied Repository 1",
-                                    Paths.get( REPOPATH_PROXIED1 ).toUri().toURL().toExternalForm(), "default" );
+            Paths.get( REPOPATH_PROXIED1 ).toUri().toURL().toExternalForm(), "default" );
 
         // Setup target (proxied to) repository.
         saveRemoteRepositoryConfig( ID_PROXIED2, "Proxied Repository 2",
-                                    Paths.get( REPOPATH_PROXIED2 ).toUri().toURL().toExternalForm(), "default" );
+            Paths.get( REPOPATH_PROXIED2 ).toUri().toURL().toExternalForm(), "default" );
+
+        repositoryRegistry.reload();
+
+        if ( repositoryRegistry.getManagedRepository( repoConfig.getId() ) != null )
+        {
+            org.apache.archiva.repository.ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( repoConfig.getId() );
+            repositoryRegistry.removeRepository( managedRepository );
+        }
+
+        repositoryRegistry.putRepository( repoConfig );
+
 
         // Setup the proxy handler.
         //proxyHandler = applicationContext.getBean (RepositoryProxyConnectors) lookup( RepositoryProxyConnectors.class.getName() );
 
         proxyHandler = applicationContext.getBean( "repositoryProxyConnectors#test", RepositoryProxyConnectors.class );
+
 
         // Setup the wagon mock.
         wagonMockControl = EasyMock.createNiceControl();
@@ -345,10 +353,8 @@ public abstract class AbstractProxyTestCase
     protected ManagedRepositoryContent createRepository( String id, String name, String path, String layout )
         throws Exception
     {
-        ManagedRepository repo = new ManagedRepository();
-        repo.setId( id );
-        repo.setName( name );
-        repo.setLocation( path );
+        MavenManagedRepository repo = new MavenManagedRepository(id, name);
+        repo.setLocation( new URI(path) );
         repo.setLayout( layout );
 
         ManagedRepositoryContent repoContent =
@@ -477,6 +483,7 @@ public abstract class AbstractProxyTestCase
         config.triggerChange( prefix + ".name", repoConfig.getName() );
         config.triggerChange( prefix + ".url", repoConfig.getUrl() );
         config.triggerChange( prefix + ".layout", repoConfig.getLayout() );
+        repositoryRegistry.reload();
     }
 
     protected Path saveTargetedRepositoryConfig( String id, String originalPath, String targetPath, String layout )

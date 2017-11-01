@@ -20,11 +20,13 @@ package org.apache.archiva.repository.scanner;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.repository.BasicManagedRepository;
+import org.apache.archiva.repository.BasicRemoteRepository;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang.SystemUtils;
 import org.easymock.IMocksControl;
@@ -46,6 +48,8 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -72,19 +76,15 @@ public class RepositoryContentConsumersTest
 
     protected ManagedRepository createRepository( String id, String name, Path location )
     {
-        ManagedRepository repo = new ManagedRepository();
-        repo.setId( id );
-        repo.setName( name );
-        repo.setLocation( location.toAbsolutePath().toString() );
+        BasicManagedRepository repo = new BasicManagedRepository( id, name  );
+        repo.setLocation( location.toAbsolutePath().toUri() );
         return repo;
     }
 
-    protected RemoteRepository createRemoteRepository( String id, String name, String url )
+    protected RemoteRepository createRemoteRepository( String id, String name, String url ) throws URISyntaxException
     {
-        RemoteRepository repo = new RemoteRepository();
-        repo.setId( id );
-        repo.setName( name );
-        repo.setUrl( url );
+        BasicRemoteRepository repo = new BasicRemoteRepository(id, name);
+        repo.setLocation( new URI( url ) );
         return repo;
     }
 

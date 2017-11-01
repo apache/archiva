@@ -19,15 +19,20 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
+import org.apache.archiva.configuration.ConfigurationEvent;
+import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.indexer.util.SearchUtil;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.index_shaded.lucene.index.IndexUpgrader;
 import org.codehaus.plexus.util.FileUtils;
 import org.easymock.EasyMock;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
+import javax.inject.Inject;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -35,6 +40,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
@@ -106,7 +112,8 @@ public class MavenRepositorySearchTest
         List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
 
         // search artifactId
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -125,9 +132,10 @@ public class MavenRepositorySearchTest
 
         archivaConfigControl.reset();
 
-        // search groupId
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
+        // search groupId
         archivaConfigControl.replay();
 
         results = search.search( "user", selectedRepos, "org.apache.archiva", null, null );
@@ -149,7 +157,8 @@ public class MavenRepositorySearchTest
         List<String> selectedRepos = Arrays.asList( TEST_REPO_1 );
 
         // search artifactId
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -169,7 +178,8 @@ public class MavenRepositorySearchTest
         archivaConfigControl.reset();
 
         // search groupId
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -193,7 +203,8 @@ public class MavenRepositorySearchTest
         selectedRepos.add( TEST_REPO_1 );
 
         // search artifactId
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -223,7 +234,8 @@ public class MavenRepositorySearchTest
         selectedRepos.add( TEST_REPO_1 );
 
         // search artifactId
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -259,7 +271,8 @@ public class MavenRepositorySearchTest
         List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
         archivaConfigControl.replay();
 
         SearchResults results = search.search( "user", selectedRepos, "archiva search", null, null );
@@ -283,7 +296,8 @@ public class MavenRepositorySearchTest
         SearchResultLimits limits = new SearchResultLimits( 0 );
         limits.setPageSize( 1 );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -303,7 +317,8 @@ public class MavenRepositorySearchTest
         limits = new SearchResultLimits( 1 );
         limits.setPageSize( 1 );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -338,7 +353,8 @@ public class MavenRepositorySearchTest
 
         config.addManagedRepository( createRepositoryConfig( TEST_REPO_2 ) );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 5 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -373,7 +389,8 @@ public class MavenRepositorySearchTest
         List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -392,7 +409,8 @@ public class MavenRepositorySearchTest
         List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( TEST_REPO_1 );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -409,8 +427,6 @@ public class MavenRepositorySearchTest
     {
         List<String> selectedRepos = new ArrayList<>();
         selectedRepos.add( "non-existing-repo" );
-
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
         archivaConfigControl.replay();
 
@@ -433,7 +449,8 @@ public class MavenRepositorySearchTest
         List<String> previousSearchTerms = new ArrayList<>();
         previousSearchTerms.add( "archiva-test" );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -471,7 +488,8 @@ public class MavenRepositorySearchTest
         searchFields.setVersion( "1.0" );
         searchFields.setRepositories( selectedRepos );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -506,7 +524,8 @@ public class MavenRepositorySearchTest
         SearchResultLimits limits = new SearchResultLimits( 0 );
         limits.setPageSize( 1 );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -524,7 +543,8 @@ public class MavenRepositorySearchTest
         limits = new SearchResultLimits( 1 );
         limits.setPageSize( 1 );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -556,7 +576,8 @@ public class MavenRepositorySearchTest
         searchFields.setArtifactId( "artifactid-numeric" );
         searchFields.setRepositories( selectedRepos );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -599,7 +620,8 @@ public class MavenRepositorySearchTest
 
         try
         {
-            EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+            EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+            EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
             archivaConfigControl.replay();
 
@@ -633,15 +655,16 @@ public class MavenRepositorySearchTest
 
         try
         {
-            EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
 
+            EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+            EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
             archivaConfigControl.replay();
 
             search.search( "user", searchFields, null );
 
             archivaConfigControl.verify();
 
-            fail( "A RepositorySearchExcecption should have been thrown." );
+            fail( "A RepositorySearchException should have been thrown." );
         }
         catch ( RepositorySearchException e )
         {
@@ -666,7 +689,8 @@ public class MavenRepositorySearchTest
         searchFields.setClassName( "org.apache.archiva.test.App" );
         searchFields.setRepositories( selectedRepos );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -697,7 +721,8 @@ public class MavenRepositorySearchTest
         searchFields.setPackaging( "jar" );
         searchFields.setRepositories( selectedRepos );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -725,7 +750,9 @@ public class MavenRepositorySearchTest
         searchFields.setPackaging( "war" );
         searchFields.setRepositories( selectedRepos );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
+
         archivaConfigControl.replay();
 
         SearchResults results = search.search( "user", searchFields, null );
@@ -748,7 +775,8 @@ public class MavenRepositorySearchTest
         searchFields.setClassName( "com.classname.search.App" );
         searchFields.setRepositories( selectedRepos );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -776,7 +804,8 @@ public class MavenRepositorySearchTest
         searchFields.setGroupId( "org.apache.archiva" );
         searchFields.setRepositories( selectedRepos );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -800,7 +829,8 @@ public class MavenRepositorySearchTest
         searchFields.setClassName( "SomeClass" );
         searchFields.setRepositories( selectedRepos );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 
@@ -849,8 +879,6 @@ public class MavenRepositorySearchTest
         searchFields.setClassName( "SomeClass" );
         searchFields.setRepositories( selectedRepos );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 2 );
-
         archivaConfigControl.replay();
 
         SearchResults results = search.search( "user", searchFields, null );
@@ -881,7 +909,8 @@ public class MavenRepositorySearchTest
         SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
         limits.setPageSize( 300 );
 
-        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn( config ).times( 1, 5 );
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration()).andReturn(config).anyTimes();
 
         archivaConfigControl.replay();
 

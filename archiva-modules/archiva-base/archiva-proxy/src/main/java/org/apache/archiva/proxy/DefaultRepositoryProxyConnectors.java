@@ -22,17 +22,27 @@ package org.apache.archiva.proxy;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.ProxyConnectorRuleType;
-import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.common.filelock.FileLockException;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.filelock.FileLockTimeoutException;
 import org.apache.archiva.common.filelock.Lock;
-import org.apache.archiva.configuration.*;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ConfigurationNames;
+import org.apache.archiva.configuration.NetworkProxyConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorRuleConfiguration;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.Keys;
 import org.apache.archiva.model.RepositoryURL;
-import org.apache.archiva.policies.*;
+import org.apache.archiva.policies.DownloadErrorPolicy;
+import org.apache.archiva.policies.DownloadPolicy;
+import org.apache.archiva.policies.PolicyConfigurationException;
+import org.apache.archiva.policies.PolicyViolationException;
+import org.apache.archiva.policies.PostDownloadPolicy;
+import org.apache.archiva.policies.PreDownloadPolicy;
+import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
@@ -43,7 +53,16 @@ import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
-import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.PasswordCredentials;
+import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.RepositoryContentFactory;
+import org.apache.archiva.repository.RepositoryCredentials;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
@@ -73,11 +92,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * DefaultRepositoryProxyConnectors
@@ -126,6 +149,9 @@ public class DefaultRepositoryProxyConnectors
     private ArchivaTaskScheduler scheduler;
 
     @Inject
+    private RepositoryRegistry repositoryRegistry;
+
+    @Inject
     private NetworkProxyAdmin networkProxyAdmin;
 
     @Inject
@@ -157,85 +183,82 @@ public class DefaultRepositoryProxyConnectors
         {
             String key = proxyConfig.getSourceRepoId();
 
-            try
+            // Create connector object.
+            ProxyConnector connector = new ProxyConnector();
+
+            ManagedRepository repo = repositoryRegistry.getManagedRepository( proxyConfig.getSourceRepoId( ) );
+            if (repo==null) {
+                log.error("Cannot find source repository after config change "+proxyConfig.getSourceRepoId());
+                continue;
+            }
+            connector.setSourceRepository(repo.getContent());
+            RemoteRepository rRepo = repositoryRegistry.getRemoteRepository( proxyConfig.getTargetRepoId() );
+            if (rRepo==null) {
+                log.error("Cannot find target repository after config change "+proxyConfig.getSourceRepoId());
+                continue;
+            }
+            connector.setTargetRepository(rRepo.getContent());
+
+            connector.setProxyId( proxyConfig.getProxyId() );
+            connector.setPolicies( proxyConfig.getPolicies() );
+            connector.setOrder( proxyConfig.getOrder() );
+            connector.setDisabled( proxyConfig.isDisabled() );
+
+            // Copy any blacklist patterns.
+            List<String> blacklist = new ArrayList<>( 0 );
+            if ( CollectionUtils.isNotEmpty( proxyConfig.getBlackListPatterns() ) )
             {
-                // Create connector object.
-                ProxyConnector connector = new ProxyConnector();
+                blacklist.addAll( proxyConfig.getBlackListPatterns() );
+            }
+            connector.setBlacklist( blacklist );
 
-                connector.setSourceRepository(
-                    repositoryFactory.getManagedRepositoryContent( proxyConfig.getSourceRepoId() ) );
-                connector.setTargetRepository(
-                    repositoryFactory.getRemoteRepositoryContent( proxyConfig.getTargetRepoId() ) );
+            // Copy any whitelist patterns.
+            List<String> whitelist = new ArrayList<>( 0 );
+            if ( CollectionUtils.isNotEmpty( proxyConfig.getWhiteListPatterns() ) )
+            {
+                whitelist.addAll( proxyConfig.getWhiteListPatterns() );
+            }
+            connector.setWhitelist( whitelist );
 
-                connector.setProxyId( proxyConfig.getProxyId() );
-                connector.setPolicies( proxyConfig.getPolicies() );
-                connector.setOrder( proxyConfig.getOrder() );
-                connector.setDisabled( proxyConfig.isDisabled() );
+            List<ProxyConnectorRuleConfiguration> proxyConnectorRuleConfigurations =
+                findProxyConnectorRules( connector.getSourceRepository().getId(),
+                                         connector.getTargetRepository().getId(),
+                                         allProxyConnectorRuleConfigurations );
 
-                // Copy any blacklist patterns.
-                List<String> blacklist = new ArrayList<>( 0 );
-                if ( CollectionUtils.isNotEmpty( proxyConfig.getBlackListPatterns() ) )
+            if ( !proxyConnectorRuleConfigurations.isEmpty() )
+            {
+                for ( ProxyConnectorRuleConfiguration proxyConnectorRuleConfiguration : proxyConnectorRuleConfigurations )
                 {
-                    blacklist.addAll( proxyConfig.getBlackListPatterns() );
-                }
-                connector.setBlacklist( blacklist );
-
-                // Copy any whitelist patterns.
-                List<String> whitelist = new ArrayList<>( 0 );
-                if ( CollectionUtils.isNotEmpty( proxyConfig.getWhiteListPatterns() ) )
-                {
-                    whitelist.addAll( proxyConfig.getWhiteListPatterns() );
-                }
-                connector.setWhitelist( whitelist );
-
-                List<ProxyConnectorRuleConfiguration> proxyConnectorRuleConfigurations =
-                    findProxyConnectorRules( connector.getSourceRepository().getId(),
-                                             connector.getTargetRepository().getId(),
-                                             allProxyConnectorRuleConfigurations );
-
-                if ( !proxyConnectorRuleConfigurations.isEmpty() )
-                {
-                    for ( ProxyConnectorRuleConfiguration proxyConnectorRuleConfiguration : proxyConnectorRuleConfigurations )
+                    if ( StringUtils.equals( proxyConnectorRuleConfiguration.getRuleType(),
+                                             ProxyConnectorRuleType.BLACK_LIST.getRuleType() ) )
                     {
-                        if ( StringUtils.equals( proxyConnectorRuleConfiguration.getRuleType(),
-                                                 ProxyConnectorRuleType.BLACK_LIST.getRuleType() ) )
-                        {
-                            connector.getBlacklist().add( proxyConnectorRuleConfiguration.getPattern() );
-                        }
+                        connector.getBlacklist().add( proxyConnectorRuleConfiguration.getPattern() );
+                    }
 
-                        if ( StringUtils.equals( proxyConnectorRuleConfiguration.getRuleType(),
-                                                 ProxyConnectorRuleType.WHITE_LIST.getRuleType() ) )
-                        {
-                            connector.getWhitelist().add( proxyConnectorRuleConfiguration.getPattern() );
-                        }
+                    if ( StringUtils.equals( proxyConnectorRuleConfiguration.getRuleType(),
+                                             ProxyConnectorRuleType.WHITE_LIST.getRuleType() ) )
+                    {
+                        connector.getWhitelist().add( proxyConnectorRuleConfiguration.getPattern() );
                     }
                 }
-
-                // Get other connectors
-                List<ProxyConnector> connectors = this.proxyConnectorMap.get( key );
-                if ( connectors == null )
-                {
-                    // Create if we are the first.
-                    connectors = new ArrayList<>( 1 );
-                }
-
-                // Add the connector.
-                connectors.add( connector );
-
-                // Ensure the list is sorted.
-                Collections.sort( connectors, proxyOrderSorter );
-
-                // Set the key to the list of connectors.
-                this.proxyConnectorMap.put( key, connectors );
             }
-            catch ( RepositoryNotFoundException e )
+
+            // Get other connectors
+            List<ProxyConnector> connectors = this.proxyConnectorMap.get( key );
+            if ( connectors == null )
             {
-                log.warn( "Unable to use proxy connector: {}", e.getMessage(), e );
+                // Create if we are the first.
+                connectors = new ArrayList<>( 1 );
             }
-            catch ( RepositoryException e )
-            {
-                log.warn( "Unable to use proxy connector: {}", e.getMessage(), e );
-            }
+
+            // Add the connector.
+            connectors.add( connector );
+
+            // Ensure the list is sorted.
+            Collections.sort( connectors, proxyOrderSorter );
+
+            // Set the key to the list of connectors.
+            this.proxyConnectorMap.put( key, connectors );
 
 
         }
@@ -1176,8 +1199,14 @@ public class DefaultRepositoryProxyConnectors
         }
 
         AuthenticationInfo authInfo = null;
-        String username = remoteRepository.getRepository().getUserName();
-        String password = remoteRepository.getRepository().getPassword();
+        String username = "";
+        String password = "";
+        RepositoryCredentials repCred = remoteRepository.getRepository().getLoginCredentials();
+        if (repCred!=null && repCred instanceof PasswordCredentials) {
+            PasswordCredentials pwdCred = (PasswordCredentials) repCred;
+            username = pwdCred.getUsername();
+            password = pwdCred.getPassword()==null ? "" : new String(pwdCred.getPassword());
+        }
 
         if ( StringUtils.isNotBlank( username ) && StringUtils.isNotBlank( password ) )
         {
@@ -1188,8 +1217,8 @@ public class DefaultRepositoryProxyConnectors
         }
 
         // Convert seconds to milliseconds
-        long timeoutInMilliseconds = TimeUnit.MILLISECONDS.convert( remoteRepository.getRepository().getTimeout(), //
-                                                                    TimeUnit.SECONDS );
+
+        long timeoutInMilliseconds = remoteRepository.getRepository().getTimeout().toMillis();
 
         // Set timeout  read and connect
         // FIXME olamy having 2 config values

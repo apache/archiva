@@ -41,6 +41,7 @@
     <module>archiva-policies</module>
     <module>archiva-indexer</module>
     <module>archiva-consumers</module>
+    <module>archiva-repository-api</module>
     <module>archiva-repository-layer</module>
     <module>archiva-xml-tools</module>
     <module>archiva-proxy-api</module>

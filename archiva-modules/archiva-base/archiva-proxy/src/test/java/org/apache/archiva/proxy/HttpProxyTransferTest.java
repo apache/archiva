@@ -23,6 +23,8 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.NetworkProxyConfiguration;
@@ -55,10 +57,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
@@ -118,10 +122,8 @@ public class HttpProxyTransferTest
         // Make the destination dir.
         Files.createDirectories(destRepoDir);
 
-        ManagedRepository repo = new ManagedRepository();
-        repo.setId( MANAGED_ID );
-        repo.setName( "Default Managed Repository" );
-        repo.setLocation( repoPath );
+        MavenManagedRepository repo = new MavenManagedRepository( MANAGED_ID, "Default Managed Repository" );
+        repo.setLocation( new URI(repoPath) );
         repo.setLayout( "default" );
 
         ManagedRepositoryContent repoContent =
@@ -133,10 +135,10 @@ public class HttpProxyTransferTest
         ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
             ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( config );
 
-        ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
+        RepositoryRegistry managedRepositoryAdmin = applicationContext.getBean( RepositoryRegistry.class );
         if ( managedRepositoryAdmin.getManagedRepository( repo.getId() ) == null )
         {
-            managedRepositoryAdmin.addManagedRepository( repo, false, null );
+            managedRepositoryAdmin.putRepository( repo );
         }
 
         //config.getConfiguration().addManagedRepository( repo );
