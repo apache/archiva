@@ -89,7 +89,6 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-repository-layer</artifactId>
-      <scope>test</scope>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>

@@ -19,8 +19,8 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
@@ -28,6 +28,7 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
@@ -56,6 +57,9 @@ public class ArchivaRepositoryScanningTaskExecutor
     implements TaskExecutor<RepositoryTask>
 {
     private Logger log = LoggerFactory.getLogger( ArchivaRepositoryScanningTaskExecutor.class );
+
+    @Inject
+    RepositoryRegistry repositoryRegistry;
 
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
@@ -107,7 +111,7 @@ public class ArchivaRepositoryScanningTaskExecutor
                 throw new TaskExecutionException( "Unable to execute RepositoryTask with blank repository Id." );
             }
 
-            ManagedRepository arepo = managedRepositoryAdmin.getManagedRepository( repoId );
+            ManagedRepository arepo = repositoryRegistry.getManagedRepository( repoId );
 
             // execute consumers on resource file if set
             if ( task.getResourceFile() != null )

@@ -50,6 +50,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -145,7 +146,7 @@ public class DownloadRemoteIndexTaskTest
 
     protected RemoteRepository getRemoteRepository() throws IOException
     {
-        RemoteRepository remoteRepository = new RemoteRepository();
+        RemoteRepository remoteRepository = new RemoteRepository( Locale.getDefault());
         Path indexDirectory =
             Paths.get( FileUtils.getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
         Files.createDirectories( indexDirectory );

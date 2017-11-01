@@ -21,11 +21,12 @@ package org.apache.archiva.scheduler.indexing;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.redback.components.taskqueue.Task;
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutionException;
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
 import org.apache.maven.index.FlatSearchRequest;
@@ -84,138 +85,138 @@ public class ArchivaIndexingTaskExecutor
     {
         ArtifactIndexingTask indexingTask = (ArtifactIndexingTask) task;
 
-        ManagedRepository repository = indexingTask.getRepository();
-        IndexingContext context = indexingTask.getContext();
+        ManagedRepository repository = indexingTask.getRepository( );
+        IndexingContext context = indexingTask.getContext( );
 
-        if ( ArtifactIndexingTask.Action.FINISH.equals( indexingTask.getAction() )
-            && indexingTask.isExecuteOnEntireRepo() )
+        if ( ArtifactIndexingTask.Action.FINISH.equals( indexingTask.getAction( ) )
+            && indexingTask.isExecuteOnEntireRepo( ) )
         {
             try
             {
-                long start = System.currentTimeMillis();
-                nexusIndexer.scan( context, null, indexingTask.isOnlyUpdate() );
-                long end = System.currentTimeMillis();
-                log.info( "indexed maven repository: {}, onlyUpdate: {}, time {} ms", repository.getId(),
-                          indexingTask.isOnlyUpdate(), ( end - start ) );
+                long start = System.currentTimeMillis( );
+                nexusIndexer.scan( context, null, indexingTask.isOnlyUpdate( ) );
+                long end = System.currentTimeMillis( );
+                log.info( "indexed maven repository: {}, onlyUpdate: {}, time {} ms", repository.getId( ),
+                    indexingTask.isOnlyUpdate( ), ( end - start ) );
             }
             catch ( IOException e )
             {
                 throw new TaskExecutionException( "Error scan repository " + repository, e );
             }
-            log.debug( "Finishing indexing task on repo: {}", repository.getId() );
+            log.debug( "Finishing indexing task on repo: {}", repository.getId( ) );
             finishIndexingTask( indexingTask, repository, context );
         }
         else
         {
             // create context if not a repo scan request
-            if ( !indexingTask.isExecuteOnEntireRepo() )
+            if ( !indexingTask.isExecuteOnEntireRepo( ) )
             {
                 try
                 {
                     log.debug( "Creating indexing context on resource: {}", //
-                               ( indexingTask.getResourceFile() == null
-                                   ? "none"
-                                   : indexingTask.getResourceFile() ) );
+                        ( indexingTask.getResourceFile( ) == null
+                            ? "none"
+                            : indexingTask.getResourceFile( ) ) );
                     context = managedRepositoryAdmin.createIndexContext( repository );
                 }
                 catch ( RepositoryAdminException e )
                 {
-                    log.error( "Error occurred while creating context: {}", e.getMessage() );
-                    throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage(), e );
+                    log.error( "Error occurred while creating context: {}", e.getMessage( ) );
+                    throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage( ), e );
                 }
             }
 
-            if ( context == null || context.getIndexDirectory() == null )
+            if ( context == null || context.getIndexDirectory( ) == null )
             {
                 throw new TaskExecutionException( "Trying to index an artifact but the context is already closed" );
             }
 
             try
             {
-                Path artifactFile = indexingTask.getResourceFile();
+                Path artifactFile = indexingTask.getResourceFile( );
                 if ( artifactFile == null )
                 {
                     log.debug( "no artifact pass in indexing task so skip it" );
                 }
                 else
                 {
-                    ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile.toFile() );
+                    ArtifactContext ac = artifactContextProducer.getArtifactContext( context, artifactFile.toFile( ) );
 
                     if ( ac != null )
                     {
                         // MRM-1779 pom must be indexed too
                         // TODO make that configurable?
-                        if ( artifactFile.getFileName().toString().endsWith( ".pom" ) )
+                        if ( artifactFile.getFileName( ).toString( ).endsWith( ".pom" ) )
                         {
-                            ac.getArtifactInfo().setFileExtension( "pom" );
-                            ac.getArtifactInfo().setPackaging( "pom" );
-                            ac.getArtifactInfo().setClassifier( "pom" );
+                            ac.getArtifactInfo( ).setFileExtension( "pom" );
+                            ac.getArtifactInfo( ).setPackaging( "pom" );
+                            ac.getArtifactInfo( ).setClassifier( "pom" );
                         }
-                        if ( indexingTask.getAction().equals( ArtifactIndexingTask.Action.ADD ) )
+                        if ( indexingTask.getAction( ).equals( ArtifactIndexingTask.Action.ADD ) )
                         {
                             //IndexSearcher s = context.getIndexSearcher();
                             //String uinfo = ac.getArtifactInfo().getUinfo();
                             //TopDocs d = s.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), 1 );
 
-                            BooleanQuery q = new BooleanQuery();
+                            BooleanQuery q = new BooleanQuery( );
                             q.add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression(
-                                ac.getArtifactInfo().getGroupId() ) ), BooleanClause.Occur.MUST );
+                                ac.getArtifactInfo( ).getGroupId( ) ) ), BooleanClause.Occur.MUST );
                             q.add( nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression(
-                                ac.getArtifactInfo().getArtifactId() ) ), BooleanClause.Occur.MUST );
+                                ac.getArtifactInfo( ).getArtifactId( ) ) ), BooleanClause.Occur.MUST );
                             q.add( nexusIndexer.constructQuery( MAVEN.VERSION, new SourcedSearchExpression(
-                                ac.getArtifactInfo().getVersion() ) ), BooleanClause.Occur.MUST );
-                            if ( ac.getArtifactInfo().getClassifier() != null )
+                                ac.getArtifactInfo( ).getVersion( ) ) ), BooleanClause.Occur.MUST );
+                            if ( ac.getArtifactInfo( ).getClassifier( ) != null )
                             {
                                 q.add( nexusIndexer.constructQuery( MAVEN.CLASSIFIER, new SourcedSearchExpression(
-                                    ac.getArtifactInfo().getClassifier() ) ), BooleanClause.Occur.MUST );
+                                    ac.getArtifactInfo( ).getClassifier( ) ) ), BooleanClause.Occur.MUST );
                             }
-                            if ( ac.getArtifactInfo().getPackaging() != null )
+                            if ( ac.getArtifactInfo( ).getPackaging( ) != null )
                             {
                                 q.add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression(
-                                    ac.getArtifactInfo().getPackaging() ) ), BooleanClause.Occur.MUST );
+                                    ac.getArtifactInfo( ).getPackaging( ) ) ), BooleanClause.Occur.MUST );
                             }
                             FlatSearchRequest flatSearchRequest = new FlatSearchRequest( q, context );
                             FlatSearchResponse flatSearchResponse = nexusIndexer.searchFlat( flatSearchRequest );
-                            if ( flatSearchResponse.getResults().isEmpty() )
+                            if ( flatSearchResponse.getResults( ).isEmpty( ) )
                             {
-                                log.debug( "Adding artifact '{}' to index..", ac.getArtifactInfo() );
+                                log.debug( "Adding artifact '{}' to index..", ac.getArtifactInfo( ) );
                                 nexusIndexer.addArtifactToIndex( ac, context );
                             }
                             else
                             {
-                                log.debug( "Updating artifact '{}' in index..", ac.getArtifactInfo() );
+                                log.debug( "Updating artifact '{}' in index..", ac.getArtifactInfo( ) );
                                 // TODO check if update exists !!
                                 nexusIndexer.deleteArtifactFromIndex( ac, context );
                                 nexusIndexer.addArtifactToIndex( ac, context );
                             }
 
-                            context.updateTimestamp();
-                            context.commit();
+                            context.updateTimestamp( );
+                            context.commit( );
 
 
                         }
                         else
                         {
-                            log.debug( "Removing artifact '{}' from index..", ac.getArtifactInfo() );
+                            log.debug( "Removing artifact '{}' from index..", ac.getArtifactInfo( ) );
                             nexusIndexer.deleteArtifactFromIndex( ac, context );
                         }
                     }
                 }
                 // close the context if not a repo scan request
-                if ( !indexingTask.isExecuteOnEntireRepo() )
+                if ( !indexingTask.isExecuteOnEntireRepo( ) )
                 {
-                    log.debug( "Finishing indexing task on resource file : {}", indexingTask.getResourceFile() != null
-                        ? indexingTask.getResourceFile()
+                    log.debug( "Finishing indexing task on resource file : {}", indexingTask.getResourceFile( ) != null
+                        ? indexingTask.getResourceFile( )
                         : " none " );
                     finishIndexingTask( indexingTask, repository, context );
                 }
             }
             catch ( IOException e )
             {
-                log.error( "Error occurred while executing indexing task '{}': {}", indexingTask, e.getMessage(),
-                           e );
+                log.error( "Error occurred while executing indexing task '{}': {}", indexingTask, e.getMessage( ),
+                    e );
                 throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask + "'",
-                                                  e );
+                    e );
             }
         }
 
@@ -228,20 +229,26 @@ public class ArchivaIndexingTaskExecutor
         try
         {
 
-            context.optimize();
+            context.optimize( );
 
-            if ( !repository.isSkipPackedIndexCreation() )
+            if ( repository.supportsFeature( IndexCreationFeature.class ) )
             {
+                IndexCreationFeature icf = repository.getFeature( IndexCreationFeature.class ).get( );
+                if ( !icf.isSkipPackedIndexCreation( ) )
+                {
 
-                IndexPackingRequest request = new IndexPackingRequest( context, //
-                                                                       context.acquireIndexSearcher().getIndexReader(),
-                                                                       //
-                                                                       context.getIndexDirectoryFile() );
+                    IndexPackingRequest request = new IndexPackingRequest( context, //
+                        context.acquireIndexSearcher( ).getIndexReader( ),
+                        //
+                        context.getIndexDirectoryFile( ) );
 
-                indexPacker.packIndex( request );
-                context.updateTimestamp( true );
+                    indexPacker.packIndex( request );
+                    context.updateTimestamp( true );
 
-                log.debug( "Index file packaged at '{}'.", context.getIndexDirectoryFile() );
+                    log.debug( "Index file packaged at '{}'.", context.getIndexDirectoryFile( ) );
+                } else {
+                    log.debug( "skip packed index creation" );
+                }
             }
             else
             {
@@ -250,9 +257,9 @@ public class ArchivaIndexingTaskExecutor
         }
         catch ( IOException e )
         {
-            log.error( "Error occurred while executing indexing task '{}': {}", indexingTask, e.getMessage() );
+            log.error( "Error occurred while executing indexing task '{}': {}", indexingTask, e.getMessage( ) );
             throw new TaskExecutionException( "Error occurred while executing indexing task '" + indexingTask + "'",
-                                              e );
+                e );
         }
     }
 

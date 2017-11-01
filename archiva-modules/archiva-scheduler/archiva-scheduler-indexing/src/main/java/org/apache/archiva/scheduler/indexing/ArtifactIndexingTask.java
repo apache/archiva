@@ -19,8 +19,8 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.redback.components.taskqueue.Task;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.maven.index.context.IndexingContext;
 
 import java.nio.file.Path;

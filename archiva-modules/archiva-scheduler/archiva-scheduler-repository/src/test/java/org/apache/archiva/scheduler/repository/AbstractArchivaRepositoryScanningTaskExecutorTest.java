@@ -26,6 +26,8 @@ import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
 import org.apache.archiva.mock.MockRepositorySessionFactory;
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.After;
@@ -59,6 +61,9 @@ import static org.mockito.Mockito.mock;
 public abstract class AbstractArchivaRepositoryScanningTaskExecutorTest
     extends TestCase
 {
+    @Inject
+    RepositoryRegistry repositoryRegistry;
+
     @Inject
     @Named( value = "taskExecutor#test-repository-scanning" )
     protected TaskExecutor taskExecutor;
@@ -134,8 +139,10 @@ public abstract class AbstractArchivaRepositoryScanningTaskExecutorTest
         repositoryConfiguration.setId( TEST_REPO_ID );
         repositoryConfiguration.setName( "Test Repository" );
         repositoryConfiguration.setLocation( repoDir.toAbsolutePath().toString() );
-        archivaConfig.getConfiguration().getManagedRepositories().clear();
-        archivaConfig.getConfiguration().addManagedRepository( repositoryConfiguration );
+        for ( ManagedRepository repo : repositoryRegistry.getManagedRepositories()) {
+            repositoryRegistry.removeRepository( repo );
+        }
+        repositoryRegistry.putRepository( repositoryConfiguration );
 
         metadataRepository = mock( MetadataRepository.class );
 

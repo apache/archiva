@@ -19,14 +19,13 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
-import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.springframework.stereotype.Service;
 
@@ -80,14 +79,7 @@ public class TestConsumer
     {
         consumed.clear();
 
-        try
-        {
-            this.repository = factory.getManagedRepositoryContent( repository.getId() );
-        }
-        catch ( RepositoryException e )
-        {
-            throw new ConsumerException( e.getMessage(), e );
-        }
+        this.repository = repository.getContent();
     }
 
     @Override

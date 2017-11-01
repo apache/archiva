@@ -29,6 +29,7 @@ import org.apache.maven.index.context.IndexingContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -52,10 +53,10 @@ public class MockManagedRepositoryAdmin
         {
             // TODO add staging repo information back too
             ManagedRepository repo =
-                new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
+                new ManagedRepository( Locale.getDefault( ), repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
                                        repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
                                        repoConfig.isBlockRedeployments(), repoConfig.getRefreshCronExpression(),
-                                       repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getRetentionTime(),
+                                       repoConfig.getIndexDir(), repoConfig.isScanned(), repoConfig.getRetentionPeriod(),
                                        repoConfig.getRetentionCount(), repoConfig.isDeleteReleasedSnapshots(), true );
 
             managedRepos.add( repo );
@@ -123,6 +124,12 @@ public class MockManagedRepositoryAdmin
     @Override
     public IndexingContext createIndexContext( ManagedRepository repository )
         throws RepositoryAdminException
+    {
+        return null;
+    }
+
+    @Override
+    public IndexingContext createIndexContext( org.apache.archiva.repository.ManagedRepository repository ) throws RepositoryAdminException
     {
         return null;
     }
