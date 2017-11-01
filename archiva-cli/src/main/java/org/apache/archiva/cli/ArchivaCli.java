@@ -21,13 +21,14 @@ package org.apache.archiva.cli;
 
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.converter.RepositoryConversionException;
 import org.apache.archiva.converter.legacy.LegacyRepositoryConverter;
+import org.apache.archiva.repository.BasicManagedRepository;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
@@ -47,6 +48,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -166,10 +168,8 @@ public class ArchivaCli
     private void doScan( String path, String[] consumers )
         throws ConsumerException, MalformedURLException
     {
-        ManagedRepository repo = new ManagedRepository();
-        repo.setId( Paths.get( path ).getFileName().toString());
-        repo.setName( "Archiva CLI Provided Repo" );
-        repo.setLocation( path );
+        BasicManagedRepository repo = new BasicManagedRepository( Paths.get(path).getFileName().toString(), "Archiva CLI Provided Repo" );
+        repo.setLocation( Paths.get(path).toUri() );
 
         List<KnownRepositoryContentConsumer> knownConsumerList = new ArrayList<>();
 
