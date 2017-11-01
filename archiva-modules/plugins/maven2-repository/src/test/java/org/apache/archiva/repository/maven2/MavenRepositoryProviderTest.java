@@ -20,17 +20,10 @@ package org.apache.archiva.repository.maven2;
  */
 
 import org.apache.archiva.common.utils.FileUtils;
-import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ArchivaRuntimeConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ConfigurationListener;
-import org.apache.archiva.configuration.DefaultArchivaConfiguration;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.metadata.repository.storage.maven2.conf.MockConfiguration;
-import org.apache.archiva.redback.components.registry.RegistryException;
-import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.PasswordCredentials;
 import org.apache.archiva.repository.ReleaseScheme;
@@ -41,23 +34,16 @@ import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.sonatype.aether.util.layout.RepositoryLayout;
-import org.springframework.test.context.ContextConfiguration;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -106,7 +92,7 @@ public class MavenRepositoryProviderTest
         repo.setId("testm001");
         repo.setName("Managed Test Repo 001");
         repo.setDescription( "This is a managed test" );
-        repo.setRetentionTime( 37 );
+        repo.setRetentionPeriod( 37 );
         repoLocation = Files.createTempDirectory( "test-repo-001");
         repo.setLocation( repoLocation.toAbsolutePath().toString() );
         repo.setSnapshots( true );
@@ -139,7 +125,7 @@ public class MavenRepositoryProviderTest
         assertEquals("4 0 0 ? * TUE", mr.getSchedulingDefinition());
         assertTrue(mr.isScanned());
         ArtifactCleanupFeature artifactCleanupFeature = mr.getFeature( ArtifactCleanupFeature.class ).get();
-        assertEquals( Period.ofDays( 37), artifactCleanupFeature.getRetentionTime());
+        assertEquals( Period.ofDays( 37), artifactCleanupFeature.getRetentionPeriod());
         assertTrue(artifactCleanupFeature.isDeleteReleasedSnapshots());
         assertEquals(33, artifactCleanupFeature.getRetentionCount());
 
@@ -229,7 +215,7 @@ public class MavenRepositoryProviderTest
     public void getManagedConfiguration() throws Exception {
         MavenManagedRepository repo = new MavenManagedRepository( "test01", "My Test repo" );
 
-        repo.setLocation( new URI("https://this.is/a/test") );
+        repo.setLocation( new URI("file:///this.is/a/test") );
         repo.setScanned( true );
         repo.setDescription( repo.getPrimaryLocale(), "This is a description" );
         repo.setLayout( "maven2" );
@@ -244,12 +230,12 @@ public class MavenRepositoryProviderTest
         indexCreationFeature.setIndexPath( new URI("test/.indexes") );
         indexCreationFeature.setSkipPackedIndexCreation( true );
         ArtifactCleanupFeature artifactCleanupFeature = repo.getFeature( ArtifactCleanupFeature.class ).get();
-        artifactCleanupFeature.setRetentionTime( Period.ofDays( 5 ) );
+        artifactCleanupFeature.setRetentionPeriod( Period.ofDays( 5 ) );
         artifactCleanupFeature.setRetentionCount( 7 );
         artifactCleanupFeature.setDeleteReleasedSnapshots( true );
 
         ManagedRepositoryConfiguration cfg = provider.getManagedConfiguration( repo );
-        assertEquals("https://this.is/a/test", cfg.getLocation());
+        assertEquals("/this.is/a/test", cfg.getLocation());
         assertTrue(cfg.isScanned());
         assertEquals( "This is a description", cfg.getDescription() );
         assertEquals("maven2", cfg.getLayout());
@@ -259,7 +245,7 @@ public class MavenRepositoryProviderTest
         assertTrue(cfg.isStageRepoNeeded());
         assertEquals("test/.indexes", cfg.getIndexDir());
         assertTrue(cfg.isSkipPackedIndexCreation());
-        assertEquals(5, cfg.getRetentionTime());
+        assertEquals(5, cfg.getRetentionPeriod());
         assertEquals(7, cfg.getRetentionCount());
         assertTrue(cfg.isDeleteReleasedSnapshots());
         assertTrue(cfg.isReleases());

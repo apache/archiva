@@ -724,7 +724,7 @@ public class Maven2RepositoryStorage
 
 
     @Override
-    public String getFilePath( String requestPath, ManagedRepository managedRepository )
+    public String getFilePath( String requestPath, org.apache.archiva.repository.ManagedRepository managedRepository )
     {
         // managedRepository can be null
         // extract artifact reference from url

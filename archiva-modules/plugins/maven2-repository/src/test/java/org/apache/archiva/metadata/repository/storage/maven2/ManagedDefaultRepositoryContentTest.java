@@ -19,7 +19,6 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
@@ -27,8 +26,10 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
+import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,7 +37,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -64,7 +69,7 @@ public class ManagedDefaultRepositoryContentTest
     {
         Path repoDir = Paths.get( "src/test/repositories/default-repository" );
 
-        ManagedRepository repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
+        MavenManagedRepository repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
 
         FileType fileType = archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
         fileType.addPattern( "**/*.xml" );
@@ -176,7 +181,7 @@ public class ManagedDefaultRepositoryContentTest
         // Use the test metadata-repository, which is already setup for
         // These kind of version tests.
         Path repoDir = Paths.get( "src/test/repositories/metadata-repository" );
-        repoContent.getRepository().setLocation( repoDir.toAbsolutePath().toString() );
+        (( EditableManagedRepository)repoContent.getRepository()).setLocation( repoDir.toAbsolutePath().toUri() );
 
         // Request the versions.
         Set<String> testedVersionSet = repoContent.getVersions( reference );
@@ -201,7 +206,7 @@ public class ManagedDefaultRepositoryContentTest
         // Use the test metadata-repository, which is already setup for
         // These kind of version tests.
         Path repoDir = Paths.get( "src/test/repositories/metadata-repository" );
-        repoContent.getRepository().setLocation( repoDir.toAbsolutePath().toString() );
+        ((EditableManagedRepository)repoContent.getRepository()).setLocation( repoDir.toAbsolutePath().toUri() );
 
         // Request the versions.
         Set<String> testedVersionSet = repoContent.getVersions( reference );

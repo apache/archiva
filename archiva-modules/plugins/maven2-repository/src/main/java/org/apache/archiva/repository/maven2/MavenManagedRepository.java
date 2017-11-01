@@ -19,6 +19,7 @@ package org.apache.archiva.repository.maven2;
  * under the License.
  */
 
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.repository.AbstractManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryCapabilities;
@@ -29,7 +30,14 @@ import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RepositoryFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
@@ -40,6 +48,9 @@ import java.util.Set;
  */
 public class MavenManagedRepository extends AbstractManagedRepository
 {
+
+    private static final Logger log = LoggerFactory.getLogger( MavenManagedRepository.class );
+
     public static final String DEFAULT_LAYOUT = "default";
     public static final String LEGACY_LAYOUT = "legacy";
     private ArtifactCleanupFeature artifactCleanupFeature = new ArtifactCleanupFeature( );
@@ -105,5 +116,22 @@ public class MavenManagedRepository extends AbstractManagedRepository
     public boolean hasIndex( )
     {
         return indexCreationFeature.hasIndex();
+    }
+
+    @Override
+    public void setLocation( URI location )
+    {
+        super.setLocation( location );
+        Path newLoc = PathUtil.getPathFromUri( location );
+        if (!Files.exists( newLoc )) {
+            try
+            {
+                Files.createDirectories( newLoc );
+            }
+            catch ( IOException e )
+            {
+                log.error("Could not create directory {}",location, e);
+            }
+        }
     }
 }

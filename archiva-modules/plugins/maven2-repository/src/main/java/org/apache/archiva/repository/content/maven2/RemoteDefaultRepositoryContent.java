@@ -19,9 +19,9 @@ package org.apache.archiva.repository.content.maven2;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.RepositoryURL;
+import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.springframework.context.annotation.Scope;
@@ -29,10 +29,8 @@ import org.springframework.stereotype.Service;
 
 /**
  * RemoteDefaultRepositoryContent
- *
- *
  */
-@Service( "remoteRepositoryContent#default" )
+@Service( "remoteRepositoryContent#maven" )
 @Scope( "prototype" )
 public class RemoteDefaultRepositoryContent
     extends AbstractDefaultRepositoryContent
@@ -41,21 +39,29 @@ public class RemoteDefaultRepositoryContent
     private RemoteRepository repository;
 
     @Override
-    public String getId()
+    public String getId( )
     {
-        return repository.getId();
+        return repository.getId( );
     }
 
     @Override
-    public RemoteRepository getRepository()
+    public RemoteRepository getRepository( )
     {
         return repository;
     }
 
     @Override
-    public RepositoryURL getURL()
+    public RepositoryURL getURL( )
     {
-        return new RepositoryURL( repository.getUrl() );
+        try
+        {
+            return new RepositoryURL( repository.getLocation( ).toString( ) );
+        }
+        catch ( Exception e )
+        {
+            log.error( "Could not convert location url {}", repository.getLocation( ) );
+            return new RepositoryURL( "" );
+        }
     }
 
     @Override
@@ -74,9 +80,10 @@ public class RemoteDefaultRepositoryContent
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {
-        if ( ( path != null ) && path.startsWith( repository.getUrl() ) )
+
+        if ( ( path != null ) && repository.getLocation()!=null && path.startsWith( repository.getLocation().toString() ) )
         {
-            return super.toArtifactReference( path.substring( repository.getUrl().length() ) );
+            return super.toArtifactReference( path.substring( repository.getLocation().toString().length( ) ) );
         }
 
         return super.toArtifactReference( path );
@@ -85,7 +92,7 @@ public class RemoteDefaultRepositoryContent
     @Override
     public RepositoryURL toURL( ArtifactReference reference )
     {
-        String url = repository.getUrl() + toPath( reference );
+        String url = repository.getLocation( ) + toPath( reference );
         return new RepositoryURL( url );
     }
 }

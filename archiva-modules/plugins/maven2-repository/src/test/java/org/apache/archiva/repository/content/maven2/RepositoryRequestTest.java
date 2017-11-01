@@ -19,12 +19,12 @@ package org.apache.archiva.repository.content.maven2;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
@@ -514,10 +514,8 @@ public class RepositoryRequestTest
                                                                        String layout )
         throws Exception
     {
-        ManagedRepository repo = new ManagedRepository();
-        repo.setId( id );
-        repo.setName( name );
-        repo.setLocation( location.toAbsolutePath().toString() );
+        MavenManagedRepository repo = new MavenManagedRepository( id, name);
+        repo.setLocation( location.toAbsolutePath().toUri() );
         repo.setLayout( layout );
 
         ManagedRepositoryContent repoContent =

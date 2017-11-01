@@ -21,6 +21,7 @@ package org.apache.archiva.repository.metadata;
 
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
+import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,6 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Locale;
 
 /**
  * @author Olivier Lamy
@@ -46,17 +48,17 @@ public class Maven2RepositoryStorageTest
     {
         String href = "/repository/internal/org/apache/maven/someartifact.jar";
         Assert.assertEquals( "/org/apache/maven/someartifact.jar",
-                             repositoryStorage.getFilePath( href, new ManagedRepository() ) );
+                             repositoryStorage.getFilePath( href, new MavenManagedRepository( "repo01", "repo01") ) );
 
         href = "repository/internal/org/apache/maven/someartifact.jar";
         Assert.assertEquals( "/org/apache/maven/someartifact.jar",
-                             repositoryStorage.getFilePath( href, new ManagedRepository() ) );
+                             repositoryStorage.getFilePath( href, new MavenManagedRepository( "repo01", "repo01" ) ) );
 
         href = "repository/internal/org/apache/maven/";
-        Assert.assertEquals( "/org/apache/maven/", repositoryStorage.getFilePath( href, new ManagedRepository() ) );
+        Assert.assertEquals( "/org/apache/maven/", repositoryStorage.getFilePath( href, new MavenManagedRepository("repo01", "repo01") ) );
 
         href = "mypath";
-        Assert.assertEquals( "/", repositoryStorage.getFilePath( href, new ManagedRepository() ) );
+        Assert.assertEquals( "/", repositoryStorage.getFilePath( href, new MavenManagedRepository("repo01", "repo01") ) );
     }
 
 

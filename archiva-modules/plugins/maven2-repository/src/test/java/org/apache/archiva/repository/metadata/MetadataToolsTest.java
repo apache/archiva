@@ -33,6 +33,7 @@ import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
@@ -362,7 +363,7 @@ public class MetadataToolsTest
         reference.setArtifactId( artifactId );
         reference.setVersion( version );
 
-        ManagedRepository repo =
+        MavenManagedRepository repo =
             createRepository( "test-repo", "Test Repository: " + name.getMethodName(), repoRootDir );
         ManagedRepositoryContent repoContent =
             applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );
@@ -614,7 +615,7 @@ public class MetadataToolsTest
 
         Files.createDirectories(repoRoot);
 
-        ManagedRepository repoConfig =
+        MavenManagedRepository repoConfig =
             createRepository( "test-repo", "Test Repository: " + name.getMethodName(), repoRoot );
 
         ManagedRepositoryContent repoContent =

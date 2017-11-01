@@ -4,6 +4,9 @@ import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Locale;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -76,5 +79,17 @@ public class TestConfiguration
     public void reload()
     {
         // no op
+    }
+
+    @Override
+    public Locale getDefaultLocale( )
+    {
+        return Locale.getDefault();
+    }
+
+    @Override
+    public List<Locale.LanguageRange> getLanguagePriorities( )
+    {
+        return Locale.LanguageRange.parse("en,fr,de");
     }
 }

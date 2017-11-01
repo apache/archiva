@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -64,7 +65,7 @@ public class MockRepoAdmin
         for ( RemoteRepositoryConfiguration repositoryConfiguration : archivaConfiguration.getConfiguration().getRemoteRepositories() )
         {
             RemoteRepository remoteRepository =
-                new RemoteRepository( repositoryConfiguration.getId(), repositoryConfiguration.getName(),
+                new RemoteRepository( Locale.getDefault(), repositoryConfiguration.getId(), repositoryConfiguration.getName(),
                                       repositoryConfiguration.getUrl(), repositoryConfiguration.getLayout(),
                                       repositoryConfiguration.getUsername(), repositoryConfiguration.getPassword(),
                                       repositoryConfiguration.getTimeout() );
@@ -153,11 +154,11 @@ public class MockRepoAdmin
         {
             if ( StringUtils.equals( repositoryId, repoConfig.getId() ) )
             {
-                return new ManagedRepository( repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
+                return new ManagedRepository( Locale.getDefault(), repoConfig.getId(), repoConfig.getName(), repoConfig.getLocation(),
                                               repoConfig.getLayout(), repoConfig.isSnapshots(), repoConfig.isReleases(),
                                               repoConfig.isBlockRedeployments(), repoConfig.getRefreshCronExpression(),
                                               repoConfig.getIndexDir(), repoConfig.isScanned(),
-                                              repoConfig.getRetentionTime(), repoConfig.getRetentionCount(),
+                                              repoConfig.getRetentionPeriod(), repoConfig.getRetentionCount(),
                                               repoConfig.isDeleteReleasedSnapshots(), false );
             }
         }
@@ -193,6 +194,12 @@ public class MockRepoAdmin
         throws RepositoryAdminException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public IndexingContext createIndexContext( org.apache.archiva.repository.ManagedRepository repository ) throws RepositoryAdminException
+    {
+        return null;
     }
 
     @Override

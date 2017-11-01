@@ -28,9 +28,12 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.configuration,org.apache.archiva.metadata.repository"/>
+  <context:component-scan base-package="org.apache.archiva.configuration,org.apache.archiva.metadata.repository,org.apache.archiva.repository.content.maven2"/>
+
+
   <alias name="archivaConfiguration#test" alias="archivaConfiguration#default"/>
   <alias name="archivaConfiguration#test" alias="archivaConfiguration"/>
+  <alias name="managedRepositoryContent#maven" alias="managedRepositoryContent#default" />
 
   <alias name="metadataResolver#test" alias="metadataResolver#default"/>
 </beans>

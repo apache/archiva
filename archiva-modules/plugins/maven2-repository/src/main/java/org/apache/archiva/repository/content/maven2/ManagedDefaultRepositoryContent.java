@@ -19,7 +19,7 @@ package org.apache.archiva.repository.content.maven2;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMappingProvider;
 import org.apache.archiva.model.ArchivaArtifact;
@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,7 +51,7 @@ import java.util.stream.Stream;
 /**
  * ManagedDefaultRepositoryContent
  */
-@Service ("managedRepositoryContent#default")
+@Service ("managedRepositoryContent#maven")
 @Scope ("prototype")
 public class ManagedDefaultRepositoryContent
     extends AbstractDefaultRepositoryContent
@@ -60,7 +61,7 @@ public class ManagedDefaultRepositoryContent
     @Named ( "fileTypes" )
     private FileTypes filetypes;
 
-    private ManagedRepository repository;
+    private org.apache.archiva.repository.ManagedRepository repository;
 
     public ManagedDefaultRepositoryContent()
     {
@@ -171,7 +172,7 @@ public class ManagedDefaultRepositoryContent
         throws ContentNotFoundException
     {
         Path artifactFile = toFile( reference );
-        Path repoBase = Paths.get(repository.getLocation()).toAbsolutePath();
+        Path repoBase = PathUtil.getPathFromUri(repository.getLocation()).toAbsolutePath();
         Path repoDir = artifactFile.getParent().toAbsolutePath();
 
         if ( !Files.exists(repoDir))
@@ -215,11 +216,21 @@ public class ManagedDefaultRepositoryContent
     @Override
     public String getRepoRoot()
     {
-        return repository.getLocation();
+        return convertUriToPath( repository.getLocation() );
+    }
+
+    private String convertUriToPath( URI uri ) {
+        if (uri.getScheme()==null) {
+            return Paths.get(uri.getPath()).toString();
+        } else if ("file".equals(uri.getScheme())) {
+            return Paths.get(uri).toString();
+        } else {
+            return uri.toString();
+        }
     }
 
     @Override
-    public ManagedRepository getRepository()
+    public org.apache.archiva.repository.ManagedRepository getRepository()
     {
         return repository;
     }
@@ -244,7 +255,7 @@ public class ManagedDefaultRepositoryContent
             path = path.substring( 0, idx );
         }
 
-        Path repoDir = Paths.get( repository.getLocation(), path );
+        Path repoDir = PathUtil.getPathFromUri( repository.getLocation() ).resolve( path );
 
         if ( !Files.exists(repoDir) )
         {
@@ -297,7 +308,7 @@ public class ManagedDefaultRepositoryContent
             path = path.substring( 0, idx );
         }
 
-        Path repoBase = Paths.get(repository.getLocation());
+        Path repoBase = PathUtil.getPathFromUri(repository.getLocation());
         Path repoDir = repoBase.resolve( path );
 
         if ( !Files.exists(repoDir) )
@@ -370,7 +381,7 @@ public class ManagedDefaultRepositoryContent
     }
 
     @Override
-    public void setRepository( ManagedRepository repository )
+    public void setRepository( org.apache.archiva.repository.ManagedRepository repository )
     {
         this.repository = repository;
     }
@@ -385,9 +396,10 @@ public class ManagedDefaultRepositoryContent
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {
-        if ( ( path != null ) && path.startsWith( repository.getLocation() ) && repository.getLocation().length() > 0 )
+        String repoPath = convertUriToPath( repository.getLocation() );
+        if ( ( path != null ) && path.startsWith( repoPath ) && repoPath.length() > 0 )
         {
-            return super.toArtifactReference( path.substring( repository.getLocation().length() + 1 ) );
+            return super.toArtifactReference( path.substring( repoPath.length() + 1 ) );
         }
 
         return super.toArtifactReference( path );
@@ -407,13 +419,13 @@ public class ManagedDefaultRepositoryContent
     @Override
     public Path toFile( ArtifactReference reference )
     {
-        return Paths.get( repository.getLocation(), toPath( reference ) );
+        return PathUtil.getPathFromUri( repository.getLocation()).resolve( toPath( reference ) );
     }
 
     @Override
     public Path toFile( ArchivaArtifact reference )
     {
-        return Paths.get( repository.getLocation(), toPath( reference ) );
+        return PathUtil.getPathFromUri( repository.getLocation()).resolve( toPath( reference ) );
     }
 
     /**
@@ -436,7 +448,7 @@ public class ManagedDefaultRepositoryContent
             path = path.substring( 0, idx );
         }
 
-        Path repoBase = Paths.get(repository.getLocation()).toAbsolutePath();
+        Path repoBase = PathUtil.getPathFromUri(repository.getLocation()).toAbsolutePath();
         Path repoDir = repoBase.resolve( path );
 
         if ( !Files.exists(repoDir) )
