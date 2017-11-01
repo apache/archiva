@@ -60,7 +60,7 @@ Configuration Files of Apache Archiva
   <managedRepositories>
     <managedRepository>
       <location>${appserver.base}/repositories/internal</location>
-      <retentionTime>30</retentionTime>
+      <retentionPeriod>30</retentionPeriod>
       <id>internal</id>
       <name>Archiva Managed Internal Repository</name>
     </managedRepository>
