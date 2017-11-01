@@ -29,7 +29,7 @@ import org.apache.archiva.repository.layout.LayoutException;
  *
  *
  */
-public interface RemoteRepositoryContent
+public interface RemoteRepositoryContent extends RepositoryContent
 {
     /**
      * <p>
@@ -72,25 +72,6 @@ public interface RemoteRepositoryContent
      * @param repo the repository to associate with this repository content.
      */
     void setRepository( RemoteRepository repo );
-
-    /**
-     * Given a repository relative path to a filename, return the {@link org.apache.archiva.model.VersionedReference} object suitable for the path.
-     *
-     * @param path the path relative to the repository base dir for the artifact.
-     * @return the {@link ArtifactReference} representing the path.  (or null if path cannot be converted to
-     *         a {@link ArtifactReference})
-     * @throws LayoutException if there was a problem converting the path to an artifact.
-     */
-    ArtifactReference toArtifactReference( String path )
-        throws LayoutException;
-
-    /**
-     * Given an ArtifactReference, return the relative path to the artifact.
-     *
-     * @param reference the artifact reference to use.
-     * @return the relative path to the artifact.
-     */
-    String toPath( ArtifactReference reference );
 
     /**
      * Given an ArtifactReference, return the url to the artifact.

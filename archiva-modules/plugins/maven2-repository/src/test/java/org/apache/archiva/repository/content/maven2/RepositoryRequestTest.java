@@ -23,6 +23,7 @@ import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryContentProvider;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -518,9 +519,10 @@ public class RepositoryRequestTest
         repo.setLocation( location.toAbsolutePath().toUri() );
         repo.setLayout( layout );
 
+        RepositoryContentProvider provider = applicationContext.getBean( "repositoryContentProvider#maven", RepositoryContentProvider.class );
+
         ManagedRepositoryContent repoContent =
-            applicationContext.getBean( "managedRepositoryContent#" + layout, ManagedRepositoryContent.class );
-        repoContent.setRepository( repo );
+            provider.createManagedContent( repo );
 
         return repoContent;
     }

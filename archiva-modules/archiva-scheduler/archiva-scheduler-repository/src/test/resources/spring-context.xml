@@ -28,10 +28,6 @@
        default-lazy-init="false">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.metadata.repository,org.apache.archiva.repository.content.maven2"/>
-
-  <alias name="managedRepositoryContent#maven" alias="managedRepositoryContent#default" />
-  <alias name="remoteRepositoryContent#maven" alias="remoteRepositoryContent#default" />
 
   <bean name="managedRepoAdmin#test" class="org.apache.archiva.mock.MockManagedRepositoryAdmin">
     <property name="archivaConfiguration" ref="archivaConfiguration#test-repository-scanning"/>

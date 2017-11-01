@@ -31,13 +31,22 @@ import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.proxy.DefaultRepositoryProxyConnectors;
 import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
+import org.apache.archiva.repository.RepositoryContentProvider;
+import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.content.maven2.RepositoryRequest;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -62,8 +71,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static org.easymock.EasyMock.*;
 
@@ -127,6 +138,12 @@ public class ArchivaDavResourceFactoryTest
 
     @Inject
     DefaultRepositoryGroupAdmin defaultRepositoryGroupAdmin;
+
+    @Inject
+    List<? extends ArtifactMappingProvider> artifactMappingProviders;
+
+    @Inject
+    FileTypes fileTypes;
 
 
     @Before
@@ -215,7 +232,7 @@ public class ArchivaDavResourceFactoryTest
     private ManagedRepositoryContent createManagedRepositoryContent( String repoId )
         throws RepositoryAdminException
     {
-        ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
+        ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent(artifactMappingProviders, fileTypes);
         org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository( repoId );
         repoContent.setRepository( repo );
         if (repo!=null && repo instanceof EditableManagedRepository)
@@ -223,6 +240,52 @@ public class ArchivaDavResourceFactoryTest
             ( (EditableManagedRepository) repo ).setContent( repoContent );
         }
         return repoContent;
+    }
+
+    private RepositoryContentProvider createRepositoryContentProvider(ManagedRepositoryContent content) {
+        Set<RepositoryType> TYPES = new HashSet<>(  );
+        TYPES.add(RepositoryType.MAVEN);
+        return new RepositoryContentProvider( )
+        {
+
+
+            @Override
+            public boolean supportsLayout( String layout )
+            {
+                return true;
+            }
+
+            @Override
+            public Set<RepositoryType> getSupportedRepositoryTypes( )
+            {
+                return TYPES;
+            }
+
+            @Override
+            public boolean supports( RepositoryType type )
+            {
+                return true;
+            }
+
+            @Override
+            public RemoteRepositoryContent createRemoteContent( RemoteRepository repository ) throws RepositoryException
+            {
+                return null;
+            }
+
+            @Override
+            public ManagedRepositoryContent createManagedContent( org.apache.archiva.repository.ManagedRepository repository ) throws RepositoryException
+            {
+                content.setRepository( repository );
+                return content;
+            }
+
+            @Override
+            public <T extends RepositoryContent, V extends Repository> T createContent( Class<T> clazz, V repository ) throws RepositoryException
+            {
+                return null;
+            }
+        };
     }
 
     @After
@@ -580,7 +643,10 @@ public class ArchivaDavResourceFactoryTest
     {
         ManagedRepositoryContent legacyRepo = createManagedRepositoryContent( LEGACY_REPO );
         ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
-        beanFactory.registerSingleton("managedRepositoryContent#legacy", legacyRepo);
+        RepositoryContentProvider provider = createRepositoryContentProvider(legacyRepo );
+        beanFactory.registerSingleton("repositoryContentProvider#legacy", provider);
+        RepositoryContentFactory repoContentFactory = applicationContext.getBean( "repositoryContentFactory#default", RepositoryContentFactory.class );
+        repoContentFactory.getRepositoryContentProviders().add(provider);
         defaultManagedRepositoryAdmin.addManagedRepository(
             createManagedRepository( LEGACY_REPO, Paths.get( "target/test-classes/" + LEGACY_REPO ).toString(),
                                      "legacy" ), false, null );

@@ -20,6 +20,7 @@ package org.apache.archiva.repository.content.maven2;
  */
 
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
@@ -27,6 +28,7 @@ import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
+import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.commons.lang.StringUtils;
@@ -40,8 +42,10 @@ import java.util.List;
 /**
  * AbstractDefaultRepositoryContent - common methods for working with default (maven 2) layout.
  */
-public abstract class AbstractDefaultRepositoryContent
+public abstract class AbstractDefaultRepositoryContent implements RepositoryContent
 {
+
+
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
     public static final String MAVEN_METADATA = "maven-metadata.xml";
@@ -56,16 +60,19 @@ public abstract class AbstractDefaultRepositoryContent
 
     private PathParser defaultPathParser = new DefaultPathParser();
 
+
+
     /**
      *
      */
-    @Inject
     protected List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
-    @PostConstruct
-    protected void initialize()
-    {
-        // no op
+    AbstractDefaultRepositoryContent(List<? extends ArtifactMappingProvider> artifactMappingProviders) {
+        this.artifactMappingProviders = artifactMappingProviders;
+    }
+
+    public void setArtifactMappingProviders(List<? extends ArtifactMappingProvider> artifactMappingProviders) {
+        this.artifactMappingProviders = artifactMappingProviders;
     }
 
     public ArtifactReference toArtifactReference( String path )

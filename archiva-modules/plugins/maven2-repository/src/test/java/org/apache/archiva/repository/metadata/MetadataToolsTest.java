@@ -32,6 +32,7 @@ import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.RepositoryContentProvider;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.commons.io.FileUtils;
@@ -365,9 +366,11 @@ public class MetadataToolsTest
 
         MavenManagedRepository repo =
             createRepository( "test-repo", "Test Repository: " + name.getMethodName(), repoRootDir );
+
+        RepositoryContentProvider provider = applicationContext.getBean( "repositoryContentProvider#maven", RepositoryContentProvider.class );
+
         ManagedRepositoryContent repoContent =
-            applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );
-        repoContent.setRepository( repo );
+            provider.createManagedContent( repo );
 
         Set<String> testedVersionSet = tools.gatherSnapshotVersions( repoContent, reference );
 
@@ -618,9 +621,10 @@ public class MetadataToolsTest
         MavenManagedRepository repoConfig =
             createRepository( "test-repo", "Test Repository: " + name.getMethodName(), repoRoot );
 
+        RepositoryContentProvider provider = applicationContext.getBean( "repositoryContentProvider#maven", RepositoryContentProvider.class );
+
         ManagedRepositoryContent repoContent =
-            applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );
-        repoContent.setRepository( repoConfig );
+            provider.createManagedContent( repoConfig );
         return repoContent;
     }
 

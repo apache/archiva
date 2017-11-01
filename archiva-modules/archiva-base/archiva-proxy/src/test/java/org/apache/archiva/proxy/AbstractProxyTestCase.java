@@ -36,6 +36,7 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryContentProvider;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -357,9 +358,9 @@ public abstract class AbstractProxyTestCase
         repo.setLocation( new URI(path) );
         repo.setLayout( layout );
 
+        RepositoryContentProvider provider = applicationContext.getBean( "repositoryContentProvider#maven", RepositoryContentProvider.class );
         ManagedRepositoryContent repoContent =
-            applicationContext.getBean( "managedRepositoryContent#" + layout, ManagedRepositoryContent.class );
-        repoContent.setRepository( repo );
+            provider.createManagedContent( repo );
         return repoContent;
     }
 

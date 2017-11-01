@@ -73,9 +73,9 @@ public abstract class AbstractRepositoryLayerTestCase
         repo.setLocation( location.toAbsolutePath().toUri() );
         repo.setLayout( layout );
 
+        RepositoryContentProvider provider = applicationContext.getBean( "repositoryContentProvider#maven", RepositoryContentProvider.class );
         ManagedRepositoryContent repoContent =
-            applicationContext.getBean( "managedRepositoryContent#" + layout, ManagedRepositoryContent.class );
-        repoContent.setRepository( repo );
+            provider.createManagedContent( repo );
 
         return repoContent;
     }
@@ -87,9 +87,9 @@ public abstract class AbstractRepositoryLayerTestCase
         repo.setLocation( new URI( url ) );
         repo.setLayout( layout );
 
+        RepositoryContentProvider provider = applicationContext.getBean( "repositoryContentProvider#maven", RepositoryContentProvider.class );
         RemoteRepositoryContent repoContent =
-            applicationContext.getBean( "remoteRepositoryContent#" + layout, RemoteRepositoryContent.class );
-        repoContent.setRepository( repo );
+            provider.createRemoteContent( repo );
 
         return repoContent;
     }

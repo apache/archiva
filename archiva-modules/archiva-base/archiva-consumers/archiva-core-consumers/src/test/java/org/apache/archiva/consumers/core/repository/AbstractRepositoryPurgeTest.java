@@ -27,6 +27,7 @@ import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPat
 import org.apache.archiva.repository.BasicManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.repository.RepositoryContentProvider;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -184,8 +185,9 @@ public abstract class AbstractRepositoryPurgeTest
     {
         if ( repo == null )
         {
-            repo = applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );
-            repo.setRepository( getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ) );
+            org.apache.archiva.repository.ManagedRepository repoCfg = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+            RepositoryContentProvider provider = applicationContext.getBean( "repositoryContentProvider#maven", RepositoryContentProvider.class );
+            repo = provider.createManagedContent( repoCfg );
         }
 
         return repo;

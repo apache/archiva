@@ -27,9 +27,6 @@
             http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
        default-lazy-init="true">
 
-  <alias name="managedRepositoryContent#maven" alias="managedRepositoryContent#default" />
-  <alias name="remoteRepositoryContent#maven" alias="remoteRepositoryContent#default" />
-
   <bean name="securitySystem#testable" class="org.apache.archiva.redback.system.DefaultSecuritySystem">
     <property name="userManager" ref="userManager#memory"/>
     <property name="keyManager" ref="keyManager#memory"/>

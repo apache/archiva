@@ -32,8 +32,11 @@ import java.util.Set;
  * ManagedRepositoryContent interface for interacting with a managed repository in an abstract way,
  * without the need for processing based on filesystem paths, or working with the database.
  */
-public interface ManagedRepositoryContent
+public interface ManagedRepositoryContent extends RepositoryContent
 {
+
+
+
     /**
      * Delete from the managed repository all files / directories associated with the
      * provided version reference.
@@ -117,7 +120,7 @@ public interface ManagedRepositoryContent
      *
      * @return the repository that is associated with this repository content.
      */
-    org.apache.archiva.repository.ManagedRepository getRepository();
+    ManagedRepository getRepository();
 
     /**
      * Given a specific {@link ProjectReference}, return the list of available versions for
@@ -180,17 +183,6 @@ public interface ManagedRepositoryContent
     void setRepository( org.apache.archiva.repository.ManagedRepository repo );
 
     /**
-     * Given a repository relative path to a filename, return the {@link VersionedReference} object suitable for the path.
-     *
-     * @param path the path relative to the repository base dir for the artifact.
-     * @return the {@link ArtifactReference} representing the path.  (or null if path cannot be converted to
-     *         a {@link ArtifactReference})
-     * @throws LayoutException if there was a problem converting the path to an artifact.
-     */
-    ArtifactReference toArtifactReference( String path )
-        throws LayoutException;
-
-    /**
      * Given an {@link ArtifactReference}, return the file reference to the artifact.
      *
      * @param reference the artifact reference to use.
@@ -223,14 +215,6 @@ public interface ManagedRepositoryContent
      * @return the path to the metadata file, or null if no metadata is appropriate.
      */
     String toMetadataPath( VersionedReference reference );
-
-    /**
-     * Given an {@link ArtifactReference}, return the relative path to the artifact.
-     *
-     * @param reference the artifact reference to use.
-     * @return the relative path to the artifact.
-     */
-    String toPath( ArtifactReference reference );
 
     /**
      * Given an {@link ArchivaArtifact}, return the relative path to the artifact.

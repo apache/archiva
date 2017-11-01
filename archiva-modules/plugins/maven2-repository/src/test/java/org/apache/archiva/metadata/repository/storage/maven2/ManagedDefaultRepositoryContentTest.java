@@ -28,6 +28,7 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.junit.Before;
@@ -52,9 +53,7 @@ import static org.junit.Assert.fail;
 public class ManagedDefaultRepositoryContentTest
     extends AbstractDefaultRepositoryContentTestCase
 {
-    @Inject
-    @Named ( "managedRepositoryContent#default" )
-    private ManagedRepositoryContent repoContent;
+    private ManagedDefaultRepositoryContent repoContent;
 
     @Inject
     FileTypes fileTypes;
@@ -62,6 +61,9 @@ public class ManagedDefaultRepositoryContentTest
     @Inject
     @Named ( "archivaConfiguration#default" )
     ArchivaConfiguration archivaConfiguration;
+
+    @Inject
+    List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
     @Before
     public void setUp()
@@ -77,6 +79,7 @@ public class ManagedDefaultRepositoryContentTest
 
         fileTypes.afterConfigurationChange( null, "fileType", null );
 
+        repoContent = new ManagedDefaultRepositoryContent(artifactMappingProviders, fileTypes);
         //repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
         repoContent.setRepository( repository );
     }

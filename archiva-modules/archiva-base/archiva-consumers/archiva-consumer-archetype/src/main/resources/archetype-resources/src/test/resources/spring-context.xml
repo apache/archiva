@@ -32,10 +32,8 @@
   <mockito:mock id="mockManagedRepositoryAdmin" class="org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin" />
   <mockito:mock id="mockRemoteRepositoryAdmin" class="org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin" />
 
-  <context:component-scan base-package="org.apache.archiva.repository.mock,org.apache.archiva.repository.content.maven2,$package"/>
+  <context:component-scan base-package="org.apache.archiva.repository.mock,org.apache.archiva.repository.content.maven2"/>
 
-  <alias name="managedRepositoryContent#maven" alias="managedRepositoryContent#default" />
-  <alias name="remoteRepositoryContent#maven" alias="remoteRepositoryContent#default" />
   <alias name="mockRepositoryProvider" alias="mavenRepositoryProvider" />
 
   <alias alias="repositorySessionFactory#jcr" name="repositorySessionFactory#file" />

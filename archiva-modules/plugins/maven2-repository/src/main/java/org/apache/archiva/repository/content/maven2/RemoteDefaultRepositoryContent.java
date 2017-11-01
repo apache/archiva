@@ -19,6 +19,7 @@ package org.apache.archiva.repository.content.maven2;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.RepositoryURL;
 import org.apache.archiva.repository.RemoteRepository;
@@ -27,16 +28,21 @@ import org.apache.archiva.repository.layout.LayoutException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * RemoteDefaultRepositoryContent
  */
-@Service( "remoteRepositoryContent#maven" )
-@Scope( "prototype" )
 public class RemoteDefaultRepositoryContent
     extends AbstractDefaultRepositoryContent
     implements RemoteRepositoryContent
 {
     private RemoteRepository repository;
+
+
+    public RemoteDefaultRepositoryContent( List<? extends ArtifactMappingProvider> artifactMappingProviders ) {
+        super(artifactMappingProviders);
+    }
 
     @Override
     public String getId( )

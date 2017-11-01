@@ -23,6 +23,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
+import org.apache.archiva.repository.RepositoryContentProvider;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.commons.io.FileUtils;
@@ -126,10 +127,10 @@ public class HttpProxyTransferTest
         repo.setLocation( new URI(repoPath) );
         repo.setLayout( "default" );
 
+        RepositoryContentProvider provider = applicationContext.getBean( "repositoryContentProvider#maven", RepositoryContentProvider.class );
         ManagedRepositoryContent repoContent =
-            applicationContext.getBean( "managedRepositoryContent#default", ManagedRepositoryContent.class );
+            provider.createManagedContent( repo );
 
-        repoContent.setRepository( repo );
         managedDefaultRepository = repoContent;
 
         ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(

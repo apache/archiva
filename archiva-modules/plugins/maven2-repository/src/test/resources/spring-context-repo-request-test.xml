@@ -35,10 +35,6 @@
   <alias name="archivaConfiguration#repo-request-test" alias="archivaConfiguration#default"/>
   <alias name="archivaConfiguration#repo-request-test" alias="archivaConfiguration"/>
 
-  <alias name="managedRepositoryContent#maven" alias="managedRepositoryContent#default" />
-  <alias name="remoteRepositoryContent#maven" alias="remoteRepositoryContent#default" />
-
-
   <bean name="registry#configured" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">
       <value>

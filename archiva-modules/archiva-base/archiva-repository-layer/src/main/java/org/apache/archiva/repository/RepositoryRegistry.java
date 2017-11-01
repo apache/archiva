@@ -191,7 +191,7 @@ public class RepositoryRegistry implements ConfigurationListener {
         }
         if ( repo instanceof EditableManagedRepository && repo.getContent() == null)
         {
-            ( (EditableManagedRepository) repo ).setContent( repositoryContentFactory.getManagedRepositoryContent( cfg, repo ) );
+            ( (EditableManagedRepository) repo ).setContent( repositoryContentFactory.getManagedRepositoryContent( repo ) );
         }
     }
 
@@ -265,7 +265,7 @@ public class RepositoryRegistry implements ConfigurationListener {
     {
         if ( repo instanceof EditableRemoteRepository && repo.getContent() == null)
         {
-            ( (EditableRemoteRepository) repo ).setContent( repositoryContentFactory.getRemoteRepositoryContent( cfg, repo ) );
+            ( (EditableRemoteRepository) repo ).setContent( repositoryContentFactory.getRemoteRepositoryContent( repo ) );
         }
     }
 

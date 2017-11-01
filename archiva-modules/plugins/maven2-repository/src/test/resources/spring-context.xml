@@ -33,7 +33,6 @@
 
   <alias name="archivaConfiguration#test" alias="archivaConfiguration#default"/>
   <alias name="archivaConfiguration#test" alias="archivaConfiguration"/>
-  <alias name="managedRepositoryContent#maven" alias="managedRepositoryContent#default" />
 
   <alias name="metadataResolver#test" alias="metadataResolver#default"/>
 </beans>

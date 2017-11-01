@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,6 +49,9 @@ public class RepositoryContentFactory
 
     @Inject
     private ApplicationContext applicationContext;
+
+    @Inject
+    private List<RepositoryContentProvider> repositoryContentProviders;
 
     private final Map<String, ManagedRepositoryContent> managedContentMap;
 
@@ -69,7 +73,7 @@ public class RepositoryContentFactory
      * @throws RepositoryException         the repository content object cannot be loaded due to configuration issue.
      */
     public ManagedRepositoryContent getManagedRepositoryContent( String repoId )
-        throws RepositoryNotFoundException, RepositoryException
+        throws RepositoryException
     {
         ManagedRepositoryContent repo = managedContentMap.get( repoId );
 
@@ -85,33 +89,38 @@ public class RepositoryContentFactory
 
     }
 
-    public ManagedRepositoryContent getManagedRepositoryContent( ManagedRepositoryConfiguration repoConfig, org.apache.archiva.repository.ManagedRepository mRepo )
-        throws RepositoryNotFoundException, RepositoryException
+    private RepositoryContentProvider getProvider(final String layout, final RepositoryType repoType) throws RepositoryException
     {
-        ManagedRepositoryContent repo = managedContentMap.get( repoConfig.getId( ) );
+        return repositoryContentProviders.stream().filter(p->p.supports( repoType ) && p.supportsLayout( layout )).
+            findFirst().orElseThrow( ( ) -> new RepositoryException( "Could not find content provider for repository type "+repoType+" and layout "+layout ) );
+    }
 
-        if ( repo != null && repo.getRepository()==mRepo)
+    public ManagedRepositoryContent getManagedRepositoryContent( org.apache.archiva.repository.ManagedRepository mRepo )
+        throws RepositoryException
+    {
+        final String id = mRepo.getId();
+        ManagedRepositoryContent content = managedContentMap.get( id );
+
+        if ( content != null && content.getRepository()==mRepo)
         {
-            return repo;
+            return content;
         }
 
-        repo = applicationContext.getBean( "managedRepositoryContent#" + repoConfig.getLayout( ),
-            ManagedRepositoryContent.class );
-        repo.setRepository( mRepo );
-        ManagedRepositoryContent previousRepo = managedContentMap.put( repoConfig.getId( ), repo );
-        if (previousRepo!=null) {
-            ManagedRepository previousMRepo = previousRepo.getRepository( );
-            if (previousMRepo!=null && previousMRepo instanceof EditableManagedRepository) {
-                ((EditableManagedRepository)previousMRepo).setContent( null );
-            }
-            previousRepo.setRepository( null );
+        RepositoryContentProvider contentProvider = getProvider( mRepo.getLayout( ), mRepo.getType( ) );
+        content = contentProvider.createManagedContent( mRepo );
+        if (content==null) {
+            throw new RepositoryException( "Could not create repository content instance for "+mRepo.getId() );
+        }
+        ManagedRepositoryContent previousContent = managedContentMap.put( id, content );
+        if (previousContent!=null) {
+            previousContent.setRepository( null );
         }
 
-        return repo;
+        return content;
     }
 
     public RemoteRepositoryContent getRemoteRepositoryContent( String repoId )
-        throws RepositoryNotFoundException, RepositoryException
+        throws RepositoryException
     {
         RemoteRepositoryContent repo = remoteContentMap.get( repoId );
 
@@ -127,30 +136,27 @@ public class RepositoryContentFactory
 
     }
 
-    public RemoteRepositoryContent getRemoteRepositoryContent( RemoteRepositoryConfiguration repoConfig, RemoteRepository mRepo )
-        throws RepositoryNotFoundException, RepositoryException
+    public RemoteRepositoryContent getRemoteRepositoryContent( RemoteRepository mRepo )
+        throws RepositoryException
     {
-        RemoteRepositoryContent repo = remoteContentMap.get( repoConfig.getId( ) );
+        final String id = mRepo.getId();
+        RemoteRepositoryContent content = remoteContentMap.get( id );
 
-        if ( repo != null && repo.getRepository()==mRepo)
+        if ( content != null && content.getRepository()==mRepo)
         {
-            return repo;
+            return content;
         }
 
-        repo = applicationContext.getBean( "remoteRepositoryContent#" + repoConfig.getLayout( ),
-            RemoteRepositoryContent.class );
-        repo.setRepository( mRepo );
-        RemoteRepositoryContent previousRepo = remoteContentMap.put( repoConfig.getId( ), repo );
-        if (previousRepo!=null) {
-            RemoteRepository previousMRepo = previousRepo.getRepository( );
-            if (previousMRepo!=null && previousMRepo instanceof EditableRemoteRepository) {
-                ((EditableRemoteRepository)previousMRepo).setContent( null );
-            }
-            previousRepo.setRepository( null );
+        RepositoryContentProvider contentProvider = getProvider( mRepo.getLayout( ), mRepo.getType( ) );
+        content = contentProvider.createRemoteContent( mRepo );
+        if (content==null) {
+            throw new RepositoryException( "Could not create repository content instance for "+mRepo.getId() );
         }
-
-
-        return repo;
+        RemoteRepositoryContent previousContent = remoteContentMap.put( id, content );
+        if (previousContent!=null) {
+            previousContent.setRepository( null );
+        }
+        return content;
     }
 
 
@@ -198,5 +204,13 @@ public class RepositoryContentFactory
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
     {
         this.archivaConfiguration = archivaConfiguration;
+    }
+
+    public void setRepositoryContentProviders(List<RepositoryContentProvider> providers) {
+        this.repositoryContentProviders = providers;
+    }
+
+    public List<RepositoryContentProvider> getRepositoryContentProviders() {
+        return repositoryContentProviders;
     }
 }

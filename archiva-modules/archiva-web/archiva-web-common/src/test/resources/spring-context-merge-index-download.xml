@@ -29,10 +29,6 @@
        default-lazy-init="true">
 
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
-  <context:component-scan base-package="org.apache.archiva.repository.content.maven2" />
-
-  <alias name="managedRepositoryContent#maven" alias="managedRepositoryContent#default" />
-  <alias name="remoteRepositoryContent#maven" alias="remoteRepositoryContent#default" />
 
 
   <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">

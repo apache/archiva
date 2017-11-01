@@ -21,6 +21,7 @@ package org.apache.archiva.repository.content.maven2;
 
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMappingProvider;
 import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
@@ -31,11 +32,7 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -43,6 +40,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,22 +49,29 @@ import java.util.stream.Stream;
 /**
  * ManagedDefaultRepositoryContent
  */
-@Service ("managedRepositoryContent#maven")
-@Scope ("prototype")
 public class ManagedDefaultRepositoryContent
     extends AbstractDefaultRepositoryContent
     implements ManagedRepositoryContent
 {
-    @Inject
-    @Named ( "fileTypes" )
+
     private FileTypes filetypes;
+
+    public void setFileTypes(FileTypes fileTypes) {
+        this.filetypes = fileTypes;
+    }
+
+
 
     private org.apache.archiva.repository.ManagedRepository repository;
 
-    public ManagedDefaultRepositoryContent()
+    public ManagedDefaultRepositoryContent(FileTypes fileTypes) {
+        super(Collections.singletonList( new DefaultArtifactMappingProvider() ));
+        setFileTypes( fileTypes );
+    }
+    public ManagedDefaultRepositoryContent( List<? extends ArtifactMappingProvider> artifactMappingProviders, FileTypes fileTypes )
     {
-        // default to use if there are none supplied as components
-        this.artifactMappingProviders = Collections.singletonList( new DefaultArtifactMappingProvider() );
+        super(artifactMappingProviders==null ? Collections.singletonList( new DefaultArtifactMappingProvider() ) : artifactMappingProviders);
+        setFileTypes( fileTypes );
     }
 
     @Override

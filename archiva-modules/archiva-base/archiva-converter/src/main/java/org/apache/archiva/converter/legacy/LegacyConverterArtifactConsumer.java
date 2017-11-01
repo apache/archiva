@@ -21,11 +21,13 @@ package org.apache.archiva.converter.legacy;
 
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.converter.artifact.ArtifactConversionException;
 import org.apache.archiva.converter.artifact.ArtifactConverter;
+import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -63,6 +65,12 @@ public class LegacyConverterArtifactConsumer
     @Named("artifactConverter#legacy-to-default")
     private ArtifactConverter artifactConverter;
 
+    @Inject
+    private List<? extends ArtifactMappingProvider> artifactMappingProviders;
+
+    @Inject
+    private FileTypes fileTypes;
+
     private ArtifactFactory artifactFactory;
 
     private ManagedRepositoryContent managedRepository;
@@ -88,7 +96,7 @@ public class LegacyConverterArtifactConsumer
     public void beginScan( org.apache.archiva.repository.ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
-        this.managedRepository = new ManagedDefaultRepositoryContent();
+        this.managedRepository = new ManagedDefaultRepositoryContent(artifactMappingProviders, fileTypes);
         this.managedRepository.setRepository( repository );
     }
 
