@@ -81,7 +81,7 @@ public interface RepositoryStorage
      * @return the file path
      * @since 2.0.0
      */
-    String getFilePath( String requestPath, ManagedRepository managedRepository );
+    String getFilePath( String requestPath, org.apache.archiva.repository.ManagedRepository managedRepository );
 
     String getFilePathWithVersion( final String requestPath, ManagedRepositoryContent managedRepositoryContent )
         throws RelocationException, XMLException;
