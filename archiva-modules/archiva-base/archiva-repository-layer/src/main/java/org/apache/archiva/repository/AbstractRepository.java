@@ -52,9 +52,11 @@ public abstract class AbstractRepository implements EditableRepository
     private Set<URI> failoverLocations = new HashSet<>(  );
     private Set<URI> uFailoverLocations = Collections.unmodifiableSet( failoverLocations );
     private boolean scanned = true;
-    String schedulingDefinition = "0 0 02 * *";
-    private String layout;
+    String schedulingDefinition = "0 0 02 * * ?";
+    private String layout = "default";
     public static final CronDefinition CRON_DEFINITION = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
+
+    Map<Class<? extends RepositoryFeature<?>>, RepositoryFeature<?>> featureMap = new HashMap<>(  );
 
     public AbstractRepository(RepositoryType type, String id, String name) {
         this.id = id;
@@ -152,13 +154,18 @@ public abstract class AbstractRepository implements EditableRepository
     @Override
     public <T extends RepositoryFeature<T>> RepositoryFeature<T> getFeature( Class<T> clazz ) throws UnsupportedFeatureException
     {
-        throw new UnsupportedFeatureException( "Feature "+clazz+" not supported"  );
+        if (featureMap.containsKey( clazz )) {
+            return (RepositoryFeature<T>) featureMap.get(clazz);
+        } else
+        {
+            throw new UnsupportedFeatureException( "Feature " + clazz + " not supported" );
+        }
     }
 
     @Override
     public <T extends RepositoryFeature<T>> boolean supportsFeature( Class<T> clazz )
     {
-        return false;
+        return featureMap.containsKey( clazz );
     }
 
     @Override
@@ -225,5 +232,9 @@ public abstract class AbstractRepository implements EditableRepository
         CronParser parser = new CronParser(CRON_DEFINITION);
         parser.parse(cronExpression).validate();
         this.schedulingDefinition = cronExpression;
+    }
+
+    protected <T extends RepositoryFeature<T>> void addFeature(RepositoryFeature<T> feature) {
+       featureMap.put( (Class<? extends RepositoryFeature<?>>) feature.getClass(), feature);
     }
 }

@@ -23,6 +23,7 @@ package org.apache.archiva.repository.features;
 import org.apache.commons.lang.StringUtils;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  *
@@ -36,7 +37,15 @@ public class IndexCreationFeature implements RepositoryFeature<IndexCreationFeat
     private URI indexPath;
 
     public IndexCreationFeature() {
-
+        try
+        {
+            this.indexPath = new URI(".indexer");
+        }
+        catch ( URISyntaxException e )
+        {
+            // This may not happen.
+            e.printStackTrace( );
+        }
     }
 
     public IndexCreationFeature(boolean skipPackedIndexCreation) {

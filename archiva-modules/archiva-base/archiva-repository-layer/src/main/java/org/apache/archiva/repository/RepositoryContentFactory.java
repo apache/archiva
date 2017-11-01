@@ -19,13 +19,10 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.admin.model.beans.RemoteRepository;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.springframework.context.ApplicationContext;
@@ -38,8 +35,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * RepositoryContentRequest
- *
- *
  */
 @Service( "repositoryContentFactory#default" )
 public class RepositoryContentFactory
@@ -52,12 +47,6 @@ public class RepositoryContentFactory
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
-
-    @Inject
-    private RemoteRepositoryAdmin remoteRepositoryAdmin;
-
-    @Inject
     private ApplicationContext applicationContext;
 
     private final Map<String, ManagedRepositoryContent> managedContentMap;
@@ -65,10 +54,10 @@ public class RepositoryContentFactory
     private final Map<String, RemoteRepositoryContent> remoteContentMap;
 
 
-    public RepositoryContentFactory()
+    public RepositoryContentFactory( )
     {
-        managedContentMap = new ConcurrentHashMap<String, ManagedRepositoryContent>();
-        remoteContentMap = new ConcurrentHashMap<String, RemoteRepositoryContent>();
+        managedContentMap = new ConcurrentHashMap<String, ManagedRepositoryContent>( );
+        remoteContentMap = new ConcurrentHashMap<String, RemoteRepositoryContent>( );
     }
 
     /**
@@ -82,65 +71,86 @@ public class RepositoryContentFactory
     public ManagedRepositoryContent getManagedRepositoryContent( String repoId )
         throws RepositoryNotFoundException, RepositoryException
     {
-        try
+        ManagedRepositoryContent repo = managedContentMap.get( repoId );
+
+        if ( repo != null )
         {
-            ManagedRepositoryContent repo = managedContentMap.get( repoId );
-
-            if ( repo != null )
-            {
-                return repo;
-            }
-
-            ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repoId );
-            if ( repoConfig == null )
-            {
-                throw new RepositoryNotFoundException(
-                    "Unable to find managed repository configuration for id:" + repoId );
-            }
-
-            repo = applicationContext.getBean( "managedRepositoryContent#" + repoConfig.getLayout(),
-                                               ManagedRepositoryContent.class );
-            repo.setRepository( repoConfig );
-            managedContentMap.put( repoId, repo );
-
             return repo;
         }
-        catch ( RepositoryAdminException e )
+        else
         {
-            throw new RepositoryException( e.getMessage(), e );
+            throw new RepositoryNotFoundException(
+                "Unable to find managed repository configuration for id " + repoId );
         }
+
+    }
+
+    public ManagedRepositoryContent getManagedRepositoryContent( ManagedRepositoryConfiguration repoConfig, org.apache.archiva.repository.ManagedRepository mRepo )
+        throws RepositoryNotFoundException, RepositoryException
+    {
+        ManagedRepositoryContent repo = managedContentMap.get( repoConfig.getId( ) );
+
+        if ( repo != null && repo.getRepository()==mRepo)
+        {
+            return repo;
+        }
+
+        repo = applicationContext.getBean( "managedRepositoryContent#" + repoConfig.getLayout( ),
+            ManagedRepositoryContent.class );
+        repo.setRepository( mRepo );
+        ManagedRepositoryContent previousRepo = managedContentMap.put( repoConfig.getId( ), repo );
+        if (previousRepo!=null) {
+            ManagedRepository previousMRepo = previousRepo.getRepository( );
+            if (previousMRepo!=null && previousMRepo instanceof EditableManagedRepository) {
+                ((EditableManagedRepository)previousMRepo).setContent( null );
+            }
+            previousRepo.setRepository( null );
+        }
+
+        return repo;
     }
 
     public RemoteRepositoryContent getRemoteRepositoryContent( String repoId )
         throws RepositoryNotFoundException, RepositoryException
     {
-        try
+        RemoteRepositoryContent repo = remoteContentMap.get( repoId );
+
+        if ( repo != null )
         {
-            RemoteRepositoryContent repo = remoteContentMap.get( repoId );
-
-            if ( repo != null )
-            {
-                return repo;
-            }
-
-            RemoteRepository repoConfig = remoteRepositoryAdmin.getRemoteRepository( repoId );
-            if ( repoConfig == null )
-            {
-                throw new RepositoryNotFoundException(
-                    "Unable to find remote repository configuration for id:" + repoId );
-            }
-
-            repo = applicationContext.getBean( "remoteRepositoryContent#" + repoConfig.getLayout(),
-                                               RemoteRepositoryContent.class );
-            repo.setRepository( repoConfig );
-            remoteContentMap.put( repoId, repo );
-
             return repo;
         }
-        catch ( RepositoryAdminException e )
+        else
         {
-            throw new RepositoryException( e.getMessage(), e );
+            throw new RepositoryNotFoundException(
+                "Unable to find remote repository configuration for id:" + repoId );
         }
+
+    }
+
+    public RemoteRepositoryContent getRemoteRepositoryContent( RemoteRepositoryConfiguration repoConfig, RemoteRepository mRepo )
+        throws RepositoryNotFoundException, RepositoryException
+    {
+        RemoteRepositoryContent repo = remoteContentMap.get( repoConfig.getId( ) );
+
+        if ( repo != null && repo.getRepository()==mRepo)
+        {
+            return repo;
+        }
+
+        repo = applicationContext.getBean( "remoteRepositoryContent#" + repoConfig.getLayout( ),
+            RemoteRepositoryContent.class );
+        repo.setRepository( mRepo );
+        RemoteRepositoryContent previousRepo = remoteContentMap.put( repoConfig.getId( ), repo );
+        if (previousRepo!=null) {
+            RemoteRepository previousMRepo = previousRepo.getRepository( );
+            if (previousMRepo!=null && previousMRepo instanceof EditableRemoteRepository) {
+                ((EditableRemoteRepository)previousMRepo).setContent( null );
+            }
+            previousRepo.setRepository( null );
+        }
+
+
+        return repo;
     }
 
 
@@ -150,7 +160,7 @@ public class RepositoryContentFactory
         if ( ConfigurationNames.isManagedRepositories( propertyName ) || ConfigurationNames.isRemoteRepositories(
             propertyName ) )
         {
-            initMaps();
+            initMaps( );
         }
     }
 
@@ -161,26 +171,26 @@ public class RepositoryContentFactory
     }
 
     @PostConstruct
-    public void initialize()
+    public void initialize( )
     {
         archivaConfiguration.addChangeListener( this );
     }
 
-    private void initMaps()
+    private void initMaps( )
     {
         // olamy we use concurent so no need of synchronize
         //synchronized ( managedContentMap )
         //{
-        managedContentMap.clear();
+        managedContentMap.clear( );
         //}
 
         //synchronized ( remoteContentMap )
         //{
-        remoteContentMap.clear();
+        remoteContentMap.clear( );
         //}
     }
 
-    public ArchivaConfiguration getArchivaConfiguration()
+    public ArchivaConfiguration getArchivaConfiguration( )
     {
         return archivaConfiguration;
     }

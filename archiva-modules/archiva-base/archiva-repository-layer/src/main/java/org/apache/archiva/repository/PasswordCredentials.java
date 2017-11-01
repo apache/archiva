@@ -27,6 +27,11 @@ public class PasswordCredentials implements RepositoryCredentials
     String username;
     char[] password;
 
+    public PasswordCredentials(String username, char[] password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public String getUsername( )
     {
         return username;

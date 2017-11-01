@@ -30,16 +30,16 @@ import java.time.Period;
 public class ArtifactCleanupFeature implements RepositoryFeature<ArtifactCleanupFeature> {
 
     private boolean deleteReleasedSnapshots = false;
-    private Period retentionTime = Period.ofDays(100);
+    private Period retentionPeriod = Period.ofDays(100);
     private int retentionCount = 2;
 
     public ArtifactCleanupFeature() {
 
     }
 
-    public ArtifactCleanupFeature(boolean deleteReleasedSnapshots, Period retentionTime, int retentionCount) {
+    public ArtifactCleanupFeature( boolean deleteReleasedSnapshots, Period retentionPeriod, int retentionCount) {
         this.deleteReleasedSnapshots = deleteReleasedSnapshots;
-        this.retentionTime = retentionTime;
+        this.retentionPeriod = retentionPeriod;
         this.retentionCount = retentionCount;
     }
 
@@ -70,16 +70,16 @@ public class ArtifactCleanupFeature implements RepositoryFeature<ArtifactCleanup
      *
      * @return The time period after that the artifacts can be deleted.
      */
-    public Period getRetentionTime() {
-        return retentionTime;
+    public Period getRetentionPeriod() {
+        return retentionPeriod;
     }
 
     /**
      * Sets time period, after that artifacts can be deleted.
-     * @param retentionTime
+     * @param retentionPeriod
      */
-    public void setRetentionTime(Period retentionTime) {
-        this.retentionTime = retentionTime;
+    public void setRetentionPeriod( Period retentionPeriod ) {
+        this.retentionPeriod = retentionPeriod;
     }
 
     /**

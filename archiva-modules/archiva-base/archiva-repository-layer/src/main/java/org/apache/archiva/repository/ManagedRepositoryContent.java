@@ -19,7 +19,6 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
@@ -118,7 +117,7 @@ public interface ManagedRepositoryContent
      *
      * @return the repository that is associated with this repository content.
      */
-    ManagedRepository getRepository();
+    org.apache.archiva.repository.ManagedRepository getRepository();
 
     /**
      * Given a specific {@link ProjectReference}, return the list of available versions for
@@ -178,7 +177,7 @@ public interface ManagedRepositoryContent
      *
      * @param repo the repository to associate with this repository content.
      */
-    void setRepository( ManagedRepository repo );
+    void setRepository( org.apache.archiva.repository.ManagedRepository repo );
 
     /**
      * Given a repository relative path to a filename, return the {@link VersionedReference} object suitable for the path.

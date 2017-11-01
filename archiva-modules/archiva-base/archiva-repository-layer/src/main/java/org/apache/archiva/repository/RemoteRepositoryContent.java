@@ -19,7 +19,6 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.RepositoryURL;
 import org.apache.archiva.repository.layout.LayoutException;
