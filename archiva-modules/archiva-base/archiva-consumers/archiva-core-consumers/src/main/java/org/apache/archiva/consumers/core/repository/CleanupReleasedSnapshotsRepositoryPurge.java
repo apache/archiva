@@ -32,19 +32,23 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -73,20 +77,16 @@ public class CleanupReleasedSnapshotsRepositoryPurge
 {
     private MetadataTools metadataTools;
 
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
-
-    private RepositoryContentFactory repoContentFactory;
+    private RepositoryRegistry repositoryRegistry;
 
     public CleanupReleasedSnapshotsRepositoryPurge( ManagedRepositoryContent repository, MetadataTools metadataTools,
-                                                    ManagedRepositoryAdmin managedRepositoryAdmin,
-                                                    RepositoryContentFactory repoContentFactory,
+                                                    RepositoryRegistry repositoryRegistry,
                                                     RepositorySession repositorySession,
                                                     List<RepositoryListener> listeners )
     {
         super( repository, repositorySession, listeners );
         this.metadataTools = metadataTools;
-        this.managedRepositoryAdmin = managedRepositoryAdmin;
-        this.repoContentFactory = repoContentFactory;
+        this.repositoryRegistry = repositoryRegistry;
     }
 
     @Override
@@ -118,15 +118,15 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             // Gether the released versions
             List<String> releasedVersions = new ArrayList<>( );
 
-            List<ManagedRepository> repos = managedRepositoryAdmin.getManagedRepositories( );
-            for ( ManagedRepository repo : repos )
+            Collection<org.apache.archiva.repository.ManagedRepository> repos = repositoryRegistry.getManagedRepositories( );
+            for ( org.apache.archiva.repository.ManagedRepository repo : repos )
             {
-                if ( repo.isReleases( ) )
+
+                if ( repo.getActiveReleaseSchemes().contains( ReleaseScheme.RELEASE ))
                 {
                     try
                     {
-                        ManagedRepositoryContent repoContent =
-                            repoContentFactory.getManagedRepositoryContent( repo.getId( ) );
+                        ManagedRepositoryContent repoContent = repo.getContent();
                         for ( String version : repoContent.getVersions( reference ) )
                         {
                             if ( !VersionUtil.isSnapshot( version ) )
@@ -134,10 +134,6 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                                 releasedVersions.add( version );
                             }
                         }
-                    }
-                    catch ( RepositoryNotFoundException e )
-                    {
-                        // swallow
                     }
                     catch ( RepositoryException e )
                     {
@@ -178,10 +174,6 @@ public class CleanupReleasedSnapshotsRepositoryPurge
             {
                 updateMetadata( artifactRef );
             }
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new RepositoryPurgeException( e.getMessage( ), e );
         }
         catch ( LayoutException e )
         {

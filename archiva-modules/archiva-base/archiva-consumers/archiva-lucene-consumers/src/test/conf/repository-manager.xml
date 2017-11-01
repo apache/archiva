@@ -30,7 +30,7 @@
       <snapshots>true</snapshots>
       <indexed>true</indexed>
       <refreshCronExpression>0 0 * * * ?</refreshCronExpression>
-      <retentionTime>0</retentionTime>
+      <retentionPeriod>0</retentionPeriod>
       <retentionCount>2</retentionCount>
     </repository>
   </repositories>

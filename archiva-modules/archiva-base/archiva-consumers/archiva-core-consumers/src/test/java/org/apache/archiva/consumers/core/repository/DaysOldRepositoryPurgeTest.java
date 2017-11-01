@@ -19,9 +19,9 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.commons.lang.time.DateUtils;
 import org.junit.After;
 import org.junit.Test;
@@ -73,9 +73,10 @@ public class DaysOldRepositoryPurgeTest
     public void testByLastModified()
         throws Exception
     {
-        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
-        repoPurge = new DaysOldRepositoryPurge( getRepository(), repoConfiguration.getDaysOlder(),
-                                                repoConfiguration.getRetentionCount(), repositorySession,
+        org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        repoPurge = new DaysOldRepositoryPurge( getRepository(), atf.getRetentionPeriod().getDays(),
+                                                atf.getRetentionCount(), repositorySession,
                                                 Collections.singletonList( listener ) );
 
         String repoRoot = prepareTestRepos();
@@ -163,10 +164,11 @@ public class DaysOldRepositoryPurgeTest
     public void testOrderOfDeletion()
         throws Exception
     {
-        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
         List<RepositoryListener> listeners = Collections.singletonList( listener );
-        repoPurge = new DaysOldRepositoryPurge( getRepository(), repoConfiguration.getDaysOlder(),
-                                                repoConfiguration.getRetentionCount(), repositorySession, listeners );
+        repoPurge = new DaysOldRepositoryPurge( getRepository(), atf.getRetentionPeriod().getDays(),
+                                                atf.getRetentionCount(), repositorySession, listeners );
 
         String repoRoot = prepareTestRepos();
         String projectNs = "org.apache.maven.plugins";
@@ -241,10 +243,11 @@ public class DaysOldRepositoryPurgeTest
     public void testMetadataDrivenSnapshots()
         throws Exception
     {
-        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
         List<RepositoryListener> listeners = Collections.singletonList( listener );
-        repoPurge = new DaysOldRepositoryPurge( getRepository(), repoConfiguration.getDaysOlder(),
-                                                repoConfiguration.getRetentionCount(), repositorySession, listeners );
+        repoPurge = new DaysOldRepositoryPurge( getRepository(), atf.getRetentionPeriod().getDays(),
+            atf.getRetentionCount(), repositorySession, listeners );
 
         String repoRoot = prepareTestRepos();
         String projectNs = "org.codehaus.plexus";

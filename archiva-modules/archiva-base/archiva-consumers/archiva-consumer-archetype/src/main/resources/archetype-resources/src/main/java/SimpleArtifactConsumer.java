@@ -47,7 +47,7 @@ import javax.inject.Named;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.repository.ManagedRepository;
 
 /**
  * <code>SimpleArtifactConsumer</code>
@@ -119,13 +119,13 @@ public class SimpleArtifactConsumer
 
         try
         {
-            ManagedRepositoryContent repositoryContent = repositoryContentFactory.getManagedRepositoryContent( repository.getId() );
+            ManagedRepositoryContent repositoryContent = repository.getContent();
             ArtifactReference artifact = repositoryContent.toArtifactReference( path );
 
             repositorySession.getRepository().getArtifacts( repository.getId(), artifact.getGroupId(),
                                                             artifact.getArtifactId(), artifact.getVersion() );
         }
-        catch ( RepositoryException | LayoutException | MetadataResolutionException e )
+        catch ( LayoutException | MetadataResolutionException e )
         {
             throw new ConsumerException( e.getLocalizedMessage(), e );
         }

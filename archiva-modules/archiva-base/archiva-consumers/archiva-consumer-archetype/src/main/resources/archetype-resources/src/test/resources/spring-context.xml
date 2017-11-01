@@ -20,14 +20,23 @@
   -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:mockito="http://www.mockito.org/spring/mockito"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
            http://www.mockito.org/spring/mockito http://www.mockito.org/spring/mockito.xsd"
        default-lazy-init="true">
 
   <mockito:mock id="mockManagedRepositoryAdmin" class="org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin" />
   <mockito:mock id="mockRemoteRepositoryAdmin" class="org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin" />
+
+  <context:component-scan base-package="org.apache.archiva.repository.mock,org.apache.archiva.repository.content.maven2,$package"/>
+
+  <alias name="managedRepositoryContent#maven" alias="managedRepositoryContent#default" />
+  <alias name="remoteRepositoryContent#maven" alias="remoteRepositoryContent#default" />
+  <alias name="mockRepositoryProvider" alias="mavenRepositoryProvider" />
 
   <alias alias="repositorySessionFactory#jcr" name="repositorySessionFactory#file" />
 

@@ -20,8 +20,8 @@ package org.apache.archiva.consumers.lucene;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.FileTypes;
@@ -31,6 +31,8 @@ import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.maven.index.NexusIndexer;
@@ -60,6 +62,10 @@ public class NexusIndexerConsumer
     extends AbstractMonitoredConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
 {
+
+    @Inject
+    private RepositoryRegistry repositoryRegistry;
+
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     private ArchivaConfiguration configuration;
@@ -113,7 +119,7 @@ public class NexusIndexerConsumer
         throws ConsumerException
     {
         this.repository = repository;
-        managedRepository = Paths.get( repository.getLocation() );
+        managedRepository = PathUtil.getPathFromUri( repository.getLocation() );
 
         try
         {

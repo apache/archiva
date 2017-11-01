@@ -19,7 +19,6 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
@@ -31,11 +30,14 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -75,6 +77,9 @@ public class RepositoryPurgeConsumer
 
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
+    private RepositoryRegistry repositoryRegistry;
 
     @Inject
     @Named( value = "repositoryContentFactory#default" )
@@ -136,37 +141,35 @@ public class RepositoryPurgeConsumer
         throws ConsumerException
     {
         ManagedRepositoryContent repositoryContent;
-        try
-        {
-            repositoryContent = repositoryContentFactory.getManagedRepositoryContent( repository.getId( ) );
-        }
-        catch ( RepositoryNotFoundException e )
-        {
-            throw new ConsumerException( "Can't run repository purge: " + e.getMessage( ), e );
-        }
-        catch ( RepositoryException e )
-        {
-            throw new ConsumerException( "Can't run repository purge: " + e.getMessage( ), e );
-        }
+        repositoryContent = repository.getContent();
 
         repositorySession = repositorySessionFactory.createSession( );
 
-        if ( repository.getDaysOlder( ) != 0 )
+        if (repository.supportsFeature( ArtifactCleanupFeature.class ))
         {
-            repoPurge = new DaysOldRepositoryPurge( repositoryContent, repository.getDaysOlder( ),
-                repository.getRetentionCount( ), repositorySession, listeners );
-        }
-        else
-        {
-            repoPurge =
-                new RetentionCountRepositoryPurge( repositoryContent, repository.getRetentionCount( ), repositorySession,
-                    listeners );
+            ArtifactCleanupFeature acf = repository.getFeature( ArtifactCleanupFeature.class ).get();
+            int retentionPeriodInDays = acf.getRetentionPeriod( ).getDays( );
+            int retentionCount = acf.getRetentionCount();
+            if ( retentionPeriodInDays != 0 )
+            {
+                repoPurge = new DaysOldRepositoryPurge( repositoryContent, retentionPeriodInDays,
+                    retentionCount, repositorySession, listeners );
+            }
+            else
+            {
+                repoPurge =
+                    new RetentionCountRepositoryPurge( repositoryContent, retentionCount, repositorySession,
+                        listeners );
+            }
+            deleteReleasedSnapshots = acf.isDeleteReleasedSnapshots( );
+        } else {
+            throw new ConsumerException( "The repository does not support the ArtifactCleanup feature "+repository.getId() );
         }
 
-        cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repositoryContent, metadataTools, managedRepositoryAdmin,
-            repositoryContentFactory, repositorySession, listeners );
 
-        deleteReleasedSnapshots = repository.isDeleteReleasedSnapshots( );
+        cleanUp = new CleanupReleasedSnapshotsRepositoryPurge( repositoryContent, metadataTools, repositoryRegistry,
+            repositorySession, listeners );
+
     }
 
     @Override

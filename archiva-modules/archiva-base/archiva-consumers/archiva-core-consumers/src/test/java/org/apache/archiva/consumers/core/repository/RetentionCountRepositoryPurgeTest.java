@@ -22,6 +22,7 @@ package org.apache.archiva.consumers.core.repository;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,9 +51,10 @@ public class RetentionCountRepositoryPurgeTest
     {
         super.setUp();
 
-        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
         List<RepositoryListener> listeners = Collections.singletonList( listener );
-        repoPurge = new RetentionCountRepositoryPurge( getRepository(), repoConfiguration.getRetentionCount(),
+        ArtifactCleanupFeature acf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        repoPurge = new RetentionCountRepositoryPurge( getRepository(), acf.getRetentionCount(),
                                                        repositorySession, listeners );
     }
 

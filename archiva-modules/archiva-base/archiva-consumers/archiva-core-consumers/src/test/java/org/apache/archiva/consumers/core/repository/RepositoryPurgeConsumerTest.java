@@ -33,9 +33,12 @@ import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.mock.MockRepositorySessionFactory;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
@@ -48,6 +51,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
+import java.time.Period;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -168,9 +172,10 @@ public class RepositoryPurgeConsumerTest
             applicationContext.getBean( "knownRepositoryContentConsumer#repo-purge-consumer-by-retention-count",
                                         KnownRepositoryContentConsumer.class );
 
-        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
-        repoConfiguration.setDaysOlder( 0 ); // force days older off to allow retention count purge to execute.
-        repoConfiguration.setRetentionCount( TEST_RETENTION_COUNT );
+        org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        atf.setRetentionPeriod( Period.ofDays( 0 ) ); // force days older off to allow retention count purge to execute.
+        atf.setRetentionCount( TEST_RETENTION_COUNT );
         addRepoToConfiguration( "retention-count", repoConfiguration );
 
         repoPurgeConsumer.beginScan( repoConfiguration, null );
@@ -247,40 +252,18 @@ public class RepositoryPurgeConsumerTest
         removeRepoFromConfiguration( "retention-count", repoConfiguration );
     }
 
-    private void addRepoToConfiguration( String configHint, ManagedRepository repoConfiguration )
+    private void addRepoToConfiguration( String configHint, org.apache.archiva.repository.ManagedRepository repoConfiguration )
         throws Exception
     {
-        ArchivaConfiguration archivaConfiguration =
-            applicationContext.getBean( "archivaConfiguration#" + configHint, ArchivaConfiguration.class );
-        ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
-            ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( archivaConfiguration );
-        // skygo: Default Validator was not looking at same config
-        ( (DefaultRepositoryCommonValidator) applicationContext.getBean(
-            RepositoryCommonValidator.class ) ).setArchivaConfiguration( archivaConfiguration );
-        ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
-        if ( managedRepositoryAdmin.getManagedRepository( repoConfiguration.getId() ) != null )
-        {
-            managedRepositoryAdmin.deleteManagedRepository( repoConfiguration.getId(), null, false );
-        }
-        managedRepositoryAdmin.addManagedRepository( repoConfiguration, false, null );
+        RepositoryRegistry repositoryRegistry = applicationContext.getBean(RepositoryRegistry.class);
+        repositoryRegistry.putRepository( repoConfiguration );
     }
 
-    private void removeRepoFromConfiguration( String configHint, ManagedRepository repoConfiguration )
+    private void removeRepoFromConfiguration( String configHint, org.apache.archiva.repository.ManagedRepository repoConfiguration )
         throws Exception
     {
-        ArchivaConfiguration archivaConfiguration =
-            applicationContext.getBean( "archivaConfiguration#" + configHint, ArchivaConfiguration.class );
-
-        ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
-            ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( archivaConfiguration );
-        // skygo: Default Validator was not looking at same config
-        ( (DefaultRepositoryCommonValidator) applicationContext.getBean(
-            RepositoryCommonValidator.class ) ).setArchivaConfiguration( archivaConfiguration );
-        ManagedRepositoryAdmin managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
-        if ( managedRepositoryAdmin.getManagedRepository( repoConfiguration.getId() ) != null )
-        {
-            managedRepositoryAdmin.deleteManagedRepository( repoConfiguration.getId(), null, true );
-        }
+        RepositoryRegistry repositoryRegistry = applicationContext.getBean(RepositoryRegistry.class);
+        repositoryRegistry.removeRepository( repoConfiguration );
     }
 
     @Test
@@ -291,8 +274,9 @@ public class RepositoryPurgeConsumerTest
             applicationContext.getBean( "knownRepositoryContentConsumer#repo-purge-consumer-by-days-old",
                                         KnownRepositoryContentConsumer.class );
 
-        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
-        repoConfiguration.setDaysOlder( TEST_DAYS_OLDER );
+        org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ArtifactCleanupFeature atf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        atf.setRetentionPeriod( Period.ofDays( TEST_DAYS_OLDER ) );
         addRepoToConfiguration( "days-old", repoConfiguration );
 
         repoPurgeConsumer.beginScan( repoConfiguration, null );
@@ -375,8 +359,9 @@ public class RepositoryPurgeConsumerTest
             applicationContext.getBean( "knownRepositoryContentConsumer#repo-purge-consumer-by-retention-count",
                                         KnownRepositoryContentConsumer.class );
 
-        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
-        repoConfiguration.setDeleteReleasedSnapshots( false ); // Set to NOT delete released snapshots.
+        org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ArtifactCleanupFeature acf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        acf.setDeleteReleasedSnapshots( false ); // Set to NOT delete released snapshots.
         addRepoToConfiguration( "retention-count", repoConfiguration );
 
         repoPurgeConsumer.beginScan( repoConfiguration, null );
@@ -437,9 +422,11 @@ public class RepositoryPurgeConsumerTest
             applicationContext.getBean( "knownRepositoryContentConsumer#repo-purge-consumer-by-days-old",
                                         KnownRepositoryContentConsumer.class );
 
-        ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
-        repoConfiguration.setDeleteReleasedSnapshots( true );
+        org.apache.archiva.repository.ManagedRepository repoConfiguration = getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME );
+        ArtifactCleanupFeature acf = repoConfiguration.getFeature( ArtifactCleanupFeature.class ).get();
+        acf.setDeleteReleasedSnapshots( true );
         addRepoToConfiguration( "days-old", repoConfiguration );
+
 
         repoPurgeConsumer.beginScan( repoConfiguration, null );
 

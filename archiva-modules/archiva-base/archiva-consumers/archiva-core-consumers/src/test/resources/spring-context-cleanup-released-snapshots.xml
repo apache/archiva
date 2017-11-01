@@ -32,6 +32,11 @@
   </bean>
   <alias name="archivaConfiguration#cleanup-released-snapshots" alias="archivaConfiguration"/>
   <alias name="archivaConfiguration#cleanup-released-snapshots" alias="archivaConfiguration#default"/>
+  <context:component-scan base-package="org.apache.archiva.repository.mock,org.apache.archiva.repository.content.maven2"/>
+
+  <alias name="managedRepositoryContent#maven" alias="managedRepositoryContent#default" />
+  <alias name="repositoryContentFactory#cleanup-released-snapshots" alias="repositoryContentFactory#default" />
+
 
   <bean name="registry#cleanup-released-snapshots" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">

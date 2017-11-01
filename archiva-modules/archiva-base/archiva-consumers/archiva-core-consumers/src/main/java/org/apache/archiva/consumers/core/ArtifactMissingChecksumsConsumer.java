@@ -19,7 +19,6 @@ package org.apache.archiva.consumers.core;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -27,6 +26,7 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.repository.ManagedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;

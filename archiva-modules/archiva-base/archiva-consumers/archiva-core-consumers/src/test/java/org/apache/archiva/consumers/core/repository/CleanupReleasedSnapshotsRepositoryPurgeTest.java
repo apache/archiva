@@ -24,10 +24,11 @@ import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryContentFactory;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.metadata.MetadataTools;
-import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.easymock.EasyMock;
 import org.junit.Before;
@@ -92,7 +93,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         List<RepositoryListener> listeners = Collections.singletonList( listener );
         repoPurge = new CleanupReleasedSnapshotsRepositoryPurge( getRepository(), metadataTools,
                                                                  applicationContext.getBean(
-                                                                     ManagedRepositoryAdmin.class ), factory,
+                                                                     RepositoryRegistry.class ),
                                                                  repositorySession, listeners );
 
         ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
@@ -104,9 +105,11 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     public void testReleasedSnapshotsExistsInSameRepo()
         throws Exception
     {
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, true );
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
-            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
+        RepositoryRegistry repositoryRegistry = applicationContext.getBean( RepositoryRegistry.class );
+        ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( TEST_REPO_ID );
+        repositoryRegistry.removeRepository( managedRepository );
+        repositoryRegistry.putRepository(
+            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ));
 
         String repoRoot = prepareTestRepos();
         String projectNs = "org.apache.maven.plugins";
@@ -180,9 +183,11 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         throws Exception
     {
 
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
-            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
+        RepositoryRegistry repositoryRegistry = applicationContext.getBean(RepositoryRegistry.class);
+        ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( TEST_REPO_ID );
+        repositoryRegistry.removeRepository( managedRepository );
+        repositoryRegistry.putRepository(
+            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ));
 
         String repoRoot = prepareTestRepos();
 
@@ -210,12 +215,15 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         throws Exception
     {
 
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
-            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
+        RepositoryRegistry repositoryRegistry = applicationContext.getBean(RepositoryRegistry.class);
+        ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( TEST_REPO_ID );
+        repositoryRegistry.removeRepository( managedRepository );
+        repositoryRegistry.putRepository(
+            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ));
 
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
-            getRepoConfiguration( RELEASES_TEST_REPO_ID, RELEASES_TEST_REPO_NAME ), false, null );
+
+        repositoryRegistry.putRepository(
+            getRepoConfiguration( RELEASES_TEST_REPO_ID, RELEASES_TEST_REPO_NAME ));
 
         String repoRoot = prepareTestRepos();
         String projectNs = "org.apache.archiva";
@@ -288,9 +296,11 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         throws Exception
     {
 
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).deleteManagedRepository( TEST_REPO_ID, null, false );
-        applicationContext.getBean( ManagedRepositoryAdmin.class ).addManagedRepository(
-            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ), false, null );
+        RepositoryRegistry repositoryRegistry = applicationContext.getBean(RepositoryRegistry.class);
+        ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( TEST_REPO_ID );
+        repositoryRegistry.removeRepository( managedRepository );
+        repositoryRegistry.putRepository(
+            getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ));
 
         String repoRoot = prepareTestRepos();
         String projectNs = "org.apache.maven.plugins";

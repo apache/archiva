@@ -24,8 +24,11 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
+import org.apache.archiva.repository.BasicManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -42,11 +45,15 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
@@ -87,7 +94,7 @@ public abstract class AbstractRepositoryPurgeTest
 
     protected static final String RELEASES_TEST_REPO_NAME = "Releases Test Repo One";
 
-    private ManagedRepository config;
+    private BasicManagedRepository config;
 
     private ManagedRepositoryContent repo;
 
@@ -156,19 +163,18 @@ public abstract class AbstractRepositoryPurgeTest
         return path;
     }
 
-    public ManagedRepository getRepoConfiguration( String repoId, String repoName )
+    public org.apache.archiva.repository.ManagedRepository getRepoConfiguration( String repoId, String repoName ) throws URISyntaxException
     {
-        config = new ManagedRepository();
-        config.setId( repoId );
-        config.setName( repoName );
-        config.setDaysOlder( TEST_DAYS_OLDER );
+        config = new BasicManagedRepository( repoId, repoName);
+        config.addActiveReleaseScheme( ReleaseScheme.RELEASE );
+        config.addActiveReleaseScheme( ReleaseScheme.SNAPSHOT );
+        ArtifactCleanupFeature atf = config.getFeature( ArtifactCleanupFeature.class ).get();
+        atf.setRetentionPeriod( Period.ofDays( TEST_DAYS_OLDER) );
         String path = AbstractRepositoryPurgeTest.fixPath(
             Paths.get( "target/test-" + getName() + "/" + repoId ).toAbsolutePath().toString() );
-        config.setLocation( path );
-        config.setReleases( true );
-        config.setSnapshots( true );
-        config.setDeleteReleasedSnapshots( true );
-        config.setRetentionCount( TEST_RETENTION_COUNT );
+        config.setLocation( new URI( path ) );
+        atf.setDeleteReleasedSnapshots( true );
+        atf.setRetentionCount( TEST_RETENTION_COUNT );
 
         return config;
     }

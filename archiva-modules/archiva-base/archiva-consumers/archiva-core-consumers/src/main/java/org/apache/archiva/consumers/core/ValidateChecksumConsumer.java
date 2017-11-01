@@ -19,13 +19,13 @@ package org.apache.archiva.consumers.core;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.plexusbridge.DigesterUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.repository.ManagedRepository;
 import org.codehaus.plexus.digest.ChecksumFile;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;

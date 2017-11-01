@@ -19,7 +19,6 @@ package org.apache.archiva.consumers.core;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
@@ -29,6 +28,7 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentNotFoundException;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;

@@ -19,7 +19,7 @@ package org.apache.archiva.consumers;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.repository.ManagedRepository;
 
 import java.util.Date;
 import java.util.List;
@@ -60,7 +60,7 @@ public interface RepositoryContentConsumer
      * @param whenGathered the start of the repository scan
      * @throws ConsumerException if there was a problem with using the provided repository with the consumer.
      */
-    void beginScan( ManagedRepository repository, Date whenGathered )
+    void beginScan( org.apache.archiva.repository.ManagedRepository repository, Date whenGathered )
         throws ConsumerException;
 
     /**

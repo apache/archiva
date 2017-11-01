@@ -68,7 +68,7 @@
       <snapshots>true</snapshots>
       <indexed>true</indexed>
       <refreshCronExpression>0 0 * * * ?</refreshCronExpression>
-      <retentionTime>100</retentionTime>
+      <retentionPeriod>100</retentionPeriod>
       <deleteReleasedSnapshots>true</deleteReleasedSnapshots>
     </repository>
   </repositories>

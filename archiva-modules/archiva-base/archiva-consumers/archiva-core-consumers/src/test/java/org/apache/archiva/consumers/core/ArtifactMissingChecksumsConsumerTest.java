@@ -1,9 +1,11 @@
 package org.apache.archiva.consumers.core;
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.repository.BasicManagedRepository;
+import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
@@ -36,7 +38,7 @@ import java.util.Calendar;
 public class ArtifactMissingChecksumsConsumerTest
     extends AbstractArtifactConsumerTest
 {
-    private ManagedRepository repoConfig;
+    private EditableManagedRepository repoConfig;
 
     @Before
     @Override
@@ -45,11 +47,9 @@ public class ArtifactMissingChecksumsConsumerTest
     {
         super.setUp();
 
-        repoConfig = new ManagedRepository();
-        repoConfig.setId( "test-repo" );
-        repoConfig.setName( "Test Repository" );
+        repoConfig = new BasicManagedRepository( "test-repo", "Test Repository");
         repoConfig.setLayout( "default" );
-        repoConfig.setLocation( Paths.get( "target/test-classes/test-repo/" ).toString() );
+        repoConfig.setLocation( Paths.get( "target/test-classes/test-repo/" ).toUri() );
 
         consumer = applicationContext.getBean( "knownRepositoryContentConsumer#create-missing-checksums",
                                                KnownRepositoryContentConsumer.class );
@@ -61,8 +61,9 @@ public class ArtifactMissingChecksumsConsumerTest
     {
         String path = "no-checksums-artifact/1.0/no-checksums-artifact-1.0.jar";
 
-        Path sha1Path = Paths.get( repoConfig.getLocation(), path + ".sha1" );
-        Path md5FilePath = Paths.get( repoConfig.getLocation(), path + ".md5" );
+        Path basePath = PathUtil.getPathFromUri( repoConfig.getLocation() );
+        Path sha1Path = basePath.resolve(path + ".sha1" );
+        Path md5FilePath = basePath.resolve(path + ".md5" );
 
         Files.deleteIfExists( sha1Path );
         Files.deleteIfExists( md5FilePath );
@@ -96,15 +97,16 @@ public class ArtifactMissingChecksumsConsumerTest
         Path newLocation = Paths.get( "target/test-repo" );
         org.apache.archiva.common.utils.FileUtils.deleteDirectory( newLocation );
         FileUtils.copyDirectory( Paths.get(repoConfig.getLocation() ).toFile(), newLocation.toFile() );
-        repoConfig.setLocation( newLocation.toAbsolutePath().toString() );
+        repoConfig.setLocation( newLocation.toAbsolutePath().toUri() );
+        Path basePath = PathUtil.getPathFromUri( repoConfig.getLocation() );
 
         String path = "incorrect-checksums/1.0/incorrect-checksums-1.0.jar";
 
-        Path sha1Path = Paths.get( repoConfig.getLocation(), path + ".sha1" );
+        Path sha1Path = basePath.resolve( path + ".sha1" );
 
-        Path md5Path = Paths.get( repoConfig.getLocation(), path + ".md5" );
+        Path md5Path = basePath.resolve( path + ".md5" );
 
-        ChecksummedFile checksum = new ChecksummedFile( Paths.get(repoConfig.getLocation(), path ) );
+        ChecksummedFile checksum = new ChecksummedFile( basePath.resolve( path ) );
 
         Assertions.assertThat( sha1Path.toFile() ).exists();
         Assertions.assertThat( md5Path.toFile() ).exists();

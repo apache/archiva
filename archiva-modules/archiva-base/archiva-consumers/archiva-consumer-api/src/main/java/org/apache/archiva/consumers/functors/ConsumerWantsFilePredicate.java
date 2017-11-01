@@ -19,9 +19,11 @@ package org.apache.archiva.consumers.functors;
  * under the License.
  */
 
+import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.archiva.common.utils.BaseFile;
@@ -136,7 +138,21 @@ public class ConsumerWantsFilePredicate
 
         if ( managedRepository != null )
         {
-            String indexDirectory = managedRepository.getIndexDirectory();
+            String indexDirectory;
+            if (managedRepository.supportsFeature( IndexCreationFeature.class )) {
+                IndexCreationFeature icf = managedRepository.getFeature( IndexCreationFeature.class ).get();
+                if (icf.getIndexPath()==null) {
+                    indexDirectory=".index";
+                } else
+                {
+                    indexDirectory = ( icf.getIndexPath( ).getScheme( ) == null ? Paths.get( icf.getIndexPath( ).getPath( ) ) : Paths.get( icf.getIndexPath( ) ) ).toString( );
+                }
+            } else {
+                indexDirectory = ".index";
+            }
+            if (StringUtils.isEmpty( indexDirectory )) {
+                indexDirectory = ".index";
+            }
             if ( StringUtils.startsWith( relativePath, indexDirectory ) )
             {
                 logger.debug( "ignore file {} part of the index directory {}", relativePath, indexDirectory );

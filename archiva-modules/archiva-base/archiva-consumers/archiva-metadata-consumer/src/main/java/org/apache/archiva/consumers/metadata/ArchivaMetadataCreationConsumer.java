@@ -19,7 +19,6 @@ package org.apache.archiva.consumers.metadata;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
@@ -41,6 +40,7 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataN
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.archiva.repository.ManagedRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;

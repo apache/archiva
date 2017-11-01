@@ -20,7 +20,10 @@ package $package;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.BasicManagedRepository;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -56,9 +59,12 @@ public class SimpleArtifactConsumerTest
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
+    private RepositoryRegistry repositoryRegistry;
+
+    @Inject
     private RepositorySessionFactory repositorySessionFactory;
 
-    private ManagedRepository testRepository;
+    private BasicManagedRepository testRepository;
 
     private Logger log = LoggerFactory.getLogger( SimpleArtifactConsumer.class );
 
@@ -72,18 +78,18 @@ public class SimpleArtifactConsumerTest
     }
 
     private void setUpMockRepository()
-        throws RepositoryAdminException, IOException
+        throws RepositoryAdminException, IOException, RepositoryException
     {
         Path repoDir = Paths.get( "target/test-consumer-repo" );
         Files.createDirectories( repoDir );
         repoDir.toFile().deleteOnExit();
 
-        testRepository = new ManagedRepository();
-        testRepository.setName( "Test-Consumer-Repository" );
-        testRepository.setId( "test-consumer-repository" );
-        testRepository.setLocation( repoDir.toAbsolutePath().toString() );
+        testRepository = new BasicManagedRepository("test-consumer-repository","Test-Consumer-Repository" );
+        testRepository.setLocation( repoDir.toAbsolutePath().toUri() );
 
-        when( managedRepositoryAdmin.getManagedRepository( testRepository.getId() ) ).thenReturn( testRepository );
+        repositoryRegistry.putRepository(testRepository);
+
+        // when( repositoryRegistry.getManagedRepository( testRepository.getId() ) ).thenReturn( testRepository );
     }
 
     @Test
