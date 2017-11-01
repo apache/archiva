@@ -125,6 +125,7 @@ public class RepositoryServletRepositoryGroupTest
         configuration.removeManagedRepository( managedRepositoryConfiguration );
         org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoRootInvalid );
 
+        repositoryRegistry.reload();
         saveConfiguration( archivaConfiguration );
 
         startRepository();

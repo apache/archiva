@@ -43,6 +43,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author Olivier Lamy
@@ -320,7 +321,7 @@ public abstract class AbstractArchivaRestTest
     protected ManagedRepository getTestManagedRepository()
     {
         String location = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-repo" ).toAbsolutePath().toString();
-        return new ManagedRepository( "TEST", "test", location, "default", true, true, false, "2 * * * * ?", null,
+        return new ManagedRepository( Locale.getDefault(),  "TEST", "test", location, "default", true, true, false, "2 * * * * ?", null,
                                       false, 2, 3, true, false, "my nice repo", false );
 
     }
@@ -429,7 +430,7 @@ public abstract class AbstractArchivaRestTest
             getManagedRepositoriesService( authorizationHeader ).deleteManagedRepository( testRepoId, false );
         }
 
-        ManagedRepository managedRepository = new ManagedRepository();
+        ManagedRepository managedRepository = new ManagedRepository(Locale.getDefault());
         managedRepository.setId( testRepoId );
         managedRepository.setName( "test repo" );
 

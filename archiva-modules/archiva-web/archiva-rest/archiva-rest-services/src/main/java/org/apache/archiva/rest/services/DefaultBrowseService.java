@@ -42,6 +42,7 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.rest.api.model.*;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
@@ -83,15 +84,21 @@ public class DefaultBrowseService
     private DependencyTreeBuilder dependencyTreeBuilder;
 
     @Inject
-    private RepositoryContentFactory repositoryContentFactory;
-
-    @Inject
     @Named( value = "repositoryProxyConnectors#default" )
     private RepositoryProxyConnectors connectors;
 
     @Inject
     @Named( value = "browse#versionMetadata" )
     private Cache<String, ProjectVersionMetadata> versionMetadataCache;
+
+    private ManagedRepositoryContent getManagedRepositoryContent(String id) throws RepositoryException
+    {
+        org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository( id );
+        if (repo==null) {
+            throw new RepositoryException( "Could not find repository "+id );
+        }
+        return repo.getContent();
+    }
 
     @Override
     public BrowseResult getRootGroups( String repositoryId )
@@ -687,7 +694,7 @@ public class DefaultBrowseService
             {
 
                 ManagedRepositoryContent managedRepositoryContent =
-                    repositoryContentFactory.getManagedRepositoryContent( repoId );
+                    getManagedRepositoryContent( repoId );
                 ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version, classifier,
                                                                        StringUtils.isEmpty( type ) ? "jar" : type,
                                                                        repoId );
@@ -763,8 +770,16 @@ public class DefaultBrowseService
             for ( String repoId : selectedRepos )
             {
 
-                ManagedRepositoryContent managedRepositoryContent =
-                    repositoryContentFactory.getManagedRepositoryContent( repoId );
+                ManagedRepositoryContent managedRepositoryContent = null;
+                try
+                {
+                    managedRepositoryContent = getManagedRepositoryContent( repoId );
+                }
+                catch ( RepositoryException e )
+                {
+                    log.error("No repository content found for "+repoId);
+                    continue;
+                }
                 ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version, classifier,
                                                                        StringUtils.isEmpty( type ) ? "jar" : type,
                                                                        repoId );
@@ -797,18 +812,6 @@ public class DefaultBrowseService
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
-        catch ( RepositoryNotFoundException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
-        }
-        catch ( RepositoryException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
-        }
         log.debug( "artifact: {}:{}:{}:{}:{} not found", groupId, artifactId, version, classifier, type );
         // 404 ?
         return new ArtifactContent();
@@ -835,8 +838,8 @@ public class DefaultBrowseService
                 {
                     continue;
                 }
-                ManagedRepositoryContent managedRepositoryContent =
-                    repositoryContentFactory.getManagedRepositoryContent( repoId );
+                ManagedRepositoryContent managedRepositoryContent = getManagedRepositoryContent( repoId );
+
                 // FIXME default to jar which can be wrong for war zip etc....
                 ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version,
                                                                        StringUtils.isEmpty( classifier )

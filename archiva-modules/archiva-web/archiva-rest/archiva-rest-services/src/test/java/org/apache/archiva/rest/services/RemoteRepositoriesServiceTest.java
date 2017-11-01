@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import javax.ws.rs.ForbiddenException;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Olivier Lamy
@@ -201,21 +202,21 @@ public class RemoteRepositoriesServiceTest
 
     RemoteRepository getRemoteRepository()
     {
-        return new RemoteRepository( "id-new", "new one", "http://foo.com", "default", "foo", "foopassword", 120,
+        return new RemoteRepository( Locale.getDefault( ), "id-new", "new one", "http://foo.com", "default", "foo", "foopassword", 120,
                                      "cool repo" );
     }
 
 
     RemoteRepository getRemoteMavenRepository()
     {
-        return new RemoteRepository( "id-maven1", "Maven1", "http://repo.maven.apache.org/maven2", "default", "foo", "foopassword", 120,
+        return new RemoteRepository( Locale.getDefault( ),"id-maven1", "Maven1", "http://repo.maven.apache.org/maven2", "default", "foo", "foopassword", 120,
                 "cool repo3" );
     }
 
 
     RemoteRepository getRemoteOracleRepository()
     {
-        return new RemoteRepository( "id-oracle", "Oracle", "http://download.oracle.com/maven", "default", "foo", "foopassword", 120,
+        return new RemoteRepository( Locale.getDefault( ),"id-oracle", "Oracle", "http://download.oracle.com/maven", "default", "foo", "foopassword", 120,
                 "cool repo4" );
     }
 

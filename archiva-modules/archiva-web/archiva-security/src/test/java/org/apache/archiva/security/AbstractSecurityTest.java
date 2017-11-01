@@ -32,6 +32,7 @@ import org.apache.archiva.redback.system.SecuritySystem;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.redback.users.UserManagerException;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
@@ -80,6 +81,9 @@ public abstract class AbstractSecurityTest
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
+    private RepositoryRegistry repositoryRegistry;
+
+    @Inject
     protected UserRepositories userRepos;
 
     protected void setupRepository( String repoId )
@@ -94,6 +98,7 @@ public abstract class AbstractSecurityTest
         {
             archivaConfiguration.getConfiguration().addManagedRepository( repoConfig );
         }
+        repositoryRegistry.reload();
 
         // Add repo roles to security.
         userRepos.createMissingRepositoryRoles( repoId );

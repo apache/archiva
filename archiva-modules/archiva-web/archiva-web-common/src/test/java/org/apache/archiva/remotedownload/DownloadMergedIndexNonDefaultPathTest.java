@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -92,7 +93,7 @@ public class DownloadMergedIndexNonDefaultPathTest
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( tmpIndexDir );
         }
         String id = Long.toString( System.currentTimeMillis() );
-        ManagedRepository managedRepository = new ManagedRepository();
+        ManagedRepository managedRepository = new ManagedRepository( Locale.getDefault());
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
         managedRepository.setLocation( System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" );
@@ -138,7 +139,7 @@ public class DownloadMergedIndexNonDefaultPathTest
 
         // create a repo with a remote on the one with index
         id = Long.toString( System.currentTimeMillis() );
-        managedRepository = new ManagedRepository();
+        managedRepository = new ManagedRepository(Locale.getDefault());
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
         managedRepository.setLocation( System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" );
@@ -153,7 +154,7 @@ public class DownloadMergedIndexNonDefaultPathTest
 
         String remoteId = Long.toString( System.currentTimeMillis() );
 
-        RemoteRepository remoteRepository = new RemoteRepository();
+        RemoteRepository remoteRepository = new RemoteRepository(Locale.getDefault());
         remoteRepository.setId( remoteId );
         remoteRepository.setName( remoteId );
         remoteRepository.setDownloadRemoteIndex( true );

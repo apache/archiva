@@ -28,6 +28,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
 import org.apache.archiva.webdav.util.MavenIndexerCleaner;
@@ -99,6 +100,9 @@ public abstract class AbstractRepositoryServletTestCase
     @Inject
     protected ManagedRepositoryAdmin managedRepositoryAdmin;
 
+    @Inject
+    RepositoryRegistry repositoryRegistry;
+
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
 
@@ -106,6 +110,7 @@ public abstract class AbstractRepositoryServletTestCase
         throws Exception
     {
         saveConfiguration( archivaConfiguration );
+        repositoryRegistry.reload();
     }
 
     @Before
@@ -135,6 +140,7 @@ public abstract class AbstractRepositoryServletTestCase
 
         config.addManagedRepository(
             createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal, true ) );
+        repositoryRegistry.reload();
 
         managedRepositoryAdmin.createIndexContext( managedRepositoryAdmin.getManagedRepository( REPOID_INTERNAL ) );
 
@@ -776,6 +782,7 @@ public abstract class AbstractRepositoryServletTestCase
     protected void saveConfiguration( ArchivaConfiguration archivaConfiguration )
         throws Exception
     {
+        repositoryRegistry.reload();
         archivaConfiguration.save( archivaConfiguration.getConfiguration() );
     }
 

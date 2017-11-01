@@ -55,7 +55,6 @@
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-configuration</artifactId>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>

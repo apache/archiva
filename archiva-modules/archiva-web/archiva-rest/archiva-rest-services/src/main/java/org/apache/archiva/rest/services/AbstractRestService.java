@@ -37,8 +37,11 @@ import org.apache.archiva.redback.configuration.UserConfigurationKeys;
 import org.apache.archiva.redback.rest.services.RedbackAuthenticationThreadLocal;
 import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
 import org.apache.archiva.redback.users.User;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.services.utils.ArtifactBuilder;
@@ -97,6 +100,9 @@ public abstract class AbstractRestService
 
     @Inject
     protected ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
+    protected RepositoryRegistry repositoryRegistry;
 
     @Inject
     protected RepositoryContentFactory repositoryContentFactory;
@@ -322,10 +328,14 @@ public abstract class AbstractRestService
                     if ( repoId == null ) {
                         throw new IllegalStateException( "Repository Id is null" );
                     }
-
+                    ManagedRepository repo = repositoryRegistry.getManagedRepository( repoId );
+                    if (repo==null) {
+                        throw new RepositoryException( "Repository not found "+repoId );
+                    }
+                    ManagedRepositoryContent content = repo.getContent( );
                     ArtifactBuilder builder =
                         new ArtifactBuilder().forArtifactMetadata( artifact ).withManagedRepositoryContent(
-                            repositoryContentFactory.getManagedRepositoryContent( repoId ) );
+                            content );
                     Artifact art = builder.build();
                     art.setUrl( getArtifactUrl( art, repositoryId ) );
                     artifacts.add( art );

@@ -156,7 +156,7 @@ public class MockBeanServices
     }
 
     @Override
-    public String getFilePath( String requestPath, ManagedRepository managedRepository )
+    public String getFilePath( String requestPath, org.apache.archiva.repository.ManagedRepository managedRepository )
     {
         return null;
     }

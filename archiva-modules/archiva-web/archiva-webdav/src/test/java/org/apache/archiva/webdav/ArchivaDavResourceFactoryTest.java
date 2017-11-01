@@ -34,8 +34,10 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.proxy.DefaultRepositoryProxyConnectors;
 import org.apache.archiva.proxy.model.ProxyFetchResult;
+import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.content.maven2.RepositoryRequest;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -44,12 +46,15 @@ import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResourceLocator;
 import org.apache.jackrabbit.webdav.DavServletRequest;
 import org.apache.jackrabbit.webdav.DavServletResponse;
+import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
@@ -58,6 +63,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static org.easymock.EasyMock.*;
 
@@ -113,6 +119,9 @@ public class ArchivaDavResourceFactoryTest
     DefaultManagedRepositoryAdmin defaultManagedRepositoryAdmin;
 
     @Inject
+    RepositoryRegistry repositoryRegistry;
+
+    @Inject
     RemoteRepositoryAdmin remoteRepositoryAdmin;
 
 
@@ -138,13 +147,18 @@ public class ArchivaDavResourceFactoryTest
         archivaConfiguration = archivaConfigurationControl.createMock( ArchivaConfiguration.class );
 
         config = new Configuration();
-        expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 5, 20 );
+        expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 2, 20 );
+        expect (archivaConfiguration.getDefaultLocale()).andReturn( Locale.getDefault() ).anyTimes();
+        archivaConfiguration.addListener( EasyMock.anyObject(  ) );
+        expectLastCall().times(0, 4);
         archivaConfiguration.save( config );
 
-        expectLastCall().times( 1, 4 );
+        expectLastCall().times( 0, 4 );
         archivaConfigurationControl.replay();
 
         defaultManagedRepositoryAdmin.setArchivaConfiguration( archivaConfiguration );
+        repositoryRegistry.setArchivaConfiguration( archivaConfiguration );
+        repositoryRegistry.reload();
         ( (DefaultRepositoryCommonValidator) defaultManagedRepositoryAdmin.getRepositoryCommonValidator() ).setArchivaConfiguration(
             archivaConfiguration );
         if ( defaultManagedRepositoryAdmin.getManagedRepository( RELEASES_REPO ) == null )
@@ -184,11 +198,12 @@ public class ArchivaDavResourceFactoryTest
         resourceFactory.setConnectors( new OverridingRepositoryProxyConnectors() );
         resourceFactory.setRemoteRepositoryAdmin( remoteRepositoryAdmin );
         resourceFactory.setManagedRepositoryAdmin( defaultManagedRepositoryAdmin );
+        resourceFactory.setRepositoryRegistry( repositoryRegistry );
     }
 
     private ManagedRepository createManagedRepository( String id, String location, String layout )
     {
-        ManagedRepository repoConfig = new ManagedRepository();
+        ManagedRepository repoConfig = new ManagedRepository( Locale.getDefault());
         repoConfig.setId( id );
         repoConfig.setName( id );
         repoConfig.setLocation( location );
@@ -201,8 +216,12 @@ public class ArchivaDavResourceFactoryTest
         throws RepositoryAdminException
     {
         ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent();
-        repoContent.setRepository( defaultManagedRepositoryAdmin.getManagedRepository( repoId ) );
-
+        org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository( repoId );
+        repoContent.setRepository( repo );
+        if (repo!=null && repo instanceof EditableManagedRepository)
+        {
+            ( (EditableManagedRepository) repo ).setContent( repoContent );
+        }
         return repoContent;
     }
 
@@ -466,9 +485,7 @@ public class ArchivaDavResourceFactoryTest
         {
             archivaConfigurationControl.reset();
 
-            expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 2 );
-
-            expect( repoFactory.getManagedRepositoryContent( INTERNAL_REPO ) ).andReturn( internalRepo );
+            expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 1 );
 
             expect( request.getMethod() ).andReturn( "GET" ).times( 4 );
 
@@ -561,6 +578,9 @@ public class ArchivaDavResourceFactoryTest
     public void testRequestMetadataRepoIsLegacy()
         throws Exception
     {
+        ManagedRepositoryContent legacyRepo = createManagedRepositoryContent( LEGACY_REPO );
+        ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) applicationContext).getBeanFactory();
+        beanFactory.registerSingleton("managedRepositoryContent#legacy", legacyRepo);
         defaultManagedRepositoryAdmin.addManagedRepository(
             createManagedRepository( LEGACY_REPO, Paths.get( "target/test-classes/" + LEGACY_REPO ).toString(),
                                      "legacy" ), false, null );
@@ -568,7 +588,6 @@ public class ArchivaDavResourceFactoryTest
             new ArchivaDavResourceLocator( "", "/repository/" + LEGACY_REPO + "/eclipse/maven-metadata.xml",
                                            LEGACY_REPO, new ArchivaDavLocatorFactory() );
 
-        ManagedRepositoryContent legacyRepo = createManagedRepositoryContent( LEGACY_REPO );
 
         // use actual object (this performs the isMetadata, isDefault and isSupportFile check!)
         RepositoryRequest repoRequest = new RepositoryRequest( );

@@ -20,7 +20,6 @@ package org.apache.archiva.webdav;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
@@ -32,7 +31,12 @@ import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
-import org.apache.archiva.indexer.merger.*;
+import org.apache.archiva.indexer.merger.IndexMerger;
+import org.apache.archiva.indexer.merger.IndexMergerException;
+import org.apache.archiva.indexer.merger.IndexMergerRequest;
+import org.apache.archiva.indexer.merger.MergedRemoteIndexesTask;
+import org.apache.archiva.indexer.merger.MergedRemoteIndexesTaskRequest;
+import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.indexer.search.RepositorySearch;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
@@ -52,12 +56,16 @@ import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.content.maven2.RepositoryRequest;
 import org.apache.archiva.repository.events.AuditListener;
+import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
@@ -72,7 +80,13 @@ import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
-import org.apache.jackrabbit.webdav.*;
+import org.apache.jackrabbit.webdav.DavException;
+import org.apache.jackrabbit.webdav.DavResource;
+import org.apache.jackrabbit.webdav.DavResourceFactory;
+import org.apache.jackrabbit.webdav.DavResourceLocator;
+import org.apache.jackrabbit.webdav.DavServletRequest;
+import org.apache.jackrabbit.webdav.DavServletResponse;
+import org.apache.jackrabbit.webdav.DavSession;
 import org.apache.jackrabbit.webdav.lock.LockManager;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
 import org.apache.maven.index.context.IndexingContext;
@@ -94,7 +108,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -141,6 +161,9 @@ public class ArchivaDavResourceFactory
 
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    @Inject
+    private RepositoryRegistry repositoryRegistry;
 
     @Inject
     private IndexMerger indexMerger;
@@ -283,40 +306,28 @@ public class ArchivaDavResourceFactory
                            archivaLocator.getRepositoryId(), e.getMessage() );
             }
 
-            ManagedRepositoryContent managedRepositoryContent = null;
 
-            try
-            {
-                managedRepositoryContent =
-                    repositoryFactory.getManagedRepositoryContent( archivaLocator.getRepositoryId() );
-            }
-            catch ( RepositoryNotFoundException e )
-            {
+            ManagedRepository repo = repositoryRegistry.getManagedRepository( archivaLocator.getRepositoryId() );
+            if (repo==null) {
                 throw new DavException( HttpServletResponse.SC_NOT_FOUND,
-                                        "Invalid repository: " + archivaLocator.getRepositoryId() );
+                    "Invalid repository: " + archivaLocator.getRepositoryId() );
             }
-            catch ( RepositoryException e )
-            {
-                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
+            ManagedRepositoryContent managedRepositoryContent = repo.getContent( );
+            if (managedRepositoryContent==null) {
+                log.error("Inconsistency detected. Repository content not found for '{}'", archivaLocator.getRepositoryId());
+                throw new DavException( HttpServletResponse.SC_NOT_FOUND,
+                    "Invalid repository: " + archivaLocator.getRepositoryId() );
             }
 
             log.debug( "Managed repository '{}' accessed by '{}'", managedRepositoryContent.getId(), activePrincipal );
 
-            try
-            {
-                resource = processRepository( request, archivaLocator, activePrincipal, managedRepositoryContent,
-                                              managedRepositoryAdmin.getManagedRepository(
-                                                  archivaLocator.getRepositoryId() ) );
+            resource = processRepository( request, archivaLocator, activePrincipal, managedRepositoryContent,
+                                          repo);
 
-                String logicalResource = getLogicalResource( archivaLocator, null, false );
-                resourcesInAbsolutePath.add(
-                    Paths.get( managedRepositoryContent.getRepoRoot(), logicalResource ).toAbsolutePath().toString() );
+            String logicalResource = getLogicalResource( archivaLocator, null, false );
+            resourcesInAbsolutePath.add(
+                Paths.get( managedRepositoryContent.getRepoRoot(), logicalResource ).toAbsolutePath().toString() );
 
-            }
-            catch ( RepositoryAdminException e )
-            {
-                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
-            }
         }
 
         String requestedResource = request.getRequestURI();
@@ -457,22 +468,17 @@ public class ArchivaDavResourceFactory
             for ( String repositoryId : repositories )
             {
                 ManagedRepositoryContent managedRepositoryContent;
+                ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( repositoryId );
+                if (managedRepository==null) {
+                    throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not find repository with id "+repositoryId );
+                }
+                managedRepositoryContent = managedRepository.getContent();
+                if (managedRepositoryContent==null) {
+                    log.error("Inconsistency detected. Repository content not found for '{}'",repositoryId);
+                    throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not find repository content with id "+repositoryId );
+                }
                 try
                 {
-                    managedRepositoryContent = repositoryFactory.getManagedRepositoryContent( repositoryId );
-                }
-                catch ( RepositoryNotFoundException e )
-                {
-                    throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
-                }
-                catch ( RepositoryException e )
-                {
-                    throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
-                }
-
-                try
-                {
-                    ManagedRepository managedRepository = managedRepositoryAdmin.getManagedRepository( repositoryId );
                     DavResource updatedResource =
                         processRepository( request, archivaLocator, activePrincipal, managedRepositoryContent,
                                            managedRepository );
@@ -492,10 +498,6 @@ public class ArchivaDavResourceFactory
                 catch ( DavException e )
                 {
                     storedExceptions.add( e );
-                }
-                catch ( RepositoryAdminException e )
-                {
-                    storedExceptions.add( new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e ) );
                 }
             }
         }
@@ -522,12 +524,12 @@ public class ArchivaDavResourceFactory
         return resource;
     }
 
-    private String getLogicalResource( ArchivaDavResourceLocator archivaLocator, ManagedRepository managedRepository,
+    private String getLogicalResource( ArchivaDavResourceLocator archivaLocator, org.apache.archiva.repository.ManagedRepository managedRepository,
                                        boolean useOrigResourcePath )
     {
         // FIXME remove this hack
         // but currently managedRepository can be null in case of group
-        String layout = managedRepository == null ? new ManagedRepository().getLayout() : managedRepository.getLayout();
+        String layout = managedRepository == null ? "default" : managedRepository.getLayout();
         RepositoryStorage repositoryStorage =
             this.applicationContext.getBean( "repositoryStorage#" + layout, RepositoryStorage.class );
         String path = repositoryStorage.getFilePath(
@@ -545,7 +547,7 @@ public class ArchivaDavResourceFactory
         throws DavException
     {
         String layout = managedRepositoryContent.getRepository() == null
-            ? new ManagedRepository().getLayout()
+            ? "default"
             : managedRepositoryContent.getRepository().getLayout();
         RepositoryStorage repositoryStorage =
             this.applicationContext.getBean( "repositoryStorage#" + layout, RepositoryStorage.class );
@@ -570,7 +572,7 @@ public class ArchivaDavResourceFactory
 
     private DavResource processRepository( final DavServletRequest request, ArchivaDavResourceLocator archivaLocator,
                                            String activePrincipal, ManagedRepositoryContent managedRepositoryContent,
-                                           ManagedRepository managedRepository )
+                                           org.apache.archiva.repository.ManagedRepository managedRepository )
         throws DavException
     {
         DavResource resource = null;
@@ -659,7 +661,7 @@ public class ArchivaDavResourceFactory
 
                 // check if target repo is enabled for releases
                 // we suppose that release-artifacts can be deployed only to repos enabled for releases
-                if ( managedRepositoryContent.getRepository().isReleases() && !repositoryRequest.isMetadata(
+                if ( managedRepositoryContent.getRepository().getActiveReleaseSchemes().contains( ReleaseScheme.RELEASE ) && !repositoryRequest.isMetadata(
                     resourcePath ) && !repositoryRequest.isSupportFile( resourcePath ) )
                 {
                     ArtifactReference artifact = null;
@@ -671,7 +673,7 @@ public class ArchivaDavResourceFactory
                         {
                             // check if artifact already exists and if artifact re-deployment to the repository is allowed
                             if ( managedRepositoryContent.hasContent( artifact )
-                                && managedRepositoryContent.getRepository().isBlockRedeployments() )
+                                && managedRepositoryContent.getRepository().blocksRedeployments())
                             {
                                 log.warn( "Overwriting released artifacts in repository '{}' is not allowed.",
                                           managedRepositoryContent.getId() );
@@ -727,41 +729,30 @@ public class ArchivaDavResourceFactory
         ArchivaDavResourceLocator archivaLocator = checkLocatorIsInstanceOfRepositoryLocator( locator );
 
         ManagedRepositoryContent managedRepositoryContent;
-        try
-        {
-            managedRepositoryContent =
-                repositoryFactory.getManagedRepositoryContent( archivaLocator.getRepositoryId() );
-        }
-        catch ( RepositoryNotFoundException e )
-        {
+        ManagedRepository repo = repositoryRegistry.getManagedRepository( archivaLocator.getRepositoryId( ) );
+        if (repo==null) {
             throw new DavException( HttpServletResponse.SC_NOT_FOUND,
-                                    "Invalid repository: " + archivaLocator.getRepositoryId() );
+                "Invalid repository: " + archivaLocator.getRepositoryId() );
         }
-        catch ( RepositoryException e )
-        {
-            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
+        managedRepositoryContent = repo.getContent();
+        if (managedRepositoryContent==null) {
+            log.error("Inconsistency detected. Repository content not found for '{}'", archivaLocator.getRepositoryId());
+            throw new DavException( HttpServletResponse.SC_NOT_FOUND,
+                "Invalid repository: " + archivaLocator.getRepositoryId() );
         }
 
         DavResource resource = null;
-        try
+        String logicalResource = getLogicalResource( archivaLocator, repo, false );
+        if ( logicalResource.startsWith( "/" ) )
         {
-            String logicalResource = getLogicalResource( archivaLocator, managedRepositoryAdmin.getManagedRepository(
-                archivaLocator.getRepositoryId() ), false );
-            if ( logicalResource.startsWith( "/" ) )
-            {
-                logicalResource = logicalResource.substring( 1 );
-            }
-            Path resourceFile = Paths.get( managedRepositoryContent.getRepoRoot(), logicalResource );
-            resource = new ArchivaDavResource( resourceFile.toAbsolutePath().toString(), logicalResource,
-                                               managedRepositoryContent.getRepository(), davSession, archivaLocator,
-                                               this, mimeTypes, auditListeners, scheduler, fileLockManager );
+            logicalResource = logicalResource.substring( 1 );
+        }
+        Path resourceFile = Paths.get( managedRepositoryContent.getRepoRoot(), logicalResource );
+        resource = new ArchivaDavResource( resourceFile.toAbsolutePath().toString(), logicalResource,
+                                           repo, davSession, archivaLocator,
+                                           this, mimeTypes, auditListeners, scheduler, fileLockManager );
 
-            resource.addLockManager( lockManager );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
-        }
+        resource.addLockManager( lockManager );
         return resource;
     }
 
@@ -1027,7 +1018,7 @@ public class ArchivaDavResourceFactory
         // FIXME add a method with group in the repository storage
         String firstRepoId = repositoryGroupConfiguration.getRepositories().get( 0 );
 
-        String path = getLogicalResource( locator, managedRepositoryAdmin.getManagedRepository( firstRepoId ), false );
+        String path = getLogicalResource( locator, repositoryRegistry.getManagedRepository( firstRepoId ), false );
         if ( path.startsWith( "/" ) )
         {
             path = path.substring( 1 );
@@ -1084,32 +1075,28 @@ public class ArchivaDavResourceFactory
                 for ( String repository : repositories )
                 {
                     ManagedRepositoryContent managedRepository = null;
-
-                    try
-                    {
-                        managedRepository = repositoryFactory.getManagedRepositoryContent( repository );
-                    }
-                    catch ( RepositoryNotFoundException e )
-                    {
+                    ManagedRepository repo = repositoryRegistry.getManagedRepository( repository );
+                    if (repo == null) {
                         throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                                "Invalid managed repository <" + repository + ">: " + e.getMessage() );
+                            "Invalid managed repository <" + repository + ">");
                     }
-                    catch ( RepositoryException e )
-                    {
+                    managedRepository = repo.getContent();
+                    if (managedRepository==null) {
+                        log.error("Inconsistency detected. Repository content not found for '{}'",repository);
                         throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                                "Invalid managed repository <" + repository + ">: " + e.getMessage() );
+                            "Invalid managed repository <" + repository + ">");
                     }
-
                     Path resourceFile = Paths.get( managedRepository.getRepoRoot(), logicalResource.getPath() );
                     if ( Files.exists(resourceFile) )
                     {
                         // in case of group displaying index directory doesn't have sense !!
-                        String repoIndexDirectory = managedRepository.getRepository().getIndexDirectory();
+                        IndexCreationFeature idf = managedRepository.getRepository().getFeature(IndexCreationFeature.class).get();
+                        String repoIndexDirectory = idf.getIndexPath().toString();
                         if ( StringUtils.isNotEmpty( repoIndexDirectory ) )
                         {
                             if ( !Paths.get( repoIndexDirectory ).isAbsolute() )
                             {
-                                repoIndexDirectory = Paths.get( managedRepository.getRepository().getLocation(),
+                                repoIndexDirectory = Paths.get( managedRepository.getRepository().getLocation() ).resolve(
                                                                StringUtils.isEmpty( repoIndexDirectory )
                                                                    ? ".indexer"
                                                                    : repoIndexDirectory ).toAbsolutePath().toString();
@@ -1117,7 +1104,7 @@ public class ArchivaDavResourceFactory
                         }
                         if ( StringUtils.isEmpty( repoIndexDirectory ) )
                         {
-                            repoIndexDirectory = Paths.get( managedRepository.getRepository().getLocation(),
+                            repoIndexDirectory = Paths.get( managedRepository.getRepository().getLocation() ).resolve(
                                                            ".indexer" ).toAbsolutePath().toString();
                         }
 
@@ -1459,5 +1446,15 @@ public class ArchivaDavResourceFactory
     public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
     {
         this.managedRepositoryAdmin = managedRepositoryAdmin;
+    }
+
+    public RepositoryRegistry getRepositoryRegistry( )
+    {
+        return repositoryRegistry;
+    }
+
+    public void setRepositoryRegistry( RepositoryRegistry repositoryRegistry )
+    {
+        this.repositoryRegistry = repositoryRegistry;
     }
 }

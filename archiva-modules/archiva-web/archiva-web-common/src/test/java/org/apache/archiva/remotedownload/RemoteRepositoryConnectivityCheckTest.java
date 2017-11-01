@@ -36,6 +36,7 @@ import org.junit.Test;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -184,7 +185,7 @@ public class RemoteRepositoryConnectivityCheckTest
 
     RemoteRepository getRemoteRepository()
     {
-        return new RemoteRepository( "id-new", "new one", "http://foo.com", "default", "foo", "foopassword", 120,
+        return new RemoteRepository( Locale.getDefault( ), "id-new", "new one", "http://foo.com", "default", "foo", "foopassword", 120,
                                      "cool repo" );
     }
 

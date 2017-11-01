@@ -37,6 +37,10 @@
   </bean>
   -->
 
+  <alias name="managedRepositoryContent#maven" alias="managedRepositoryContent#default" />
+  <alias name="remoteRepositoryContent#maven" alias="remoteRepositoryContent#default" />
+
+
   <alias name="repositorySessionFactory#jcr" alias="repositorySessionFactory"/>
 
   <bean name="TestRepositorySessionFactoryBean" class="org.apache.archiva.TestRepositorySessionFactoryBean">

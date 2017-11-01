@@ -37,6 +37,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -544,7 +545,7 @@ public class RepositoriesServiceTest
     protected ManagedRepository getTestManagedRepository( String id, String path )
     {
         String location = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/" + path ).toAbsolutePath().toString();
-        return new ManagedRepository( id, id, location, "default", true, true, true, "2 * * * * ?", null, false, 80, 80,
+        return new ManagedRepository( Locale.getDefault(), id, id, location, "default", true, true, true, "2 * * * * ?", null, false, 80, 80,
                                       true, false );
     }
 

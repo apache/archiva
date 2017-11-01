@@ -20,7 +20,7 @@
 
 <configuration>
 
-  <version>2</version>
+  <version>3.0.0</version>
   
   <repositoryScanning>
     <fileTypes>

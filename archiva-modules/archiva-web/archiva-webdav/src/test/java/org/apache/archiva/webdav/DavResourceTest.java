@@ -20,13 +20,24 @@ package org.apache.archiva.webdav;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.repository.events.AuditListener;
+import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.util.MimeTypes;
-import org.apache.jackrabbit.webdav.*;
-import org.apache.jackrabbit.webdav.lock.*;
+import org.apache.jackrabbit.webdav.DavException;
+import org.apache.jackrabbit.webdav.DavResource;
+import org.apache.jackrabbit.webdav.DavResourceFactory;
+import org.apache.jackrabbit.webdav.DavResourceLocator;
+import org.apache.jackrabbit.webdav.DavServletRequest;
+import org.apache.jackrabbit.webdav.DavServletResponse;
+import org.apache.jackrabbit.webdav.DavSession;
+import org.apache.jackrabbit.webdav.lock.ActiveLock;
+import org.apache.jackrabbit.webdav.lock.LockInfo;
+import org.apache.jackrabbit.webdav.lock.LockManager;
+import org.apache.jackrabbit.webdav.lock.Scope;
+import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
+import org.apache.jackrabbit.webdav.lock.Type;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,7 +77,7 @@ public class DavResourceTest
 
     private LockManager lockManager;
 
-    private ManagedRepository repository = new ManagedRepository();
+    private MavenManagedRepository repository = new MavenManagedRepository( "repo001", "repo001");
     
     @Override
     @Before

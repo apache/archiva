@@ -30,7 +30,11 @@
   <context:property-placeholder system-properties-mode="OVERRIDE"/>
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.webtest.memory"/>
+  <context:component-scan base-package="org.apache.archiva.webtest.memory,org.apache.archiva.repository.content.maven2"/>
+
+  <alias name="managedRepositoryContent#maven" alias="managedRepositoryContent#default" />
+  <alias name="remoteRepositoryContent#maven" alias="remoteRepositoryContent#default" />
+
 
   <alias name="repositorySessionFactory#test" alias="repositorySessionFactory"/>
 

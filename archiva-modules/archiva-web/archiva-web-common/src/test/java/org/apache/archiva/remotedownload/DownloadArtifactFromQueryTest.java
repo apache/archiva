@@ -34,6 +34,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 /**
  * @author Olivier Lamy
@@ -88,7 +89,7 @@ public class DownloadArtifactFromQueryTest
             FileUtils.deleteDirectory( tmpIndexDir.toFile() );
         }
         String id = Long.toString( System.currentTimeMillis() );
-        ManagedRepository managedRepository = new ManagedRepository();
+        ManagedRepository managedRepository = new ManagedRepository( Locale.getDefault());
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
         managedRepository.setLocation( System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" );

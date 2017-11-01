@@ -18,6 +18,8 @@ package org.apache.archiva.rest.api.model;
  * under the License.
  */
 
+
+
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 
 import javax.xml.bind.annotation.XmlRootElement;

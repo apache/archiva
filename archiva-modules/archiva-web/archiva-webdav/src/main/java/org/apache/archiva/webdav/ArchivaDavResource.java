@@ -19,7 +19,6 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.filelock.FileLockException;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.filelock.FileLockTimeoutException;
@@ -35,11 +34,28 @@ import org.apache.archiva.webdav.util.MimeTypes;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.util.Text;
-import org.apache.jackrabbit.webdav.*;
+import org.apache.jackrabbit.webdav.DavException;
+import org.apache.jackrabbit.webdav.DavResource;
+import org.apache.jackrabbit.webdav.DavResourceFactory;
+import org.apache.jackrabbit.webdav.DavResourceIterator;
+import org.apache.jackrabbit.webdav.DavResourceIteratorImpl;
+import org.apache.jackrabbit.webdav.DavResourceLocator;
+import org.apache.jackrabbit.webdav.DavServletResponse;
+import org.apache.jackrabbit.webdav.DavSession;
+import org.apache.jackrabbit.webdav.MultiStatusResponse;
 import org.apache.jackrabbit.webdav.io.InputContext;
 import org.apache.jackrabbit.webdav.io.OutputContext;
-import org.apache.jackrabbit.webdav.lock.*;
-import org.apache.jackrabbit.webdav.property.*;
+import org.apache.jackrabbit.webdav.lock.ActiveLock;
+import org.apache.jackrabbit.webdav.lock.LockInfo;
+import org.apache.jackrabbit.webdav.lock.LockManager;
+import org.apache.jackrabbit.webdav.lock.Scope;
+import org.apache.jackrabbit.webdav.lock.Type;
+import org.apache.jackrabbit.webdav.property.DavProperty;
+import org.apache.jackrabbit.webdav.property.DavPropertyName;
+import org.apache.jackrabbit.webdav.property.DavPropertyNameSet;
+import org.apache.jackrabbit.webdav.property.DavPropertySet;
+import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
+import org.apache.jackrabbit.webdav.property.ResourceType;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -80,7 +96,7 @@ public class ArchivaDavResource
 
     private String remoteAddr;
 
-    private final ManagedRepository repository;
+    private final org.apache.archiva.repository.ManagedRepository repository;
 
     private final MimeTypes mimeTypes;
 
@@ -96,7 +112,7 @@ public class ArchivaDavResource
 
     private Logger log = LoggerFactory.getLogger( ArchivaDavResource.class );
 
-    public ArchivaDavResource( String localResource, String logicalResource, ManagedRepository repository,
+    public ArchivaDavResource( String localResource, String logicalResource, org.apache.archiva.repository.ManagedRepository repository,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
                                RepositoryArchivaTaskScheduler scheduler, FileLockManager fileLockManager )
@@ -117,7 +133,7 @@ public class ArchivaDavResource
         this.fileLockManager = fileLockManager;
     }
 
-    public ArchivaDavResource( String localResource, String logicalResource, ManagedRepository repository,
+    public ArchivaDavResource( String localResource, String logicalResource, org.apache.archiva.repository.ManagedRepository repository,
                                String remoteAddr, String principal, DavSession session,
                                ArchivaDavResourceLocator locator, DavResourceFactory factory, MimeTypes mimeTypes,
                                List<AuditListener> auditListeners, RepositoryArchivaTaskScheduler scheduler,

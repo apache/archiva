@@ -204,7 +204,7 @@ public class RepositoryServlet
 
         long end = System.currentTimeMillis();
 
-        log.info( "initServers done in {} ms", (end - start) );
+        log.debug( "initServers done in {} ms", (end - start) );
     }
 
     @Override

@@ -18,6 +18,8 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.RepositoryAdminException;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.components.cache.CacheStatistics;
 import org.apache.archiva.redback.components.taskqueue.TaskQueue;
@@ -57,6 +59,8 @@ public class DefaultSystemStatusService
 
     private RepositoryScanner scanner;
 
+    ManagedRepositoryAdmin managedRepositoryAdmin;
+
     // display spring scheduled
     //@Inject @Named (value="springScheduler");
 
@@ -69,6 +73,8 @@ public class DefaultSystemStatusService
         queues = getBeansOfType( applicationContext, TaskQueue.class );
 
         caches = getBeansOfType( applicationContext, Cache.class );
+
+        managedRepositoryAdmin = applicationContext.getBean( ManagedRepositoryAdmin.class );
     }
 
     @Override
@@ -178,11 +184,19 @@ public class DefaultSystemStatusService
         List<RepositoryScannerStatistics> repositoryScannerStatisticsList =
             new ArrayList<RepositoryScannerStatistics>( repositoryScannerInstances.size() );
 
+
         for ( RepositoryScannerInstance instance : repositoryScannerInstances )
         {
             RepositoryScannerStatistics repositoryScannerStatistics = new RepositoryScannerStatistics();
             repositoryScannerStatisticsList.add( repositoryScannerStatistics );
-            repositoryScannerStatistics.setManagedRepository( instance.getRepository() );
+            try
+            {
+                repositoryScannerStatistics.setManagedRepository( managedRepositoryAdmin.getManagedRepository( instance.getRepository().getId())  );
+            }
+            catch ( RepositoryAdminException e )
+            {
+                log.error("Could not retrieve repository '{}'", instance.getRepository().getId());
+            }
             repositoryScannerStatistics.setNewFileCount( instance.getStats().getNewFileCount() );
             repositoryScannerStatistics.setTotalFileCount( instance.getStats().getTotalFileCount() );
             repositoryScannerStatistics.setConsumerScanningStatistics( mapConsumerScanningStatistics( instance ) );

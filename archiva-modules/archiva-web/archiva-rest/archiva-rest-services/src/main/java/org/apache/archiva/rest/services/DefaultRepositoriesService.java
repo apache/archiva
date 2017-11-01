@@ -48,6 +48,7 @@ import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
@@ -102,6 +103,9 @@ public class DefaultRepositoriesService
     private ArchivaIndexingTaskExecutor archivaIndexingTaskExecutor;
 
     @Inject
+    private RepositoryRegistry repositoryRegistry;
+
+    @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
@@ -109,9 +113,6 @@ public class DefaultRepositoriesService
 
     @Inject
     private SecuritySystem securitySystem;
-
-    @Inject
-    private RepositoryContentFactory repositoryFactory;
 
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
@@ -180,6 +181,15 @@ public class DefaultRepositoriesService
         }
     }
 
+    private ManagedRepositoryContent getManagedRepositoryContent(String id) throws RepositoryException
+    {
+        org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository( id );
+        if (repo==null) {
+            throw new RepositoryException( "Repository not found "+id );
+        }
+        return repo.getContent();
+    }
+
     @Override
     public Boolean scanRepositoryNow( String repositoryId, boolean fullScan )
         throws ArchivaRestServiceException
@@ -187,7 +197,8 @@ public class DefaultRepositoriesService
 
         try
         {
-            ManagedRepository repository = managedRepositoryAdmin.getManagedRepository( repositoryId );
+
+            org.apache.archiva.repository.ManagedRepository repository = repositoryRegistry.getManagedRepository( repositoryId );
 
             IndexingContext context = managedRepositoryAdmin.createIndexContext( repository );
 
@@ -367,7 +378,7 @@ public class DefaultRepositoriesService
         {
 
             ManagedRepositoryContent sourceRepository =
-                repositoryFactory.getManagedRepositoryContent( artifactTransferRequest.getRepositoryId() );
+                getManagedRepositoryContent( artifactTransferRequest.getRepositoryId() );
 
             String artifactSourcePath = sourceRepository.toPath( artifactReference );
 
@@ -388,7 +399,7 @@ public class DefaultRepositoriesService
             }
 
             ManagedRepositoryContent targetRepository =
-                repositoryFactory.getManagedRepositoryContent( artifactTransferRequest.getTargetRepositoryId() );
+                getManagedRepositoryContent( artifactTransferRequest.getTargetRepositoryId() );
 
             String artifactPath = targetRepository.toPath( artifactReference );
 
@@ -646,7 +657,7 @@ public class DefaultRepositoriesService
 
         try
         {
-            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+            ManagedRepositoryContent repository = getManagedRepositoryContent( repositoryId );
 
             VersionedReference ref = new VersionedReference();
             ref.setArtifactId( projectId );
@@ -767,7 +778,7 @@ public class DefaultRepositoriesService
             ref.setGroupId( artifact.getGroupId() );
             ref.setVersion( artifact.getVersion() );
 
-            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+            ManagedRepositoryContent repository = getManagedRepositoryContent( repositoryId );
 
             ArtifactReference artifactReference = new ArtifactReference();
             artifactReference.setArtifactId( artifact.getArtifactId() );
@@ -977,7 +988,7 @@ public class DefaultRepositoriesService
 
         try
         {
-            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+            ManagedRepositoryContent repository = getManagedRepositoryContent( repositoryId );
 
             repository.deleteGroupId( groupId );
 
@@ -1038,7 +1049,7 @@ public class DefaultRepositoriesService
 
         try
         {
-            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+            ManagedRepositoryContent repository = getManagedRepositoryContent( repositoryId );
 
             repository.deleteProject( groupId, projectId );
         }
@@ -1100,14 +1111,9 @@ public class DefaultRepositoriesService
         long sinceWhen = RepositoryScanner.FRESH_SCAN;
         try
         {
-            return repoScanner.scan( getManagedRepositoryAdmin().getManagedRepository( repositoryId ), sinceWhen );
+            return repoScanner.scan( repositoryRegistry.getManagedRepository( repositoryId ), sinceWhen );
         }
         catch ( RepositoryScannerException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( "RepositoryScannerException exception: " + e.getMessage(), 500, e );
-        }
-        catch ( RepositoryAdminException e )
         {
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( "RepositoryScannerException exception: " + e.getMessage(), 500, e );
@@ -1189,16 +1195,6 @@ public class DefaultRepositoriesService
     public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
     {
         this.managedRepositoryAdmin = managedRepositoryAdmin;
-    }
-
-    public RepositoryContentFactory getRepositoryFactory()
-    {
-        return repositoryFactory;
-    }
-
-    public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
-    {
-        this.repositoryFactory = repositoryFactory;
     }
 
     public RepositorySessionFactory getRepositorySessionFactory()

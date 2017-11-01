@@ -18,10 +18,10 @@ package org.apache.archiva.web.mocks;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.ConsumerMonitor;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
+import org.apache.archiva.repository.ManagedRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;

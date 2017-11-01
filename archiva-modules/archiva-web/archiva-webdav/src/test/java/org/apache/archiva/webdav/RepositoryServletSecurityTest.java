@@ -33,6 +33,7 @@ import org.apache.archiva.redback.system.DefaultSecuritySession;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.memory.SimpleUser;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.audit.TestAuditListener;
 import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
@@ -85,6 +86,9 @@ public class RepositoryServletSecurityTest
 
     @Inject
     protected ArchivaConfiguration archivaConfiguration;
+
+    @Inject
+    protected RepositoryRegistry repositoryRegistry;
 
     private DavSessionProvider davSessionProvider;
 
@@ -188,6 +192,7 @@ public class RepositoryServletSecurityTest
     protected void saveConfiguration( ArchivaConfiguration archivaConfiguration )
         throws Exception
     {
+        repositoryRegistry.reload();
         archivaConfiguration.save( archivaConfiguration.getConfiguration() );        
     }
 
