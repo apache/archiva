@@ -30,9 +30,9 @@ import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
@@ -72,7 +72,7 @@ public class MetadataUpdaterConsumer
     private String description = "Update / Create maven-metadata.xml files";
 
     @Inject
-    private RepositoryContentFactory repositoryFactory;
+    private RepositoryRegistry repositoryRegistry;
 
     @Inject
     private MetadataTools metadataTools;
@@ -120,7 +120,14 @@ public class MetadataUpdaterConsumer
     {
         try
         {
-            this.repository = repositoryFactory.getManagedRepositoryContent( repoConfig.getId( ) );
+            ManagedRepository repo = repositoryRegistry.getManagedRepository( repoConfig.getId( ) );
+            if (repo==null) {
+                throw new RepositoryNotFoundException( "Repository not found: "+repoConfig.getId() );
+            }
+            this.repository = repo.getContent();
+            if (this.repository==null) {
+                throw new RepositoryNotFoundException( "Repository content not found: "+repoConfig.getId() );
+            }
             this.repositoryDir = Paths.get( repository.getRepoRoot( ) );
             this.scanStartTimestamp = System.currentTimeMillis( );
         }
