@@ -37,8 +37,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -503,11 +505,32 @@ public abstract class AbstractSeleniumTest
     }
 
 
-    public void selectValue( String locator, String value )
+    public WebElement selectValue( String locator, String value) {
+        return this.selectValue( locator, value, false );
+    }
+
+    public WebElement selectValue( String locator, String value, boolean scrollToView )
     {
-        WebElement element = findElement(locator );
+        int count = 5;
+        boolean check = true;
+        WebDriverWait wait = new WebDriverWait( getWebDriver( ), 10 );
+        WebElement element = null;
+        while(check && count-->0)
+        {
+            try
+            {
+                element = findElement( locator );
+                List<WebElement> elementList = new ArrayList<>( );
+                elementList.add( element );
+                wait.until( ExpectedConditions.visibilityOfAllElements( elementList ) );
+                check=false;
+            } catch (Throwable e) {
+                logger.info("Waiting for select element {} to be visible", locator);
+            }
+        }
         Select select = new Select(element);
         select.selectByValue( value );
+        return element;
     }
 
     public WebElement findElement(String locator) {

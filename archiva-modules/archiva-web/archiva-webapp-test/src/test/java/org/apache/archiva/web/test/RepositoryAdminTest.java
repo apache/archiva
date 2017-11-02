@@ -25,7 +25,9 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
@@ -61,9 +63,15 @@ public class RepositoryAdminTest
         setFieldValue( "id", "myrepoid" );        
         setFieldValue( "name", "My repo name" );        
         setFieldValue( "url", "http://www.repo.org" );
-        
+
+        el = wait.until( ExpectedConditions.elementToBeClickable(By.id("remote-repository-save-button") ));
+        Actions actions = new Actions(getWebDriver());
+        actions.moveToElement(el);
+        actions.perform();
+        ((JavascriptExecutor)getWebDriver()).executeScript("arguments[0].scrollIntoView();", el);
         el.click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("remote-repositories-view-a")));
+        el = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("remote-repositories-view-a")));
+        ((JavascriptExecutor)getWebDriver()).executeScript("arguments[0].scrollIntoView();", el);
         tryClick(By.id("menu-proxy-connectors-list-a"),
             ExpectedConditions.visibilityOfElementLocated(By.id("proxy-connectors-view-tabs-a-network-proxies-grid")),
             "Network proxies not available",
@@ -76,7 +84,12 @@ public class RepositoryAdminTest
         el = wait.until(ExpectedConditions.elementToBeClickable( By.id("proxy-connectors-view-tabs-a-edit") ));
         el.click();
         el = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("proxy-connector-btn-save")));
-        selectValue( "sourceRepoId", "internal" );
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("remote-repository-edit-fieldset")));
+        // Another hack, don't know why the normal selectValue() does not work here
+        ((JavascriptExecutor)getWebDriver()).executeScript("jQuery('#sourceRepoId').css('display','block')");
+        Select select = new Select(getWebDriver().findElement(By.xpath(".//select[@id='sourceRepoId']")));
+        select.selectByVisibleText("internal");
+        // selectValue( "sourceRepoId", "internal", true );
         // Workaround
         // TODO: Check after upgrade of htmlunit, bootstrap or jquery
         // TODO: Check whats wrong here
