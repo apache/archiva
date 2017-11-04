@@ -61,7 +61,7 @@ function stop_instance() {
 
 function start_instance() {
   echo "Starting container ${INSTANCE_NAME}"
-  docker run -d --net="${NETWORK_TYPE}" -p "${PORT_MAPPING}" --name "${INSTANCE_NAME}" "${TAG}"
+  docker run -d -e "SCREEN_WIDTH=${SCREEN_WIDTH}" -e "SCREEN_HEIGHT=${SCREEN_HEIGHT}" --net="${NETWORK_TYPE}" -p "${PORT_MAPPING}" --name "${INSTANCE_NAME}" "${TAG}"
 }
 
 function print_usage() {

@@ -87,8 +87,8 @@ public abstract class AbstractSeleniumTest
         p.load( this.getClass().getClassLoader().getResourceAsStream( "test.properties" ) );
 
         baseUrl = WebdriverUtility.getBaseUrl()+"/index.html?request_lang=en";
-
         open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs, remoteSelenium );
+        getWebDriver().manage().window().maximize();
         assertAdminCreated();
     }
 
@@ -149,7 +149,6 @@ public abstract class AbstractSeleniumTest
     {
 
         open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs, remoteSelenium);
-
         loadPage(baseUrl, 30);
         WebDriverWait wait = new WebDriverWait(getWebDriver(),30);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("topbar-menu")));
