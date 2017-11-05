@@ -38,6 +38,7 @@ import org.apache.archiva.indexer.merger.MergedRemoteIndexesTask;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesTaskRequest;
 import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.indexer.search.RepositorySearch;
+import org.apache.archiva.indexer.search.RepositorySearchException;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.storage.RelocationException;
@@ -60,8 +61,6 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryContentFactory;
-import org.apache.archiva.repository.RepositoryException;
-import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.content.maven2.RepositoryRequest;
 import org.apache.archiva.repository.events.AuditListener;
@@ -1348,6 +1347,7 @@ public class ArchivaDavResourceFactory
                     log.debug( "Skipping repository '{}' for user '{}': {}", repository, activePrincipal,
                                e.getMessage() );
                 }
+
             }
             log.info( "generate temporary merged index for repository group '{}' for repositories '{}'",
                       repositoryGroupConfiguration.getId(), authzRepos );
@@ -1378,7 +1378,7 @@ public class ArchivaDavResourceFactory
                                   temporaryGroupIndexMap );
             return mergedRepoDir;
         }
-        catch ( RepositoryAdminException e )
+        catch ( RepositorySearchException e )
         {
             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
         }

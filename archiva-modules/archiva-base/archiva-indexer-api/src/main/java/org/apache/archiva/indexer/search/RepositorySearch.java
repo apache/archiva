@@ -19,8 +19,6 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.RepositoryAdminException;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -57,5 +55,5 @@ public interface RepositorySearch
         throws RepositorySearchException;
 
     Set<String> getRemoteIndexingContextIds( String managedRepoId )
-        throws RepositoryAdminException;
+        throws RepositorySearchException;
 }

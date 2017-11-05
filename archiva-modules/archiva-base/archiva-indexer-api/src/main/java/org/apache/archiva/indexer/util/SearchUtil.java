@@ -1,4 +1,5 @@
-package org.apache.archiva.indexer.search;
+package org.apache.archiva.indexer.util;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,15 +19,18 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
-import org.apache.maven.index.ArtifactInfo;
-
-import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 
 /**
- * @author Olivier Lamy
- * @since 1.4-M1
+ * SearchUtil - utility class for search.
  */
-public interface ArtifactInfoFilter
+public class SearchUtil
 {
-    boolean addArtifactInResult( ArtifactInfo artifact, Map<String, SearchResultHit> currentResult );
+    public static String getHitId( String groupId, String artifactId, String classifier, String packaging )
+    {
+        return ( StringUtils.isBlank( groupId ) ? "" : StringUtils.trim( groupId ) ) + ":" //
+            + ( StringUtils.isBlank( artifactId ) ? "" : StringUtils.trim( artifactId ) ) + ":" //
+            + ( StringUtils.isBlank( classifier ) ? "" : StringUtils.trim( classifier ) ) + ":" //
+            + ( StringUtils.isBlank( packaging ) ? "" : StringUtils.trim( packaging ) );
+    }
 }

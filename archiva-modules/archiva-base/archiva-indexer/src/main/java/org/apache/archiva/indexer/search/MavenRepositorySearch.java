@@ -26,6 +26,8 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.indexer.util.SearchUtil;
+import org.apache.archiva.model.ArchivaArtifactModel;
+import org.apache.archiva.model.ArtifactReference;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
@@ -407,6 +409,12 @@ public class MavenRepositorySearch
                           e.getMessage() );
                 continue;
             }
+            catch ( RepositorySearchException e )
+            {
+                log.warn( "RepositorySearchException occured while accessing index of repository '{}' : {}", repo,
+                    e.getMessage() );
+                continue;
+            }
         }
 
         return new ArrayList<>( indexingContextIds );
@@ -415,11 +423,19 @@ public class MavenRepositorySearch
 
     @Override
     public Set<String> getRemoteIndexingContextIds( String managedRepoId )
-        throws RepositoryAdminException
+        throws RepositorySearchException
     {
         Set<String> ids = new HashSet<>();
 
-        List<ProxyConnector> proxyConnectors = proxyConnectorAdmin.getProxyConnectorAsMap().get( managedRepoId );
+        List<ProxyConnector> proxyConnectors = null;
+        try
+        {
+            proxyConnectors = proxyConnectorAdmin.getProxyConnectorAsMap().get( managedRepoId );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            throw new RepositorySearchException( e.getMessage(), e );
+        }
 
         if ( proxyConnectors == null || proxyConnectors.isEmpty() )
         {
@@ -485,6 +501,7 @@ public class MavenRepositorySearch
                                              artifactInfo.getClassifier(), //
                                              artifactInfo.getPackaging() );
             Map<String, SearchResultHit> hitsMap = results.getHitsMap();
+
 
             if ( !applyArtifactInfoFilters( artifactInfo, artifactInfoFilters, hitsMap ) )
             {
@@ -650,9 +667,17 @@ public class MavenRepositorySearch
             return true;
         }
 
+        ArchivaArtifactModel artifact = new ArchivaArtifactModel();
+        artifact.setArtifactId( artifactInfo.getArtifactId() );
+        artifact.setClassifier( artifactInfo.getClassifier() );
+        artifact.setGroupId( artifactInfo.getGroupId() );
+        artifact.setRepositoryId( artifactInfo.getRepository() );
+        artifact.setVersion( artifactInfo.getVersion() );
+        artifact.setChecksumMD5( artifactInfo.getMd5() );
+        artifact.setChecksumSHA1( artifactInfo.getSha1() );
         for ( ArtifactInfoFilter filter : artifactInfoFilters )
         {
-            if ( !filter.addArtifactInResult( artifactInfo, currentResult ) )
+            if ( !filter.addArtifactInResult( artifact, currentResult ) )
             {
                 return false;
             }
