@@ -21,7 +21,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
-import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
@@ -82,7 +82,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
      *
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      *
      */
     @Test
@@ -103,7 +103,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
      *
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      *
      */
     @Test
@@ -124,7 +124,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
      * Test the ejb-client type spec.
      * Type specs are not a 1 to 1 map to the extension.
      * This tests that effect.
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      */
     /* TODO: Re-enabled in the future.
     public void testGoodFooEjbClient()
@@ -145,7 +145,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
      *
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      *
      */
     @Test
@@ -252,7 +252,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     /**
      * Test the classifier, and java-source type spec.
      *
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      *
      */
     @Test
@@ -272,7 +272,7 @@ public abstract class AbstractDefaultRepositoryContentTestCase
     /**
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
      *
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      *
      */
     @Test

@@ -20,6 +20,8 @@ package org.apache.archiva.repository;
  */
 
 
+import org.apache.archiva.indexer.ArchivaIndexingContext;
+
 import java.util.Set;
 
 /**
@@ -46,4 +48,5 @@ public interface ManagedRepository extends Repository {
      * @return
      */
     Set<ReleaseScheme> getActiveReleaseSchemes();
+
 }

@@ -20,9 +20,9 @@ package org.apache.archiva.repository.content.maven2;
  */
 
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.content.PathParser;
-import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.commons.lang.StringUtils;
 
@@ -45,7 +45,7 @@ public class RepositoryRequest
      *
      * @param requestedPath the relative path to the content.
      * @return the ArtifactReference for the requestedPath.
-     * @throws org.apache.archiva.repository.layout.LayoutException if the request path is not layout valid.
+     * @throws LayoutException if the request path is not layout valid.
      */
     public ArtifactReference toArtifactReference( String requestedPath )
         throws LayoutException
@@ -236,7 +236,7 @@ public class RepositoryRequest
      * @param requestedPath the incoming requested path.
      * @param repository    the repository to adjust to.
      * @return the adjusted (to native) path.
-     * @throws org.apache.archiva.repository.layout.LayoutException if the path cannot be parsed.
+     * @throws LayoutException if the path cannot be parsed.
      */
     public String toNativePath( String requestedPath, ManagedRepositoryContent repository )
         throws LayoutException

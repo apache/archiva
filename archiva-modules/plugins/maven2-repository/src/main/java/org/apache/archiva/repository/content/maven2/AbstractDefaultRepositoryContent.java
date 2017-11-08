@@ -20,7 +20,6 @@ package org.apache.archiva.repository.content.maven2;
  */
 
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
@@ -30,13 +29,11 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.RepositoryContent;
 import org.apache.archiva.repository.content.PathParser;
-import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import java.util.List;
 
 /**

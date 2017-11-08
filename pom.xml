@@ -289,11 +289,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-indexer-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-indexer</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -435,6 +430,11 @@
       <dependency>
         <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-repository-layer</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-repository-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

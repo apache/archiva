@@ -23,6 +23,7 @@ import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.features.RepositoryFeature;
 
 import java.net.URI;
@@ -236,5 +237,11 @@ public abstract class AbstractRepository implements EditableRepository
 
     protected <T extends RepositoryFeature<T>> void addFeature(RepositoryFeature<T> feature) {
        featureMap.put( (Class<? extends RepositoryFeature<?>>) feature.getClass(), feature);
+    }
+
+    @Override
+    public ArchivaIndexingContext getIndexingContext() {
+        // TODO: Implement
+        return null;
     }
 }

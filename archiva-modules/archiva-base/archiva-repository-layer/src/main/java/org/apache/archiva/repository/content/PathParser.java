@@ -20,7 +20,7 @@ package org.apache.archiva.repository.content;
  */
 
 import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.LayoutException;
 
 /**
  * PathParser interface.

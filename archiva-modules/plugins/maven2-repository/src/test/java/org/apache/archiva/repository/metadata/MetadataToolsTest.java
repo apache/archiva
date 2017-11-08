@@ -19,7 +19,6 @@ package org.apache.archiva.repository.metadata;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.metadata.repository.storage.maven2.conf.MockConfiguration;
@@ -33,7 +32,7 @@ import org.apache.archiva.repository.AbstractRepositoryLayerTestCase;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentProvider;
-import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;

@@ -20,8 +20,8 @@ package org.apache.archiva.repository.content.maven2;
  */
 
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.content.PathParser;
-import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
@@ -152,7 +152,7 @@ public class DefaultPathParserTest
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
      *
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      */
     @Test
     public void testGoodButOddVersionSpecGanymedSsh2()
@@ -172,7 +172,7 @@ public class DefaultPathParserTest
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
      *
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      */
     @Test
     public void testGoodButOddVersionSpecJavaxComm()
@@ -192,7 +192,7 @@ public class DefaultPathParserTest
      * Test the ejb-client type spec.
      * Type specs are not a 1 to 1 map to the extension.
      * This tests that effect.
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      */
     /* TODO: Re-enabled in the future.
     public void testGoodFooEjbClient()
@@ -213,7 +213,7 @@ public class DefaultPathParserTest
      * [MRM-432] Oddball version spec.
      * Example of an oddball / unusual version spec.
      *
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      */
     @Test
     public void testGoodButOddVersionSpecJavaxPersistence()
@@ -333,7 +333,7 @@ public class DefaultPathParserTest
     /**
      * Test the classifier, and java-source type spec.
      *
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      */
     @Test
     public void testGoodFooLibSources()
@@ -352,7 +352,7 @@ public class DefaultPathParserTest
     /**
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
      *
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      */
     @Test
     public void testGoodSnapshotMavenTest()
@@ -372,7 +372,7 @@ public class DefaultPathParserTest
     /**
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
      *
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      */
     @Test
     public void testGoodLongSnapshotMavenTest()
@@ -401,7 +401,7 @@ public class DefaultPathParserTest
     /**
      * A timestamped versioned artifact, should reside in a SNAPSHOT baseversion directory.
      *
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      */
     @Test
     public void testClassifiedSnapshotMavenTest()

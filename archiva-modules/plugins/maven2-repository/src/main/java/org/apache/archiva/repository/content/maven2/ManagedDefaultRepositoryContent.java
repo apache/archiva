@@ -28,9 +28,9 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentNotFoundException;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
-import org.apache.archiva.repository.layout.LayoutException;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
@@ -245,8 +245,8 @@ public class ManagedDefaultRepositoryContent
      * information.
      *
      * @return the Set of available versions, based on the project reference.
-     * @throws org.apache.archiva.repository.layout.LayoutException
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
+     * @throws LayoutException
      */
     @Override
     public Set<String> getVersions( ProjectReference reference )
@@ -395,7 +395,7 @@ public class ManagedDefaultRepositoryContent
      * Convert a path to an artifact reference.
      *
      * @param path the path to convert. (relative or full location path)
-     * @throws org.apache.archiva.repository.layout.LayoutException if the path cannot be converted to an artifact reference.
+     * @throws LayoutException if the path cannot be converted to an artifact reference.
      */
     @Override
     public ArtifactReference toArtifactReference( String path )
@@ -440,7 +440,7 @@ public class ManagedDefaultRepositoryContent
      * @return the ArtifactReference to the first artifact located within the versioned reference. or null if
      *         no artifact was found within the versioned reference.
      * @throws java.io.IOException     if the versioned reference is invalid (example: doesn't exist, or isn't a directory)
-     * @throws org.apache.archiva.repository.layout.LayoutException
+     * @throws LayoutException
      */
     private ArtifactReference getFirstArtifact( VersionedReference reference )
         throws LayoutException, IOException

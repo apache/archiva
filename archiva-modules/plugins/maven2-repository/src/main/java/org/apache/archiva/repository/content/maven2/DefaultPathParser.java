@@ -27,7 +27,7 @@ import org.apache.archiva.metadata.repository.storage.maven2.DefaultArtifactMapp
 import org.apache.archiva.metadata.repository.storage.maven2.Maven2RepositoryPathTranslator;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.content.PathParser;
-import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 

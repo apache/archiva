@@ -21,7 +21,6 @@ package org.apache.archiva.repository;
 
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.RepositoryURL;
-import org.apache.archiva.repository.layout.LayoutException;
 
 /**
  * RemoteRepositoryContent interface for interacting with a remote repository in an abstract way, 

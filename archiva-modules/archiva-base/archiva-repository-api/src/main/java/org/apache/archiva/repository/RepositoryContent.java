@@ -21,7 +21,6 @@ package org.apache.archiva.repository;
 
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.VersionedReference;
-import org.apache.archiva.repository.layout.LayoutException;
 
 
 /**

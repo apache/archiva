@@ -22,11 +22,9 @@ package org.apache.archiva.repository.content.maven2;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.RepositoryURL;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
-import org.apache.archiva.repository.layout.LayoutException;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -80,7 +78,7 @@ public class RemoteDefaultRepositoryContent
      * Convert a path to an artifact reference.
      *
      * @param path the path to convert. (relative or full url path)
-     * @throws org.apache.archiva.repository.layout.LayoutException if the path cannot be converted to an artifact reference.
+     * @throws LayoutException if the path cannot be converted to an artifact reference.
      */
     @Override
     public ArtifactReference toArtifactReference( String path )

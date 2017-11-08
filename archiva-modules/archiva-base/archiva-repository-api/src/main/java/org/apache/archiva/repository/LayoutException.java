@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.layout;
+package org.apache.archiva.repository;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

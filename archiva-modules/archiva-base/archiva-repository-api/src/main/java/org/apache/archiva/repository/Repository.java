@@ -19,6 +19,7 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.features.RepositoryFeature;
 
 import java.net.URI;
@@ -159,4 +160,10 @@ public interface Repository {
     <T extends RepositoryFeature<T>> boolean supportsFeature(Class<T> clazz);
 
 
+    /**
+     * Returns a indexing context.
+     * @return
+     * @throws UnsupportedOperationException
+     */
+    ArchivaIndexingContext getIndexingContext();
 }
