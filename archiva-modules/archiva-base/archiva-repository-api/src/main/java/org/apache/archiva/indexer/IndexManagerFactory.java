@@ -39,7 +39,7 @@ public class IndexManagerFactory {
     @Inject
     ApplicationContext applicationContext;
 
-    ArchivaIndexManager getIndexManager(RepositoryType type) {
+    public ArchivaIndexManager getIndexManager(RepositoryType type) {
         if (managers.containsKey(type)) {
             return managers.get(type);
         } else {

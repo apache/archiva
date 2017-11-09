@@ -20,6 +20,7 @@ package org.apache.archiva.indexer;
  */
 
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryType;
 
 import java.net.URI;
@@ -68,4 +69,11 @@ public interface ArchivaIndexManager {
      * @return
      */
     boolean supportsRepository(RepositoryType type);
+
+    /**
+     * Creates the indexing context for the given repository.
+     * @param repository the repository for which the index context should be created
+     * @return the index context
+     */
+    ArchivaIndexingContext createContext(Repository repository);
 }

@@ -32,7 +32,7 @@
        default-lazy-init="false">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.indexer.search,org.apache.archiva.indexer.merger"/>
+  <context:component-scan base-package="org.apache.archiva.indexer"/>
 
 
 
