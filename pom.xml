@@ -289,7 +289,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-indexer</artifactId>
+        <artifactId>archiva-maven2-indexer</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

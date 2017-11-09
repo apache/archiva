@@ -275,13 +275,13 @@
     <bundle>mvn:org.apache.archiva/archiva-converter/${project.version}</bundle>
   </feature>
 
-  <feature name="archiva-indexer" description="Archiva Indexer module" version="${project.version}" resolver="(obr)">
+  <feature name="archiva-maven2-indexer" description="Archiva Maven2 Indexer module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-repository-admin-api</feature>
     <feature version="${project.version}">archiva-plexus-bridge</feature>
     <bundle dependency="true">mvn:commons-io/commons-io/${commons-io.version}</bundle>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.lucene/${lucene.bundle.version}</bundle>
     <bundle dependency="true">wrap:mvn:org.apache.maven.indexer/indexer-core/${maven.indexer.version}</bundle>
-    <bundle>mvn:org.apache.archiva/archiva-indexer/${project.version}</bundle>
+    <bundle>mvn:org.apache.archiva/archiva-maven2-indexer/${project.version}</bundle>
   </feature>
 
   <feature name="archiva-security-common" description="Archiva Security Common module" version="${project.version}" resolver="(obr)">
@@ -298,7 +298,7 @@
   <feature name="archiva-rest-services" description="Archiva REST Services module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-rest-api</feature>
     <feature version="${project.version}">archiva-audit</feature>
-    <feature version="${project.version}">archiva-indexer</feature>
+    <feature version="${project.version}">archiva-maven2-indexer</feature>
     <feature version="${project.version}">archiva-checksum</feature>
     <feature version="${project.version}">archiva-repository-layer</feature>
     <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xpp3/${xpp3.bundle.version}</bundle>
@@ -331,7 +331,7 @@
 
   <feature name="archiva-webdav" description="Archiva WebDav module" version="${project.version}" resolver="(obr)">
     <feature version="${project.version}">archiva-audit</feature>
-    <feature version="${project.version}">archiva-indexer</feature>
+    <feature version="${project.version}">archiva-maven2-indexer</feature>
     <feature version="${project.version}">archiva-proxy</feature>
     <feature version="${project.version}">archiva-security</feature>
     <feature>http</feature>
@@ -395,7 +395,7 @@
     <feature version="${project.version}">archiva-configuration</feature>
     <feature version="${project.version}">archiva-repository-statistics</feature>
     <feature version="${project.version}">archiva-scheduler</feature>
-    <feature version="${project.version}">archiva-indexer</feature>
+    <feature version="${project.version}">archiva-maven2-indexer</feature>
     <feature version="${project.version}">archiva-generic-metadata-support</feature>
     <feature version="${project.version}">archiva-rest-api</feature>
     <feature version="${project.version}">archiva-rss</feature>
