@@ -71,7 +71,7 @@
       <artifactId>archiva-test-utils</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>metadata-model</artifactId>
@@ -171,6 +171,7 @@
         <configuration>
           <systemPropertyVariables>
             <basedir>${basedir}</basedir>
+            <appserver.base>${project.build.directory}/test-classes</appserver.base>
           </systemPropertyVariables>
         </configuration>
       </plugin>

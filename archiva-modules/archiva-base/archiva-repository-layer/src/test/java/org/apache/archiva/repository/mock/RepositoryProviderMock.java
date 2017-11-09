@@ -130,6 +130,7 @@ public class RepositoryProviderMock implements RepositoryProvider
         String id = configuration.getId( ) + StagingRepositoryFeature.STAGING_REPO_POSTFIX;
         BasicManagedRepository managedRepository = new BasicManagedRepository( id, configuration.getName( ) );
         updateManagedInstance( managedRepository, configuration );
+        managedRepository.getFeature(StagingRepositoryFeature.class).get().setStageRepoNeeded(false);
         return managedRepository;
     }
 
