@@ -78,7 +78,7 @@
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <lucene.version>4.10.4</lucene.version>
 
-    <jcr-oak.version>1.7.5</jcr-oak.version>
+    <jcr-oak.version>1.7.10</jcr-oak.version>
     <jackrabbit.version>2.15.4</jackrabbit.version>
 
     <cxf.version>3.0.3</cxf.version>
@@ -86,8 +86,7 @@
     <httpclient.version>4.5.2</httpclient.version>
     <httpclient.core.version>4.4.4</httpclient.core.version>
     <javaxMailVersion>1.4</javaxMailVersion>
-    <!--jettyVersion>9.4.5.v20170502</jettyVersion-->
-    <jettyVersion>9.4.7-SNAPSHOT</jettyVersion>
+    <jettyVersion>9.4.7.v20170914</jettyVersion>
     <guava.version>15.0</guava.version>
     <openjpaVersion>2.4.1</openjpaVersion>
 
