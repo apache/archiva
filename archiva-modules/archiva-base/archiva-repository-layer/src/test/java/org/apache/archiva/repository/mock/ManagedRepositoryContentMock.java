@@ -27,7 +27,7 @@ import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
-import org.apache.archiva.repository.layout.LayoutException;
+import org.apache.archiva.repository.LayoutException;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
