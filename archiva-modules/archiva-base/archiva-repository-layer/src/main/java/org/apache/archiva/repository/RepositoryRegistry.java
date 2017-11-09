@@ -26,6 +26,8 @@ import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.indexer.IndexManagerFactory;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
@@ -65,6 +67,9 @@ public class RepositoryRegistry implements ConfigurationListener {
      */
     @Inject
     List<RepositoryProvider> repositoryProviders;
+
+    @Inject
+    IndexManagerFactory indexManagerFactory;
 
     @Inject
     ArchivaConfiguration archivaConfiguration;
@@ -201,6 +206,9 @@ public class RepositoryRegistry implements ConfigurationListener {
         if ( stageRepo == null )
         {
             stageRepo = provider.createStagingInstance( baseRepoCfg );
+            if (stageRepo.supportsFeature(StagingRepositoryFeature.class)) {
+                stageRepo.getFeature(StagingRepositoryFeature.class).get().setStageRepoNeeded(false);
+            }
             ManagedRepositoryConfiguration stageCfg = provider.getManagedConfiguration( stageRepo );
             updateRepositoryReferences( provider, stageRepo, stageCfg, configuration);
         }
@@ -900,4 +908,7 @@ public class RepositoryRegistry implements ConfigurationListener {
     public void configurationEvent(ConfigurationEvent event) {
 
     }
+
+
+
 }
