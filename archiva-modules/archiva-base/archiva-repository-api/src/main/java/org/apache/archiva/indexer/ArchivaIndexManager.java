@@ -23,6 +23,7 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryType;
 
+import java.io.IOException;
 import java.net.URI;
 
 public interface ArchivaIndexManager {
@@ -31,14 +32,14 @@ public interface ArchivaIndexManager {
      * Compresses the index to a more dense packed format.
      * @param context
      */
-    void pack(ArchivaIndexingContext context);
+    void pack(ArchivaIndexingContext context) throws IOException;
 
     /**
      * Rescans the whole repository, this index is associated to.
      * @param context
      * @param update
      */
-    void scan(ArchivaIndexingContext context, boolean update);
+    void scan(ArchivaIndexingContext context, boolean update) throws IOException;
 
     /**
      * Updates the index from the remote url.
@@ -46,21 +47,21 @@ public interface ArchivaIndexManager {
      * @param remoteUpdateUri
      * @param fullUpdate
      */
-    void update(ArchivaIndexingContext context, URI remoteUpdateUri, boolean fullUpdate);
+    void update(ArchivaIndexingContext context, URI remoteUpdateUri, boolean fullUpdate) throws IOException;
 
     /**
      * Adds a artifact to the index.
      * @param context
      * @param artifactReference
      */
-    void addArtifactToIndex(ArchivaIndexingContext context, ArtifactReference artifactReference);
+    void addArtifactToIndex(ArchivaIndexingContext context, ArtifactReference artifactReference) throws IOException;
 
     /**
      * Removes a artifact from the index.
      * @param context
      * @param artifactReference
      */
-    void removeArtifactFromIndex(ArchivaIndexingContext context, ArtifactReference artifactReference);
+    void removeArtifactFromIndex(ArchivaIndexingContext context, ArtifactReference artifactReference) throws IOException;
 
 
     /**
@@ -75,5 +76,5 @@ public interface ArchivaIndexManager {
      * @param repository the repository for which the index context should be created
      * @return the index context
      */
-    ArchivaIndexingContext createContext(Repository repository);
+    ArchivaIndexingContext createContext(Repository repository) throws IOException;
 }

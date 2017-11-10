@@ -1,4 +1,4 @@
-package org.apache.archiva.indexer.search;
+package org.apache.archiva.indexer.maven.search;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -25,6 +25,7 @@ import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.archiva.indexer.search.*;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.model.ArchivaArtifactModel;
 import org.apache.archiva.model.ArtifactReference;
@@ -96,8 +97,8 @@ public class MavenRepositorySearch
      * @see RepositorySearch#search(String, List, String, SearchResultLimits, List)
      */
     @Override
-    public SearchResults search( String principal, List<String> selectedRepos, String term, SearchResultLimits limits,
-                                 List<String> previousSearchTerms )
+    public SearchResults search(String principal, List<String> selectedRepos, String term, SearchResultLimits limits,
+                                List<String> previousSearchTerms )
         throws RepositorySearchException
     {
         List<String> indexingContextIds = addIndexingContexts( selectedRepos );

@@ -4,6 +4,8 @@ import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 
@@ -91,5 +93,14 @@ public class TestConfiguration
     public List<Locale.LanguageRange> getLanguagePriorities( )
     {
         return Locale.LanguageRange.parse("en,fr,de");
+    }
+
+    @Override
+    public Path getAppServerBaseDir() {
+        if (System.getProperties().containsKey("appserver.base")) {
+            return Paths.get(System.getProperty("appserver.base"));
+        } else {
+            return Paths.get("");
+        }
     }
 }

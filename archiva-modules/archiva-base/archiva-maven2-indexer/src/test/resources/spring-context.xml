@@ -28,6 +28,7 @@
        default-lazy-init="false">
 
   <context:annotation-config/>
+  <context:component-scan base-package="org.apache.archiva.indexer.maven" />
 
   <bean name="scheduler" class="org.apache.archiva.redback.components.scheduler.DefaultScheduler">
     <property name="properties">

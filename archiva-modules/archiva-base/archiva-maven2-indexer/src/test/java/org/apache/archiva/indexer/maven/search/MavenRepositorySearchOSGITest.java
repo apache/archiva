@@ -1,4 +1,4 @@
-package org.apache.archiva.indexer.search;
+package org.apache.archiva.indexer.maven.search;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,6 +19,9 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
+import org.apache.archiva.indexer.search.SearchFields;
+import org.apache.archiva.indexer.search.SearchResultHit;
+import org.apache.archiva.indexer.search.SearchResults;
 import org.easymock.EasyMock;
 import org.junit.Test;
 

@@ -25,6 +25,7 @@ import org.apache.archiva.repository.RepositoryType;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 /**
@@ -55,7 +56,7 @@ public interface ArchivaIndexingContext {
      * Returns true, if the index has no entries or is not initialized.
      * @return
      */
-    boolean isEmpty();
+    boolean isEmpty() throws IOException;
 
     /**
      * Writes the last changes to the index.
@@ -111,7 +112,7 @@ public interface ArchivaIndexingContext {
      * Returns the list of groups that are assigned to this index
      * @return
      */
-    Set<String> getGroups();
+    Set<String> getGroups() throws IOException;
 
     /**
      * Updates the timestamp of the index.
@@ -126,5 +127,5 @@ public interface ArchivaIndexingContext {
      * @param time
      * @throws IOException
      */
-    void updateTimestamp(boolean save, LocalDateTime time) throws IOException;
+    void updateTimestamp(boolean save, ZonedDateTime time) throws IOException;
 }

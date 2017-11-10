@@ -1,4 +1,4 @@
-package org.apache.archiva.indexer.merger;
+package org.apache.archiva.indexer.maven.merger;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,6 +19,10 @@ package org.apache.archiva.indexer.merger;
  */
 
 import org.apache.archiva.common.utils.FileUtils;
+import org.apache.archiva.indexer.merger.IndexMerger;
+import org.apache.archiva.indexer.merger.IndexMergerException;
+import org.apache.archiva.indexer.merger.IndexMergerRequest;
+import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;

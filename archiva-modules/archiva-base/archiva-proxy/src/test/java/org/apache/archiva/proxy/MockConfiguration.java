@@ -19,12 +19,7 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ConfigurationListener;
-import org.apache.archiva.configuration.FileType;
-import org.apache.archiva.configuration.FileTypes;
-import org.apache.archiva.configuration.RepositoryScanningConfiguration;
+import org.apache.archiva.configuration.*;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
@@ -32,12 +27,10 @@ import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 import javax.annotation.PostConstruct;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  * MockConfiguration
@@ -157,5 +150,14 @@ public class MockConfiguration
     public List<Locale.LanguageRange> getLanguagePriorities( )
     {
         return Locale.LanguageRange.parse( "en,fr,de" );
+    }
+
+    @Override
+    public Path getAppServerBaseDir() {
+        if (System.getProperties().containsKey("appserver.base")) {
+            return Paths.get(System.getProperty("appserver.base"));
+        } else {
+            return Paths.get("");
+        }
     }
 }

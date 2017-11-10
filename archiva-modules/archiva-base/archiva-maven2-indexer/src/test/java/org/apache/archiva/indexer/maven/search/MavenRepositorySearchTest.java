@@ -1,4 +1,4 @@
-package org.apache.archiva.indexer.search;
+package org.apache.archiva.indexer.maven.search;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,20 +19,16 @@ package org.apache.archiva.indexer.search;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ConfigurationEvent;
-import org.apache.archiva.configuration.ConfigurationListener;
+import org.apache.archiva.indexer.search.*;
 import org.apache.archiva.indexer.util.SearchUtil;
-import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.index_shaded.lucene.index.IndexUpgrader;
 import org.codehaus.plexus.util.FileUtils;
 import org.easymock.EasyMock;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.inject.Inject;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;

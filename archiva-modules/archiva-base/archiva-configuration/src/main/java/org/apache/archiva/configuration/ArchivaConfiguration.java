@@ -22,6 +22,7 @@ package org.apache.archiva.configuration;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 
@@ -92,5 +93,7 @@ public interface ArchivaConfiguration
     public Locale getDefaultLocale();
 
     public List<Locale.LanguageRange> getLanguagePriorities();
+
+    public Path getAppServerBaseDir();
 }
 

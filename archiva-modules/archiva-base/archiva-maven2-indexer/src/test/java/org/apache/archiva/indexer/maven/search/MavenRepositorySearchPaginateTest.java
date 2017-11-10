@@ -1,4 +1,4 @@
-package org.apache.archiva.indexer.search;
+package org.apache.archiva.indexer.maven.search;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,6 +19,10 @@ package org.apache.archiva.indexer.search;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.indexer.maven.search.MavenRepositorySearch;
+import org.apache.archiva.indexer.search.SearchResultHit;
+import org.apache.archiva.indexer.search.SearchResultLimits;
+import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;

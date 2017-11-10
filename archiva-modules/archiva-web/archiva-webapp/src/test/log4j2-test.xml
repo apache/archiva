@@ -52,7 +52,7 @@
     <logger name="org.apache.http.headers" level="debug"/>
     -->
 
-    <logger name="org.apache.archiva.indexer.search.MavenRepositorySearch" level="info"/>
+    <logger name="org.apache.archiva.indexer.maven.search.MavenRepositorySearch" level="info"/>
 
     <logger name="org.apache.archiva.common.plexusbridge.MavenIndexerUtils" level="info"/>
 

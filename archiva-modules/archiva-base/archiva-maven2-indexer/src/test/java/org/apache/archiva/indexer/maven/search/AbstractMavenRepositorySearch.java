@@ -1,4 +1,4 @@
-package org.apache.archiva.indexer.search;
+package org.apache.archiva.indexer.maven.search;
 
 /*
 * Licensed to the Apache Software Foundation (ASF) under one
@@ -28,6 +28,9 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.indexer.maven.search.MavenRepositorySearch;
+import org.apache.archiva.indexer.search.SearchResultHit;
+import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang.SystemUtils;

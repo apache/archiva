@@ -892,6 +892,16 @@ public class DefaultArchivaConfiguration
     }
 
     @Override
+    public Path getAppServerBaseDir() {
+        String basePath = registry.getString("appserver.base");
+        if (!StringUtils.isEmpty(basePath)) {
+            return Paths.get(basePath);
+        } else {
+            return Paths.get("");
+        }
+    }
+
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         // nothing to do here
