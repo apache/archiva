@@ -104,7 +104,7 @@ public interface ArchivaIndexingContext {
      * @return the instance of the given class representing this index
      * @throws UnsupportedOperationException if the implementation is not supported
      */
-    <T> T getBaseContext(Class<T> clazz) throws UnsupportedOperationException;
+    <T> T getBaseContext(Class<T> clazz) throws UnsupportedBaseContextException;
 
 
 
