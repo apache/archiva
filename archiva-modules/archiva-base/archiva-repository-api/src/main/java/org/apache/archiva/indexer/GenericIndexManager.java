@@ -25,6 +25,8 @@ import org.apache.archiva.repository.RepositoryType;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.nio.file.Path;
+import java.util.Collection;
 
 @Service("indexManager#none")
 public class GenericIndexManager implements ArchivaIndexManager {
@@ -45,12 +47,12 @@ public class GenericIndexManager implements ArchivaIndexManager {
     }
 
     @Override
-    public void addArtifactToIndex(ArchivaIndexingContext context, ArtifactReference artifactReference) {
+    public void addArtifactsToIndex(ArchivaIndexingContext context, Collection<Path> artifactReference) {
 
     }
 
     @Override
-    public void removeArtifactFromIndex(ArchivaIndexingContext context, ArtifactReference artifactReference) {
+    public void removeArtifactsFromIndex(ArchivaIndexingContext context, Collection<Path> artifactReference) {
 
     }
 

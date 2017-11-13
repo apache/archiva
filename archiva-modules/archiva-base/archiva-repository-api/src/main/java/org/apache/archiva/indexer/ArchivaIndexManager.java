@@ -25,6 +25,8 @@ import org.apache.archiva.repository.RepositoryType;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
+import java.util.Collection;
 
 public interface ArchivaIndexManager {
 
@@ -50,18 +52,18 @@ public interface ArchivaIndexManager {
     void update(ArchivaIndexingContext context, URI remoteUpdateUri, boolean fullUpdate) throws IndexUpdateFailedException;
 
     /**
-     * Adds a artifact to the index.
+     * Adds a list of artifacts to the index.
      * @param context
      * @param artifactReference
      */
-    void addArtifactToIndex(ArchivaIndexingContext context, ArtifactReference artifactReference) throws IndexUpdateFailedException;
+    void addArtifactsToIndex(ArchivaIndexingContext context, Collection<Path> artifactReference) throws IndexUpdateFailedException;
 
     /**
-     * Removes a artifact from the index.
+     * Removes a list of artifacts from the index.
      * @param context
      * @param artifactReference
      */
-    void removeArtifactFromIndex(ArchivaIndexingContext context, ArtifactReference artifactReference) throws IndexUpdateFailedException;
+    void removeArtifactsFromIndex(ArchivaIndexingContext context, Collection<Path> artifactReference) throws IndexUpdateFailedException;
 
 
     /**

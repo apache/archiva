@@ -42,12 +42,7 @@ import org.apache.archiva.repository.UnsupportedRepositoryTypeException;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.index.DefaultScannerListener;
-import org.apache.maven.index.Indexer;
-import org.apache.maven.index.IndexerEngine;
-import org.apache.maven.index.Scanner;
-import org.apache.maven.index.ScanningRequest;
-import org.apache.maven.index.ScanningResult;
+import org.apache.maven.index.*;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPacker;
@@ -83,12 +78,19 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.stream.Collectors;
 
 /**
- * Maven implementation of index manager
+ * Maven implementation of index manager.
+ * The index manager is a singleton, so we try to make sure, that index operations are not running
+ * parallel by synchronizing on the index path.
+ * A update operation waits for parallel running methods to finish before starting, but after a certain
+ * time of retries a IndexUpdateFailedException is thrown.
  */
 @Service( "archivaIndexManager#maven" )
 public class MavenIndexManager implements ArchivaIndexManager
@@ -123,6 +125,9 @@ public class MavenIndexManager implements ArchivaIndexManager
     @Inject
     private IndexUpdater indexUpdater;
 
+    @Inject
+    private ArtifactContextProducer artifactContextProducer;
+
     private ConcurrentSkipListSet<Path> activeContexts = new ConcurrentSkipListSet<>( );
 
     private static final int WAIT_TIME = 100;
@@ -151,6 +156,10 @@ public class MavenIndexManager implements ArchivaIndexManager
         void accept( IndexingContext indexingContext ) throws IndexUpdateFailedException;
     }
 
+    /*
+     * This method is used to do some actions around the update execution code. And to make sure, that no other
+     * method is running on the same index.
+     */
     private void executeUpdateFunction( ArchivaIndexingContext context, IndexUpdateConsumer function ) throws IndexUpdateFailedException
     {
         IndexingContext indexingContext = null;
@@ -374,14 +383,33 @@ public class MavenIndexManager implements ArchivaIndexManager
     }
 
     @Override
-    public void addArtifactToIndex( ArchivaIndexingContext context, ArtifactReference artifactReference ) throws IndexUpdateFailedException
+    public void addArtifactsToIndex( final ArchivaIndexingContext context, final Collection<Path> artifactReference ) throws IndexUpdateFailedException
     {
-
+        executeUpdateFunction(context, indexingContext -> {
+            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, r.toFile())).collect(Collectors.toList());
+            try {
+                indexer.addArtifactsToIndex(artifacts, indexingContext);
+            } catch (IOException e) {
+                log.error("IOException while adding artifact {}", e.getMessage(), e);
+                throw new IndexUpdateFailedException("Error occured while adding artifact to index of "+context.getId()
+                + (StringUtils.isNotEmpty(e.getMessage()) ? ": "+e.getMessage() : ""));
+            }
+        });
     }
 
     @Override
-    public void removeArtifactFromIndex( ArchivaIndexingContext context, ArtifactReference artifactReference ) throws IndexUpdateFailedException
+    public void removeArtifactsFromIndex( ArchivaIndexingContext context, Collection<Path> artifactReference ) throws IndexUpdateFailedException
     {
+        executeUpdateFunction(context, indexingContext -> {
+            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, r.toFile())).collect(Collectors.toList());
+            try {
+                indexer.deleteArtifactsFromIndex(artifacts, indexingContext);
+            } catch (IOException e) {
+                log.error("IOException while removing artifact {}", e.getMessage(), e);
+                throw new IndexUpdateFailedException("Error occured while removing artifact from index of "+context.getId()
+                        + (StringUtils.isNotEmpty(e.getMessage()) ? ": "+e.getMessage() : ""));
+            }
+        });
 
     }
 
