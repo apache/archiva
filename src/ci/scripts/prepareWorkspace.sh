@@ -22,7 +22,7 @@
 #
 #  Removes directories that are not used anymore.
 ##
-ATTIC_DIRS=""
+ATTIC_DIRS="archiva-modules/archiva-base/archiva-indexer"
 REMOVE_DIRS=".indexer"
 
 for i in ${ATTIC_DIRS}; do
@@ -35,3 +35,22 @@ done
 for i in ${REMOVE_DIRS}; do
   find . -type d -name "${i}" -print0 | xargs -0 rm -rvf
 done
+
+TMP_DIRS="/tmp/archiva /var/tmp/archiva"
+for MY_TMP in $TMP_DIRS; do
+  if [ -e ${MY_TMP} ]; then
+    echo "Trying to delete ${MY_TMP}"
+    rm -rf ${MY_TMP} >/dev/null 2>&1
+  fi
+  if [ -e ${MY_TMP} ]; then
+    echo "Trying to move ${MY_TMP} away"
+    mv ${MY_TMP} ${MY_TMP}.$$
+  fi
+  if [ -e ${MY_TMP} ]; then
+    echo "Warning there exists a temporary directory, that cannot be cleaned ${MY_TMP}"
+    ls -latr ${MY_TMP}
+    ls -latr $(dirname ${MY_TMP})
+  fi
+done
+
+exit 0
