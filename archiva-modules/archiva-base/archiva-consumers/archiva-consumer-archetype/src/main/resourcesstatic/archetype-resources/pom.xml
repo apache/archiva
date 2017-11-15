@@ -64,7 +64,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-repository-layer</artifactId>
+      <artifactId>archiva-repository-api</artifactId>
       <version>${archiva.version}</version>
     </dependency>
     <dependency>
