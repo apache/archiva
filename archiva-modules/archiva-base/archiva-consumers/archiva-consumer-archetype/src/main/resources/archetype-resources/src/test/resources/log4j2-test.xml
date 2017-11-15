@@ -28,6 +28,7 @@
   <loggers>
 
     <logger name="org.springframework" level="error"/>
+    <logger name="sf.ehcache" level="debug" />
 
     <root level="info">
       <appender-ref ref="console"/>
