@@ -174,10 +174,15 @@ public class DefaultArchivaConfiguration
 
     private List<Locale.LanguageRange> languagePriorities = new ArrayList<>(  );
 
+    private volatile Path dataDirectory;
+    private volatile Path repositoryBaseDirectory;
+
     @PostConstruct
     private void init() {
         languagePriorities = Locale.LanguageRange.parse( "en,fr,de" );
     }
+
+
 
     @Override
     public Configuration getConfiguration()
@@ -223,14 +228,40 @@ public class DefaultArchivaConfiguration
         }
 
         Configuration config = new ConfigurationRegistryReader().read( subset );
-        if (StringUtils.isEmpty( config.getArchivaRuntimeConfiguration().getDataDirectory() )) {
-            Path appserverBaseDir = Paths.get(registry.getString("appserver.base", ""));
-            config.getArchivaRuntimeConfiguration().setDataDirectory( appserverBaseDir.normalize().toString() );
+
+        // Resolving data and repositories directories
+        // If the config entries are absolute, the path is used as it is
+        // if the config entries are empty, they are resolved:
+        //   dataDirectory = ${appserver.base}/data
+        //   repositoryDirectory = ${dataDirectory}/repositories
+        // If the entries are relative they are resolved
+        //   relative to the appserver.base, for dataDirectory
+        //   relative to dataDirectory for repositoryBase
+        String dataDir = config.getArchivaRuntimeConfiguration().getDataDirectory();
+        if (StringUtils.isEmpty( dataDir )) {
+            dataDirectory = getAppServerBaseDir().resolve( "data");
+        } else {
+            Path tmpDataDir = Paths.get(dataDir);
+            if (tmpDataDir.isAbsolute()) {
+                dataDirectory = tmpDataDir;
+            } else {
+                dataDirectory = getAppServerBaseDir().resolve(tmpDataDir);
+            }
         }
-        if (StringUtils.isEmpty( config.getArchivaRuntimeConfiguration().getRepositoryBaseDirectory())) {
-            Path baseDir = Paths.get(config.getArchivaRuntimeConfiguration().getDataDirectory());
-            config.getArchivaRuntimeConfiguration().setRepositoryBaseDirectory( baseDir.resolve("repositories").toString() );
+        config.getArchivaRuntimeConfiguration().setDataDirectory( dataDirectory.normalize().toString() );
+        String repoBaseDir = config.getArchivaRuntimeConfiguration().getRepositoryBaseDirectory();
+        if (StringUtils.isEmpty( repoBaseDir )) {
+            repositoryBaseDirectory = dataDirectory.resolve("repositories");
+
+        } else {
+            Path tmpRepoBaseDir = Paths.get(repoBaseDir);
+            if (tmpRepoBaseDir.isAbsolute()) {
+                repositoryBaseDirectory = tmpRepoBaseDir;
+            } else {
+                dataDirectory.resolve(tmpRepoBaseDir);
+            }
         }
+
 
         config.getRepositoryGroups();
         config.getRepositoryGroupsAsMap();
@@ -902,6 +933,23 @@ public class DefaultArchivaConfiguration
     }
 
     @Override
+    public Path getRepositoryBaseDir() {
+        if (repositoryBaseDirectory==null) {
+            getConfiguration();
+        }
+        return repositoryBaseDirectory;
+
+    }
+
+    @Override
+    public Path getDataDirectory() {
+        if (dataDirectory==null) {
+            getConfiguration();
+        }
+        return dataDirectory;
+    }
+
+    @Override
     public void beforeConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         // nothing to do here
@@ -911,6 +959,8 @@ public class DefaultArchivaConfiguration
     public synchronized void afterConfigurationChange( Registry registry, String propertyName, Object propertyValue )
     {
         configuration = null;
+        this.dataDirectory=null;
+        this.repositoryBaseDirectory=null;
     }
 
     private String removeExpressions( String directory )

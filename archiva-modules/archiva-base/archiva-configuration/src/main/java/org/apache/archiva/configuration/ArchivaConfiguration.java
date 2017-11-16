@@ -95,5 +95,17 @@ public interface ArchivaConfiguration
     public List<Locale.LanguageRange> getLanguagePriorities();
 
     public Path getAppServerBaseDir();
+
+    /**
+     * Returns the base directory for repositories that have a relative location path set.
+     * @return
+     */
+    public Path getRepositoryBaseDir();
+
+    /**
+     * Returns the data directory where repositories and metadata reside
+     * @return
+     */
+    public Path getDataDirectory();
 }
 
