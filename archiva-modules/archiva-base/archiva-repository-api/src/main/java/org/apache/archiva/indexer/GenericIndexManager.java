@@ -19,13 +19,11 @@ package org.apache.archiva.indexer;
  * under the License.
  */
 
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryType;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.Collection;
 
 @Service("indexManager#none")
@@ -37,7 +35,7 @@ public class GenericIndexManager implements ArchivaIndexManager {
     }
 
     @Override
-    public void scan(ArchivaIndexingContext context, boolean update) {
+    public void scan(ArchivaIndexingContext context) {
 
     }
 
@@ -47,12 +45,12 @@ public class GenericIndexManager implements ArchivaIndexManager {
     }
 
     @Override
-    public void addArtifactsToIndex(ArchivaIndexingContext context, Collection<Path> artifactReference) {
+    public void addArtifactsToIndex(ArchivaIndexingContext context, Collection<URI> artifactReference) {
 
     }
 
     @Override
-    public void removeArtifactsFromIndex(ArchivaIndexingContext context, Collection<Path> artifactReference) {
+    public void removeArtifactsFromIndex(ArchivaIndexingContext context, Collection<URI> artifactReference) {
 
     }
 

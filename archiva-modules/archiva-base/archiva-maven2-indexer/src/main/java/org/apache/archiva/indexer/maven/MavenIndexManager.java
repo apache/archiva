@@ -29,7 +29,6 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
@@ -78,7 +77,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -134,7 +132,7 @@ public class MavenIndexManager implements ArchivaIndexManager
     private static final int MAX_WAIT = 10;
 
 
-    IndexingContext getMvnContext( ArchivaIndexingContext context ) throws UnsupportedBaseContextException
+    public static IndexingContext getMvnContext( ArchivaIndexingContext context ) throws UnsupportedBaseContextException
     {
         if ( !context.supports( IndexingContext.class ) )
         {
@@ -226,10 +224,10 @@ public class MavenIndexManager implements ArchivaIndexManager
     }
 
     @Override
-    public void scan( final ArchivaIndexingContext context, final boolean update ) throws IndexUpdateFailedException
+    public void scan(final ArchivaIndexingContext context) throws IndexUpdateFailedException
     {
         executeUpdateFunction( context, indexingContext -> {
-            DefaultScannerListener listener = new DefaultScannerListener( indexingContext, indexerEngine, update, null );
+            DefaultScannerListener listener = new DefaultScannerListener( indexingContext, indexerEngine, true, null );
             ScanningRequest request = new ScanningRequest( indexingContext, listener );
             ScanningResult result = scanner.scan( request );
             if ( result.hasExceptions( ) )
@@ -383,10 +381,11 @@ public class MavenIndexManager implements ArchivaIndexManager
     }
 
     @Override
-    public void addArtifactsToIndex( final ArchivaIndexingContext context, final Collection<Path> artifactReference ) throws IndexUpdateFailedException
+    public void addArtifactsToIndex( final ArchivaIndexingContext context, final Collection<URI> artifactReference ) throws IndexUpdateFailedException
     {
+        final URI ctxUri = context.getPath();
         executeUpdateFunction(context, indexingContext -> {
-            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, r.toFile())).collect(Collectors.toList());
+            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, Paths.get(ctxUri.resolve(r)).toFile())).collect(Collectors.toList());
             try {
                 indexer.addArtifactsToIndex(artifacts, indexingContext);
             } catch (IOException e) {
@@ -398,10 +397,11 @@ public class MavenIndexManager implements ArchivaIndexManager
     }
 
     @Override
-    public void removeArtifactsFromIndex( ArchivaIndexingContext context, Collection<Path> artifactReference ) throws IndexUpdateFailedException
+    public void removeArtifactsFromIndex( ArchivaIndexingContext context, Collection<URI> artifactReference ) throws IndexUpdateFailedException
     {
+        final URI ctxUri = context.getPath();
         executeUpdateFunction(context, indexingContext -> {
-            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, r.toFile())).collect(Collectors.toList());
+            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, Paths.get(ctxUri.resolve(r)).toFile())).collect(Collectors.toList());
             try {
                 indexer.deleteArtifactsFromIndex(artifacts, indexingContext);
             } catch (IOException e) {

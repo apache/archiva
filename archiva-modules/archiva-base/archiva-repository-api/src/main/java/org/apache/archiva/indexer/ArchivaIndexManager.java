@@ -19,13 +19,10 @@ package org.apache.archiva.indexer;
  * under the License.
  */
 
-import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryType;
 
-import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.Collection;
 
 public interface ArchivaIndexManager {
@@ -39,9 +36,9 @@ public interface ArchivaIndexManager {
     /**
      * Rescans the whole repository, this index is associated to.
      * @param context
-     * @param update
+     *
      */
-    void scan(ArchivaIndexingContext context, boolean update) throws IndexUpdateFailedException;
+    void scan(ArchivaIndexingContext context) throws IndexUpdateFailedException;
 
     /**
      * Updates the index from the remote url.
@@ -56,14 +53,14 @@ public interface ArchivaIndexManager {
      * @param context
      * @param artifactReference
      */
-    void addArtifactsToIndex(ArchivaIndexingContext context, Collection<Path> artifactReference) throws IndexUpdateFailedException;
+    void addArtifactsToIndex(ArchivaIndexingContext context, Collection<URI> artifactReference) throws IndexUpdateFailedException;
 
     /**
      * Removes a list of artifacts from the index.
      * @param context
      * @param artifactReference
      */
-    void removeArtifactsFromIndex(ArchivaIndexingContext context, Collection<Path> artifactReference) throws IndexUpdateFailedException;
+    void removeArtifactsFromIndex(ArchivaIndexingContext context, Collection<URI> artifactReference) throws IndexUpdateFailedException;
 
 
     /**
