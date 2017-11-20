@@ -41,6 +41,7 @@ import org.junit.Test;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
@@ -213,7 +214,7 @@ public class MavenRepositoryProviderTest
 
     @Test
     public void getManagedConfiguration() throws Exception {
-        MavenManagedRepository repo = new MavenManagedRepository( "test01", "My Test repo" );
+        MavenManagedRepository repo = new MavenManagedRepository( "test01", "My Test repo", Paths.get("target/repositories") );
 
         repo.setLocation( new URI("file:///this.is/a/test") );
         repo.setScanned( true );
@@ -258,7 +259,7 @@ public class MavenRepositoryProviderTest
 
     @Test
     public void getRemoteConfiguration() throws Exception {
-        MavenRemoteRepository repo = new MavenRemoteRepository( "test01", "My Test repo" );
+        MavenRemoteRepository repo = new MavenRemoteRepository( "test01", "My Test repo", Paths.get("target/remotes") );
 
         repo.setLocation( new URI("https://this.is/a/test") );
         repo.setScanned( true );

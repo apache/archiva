@@ -21,6 +21,7 @@ package org.apache.archiva.configuration;
 
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
@@ -102,5 +103,30 @@ public class StubConfiguration
         } else {
             return Paths.get("");
         }
+    }
+
+    @Override
+    public Path getRepositoryBaseDir() {
+        return getDataDirectory().resolve("repositories");
+    }
+
+    @Override
+    public Path getRemoteRepositoryBaseDir() {
+        return getDataDirectory().resolve("remotes");
+    }
+
+    @Override
+    public Path getDataDirectory() {
+        if (configuration!=null && StringUtils.isNotEmpty(configuration.getArchivaRuntimeConfiguration().getDataDirectory())) {
+            Path dataDir = Paths.get(configuration.getArchivaRuntimeConfiguration().getDataDirectory());
+            if (dataDir.isAbsolute()) {
+                return dataDir;
+            } else {
+                return getAppServerBaseDir().resolve(dataDir);
+            }
+        } else {
+            return getAppServerBaseDir().resolve("data");
+        }
+
     }
 }

@@ -47,9 +47,10 @@ public class ArtifactMissingChecksumsConsumerTest
     {
         super.setUp();
 
-        repoConfig = new BasicManagedRepository( "test-repo", "Test Repository");
+        Path basePath = Paths.get("target/test-classes");
+        repoConfig = new BasicManagedRepository( "test-repo", "Test Repository", basePath);
         repoConfig.setLayout( "default" );
-        repoConfig.setLocation( Paths.get( "target/test-classes/test-repo/" ).toUri() );
+        repoConfig.setLocation(basePath.resolve("test-repo/" ).toUri() );
 
         consumer = applicationContext.getBean( "knownRepositoryContentConsumer#create-missing-checksums",
                                                KnownRepositoryContentConsumer.class );

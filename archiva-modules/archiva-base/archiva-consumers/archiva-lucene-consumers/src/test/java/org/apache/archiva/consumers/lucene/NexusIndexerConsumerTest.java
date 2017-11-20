@@ -132,7 +132,7 @@ public class NexusIndexerConsumerTest
         // initialize to set the file types to be processed
         nexusIndexerConsumer.initialize();
 
-        repositoryConfig = new BasicManagedRepository( "test-repo", "Test Repository"  );
+        repositoryConfig = new BasicManagedRepository( "test-repo", "Test Repository", Paths.get("target/test-classes")  );
         repositoryConfig.setLocation( new URI("target/test-classes/test-repo") );
         repositoryConfig.setLayout( "default" );
         repositoryConfig.setScanned( true );

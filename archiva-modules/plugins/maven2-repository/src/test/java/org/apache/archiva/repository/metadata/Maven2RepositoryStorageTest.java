@@ -30,6 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.nio.file.Paths;
 import java.util.Locale;
 
 /**
@@ -48,17 +49,17 @@ public class Maven2RepositoryStorageTest
     {
         String href = "/repository/internal/org/apache/maven/someartifact.jar";
         Assert.assertEquals( "/org/apache/maven/someartifact.jar",
-                             repositoryStorage.getFilePath( href, new MavenManagedRepository( "repo01", "repo01") ) );
+                             repositoryStorage.getFilePath( href, new MavenManagedRepository( "repo01", "repo01", Paths.get("target/repositories")) ) );
 
         href = "repository/internal/org/apache/maven/someartifact.jar";
         Assert.assertEquals( "/org/apache/maven/someartifact.jar",
-                             repositoryStorage.getFilePath( href, new MavenManagedRepository( "repo01", "repo01" ) ) );
+                             repositoryStorage.getFilePath( href, new MavenManagedRepository( "repo01", "repo01", Paths.get("target/repositories") ) ) );
 
         href = "repository/internal/org/apache/maven/";
-        Assert.assertEquals( "/org/apache/maven/", repositoryStorage.getFilePath( href, new MavenManagedRepository("repo01", "repo01") ) );
+        Assert.assertEquals( "/org/apache/maven/", repositoryStorage.getFilePath( href, new MavenManagedRepository("repo01", "repo01", Paths.get("target/repositories")) ) );
 
         href = "mypath";
-        Assert.assertEquals( "/", repositoryStorage.getFilePath( href, new MavenManagedRepository("repo01", "repo01") ) );
+        Assert.assertEquals( "/", repositoryStorage.getFilePath( href, new MavenManagedRepository("repo01", "repo01", Paths.get("target/repositories")) ) );
     }
 
 

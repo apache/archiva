@@ -166,13 +166,14 @@ public abstract class AbstractRepositoryPurgeTest
 
     public org.apache.archiva.repository.ManagedRepository getRepoConfiguration( String repoId, String repoName ) throws URISyntaxException
     {
-        config = new BasicManagedRepository( repoId, repoName);
+        Path basePath = Paths.get("target/test-" + getName()).toAbsolutePath();
+        config = new BasicManagedRepository( repoId, repoName, basePath);
         config.addActiveReleaseScheme( ReleaseScheme.RELEASE );
         config.addActiveReleaseScheme( ReleaseScheme.SNAPSHOT );
         ArtifactCleanupFeature atf = config.getFeature( ArtifactCleanupFeature.class ).get();
         atf.setRetentionPeriod( Period.ofDays( TEST_DAYS_OLDER) );
         String path = AbstractRepositoryPurgeTest.fixPath(
-            Paths.get( "target/test-" + getName() + "/" + repoId ).toAbsolutePath().toString() );
+            basePath.resolve( repoId ).toAbsolutePath().toString() );
         config.setLocation( new URI( path ) );
         atf.setDeleteReleasedSnapshots( true );
         atf.setRetentionCount( TEST_RETENTION_COUNT );

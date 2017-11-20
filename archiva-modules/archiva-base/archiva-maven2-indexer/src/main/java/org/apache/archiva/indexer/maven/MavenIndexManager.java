@@ -521,13 +521,7 @@ public class MavenIndexManager implements ArchivaIndexManager
 
         IndexingContext context;
         // take care first about repository location as can be relative
-        Path repositoryDirectory = PathUtil.getPathFromUri( repository.getLocation( ) );
-
-        if ( !repositoryDirectory.isAbsolute( ) )
-        {
-            repositoryDirectory =
-                repositoryDirectory.resolve( "repositories" ).resolve( repositoryDirectory );
-        }
+        Path repositoryDirectory = repository.getLocalPath();
 
         if ( !Files.exists( repositoryDirectory ) )
         {

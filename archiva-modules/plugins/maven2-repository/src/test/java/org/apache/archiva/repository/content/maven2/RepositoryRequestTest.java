@@ -515,7 +515,7 @@ public class RepositoryRequestTest
                                                                        String layout )
         throws Exception
     {
-        MavenManagedRepository repo = new MavenManagedRepository( id, name);
+        MavenManagedRepository repo = new MavenManagedRepository( id, name, archivaConfiguration.getRepositoryBaseDir());
         repo.setLocation( location.toAbsolutePath().toUri() );
         repo.setLayout( layout );
 

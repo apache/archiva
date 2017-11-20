@@ -90,6 +90,8 @@ import java.util.Set;
  * <p>
  * If the configuration is outdated, it will be upgraded when it is loaded. This is done by checking the version flag
  * before reading it from the registry.
+ *
+ * FIXME: The synchronization must be improved, the current impl may lead to inconsistent data or multiple getConfiguration() calls (martin_s@apache.org)
  * </p>
  */
 @Service("archivaConfiguration#default")
@@ -176,6 +178,7 @@ public class DefaultArchivaConfiguration
 
     private volatile Path dataDirectory;
     private volatile Path repositoryBaseDirectory;
+    private volatile Path remoteRepositoryBaseDirectory;
 
     @PostConstruct
     private void init() {
@@ -259,6 +262,17 @@ public class DefaultArchivaConfiguration
                 repositoryBaseDirectory = tmpRepoBaseDir;
             } else {
                 dataDirectory.resolve(tmpRepoBaseDir);
+            }
+        }
+        String remoteRepoBaseDir = config.getArchivaRuntimeConfiguration().getRemoteRepositoryBaseDirectory();
+        if (StringUtils.isEmpty(remoteRepoBaseDir)) {
+            remoteRepositoryBaseDirectory = dataDirectory.resolve("remotes");
+        } else {
+            Path tmpRemoteRepoDir = Paths.get(remoteRepoBaseDir);
+            if (tmpRemoteRepoDir.isAbsolute()) {
+                remoteRepositoryBaseDirectory = tmpRemoteRepoDir;
+            } else {
+                dataDirectory.resolve(tmpRemoteRepoDir);
             }
         }
 
@@ -939,6 +953,14 @@ public class DefaultArchivaConfiguration
         }
         return repositoryBaseDirectory;
 
+    }
+
+    @Override
+    public Path getRemoteRepositoryBaseDir() {
+        if (remoteRepositoryBaseDirectory==null) {
+            getConfiguration();
+        }
+        return remoteRepositoryBaseDirectory;
     }
 
     @Override

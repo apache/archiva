@@ -92,7 +92,7 @@ public class DefaultLegacyRepositoryConverter
         {
             String defaultRepositoryUrl = PathUtil.toUrl( repositoryDirectory );
 
-            BasicManagedRepository legacyRepository = new BasicManagedRepository( "legacy", "Legacy Repository");
+            BasicManagedRepository legacyRepository = new BasicManagedRepository( "legacy", "Legacy Repository", repositoryDirectory.getParent());
             legacyRepository.setLocation( legacyRepositoryDirectory.toAbsolutePath().toUri() );
             legacyRepository.setLayout( "legacy" );
 

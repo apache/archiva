@@ -123,7 +123,7 @@ public class HttpProxyTransferTest
         // Make the destination dir.
         Files.createDirectories(destRepoDir);
 
-        MavenManagedRepository repo = new MavenManagedRepository( MANAGED_ID, "Default Managed Repository" );
+        MavenManagedRepository repo = new MavenManagedRepository( MANAGED_ID, "Default Managed Repository", Paths.get(repoPath).getParent() );
         repo.setLocation( new URI(repoPath) );
         repo.setLayout( "default" );
 

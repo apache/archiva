@@ -20,6 +20,10 @@ package org.apache.archiva.repository;
  */
 
 
+import org.apache.commons.lang.StringUtils;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,14 +47,14 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
     private String proxyId;
     private RemoteRepositoryContent content;
 
-    public AbstractRemoteRepository( RepositoryType type, String id, String name )
+    public AbstractRemoteRepository( RepositoryType type, String id, String name , Path repositoryBase)
     {
-        super( type, id, name );
+        super( type, id, name, repositoryBase );
     }
 
-    public AbstractRemoteRepository( Locale primaryLocale, RepositoryType type, String id, String name )
+    public AbstractRemoteRepository( Locale primaryLocale, RepositoryType type, String id, String name, Path repositoryBase )
     {
-        super( primaryLocale, type, id, name );
+        super( primaryLocale, type, id, name, repositoryBase );
     }
 
     @Override
@@ -136,6 +140,15 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
     public Duration getTimeout( )
     {
         return timeout;
+    }
+
+    /**
+     * Remote repositories resolve always relative to the base directory.
+     * @return
+     */
+    @Override
+    public Path getLocalPath() {
+        return repositoryBase.resolve(getId());
     }
 
 }

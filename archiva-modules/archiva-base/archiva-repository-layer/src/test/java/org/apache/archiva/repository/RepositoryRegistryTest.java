@@ -192,14 +192,14 @@ public class RepositoryRegistryTest
     @Test
     public void putManagedRepository( ) throws Exception
     {
-        BasicManagedRepository managedRepository = new BasicManagedRepository( "test001", "Test repo" );
+        BasicManagedRepository managedRepository = new BasicManagedRepository( "test001", "Test repo", archivaConfiguration.getRepositoryBaseDir() );
         managedRepository.setDescription( managedRepository.getPrimaryLocale(), "This is just a test" );
         repositoryRegistry.putRepository(managedRepository);
 
         assertNotNull(managedRepository.getContent());
         assertEquals(6, repositoryRegistry.getRepositories().size());
 
-        managedRepository = new BasicManagedRepository( "central", "Test repo" );
+        managedRepository = new BasicManagedRepository( "central", "Test repo", archivaConfiguration.getRepositoryBaseDir() );
         managedRepository.setDescription( managedRepository.getPrimaryLocale(), "This is just a test" );
         ManagedRepository updatedRepo = null;
         try {
@@ -208,7 +208,7 @@ public class RepositoryRegistryTest
         } catch (RepositoryException e) {
             // OK
         }
-        managedRepository = new BasicManagedRepository( "internal", "Test repo" );
+        managedRepository = new BasicManagedRepository( "internal", "Test repo", archivaConfiguration.getRepositoryBaseDir() );
         managedRepository.setDescription( managedRepository.getPrimaryLocale(), "This is just a test" );
         updatedRepo = repositoryRegistry.putRepository( managedRepository );
 
@@ -283,7 +283,7 @@ public class RepositoryRegistryTest
     @Test
     public void putRemoteRepository( ) throws Exception
     {
-        BasicRemoteRepository remoteRepository = new BasicRemoteRepository( "test001", "Test repo" );
+        BasicRemoteRepository remoteRepository = new BasicRemoteRepository( "test001", "Test repo", archivaConfiguration.getRemoteRepositoryBaseDir() );
         remoteRepository.setDescription( remoteRepository.getPrimaryLocale(), "This is just a test" );
         RemoteRepository newRepo = repositoryRegistry.putRepository(remoteRepository);
 
@@ -291,7 +291,7 @@ public class RepositoryRegistryTest
         assertNotNull(remoteRepository.getContent());
         assertEquals(6, repositoryRegistry.getRepositories().size());
 
-        remoteRepository = new BasicRemoteRepository( "internal", "Test repo" );
+        remoteRepository = new BasicRemoteRepository( "internal", "Test repo", archivaConfiguration.getRemoteRepositoryBaseDir() );
         remoteRepository.setDescription( remoteRepository.getPrimaryLocale(), "This is just a test" );
         RemoteRepository updatedRepo = null;
         try
@@ -302,7 +302,7 @@ public class RepositoryRegistryTest
             // OK
         }
 
-        remoteRepository = new BasicRemoteRepository( "central", "Test repo" );
+        remoteRepository = new BasicRemoteRepository( "central", "Test repo", archivaConfiguration.getRemoteRepositoryBaseDir() );
         remoteRepository.setDescription( remoteRepository.getPrimaryLocale(), "This is just a test" );
         updatedRepo = repositoryRegistry.putRepository( remoteRepository );
 

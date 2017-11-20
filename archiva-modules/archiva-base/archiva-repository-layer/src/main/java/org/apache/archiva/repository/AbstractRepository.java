@@ -23,10 +23,14 @@ import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.features.RepositoryFeature;
+import org.apache.commons.lang.StringUtils;
 
 import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -59,17 +63,21 @@ public abstract class AbstractRepository implements EditableRepository
 
     Map<Class<? extends RepositoryFeature<?>>, RepositoryFeature<?>> featureMap = new HashMap<>(  );
 
-    public AbstractRepository(RepositoryType type, String id, String name) {
+    protected Path repositoryBase;
+
+    public AbstractRepository(RepositoryType type, String id, String name, Path repositoryBase) {
         this.id = id;
         this.names.put( primaryLocale, name);
         this.type = type;
+        this.repositoryBase=repositoryBase;
     }
 
-    public AbstractRepository(Locale primaryLocale, RepositoryType type, String id, String name) {
+    public AbstractRepository(Locale primaryLocale, RepositoryType type, String id, String name, Path repositoryBase) {
         setPrimaryLocale( primaryLocale );
         this.id = id;
         this.names.put( primaryLocale, name);
         this.type = type;
+        this.repositoryBase=repositoryBase;
     }
 
     protected void setPrimaryLocale(Locale locale) {
@@ -118,8 +126,19 @@ public abstract class AbstractRepository implements EditableRepository
         return location;
     }
 
-    public URI getAbsoluteLocation() {
-        return baseUri.resolve( location );
+    @Override
+    public Path getLocalPath() {
+        Path localPath;
+        if (getLocation().getScheme()=="file" || StringUtils.isEmpty(getLocation().getScheme())) {
+            localPath = PathUtil.getPathFromUri(getLocation());
+            if (localPath.isAbsolute()) {
+                return localPath;
+            } else {
+                return repositoryBase.resolve(localPath);
+            }
+        } else {
+            return repositoryBase.resolve(getId());
+        }
     }
 
     @Override

@@ -97,7 +97,7 @@ public class DuplicateArtifactsConsumerTest
 
         assertNotNull( consumer );
 
-        config = new BasicManagedRepository(TEST_REPO, TEST_REPO);
+        config = new BasicManagedRepository(TEST_REPO, TEST_REPO, Paths.get("target"));
         config.setLocation( Paths.get( "target/test-repository" ).toAbsolutePath().toUri() );
 
         metadataRepository = mock( MetadataRepository.class );

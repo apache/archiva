@@ -40,6 +40,7 @@ import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Period;
 import java.util.HashSet;
@@ -69,19 +70,19 @@ public class RepositoryProviderMock implements RepositoryProvider
     @Override
     public EditableManagedRepository createManagedInstance( String id, String name )
     {
-        return new BasicManagedRepository( id, name );
+        return new BasicManagedRepository( id, name, Paths.get("target/repositories") );
     }
 
     @Override
     public EditableRemoteRepository createRemoteInstance( String id, String name )
     {
-        return new BasicRemoteRepository( id, name );
+        return new BasicRemoteRepository( id, name, Paths.get("target/remotes") );
     }
 
     @Override
     public ManagedRepository createManagedInstance( ManagedRepositoryConfiguration configuration ) throws RepositoryException
     {
-        BasicManagedRepository managedRepository = new BasicManagedRepository( configuration.getId( ), configuration.getName( ) );
+        BasicManagedRepository managedRepository = new BasicManagedRepository( configuration.getId( ), configuration.getName( ), Paths.get("target/repositories") );
         updateManagedInstance( managedRepository, configuration );
         return managedRepository;
     }
@@ -128,7 +129,7 @@ public class RepositoryProviderMock implements RepositoryProvider
     public ManagedRepository createStagingInstance( ManagedRepositoryConfiguration configuration ) throws RepositoryException
     {
         String id = configuration.getId( ) + StagingRepositoryFeature.STAGING_REPO_POSTFIX;
-        BasicManagedRepository managedRepository = new BasicManagedRepository( id, configuration.getName( ) );
+        BasicManagedRepository managedRepository = new BasicManagedRepository( id, configuration.getName( ), Paths.get("target/repositories") );
         updateManagedInstance( managedRepository, configuration );
         return managedRepository;
     }
@@ -136,7 +137,7 @@ public class RepositoryProviderMock implements RepositoryProvider
     @Override
     public RemoteRepository createRemoteInstance( RemoteRepositoryConfiguration configuration ) throws RepositoryException
     {
-        BasicRemoteRepository remoteRepository = new BasicRemoteRepository( configuration.getId( ), configuration.getName( ) );
+        BasicRemoteRepository remoteRepository = new BasicRemoteRepository( configuration.getId( ), configuration.getName( ), Paths.get("target/remotes") );
         updateRemoteInstance( remoteRepository, configuration );
         return remoteRepository;
     }

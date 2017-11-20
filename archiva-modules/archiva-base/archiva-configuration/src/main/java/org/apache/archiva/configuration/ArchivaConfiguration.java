@@ -103,6 +103,12 @@ public interface ArchivaConfiguration
     public Path getRepositoryBaseDir();
 
     /**
+     * Returns the base directory for remote repositories
+     * @return
+     */
+    public Path getRemoteRepositoryBaseDir();
+
+    /**
      * Returns the data directory where repositories and metadata reside
      * @return
      */

@@ -25,6 +25,7 @@ import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
+import org.apache.commons.lang.StringUtils;
 import org.easymock.IMocksControl;
 import org.springframework.stereotype.Service;
 
@@ -144,6 +145,26 @@ public class MockConfiguration
             return Paths.get(System.getProperty("appserver.base"));
         } else {
             return Paths.get("");
+        }
+    }
+
+
+    @Override
+    public Path getRepositoryBaseDir() {
+        return getDataDirectory().resolve("repositories");
+    }
+
+    @Override
+    public Path getRemoteRepositoryBaseDir() {
+        return getDataDirectory().resolve("remotes");
+    }
+
+    @Override
+    public Path getDataDirectory() {
+        if (configuration!=null && StringUtils.isNotEmpty(configuration.getArchivaRuntimeConfiguration().getDataDirectory())) {
+            return Paths.get(configuration.getArchivaRuntimeConfiguration().getDataDirectory());
+        } else {
+            return getAppServerBaseDir().resolve("data");
         }
     }
 }

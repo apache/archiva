@@ -84,7 +84,7 @@ public class SimpleArtifactConsumerTest
         Files.createDirectories( repoDir );
         repoDir.toFile().deleteOnExit();
 
-        testRepository = new BasicManagedRepository("test-consumer-repository","Test-Consumer-Repository" );
+        testRepository = new BasicManagedRepository("test-consumer-repository","Test-Consumer-Repository", Paths.get("target/repositories") );
         testRepository.setLocation( repoDir.toAbsolutePath().toUri() );
 
         repositoryRegistry.putRepository(testRepository);

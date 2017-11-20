@@ -23,6 +23,7 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.features.RepositoryFeature;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -86,14 +87,22 @@ public interface Repository {
      */
     URI getLocation();
 
+
     /**
-     * This returns the absolute location uri of this repository. Some repository locations may be relative to
-     * the base repository directory or uri. This returns the absolute path of the repository.
-     * If the location is absolute already this method returns the same URI as getLocation().
+     * Returns the local path that this repository uses, if it stores data locally. You should keep in
+     * mind, that repository implementations may not store any data in this directory. E.g. if the
+     * repository data is handled by a database. So the content of this directory is very implementation
+     * specific. Users of this directory must know about the repository file layout if they use this
+     * path.
      *
-     * @return the absolute uri of the location.
+     * Repository implementations should always return a valid path, even if there is no locally stored data.
+     *
+     * Some extensions may use the path to store their own repository specific data, e.g. statistics, metadata,...
+     *
+     * @return the filesystem path to the repository.
      */
-    URI getAbsoluteLocation();
+    Path getLocalPath();
+
 
     /**
      * A repository may allow additional locations that can be used, if the primary location is not available.

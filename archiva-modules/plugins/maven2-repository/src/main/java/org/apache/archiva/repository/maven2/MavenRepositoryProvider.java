@@ -62,63 +62,58 @@ import java.util.Set;
  * Provider for the maven2 repository implementations
  */
 @Service("mavenRepositoryProvider")
-public class MavenRepositoryProvider implements RepositoryProvider
-{
+public class MavenRepositoryProvider implements RepositoryProvider {
 
 
     @Inject
     private ArchivaConfiguration archivaConfiguration;
 
-    private static final Logger log = LoggerFactory.getLogger( MavenRepositoryProvider.class );
+    private static final Logger log = LoggerFactory.getLogger(MavenRepositoryProvider.class);
 
-    static final Set<RepositoryType> TYPES = new HashSet<>(  );
+    static final Set<RepositoryType> TYPES = new HashSet<>();
+
     static {
-        TYPES.add( RepositoryType.MAVEN);
+        TYPES.add(RepositoryType.MAVEN);
     }
 
     @Override
-    public Set<RepositoryType> provides( )
-    {
+    public Set<RepositoryType> provides() {
         return TYPES;
     }
 
     @Override
     public EditableManagedRepository createManagedInstance(String id, String name) {
-        return new MavenManagedRepository(id, name);
+        return new MavenManagedRepository(id, name, archivaConfiguration.getRepositoryBaseDir());
     }
 
     @Override
     public EditableRemoteRepository createRemoteInstance(String id, String name) {
-        return new MavenRemoteRepository(id, name);
+        return new MavenRemoteRepository(id, name, archivaConfiguration.getRemoteRepositoryBaseDir());
     }
 
-    private URI getURIFromString( String uriStr) throws RepositoryException {
+    private URI getURIFromString(String uriStr) throws RepositoryException {
         URI uri;
         try {
-            if (StringUtils.isEmpty( uriStr )) {
+            if (StringUtils.isEmpty(uriStr)) {
                 return new URI("");
             }
             if (uriStr.startsWith("/")) {
                 // only absolute paths are prepended with file scheme
-                uri = new URI("file://"+uriStr);
-            } else
-            {
-                uri = new URI( uriStr );
+                uri = new URI("file://" + uriStr);
+            } else {
+                uri = new URI(uriStr);
             }
-            if (uri.getScheme()!=null && !"file".equals(uri.getScheme())) {
+            if (uri.getScheme() != null && !"file".equals(uri.getScheme())) {
                 log.error("Bad URI scheme found: {}, URI={}", uri.getScheme(), uri);
-                throw new RepositoryException("The uri "+uriStr+" is not valid. Only file:// URI is allowed for maven.");
+                throw new RepositoryException("The uri " + uriStr + " is not valid. Only file:// URI is allowed for maven.");
             }
         } catch (URISyntaxException e) {
-            String newCfg = "file://"+uriStr;
-            try
-            {
+            String newCfg = "file://" + uriStr;
+            try {
                 uri = new URI(newCfg);
-            }
-            catch ( URISyntaxException e1 )
-            {
+            } catch (URISyntaxException e1) {
                 log.error("Could not create URI from {} -> ", uriStr, newCfg);
-                throw new RepositoryException( "The config entry "+uriStr+" cannot be converted to URI." );
+                throw new RepositoryException("The config entry " + uriStr + " cannot be converted to URI.");
             }
         }
         log.debug("Setting location uri: {}", uri);
@@ -126,56 +121,48 @@ public class MavenRepositoryProvider implements RepositoryProvider
     }
 
     @Override
-    public ManagedRepository createManagedInstance( ManagedRepositoryConfiguration cfg ) throws RepositoryException
-    {
-        MavenManagedRepository repo = new MavenManagedRepository(cfg.getId() ,cfg.getName());
-        updateManagedInstance( repo, cfg );
+    public ManagedRepository createManagedInstance(ManagedRepositoryConfiguration cfg) throws RepositoryException {
+        MavenManagedRepository repo = new MavenManagedRepository(cfg.getId(), cfg.getName(), archivaConfiguration.getRepositoryBaseDir());
+        updateManagedInstance(repo, cfg);
         return repo;
     }
 
     @Override
-    public void updateManagedInstance( EditableManagedRepository repo , ManagedRepositoryConfiguration cfg ) throws RepositoryException
-    {
-        try
-        {
-            repo.setLocation( getURIFromString( cfg.getLocation() ) );
+    public void updateManagedInstance(EditableManagedRepository repo, ManagedRepositoryConfiguration cfg) throws RepositoryException {
+        try {
+            repo.setLocation(getURIFromString(cfg.getLocation()));
+        } catch (UnsupportedURIException e) {
+            throw new RepositoryException("The location entry is not a valid uri: " + cfg.getLocation());
         }
-        catch ( UnsupportedURIException e )
-        {
-            throw new RepositoryException( "The location entry is not a valid uri: "+cfg.getLocation() );
-        }
-        setBaseConfig( repo, cfg );
-        Path repoDir = PathUtil.getPathFromUri(repo.getAbsoluteLocation());
+        setBaseConfig(repo, cfg);
+        Path repoDir = repo.getLocalPath();
         if (!Files.exists(repoDir)) {
             log.debug("Creating repo directory {}", repoDir);
-            try
-            {
-                Files.createDirectories( repoDir );
-            }
-            catch ( IOException e )
-            {
-                log.error("Could not create directory {} for repository {}", repo.getAbsoluteLocation(), repo.getId(), e);
-                throw new RepositoryException( "Could not create directory for repository "+repo.getAbsoluteLocation() );
+            try {
+                Files.createDirectories(repoDir);
+            } catch (IOException e) {
+                log.error("Could not create directory {} for repository {}", repo.getLocalPath(), repo.getId(), e);
+                throw new RepositoryException("Could not create directory for repository " + repo.getLocalPath());
             }
         }
         repo.setSchedulingDefinition(cfg.getRefreshCronExpression());
-        repo.setBlocksRedeployment( cfg.isBlockRedeployments() );
-        repo.setScanned( cfg.isScanned() );
+        repo.setBlocksRedeployment(cfg.isBlockRedeployments());
+        repo.setScanned(cfg.isScanned());
         if (cfg.isReleases()) {
-            repo.addActiveReleaseScheme( ReleaseScheme.RELEASE);
+            repo.addActiveReleaseScheme(ReleaseScheme.RELEASE);
         }
         if (cfg.isSnapshots()) {
             repo.addActiveReleaseScheme(ReleaseScheme.SNAPSHOT);
         }
 
-        StagingRepositoryFeature stagingRepositoryFeature = repo.getFeature( StagingRepositoryFeature.class ).get();
-        stagingRepositoryFeature.setStageRepoNeeded( cfg.isStageRepoNeeded() );
+        StagingRepositoryFeature stagingRepositoryFeature = repo.getFeature(StagingRepositoryFeature.class).get();
+        stagingRepositoryFeature.setStageRepoNeeded(cfg.isStageRepoNeeded());
 
-        IndexCreationFeature indexCreationFeature = repo.getFeature( IndexCreationFeature.class ).get( );
-        indexCreationFeature.setSkipPackedIndexCreation( cfg.isSkipPackedIndexCreation() );
-        indexCreationFeature.setIndexPath( getURIFromString( cfg.getIndexDir() ) );
+        IndexCreationFeature indexCreationFeature = repo.getFeature(IndexCreationFeature.class).get();
+        indexCreationFeature.setSkipPackedIndexCreation(cfg.isSkipPackedIndexCreation());
+        indexCreationFeature.setIndexPath(getURIFromString(cfg.getIndexDir()));
         Path indexPath;
-        if (indexCreationFeature.getIndexPath().getScheme()==null) {
+        if (indexCreationFeature.getIndexPath().getScheme() == null) {
             indexPath = Paths.get(indexCreationFeature.getIndexPath().getPath());
         } else {
             indexPath = Paths.get(indexCreationFeature.getIndexPath());
@@ -184,44 +171,39 @@ public class MavenRepositoryProvider implements RepositoryProvider
         if (indexPath.isAbsolute()) {
             absoluteIndexPath = indexPath;
         } else {
-            absoluteIndexPath = PathUtil.getPathFromUri( repo.getLocation()).resolve(indexCreationFeature.getIndexPath().getPath());
+            absoluteIndexPath = PathUtil.getPathFromUri(repo.getLocation()).resolve(indexCreationFeature.getIndexPath().getPath());
         }
-        try
-        {
-            Files.createDirectories( absoluteIndexPath );
-        }
-        catch ( IOException e )
-        {
+        try {
+            Files.createDirectories(absoluteIndexPath);
+        } catch (IOException e) {
             log.error("Could not create index directory {}", absoluteIndexPath);
-            throw new RepositoryException( "Could not create index directory "+absoluteIndexPath );
+            throw new RepositoryException("Could not create index directory " + absoluteIndexPath);
         }
 
-        ArtifactCleanupFeature artifactCleanupFeature = repo.getFeature( ArtifactCleanupFeature.class ).get();
+        ArtifactCleanupFeature artifactCleanupFeature = repo.getFeature(ArtifactCleanupFeature.class).get();
 
-        artifactCleanupFeature.setDeleteReleasedSnapshots( cfg.isDeleteReleasedSnapshots() );
-        artifactCleanupFeature.setRetentionCount( cfg.getRetentionCount() );
-        artifactCleanupFeature.setRetentionPeriod( Period.ofDays( cfg.getRetentionPeriod() ) );
+        artifactCleanupFeature.setDeleteReleasedSnapshots(cfg.isDeleteReleasedSnapshots());
+        artifactCleanupFeature.setRetentionCount(cfg.getRetentionCount());
+        artifactCleanupFeature.setRetentionPeriod(Period.ofDays(cfg.getRetentionPeriod()));
     }
 
 
     @Override
-    public ManagedRepository createStagingInstance( ManagedRepositoryConfiguration baseConfiguration ) throws RepositoryException
-    {
+    public ManagedRepository createStagingInstance(ManagedRepositoryConfiguration baseConfiguration) throws RepositoryException {
         log.debug("Creating staging instance for {}", baseConfiguration.getId());
-        return createManagedInstance( getStageRepoConfig( baseConfiguration ) );
+        return createManagedInstance(getStageRepoConfig(baseConfiguration));
     }
 
 
     @Override
-    public RemoteRepository createRemoteInstance( RemoteRepositoryConfiguration cfg ) throws RepositoryException
-    {
-        MavenRemoteRepository repo = new MavenRemoteRepository( cfg.getId( ), cfg.getName( ) );
-        updateRemoteInstance( repo, cfg );
+    public RemoteRepository createRemoteInstance(RemoteRepositoryConfiguration cfg) throws RepositoryException {
+        MavenRemoteRepository repo = new MavenRemoteRepository(cfg.getId(), cfg.getName(), archivaConfiguration.getRemoteRepositoryBaseDir());
+        updateRemoteInstance(repo, cfg);
         return repo;
     }
 
     private String convertUriToPath(URI uri) {
-        if (uri.getScheme()==null) {
+        if (uri.getScheme() == null) {
             return uri.getPath();
         } else if ("file".equals(uri.getScheme())) {
             return Paths.get(uri).toString();
@@ -231,96 +213,83 @@ public class MavenRepositoryProvider implements RepositoryProvider
     }
 
     @Override
-    public void updateRemoteInstance( EditableRemoteRepository repo, RemoteRepositoryConfiguration cfg ) throws RepositoryException
-    {
-        setBaseConfig( repo, cfg );
-        repo.setCheckPath( cfg.getCheckPath() );
-        repo.setSchedulingDefinition( cfg.getRefreshCronExpression() );
-        try
-        {
+    public void updateRemoteInstance(EditableRemoteRepository repo, RemoteRepositoryConfiguration cfg) throws RepositoryException {
+        setBaseConfig(repo, cfg);
+        repo.setCheckPath(cfg.getCheckPath());
+        repo.setSchedulingDefinition(cfg.getRefreshCronExpression());
+        try {
             repo.setLocation(new URI(cfg.getUrl()));
+        } catch (UnsupportedURIException | URISyntaxException e) {
+            log.error("Could not set remote url " + cfg.getUrl());
+            throw new RepositoryException("The url config is not a valid uri: " + cfg.getUrl());
         }
-        catch ( UnsupportedURIException | URISyntaxException e )
-        {
-            log.error("Could not set remote url "+cfg.getUrl());
-            throw new RepositoryException( "The url config is not a valid uri: "+cfg.getUrl() );
-        }
-        repo.setTimeout( Duration.ofSeconds( cfg.getTimeout() ) );
-        RemoteIndexFeature remoteIndexFeature = repo.getFeature( RemoteIndexFeature.class ).get();
-        remoteIndexFeature.setDownloadRemoteIndex( cfg.isDownloadRemoteIndex() );
-        remoteIndexFeature.setDownloadRemoteIndexOnStartup( cfg.isDownloadRemoteIndexOnStartup() );
-        remoteIndexFeature.setDownloadTimeout( Duration.ofSeconds( cfg.getRemoteDownloadTimeout()) );
-        remoteIndexFeature.setProxyId( cfg.getRemoteDownloadNetworkProxyId() );
-        if (cfg.isDownloadRemoteIndex())
-        {
-            try
-            {
-                remoteIndexFeature.setIndexUri( new URI( cfg.getRemoteIndexUrl( ) ) );
-            }
-            catch ( URISyntaxException e )
-            {
-                log.error( "Could not set remote index url " + cfg.getRemoteIndexUrl( ) );
-                remoteIndexFeature.setDownloadRemoteIndex( false );
-                remoteIndexFeature.setDownloadRemoteIndexOnStartup( false );
+        repo.setTimeout(Duration.ofSeconds(cfg.getTimeout()));
+        RemoteIndexFeature remoteIndexFeature = repo.getFeature(RemoteIndexFeature.class).get();
+        remoteIndexFeature.setDownloadRemoteIndex(cfg.isDownloadRemoteIndex());
+        remoteIndexFeature.setDownloadRemoteIndexOnStartup(cfg.isDownloadRemoteIndexOnStartup());
+        remoteIndexFeature.setDownloadTimeout(Duration.ofSeconds(cfg.getRemoteDownloadTimeout()));
+        remoteIndexFeature.setProxyId(cfg.getRemoteDownloadNetworkProxyId());
+        if (cfg.isDownloadRemoteIndex()) {
+            try {
+                remoteIndexFeature.setIndexUri(new URI(cfg.getRemoteIndexUrl()));
+            } catch (URISyntaxException e) {
+                log.error("Could not set remote index url " + cfg.getRemoteIndexUrl());
+                remoteIndexFeature.setDownloadRemoteIndex(false);
+                remoteIndexFeature.setDownloadRemoteIndexOnStartup(false);
             }
         }
-        repo.setExtraHeaders( cfg.getExtraHeaders() );
-        repo.setExtraParameters( cfg.getExtraParameters() );
+        repo.setExtraHeaders(cfg.getExtraHeaders());
+        repo.setExtraParameters(cfg.getExtraParameters());
         PasswordCredentials credentials = new PasswordCredentials("", new char[0]);
-        if (cfg.getPassword()!=null && cfg.getUsername()!=null)
-        {
-            credentials.setPassword( cfg.getPassword( ).toCharArray( ) );
-            credentials.setUsername( cfg.getUsername() );
-            repo.setCredentials( credentials );
+        if (cfg.getPassword() != null && cfg.getUsername() != null) {
+            credentials.setPassword(cfg.getPassword().toCharArray());
+            credentials.setUsername(cfg.getUsername());
+            repo.setCredentials(credentials);
         } else {
-            credentials.setPassword( new char[0] );
+            credentials.setPassword(new char[0]);
         }
-        if (cfg.getIndexDir()!=null) {
-            IndexCreationFeature indexCreationFeature = repo.getFeature( IndexCreationFeature.class ).get();
-            indexCreationFeature.setIndexPath( getURIFromString( cfg.getIndexDir() ) );
+        if (cfg.getIndexDir() != null) {
+            IndexCreationFeature indexCreationFeature = repo.getFeature(IndexCreationFeature.class).get();
+            indexCreationFeature.setIndexPath(getURIFromString(cfg.getIndexDir()));
         }
     }
 
     @Override
-    public RemoteRepositoryConfiguration getRemoteConfiguration( RemoteRepository remoteRepository ) throws RepositoryException
-    {
+    public RemoteRepositoryConfiguration getRemoteConfiguration(RemoteRepository remoteRepository) throws RepositoryException {
         if (!(remoteRepository instanceof MavenRemoteRepository)) {
-            log.error("Wrong remote repository type "+remoteRepository.getClass().getName());
-            throw new RepositoryException( "The given repository type cannot be handled by the maven provider: "+remoteRepository.getClass().getName() );
+            log.error("Wrong remote repository type " + remoteRepository.getClass().getName());
+            throw new RepositoryException("The given repository type cannot be handled by the maven provider: " + remoteRepository.getClass().getName());
         }
         RemoteRepositoryConfiguration cfg = new RemoteRepositoryConfiguration();
-        cfg.setType( remoteRepository.getType().toString() );
-        cfg.setId( remoteRepository.getId() );
-        cfg.setName( remoteRepository.getName() );
-        cfg.setDescription( remoteRepository.getDescription() );
+        cfg.setType(remoteRepository.getType().toString());
+        cfg.setId(remoteRepository.getId());
+        cfg.setName(remoteRepository.getName());
+        cfg.setDescription(remoteRepository.getDescription());
         cfg.setUrl(remoteRepository.getLocation().toString());
-        cfg.setTimeout( (int)remoteRepository.getTimeout().toMillis()/1000 );
-        cfg.setCheckPath( remoteRepository.getCheckPath() );
-        RepositoryCredentials creds = remoteRepository.getLoginCredentials( );
-        if (creds!=null)
-        {
+        cfg.setTimeout((int) remoteRepository.getTimeout().toMillis() / 1000);
+        cfg.setCheckPath(remoteRepository.getCheckPath());
+        RepositoryCredentials creds = remoteRepository.getLoginCredentials();
+        if (creds != null) {
             if (creds instanceof PasswordCredentials) {
                 PasswordCredentials pCreds = (PasswordCredentials) creds;
-                cfg.setPassword( new String(pCreds.getPassword()) );
-                cfg.setUsername( pCreds.getUsername() );
+                cfg.setPassword(new String(pCreds.getPassword()));
+                cfg.setUsername(pCreds.getUsername());
             }
         }
-        cfg.setLayout( remoteRepository.getLayout() );
-        cfg.setExtraParameters( remoteRepository.getExtraParameters() );
-        cfg.setExtraHeaders( remoteRepository.getExtraHeaders() );
-        cfg.setRefreshCronExpression( remoteRepository.getSchedulingDefinition() );
+        cfg.setLayout(remoteRepository.getLayout());
+        cfg.setExtraParameters(remoteRepository.getExtraParameters());
+        cfg.setExtraHeaders(remoteRepository.getExtraHeaders());
+        cfg.setRefreshCronExpression(remoteRepository.getSchedulingDefinition());
 
-        IndexCreationFeature indexCreationFeature = remoteRepository.getFeature( IndexCreationFeature.class ).get();
-        cfg.setIndexDir( convertUriToPath( indexCreationFeature.getIndexPath()));
+        IndexCreationFeature indexCreationFeature = remoteRepository.getFeature(IndexCreationFeature.class).get();
+        cfg.setIndexDir(convertUriToPath(indexCreationFeature.getIndexPath()));
 
-        RemoteIndexFeature remoteIndexFeature = remoteRepository.getFeature( RemoteIndexFeature.class ).get();
-        cfg.setRemoteIndexUrl( remoteIndexFeature.getIndexUri().toString() );
-        cfg.setRemoteDownloadTimeout( (int)remoteIndexFeature.getDownloadTimeout().get( ChronoUnit.SECONDS ) );
-        cfg.setDownloadRemoteIndexOnStartup( remoteIndexFeature.isDownloadRemoteIndexOnStartup() );
-        cfg.setDownloadRemoteIndex( remoteIndexFeature.isDownloadRemoteIndex() );
-        cfg.setRemoteDownloadNetworkProxyId( remoteIndexFeature.getProxyId() );
-
-
+        RemoteIndexFeature remoteIndexFeature = remoteRepository.getFeature(RemoteIndexFeature.class).get();
+        cfg.setRemoteIndexUrl(remoteIndexFeature.getIndexUri().toString());
+        cfg.setRemoteDownloadTimeout((int) remoteIndexFeature.getDownloadTimeout().get(ChronoUnit.SECONDS));
+        cfg.setDownloadRemoteIndexOnStartup(remoteIndexFeature.isDownloadRemoteIndexOnStartup());
+        cfg.setDownloadRemoteIndex(remoteIndexFeature.isDownloadRemoteIndex());
+        cfg.setRemoteDownloadNetworkProxyId(remoteIndexFeature.getProxyId());
 
 
         return cfg;
@@ -328,125 +297,104 @@ public class MavenRepositoryProvider implements RepositoryProvider
     }
 
     @Override
-    public ManagedRepositoryConfiguration getManagedConfiguration( ManagedRepository managedRepository ) throws RepositoryException
-    {
+    public ManagedRepositoryConfiguration getManagedConfiguration(ManagedRepository managedRepository) throws RepositoryException {
         if (!(managedRepository instanceof MavenManagedRepository)) {
-            log.error("Wrong remote repository type "+managedRepository.getClass().getName());
-            throw new RepositoryException( "The given repository type cannot be handled by the maven provider: "+managedRepository.getClass().getName() );
+            log.error("Wrong remote repository type " + managedRepository.getClass().getName());
+            throw new RepositoryException("The given repository type cannot be handled by the maven provider: " + managedRepository.getClass().getName());
         }
         ManagedRepositoryConfiguration cfg = new ManagedRepositoryConfiguration();
-        cfg.setType( managedRepository.getType().toString() );
-        cfg.setId( managedRepository.getId() );
-        cfg.setName( managedRepository.getName() );
-        cfg.setDescription( managedRepository.getDescription() );
-        cfg.setLocation( convertUriToPath( managedRepository.getLocation() ) );
-        cfg.setLayout( managedRepository.getLayout() );
-        cfg.setRefreshCronExpression( managedRepository.getSchedulingDefinition() );
-        cfg.setScanned( managedRepository.isScanned() );
-        cfg.setBlockRedeployments( managedRepository.blocksRedeployments() );
-        StagingRepositoryFeature stagingRepositoryFeature = managedRepository.getFeature( StagingRepositoryFeature.class ).get();
+        cfg.setType(managedRepository.getType().toString());
+        cfg.setId(managedRepository.getId());
+        cfg.setName(managedRepository.getName());
+        cfg.setDescription(managedRepository.getDescription());
+        cfg.setLocation(convertUriToPath(managedRepository.getLocation()));
+        cfg.setLayout(managedRepository.getLayout());
+        cfg.setRefreshCronExpression(managedRepository.getSchedulingDefinition());
+        cfg.setScanned(managedRepository.isScanned());
+        cfg.setBlockRedeployments(managedRepository.blocksRedeployments());
+        StagingRepositoryFeature stagingRepositoryFeature = managedRepository.getFeature(StagingRepositoryFeature.class).get();
         cfg.setStageRepoNeeded(stagingRepositoryFeature.isStageRepoNeeded());
-        IndexCreationFeature indexCreationFeature = managedRepository.getFeature( IndexCreationFeature.class ).get();
-        cfg.setIndexDir(convertUriToPath( indexCreationFeature.getIndexPath() ));
-        cfg.setSkipPackedIndexCreation( indexCreationFeature.isSkipPackedIndexCreation() );
+        IndexCreationFeature indexCreationFeature = managedRepository.getFeature(IndexCreationFeature.class).get();
+        cfg.setIndexDir(convertUriToPath(indexCreationFeature.getIndexPath()));
+        cfg.setSkipPackedIndexCreation(indexCreationFeature.isSkipPackedIndexCreation());
 
-        ArtifactCleanupFeature artifactCleanupFeature = managedRepository.getFeature( ArtifactCleanupFeature.class ).get();
-        cfg.setRetentionCount( artifactCleanupFeature.getRetentionCount());
-        cfg.setRetentionPeriod( artifactCleanupFeature.getRetentionPeriod().getDays() );
+        ArtifactCleanupFeature artifactCleanupFeature = managedRepository.getFeature(ArtifactCleanupFeature.class).get();
+        cfg.setRetentionCount(artifactCleanupFeature.getRetentionCount());
+        cfg.setRetentionPeriod(artifactCleanupFeature.getRetentionPeriod().getDays());
         cfg.setDeleteReleasedSnapshots(artifactCleanupFeature.isDeleteReleasedSnapshots());
 
-        if (managedRepository.getActiveReleaseSchemes().contains( ReleaseScheme.RELEASE )) {
-            cfg.setReleases( true );
+        if (managedRepository.getActiveReleaseSchemes().contains(ReleaseScheme.RELEASE)) {
+            cfg.setReleases(true);
         } else {
-            cfg.setReleases( false );
+            cfg.setReleases(false);
         }
-        if (managedRepository.getActiveReleaseSchemes().contains( ReleaseScheme.SNAPSHOT )) {
-            cfg.setSnapshots( true );
+        if (managedRepository.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT)) {
+            cfg.setSnapshots(true);
         } else {
-            cfg.setSnapshots( false );
+            cfg.setSnapshots(false);
         }
         return cfg;
 
     }
 
-    private ManagedRepositoryConfiguration getStageRepoConfig( ManagedRepositoryConfiguration repository )
-    {
+    private ManagedRepositoryConfiguration getStageRepoConfig(ManagedRepositoryConfiguration repository) {
         ManagedRepositoryConfiguration stagingRepository = new ManagedRepositoryConfiguration();
-        stagingRepository.setId( repository.getId() + StagingRepositoryFeature.STAGING_REPO_POSTFIX );
-        stagingRepository.setLayout( repository.getLayout() );
-        stagingRepository.setName( repository.getName() + StagingRepositoryFeature.STAGING_REPO_POSTFIX );
-        stagingRepository.setBlockRedeployments( repository.isBlockRedeployments() );
-        stagingRepository.setRetentionPeriod( repository.getRetentionPeriod() );
-        stagingRepository.setDeleteReleasedSnapshots( repository.isDeleteReleasedSnapshots() );
-        stagingRepository.setStageRepoNeeded( false );
+        stagingRepository.setId(repository.getId() + StagingRepositoryFeature.STAGING_REPO_POSTFIX);
+        stagingRepository.setLayout(repository.getLayout());
+        stagingRepository.setName(repository.getName() + StagingRepositoryFeature.STAGING_REPO_POSTFIX);
+        stagingRepository.setBlockRedeployments(repository.isBlockRedeployments());
+        stagingRepository.setRetentionPeriod(repository.getRetentionPeriod());
+        stagingRepository.setDeleteReleasedSnapshots(repository.isDeleteReleasedSnapshots());
+        stagingRepository.setStageRepoNeeded(false);
 
         String path = repository.getLocation();
-        int lastIndex = path.replace( '\\', '/' ).lastIndexOf( '/' );
-        stagingRepository.setLocation( path.substring( 0, lastIndex ) + "/" + stagingRepository.getId() );
+        int lastIndex = path.replace('\\', '/').lastIndexOf('/');
+        stagingRepository.setLocation(path.substring(0, lastIndex) + "/" + stagingRepository.getId());
 
-        if ( StringUtils.isNotBlank( repository.getIndexDir() ) )
-        {
+        if (StringUtils.isNotBlank(repository.getIndexDir())) {
             Path indexDir = null;
-            try
-            {
-                indexDir = Paths.get( new URI(repository.getIndexDir().startsWith( "file://" ) ? repository.getIndexDir() : "file://"+repository.getIndexDir()) );
-                if ( indexDir.isAbsolute() )
-                {
-                    Path newDir = Paths.get(new URI(stagingRepository.getLocation().startsWith( "file://" ) ? stagingRepository.getLocation() : "file://"+stagingRepository.getLocation())).resolve(".index");
+            try {
+                indexDir = Paths.get(new URI(repository.getIndexDir().startsWith("file://") ? repository.getIndexDir() : "file://" + repository.getIndexDir()));
+                if (indexDir.isAbsolute()) {
+                    Path newDir = Paths.get(new URI(stagingRepository.getLocation().startsWith("file://") ? stagingRepository.getLocation() : "file://" + stagingRepository.getLocation())).resolve(".index");
                     log.debug("Changing index directory {} -> {}", indexDir, newDir);
-                    stagingRepository.setIndexDir( newDir.toString() );
-                }
-                else
-                {
+                    stagingRepository.setIndexDir(newDir.toString());
+                } else {
                     log.debug("Keeping index directory {}", repository.getIndexDir());
-                    stagingRepository.setIndexDir( repository.getIndexDir() );
+                    stagingRepository.setIndexDir(repository.getIndexDir());
                 }
-            }
-            catch ( URISyntaxException e )
-            {
+            } catch (URISyntaxException e) {
                 log.error("Could not parse index path as uri {}", repository.getIndexDir());
-                stagingRepository.setIndexDir( "" );
+                stagingRepository.setIndexDir("");
             }
             // in case of absolute dir do not use the same
         }
-        stagingRepository.setRefreshCronExpression( repository.getRefreshCronExpression() );
-        stagingRepository.setReleases( repository.isReleases() );
-        stagingRepository.setRetentionCount( repository.getRetentionCount() );
-        stagingRepository.setScanned( repository.isScanned() );
-        stagingRepository.setSnapshots( repository.isSnapshots() );
-        stagingRepository.setSkipPackedIndexCreation( repository.isSkipPackedIndexCreation() );
+        stagingRepository.setRefreshCronExpression(repository.getRefreshCronExpression());
+        stagingRepository.setReleases(repository.isReleases());
+        stagingRepository.setRetentionCount(repository.getRetentionCount());
+        stagingRepository.setScanned(repository.isScanned());
+        stagingRepository.setSnapshots(repository.isSnapshots());
+        stagingRepository.setSkipPackedIndexCreation(repository.isSkipPackedIndexCreation());
         // do not duplicate description
         //stagingRepository.getDescription("")
         return stagingRepository;
     }
 
-    private void setBaseConfig( EditableRepository repo, AbstractRepositoryConfiguration cfg) throws RepositoryException {
-        String baseUriStr = archivaConfiguration.getConfiguration().getArchivaRuntimeConfiguration().getRepositoryBaseDirectory();
-        if (baseUriStr==null) {
-            baseUriStr = Paths.get(System.getProperty( "appserver.base" )).resolve("repositories").normalize().toString();
-        }
-        try
-        {
-            URI baseUri = new URI(baseUriStr);
-            repo.setBaseUri( baseUri );
-        }
-        catch ( URISyntaxException e )
-        {
-            log.error("Could not set base URI {}: {}", baseUriStr, e.getMessage(), e);
-            throw new RepositoryException( "Could not set base URI "+ baseUriStr);
-        }
-        repo.setName( repo.getPrimaryLocale(), cfg.getName() );
-        repo.setDescription( repo.getPrimaryLocale(), cfg.getDescription() );
-        repo.setLayout( cfg.getLayout() );
+    private void setBaseConfig(EditableRepository repo, AbstractRepositoryConfiguration cfg) throws RepositoryException {
+
+        URI baseUri = archivaConfiguration.getRepositoryBaseDir().toUri();
+        repo.setBaseUri(baseUri);
+
+        repo.setName(repo.getPrimaryLocale(), cfg.getName());
+        repo.setDescription(repo.getPrimaryLocale(), cfg.getDescription());
+        repo.setLayout(cfg.getLayout());
     }
 
-    public ArchivaConfiguration getArchivaConfiguration( )
-    {
+    public ArchivaConfiguration getArchivaConfiguration() {
         return archivaConfiguration;
     }
 
-    public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
-    {
+    public void setArchivaConfiguration(ArchivaConfiguration archivaConfiguration) {
         this.archivaConfiguration = archivaConfiguration;
     }
 }

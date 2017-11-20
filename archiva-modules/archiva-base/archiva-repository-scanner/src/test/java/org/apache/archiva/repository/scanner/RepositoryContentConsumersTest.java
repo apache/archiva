@@ -76,14 +76,14 @@ public class RepositoryContentConsumersTest
 
     protected ManagedRepository createRepository( String id, String name, Path location )
     {
-        BasicManagedRepository repo = new BasicManagedRepository( id, name  );
+        BasicManagedRepository repo = new BasicManagedRepository( id, name , location.getParent() );
         repo.setLocation( location.toAbsolutePath().toUri() );
         return repo;
     }
 
     protected RemoteRepository createRemoteRepository( String id, String name, String url ) throws URISyntaxException
     {
-        BasicRemoteRepository repo = new BasicRemoteRepository(id, name);
+        BasicRemoteRepository repo = new BasicRemoteRepository(id, name, Paths.get("remotes"));
         repo.setLocation( new URI( url ) );
         return repo;
     }

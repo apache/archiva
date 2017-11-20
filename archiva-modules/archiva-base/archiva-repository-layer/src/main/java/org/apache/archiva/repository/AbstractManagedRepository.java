@@ -20,6 +20,7 @@ package org.apache.archiva.repository;
  */
 
 
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
@@ -35,14 +36,14 @@ public abstract class AbstractManagedRepository extends AbstractRepository imple
     private Set<ReleaseScheme> activeReleaseSchemes = new HashSet<>(  );
     private Set<ReleaseScheme> uActiveReleaseSchemes = Collections.unmodifiableSet( activeReleaseSchemes );
 
-    public AbstractManagedRepository( RepositoryType type, String id, String name )
+    public AbstractManagedRepository( RepositoryType type, String id, String name, Path basePath )
     {
-        super( type, id, name );
+        super( type, id, name, basePath );
     }
 
-    public AbstractManagedRepository( Locale primaryLocale, RepositoryType type, String id, String name )
+    public AbstractManagedRepository( Locale primaryLocale, RepositoryType type, String id, String name, Path basePath )
     {
-        super( primaryLocale, type, id, name );
+        super( primaryLocale, type, id, name, basePath );
     }
 
     @Override

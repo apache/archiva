@@ -70,14 +70,14 @@ public class MavenManagedRepository extends AbstractManagedRepository
         false
     );
 
-    public MavenManagedRepository( String id, String name )
+    public MavenManagedRepository( String id, String name, Path basePath )
     {
-        super( RepositoryType.MAVEN, id, name );
+        super( RepositoryType.MAVEN, id, name, basePath);
     }
 
-    public MavenManagedRepository( Locale primaryLocale, String id, String name )
+    public MavenManagedRepository( Locale primaryLocale, String id, String name, Path basePath )
     {
-        super( primaryLocale, RepositoryType.MAVEN, id, name );
+        super( primaryLocale, RepositoryType.MAVEN, id, name, basePath );
     }
 
     @Override

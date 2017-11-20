@@ -354,7 +354,7 @@ public abstract class AbstractProxyTestCase
     protected ManagedRepositoryContent createRepository( String id, String name, String path, String layout )
         throws Exception
     {
-        MavenManagedRepository repo = new MavenManagedRepository(id, name);
+        MavenManagedRepository repo = new MavenManagedRepository(id, name, Paths.get(path).getParent());
         repo.setLocation( new URI(path) );
         repo.setLayout( layout );
 

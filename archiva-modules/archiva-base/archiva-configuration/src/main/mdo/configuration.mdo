@@ -1547,6 +1547,13 @@
           <required>false</required>
         </field>
         <field>
+          <name>remoteRepositoryBaseDirectory</name>
+          <version>3.0.0+</version>
+          <description>The base directory for local storage of remote repository data. If not set, it's ${dataDirectory}/remotes.</description>
+          <type>String</type>
+          <required>false</required>
+        </field>
+        <field>
           <name>defaultLanguage</name>
           <type>String</type>
           <version>3.0.0+</version>

@@ -23,6 +23,7 @@ import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 
+import java.nio.file.Path;
 import java.util.Locale;
 
 /**
@@ -46,15 +47,15 @@ public class BasicManagedRepository extends AbstractManagedRepository
         StagingRepositoryFeature.class.toString()
     }, true, true, true, true, true  );
 
-    public BasicManagedRepository( String id, String name )
+    public BasicManagedRepository( String id, String name, Path basePath )
     {
-        super( RepositoryType.MAVEN, id, name );
+        super( RepositoryType.MAVEN, id, name, basePath );
         initFeatures();
     }
 
-    public BasicManagedRepository( Locale primaryLocale, RepositoryType type, String id, String name )
+    public BasicManagedRepository( Locale primaryLocale, RepositoryType type, String id, String name, Path basePath )
     {
-        super( primaryLocale, type, id, name );
+        super( primaryLocale, type, id, name, basePath );
         initFeatures();
     }
 

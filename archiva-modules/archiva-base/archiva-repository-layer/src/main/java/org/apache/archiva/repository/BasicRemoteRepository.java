@@ -21,6 +21,7 @@ package org.apache.archiva.repository;
 
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 
+import java.nio.file.Path;
 import java.util.Locale;
 
 /**
@@ -41,15 +42,15 @@ public class BasicRemoteRepository extends AbstractRemoteRepository
         RemoteIndexFeature.class.toString()
     }, true, true, true, true, true  );
 
-    public BasicRemoteRepository( String id, String name )
+    public BasicRemoteRepository( String id, String name, Path basePath )
     {
-        super( RepositoryType.MAVEN, id, name );
+        super( RepositoryType.MAVEN, id, name, basePath);
         initFeatures();
     }
 
-    public BasicRemoteRepository( Locale primaryLocale, RepositoryType type, String id, String name )
+    public BasicRemoteRepository( Locale primaryLocale, RepositoryType type, String id, String name, Path basePath )
     {
-        super( primaryLocale, type, id, name );
+        super( primaryLocale, type, id, name, basePath );
         initFeatures();
     }
 

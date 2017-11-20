@@ -77,8 +77,7 @@ public class DavResourceTest
 
     private LockManager lockManager;
 
-    private MavenManagedRepository repository = new MavenManagedRepository( "repo001", "repo001");
-    
+    private MavenManagedRepository repository;
     @Override
     @Before
     public void setUp()
@@ -88,6 +87,8 @@ public class DavResourceTest
         session = new ArchivaDavSession();
         baseDir = Paths.get( "target/DavResourceTest" );
         Files.createDirectories( baseDir );
+        repository = new MavenManagedRepository( "repo001", "repo001", baseDir);
+
         myResource = baseDir.resolve( "myresource.jar" );
         Files.createFile(myResource);
         resourceFactory = new RootContextDavResourceFactory();
