@@ -24,7 +24,9 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.features.IndexCreationFeature;
+import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
+import org.apache.archiva.repository.maven2.MavenRemoteRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.QueryCreator;
@@ -59,6 +61,7 @@ public class MavenIndexManagerTest {
     private Path indexPath;
     private MavenManagedRepository repository;
     private ArchivaIndexingContext ctx;
+    private MavenRemoteRepository repositoryRemote;
 
     @Inject
     MavenIndexManager mavenIndexManager;
@@ -84,6 +87,19 @@ public class MavenIndexManagerTest {
 
     @Test
     public void pack() throws Exception {
+        createTestContext();
+        Path destDir = repository.getLocalPath().resolve("org/apache/archiva/archiva-webapp/1.0");
+        Path srcDir = Paths.get("src/test/maven-search-test-repo/org/apache/archiva/archiva-webapp/1.0");
+        org.apache.commons.io.FileUtils.copyDirectory(srcDir.toFile(),destDir.toFile());
+        mavenIndexManager.scan(ctx);
+        mavenIndexManager.pack(ctx);
+        assertTrue(Files.list(indexPath).filter(path -> {
+            try {
+                return path.getFileName().toString().endsWith(".gz") && Files.size(path) > 0;
+            } catch (IOException e) {
+                return false;
+            }
+        }).findAny().isPresent());
     }
 
     @Test
@@ -101,8 +117,16 @@ public class MavenIndexManagerTest {
         assertEquals(4, mvnCtx.acquireIndexSearcher().count(q));
     }
 
+    /*
+     * Does only a index update via file uri, no HTTP uri
+     */
     @Test
     public void update() throws Exception {
+        createTestContext();
+        mavenIndexManager.pack(ctx);
+        ctx.close(false);
+        createTestContextForRemote();
+        mavenIndexManager.update(ctx, true);
     }
 
     @Test
@@ -159,6 +183,17 @@ public class MavenIndexManagerTest {
         IndexCreationFeature icf = repository.getFeature(IndexCreationFeature.class).get();
         icf.setIndexPath(new URI(".index-test"));
         ctx = mavenIndexManager.createContext(repository);
+        return ctx;
+    }
+
+    private ArchivaIndexingContext createTestContextForRemote() throws URISyntaxException, IndexCreationFailedException, IOException {
+        indexPath = Paths.get("target/repositories/test-repo/.index-test");
+        Path repoPath = Paths.get("target/repositories").toAbsolutePath();
+        repositoryRemote = new MavenRemoteRepository("test-repo", "Test Repo", repoPath);
+        repositoryRemote.setLocation(repoPath.resolve("test-repo").toUri());
+        RemoteIndexFeature icf = repositoryRemote.getFeature(RemoteIndexFeature.class).get();
+        icf.setIndexUri(new URI(".index-test"));
+        ctx = mavenIndexManager.createContext(repositoryRemote);
         return ctx;
     }
 

@@ -40,7 +40,7 @@ public class GenericIndexManager implements ArchivaIndexManager {
     }
 
     @Override
-    public void update(ArchivaIndexingContext context, URI remoteUpdateUri, boolean fullUpdate) {
+    public void update(ArchivaIndexingContext context, boolean fullUpdate) {
 
     }
 

@@ -84,6 +84,13 @@ public interface ArchivaIndexingContext {
     void close(boolean deleteFiles) throws IOException;
 
     /**
+     * Closes the context without deleting the files.
+     * Is identical to <code>close(false)</code>
+     * @throws IOException
+     */
+    void close() throws IOException;
+
+    /**
      * Removes all entries from the index. After this method finished,
      * isEmpty() should return true.
      * @throws IOException

@@ -30,6 +30,9 @@
   <context:annotation-config/>
   <context:component-scan base-package="org.apache.archiva.indexer.maven" />
 
+
+  <bean name="wagon#file" scope="prototype" class="org.apache.maven.wagon.providers.file.FileWagon"/>
+
   <bean name="scheduler" class="org.apache.archiva.redback.components.scheduler.DefaultScheduler">
     <property name="properties">
       <props>

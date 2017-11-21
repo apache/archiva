@@ -85,6 +85,11 @@ public class MavenIndexContext implements ArchivaIndexingContext {
     }
 
     @Override
+    public void close() throws IOException {
+        delegate.close(false);
+    }
+
+    @Override
     public void purge() throws IOException {
         delegate.purge();
     }

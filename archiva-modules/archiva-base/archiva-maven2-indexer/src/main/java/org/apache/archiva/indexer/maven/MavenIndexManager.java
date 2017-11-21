@@ -242,13 +242,16 @@ public class MavenIndexManager implements ArchivaIndexManager
     }
 
     @Override
-    public void update( final ArchivaIndexingContext context, final URI remoteUpdateUri, final boolean fullUpdate ) throws IndexUpdateFailedException
+    public void update(final ArchivaIndexingContext context, final boolean fullUpdate) throws IndexUpdateFailedException
     {
         log.info( "start download remote index for remote repository {}", context.getRepository( ).getId( ) );
-
-        if ( !( context.getRepository( ) instanceof RemoteRepository ) )
+        URI remoteUpdateUri;
+        if ( !( context.getRepository( ) instanceof RemoteRepository ) || !(context.getRepository().supportsFeature(RemoteIndexFeature.class)) )
         {
-            throw new IndexUpdateFailedException( "The context is not associated to a remote repository " + context.getId( ) );
+            throw new IndexUpdateFailedException( "The context is not associated to a remote repository with remote index " + context.getId( ) );
+        } else {
+            RemoteIndexFeature rif = context.getRepository().getFeature(RemoteIndexFeature.class).get();
+            remoteUpdateUri = context.getRepository().getLocation().resolve(rif.getIndexUri());
         }
         final RemoteRepository remoteRepository = (RemoteRepository) context.getRepository( );
 

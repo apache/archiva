@@ -43,10 +43,9 @@ public interface ArchivaIndexManager {
     /**
      * Updates the index from the remote url.
      * @param context
-     * @param remoteUpdateUri
      * @param fullUpdate
      */
-    void update(ArchivaIndexingContext context, URI remoteUpdateUri, boolean fullUpdate) throws IndexUpdateFailedException;
+    void update(ArchivaIndexingContext context, boolean fullUpdate) throws IndexUpdateFailedException;
 
     /**
      * Adds a list of artifacts to the index.
