@@ -300,7 +300,7 @@ function(jquery,i18n,jqueryTmpl,bootstrap,jqueryValidate,ko) {
       rules: {
         retentionTime : {
           digits: true,
-          min: 1
+          min: 0
         },
         retentionCount : {
           digits: true,
