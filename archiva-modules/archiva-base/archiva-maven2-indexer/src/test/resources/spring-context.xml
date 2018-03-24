@@ -28,7 +28,7 @@
        default-lazy-init="false">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.indexer.maven" />
+  <context:component-scan base-package="org.apache.archiva.indexer.maven,org.apache.archiva.repository,org.apache.archiva.repository.content.maven2" />
 
 
   <bean name="wagon#file" scope="prototype" class="org.apache.maven.wagon.providers.file.FileWagon"/>

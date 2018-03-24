@@ -21,18 +21,7 @@ package org.apache.archiva.repository.mock;
 
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.repository.BasicManagedRepository;
-import org.apache.archiva.repository.BasicRemoteRepository;
-import org.apache.archiva.repository.EditableManagedRepository;
-import org.apache.archiva.repository.EditableRemoteRepository;
-import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.PasswordCredentials;
-import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.RemoteRepository;
-import org.apache.archiva.repository.RepositoryCredentials;
-import org.apache.archiva.repository.RepositoryException;
-import org.apache.archiva.repository.RepositoryProvider;
-import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
@@ -165,6 +154,8 @@ public class RepositoryProviderMock implements RepositoryProvider
             rif.setIndexUri( new URI( configuration.getIndexDir( ) ) );
             rif.setDownloadTimeout( Duration.ofSeconds( configuration.getRemoteDownloadTimeout( ) ) );
             rif.setProxyId( configuration.getRemoteDownloadNetworkProxyId( ) );
+            IndexCreationFeature icf = remoteRepository.getFeature(IndexCreationFeature.class).get();
+            icf.setIndexPath(new URI(".index" ));
         }
         catch ( Exception e )
         {
@@ -229,4 +220,8 @@ public class RepositoryProviderMock implements RepositoryProvider
         return configuration;
     }
 
+    @Override
+    public <T> void raise(RepositoryEvent<T> event) {
+
+    }
 }

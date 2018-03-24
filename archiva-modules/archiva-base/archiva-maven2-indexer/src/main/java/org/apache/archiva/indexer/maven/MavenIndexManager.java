@@ -22,6 +22,7 @@ package org.apache.archiva.indexer.maven;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.indexer.ArchivaIndexManager;
@@ -32,12 +33,7 @@ import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
-import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.PasswordCredentials;
-import org.apache.archiva.repository.RemoteRepository;
-import org.apache.archiva.repository.Repository;
-import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.repository.UnsupportedRepositoryTypeException;
+import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang.StringUtils;
@@ -425,7 +421,7 @@ public class MavenIndexManager implements ArchivaIndexManager
     @Override
     public ArchivaIndexingContext createContext( Repository repository ) throws IndexCreationFailedException
     {
-
+        log.debug("Creating context for repo {}, type: {}", repository.getId(), repository.getType());
         if ( repository.getType( ) != RepositoryType.MAVEN )
         {
             throw new UnsupportedRepositoryTypeException( repository.getType( ) );
@@ -449,44 +445,120 @@ public class MavenIndexManager implements ArchivaIndexManager
                 + ( StringUtils.isNotEmpty( e.getMessage( ) ) ? ": " + e.getMessage( ) : "" ), e );
         }
         MavenIndexContext context = new MavenIndexContext( repository, mvnCtx );
+
         return context;
     }
 
-    private IndexingContext createRemoteContext( RemoteRepository remoteRepository ) throws IOException
+    @Override
+    public ArchivaIndexingContext reset(ArchivaIndexingContext context) throws IndexUpdateFailedException {
+        ArchivaIndexingContext ctx;
+        executeUpdateFunction(context, indexingContext -> {
+            try {
+                indexingContext.close(true);
+            } catch (IOException e) {
+                log.warn("Index close failed");
+            }
+            try {
+                FileUtils.deleteDirectory(Paths.get(context.getPath()));
+            } catch (IOException e) {
+                throw new IndexUpdateFailedException("Could not delete index files");
+            }
+        });
+        try {
+            Repository repo = context.getRepository();
+            ctx = createContext(context.getRepository());
+            if (repo instanceof EditableRepository) {
+                ((EditableRepository)repo).setIndexingContext(ctx);
+            }
+        } catch (IndexCreationFailedException e) {
+            throw new IndexUpdateFailedException("Could not create index");
+        }
+        return ctx;
+    }
+
+    @Override
+    public ArchivaIndexingContext move(ArchivaIndexingContext context, Repository repo) throws IndexCreationFailedException {
+        if (context==null) {
+            return null;
+        }
+        if (context.supports(IndexingContext.class)) {
+            try {
+                Path newPath = getIndexPath(repo);
+                IndexingContext ctx = context.getBaseContext(IndexingContext.class);
+                Path oldPath = ctx.getIndexDirectoryFile().toPath();
+                if (oldPath.equals(newPath)) {
+                    // Nothing to do, if path does not change
+                    return context;
+                }
+                if (!Files.exists(oldPath)) {
+                    return createContext(repo);
+                } else if (context.isEmpty()) {
+                    context.close();
+                    return createContext(repo);
+                } else {
+                    context.close(false);
+                    Files.move(oldPath, newPath);
+                    return createContext(repo);
+                }
+            } catch (IOException e) {
+                log.error("IOException while moving index directory {}", e.getMessage(), e);
+                throw new IndexCreationFailedException("Could not recreated the index.", e);
+            } catch (UnsupportedBaseContextException e) {
+                throw new IndexCreationFailedException("The given context, is not a maven context.");
+            }
+        } else {
+            throw new IndexCreationFailedException("Bad context type. This is not a maven context.");
+        }
+    }
+
+    private Path getIndexPath(Repository repo) throws IOException {
+        IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+        Path repoDir = repo.getLocalPath();
+        URI indexDir = icf.getIndexPath();
+        Path indexDirectory = null;
+        if ( ! StringUtils.isEmpty(indexDir.toString( ) ) )
+        {
+
+            indexDirectory = PathUtil.getPathFromUri( indexDir );
+            // not absolute so create it in repository directory
+            if ( !indexDirectory.isAbsolute( ) )
+            {
+                indexDirectory = repoDir.resolve( indexDirectory );
+            }
+        }
+        else
+        {
+            indexDirectory = repoDir.resolve( ".index" );
+        }
+
+        if ( !Files.exists( indexDirectory ) )
+        {
+            Files.createDirectories( indexDirectory );
+        }
+        return indexDirectory;
+    }
+
+    private IndexingContext createRemoteContext(RemoteRepository remoteRepository ) throws IOException
     {
         Path appServerBase = archivaConfiguration.getAppServerBaseDir( );
 
         String contextKey = "remote-" + remoteRepository.getId( );
 
+
         // create remote repository path
-        Path repoDir = appServerBase.resolve( "data" ).resolve( "remotes" ).resolve( remoteRepository.getId( ) );
+        Path repoDir = remoteRepository.getLocalPath();
         if ( !Files.exists( repoDir ) )
         {
             Files.createDirectories( repoDir );
         }
 
-        Path indexDirectory;
+        Path indexDirectory = null;
 
         // is there configured indexDirectory ?
         if ( remoteRepository.supportsFeature( RemoteIndexFeature.class ) )
         {
             RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class ).get( );
-            indexDirectory = PathUtil.getPathFromUri( rif.getIndexUri( ) );
-            if ( !indexDirectory.isAbsolute( ) )
-            {
-                indexDirectory = repoDir.resolve( indexDirectory );
-            }
-
-            // if not configured use a default value
-            if ( indexDirectory == null )
-            {
-                indexDirectory = repoDir.resolve( ".index" );
-            }
-            if ( !Files.exists( indexDirectory ) )
-            {
-                Files.createDirectories( indexDirectory );
-            }
-
+            indexDirectory = getIndexPath(remoteRepository);
             String remoteIndexUrl = calculateIndexRemoteUrl( remoteRepository.getLocation( ), rif );
             try
             {
@@ -538,35 +610,11 @@ public class MavenIndexManager implements ArchivaIndexManager
             }
         }
 
+        Path indexDirectory = null;
 
         if ( repository.supportsFeature( IndexCreationFeature.class ) )
         {
-            IndexCreationFeature icf = repository.getFeature( IndexCreationFeature.class ).get( );
-            URI indexDir = icf.getIndexPath( );
-            //File managedRepository = new File( repository.getLocation() );
-
-            Path indexDirectory = null;
-            if ( indexDir != null && !"".equals( indexDir.toString( ) ) )
-            {
-
-                indexDirectory = PathUtil.getPathFromUri( indexDir );
-                // not absolute so create it in repository directory
-                if ( !indexDirectory.isAbsolute( ) )
-                {
-                    indexDirectory = repositoryDirectory.resolve( indexDirectory );
-                }
-                icf.setIndexPath( indexDirectory.normalize( ).toUri( ) );
-            }
-            else
-            {
-                indexDirectory = repositoryDirectory.resolve( ".indexer" );
-                icf.setIndexPath( indexDirectory.toUri( ) );
-            }
-
-            if ( !Files.exists( indexDirectory ) )
-            {
-                Files.createDirectories( indexDirectory );
-            }
+            indexDirectory = getIndexPath(repository);
 
             String indexUrl = repositoryDirectory.toUri( ).toURL( ).toExternalForm( );
             try

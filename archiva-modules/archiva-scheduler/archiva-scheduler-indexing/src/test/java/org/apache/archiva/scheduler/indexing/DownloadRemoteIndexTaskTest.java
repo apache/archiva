@@ -21,11 +21,10 @@ package org.apache.archiva.scheduler.indexing;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.common.utils.FileUtils;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.MAVEN;
-import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.*;
+import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.StringSearchExpression;
 import org.apache.maven.index_shaded.lucene.search.BooleanClause;
 import org.apache.maven.index_shaded.lucene.search.BooleanQuery;
@@ -77,12 +76,27 @@ public class DownloadRemoteIndexTaskTest
     DefaultDownloadRemoteIndexScheduler downloadRemoteIndexScheduler;
 
     @Inject
+    Indexer indexer;
+
+    @Inject
+    RepositoryRegistry repositoryRegistry;
+
+    @Inject
     NexusIndexer nexusIndexer;
 
     @Before
     public void initialize()
         throws Exception
     {
+        Path cfgFile = Paths.get("target/appserver-base/conf/archiva.xml");
+        if (Files.exists(cfgFile)) {
+            Files.delete(cfgFile);
+        }
+        try {
+            remoteRepositoryAdmin.deleteRemoteRepository("test-repo-re", null);
+        } catch (Exception e) {
+            // Ignore
+        }
         server = new Server( );
         serverConnector = new ServerConnector( server, new HttpConnectionFactory());
         server.addConnector( serverConnector );
@@ -108,7 +122,13 @@ public class DownloadRemoteIndexTaskTest
     public void tearDown()
         throws Exception
     {
-        server.stop();
+        if (server!=null) {
+            server.stop();
+        }
+        Path cfgFile = Paths.get("target/appserver-base/conf/archiva.xml");
+        if (Files.exists(cfgFile)) {
+            Files.delete(cfgFile);
+        }
     }
 
     @Test
@@ -121,23 +141,24 @@ public class DownloadRemoteIndexTaskTest
 
         downloadRemoteIndexScheduler.startup();
 
-        downloadRemoteIndexScheduler.scheduleDownloadRemote( "test-repo", true, true );
+        downloadRemoteIndexScheduler.scheduleDownloadRemote( "test-repo-re", true, true );
 
         ( (ThreadPoolTaskScheduler) downloadRemoteIndexScheduler.getTaskScheduler() ).getScheduledExecutor().awaitTermination(
             10, TimeUnit.SECONDS );
 
-        remoteRepositoryAdmin.deleteRemoteRepository( "test-repo", null );
+        remoteRepositoryAdmin.deleteRemoteRepository( "test-repo-re", null );
 
         // search
         BooleanQuery iQuery = new BooleanQuery();
-        iQuery.add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "commons-logging" ) ),
+        iQuery.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "commons-logging" ) ),
                     BooleanClause.Occur.SHOULD );
 
+        remoteRepositoryAdmin.addRemoteRepository(remoteRepository,  null);
         FlatSearchRequest rq = new FlatSearchRequest( iQuery );
         rq.setContexts(
-            Arrays.asList( nexusIndexer.getIndexingContexts().get( "remote-" + getRemoteRepository().getId() ) ) );
+            Arrays.asList( repositoryRegistry.getRemoteRepository(remoteRepository.getId()).getIndexingContext().getBaseContext(IndexingContext.class) ) );
 
-        FlatSearchResponse response = nexusIndexer.searchFlat( rq );
+        FlatSearchResponse response = indexer.searchFlat(rq);
 
         log.info( "returned hit count:{}", response.getReturnedHitsCount() );
         assertThat( response.getReturnedHitsCount() ).isEqualTo( 8 );
@@ -155,9 +176,10 @@ public class DownloadRemoteIndexTaskTest
         remoteRepository.setName( "foo" );
         remoteRepository.setIndexDirectory( indexDirectory.toAbsolutePath().toString() );
         remoteRepository.setDownloadRemoteIndex( true );
-        remoteRepository.setId( "test-repo" );
+        remoteRepository.setId( "test-repo-re" );
         remoteRepository.setUrl( "http://localhost:" + port );
         remoteRepository.setRemoteIndexUrl( "http://localhost:" + port + "/index-updates/" );
+
         return remoteRepository;
     }
 

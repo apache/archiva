@@ -20,10 +20,8 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
-import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
@@ -45,9 +43,10 @@ import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.PathParser;
-import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.features.RepositoryFeature;
+import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -99,10 +98,7 @@ public class Maven2RepositoryStorage
     private ModelBuilder builder;
 
     @Inject
-    private RemoteRepositoryAdmin remoteRepositoryAdmin;
-
-    @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
+    RepositoryRegistry repositoryRegistry;
 
     @Inject
     private ProxyConnectorAdmin proxyConnectorAdmin;
@@ -155,8 +151,9 @@ public class Maven2RepositoryStorage
     {
         try
         {
-            ManagedRepository managedRepository =
-                managedRepositoryAdmin.getManagedRepository( readMetadataRequest.getRepositoryId() );
+            ManagedRepository managedRepository = repositoryRegistry.getManagedRepository(readMetadataRequest.getRepositoryId());
+            boolean isReleases = managedRepository.getActiveReleaseSchemes().contains(ReleaseScheme.RELEASE);
+            boolean isSnapshots = managedRepository.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT);
             String artifactVersion = readMetadataRequest.getProjectVersion();
             // olamy: in case of browsing via the ui we can mix repos (parent of a SNAPSHOT can come from release repo)
             if ( !readMetadataRequest.isBrowsingRequest() )
@@ -164,7 +161,7 @@ public class Maven2RepositoryStorage
                 if ( VersionUtil.isSnapshot( artifactVersion ) )
                 {
                     // skygo trying to improve speed by honoring managed configuration MRM-1658
-                    if ( managedRepository.isReleases() && !managedRepository.isSnapshots() )
+                    if ( isReleases && !isSnapshots )
                     {
                         throw new RepositoryStorageRuntimeException( "lookforsnaponreleaseonly",
                                                                      "managed repo is configured for release only" );
@@ -172,7 +169,7 @@ public class Maven2RepositoryStorage
                 }
                 else
                 {
-                    if ( !managedRepository.isReleases() && managedRepository.isSnapshots() )
+                    if ( !isReleases && isSnapshots)
                     {
                         throw new RepositoryStorageRuntimeException( "lookforsreleaseonsneponly",
                                                                      "managed repo is configured for snapshot only" );
@@ -231,7 +228,7 @@ public class Maven2RepositoryStorage
                 for ( ProxyConnector proxyConnector : proxyConnectors )
                 {
                     RemoteRepository remoteRepoConfig =
-                        remoteRepositoryAdmin.getRemoteRepository( proxyConnector.getTargetRepoId() );
+                        repositoryRegistry.getRemoteRepository( proxyConnector.getTargetRepoId() );
 
                     if ( remoteRepoConfig != null )
                     {
@@ -253,7 +250,7 @@ public class Maven2RepositoryStorage
             // can have released parent pom
             if ( readMetadataRequest.isBrowsingRequest() )
             {
-                remoteRepositories.addAll( remoteRepositoryAdmin.getRemoteRepositories() );
+                remoteRepositories.addAll( repositoryRegistry.getRemoteRepositories() );
             }
 
             ModelBuildingRequest req =
@@ -516,16 +513,9 @@ public class Maven2RepositoryStorage
     private Path getRepositoryBasedir( String repoId )
         throws RepositoryStorageRuntimeException
     {
-        try
-        {
-            ManagedRepository repositoryConfiguration = managedRepositoryAdmin.getManagedRepository( repoId );
+        ManagedRepository repositoryConfiguration = repositoryRegistry.getManagedRepository( repoId );
 
-            return Paths.get( repositoryConfiguration.getLocation() );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new RepositoryStorageRuntimeException( "repo-admin", e.getMessage(), e );
-        }
+        return Paths.get( repositoryConfiguration.getLocation() );
     }
 
     @Override

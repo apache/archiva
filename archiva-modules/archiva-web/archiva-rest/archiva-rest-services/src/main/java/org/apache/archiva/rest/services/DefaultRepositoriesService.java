@@ -200,10 +200,9 @@ public class DefaultRepositoriesService
 
             org.apache.archiva.repository.ManagedRepository repository = repositoryRegistry.getManagedRepository( repositoryId );
 
-            IndexingContext context = managedRepositoryAdmin.createIndexContext( repository );
 
             ArtifactIndexingTask task =
-                new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, context );
+                new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, repository.getIndexingContext() );
 
             task.setExecuteOnEntireRepo( true );
             task.setOnlyUpdate( !fullScan );

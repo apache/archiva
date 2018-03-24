@@ -31,6 +31,7 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataI
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.Wagon;
@@ -62,6 +63,9 @@ public class Maven2RepositoryMetadataResolverTest
     @Inject
     @Named ( "repositoryStorage#maven2" )
     private Maven2RepositoryStorage storage;
+
+    @Inject
+    RepositoryRegistry repositoryRegistry;
 
     private static final String TEST_REPO_ID = "test";
 
@@ -101,6 +105,8 @@ public class Maven2RepositoryMetadataResolverTest
         super.setUp();
 
         c = new Configuration();
+
+        c.setVersion("2.0");
         testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
         testRepo.setLocation( Paths.get( "target/test-repository" ).toAbsolutePath().toString() );
@@ -122,7 +128,12 @@ public class Maven2RepositoryMetadataResolverTest
         proxyConnector.setDisabled( false );
         c.addProxyConnector( proxyConnector );
 
+        RepositoryScanningConfiguration scCfg = new RepositoryScanningConfiguration();
+        c.setRepositoryScanning(scCfg);
+
         configuration.save( c );
+        assertFalse(configuration.isDefaulted());
+        repositoryRegistry.reload();
 
         assertTrue( c.getManagedRepositories().get( 0 ).isSnapshots() );
         assertTrue( c.getManagedRepositories().get( 0 ).isReleases() );
@@ -553,7 +564,7 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetRootNamespaces()
         throws Exception
     {
-        assertEquals( Arrays.asList( "com", "org" ), storage.listRootNamespaces( TEST_REPO_ID, ALL ) );
+        assertEquals( Arrays.asList( "com", "org", "remotes"), storage.listRootNamespaces( TEST_REPO_ID, ALL ) );
     }
 
     @Test

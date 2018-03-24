@@ -28,7 +28,7 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd"
        default-lazy-init="true">
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.consumers.lucene.test"/>
+  <context:component-scan base-package="org.apache.archiva.consumers.lucene.test,org.apache.maven.index"/>
 
   <bean name="commons-configuration" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
     <property name="properties">

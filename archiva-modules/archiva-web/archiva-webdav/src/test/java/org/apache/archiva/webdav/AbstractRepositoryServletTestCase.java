@@ -142,8 +142,6 @@ public abstract class AbstractRepositoryServletTestCase
             createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal, true ) );
         repositoryRegistry.reload();
 
-        managedRepositoryAdmin.createIndexContext( managedRepositoryAdmin.getManagedRepository( REPOID_INTERNAL ) );
-
         config.getProxyConnectors().clear();
 
         config.getRemoteRepositories().clear();

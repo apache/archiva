@@ -107,7 +107,7 @@ public class TestConfiguration
 
     @Override
     public Path getRepositoryBaseDir() {
-        return getDataDirectory().resolve("repositories");
+        return getDataDirectory().resolve("");
     }
 
     @Override
@@ -117,10 +117,11 @@ public class TestConfiguration
 
     @Override
     public Path getDataDirectory() {
-        if (configuration!=null && StringUtils.isNotEmpty(configuration.getArchivaRuntimeConfiguration().getDataDirectory())) {
+        if (configuration!=null && configuration.getArchivaRuntimeConfiguration()!=null &&
+                StringUtils.isNotEmpty(configuration.getArchivaRuntimeConfiguration().getDataDirectory())) {
             return Paths.get(configuration.getArchivaRuntimeConfiguration().getDataDirectory());
         } else {
-            return getAppServerBaseDir().resolve("data");
+            return getAppServerBaseDir().resolve("");
         }
     }
 }

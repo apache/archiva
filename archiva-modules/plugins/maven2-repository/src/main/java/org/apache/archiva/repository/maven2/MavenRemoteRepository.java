@@ -1,5 +1,6 @@
 package org.apache.archiva.repository.maven2;
 
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.AbstractRemoteRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RemoteRepository;
@@ -10,7 +11,10 @@ import org.apache.archiva.repository.UnsupportedFeatureException;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.features.RepositoryFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Locale;
 
@@ -39,8 +43,11 @@ import java.util.Locale;
 public class MavenRemoteRepository extends AbstractRemoteRepository
     implements RemoteRepository
 {
+
+    Logger log = LoggerFactory.getLogger(MavenRemoteRepository.class);
+
     final private RemoteIndexFeature remoteIndexFeature = new RemoteIndexFeature();
-    final private IndexCreationFeature indexCreationFeature = new IndexCreationFeature(  );
+    final private IndexCreationFeature indexCreationFeature;
 
     private static final RepositoryCapabilities CAPABILITIES = new StandardCapabilities(
         new ReleaseScheme[] { ReleaseScheme.RELEASE, ReleaseScheme.SNAPSHOT },
@@ -57,11 +64,14 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
     public MavenRemoteRepository( String id, String name, Path basePath )
     {
         super( RepositoryType.MAVEN, id, name, basePath );
+        this.indexCreationFeature = new IndexCreationFeature(id, this);
+
     }
 
     public MavenRemoteRepository( Locale primaryLocale, String id, String name, Path basePath )
     {
         super( primaryLocale, RepositoryType.MAVEN, id, name, basePath );
+        this.indexCreationFeature = new IndexCreationFeature(id, this);
     }
 
     @Override
@@ -97,4 +107,6 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
             return false;
         }
     }
+
+
 }

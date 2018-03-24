@@ -30,6 +30,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.functors.ProxyConnectorSelectionPredicate;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -53,10 +54,7 @@ public class DefaultProxyConnectorAdmin
 {
 
     @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
-
-    @Inject
-    private RemoteRepositoryAdmin remoteRepositoryAdmin;
+    RepositoryRegistry repositoryRegistry;
 
     @Override
     public List<ProxyConnector> getProxyConnectors()
@@ -230,13 +228,13 @@ public class DefaultProxyConnectorAdmin
         throws RepositoryAdminException
     {
         // validate source a Managed target a Remote
-        if ( managedRepositoryAdmin.getManagedRepository( proxyConnector.getSourceRepoId() ) == null )
+        if ( repositoryRegistry.getManagedRepository( proxyConnector.getSourceRepoId() ) == null )
         {
             throw new RepositoryAdminException(
                 "non valid ProxyConnector sourceRepo with id " + proxyConnector.getSourceRepoId()
                     + " is not a ManagedRepository" );
         }
-        if ( remoteRepositoryAdmin.getRemoteRepository( proxyConnector.getTargetRepoId() ) == null )
+        if ( repositoryRegistry.getRemoteRepository( proxyConnector.getTargetRepoId() ) == null )
         {
             throw new RepositoryAdminException(
                 "non valid ProxyConnector sourceRepo with id " + proxyConnector.getTargetRepoId()

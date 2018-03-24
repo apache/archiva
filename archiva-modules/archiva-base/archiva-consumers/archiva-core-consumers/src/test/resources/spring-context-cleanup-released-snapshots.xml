@@ -32,7 +32,7 @@
   </bean>
   <alias name="archivaConfiguration#cleanup-released-snapshots" alias="archivaConfiguration"/>
   <alias name="archivaConfiguration#cleanup-released-snapshots" alias="archivaConfiguration#default"/>
-  <context:component-scan base-package="org.apache.archiva.configuration,org.apache.archiva.repository.content.maven2"/>
+  <context:component-scan base-package="org.apache.archiva.configuration,org.apache.archiva.repository.content.maven2,org.apache.archiva.indexer.maven"/>
 
   <alias name="repositoryContentFactory#cleanup-released-snapshots" alias="repositoryContentFactory#default" />
 

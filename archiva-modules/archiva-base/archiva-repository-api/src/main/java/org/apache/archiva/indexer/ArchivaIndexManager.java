@@ -20,6 +20,7 @@ package org.apache.archiva.indexer;
  */
 
 import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryEventListener;
 import org.apache.archiva.repository.RepositoryType;
 
 import java.net.URI;
@@ -75,4 +76,23 @@ public interface ArchivaIndexManager {
      * @return the index context
      */
     ArchivaIndexingContext createContext(Repository repository) throws IndexCreationFailedException;
+
+    /**
+     * Reinitializes the index. E.g. remove the files and create a new empty index.
+     *
+     * @param context
+     * @return the new created index
+     */
+    ArchivaIndexingContext reset(ArchivaIndexingContext context) throws IndexUpdateFailedException;
+
+    /**
+     * Moves the context to a new directory. It's up to the implementation, if a new context is created
+     * or the context is moved only.
+     *
+     * @param context The current context
+     * @param repo The repository
+     * @return The new context
+     * @throws IndexCreationFailedException
+     */
+    ArchivaIndexingContext move(ArchivaIndexingContext context, Repository repo) throws IndexCreationFailedException;
 }

@@ -439,7 +439,10 @@
             <include>**/*Tests.java</include>
             <include>**/*Test.java</include>
           </includes>
+          <!--
           <argLine>-Xms1024m -Xmx3072m -server -XX:MaxPermSize=256m @{jacocoproperty}</argLine>
+          -->
+          <argLine>-Xms1024m -Xmx3072m -server -XX:MaxPermSize=256m</argLine>
           <systemPropertyVariables>
             <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             <plexus.home>${project.build.directory}/appserver-base</plexus.home>

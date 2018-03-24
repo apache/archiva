@@ -20,26 +20,36 @@ package org.apache.archiva.repository.features;
  */
 
 
+import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryEventListener;
 import org.apache.commons.lang.StringUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.List;
 
 /**
  *
  * This feature provides some information about index creation.
  *
  */
-public class IndexCreationFeature implements RepositoryFeature<IndexCreationFeature> {
+public class IndexCreationFeature extends AbstractFeature implements RepositoryFeature<IndexCreationFeature>{
+
 
     private boolean skipPackedIndexCreation = false;
 
     private URI indexPath;
 
-    public IndexCreationFeature() {
+    private String repo;
+
+    public IndexCreationFeature(String repoId, RepositoryEventListener listener) {
+        super(listener);
+        this.repo = repoId;
         try
         {
-            this.indexPath = new URI(".indexer");
+            setIndexPath(new URI(".indexer"));
         }
         catch ( URISyntaxException e )
         {
@@ -89,7 +99,10 @@ public class IndexCreationFeature implements RepositoryFeature<IndexCreationFeat
      */
     public void setIndexPath( URI indexPath )
     {
+        URI oldVal = this.indexPath;
         this.indexPath = indexPath;
+        raiseEvent(new IndexCreationEvent(repo, oldVal, this.indexPath));
+
     }
 
 

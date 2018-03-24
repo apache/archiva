@@ -230,4 +230,8 @@ public class RepositoryProviderMock implements RepositoryProvider
         return configuration;
     }
 
+    @Override
+    public <T> void raise(org.apache.archiva.repository.RepositoryEvent<T> event) {
+
+    }
 }

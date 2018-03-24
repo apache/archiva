@@ -19,6 +19,8 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.indexer.ArchivaIndexingContext;
+
 import java.net.URI;
 import java.util.Locale;
 
@@ -119,6 +121,12 @@ public interface EditableRepository extends Repository
      * @param layout
      */
     void setLayout(String layout);
+
+    /**
+     * Sets the indexing context reference.
+     * @param context
+     */
+    void setIndexingContext(ArchivaIndexingContext context);
 
 
 }

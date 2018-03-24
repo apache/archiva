@@ -26,25 +26,27 @@ import com.cronutils.parser.CronParser;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.features.RepositoryFeature;
+import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Implementation of a repository with the necessary fields for a bare repository.
  * No features are provided. Capabilities and features must be implemented by concrete classes.
  *
  */
-public abstract class AbstractRepository implements EditableRepository
+public abstract class AbstractRepository implements EditableRepository, RepositoryEventListener
 {
+
+
+    Logger log = LoggerFactory.getLogger(AbstractRepository.class);
 
     private final RepositoryType type;
     private final String id;
@@ -60,10 +62,13 @@ public abstract class AbstractRepository implements EditableRepository
     String schedulingDefinition = "0 0 02 * * ?";
     private String layout = "default";
     public static final CronDefinition CRON_DEFINITION = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
+    private List<RepositoryEventListener> listeners = new ArrayList<>();
+
 
     Map<Class<? extends RepositoryFeature<?>>, RepositoryFeature<?>> featureMap = new HashMap<>(  );
 
     protected Path repositoryBase;
+    private ArchivaIndexingContext indexingContext;
 
     public AbstractRepository(RepositoryType type, String id, String name, Path repositoryBase) {
         this.id = id;
@@ -129,7 +134,7 @@ public abstract class AbstractRepository implements EditableRepository
     @Override
     public Path getLocalPath() {
         Path localPath;
-        if (getLocation().getScheme()=="file" || StringUtils.isEmpty(getLocation().getScheme())) {
+        if (StringUtils.isEmpty(getLocation().getScheme()) || "file".equals(getLocation().getScheme()) ) {
             localPath = PathUtil.getPathFromUri(getLocation());
             if (localPath.isAbsolute()) {
                 return localPath;
@@ -259,8 +264,53 @@ public abstract class AbstractRepository implements EditableRepository
     }
 
     @Override
-    public ArchivaIndexingContext getIndexingContext() {
-        // TODO: Implement
-        return null;
+    public void setIndexingContext(ArchivaIndexingContext context) {
+        this.indexingContext = context;
     }
+
+    @Override
+    public ArchivaIndexingContext getIndexingContext() {
+        return indexingContext;
+    }
+
+    @Override
+    public void close() {
+        ArchivaIndexingContext ctx = getIndexingContext();
+        if (ctx!=null) {
+            try {
+                ctx.close();
+            } catch (IOException e) {
+                log.warn("Error during index context close.",e);
+            }
+        }
+        if (supportsFeature(StagingRepositoryFeature.class)) {
+            StagingRepositoryFeature sf = getFeature(StagingRepositoryFeature.class).get();
+            if (sf.getStagingRepository()!=null) {
+                sf.getStagingRepository().close();
+            }
+        }
+        clearListeners();
+    }
+
+    @Override
+    public <T> void raise(RepositoryEvent<T> event) {
+        for(RepositoryEventListener listener : listeners) {
+            listener.raise(event);
+        }
+    }
+
+    public void addListener(RepositoryEventListener listener) {
+        if (!this.listeners.contains(listener)) {
+            this.listeners.add(listener);
+        }
+    }
+
+    public void removeListener(RepositoryEventListener listener) {
+        this.removeListener(listener);
+    }
+
+    public void clearListeners() {
+        this.listeners.clear();
+    }
+
 }

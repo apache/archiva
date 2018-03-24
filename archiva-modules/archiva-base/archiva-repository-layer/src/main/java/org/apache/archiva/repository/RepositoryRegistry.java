@@ -26,24 +26,22 @@ import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.indexer.ArchivaIndexingContext;
-import org.apache.archiva.indexer.IndexManagerFactory;
+import org.apache.archiva.indexer.*;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
+import org.apache.archiva.repository.features.IndexCreationEvent;
+import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -58,7 +56,7 @@ import java.util.stream.Stream;
  * TODO: Audit events should be sent, but we don't want dependency to the repsitory-metadata-api
  */
 @Service( "repositoryRegistry" )
-public class RepositoryRegistry implements ConfigurationListener {
+public class RepositoryRegistry implements ConfigurationListener, RepositoryEventHandler, RepositoryEventListener {
 
     private static final Logger log = LoggerFactory.getLogger( RepositoryRegistry.class );
 
@@ -78,6 +76,7 @@ public class RepositoryRegistry implements ConfigurationListener {
     @Named("repositoryContentFactory#default")
     RepositoryContentFactory repositoryContentFactory;
 
+    private List<RepositoryEventListener> listeners = new ArrayList<>();
 
 
     private Map<String, ManagedRepository> managedRepositories = new HashMap<>( );
@@ -98,8 +97,15 @@ public class RepositoryRegistry implements ConfigurationListener {
         rwLock.writeLock( ).lock( );
         try
         {
+            log.debug("Initializing repository registry");
+            for(ManagedRepository rep : managedRepositories.values()) {
+                rep.close();
+            }
             managedRepositories.clear( );
             managedRepositories.putAll( getManagedRepositoriesFromConfig( ) );
+            for (RemoteRepository repo : remoteRepositories.values()) {
+                repo.close();
+            }
             remoteRepositories.clear( );
             remoteRepositories.putAll( getRemoteRepositoriesFromConfig( ) );
             // archivaConfiguration.addChangeListener(this);
@@ -110,6 +116,18 @@ public class RepositoryRegistry implements ConfigurationListener {
             rwLock.writeLock( ).unlock( );
         }
     }
+
+    @PreDestroy
+    public void destroy() {
+        for(ManagedRepository rep : managedRepositories.values()) {
+            rep.close();
+        }
+        for (RemoteRepository repo : remoteRepositories.values()) {
+            repo.close();
+        }
+    }
+
+
 
     private Map<RepositoryType, RepositoryProvider> createProviderMap( )
     {
@@ -173,7 +191,9 @@ public class RepositoryRegistry implements ConfigurationListener {
 
     private ManagedRepository createNewManagedRepository( RepositoryProvider provider, ManagedRepositoryConfiguration cfg ) throws RepositoryException
     {
+        log.debug("Creating repo {}", cfg.getId());
         ManagedRepository repo = provider.createManagedInstance( cfg );
+        repo.addListener(this);
         updateRepositoryReferences( provider, repo, cfg , null);
         return repo;
 
@@ -181,6 +201,7 @@ public class RepositoryRegistry implements ConfigurationListener {
 
     private void updateRepositoryReferences(RepositoryProvider provider, ManagedRepository repo, ManagedRepositoryConfiguration cfg, Configuration configuration) throws RepositoryException
     {
+        log.debug("Updating references of repo {}",repo.getId());
         if ( repo.supportsFeature( StagingRepositoryFeature.class ) )
         {
             StagingRepositoryFeature feature = repo.getFeature( StagingRepositoryFeature.class ).get( );
@@ -194,9 +215,33 @@ public class RepositoryRegistry implements ConfigurationListener {
                 }
             }
         }
-        if ( repo instanceof EditableManagedRepository && repo.getContent() == null)
+        if ( repo instanceof EditableManagedRepository)
         {
-            ( (EditableManagedRepository) repo ).setContent( repositoryContentFactory.getManagedRepositoryContent( repo ) );
+            EditableManagedRepository editableRepo = (EditableManagedRepository) repo;
+            if (repo.getContent()==null) {
+                editableRepo.setContent(repositoryContentFactory.getManagedRepositoryContent(repo));
+            }
+            log.debug("Index repo: "+repo.hasIndex());
+            if (repo.hasIndex() && repo.getIndexingContext()==null) {
+                log.debug("Creating indexing context for {}", repo.getId());
+                createIndexingContext(editableRepo);
+            }
+        }
+
+    }
+
+    private ArchivaIndexManager getIndexManager(RepositoryType type) {
+        return indexManagerFactory.getIndexManager(type);
+    }
+
+    private void createIndexingContext(EditableRepository editableRepo) throws RepositoryException {
+        if (editableRepo.supportsFeature(IndexCreationFeature.class)) {
+            ArchivaIndexManager idxManager = getIndexManager(editableRepo.getType());
+            try {
+                editableRepo.setIndexingContext(idxManager.createContext(editableRepo));
+            } catch (IndexCreationFailedException e) {
+                throw new RepositoryException("Could not create index for repository "+editableRepo.getId()+": "+e.getMessage(),e);
+            }
         }
     }
 
@@ -263,7 +308,9 @@ public class RepositoryRegistry implements ConfigurationListener {
 
     private RemoteRepository createNewRemoteRepository( RepositoryProvider provider, RemoteRepositoryConfiguration cfg ) throws RepositoryException
     {
+        log.debug("Creating remote repo {}", cfg.getId());
         RemoteRepository repo = provider.createRemoteInstance( cfg );
+        repo.addListener(this);
         updateRepositoryReferences( provider, repo, cfg , null);
         return repo;
 
@@ -273,7 +320,13 @@ public class RepositoryRegistry implements ConfigurationListener {
     {
         if ( repo instanceof EditableRemoteRepository && repo.getContent() == null)
         {
-            ( (EditableRemoteRepository) repo ).setContent( repositoryContentFactory.getRemoteRepositoryContent( repo ) );
+            EditableRemoteRepository editableRepo = (EditableRemoteRepository) repo;
+            if (repo.getContent()==null) {
+                editableRepo.setContent( repositoryContentFactory.getRemoteRepositoryContent( repo ) );
+            }
+            if (repo.supportsFeature(IndexCreationFeature.class) && repo.getIndexingContext()==null ) {
+                createIndexingContext(editableRepo);
+            }
         }
     }
 
@@ -346,12 +399,15 @@ public class RepositoryRegistry implements ConfigurationListener {
         rwLock.readLock( ).lock( );
         try
         {
+            log.debug("getRepository {}", repoId);
             if ( managedRepositories.containsKey( repoId ) )
             {
+                log.debug("Managed repo");
                 return managedRepositories.get( repoId );
             }
             else
             {
+                log.debug("Remote repo");
                 return remoteRepositories.get( repoId );
             }
         }
@@ -422,6 +478,9 @@ public class RepositoryRegistry implements ConfigurationListener {
             ManagedRepository originRepo = managedRepositories.put( id, managedRepository );
             try
             {
+                if (originRepo!=null) {
+                    originRepo.close();
+                }
                 RepositoryProvider provider = getProvider( managedRepository.getType() );
                 ManagedRepositoryConfiguration newCfg = provider.getManagedConfiguration( managedRepository );
                 Configuration configuration = getArchivaConfiguration( ).getConfiguration( );
@@ -521,6 +580,7 @@ public class RepositoryRegistry implements ConfigurationListener {
             } else
             {
                 repo = getProvider( repoType ).createManagedInstance( managedRepositoryConfiguration );
+                repo.addListener(this);
                 managedRepositories.put(id, repo);
             }
             updateRepositoryReferences( getProvider( repoType  ), repo, managedRepositoryConfiguration, configuration );
@@ -563,6 +623,9 @@ public class RepositoryRegistry implements ConfigurationListener {
             RemoteRepositoryConfiguration newCfg=null;
             try
             {
+                if (originRepo!=null) {
+                    originRepo.close();
+                }
                 final RepositoryProvider provider = getProvider( remoteRepository.getType() );
                 newCfg = provider.getRemoteConfiguration( remoteRepository );
                 updateRepositoryReferences( provider, remoteRepository, newCfg, configuration );
@@ -698,6 +761,7 @@ public class RepositoryRegistry implements ConfigurationListener {
             } else
             {
                 repo = getProvider( repoType ).createRemoteInstance( remoteRepositoryConfiguration );
+                repo.addListener(this);
                 remoteRepositories.put(id, repo);
             }
             updateRepositoryReferences( getProvider( repoType  ), repo, remoteRepositoryConfiguration, configuration );
@@ -712,6 +776,12 @@ public class RepositoryRegistry implements ConfigurationListener {
 
     }
 
+    public void removeRepository(String repoId) throws RepositoryException {
+        Repository repo = getRepository(repoId);
+        if (repo!=null) {
+            removeRepository(repo);
+        }
+    }
     public void removeRepository(Repository repo) throws RepositoryException
     {
         if (repo instanceof RemoteRepository ) {
@@ -739,6 +809,7 @@ public class RepositoryRegistry implements ConfigurationListener {
             try {
                 repo = managedRepositories.remove( id );
                 if (repo!=null) {
+                    repo.close();
                     Configuration configuration = getArchivaConfiguration().getConfiguration();
                     ManagedRepositoryConfiguration cfg = configuration.findManagedRepositoryById( id );
                     if (cfg!=null) {
@@ -754,8 +825,7 @@ public class RepositoryRegistry implements ConfigurationListener {
                 log.error("Could not save config after repository removal: {}", e.getMessage(), e);
                 managedRepositories.put(repo.getId(), repo);
                 throw new RepositoryException( "Could not save configuration after repository removal: "+e.getMessage() );
-            }
-            finally
+            } finally
             {
                 rwLock.writeLock().unlock();
             }
@@ -771,13 +841,13 @@ public class RepositoryRegistry implements ConfigurationListener {
             try {
                 repo = managedRepositories.remove( id );
                 if (repo!=null) {
+                    repo.close();
                     ManagedRepositoryConfiguration cfg = configuration.findManagedRepositoryById( id );
                     if (cfg!=null) {
                         configuration.removeManagedRepository( cfg );
                     }
                 }
-            }
-            finally
+            } finally
             {
                 rwLock.writeLock().unlock();
             }
@@ -800,7 +870,9 @@ public class RepositoryRegistry implements ConfigurationListener {
             rwLock.writeLock().lock();
             try {
                 repo = remoteRepositories.remove( id );
+
                 if (repo!=null) {
+                    repo.close();
                     Configuration configuration = getArchivaConfiguration().getConfiguration();
                     RemoteRepositoryConfiguration cfg = configuration.findRemoteRepositoryById( id );
                     if (cfg!=null) {
@@ -816,8 +888,7 @@ public class RepositoryRegistry implements ConfigurationListener {
                 log.error("Could not save config after repository removal: {}", e.getMessage(), e);
                 remoteRepositories.put(repo.getId(), repo);
                 throw new RepositoryException( "Could not save configuration after repository removal: "+e.getMessage() );
-            }
-            finally
+            } finally
             {
                 rwLock.writeLock().unlock();
             }
@@ -833,13 +904,13 @@ public class RepositoryRegistry implements ConfigurationListener {
             try {
                 repo = remoteRepositories.remove( id );
                 if (repo!=null) {
+                    repo.close();
                     RemoteRepositoryConfiguration cfg = configuration.findRemoteRepositoryById( id );
                     if (cfg!=null) {
                         configuration.removeRemoteRepository( cfg );
                     }
                 }
-            }
-            finally
+            } finally
             {
                 rwLock.writeLock().unlock();
             }
@@ -852,6 +923,20 @@ public class RepositoryRegistry implements ConfigurationListener {
      */
     public void reload() {
         initialize();
+    }
+
+    /**
+     * Resets the indexing context of a given repository.
+     *
+     * @param repo
+     * @throws IndexUpdateFailedException
+     */
+    public void resetIndexingContext(Repository repo) throws IndexUpdateFailedException {
+        if (repo.hasIndex() && repo instanceof EditableRepository) {
+            EditableRepository eRepo = (EditableRepository) repo;
+            ArchivaIndexingContext newCtx = getIndexManager(repo.getType()).reset(repo.getIndexingContext());
+            eRepo.setIndexingContext(newCtx);
+        }
     }
 
 
@@ -871,6 +956,7 @@ public class RepositoryRegistry implements ConfigurationListener {
         ManagedRepositoryConfiguration cfg = provider.getManagedConfiguration(repo);
         cfg.setId(newId);
         ManagedRepository cloned = provider.createManagedInstance(cfg);
+        cloned.addListener(this);
         return cloned;
     }
 
@@ -900,6 +986,7 @@ public class RepositoryRegistry implements ConfigurationListener {
         RemoteRepositoryConfiguration cfg = provider.getRemoteConfiguration(repo);
         cfg.setId(newId);
         RemoteRepository cloned = provider.createRemoteInstance(cfg);
+        cloned.addListener(this);
         return cloned;
     }
 
@@ -910,5 +997,41 @@ public class RepositoryRegistry implements ConfigurationListener {
     }
 
 
+    @Override
+    public void addListener(RepositoryEventListener listener) {
+        if (!this.listeners.contains(listener)) {
+            this.listeners.add(listener);
+        }
+    }
 
+    @Override
+    public void removeListener(RepositoryEventListener listener) {
+        this.listeners.remove(listener);
+    }
+
+    @Override
+    public void clearListeners() {
+        this.listeners.clear();
+    }
+
+    @Override
+    public <T> void raise(RepositoryEvent<T> event) {
+        if (event.getType().equals(IndexCreationEvent.Index.URI_CHANGE)) {
+            if (managedRepositories.containsKey(event.getRepositoryId()) ||
+                    remoteRepositories.containsKey(event.getRepositoryId())) {
+                EditableRepository repo = (EditableRepository) getRepository(event.getRepositoryId());
+                if (repo != null && repo.getIndexingContext()!=null) {
+                    try {
+                        ArchivaIndexingContext newCtx = getIndexManager(repo.getType()).move(repo.getIndexingContext(), repo);
+                        repo.setIndexingContext(newCtx);
+                    } catch (IndexCreationFailedException e) {
+                        log.error("Could not move index to new directory {}", e.getMessage(), e);
+                    }
+                }
+            }
+        }
+        for(RepositoryEventListener listener : listeners) {
+            listener.raise(event);
+        }
+    }
 }

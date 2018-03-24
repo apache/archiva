@@ -107,7 +107,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
     {
         RepositoryRegistry repositoryRegistry = applicationContext.getBean( RepositoryRegistry.class );
         ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( TEST_REPO_ID );
-        repositoryRegistry.removeRepository( managedRepository );
+        repositoryRegistry.removeRepository( TEST_REPO_ID );
         repositoryRegistry.putRepository(
             getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ));
 
@@ -217,7 +217,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         RepositoryRegistry repositoryRegistry = applicationContext.getBean(RepositoryRegistry.class);
         ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( TEST_REPO_ID );
-        repositoryRegistry.removeRepository( managedRepository );
+        repositoryRegistry.removeRepository( TEST_REPO_ID );
         repositoryRegistry.putRepository(
             getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ));
 
@@ -298,7 +298,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         RepositoryRegistry repositoryRegistry = applicationContext.getBean(RepositoryRegistry.class);
         ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( TEST_REPO_ID );
-        repositoryRegistry.removeRepository( managedRepository );
+        repositoryRegistry.removeRepository( TEST_REPO_ID );
         repositoryRegistry.putRepository(
             getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ));
 

@@ -644,6 +644,7 @@ public class DefaultArchivaConfiguration
 
 
         this.configuration = unescapeExpressions( configuration );
+        isConfigurationDefaulted=false;
 
         triggerEvent( ConfigurationEvent.SAVED );
     }

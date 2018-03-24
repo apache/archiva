@@ -24,6 +24,8 @@ import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.admin.model.group.RepositoryGroupAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdminTest;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -39,12 +41,23 @@ public class RepositoryGroupAdminTest
     @Inject
     RepositoryGroupAdmin repositoryGroupAdmin;
 
+    @Inject
+    RepositoryRegistry repositoryRegistry;
+
     @Test
     public void addAndDeleteGroup()
         throws Exception
     {
         try
         {
+            Repository repo = repositoryRegistry.getRepository("test-new-one");
+            if (repo!=null) {
+                repositoryRegistry.removeRepository(repo);
+            }
+            repo = repositoryRegistry.getRepository("test-new-two");
+            if (repo!=null) {
+                repositoryRegistry.removeRepository(repo);
+            }
             ManagedRepository managedRepositoryOne =
                 getTestManagedRepository( "test-new-one", Paths.get(APPSERVER_BASE_PATH,"test-new-one" ).toString());
 
@@ -55,8 +68,10 @@ public class RepositoryGroupAdminTest
 
             managedRepositoryAdmin.addManagedRepository( managedRepositoryTwo, false, getFakeAuditInformation() );
 
+
             RepositoryGroup repositoryGroup =
                 new RepositoryGroup( "repo-group-one", Arrays.asList( "test-new-one", "test-new-two" ) );
+            // repositoryGroupAdmin.deleteRepositoryGroup("repo-group-one", null);
 
             mockAuditListener.clearEvents();
 
@@ -84,8 +99,8 @@ public class RepositoryGroupAdminTest
         finally
         {
             mockAuditListener.clearEvents();
-            managedRepositoryAdmin.deleteManagedRepository( "test-new-one", getFakeAuditInformation(), true );
-            managedRepositoryAdmin.deleteManagedRepository( "test-new-two", getFakeAuditInformation(), true );
+            repositoryRegistry.removeRepository(repositoryRegistry.getManagedRepository("test-new-one"));
+            repositoryRegistry.removeRepository(repositoryRegistry.getManagedRepository("test-new-two"));
         }
     }
 
@@ -202,8 +217,7 @@ public class RepositoryGroupAdminTest
         finally
         {
             mockAuditListener.clearEvents();
-
-            managedRepositoryAdmin.deleteManagedRepository( "test-new-two", getFakeAuditInformation(), true );
+            repositoryRegistry.removeRepository(repositoryRegistry.getRepository("test-new-two"));
         }
     }
 
@@ -231,8 +245,8 @@ public class RepositoryGroupAdminTest
         finally
         {
             mockAuditListener.clearEvents();
-            managedRepositoryAdmin.deleteManagedRepository( "test-new-one", getFakeAuditInformation(), true );
-            managedRepositoryAdmin.deleteManagedRepository( "test-new-two", getFakeAuditInformation(), true );
+            repositoryRegistry.removeRepository(repositoryRegistry.getRepository("test-new-one"));
+            repositoryRegistry.removeRepository(repositoryRegistry.getRepository("test-new-two"));
         }
     }
 

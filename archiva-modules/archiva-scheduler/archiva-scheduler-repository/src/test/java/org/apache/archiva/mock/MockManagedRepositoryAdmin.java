@@ -121,16 +121,5 @@ public class MockManagedRepositoryAdmin
         this.archivaConfiguration = archivaConfiguration;
     }
 
-    @Override
-    public IndexingContext createIndexContext( ManagedRepository repository )
-        throws RepositoryAdminException
-    {
-        return null;
-    }
 
-    @Override
-    public IndexingContext createIndexContext( org.apache.archiva.repository.ManagedRepository repository ) throws RepositoryAdminException
-    {
-        return null;
-    }
 }

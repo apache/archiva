@@ -26,6 +26,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryCheckPath;
+import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.PasswordCredentials;
@@ -307,7 +308,9 @@ public class DefaultRemoteRepositoryAdmin
     {
         try
         {
-            String appServerBase = getRegistry().getString( "appserver.base" );
+            RemoteRepository repo = repositoryRegistry.getRemoteRepository(remoteRepository.getId());
+            return repo.getIndexingContext().getBaseContext(IndexingContext.class);
+            /*String appServerBase = getRegistry().getString( "appserver.base" );
 
             String contextKey = "remote-" + remoteRepository.getId();
             IndexingContext indexingContext = indexer.getIndexingContexts().get( contextKey );
@@ -359,11 +362,9 @@ public class DefaultRemoteRepositoryAdmin
                                                    remoteRepository.getUrl(), calculateIndexRemoteUrl( remoteRepository ),
                                                    indexCreators );
 
-            }
-        }
-        catch ( IOException | UnsupportedExistingLuceneIndexException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
+            }*/
+        } catch (UnsupportedBaseContextException e) {
+            throw new RepositoryAdminException( e.getMessage(), e);
         }
 
     }

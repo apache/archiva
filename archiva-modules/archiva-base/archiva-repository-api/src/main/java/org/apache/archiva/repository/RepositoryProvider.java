@@ -37,7 +37,7 @@ import java.util.Set;
  *
  *
  */
-public interface RepositoryProvider
+public interface RepositoryProvider extends RepositoryEventListener
 {
 
     /**

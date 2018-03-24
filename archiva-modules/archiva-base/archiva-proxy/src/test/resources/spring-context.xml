@@ -33,6 +33,7 @@
 
   <alias name="archivaConfiguration#mock" alias="archivaConfiguration#default"/>
   <alias name="archivaConfiguration#mock" alias="archivaConfiguration"/>
+  <alias name="archivaTaskScheduler#repositoryMock" alias="archivaTaskScheduler#repository" />
 
   <bean name="scheduler" class="org.apache.archiva.redback.components.scheduler.DefaultScheduler">
     <property name="properties">

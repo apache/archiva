@@ -22,6 +22,7 @@ package org.apache.archiva.indexer.maven;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
@@ -58,6 +59,10 @@ import static org.junit.Assert.*;
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class MavenIndexManagerTest {
 
+    @Inject
+    RepositoryRegistry repositoryRegistry;
+
+
     private Path indexPath;
     private MavenManagedRepository repository;
     private ArchivaIndexingContext ctx;
@@ -72,6 +77,7 @@ public class MavenIndexManagerTest {
 
     @After
     public void tearDown() {
+        repositoryRegistry.destroy();
         if (ctx!=null) {
             try {
                 ctx.close(true);

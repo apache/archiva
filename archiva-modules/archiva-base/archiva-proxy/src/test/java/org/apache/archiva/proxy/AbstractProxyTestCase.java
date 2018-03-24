@@ -82,6 +82,9 @@ public abstract class AbstractProxyTestCase
     @Inject
     protected ApplicationContext applicationContext;
 
+    @Inject
+    RepositoryRegistry repositoryRegistry;
+
     protected static final String ID_PROXIED1 = "proxied1";
 
     protected static final String ID_PROXIED1_TARGET = "proxied1-target";
@@ -121,7 +124,6 @@ public abstract class AbstractProxyTestCase
 
     WagonDelegate delegate;
 
-    protected RepositoryRegistry repositoryRegistry;
 
     @Inject
     protected NexusIndexer nexusIndexer;
@@ -156,7 +158,6 @@ public abstract class AbstractProxyTestCase
         // to prevent windauze file leaking
         removeMavenIndexes();
 
-        repositoryRegistry = applicationContext.getBean( RepositoryRegistry.class );
         repositoryRegistry.setArchivaConfiguration( config );
 
         // Setup target (proxied to) repository.
@@ -166,6 +167,7 @@ public abstract class AbstractProxyTestCase
         // Setup target (proxied to) repository.
         saveRemoteRepositoryConfig( ID_PROXIED2, "Proxied Repository 2",
             Paths.get( REPOPATH_PROXIED2 ).toUri().toURL().toExternalForm(), "default" );
+
 
         repositoryRegistry.reload();
 

@@ -22,6 +22,8 @@ package org.apache.archiva.scheduler.indexing;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.redback.components.taskqueue.Task;
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutionException;
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
@@ -86,7 +88,16 @@ public class ArchivaIndexingTaskExecutor
         ArtifactIndexingTask indexingTask = (ArtifactIndexingTask) task;
 
         ManagedRepository repository = indexingTask.getRepository( );
-        IndexingContext context = indexingTask.getContext( );
+        ArchivaIndexingContext archivaContext = indexingTask.getContext( );
+        IndexingContext context = null;
+        try {
+            context = archivaContext.getBaseContext(IndexingContext.class);
+        } catch (UnsupportedBaseContextException e) {
+            throw new TaskExecutionException("Bad repository type.", e);
+        }
+        if (!nexusIndexer.getIndexingContexts().containsKey(context.getId())) {
+            nexusIndexer.addIndexingContext(context);
+        }
 
         if ( ArtifactIndexingTask.Action.FINISH.equals( indexingTask.getAction( ) )
             && indexingTask.isExecuteOnEntireRepo( ) )
@@ -117,9 +128,10 @@ public class ArchivaIndexingTaskExecutor
                         ( indexingTask.getResourceFile( ) == null
                             ? "none"
                             : indexingTask.getResourceFile( ) ) );
-                    context = managedRepositoryAdmin.createIndexContext( repository );
+                    archivaContext = repository.getIndexingContext();
+                    context = archivaContext.getBaseContext(IndexingContext.class);
                 }
-                catch ( RepositoryAdminException e )
+                catch ( UnsupportedBaseContextException e )
                 {
                     log.error( "Error occurred while creating context: {}", e.getMessage( ) );
                     throw new TaskExecutionException( "Error occurred while creating context: " + e.getMessage( ), e );

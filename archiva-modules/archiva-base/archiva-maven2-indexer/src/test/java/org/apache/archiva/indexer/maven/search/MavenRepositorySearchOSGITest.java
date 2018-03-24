@@ -22,9 +22,12 @@ package org.apache.archiva.indexer.maven.search;
 import org.apache.archiva.indexer.search.SearchFields;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResults;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.easymock.EasyMock;
+import org.junit.After;
 import org.junit.Test;
 
+import javax.inject.Inject;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,6 +40,16 @@ import java.util.Locale;
 public class MavenRepositorySearchOSGITest
     extends AbstractMavenRepositorySearch
 {
+
+    @Inject
+    RepositoryRegistry repositoryRegistry;
+
+    @After
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        repositoryRegistry.destroy();
+    }
 
     @Test
     public void searchFelixWithSymbolicName()

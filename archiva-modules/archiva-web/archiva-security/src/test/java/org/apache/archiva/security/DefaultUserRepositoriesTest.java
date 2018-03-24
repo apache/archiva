@@ -73,7 +73,7 @@ public class DefaultUserRepositoriesTest
 
         assertRepoIds( new String[]{ "central", "corporate" }, userRepos.getObservableRepositoryIds( USER_ALPACA ) );
         assertRepoIds( new String[]{ "coporate" }, userRepos.getObservableRepositoryIds( USER_GUEST ) );
-        assertRepoIds( new String[]{ "central", "internal", "corporate", "snapshots", "secret" },
+        assertRepoIds( new String[]{ "central", "internal","corporate", "snapshots", "secret" },
                        userRepos.getObservableRepositoryIds( USER_ADMIN ) );
 
     }

@@ -29,7 +29,10 @@ import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationEvent;
 import org.apache.archiva.configuration.ConfigurationListener;
+import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.proxy.common.WagonFactory;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
@@ -67,6 +70,9 @@ public class DefaultDownloadRemoteIndexScheduler
     private TaskScheduler taskScheduler;
 
     @Inject
+    RepositoryRegistry repositoryRegistry;
+
+    @Inject
     private ArchivaConfiguration archivaConfiguration;
 
     @Inject
@@ -95,24 +101,25 @@ public class DefaultDownloadRemoteIndexScheduler
 
     @PostConstruct
     public void startup()
-        throws ArchivaException, RepositoryAdminException, PlexusSisuBridgeException, IOException,
-        UnsupportedExistingLuceneIndexException, DownloadRemoteIndexException
-    {
+            throws ArchivaException, RepositoryAdminException, PlexusSisuBridgeException, IOException,
+            UnsupportedExistingLuceneIndexException, DownloadRemoteIndexException, UnsupportedBaseContextException {
         archivaConfiguration.addListener( this );
         // TODO add indexContexts even if null
 
-        for ( RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )
+        for ( org.apache.archiva.repository.RemoteRepository remoteRepository : repositoryRegistry.getRemoteRepositories() )
         {
             String contextKey = "remote-" + remoteRepository.getId();
-            IndexingContext context = nexusIndexer.getIndexingContexts().get( contextKey );
+            IndexingContext context = remoteRepository.getIndexingContext().getBaseContext(IndexingContext.class);
             if ( context == null )
             {
                 continue;
             }
+            RemoteIndexFeature rif = remoteRepository.getFeature(RemoteIndexFeature.class).get();
+
 
             // TODO record jobs from configuration
-            if ( remoteRepository.isDownloadRemoteIndex() && StringUtils.isNotEmpty(
-                remoteRepository.getCronExpression() ) )
+            if ( rif.isDownloadRemoteIndex() && StringUtils.isNotEmpty(
+                remoteRepository.getSchedulingDefinition() ) )
             {
                 boolean fullDownload = context.getIndexDirectoryFile().list().length == 0;
                 scheduleDownloadRemote( remoteRepository.getId(), false, fullDownload );

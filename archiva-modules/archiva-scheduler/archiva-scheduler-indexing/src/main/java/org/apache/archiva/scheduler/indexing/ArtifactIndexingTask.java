@@ -19,9 +19,9 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.redback.components.taskqueue.Task;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.maven.index.context.IndexingContext;
 
 import java.nio.file.Path;
 
@@ -42,7 +42,7 @@ public class ArtifactIndexingTask
 
     private final Action action;
 
-    private final IndexingContext context;
+    private final ArchivaIndexingContext context;
 
     private boolean executeOnEntireRepo = true;
 
@@ -52,7 +52,7 @@ public class ArtifactIndexingTask
     private boolean onlyUpdate = false;
 
     public ArtifactIndexingTask( ManagedRepository repository, Path resourceFile, Action action,
-                                 IndexingContext context )
+                                 ArchivaIndexingContext context )
     {
         this.repository = repository;
         this.resourceFile = resourceFile;
@@ -61,14 +61,14 @@ public class ArtifactIndexingTask
     }
 
     public ArtifactIndexingTask( ManagedRepository repository, Path resourceFile, Action action,
-                                 IndexingContext context, boolean executeOnEntireRepo )
+                                 ArchivaIndexingContext context, boolean executeOnEntireRepo )
     {
         this( repository, resourceFile, action, context );
         this.executeOnEntireRepo = executeOnEntireRepo;
     }
 
     public ArtifactIndexingTask( ManagedRepository repository, Path resourceFile, Action action,
-                                 IndexingContext context, boolean executeOnEntireRepo, boolean onlyUpdate )
+                                 ArchivaIndexingContext context, boolean executeOnEntireRepo, boolean onlyUpdate )
     {
         this( repository, resourceFile, action, context, executeOnEntireRepo );
         this.onlyUpdate = onlyUpdate;
@@ -111,7 +111,7 @@ public class ArtifactIndexingTask
         return repository;
     }
 
-    public IndexingContext getContext()
+    public ArchivaIndexingContext getContext()
     {
         return context;
     }

@@ -28,11 +28,13 @@ import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.maven.index.NexusIndexer;
@@ -124,11 +126,14 @@ public class NexusIndexerConsumer
         try
         {
             log.info( "Creating indexing context for repo : {}", repository.getId() );
-            indexingContext = managedRepositoryAdmin.createIndexContext( repository );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ConsumerException( e.getMessage(), e );
+            if (repository.getType()== RepositoryType.MAVEN) {
+                indexingContext = repository.getIndexingContext().getBaseContext(IndexingContext.class);
+            } else  {
+                indexingContext= null;
+            }
+        } catch (UnsupportedBaseContextException e) {
+            log.error("Bad repository type. Not nexus indexer compatible.");
+            throw new ConsumerException("Bad repository type "+repository.getType());
         }
     }
 
@@ -154,7 +159,7 @@ public class NexusIndexerConsumer
         Path artifactFile = managedRepository.resolve(path);
 
         ArtifactIndexingTask task =
-            new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD, getIndexingContext() );
+            new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD, repository.getIndexingContext() );
         try
         {
             log.debug( "Queueing indexing task '{}' to add or update the artifact in the index.", task );
@@ -181,7 +186,7 @@ public class NexusIndexerConsumer
             // specify in indexing task that this is not a repo scan request!
             ArtifactIndexingTask task =
                 new ArtifactIndexingTask( repository, artifactFile, ArtifactIndexingTask.Action.ADD,
-                                          getIndexingContext(), false );
+                                          repository.getIndexingContext(), false );
             // only update index we don't need to scan the full repo here
             task.setOnlyUpdate( true );
             try
@@ -199,21 +204,8 @@ public class NexusIndexerConsumer
     @Override
     public void completeScan()
     {
-        IndexingContext context = this.indexingContext;
-        if ( context == null )
-        {
-            try
-            {
-                context = getIndexingContext();
-            }
-            catch ( ConsumerException e )
-            {
-                log.warn( "failed to get an IndexingContext:{}", e.getMessage() );
-                return;
-            }
-        }
         ArtifactIndexingTask task =
-            new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, context );
+            new ArtifactIndexingTask( repository, null, ArtifactIndexingTask.Action.FINISH, repository.getIndexingContext());
         try
         {
             log.debug( "Queueing indexing task '{}' to finish indexing.", task );
@@ -292,11 +284,10 @@ public class NexusIndexerConsumer
         {
             try
             {
-                indexingContext = managedRepositoryAdmin.createIndexContext( repository );
-            }
-            catch ( RepositoryAdminException e )
-            {
-                throw new ConsumerException( e.getMessage(), e );
+                indexingContext = repository.getIndexingContext().getBaseContext(IndexingContext.class);
+            } catch (UnsupportedBaseContextException e) {
+                log.error("Bad repository type. Not nexus indexer compatible. "+repository.getType());
+                throw new ConsumerException("Bad repository type "+repository.getType());
             }
         }
         return indexingContext;

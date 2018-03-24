@@ -44,7 +44,7 @@ public class MockWagon
     public void get( String s, File file )
         throws TransferFailedException, ResourceDoesNotExistException, AuthorizationException
     {
-        String sourceFile = getBasedir() + "/target/test-classes/" + s;
+        String sourceFile = getBasedir() + "/src/test/resources/" + s;
 
         try
         {

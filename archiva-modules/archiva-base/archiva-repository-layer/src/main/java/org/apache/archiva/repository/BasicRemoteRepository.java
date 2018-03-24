@@ -19,8 +19,13 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Locale;
 
@@ -33,13 +38,17 @@ import java.util.Locale;
 public class BasicRemoteRepository extends AbstractRemoteRepository
 
 {
+    Logger log = LoggerFactory.getLogger(BasicRemoteRepository.class);
+
     RemoteIndexFeature remoteIndexFeature = new RemoteIndexFeature();
+    IndexCreationFeature indexCreationFeature = new IndexCreationFeature(true);
 
 
     static final StandardCapabilities CAPABILITIES = new StandardCapabilities( new ReleaseScheme[] {
         ReleaseScheme.RELEASE, ReleaseScheme.SNAPSHOT
     }, new String[] {"default"}, new String[0], new String[] {
-        RemoteIndexFeature.class.toString()
+        RemoteIndexFeature.class.toString(),
+            IndexCreationFeature.class.toString()
     }, true, true, true, true, true  );
 
     public BasicRemoteRepository( String id, String name, Path basePath )
@@ -56,6 +65,7 @@ public class BasicRemoteRepository extends AbstractRemoteRepository
 
     private void initFeatures() {
         addFeature( remoteIndexFeature );
+        addFeature( indexCreationFeature );
     }
 
     @Override

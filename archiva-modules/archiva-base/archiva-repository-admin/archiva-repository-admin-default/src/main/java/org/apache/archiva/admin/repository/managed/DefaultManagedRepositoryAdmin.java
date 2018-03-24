@@ -28,6 +28,10 @@ import org.apache.archiva.configuration.IndeterminateConfigurationException;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.indexer.ArchivaIndexManager;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.indexer.IndexManagerFactory;
+import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
@@ -40,6 +44,7 @@ import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.role.RoleManagerException;
 import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
@@ -50,10 +55,8 @@ import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.context.IndexCreator;
+
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
-import org.apache.maven.index_shaded.lucene.index.IndexFormatTooOldException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -112,12 +115,11 @@ public class DefaultManagedRepositoryAdmin
     @Named(value = "cache#namespaces")
     private Cache<String, Collection<String>> namespacesCache;
 
-    // fields
     @Inject
-    private List<? extends IndexCreator> indexCreators;
+    private IndexManagerFactory indexManagerFactory;
 
-    @Inject
-    private NexusIndexer indexer;
+
+
 
     @PostConstruct
     public void initialize()
@@ -127,7 +129,6 @@ public class DefaultManagedRepositoryAdmin
         for ( ManagedRepository managedRepository : getManagedRepositories() )
         {
             log.debug("Initializating {}", managedRepository.getId());
-            createIndexContext( managedRepository );
             addRepositoryRoles( managedRepository.getId() );
 
         }
@@ -137,22 +138,6 @@ public class DefaultManagedRepositoryAdmin
     public void shutdown()
         throws RepositoryAdminException
     {
-        try
-        {
-            // close index on shutdown
-            for ( ManagedRepository managedRepository : getManagedRepositories() )
-            {
-                IndexingContext context = indexer.getIndexingContexts().get( managedRepository.getId() );
-                if ( context != null )
-                {
-                    indexer.removeIndexingContext( context, false );
-                }
-            }
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
     }
 
     /*
@@ -290,7 +275,6 @@ public class DefaultManagedRepositoryAdmin
             log.error("Could not add repository roles for repository [{}]: {}", managedRepository.getId(), e.getMessage(), e);
             throw new RepositoryAdminException( "Could not add roles to repository "+e.getMessage() );
         }
-        createIndexContext( managedRepository );
         return Boolean.TRUE;
 
     }
@@ -304,64 +288,56 @@ public class DefaultManagedRepositoryAdmin
     {
         Configuration config = getArchivaConfiguration().getConfiguration();
         ManagedRepositoryConfiguration repoConfig=config.findManagedRepositoryById( repositoryId );
+        if (repoConfig!=null) {
 
-        log.debug("Repo location "+repoConfig.getLocation());
+            log.debug("Repo location " + repoConfig.getLocation());
 
-        org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository( repositoryId );
-        org.apache.archiva.repository.ManagedRepository stagingRepository = null;
-        if (repo!=null) {
-            try
-            {
-                if (repo.supportsFeature( StagingRepositoryFeature.class )) {
-                    stagingRepository = repo.getFeature( StagingRepositoryFeature.class ).get().getStagingRepository();
+            org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository(repositoryId);
+            org.apache.archiva.repository.ManagedRepository stagingRepository = null;
+            if (repo != null) {
+                try {
+                    if (repo.supportsFeature(StagingRepositoryFeature.class)) {
+                        stagingRepository = repo.getFeature(StagingRepositoryFeature.class).get().getStagingRepository();
+                    }
+                    repositoryRegistry.removeRepository(repo, config);
+                } catch (RepositoryException e) {
+                    log.error("Removal of repository {} failed: {}", repositoryId, e.getMessage(), e);
+                    throw new RepositoryAdminException("Removal of repository " + repositoryId + " failed.");
                 }
-                repositoryRegistry.removeRepository( repo, config );
+            } else {
+                throw new RepositoryAdminException("A repository with that id does not exist");
             }
-            catch ( RepositoryException e )
-            {
-                log.error("Removal of repository {} failed: {}", repositoryId, e.getMessage(), e);
-                throw new RepositoryAdminException( "Removal of repository "+repositoryId+" failed." );
+
+            triggerAuditEvent(repositoryId, null, AuditEvent.DELETE_MANAGED_REPO, auditInformation);
+            if (repoConfig != null) {
+                deleteManagedRepository(repoConfig, deleteContent, config, false);
             }
+
+
+            // stage repo exists ?
+            if (stagingRepository != null) {
+                // do not trigger event when deleting the staged one
+                ManagedRepositoryConfiguration stagingRepositoryConfig = config.findManagedRepositoryById(stagingRepository.getId());
+                try {
+                    repositoryRegistry.removeRepository(stagingRepository);
+                    if (stagingRepositoryConfig != null) {
+                        deleteManagedRepository(stagingRepositoryConfig, deleteContent, config, true);
+                    }
+                } catch (RepositoryException e) {
+                    log.error("Removal of staging repository {} failed: {}", stagingRepository.getId(), e.getMessage(), e);
+                }
+            }
+
+            try {
+                saveConfiguration(config);
+            } catch (Exception e) {
+                throw new RepositoryAdminException("Error saving configuration for delete action" + e.getMessage(), e);
+            }
+
+            return Boolean.TRUE;
         } else {
-            throw new RepositoryAdminException( "A repository with that id does not exist" );
+            return Boolean.FALSE;
         }
-
-        triggerAuditEvent( repositoryId, null, AuditEvent.DELETE_MANAGED_REPO, auditInformation );
-        if (repoConfig!=null)
-        {
-            deleteManagedRepository( repoConfig, deleteContent, config, false );
-        }
-
-
-        // stage repo exists ?
-        if ( stagingRepository != null )
-        {
-            // do not trigger event when deleting the staged one
-            ManagedRepositoryConfiguration stagingRepositoryConfig = config.findManagedRepositoryById( stagingRepository.getId( ) );
-            try
-            {
-                repositoryRegistry.removeRepository( stagingRepository );
-                if (stagingRepositoryConfig!=null)
-                {
-                    deleteManagedRepository( stagingRepositoryConfig, deleteContent, config, true );
-                }
-            }
-            catch ( RepositoryException e )
-            {
-                log.error("Removal of staging repository {} failed: {}", stagingRepository.getId(), e.getMessage(), e);
-            }
-        }
-
-        try
-        {
-            saveConfiguration( config );
-        }
-        catch ( Exception e )
-        {
-            throw new RepositoryAdminException( "Error saving configuration for delete action" + e.getMessage(), e );
-        }
-
-        return Boolean.TRUE;
     }
 
     private Boolean deleteManagedRepository( ManagedRepositoryConfiguration repository, boolean deleteContent,
@@ -369,20 +345,6 @@ public class DefaultManagedRepositoryAdmin
         throws RepositoryAdminException
     {
 
-        try
-        {
-            IndexingContext context = indexer.getIndexingContexts().get( repository.getId() );
-            if ( context != null )
-            {
-                // delete content only if directory exists
-                indexer.removeIndexingContext( context,
-                                                    deleteContent && context.getIndexDirectoryFile().exists() );
-            }
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
         if ( !stagedOne )
         {
             RepositorySession repositorySession = getRepositorySessionFactory().createSession();
@@ -454,11 +416,24 @@ public class DefaultManagedRepositoryAdmin
                 "fail to remove repository roles for repository " + repository.getId() + " : " + e.getMessage(), e );
         }
 
+        try {
+            final RepositoryRegistry reg = getRepositoryRegistry();
+            if (reg.getManagedRepository(repository.getId())!=null) {
+                reg.removeRepository(reg.getManagedRepository(repository.getId()));
+            }
+        } catch (RepositoryException e) {
+            throw new RepositoryAdminException("Removal of repository "+repository.getId()+ " failed: "+e.getMessage());
+        }
+
         saveConfiguration( config );
 
         return Boolean.TRUE;
     }
 
+    ArchivaIndexManager getIndexManager(ManagedRepository managedRepository) {
+        org.apache.archiva.repository.ManagedRepository repo = getRepositoryRegistry().getManagedRepository(managedRepository.getId());
+        return indexManagerFactory.getIndexManager(repo.getType());
+    }
 
     @Override
     public Boolean updateManagedRepository( ManagedRepository managedRepository, boolean needStageRepo,
@@ -486,11 +461,11 @@ public class DefaultManagedRepositoryAdmin
             stagingExists = oldRepo.getFeature( StagingRepositoryFeature.class ).get().getStagingRepository() != null;
         }
         boolean updateIndexContext = !StringUtils.equals( updatedRepoConfig.getIndexDir(), managedRepository.getIndexDirectory() );
-
+        org.apache.archiva.repository.ManagedRepository newRepo;
         // TODO remove content from old if path has changed !!!!!
         try
         {
-            org.apache.archiva.repository.ManagedRepository newRepo = repositoryRegistry.putRepository( updatedRepoConfig, configuration );
+            newRepo = repositoryRegistry.putRepository( updatedRepoConfig, configuration );
             if (newRepo.supportsFeature( StagingRepositoryFeature.class )) {
                 org.apache.archiva.repository.ManagedRepository stagingRepo = newRepo.getFeature( StagingRepositoryFeature.class ).get( ).getStagingRepository( );
                 if (stagingRepo!=null && !stagingExists)
@@ -551,21 +526,10 @@ public class DefaultManagedRepositoryAdmin
         {
             try
             {
-                IndexingContext indexingContext = indexer.getIndexingContexts().get( managedRepository.getId() );
-                if ( indexingContext != null )
-                {
-                    indexer.removeIndexingContext( indexingContext, true );
-                }
 
-                // delete directory too as only content is deleted
-                Path indexDirectory = indexingContext.getIndexDirectoryFile().toPath();
-                org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDirectory );
-
-                createIndexContext( managedRepository );
-            }
-            catch ( IOException e )
-            {
-                throw new RepositoryAdminException( e.getMessage(), e );
+                repositoryRegistry.resetIndexingContext(newRepo);
+            } catch (IndexUpdateFailedException e) {
+                e.printStackTrace();
             }
         }
 
@@ -591,110 +555,6 @@ public class DefaultManagedRepositoryAdmin
 
     }
 
-    public IndexingContext createIndexContext( org.apache.archiva.repository.ManagedRepository repository) throws RepositoryAdminException
-    {
-        return createIndexContext( convertRepo( repository ) );
-    }
-
-    @Override
-    public IndexingContext createIndexContext( ManagedRepository repository )
-        throws RepositoryAdminException
-    {
-
-        IndexingContext context = indexer.getIndexingContexts().get( repository.getId() );
-
-        if ( context != null )
-        {
-            log.debug( "skip creating repository indexingContent with id {} as already exists", repository.getId() );
-            return context;
-        }
-
-        // take care first about repository location as can be relative
-        Path repositoryDirectory = Paths.get( repository.getLocation() );
-
-        if ( !repositoryDirectory.isAbsolute() )
-        {
-            repositoryDirectory =
-                Paths.get( getRegistry().getString( "appserver.base" ), "repositories",
-                          repository.getLocation() );
-        }
-
-        if ( !Files.exists(repositoryDirectory) )
-        {
-            try {
-                Files.createDirectories(repositoryDirectory);
-            } catch (IOException e) {
-                log.error("Could not create directory {}", repositoryDirectory);
-            }
-        }
-
-        try
-        {
-
-            String indexDir = repository.getIndexDirectory();
-            //File managedRepository = new File( repository.getLocation() );
-
-            Path indexDirectory = null;
-            if ( StringUtils.isNotBlank( indexDir ) )
-            {
-                indexDirectory = Paths.get( repository.getIndexDirectory() );
-                // not absolute so create it in repository directory
-                if ( !indexDirectory.isAbsolute() )
-                {
-                    indexDirectory = repositoryDirectory.resolve(repository.getIndexDirectory() );
-                }
-                repository.setIndexDirectory( indexDirectory.toAbsolutePath().toString() );
-            }
-            else
-            {
-                indexDirectory = repositoryDirectory.resolve(".indexer" );
-                if ( !repositoryDirectory.isAbsolute() )
-                {
-                    indexDirectory = repositoryDirectory.resolve( ".indexer" );
-                }
-                repository.setIndexDirectory( indexDirectory.toAbsolutePath().toString() );
-            }
-
-            if ( !Files.exists(indexDirectory) )
-            {
-                Files.createDirectories(indexDirectory);
-            }
-
-            context = indexer.getIndexingContexts().get( repository.getId() );
-
-            if ( context == null )
-            {
-                try
-                {
-                    context = indexer.addIndexingContext( repository.getId(), repository.getId(), repositoryDirectory.toFile(),
-                                                          indexDirectory.toFile(),
-                                                          repositoryDirectory.toUri().toURL().toExternalForm(),
-                                                          indexDirectory.toUri().toURL().toString(), indexCreators );
-
-                    context.setSearchable( repository.isScanned() );
-                }
-                catch ( IndexFormatTooOldException e )
-                {
-                    // existing index with an old lucene format so we need to delete it!!!
-                    // delete it first then recreate it.
-                    log.warn( "the index of repository {} is too old we have to delete and recreate it", //
-                              repository.getId() );
-                    org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDirectory );
-                    context = indexer.addIndexingContext( repository.getId(), repository.getId(), repositoryDirectory.toFile(),
-                                                          indexDirectory.toFile(),
-                                                          repositoryDirectory.toUri().toURL().toExternalForm(),
-                                                          indexDirectory.toUri().toURL().toString(), indexCreators );
-
-                    context.setSearchable( repository.isScanned() );
-                }
-            }
-            return context;
-        }
-        catch ( IOException| UnsupportedExistingLuceneIndexException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-    }
 
     public Boolean scanRepository( String repositoryId, boolean fullScan )
     {
@@ -799,25 +659,6 @@ public class DefaultManagedRepositoryAdmin
         this.repositoryTaskScheduler = repositoryTaskScheduler;
     }
 
-    public NexusIndexer getIndexer()
-    {
-        return indexer;
-    }
-
-    public void setIndexer( NexusIndexer indexer )
-    {
-        this.indexer = indexer;
-    }
-
-    public List<? extends IndexCreator> getIndexCreators()
-    {
-        return indexCreators;
-    }
-
-    public void setIndexCreators( List<? extends IndexCreator> indexCreators )
-    {
-        this.indexCreators = indexCreators;
-    }
 
     public RepositoryRegistry getRepositoryRegistry( )
     {

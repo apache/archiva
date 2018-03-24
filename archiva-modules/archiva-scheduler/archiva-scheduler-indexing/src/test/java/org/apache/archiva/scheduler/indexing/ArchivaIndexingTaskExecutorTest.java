@@ -22,9 +22,9 @@ package org.apache.archiva.scheduler.indexing;
 import junit.framework.TestCase;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.utils.PathUtil;
-import org.apache.archiva.repository.BasicManagedRepository;
-import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.indexer.UnsupportedBaseContextException;
+import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.index.ArtifactInfo;
@@ -57,6 +57,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -76,10 +77,7 @@ public class ArchivaIndexingTaskExecutorTest
     private NexusIndexer indexer;
 
     @Inject
-    List<IndexCreator> indexCreators;
-
-    @Inject
-    ManagedRepositoryAdmin managedRepositoryAdmin;
+    RepositoryRegistry repositoryRegistry;
 
     @Inject
     private IndexUpdater indexUpdater;
@@ -99,7 +97,7 @@ public class ArchivaIndexingTaskExecutorTest
         repositoryConfig.setScanned( true );
         repositoryConfig.addActiveReleaseScheme( ReleaseScheme.RELEASE );
         repositoryConfig.removeActiveReleaseScheme( ReleaseScheme.SNAPSHOT );
-        managedRepositoryAdmin.createIndexContext( repositoryConfig );
+        repositoryRegistry.putRepository(repositoryConfig);
     }
 
     @After
@@ -112,6 +110,7 @@ public class ArchivaIndexingTaskExecutorTest
         {
             indexer.removeIndexingContext( indexingContext, true );
         }
+        repositoryRegistry.destroy();
         /*
         removeIndexingContext with true cleanup files.
         // delete created index in the repository
@@ -126,9 +125,12 @@ public class ArchivaIndexingTaskExecutorTest
         super.tearDown();
     }
 
-    protected IndexingContext getIndexingContext()
-    {
-        return indexer.getIndexingContexts().get( repositoryConfig.getId() );
+    protected IndexingContext getIndexingContext() throws UnsupportedBaseContextException {
+        Repository repo = repositoryRegistry.getRepository(repositoryConfig.getId());
+        assert repo != null;
+        ArchivaIndexingContext ctx = repo.getIndexingContext();
+        assert ctx != null;
+        return ctx.getBaseContext(IndexingContext.class);
     }
 
     @Test
@@ -139,29 +141,20 @@ public class ArchivaIndexingTaskExecutorTest
         Path artifactFile = basePath.resolve(
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
+        ManagedRepository repo = repositoryRegistry.getManagedRepository(repositoryConfig.getId());
         ArtifactIndexingTask task =
             new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.ADD,
-                                      getIndexingContext() );
+                                      repo.getIndexingContext());
 
         indexingExecutor.executeTask( task );
 
+        Map<String, IndexingContext> ctxs = indexer.getIndexingContexts();
         BooleanQuery q = new BooleanQuery();
         q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "org.apache.archiva" ) ),
                BooleanClause.Occur.SHOULD );
         q.add(
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             BooleanClause.Occur.SHOULD );
-
-        if ( !indexer.getIndexingContexts().containsKey( repositoryConfig.getId() ) )
-        {
-            IndexingContext context = indexer.addIndexingContext( repositoryConfig.getId(), //
-                                                                  repositoryConfig.getId(), //
-                                                                  basePath.toFile(), //
-                                                                  basePath.resolve(".indexer" ).toFile()
-                                                                  //
-                , null, null, indexCreators );
-            context.setSearchable( true );
-        }
 
         FlatSearchRequest request = new FlatSearchRequest( q );
         FlatSearchResponse response = indexer.searchFlat( request );
@@ -187,9 +180,10 @@ public class ArchivaIndexingTaskExecutorTest
         Path artifactFile = basePath.resolve(
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
+        ManagedRepository repo = repositoryRegistry.getManagedRepository(repositoryConfig.getId());
         ArtifactIndexingTask task =
             new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.ADD,
-                                      getIndexingContext() );
+                                      repo.getIndexingContext() );
 
         indexingExecutor.executeTask( task );
         indexingExecutor.executeTask( task );
@@ -201,7 +195,7 @@ public class ArchivaIndexingTaskExecutorTest
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             BooleanClause.Occur.SHOULD );
 
-        IndexingContext ctx = indexer.getIndexingContexts().get( repositoryConfig.getId() );
+        IndexingContext ctx = getIndexingContext();
 
         IndexSearcher searcher = ctx.acquireIndexSearcher();
         TopDocs topDocs = searcher.search( q, null, 10 );
@@ -224,9 +218,10 @@ public class ArchivaIndexingTaskExecutorTest
         Path artifactFile = basePath.resolve(
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
+        ManagedRepository repo = repositoryRegistry.getManagedRepository(repositoryConfig.getId());
         ArtifactIndexingTask task =
             new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.ADD,
-                                      getIndexingContext() );
+                                      repo.getIndexingContext() );
 
         // add artifact to index
         indexingExecutor.executeTask( task );
@@ -251,11 +246,11 @@ public class ArchivaIndexingTaskExecutorTest
 
         // remove added artifact from index
         task = new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.DELETE,
-                                         getIndexingContext() );
+                        repo.getIndexingContext());
         indexingExecutor.executeTask( task );
 
         task = new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.FINISH,
-                                         getIndexingContext() );
+                                         repo.getIndexingContext() );
         indexingExecutor.executeTask( task );
 
         q = new BooleanQuery();
@@ -301,16 +296,16 @@ public class ArchivaIndexingTaskExecutorTest
 
         Path artifactFile = basePath.resolve(
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
-
+        ManagedRepository repo = repositoryRegistry.getManagedRepository(repositoryConfig.getId());
         ArtifactIndexingTask task =
             new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.ADD,
-                                      getIndexingContext() );
+                                      repo.getIndexingContext() );
         task.setExecuteOnEntireRepo( false );
 
         indexingExecutor.executeTask( task );
 
         task = new ArtifactIndexingTask( repositoryConfig, null, ArtifactIndexingTask.Action.FINISH,
-                                         getIndexingContext() );
+                                         repo.getIndexingContext() );
 
         task.setExecuteOnEntireRepo( false );
 

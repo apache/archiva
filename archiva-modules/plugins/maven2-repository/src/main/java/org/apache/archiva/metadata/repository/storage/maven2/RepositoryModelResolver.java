@@ -19,9 +19,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
-import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
@@ -30,8 +28,13 @@ import org.apache.archiva.model.SnapshotVersion;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.RepositoryCredentials;
+import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.building.FileModelSource;
 import org.apache.maven.model.building.ModelSource;
@@ -53,6 +56,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 
@@ -228,15 +232,15 @@ public class RepositoryModelResolver
         Path tmpSha1 = null;
         Path tmpResource = null;
         String artifactPath = pathTranslator.toPath( groupId, artifactId, version, filename );
-        Path resource = Paths.get( targetRepository.getLocation(), artifactPath );
+        Path resource = Paths.get(targetRepository.getLocation()).resolve( artifactPath );
 
-        Path workingDirectory = createWorkingDirectory( targetRepository.getLocation() );
+        Path workingDirectory = createWorkingDirectory( targetRepository.getLocation().toString() );
         try
         {
             Wagon wagon = null;
             try
             {
-                String protocol = getProtocol( remoteRepository.getUrl() );
+                String protocol = getProtocol( remoteRepository.getLocation().toString() );
                 final NetworkProxy networkProxy = this.networkProxyMap.get( remoteRepository.getId() );
 
                 wagon = wagonFactory.getWagon(
@@ -357,7 +361,7 @@ public class RepositoryModelResolver
             networkProxy.setPassword( proxyConnector.getPassword() );
 
             String msg = "Using network proxy " + networkProxy.getHost() + ":" + networkProxy.getPort()
-                + " to connect to remote repository " + remoteRepository.getUrl();
+                + " to connect to remote repository " + remoteRepository.getLocation();
             if ( networkProxy.getNonProxyHosts() != null )
             {
                 msg += "; excluding hosts: " + networkProxy.getNonProxyHosts();
@@ -372,19 +376,24 @@ public class RepositoryModelResolver
         }
 
         AuthenticationInfo authInfo = null;
-        String username = remoteRepository.getUserName();
-        String password = remoteRepository.getPassword();
+        RepositoryCredentials creds = remoteRepository.getLoginCredentials();
+        String username = "";
+        String password = "";
+        if (creds instanceof UsernamePasswordCredentials) {
+            UsernamePasswordCredentials c = (UsernamePasswordCredentials) creds;
+            username = c.getUserName();
+            password = c.getPassword();
+        }
 
         if ( StringUtils.isNotBlank( username ) && StringUtils.isNotBlank( password ) )
         {
-            log.debug( "Using username {} to connect to remote repository {}", username, remoteRepository.getUrl() );
+            log.debug( "Using username {} to connect to remote repository {}", username, remoteRepository.getLocation() );
             authInfo = new AuthenticationInfo();
             authInfo.setUserName( username );
             authInfo.setPassword( password );
         }
 
-        // Convert seconds to milliseconds
-        int timeoutInMilliseconds = remoteRepository.getTimeout() * 1000;
+        int timeoutInMilliseconds = ((int)remoteRepository.getTimeout().getSeconds())*1000;
         // FIXME olamy having 2 config values
         // Set timeout
         wagon.setReadTimeout( timeoutInMilliseconds );
@@ -393,7 +402,7 @@ public class RepositoryModelResolver
         try
         {
             org.apache.maven.wagon.repository.Repository wagonRepository =
-                new org.apache.maven.wagon.repository.Repository( remoteRepository.getId(), remoteRepository.getUrl() );
+                new org.apache.maven.wagon.repository.Repository( remoteRepository.getId(), remoteRepository.getLocation().toString() );
             if ( networkProxy != null )
             {
                 wagon.connect( wagonRepository, authInfo, networkProxy );

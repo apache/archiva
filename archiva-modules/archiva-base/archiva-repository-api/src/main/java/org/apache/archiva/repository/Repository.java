@@ -22,6 +22,7 @@ package org.apache.archiva.repository;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.features.RepositoryFeature;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
@@ -34,7 +35,7 @@ import java.util.Set;
  *
  * Created by Martin Stockhammer on 21.09.17.
  */
-public interface Repository {
+public interface Repository extends RepositoryEventHandler {
 
     /**
      * Return the identifier of the repository. Repository identifier should be unique at least
@@ -175,4 +176,10 @@ public interface Repository {
      * @throws UnsupportedOperationException
      */
     ArchivaIndexingContext getIndexingContext();
+
+    /**
+     * Closes all resources that are opened by this repository.
+     */
+    void close();
+
 }

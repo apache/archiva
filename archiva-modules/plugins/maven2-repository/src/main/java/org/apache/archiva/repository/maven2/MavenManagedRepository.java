@@ -20,6 +20,7 @@ package org.apache.archiva.repository.maven2;
  */
 
 import org.apache.archiva.common.utils.PathUtil;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.AbstractManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryCapabilities;
@@ -54,8 +55,10 @@ public class MavenManagedRepository extends AbstractManagedRepository
     public static final String DEFAULT_LAYOUT = "default";
     public static final String LEGACY_LAYOUT = "legacy";
     private ArtifactCleanupFeature artifactCleanupFeature = new ArtifactCleanupFeature( );
-    private IndexCreationFeature indexCreationFeature = new IndexCreationFeature(  );
+    private IndexCreationFeature indexCreationFeature;
     private StagingRepositoryFeature stagingRepositoryFeature = new StagingRepositoryFeature(  );
+
+    
 
     private static final RepositoryCapabilities CAPABILITIES = new StandardCapabilities(
         new ReleaseScheme[] { ReleaseScheme.RELEASE, ReleaseScheme.SNAPSHOT },
@@ -73,6 +76,7 @@ public class MavenManagedRepository extends AbstractManagedRepository
     public MavenManagedRepository( String id, String name, Path basePath )
     {
         super( RepositoryType.MAVEN, id, name, basePath);
+        this.indexCreationFeature = new IndexCreationFeature(id, this);
     }
 
     public MavenManagedRepository( Locale primaryLocale, String id, String name, Path basePath )
@@ -134,4 +138,5 @@ public class MavenManagedRepository extends AbstractManagedRepository
             }
         }
     }
+
 }

@@ -50,11 +50,11 @@ public class MavenRepositorySearchTest
         throws Exception
     {
         List<Path> files = new ArrayList<>();
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test", TEST_REPO_1,
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos", TEST_REPO_1,
                               "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test", TEST_REPO_1,
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos", TEST_REPO_1,
                               "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ));
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test", TEST_REPO_1,
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos", TEST_REPO_1,
                               "org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ));
 
         createIndex( TEST_REPO_1, files, scan );
@@ -64,20 +64,20 @@ public class MavenRepositorySearchTest
         throws Exception
     {
         List<Path> files = new ArrayList<>();
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + TEST_REPO_1
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + TEST_REPO_1
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-test/1.0/archiva-test-1.0.jar" ) );
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + TEST_REPO_1
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-test/2.0/archiva-test-2.0.jar" ) );
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + TEST_REPO_1
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-webapp/1.0/archiva-webapp-1.0.war" ) );
         files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(),
-                             "src/test/" + TEST_REPO_1 + "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + TEST_REPO_1
+                             "target/repos/" + TEST_REPO_1 + "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos/" + TEST_REPO_1
             + "/com/artifactid-numeric123/1.0/artifactid-numeric123-1.0.jar" ) );
         files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(),
-                             "src/test/" + TEST_REPO_1 + "/com/classname-search/1.0/classname-search-1.0.jar" ) );
+                             "target/repos/" + TEST_REPO_1 + "/com/classname-search/1.0/classname-search-1.0.jar" ) );
 
         createIndex( TEST_REPO_1, files, scan );
     }
@@ -87,13 +87,13 @@ public class MavenRepositorySearchTest
     {
         List<Path> files = new ArrayList<>();
 
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + TEST_REPO_1
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
 
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + TEST_REPO_1
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.pom" ) );
 
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + TEST_REPO_1
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos/" + TEST_REPO_1
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0-sources.jar" ) );
 
         createIndex( TEST_REPO_1, files, scan );
@@ -337,9 +337,9 @@ public class MavenRepositorySearchTest
         createSimpleIndex( true );
 
         List<Path> files = new ArrayList<>();
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + TEST_REPO_2
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + TEST_REPO_2
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.1/archiva-search-1.1.jar" ) );
         createIndex( TEST_REPO_2, files, false );
 
@@ -365,6 +365,7 @@ public class MavenRepositorySearchTest
 
         SearchResultHit hit =
             results.getSearchResultHit( SearchUtil.getHitId( "org.apache.archiva", "archiva-search", null, "jar" ) );
+        assertNotNull(hit);
         assertEquals( "org.apache.archiva", hit.getGroupId() );
         assertEquals( "archiva-search", hit.getArtifactId() );
         assertEquals( "not 2 version for hit " + hit + "::" + niceDisplay( results ), 2, hit.getVersions().size() );
@@ -470,9 +471,9 @@ public class MavenRepositorySearchTest
         throws Exception
     {
         List<Path> files = new ArrayList<>();
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + TEST_REPO_2
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.0/archiva-search-1.0.jar" ) );
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + TEST_REPO_2
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos/" + TEST_REPO_2
             + "/org/apache/archiva/archiva-search/1.1/archiva-search-1.1.jar" ) );
         createIndex( TEST_REPO_2, files, false );
 
@@ -560,8 +561,8 @@ public class MavenRepositorySearchTest
     {
         List<Path> files = new ArrayList<>();
         files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(),
-                             "src/test/" + TEST_REPO_1 + "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
-        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + TEST_REPO_1
+                             "target/repos/" + TEST_REPO_1 + "/com/artifactid-numeric/1.0/artifactid-numeric-1.0.jar" ) );
+        files.add( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/repos/" + TEST_REPO_1
             + "/com/artifactid-numeric123/1.0/artifactid-numeric123-1.0.jar" ) );
         createIndex( TEST_REPO_1, files, true );
 
@@ -891,16 +892,19 @@ public class MavenRepositorySearchTest
     {
 
         Path repo = Paths.get( "target/repo-release" );
+        FileUtils.deleteDirectory(repo.toFile());
         Path indexDirectory = repo.resolve(".index" );
         FileUtils.copyDirectoryStructure( Paths.get( "src/test/repo-release" ).toFile(), repo.toFile() );
 
         IndexUpgrader.main( new String[]{ indexDirectory.toAbsolutePath().toString() } );
 
-        createIndex( "repo-release", Collections.emptyList(), false );
+        createIndex(REPO_RELEASE, Collections.emptyList(), false, indexDirectory );
 
-        nexusIndexer.addIndexingContext( REPO_RELEASE, REPO_RELEASE, repo.toFile(), indexDirectory.toFile(),
-                                         repo.toUri().toURL().toExternalForm(),
-                                         indexDirectory.toUri().toURL().toString(), indexCreators );
+//        indexer.addIndexingContext( REPO_RELEASE, REPO_RELEASE, repo.toFile(), indexDirectory.toFile(),
+//                                         repo.toUri().toURL().toExternalForm(),
+//                                         indexDirectory.toUri().toURL().toString(), indexCreators );
+
+
 
         SearchResultLimits limits = new SearchResultLimits( SearchResultLimits.ALL_PAGES );
         limits.setPageSize( 300 );

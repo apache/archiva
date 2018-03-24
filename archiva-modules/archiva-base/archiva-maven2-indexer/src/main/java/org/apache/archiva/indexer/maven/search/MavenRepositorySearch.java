@@ -20,24 +20,20 @@ package org.apache.archiva.indexer.maven.search;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.archiva.indexer.UnsupportedBaseContextException;
+import org.apache.archiva.indexer.search.ArtifactInfoFilter;
 import org.apache.archiva.indexer.search.*;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.model.ArchivaArtifactModel;
-import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.MAVEN;
-import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.OSGI;
-import org.apache.maven.index.QueryCreator;
-import org.apache.maven.index.SearchType;
+import org.apache.maven.index.*;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.expr.SearchTyped;
@@ -52,13 +48,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * RepositorySearch implementation which uses the Maven Indexer for searching.
@@ -69,11 +59,12 @@ public class MavenRepositorySearch
 {
     private Logger log = LoggerFactory.getLogger( getClass() );
 
-    private NexusIndexer indexer;
+    private Indexer indexer;
 
     private QueryCreator queryCreator;
 
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
+
+    RepositoryRegistry repositoryRegistry;
 
     private ProxyConnectorAdmin proxyConnectorAdmin;
 
@@ -83,13 +74,14 @@ public class MavenRepositorySearch
     }
 
     @Inject
-    public MavenRepositorySearch( NexusIndexer nexusIndexer, ManagedRepositoryAdmin managedRepositoryAdmin,
+    public MavenRepositorySearch( Indexer nexusIndexer, RepositoryRegistry repositoryRegistry,
+
                                   ProxyConnectorAdmin proxyConnectorAdmin, QueryCreator queryCreator )
         throws PlexusSisuBridgeException
     {
         this.indexer = nexusIndexer;
         this.queryCreator = queryCreator;
-        this.managedRepositoryAdmin = managedRepositoryAdmin;
+        this.repositoryRegistry = repositoryRegistry;
         this.proxyConnectorAdmin = proxyConnectorAdmin;
     }
 
@@ -335,13 +327,36 @@ public class MavenRepositorySearch
 
     }
 
+    private IndexingContext getIndexingContext(String id) {
+        String repoId;
+        if (StringUtils.startsWith(id, "remote-")) {
+            repoId = StringUtils.substringAfter(id, "remote-");
+        } else {
+            repoId = id;
+        }
+        Repository repo = repositoryRegistry.getRepository(repoId);
+        if (repo==null) {
+            return null;
+        } else {
+            if (repo.getIndexingContext()!=null) {
+                try {
+                    return repo.getIndexingContext().getBaseContext(IndexingContext.class);
+                } catch (UnsupportedBaseContextException e) {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
+    }
+
     private List<IndexingContext> getIndexingContexts( List<String> ids )
     {
         List<IndexingContext> contexts = new ArrayList<>( ids.size() );
 
         for ( String id : ids )
         {
-            IndexingContext context = indexer.getIndexingContexts().get( id );
+            IndexingContext context = getIndexingContext(id);
             if ( context != null )
             {
                 contexts.add( context );
@@ -382,20 +397,20 @@ public class MavenRepositorySearch
         {
             try
             {
-                ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repo );
+                Repository rRepo = repositoryRegistry.getRepository(repo);
 
-                if ( repoConfig != null )
+                if ( rRepo != null )
                 {
 
-                    IndexingContext context = managedRepositoryAdmin.createIndexContext( repoConfig );
-                    if ( context.isSearchable() )
-                    {
-                        indexingContextIds.addAll( getRemoteIndexingContextIds( repo ) );
-                        indexingContextIds.add( context.getId() );
-                    }
-                    else
-                    {
-                        log.warn( "indexingContext with id {} not searchable", repoConfig.getId() );
+                    if (rRepo.getType().equals(RepositoryType.MAVEN)) {
+                        assert rRepo.getIndexingContext() != null;
+                        IndexingContext context = rRepo.getIndexingContext().getBaseContext(IndexingContext.class);
+                        if (context.isSearchable()) {
+                            indexingContextIds.addAll(getRemoteIndexingContextIds(repo));
+                            indexingContextIds.add(context.getId());
+                        } else {
+                            log.warn("indexingContext with id {} not searchable", rRepo.getId());
+                        }
                     }
 
                 }
@@ -404,16 +419,13 @@ public class MavenRepositorySearch
                     log.warn( "Repository '{}' not found in configuration.", repo );
                 }
             }
-            catch ( RepositoryAdminException e )
-            {
-                log.warn( "RepositoryAdminException occured while accessing index of repository '{}' : {}", repo,
-                          e.getMessage() );
-                continue;
-            }
             catch ( RepositorySearchException e )
             {
                 log.warn( "RepositorySearchException occured while accessing index of repository '{}' : {}", repo,
                     e.getMessage() );
+                continue;
+            } catch (UnsupportedBaseContextException e) {
+                log.error("Fatal situation: Maven repository without IndexingContext found.");
                 continue;
             }
         }
@@ -446,10 +458,16 @@ public class MavenRepositorySearch
         for ( ProxyConnector proxyConnector : proxyConnectors )
         {
             String remoteId = "remote-" + proxyConnector.getTargetRepoId();
-            IndexingContext context = indexer.getIndexingContexts().get( remoteId );
-            if ( context != null && context.isSearchable() )
-            {
-                ids.add( remoteId );
+            RemoteRepository repo = repositoryRegistry.getRemoteRepository(proxyConnector.getTargetRepoId());
+            if (repo.getType()==RepositoryType.MAVEN) {
+                try {
+                    IndexingContext context = repo.getIndexingContext() != null ? repo.getIndexingContext().getBaseContext(IndexingContext.class) : null;
+                    if (context!=null && context.isSearchable()) {
+                        ids.add(remoteId);
+                    }
+                } catch (UnsupportedBaseContextException e) {
+                    // Ignore this one
+                }
             }
         }
 

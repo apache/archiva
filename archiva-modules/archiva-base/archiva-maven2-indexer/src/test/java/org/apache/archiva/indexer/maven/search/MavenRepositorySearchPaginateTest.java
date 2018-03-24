@@ -24,19 +24,37 @@ import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResultLimits;
 import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.indexer.util.SearchUtil;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Arrays;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+
+import javax.inject.Inject;
 
 /**
  * @author Olivier Lamy
  */
-@RunWith( ArchivaBlockJUnit4ClassRunner.class )
+@RunWith( ArchivaSpringJUnit4ClassRunner.class )
+@ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context.xml" } )
 public class MavenRepositorySearchPaginateTest
     extends TestCase
 {
+
+    @Autowired
+    RepositoryRegistry repositoryRegistry;
+
+    @After
+    public void endTests() {
+        assert repositoryRegistry!=null;
+        repositoryRegistry.destroy();
+    }
+
     @Test
     public void nonPaginatedResult()
         throws Exception

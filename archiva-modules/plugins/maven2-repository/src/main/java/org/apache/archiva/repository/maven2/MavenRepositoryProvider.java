@@ -24,18 +24,7 @@ import org.apache.archiva.configuration.AbstractRepositoryConfiguration;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.repository.EditableManagedRepository;
-import org.apache.archiva.repository.EditableRemoteRepository;
-import org.apache.archiva.repository.EditableRepository;
-import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.PasswordCredentials;
-import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.RemoteRepository;
-import org.apache.archiva.repository.RepositoryCredentials;
-import org.apache.archiva.repository.RepositoryException;
-import org.apache.archiva.repository.RepositoryProvider;
-import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.repository.UnsupportedURIException;
+import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
@@ -298,7 +287,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
 
     @Override
     public ManagedRepositoryConfiguration getManagedConfiguration(ManagedRepository managedRepository) throws RepositoryException {
-        if (!(managedRepository instanceof MavenManagedRepository)) {
+        if (!(managedRepository instanceof MavenManagedRepository || managedRepository instanceof BasicManagedRepository)) {
             log.error("Wrong remote repository type " + managedRepository.getClass().getName());
             throw new RepositoryException("The given repository type cannot be handled by the maven provider: " + managedRepository.getClass().getName());
         }
@@ -396,5 +385,10 @@ public class MavenRepositoryProvider implements RepositoryProvider {
 
     public void setArchivaConfiguration(ArchivaConfiguration archivaConfiguration) {
         this.archivaConfiguration = archivaConfiguration;
+    }
+
+    @Override
+    public <T> void raise(RepositoryEvent<T> event) {
+        //
     }
 }

@@ -20,6 +20,7 @@ package org.apache.archiva.indexer;
  */
 
 import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryEvent;
 import org.apache.archiva.repository.RepositoryType;
 import org.springframework.stereotype.Service;
 
@@ -63,4 +64,15 @@ public class GenericIndexManager implements ArchivaIndexManager {
     public ArchivaIndexingContext createContext(Repository repository) {
         return null;
     }
+
+    @Override
+    public ArchivaIndexingContext reset(ArchivaIndexingContext context) throws IndexUpdateFailedException {
+        return null;
+    }
+
+    @Override
+    public ArchivaIndexingContext move(ArchivaIndexingContext context, Repository repo) throws IndexCreationFailedException {
+        return null;
+    }
+
 }

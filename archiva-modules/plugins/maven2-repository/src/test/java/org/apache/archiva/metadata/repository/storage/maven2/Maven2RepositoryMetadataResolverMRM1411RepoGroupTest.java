@@ -27,6 +27,7 @@ import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.Wagon;
@@ -87,6 +88,9 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
     @Inject
     @Named ( "archivaConfiguration#default" )
     private ArchivaConfiguration configuration;
+
+    @Inject
+    RepositoryRegistry repositoryRegistry;
 
     private WagonFactory wagonFactory;
 
@@ -149,6 +153,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
         c.addRepositoryGroup( repoGroup );
 
         configuration.save( c );
+        repositoryRegistry.reload();
 
         assertFalse( c.getManagedRepositories().get( 0 ).isSnapshots() );
         assertTrue( c.getManagedRepositories().get( 0 ).isReleases() );
@@ -169,8 +174,12 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
     public void testGetProjectVersionMetadataWithParentSuccessful()
         throws Exception
     {
-        copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-module-a",
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-root",
+                "target/test-repository/com/example/test/test-artifact-root" );
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-parent",
+                "target/test-repository/com/example/test/test-artifact-parent" );
 
         ReadMetadataRequest readMetadataRequest =
             new ReadMetadataRequest().repositoryId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
@@ -221,8 +230,12 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
 
         configuration.save( config );
 
-        copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-module-a",
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-root",
+                "target/test-repository/com/example/test/test-artifact-root" );
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-parent",
+                "target/test-repository/com/example/test/test-artifact-parent" );
 
         ReadMetadataRequest readMetadataRequest =
             new ReadMetadataRequest().repositoryId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(
@@ -248,7 +261,7 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
     public void testGetProjectVersionMetadataWithParentNotInAnyRemoteRepo()
         throws Exception
     {
-        copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-module-a",
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
 
         ReadMetadataRequest readMetadataRequest =
@@ -281,6 +294,8 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
                                     "target/test-repositorys/com/example/test/test-snapshot-artifact-module-a" );
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-snapshot-artifact-root",
                                     "target/test-repositorys/com/example/test/test-snapshot-artifact-root" );
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-parent",
+                "target/test-repositorys/com/example/test/test-artifact-parent" );
 
         ReadMetadataRequest readMetadataRequest =
             new ReadMetadataRequest( TEST_SNAP_REPO_ID, "com.example.test", "test-snapshot-artifact-module-a",
@@ -324,6 +339,10 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
     {
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-snapshot-artifact-module-a",
                                     "target/test-repositorys/com/example/test/test-snapshot-artifact-module-a" );
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-parent",
+                "target/test-repositorys/com/example/test/test-artifact-parent" );
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-snapshot-artifact-root",
+                "target/test-repositorys/com/example/test/test-snapshot-artifact-root" );
 
         ReadMetadataRequest readMetadataRequest =
             new ReadMetadataRequest().repositoryId( TEST_SNAP_REPO_ID ).namespace( "com.example.test" ).projectId(
@@ -365,8 +384,10 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
     public void testGetProjectVersionMetadataWithParentSnapshotVersionAndSnapNotAllowed2()
         throws Exception
     {
-        copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-b",
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-module-b",
                                     "target/test-repository/com/example/test/test-artifact-module-b" );
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-snapshot-artifact-root",
+                "target/test-repositorys/com/example/test/test-snapshot-artifact-root" );
 
         ReadMetadataRequest readMetadataRequest =
             new ReadMetadataRequest().repositoryId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(

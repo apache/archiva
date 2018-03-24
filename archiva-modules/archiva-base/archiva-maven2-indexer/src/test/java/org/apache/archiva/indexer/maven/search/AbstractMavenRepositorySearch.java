@@ -28,18 +28,14 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.indexer.maven.search.MavenRepositorySearch;
 import org.apache.archiva.indexer.search.SearchResultHit;
 import org.apache.archiva.indexer.search.SearchResults;
+import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang.SystemUtils;
-import org.apache.maven.index.ArtifactContext;
-import org.apache.maven.index.ArtifactContextProducer;
-import org.apache.maven.index.ArtifactScanningListener;
-import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.QueryCreator;
-import org.apache.maven.index.ScanningResult;
+import org.apache.maven.index.*;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.easymock.EasyMock;
@@ -87,6 +83,9 @@ public abstract class AbstractMavenRepositorySearch
     @Inject
     RepositoryRegistry repositoryRegistry;
 
+    @Inject
+    private IndexerEngine indexerEngine;
+
     IMocksControl archivaConfigControl;
 
     Configuration config;
@@ -98,7 +97,10 @@ public abstract class AbstractMavenRepositorySearch
     List<IndexCreator> indexCreators;
 
     @Inject
-    NexusIndexer nexusIndexer;
+    Indexer indexer;
+
+    @Inject
+    Scanner scanner;
 
     @Inject
     QueryCreator queryCreator;
@@ -127,11 +129,9 @@ public abstract class AbstractMavenRepositorySearch
         defaultProxyConnectorAdmin.setArchivaConfiguration( archivaConfig );
         repositoryRegistry.setArchivaConfiguration( archivaConfig );
 
-        search = new MavenRepositorySearch( nexusIndexer, defaultManagedRepositoryAdmin, defaultProxyConnectorAdmin,
+        search = new MavenRepositorySearch( indexer, repositoryRegistry, defaultProxyConnectorAdmin,
                                             queryCreator );
 
-        defaultManagedRepositoryAdmin.setIndexer( nexusIndexer );
-        defaultManagedRepositoryAdmin.setIndexCreators( indexCreators );
         assertNotNull( repositoryRegistry );
         defaultManagedRepositoryAdmin.setRepositoryRegistry( repositoryRegistry );
 
@@ -144,6 +144,8 @@ public abstract class AbstractMavenRepositorySearch
         archivaConfig.addListener( EasyMock.anyObject( ConfigurationListener.class ) );
         EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
         EasyMock.expect( archivaConfig.getConfiguration() ).andReturn(config).anyTimes();
+        archivaConfig.save(EasyMock.anyObject(Configuration.class));
+        EasyMock.expectLastCall().anyTimes();
         archivaConfigControl.replay();
         repositoryRegistry.reload();
         archivaConfigControl.reset();
@@ -154,11 +156,16 @@ public abstract class AbstractMavenRepositorySearch
     public void tearDown()
         throws Exception
     {
-        for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
-        {
-            nexusIndexer.removeIndexingContext( indexingContext, true );
-        }
-
+        archivaConfigControl.reset();
+        EasyMock.expect( archivaConfig.getDefaultLocale() ).andReturn( Locale.getDefault( ) ).anyTimes();
+        EasyMock.expect( archivaConfig.getConfiguration() ).andReturn(config).anyTimes();
+        archivaConfig.save(EasyMock.anyObject(Configuration.class));
+        EasyMock.expectLastCall().anyTimes();
+        archivaConfigControl.replay();
+        repositoryRegistry.removeRepository(TEST_REPO_1);
+        repositoryRegistry.removeRepository(TEST_REPO_2);
+        repositoryRegistry.removeRepository(REPO_RELEASE);
+        repositoryRegistry.destroy();
         FileUtils.deleteDirectory( Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 ) );
         assertFalse( Files.exists(Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + TEST_REPO_1 )) );
 
@@ -190,22 +197,32 @@ public abstract class AbstractMavenRepositorySearch
         repositoryConfig.setScanned( true );
         repositoryConfig.setSnapshots( false );
         repositoryConfig.setReleases( true );
+        repositoryConfig.setIndexDir(".indexer");
 
         return repositoryConfig;
     }
 
-    protected void createIndex( String repository, List<Path> filesToBeIndexed, boolean scan )
+    protected void createIndex( String repository, List<Path> filesToBeIndexed, boolean scan) throws Exception {
+        createIndex(repository, filesToBeIndexed, scan, null);
+    }
+
+    protected void createIndex( String repository, List<Path> filesToBeIndexed, boolean scan, Path indexDir)
         throws Exception
     {
+        Repository rRepo = repositoryRegistry.getRepository(repository);
+        IndexCreationFeature icf = rRepo.getFeature(IndexCreationFeature.class).get();
 
-        IndexingContext context = nexusIndexer.getIndexingContexts().get( repository );
+
+        IndexingContext context = rRepo.getIndexingContext().getBaseContext(IndexingContext.class);
 
         if ( context != null )
         {
-            nexusIndexer.removeIndexingContext( context, true );
+            context.close(true);
         }
 
-        Path indexerDirectory = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + repository + "/.indexer" );
+        Path repoDir = Paths.get(org.apache.archiva.common.utils.FileUtils.getBasedir()).resolve("target").resolve("repos").resolve(repository);
+
+        Path indexerDirectory = repoDir.resolve(".indexer" );
 
         if ( Files.exists(indexerDirectory) )
         {
@@ -214,7 +231,7 @@ public abstract class AbstractMavenRepositorySearch
 
         assertFalse( Files.exists(indexerDirectory) );
 
-        Path lockFile = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "/target/repos/" + repository + "/.indexer/write.lock" );
+        Path lockFile = repoDir.resolve(".indexer/write.lock" );
         if ( Files.exists(lockFile) )
         {
             Files.delete(lockFile);
@@ -224,14 +241,20 @@ public abstract class AbstractMavenRepositorySearch
 
         Path repo = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "src/test/" + repository );
         assertTrue( Files.exists(repo) );
-        Path indexDirectory =
-            Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
-        indexDirectory.toFile().deleteOnExit();
-        FileUtils.deleteDirectory( indexDirectory );
+        org.apache.commons.io.FileUtils.copyDirectory(repo.toFile(), repoDir.toFile());
 
-        context = nexusIndexer.addIndexingContext( repository, repository, repo.toFile(), indexDirectory.toFile(),
-                                                   repo.toUri().toURL().toExternalForm(),
-                                                   indexDirectory.toUri().toURL().toString(), indexCreators );
+        if (indexDir==null) {
+            Path indexDirectory =
+                    Paths.get(org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/index/test-" + Long.toString(System.currentTimeMillis()));
+            indexDirectory.toFile().deleteOnExit();
+            FileUtils.deleteDirectory(indexDirectory);
+            icf.setIndexPath(indexDirectory.toUri());
+        } else {
+
+            icf.setIndexPath(indexDir.toUri());
+        }
+        context = rRepo.getIndexingContext().getBaseContext(IndexingContext.class);
+
 
         // minimize datas in memory
 //        context.getIndexWriter().setMaxBufferedDocs( -1 );
@@ -247,16 +270,20 @@ public abstract class AbstractMavenRepositorySearch
                 ac.getArtifactInfo().setPackaging( "pom" );
                 ac.getArtifactInfo().setClassifier( "pom" );
             }
-            nexusIndexer.addArtifactToIndex( ac, context );
+            indexer.addArtifactToIndex( ac, context );
             context.updateTimestamp( true );
         }
 
         if ( scan )
         {
-            nexusIndexer.scan( context, new ArtifactScanListener(), false );
+            DefaultScannerListener listener = new DefaultScannerListener( context, indexerEngine, true, new ArtifactScanListener());
+            ScanningRequest req = new ScanningRequest(context, listener );
+            scanner.scan( req );
+            context.commit();
         }
         // force flushing
-        context.getIndexWriter().commit();
+        context.commit();
+        //  context.getIndexWriter().commit();
         context.setSearchable( true );
 
     }

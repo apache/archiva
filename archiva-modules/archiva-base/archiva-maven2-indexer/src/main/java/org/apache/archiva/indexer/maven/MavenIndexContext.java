@@ -26,6 +26,7 @@ import org.apache.maven.index.context.IndexingContext;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.sql.Date;
 import java.time.ZonedDateTime;
 import java.util.Set;
@@ -81,12 +82,20 @@ public class MavenIndexContext implements ArchivaIndexingContext {
 
     @Override
     public void close(boolean deleteFiles) throws IOException {
-        delegate.close(deleteFiles);
+        try {
+            delegate.close(deleteFiles);
+        } catch (NoSuchFileException e) {
+            // Ignore missing directory
+        }
     }
 
     @Override
     public void close() throws IOException {
-        delegate.close(false);
+        try {
+            delegate.close(false);
+        } catch (NoSuchFileException e) {
+            // Ignore missing directory
+        }
     }
 
     @Override

@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,6 +39,9 @@ public class Maven2RepositoryMetadataResolverManagedSnapshotTest
     @Inject
     @Named ( "repositoryStorage#maven2")
     private Maven2RepositoryStorage storage;
+
+    @Inject
+    RepositoryRegistry repositoryRegistry;
 
     private static final String TEST_REPO_ID = "test";
 
@@ -72,6 +76,8 @@ public class Maven2RepositoryMetadataResolverManagedSnapshotTest
         testRepo.setSnapshots( true );
 
         configuration.save( c );
+
+        repositoryRegistry.reload();
 
         assertTrue( c.getManagedRepositories().get( 0 ).isSnapshots() );
         assertFalse( c.getManagedRepositories().get( 0 ).isReleases() );

@@ -96,9 +96,8 @@ public abstract class AbstractSecurityTest
         repoConfig.setLocation( Paths.get( "target/test-repo/" + repoId ).toString() );
         if ( !archivaConfiguration.getConfiguration().getManagedRepositoriesAsMap().containsKey( repoId ) )
         {
-            archivaConfiguration.getConfiguration().addManagedRepository( repoConfig );
+            repositoryRegistry.putRepository( repoConfig );
         }
-        repositoryRegistry.reload();
 
         // Add repo roles to security.
         userRepos.createMissingRepositoryRoles( repoId );
@@ -152,6 +151,9 @@ public abstract class AbstractSecurityTest
         // Setup Guest User.
         User guestUser = createUser( USER_GUEST, "Guest User" );
         roleManager.assignRole( ArchivaRoleConstants.TEMPLATE_GUEST, guestUser.getUsername() );
+
+        repositoryRegistry.setArchivaConfiguration(archivaConfiguration);
+        repositoryRegistry.reload();
     }
 
     protected void restoreGuestInitialValues( String userId )
