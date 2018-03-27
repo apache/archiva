@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
@@ -42,9 +43,11 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
 
     private URI indexPath;
 
-    private String repo;
+    private Path localIndexPath;
 
-    public IndexCreationFeature(String repoId, RepositoryEventListener listener) {
+    private Repository repo;
+
+    public IndexCreationFeature(Repository repoId, RepositoryEventListener listener) {
         super(listener);
         this.repo = repoId;
         try
@@ -108,5 +111,13 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
 
     public boolean hasIndex() {
         return this.indexPath!=null && !StringUtils.isEmpty( this.indexPath.getPath() );
+    }
+
+    public Path getLocalIndexPath() {
+        return localIndexPath;
+    }
+
+    public void setLocalIndexPath(Path localIndexPath) {
+        this.localIndexPath = localIndexPath;
     }
 }

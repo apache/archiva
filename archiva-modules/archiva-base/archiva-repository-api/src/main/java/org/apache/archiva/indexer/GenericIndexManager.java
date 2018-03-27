@@ -19,16 +19,28 @@ package org.apache.archiva.indexer;
  * under the License.
  */
 
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryEvent;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.features.IndexCreationFeature;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 
 @Service("indexManager#none")
 public class GenericIndexManager implements ArchivaIndexManager {
+
+    private final Logger log = LoggerFactory.getLogger(GenericIndexManager.class);
+
+    public static final String DEFAULT_INDEXER_DIR = ".indexer";
 
     @Override
     public void pack(ArchivaIndexingContext context) {
@@ -73,6 +85,45 @@ public class GenericIndexManager implements ArchivaIndexManager {
     @Override
     public ArchivaIndexingContext move(ArchivaIndexingContext context, Repository repo) throws IndexCreationFailedException {
         return null;
+    }
+
+    @Override
+    public void updateLocalIndexPath(Repository repo) {
+        if (repo.supportsFeature(IndexCreationFeature.class)) {
+            IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+            try {
+                icf.setLocalIndexPath(getIndexPath(repo));
+            } catch (IOException e) {
+                log.error("Could not set local index path for {}. New URI: {}", repo.getId(), icf.getIndexPath());
+            }
+        }
+    }
+
+    private Path getIndexPath(Repository repo) throws IOException {
+        IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+        Path repoDir = repo.getLocalPath();
+        URI indexDir = icf.getIndexPath();
+        Path indexDirectory = null;
+        if ( ! StringUtils.isEmpty(indexDir.toString( ) ) )
+        {
+
+            indexDirectory = PathUtil.getPathFromUri( indexDir );
+            // not absolute so create it in repository directory
+            if ( !indexDirectory.isAbsolute( ) )
+            {
+                indexDirectory = repoDir.resolve( indexDirectory );
+            }
+        }
+        else
+        {
+            indexDirectory = repoDir.resolve( DEFAULT_INDEXER_DIR);
+        }
+
+        if ( !Files.exists( indexDirectory ) )
+        {
+            Files.createDirectories( indexDirectory );
+        }
+        return indexDirectory;
     }
 
 }

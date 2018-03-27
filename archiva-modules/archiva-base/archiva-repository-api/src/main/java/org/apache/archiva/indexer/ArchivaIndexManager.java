@@ -24,6 +24,7 @@ import org.apache.archiva.repository.RepositoryEventListener;
 import org.apache.archiva.repository.RepositoryType;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Collection;
 
 public interface ArchivaIndexManager {
@@ -95,4 +96,10 @@ public interface ArchivaIndexManager {
      * @throws IndexCreationFailedException
      */
     ArchivaIndexingContext move(ArchivaIndexingContext context, Repository repo) throws IndexCreationFailedException;
+
+    /**
+     * Returns the local path where the index is stored.
+     * @return
+     */
+    public void updateLocalIndexPath(Repository repo);
 }

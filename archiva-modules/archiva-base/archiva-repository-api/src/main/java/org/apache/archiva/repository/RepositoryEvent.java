@@ -29,12 +29,12 @@ import java.time.LocalDateTime;
 public class RepositoryEvent<T> {
 
     final EventType type;
-    final String repo;
+    final Repository repo;
     final T value;
     final T oldValue;
     final LocalDateTime instant;
 
-    public RepositoryEvent(EventType type, String repo, T oldValue, T value) {
+    public RepositoryEvent(EventType type, Repository repo, T oldValue, T value) {
         this.type = type;
         this.repo = repo;
         this.value = value;
@@ -47,19 +47,19 @@ public class RepositoryEvent<T> {
     }
 
 
-    EventType getType() {
+    public EventType getType() {
         return type;
     };
 
-    String getRepositoryId() {
+    public Repository getRepository() {
         return repo;
     };
 
-    T getValue() {
+    public T getValue() {
         return value;
     }
 
-    T getOldValue() {
+    public T getOldValue() {
         return oldValue;
     }
 

@@ -19,6 +19,7 @@ package org.apache.archiva.repository.features;
  * under the License.
  */
 
+import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryEvent;
 
 import java.net.URI;
@@ -29,7 +30,7 @@ public class IndexCreationEvent extends RepositoryEvent<URI> {
         URI_CHANGE
     }
 
-    IndexCreationEvent(String repo, URI oldValue, URI value) {
+    IndexCreationEvent(Repository repo, URI oldValue, URI value) {
         super(Index.URI_CHANGE, repo, oldValue, value);
     }
 }

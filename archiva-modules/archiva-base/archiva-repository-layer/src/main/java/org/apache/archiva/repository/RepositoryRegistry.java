@@ -19,19 +19,14 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ConfigurationEvent;
-import org.apache.archiva.configuration.ConfigurationListener;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.*;
 import org.apache.archiva.indexer.*;
+import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.redback.components.registry.RegistryException;
-import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationEvent;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -40,7 +35,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
@@ -239,6 +233,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             ArchivaIndexManager idxManager = getIndexManager(editableRepo.getType());
             try {
                 editableRepo.setIndexingContext(idxManager.createContext(editableRepo));
+                idxManager.updateLocalIndexPath(editableRepo);
             } catch (IndexCreationFailedException e) {
                 throw new RepositoryException("Could not create index for repository "+editableRepo.getId()+": "+e.getMessage(),e);
             }
@@ -855,6 +850,21 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
 
     }
 
+
+    private void doRemoveRepo(RemoteRepository repo, Configuration configuration) {
+            repo.close();
+            RemoteRepositoryConfiguration cfg = configuration.findRemoteRepositoryById(repo.getId());
+            if (cfg != null) {
+                configuration.removeRemoteRepository(cfg);
+            }
+            List<ProxyConnectorConfiguration> proxyConnectors = new ArrayList<>(configuration.getProxyConnectors());
+            for (ProxyConnectorConfiguration proxyConnector : proxyConnectors) {
+                if (StringUtils.equals(proxyConnector.getTargetRepoId(), repo.getId())) {
+                    configuration.removeProxyConnector(proxyConnector);
+                }
+            }
+    }
+
     /**
      * Removes the remote repository from the registry and configuration.
      * The change is saved to the configuration immediately.
@@ -864,23 +874,18 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
      */
     public void removeRepository( RemoteRepository remoteRepository ) throws RepositoryException
     {
+
         final String id = remoteRepository.getId();
         RemoteRepository repo = getRemoteRepository( id );
         if (repo!=null) {
             rwLock.writeLock().lock();
             try {
                 repo = remoteRepositories.remove( id );
-
                 if (repo!=null) {
-                    repo.close();
                     Configuration configuration = getArchivaConfiguration().getConfiguration();
-                    RemoteRepositoryConfiguration cfg = configuration.findRemoteRepositoryById( id );
-                    if (cfg!=null) {
-                        configuration.removeRemoteRepository( cfg );
-                    }
+                    doRemoveRepo(repo, configuration);
                     getArchivaConfiguration().save( configuration );
                 }
-
             }
             catch ( RegistryException | IndeterminateConfigurationException e )
             {
@@ -904,11 +909,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             try {
                 repo = remoteRepositories.remove( id );
                 if (repo!=null) {
-                    repo.close();
-                    RemoteRepositoryConfiguration cfg = configuration.findRemoteRepositoryById( id );
-                    if (cfg!=null) {
-                        configuration.removeRemoteRepository( cfg );
-                    }
+                    doRemoveRepo(repo, configuration);
                 }
             } finally
             {
@@ -1017,13 +1018,18 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
     @Override
     public <T> void raise(RepositoryEvent<T> event) {
         if (event.getType().equals(IndexCreationEvent.Index.URI_CHANGE)) {
-            if (managedRepositories.containsKey(event.getRepositoryId()) ||
-                    remoteRepositories.containsKey(event.getRepositoryId())) {
-                EditableRepository repo = (EditableRepository) getRepository(event.getRepositoryId());
+            if (managedRepositories.containsKey(event.getRepository().getId()) ||
+                    remoteRepositories.containsKey(event.getRepository().getId())) {
+                EditableRepository repo = (EditableRepository) event.getRepository();
                 if (repo != null && repo.getIndexingContext()!=null) {
                     try {
-                        ArchivaIndexingContext newCtx = getIndexManager(repo.getType()).move(repo.getIndexingContext(), repo);
-                        repo.setIndexingContext(newCtx);
+                        ArchivaIndexManager idxmgr = getIndexManager(repo.getType());
+                        if (idxmgr != null) {
+                            ArchivaIndexingContext newCtx = idxmgr.move(repo.getIndexingContext(), repo);
+                            repo.setIndexingContext(newCtx);
+                            idxmgr.updateLocalIndexPath(repo);
+                        }
+
                     } catch (IndexCreationFailedException e) {
                         log.error("Could not move index to new directory {}", e.getMessage(), e);
                     }

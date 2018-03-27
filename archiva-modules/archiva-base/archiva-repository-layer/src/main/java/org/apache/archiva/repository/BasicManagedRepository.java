@@ -64,7 +64,7 @@ public class BasicManagedRepository extends AbstractManagedRepository
     }
 
     private void initFeatures() {
-        IndexCreationFeature indexCreationFeature = new IndexCreationFeature(this.getId(), this);
+        IndexCreationFeature indexCreationFeature = new IndexCreationFeature(this, this);
         addFeature( artifactCleanupFeature );
         addFeature( indexCreationFeature );
         addFeature( stagingRepositoryFeature );

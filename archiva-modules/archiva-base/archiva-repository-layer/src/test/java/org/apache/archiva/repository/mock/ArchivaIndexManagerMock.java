@@ -82,4 +82,9 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
     public ArchivaIndexingContext move(ArchivaIndexingContext context, Repository repo) throws IndexCreationFailedException {
         return null;
     }
+
+    @Override
+    public void updateLocalIndexPath(Repository repo) {
+
+    }
 }
