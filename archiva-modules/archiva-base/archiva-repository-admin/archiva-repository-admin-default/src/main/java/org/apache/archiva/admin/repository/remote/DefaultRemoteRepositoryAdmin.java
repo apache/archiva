@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
@@ -33,6 +34,8 @@ import org.apache.archiva.repository.PasswordCredentials;
 import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.features.IndexCreationEvent;
+import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.NexusIndexer;
@@ -46,6 +49,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -137,6 +141,11 @@ public class DefaultRemoteRepositoryAdmin
             adminRepo.setDownloadRemoteIndexOnStartup( rif.isDownloadRemoteIndexOnStartup() );
             adminRepo.setRemoteDownloadTimeout( (int) rif.getDownloadTimeout().getSeconds() );
         }
+        if (repo.supportsFeature(IndexCreationFeature.class)) {
+            IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+            adminRepo.setIndexDirectory(PathUtil.getPathFromUri(icf.getIndexPath()).toString());
+        }
+        adminRepo.setDescription(repo.getDescription());
         return adminRepo;
     }
 
@@ -156,6 +165,8 @@ public class DefaultRemoteRepositoryAdmin
         repoConfig.setRemoteDownloadNetworkProxyId( repo.getRemoteDownloadNetworkProxyId() );
         repoConfig.setDownloadRemoteIndexOnStartup( repo.isDownloadRemoteIndexOnStartup() );
         repoConfig.setRemoteDownloadTimeout( repo.getRemoteDownloadTimeout() );
+        repoConfig.setDescription(repo.getDescription());
+        repoConfig.setIndexDir(repo.getIndexDirectory());
         return repoConfig;
     }
 
@@ -243,17 +254,6 @@ public class DefaultRemoteRepositoryAdmin
         {
             log.error("Deletion of remote repository failed {}: {}", repo.getId(), e.getMessage(), e);
             throw new RepositoryAdminException( "Could not delete remote repository"+(e.getMessage()==null?"":": "+e.getMessage()) );
-        }
-
-        // TODO use ProxyConnectorAdmin interface ?
-        // [MRM-520] Proxy Connectors are not deleted with the deletion of a Repository.
-        List<ProxyConnectorConfiguration> proxyConnectors = new ArrayList<>( configuration.getProxyConnectors() );
-        for ( ProxyConnectorConfiguration proxyConnector : proxyConnectors )
-        {
-            if ( StringUtils.equals( proxyConnector.getTargetRepoId(), repositoryId ) )
-            {
-                configuration.removeProxyConnector( proxyConnector );
-            }
         }
 
         saveConfiguration( configuration );
@@ -369,22 +369,6 @@ public class DefaultRemoteRepositoryAdmin
 
     }
 
-    protected String calculateIndexRemoteUrl( org.apache.archiva.admin.model.beans.RemoteRepository remoteRepository )
-    {
-        if ( StringUtils.startsWith( remoteRepository.getRemoteIndexUrl(), "http" ) )
-        {
-            String baseUrl = remoteRepository.getRemoteIndexUrl();
-            return baseUrl.endsWith( "/" ) ? StringUtils.substringBeforeLast( baseUrl, "/" ) : baseUrl;
-        }
-        String baseUrl = StringUtils.endsWith( remoteRepository.getUrl(), "/" ) ? StringUtils.substringBeforeLast(
-            remoteRepository.getUrl(), "/" ) : remoteRepository.getUrl();
-
-        baseUrl = StringUtils.isEmpty( remoteRepository.getRemoteIndexUrl() )
-            ? baseUrl + "/.index"
-            : baseUrl + "/" + remoteRepository.getRemoteIndexUrl();
-        return baseUrl;
-
-    }
 
 
 
