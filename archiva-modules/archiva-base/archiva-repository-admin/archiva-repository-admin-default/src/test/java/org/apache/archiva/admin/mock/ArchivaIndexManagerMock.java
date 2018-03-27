@@ -492,6 +492,18 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
         }
     }
 
+    @Override
+    public void updateLocalIndexPath(Repository repo) {
+        if (repo.supportsFeature(IndexCreationFeature.class)) {
+            IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+            try {
+                icf.setLocalIndexPath(getIndexPath(repo));
+            } catch (IOException e) {
+                log.error("Could not set local index path for {}. New URI: {}", repo.getId(), icf.getIndexPath());
+            }
+        }
+    }
+
     private Path getIndexPath(Repository repo) throws IOException {
         IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
         Path repoDir = repo.getLocalPath();
