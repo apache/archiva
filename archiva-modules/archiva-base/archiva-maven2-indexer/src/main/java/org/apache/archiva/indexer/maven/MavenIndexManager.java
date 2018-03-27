@@ -34,6 +34,7 @@ import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryException;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.features.IndexCreationEvent;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang.StringUtils;
@@ -64,6 +65,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -87,8 +89,7 @@ import java.util.stream.Collectors;
  * time of retries a IndexUpdateFailedException is thrown.
  */
 @Service( "archivaIndexManager#maven" )
-public class MavenIndexManager implements ArchivaIndexManager
-{
+public class MavenIndexManager implements ArchivaIndexManager {
 
     private static final Logger log = LoggerFactory.getLogger( MavenIndexManager.class );
 
@@ -121,6 +122,11 @@ public class MavenIndexManager implements ArchivaIndexManager
 
     @Inject
     private ArtifactContextProducer artifactContextProducer;
+
+    @Inject
+    RepositoryRegistry repositoryRegistry;
+
+    public static final String DEFAULT_INDEXER_DIR = ".indexer";
 
     private ConcurrentSkipListSet<Path> activeContexts = new ConcurrentSkipListSet<>( );
 
@@ -511,6 +517,18 @@ public class MavenIndexManager implements ArchivaIndexManager
         }
     }
 
+    @Override
+    public void updateLocalIndexPath(Repository repo) {
+        if (repo.supportsFeature(IndexCreationFeature.class)) {
+            IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+            try {
+                icf.setLocalIndexPath(getIndexPath(repo));
+            } catch (IOException e) {
+                log.error("Could not set local index path for {}. New URI: {}", repo.getId(), icf.getIndexPath());
+            }
+        }
+    }
+
     private Path getIndexPath(Repository repo) throws IOException {
         IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
         Path repoDir = repo.getLocalPath();
@@ -528,7 +546,7 @@ public class MavenIndexManager implements ArchivaIndexManager
         }
         else
         {
-            indexDirectory = repoDir.resolve( ".index" );
+            indexDirectory = repoDir.resolve( DEFAULT_INDEXER_DIR );
         }
 
         if ( !Files.exists( indexDirectory ) )
@@ -644,7 +662,7 @@ public class MavenIndexManager implements ArchivaIndexManager
     {
         if ( rif.getIndexUri( ) == null )
         {
-            return baseUri.resolve( ".index" ).toString( );
+            return baseUri.resolve( DEFAULT_INDEXER_DIR ).toString( );
         }
         else
         {
