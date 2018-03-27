@@ -64,14 +64,14 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
     public MavenRemoteRepository( String id, String name, Path basePath )
     {
         super( RepositoryType.MAVEN, id, name, basePath );
-        this.indexCreationFeature = new IndexCreationFeature(id, this);
+        this.indexCreationFeature = new IndexCreationFeature(this, this);
 
     }
 
     public MavenRemoteRepository( Locale primaryLocale, String id, String name, Path basePath )
     {
         super( primaryLocale, RepositoryType.MAVEN, id, name, basePath );
-        this.indexCreationFeature = new IndexCreationFeature(id, this);
+        this.indexCreationFeature = new IndexCreationFeature(this, this);
     }
 
     @Override

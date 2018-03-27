@@ -76,7 +76,7 @@ public class MavenManagedRepository extends AbstractManagedRepository
     public MavenManagedRepository( String id, String name, Path basePath )
     {
         super( RepositoryType.MAVEN, id, name, basePath);
-        this.indexCreationFeature = new IndexCreationFeature(id, this);
+        this.indexCreationFeature = new IndexCreationFeature(this, this);
     }
 
     public MavenManagedRepository( Locale primaryLocale, String id, String name, Path basePath )
