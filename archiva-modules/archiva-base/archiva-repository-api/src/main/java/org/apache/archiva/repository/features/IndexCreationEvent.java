@@ -27,10 +27,22 @@ import java.net.URI;
 public class IndexCreationEvent extends RepositoryEvent<URI> {
 
     public enum Index implements EventType {
-        URI_CHANGE
+        INDEX_URI_CHANGE, PACKED_INDEX_URI_CHANGE
     }
 
     IndexCreationEvent(Repository repo, URI oldValue, URI value) {
-        super(Index.URI_CHANGE, repo, oldValue, value);
+        super(Index.INDEX_URI_CHANGE, repo, oldValue, value);
+    }
+
+    IndexCreationEvent(Index type, Repository repo, URI oldValue, URI value) {
+        super(type, repo, oldValue, value);
+    }
+
+    public static final IndexCreationEvent indexUriChange(Repository repo, URI oldValue, URI newValue) {
+        return new IndexCreationEvent(Index.INDEX_URI_CHANGE, repo, oldValue, newValue);
+    }
+
+    public static final IndexCreationEvent packedIndexUriChange(Repository repo, URI oldValue, URI newValue) {
+        return new IndexCreationEvent(Index.PACKED_INDEX_URI_CHANGE, repo, oldValue, newValue);
     }
 }

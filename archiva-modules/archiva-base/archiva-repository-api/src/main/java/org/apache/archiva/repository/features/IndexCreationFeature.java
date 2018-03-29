@@ -38,31 +38,42 @@ import java.util.List;
  */
 public class IndexCreationFeature extends AbstractFeature implements RepositoryFeature<IndexCreationFeature>{
 
+    public static final String DEFAULT_INDEX_PATH = ".indexer";
+    public static final String DEFAULT_PACKED_INDEX_PATH = ".index";
 
     private boolean skipPackedIndexCreation = false;
 
     private URI indexPath;
 
+    private URI packedIndexPath;
+
     private Path localIndexPath;
+
+    private Path localPackedIndexPath;
 
     private Repository repo;
 
     public IndexCreationFeature(Repository repoId, RepositoryEventListener listener) {
         super(listener);
         this.repo = repoId;
-        try
-        {
-            setIndexPath(new URI(".indexer"));
-        }
-        catch ( URISyntaxException e )
-        {
-            // This may not happen.
-            e.printStackTrace( );
+        try {
+            this.indexPath = new URI(DEFAULT_INDEX_PATH);
+            this.packedIndexPath = new URI(DEFAULT_PACKED_INDEX_PATH);
+        } catch (URISyntaxException e) {
+            // Does not happen
+            e.printStackTrace();
         }
     }
 
     public IndexCreationFeature(boolean skipPackedIndexCreation) {
         this.skipPackedIndexCreation = skipPackedIndexCreation;
+        try {
+            this.indexPath = new URI(DEFAULT_INDEX_PATH);
+            this.packedIndexPath = new URI(DEFAULT_PACKED_INDEX_PATH);
+        } catch (URISyntaxException e) {
+            // Does not happen
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -104,7 +115,7 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
     {
         URI oldVal = this.indexPath;
         this.indexPath = indexPath;
-        raiseEvent(new IndexCreationEvent(repo, oldVal, this.indexPath));
+        raiseEvent(IndexCreationEvent.indexUriChange(repo, oldVal, this.indexPath));
 
     }
 
@@ -113,11 +124,67 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
         return this.indexPath!=null && !StringUtils.isEmpty( this.indexPath.getPath() );
     }
 
+    /**
+     * Returns the path where the index is stored physically.
+     *
+     * @return
+     */
     public Path getLocalIndexPath() {
         return localIndexPath;
     }
 
+    /**
+     * Sets the path where the index is stored physically. This method should only be used by the
+     * MavenIndexProvider implementations.
+     *
+     * @param localIndexPath
+     */
     public void setLocalIndexPath(Path localIndexPath) {
         this.localIndexPath = localIndexPath;
+    }
+
+
+    /**
+     * Returns the path of the packed index.
+     * @return
+     */
+    public URI getPackedIndexPath() {
+        return packedIndexPath;
+    }
+
+    /**
+     * Sets the path (relative or absolute) of the packed index.
+     * @param packedIndexPath
+     */
+    public void setPackedIndexPath(URI packedIndexPath) {
+        URI oldVal = this.packedIndexPath;
+        this.packedIndexPath = packedIndexPath;
+        raiseEvent(IndexCreationEvent.packedIndexUriChange(repo, oldVal, this.packedIndexPath));
+    }
+
+    /**
+     * Returns the directory where the packed index is stored.
+     * @return
+     */
+    public Path getLocalPackedIndexPath() {
+        return localPackedIndexPath;
+    }
+
+    /**
+     * Sets the path where the packed index is stored physically. This method should only be used by the
+     * MavenIndexProvider implementations.
+     *
+     * @param localPackedIndexPath
+     */
+    public void setLocalPackedIndexPath(Path localPackedIndexPath) {
+        this.localPackedIndexPath = localPackedIndexPath;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("IndexCreationFeature:{").append("skipPackedIndexCreation=").append(skipPackedIndexCreation)
+                .append(",indexPath=").append(indexPath).append(",packedIndexPath=").append(packedIndexPath).append("}");
+        return sb.toString();
     }
 }
