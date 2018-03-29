@@ -51,4 +51,9 @@ public class PasswordCredentials implements RepositoryCredentials
     {
         this.password = password;
     }
+
+    @Override
+    public String toString() {
+        return "name="+username+",pwd=*****";
+    }
 }
