@@ -54,6 +54,11 @@ public class AbstractRepository
 
     private String indexDirectory;
 
+    /*
+     * @since 3.0.0
+     */
+    private String packedIndexDirectory;
+
     private String toStringCache = null;
 
 
@@ -136,6 +141,7 @@ public class AbstractRepository
 
     public void setIndexDirectory( String indexDirectory )
     {
+        this.toStringCache=null;
         this.indexDirectory = indexDirectory;
     }
 
@@ -202,7 +208,17 @@ public class AbstractRepository
     }
 
     public void setType(String type) {
+        toStringCache=null;
         this.type = type;
+    }
+
+    public String getPackedIndexDirectory() {
+        return packedIndexDirectory;
+    }
+
+    public void setPackedIndexDirectory(String packedIndexDirectory) {
+        toStringCache=null;
+        this.packedIndexDirectory = packedIndexDirectory;
     }
 
     @Override
@@ -214,12 +230,13 @@ public class AbstractRepository
         {
             final StringBuilder sb = new StringBuilder( );
             sb.append( "AbstractRepository" );
-            sb.append( "{id='" ).append( id ).append( '\'' );
-            sb.append(", type='").append(type).append('\'');
-            sb.append( ", name='" ).append( getLocaleString( name ) ).append( '\'' );
-            sb.append( ", layout='" ).append( layout ).append( '\'' );
-            sb.append( ", indexDirectory='" ).append( indexDirectory ).append( '\'' );
-            sb.append( ", description='" ).append( getLocaleString( description ) ).append( '\'' );
+            sb.append( "{ id=\"" ).append( id ).append( '"' );
+            sb.append( ", type=\"").append(type).append('"');
+            sb.append( ", name=\"" ).append( getLocaleString( name ) ).append( '"' );
+            sb.append( ", layout=\"" ).append( layout ).append( '"' );
+            sb.append( ", indexDirectory=\"" ).append( indexDirectory ).append( '"' );
+            sb.append( ", packedIndexDirectory=\"").append(packedIndexDirectory).append('"');
+            sb.append( ", description=\"" ).append( getLocaleString( description ) ).append( '"' );
             sb.append( '}' );
             toStringCache=sb.toString( );
             return toStringCache;

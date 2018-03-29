@@ -161,7 +161,7 @@ public class DownloadMergedIndexTest
         remoteRepository.setName( "all-merged" );
         remoteRepository.setDownloadRemoteIndex( true );
         remoteRepository.setUrl( "http://localhost:" + port + "/repository/test-group" );
-        remoteRepository.setRemoteIndexUrl( "http://localhost:" + port + "/repository/test-group/.indexer" );
+        remoteRepository.setRemoteIndexUrl( "http://localhost:" + port + "/repository/test-group/.index" );
         remoteRepository.setUserName( RedbackRoleConstants.ADMINISTRATOR_ACCOUNT_NAME );
         remoteRepository.setPassword( FakeCreateAdminService.ADMIN_TEST_PWD );
 

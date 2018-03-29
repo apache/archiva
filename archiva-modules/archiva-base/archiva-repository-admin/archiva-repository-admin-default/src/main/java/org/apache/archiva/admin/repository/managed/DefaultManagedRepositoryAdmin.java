@@ -145,7 +145,6 @@ public class DefaultManagedRepositoryAdmin
         adminRepo.setCronExpression( repo.getSchedulingDefinition() );
         if (repo.supportsFeature( IndexCreationFeature.class )) {
             IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class ).get();
-            adminRepo.setIndexDirectory(convertUriToString( icf.getIndexPath() ));
             adminRepo.setSkipPackedIndexCreation( icf.isSkipPackedIndexCreation() );
         }
         adminRepo.setScanned( repo.isScanned() );
@@ -180,6 +179,7 @@ public class DefaultManagedRepositoryAdmin
         repoConfig.setDeleteReleasedSnapshots( repo.isDeleteReleasedSnapshots() );
         repoConfig.setSkipPackedIndexCreation( repo.isSkipPackedIndexCreation());
         repoConfig.setStageRepoNeeded( repo.isStageRepoNeeded() );
+
         return repoConfig;
     }
 

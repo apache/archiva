@@ -151,4 +151,10 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
         return repositoryBase.resolve(getId());
     }
 
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        return str.append("checkPath=").append(checkPath)
+                .append(",creds:").append(credentials).toString();
+    }
 }

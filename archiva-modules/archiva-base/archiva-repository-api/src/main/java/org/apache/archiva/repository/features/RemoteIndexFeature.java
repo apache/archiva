@@ -133,4 +133,13 @@ public class RemoteIndexFeature implements RepositoryFeature<RemoteIndexFeature>
     public boolean hasIndex() {
         return this.indexUri!=null && !StringUtils.isEmpty( this.indexUri.getPath() );
     }
+
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        return str.append("RemoteIndexFeature:{downloadRemoteIndex=").append(downloadRemoteIndex)
+                .append(",indexURI=").append(indexUri)
+                .append(",downloadOnStartup=").append(downloadRemoteIndexOnStartup)
+                .append(",timeout=").append(downloadTimeout).append("}").toString();
+    }
 }

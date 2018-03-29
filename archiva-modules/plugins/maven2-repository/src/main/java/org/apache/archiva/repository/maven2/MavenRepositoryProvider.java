@@ -150,6 +150,9 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         IndexCreationFeature indexCreationFeature = repo.getFeature(IndexCreationFeature.class).get();
         indexCreationFeature.setSkipPackedIndexCreation(cfg.isSkipPackedIndexCreation());
         indexCreationFeature.setIndexPath(getURIFromString(cfg.getIndexDir()));
+        indexCreationFeature.setPackedIndexPath(getURIFromString(cfg.getPackedIndexDir()));
+        /* -> Should be created by MavenIndexProvider
+
         Path indexPath;
         if (indexCreationFeature.getIndexPath().getScheme() == null) {
             indexPath = Paths.get(indexCreationFeature.getIndexPath().getPath());
@@ -167,7 +170,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         } catch (IOException e) {
             log.error("Could not create index directory {}", absoluteIndexPath);
             throw new RepositoryException("Could not create index directory " + absoluteIndexPath);
-        }
+        }*/
 
         ArtifactCleanupFeature artifactCleanupFeature = repo.getFeature(ArtifactCleanupFeature.class).get();
 
@@ -237,10 +240,14 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         } else {
             credentials.setPassword(new char[0]);
         }
+        IndexCreationFeature indexCreationFeature = repo.getFeature(IndexCreationFeature.class).get();
         if (cfg.getIndexDir() != null) {
-            IndexCreationFeature indexCreationFeature = repo.getFeature(IndexCreationFeature.class).get();
             indexCreationFeature.setIndexPath(getURIFromString(cfg.getIndexDir()));
         }
+        if (cfg.getPackedIndexDir() != null) {
+            indexCreationFeature.setPackedIndexPath(getURIFromString(cfg.getPackedIndexDir()));
+        }
+        log.debug("Updated remote instance {}", repo);
     }
 
     @Override
@@ -272,6 +279,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
 
         IndexCreationFeature indexCreationFeature = remoteRepository.getFeature(IndexCreationFeature.class).get();
         cfg.setIndexDir(convertUriToPath(indexCreationFeature.getIndexPath()));
+        cfg.setPackedIndexDir(convertUriToPath(indexCreationFeature.getPackedIndexPath()));
 
         RemoteIndexFeature remoteIndexFeature = remoteRepository.getFeature(RemoteIndexFeature.class).get();
         cfg.setRemoteIndexUrl(remoteIndexFeature.getIndexUri().toString());
@@ -305,6 +313,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         cfg.setStageRepoNeeded(stagingRepositoryFeature.isStageRepoNeeded());
         IndexCreationFeature indexCreationFeature = managedRepository.getFeature(IndexCreationFeature.class).get();
         cfg.setIndexDir(convertUriToPath(indexCreationFeature.getIndexPath()));
+        cfg.setPackedIndexDir(convertUriToPath(indexCreationFeature.getPackedIndexPath()));
         cfg.setSkipPackedIndexCreation(indexCreationFeature.isSkipPackedIndexCreation());
 
         ArtifactCleanupFeature artifactCleanupFeature = managedRepository.getFeature(ArtifactCleanupFeature.class).get();
@@ -345,7 +354,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             try {
                 indexDir = Paths.get(new URI(repository.getIndexDir().startsWith("file://") ? repository.getIndexDir() : "file://" + repository.getIndexDir()));
                 if (indexDir.isAbsolute()) {
-                    Path newDir = Paths.get(new URI(stagingRepository.getLocation().startsWith("file://") ? stagingRepository.getLocation() : "file://" + stagingRepository.getLocation())).resolve(".index");
+                    Path newDir = indexDir.getParent().resolve(indexDir.getFileName() + StagingRepositoryFeature.STAGING_REPO_POSTFIX);
                     log.debug("Changing index directory {} -> {}", indexDir, newDir);
                     stagingRepository.setIndexDir(newDir.toString());
                 } else {
@@ -355,6 +364,24 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             } catch (URISyntaxException e) {
                 log.error("Could not parse index path as uri {}", repository.getIndexDir());
                 stagingRepository.setIndexDir("");
+            }
+            // in case of absolute dir do not use the same
+        }
+        if (StringUtils.isNotBlank(repository.getPackedIndexDir())) {
+            Path packedIndexDir = null;
+            try {
+                packedIndexDir = Paths.get(new URI(repository.getPackedIndexDir().startsWith("file://") ? repository.getPackedIndexDir() : "file://" + repository.getPackedIndexDir()));
+                if (packedIndexDir.isAbsolute()) {
+                    Path newDir = packedIndexDir.getParent().resolve(packedIndexDir.getFileName() + StagingRepositoryFeature.STAGING_REPO_POSTFIX);
+                    log.debug("Changing index directory {} -> {}", packedIndexDir, newDir);
+                    stagingRepository.setPackedIndexDir(newDir.toString());
+                } else {
+                    log.debug("Keeping index directory {}", repository.getPackedIndexDir());
+                    stagingRepository.setPackedIndexDir(repository.getPackedIndexDir());
+                }
+            } catch (URISyntaxException e) {
+                log.error("Could not parse index path as uri {}", repository.getPackedIndexDir());
+                stagingRepository.setPackedIndexDir("");
             }
             // in case of absolute dir do not use the same
         }

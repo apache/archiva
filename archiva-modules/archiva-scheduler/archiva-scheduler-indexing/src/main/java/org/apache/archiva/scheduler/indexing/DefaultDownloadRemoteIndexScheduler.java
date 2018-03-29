@@ -20,10 +20,7 @@ package org.apache.archiva.scheduler.indexing;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
-import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
-import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
-import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.common.ArchivaException;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -34,7 +31,6 @@ import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.packer.IndexPacker;
@@ -46,7 +42,6 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
@@ -79,16 +74,7 @@ public class DefaultDownloadRemoteIndexScheduler
     private WagonFactory wagonFactory;
 
     @Inject
-    private RemoteRepositoryAdmin remoteRepositoryAdmin;
-
-    @Inject
-    private ProxyConnectorAdmin proxyConnectorAdmin;
-
-    @Inject
     private NetworkProxyAdmin networkProxyAdmin;
-
-    @Inject
-    private NexusIndexer nexusIndexer;
 
     @Inject
     private IndexUpdater indexUpdater;
@@ -101,8 +87,8 @@ public class DefaultDownloadRemoteIndexScheduler
 
     @PostConstruct
     public void startup()
-            throws ArchivaException, RepositoryAdminException, PlexusSisuBridgeException, IOException,
-            UnsupportedExistingLuceneIndexException, DownloadRemoteIndexException, UnsupportedBaseContextException {
+            throws
+            DownloadRemoteIndexException, UnsupportedBaseContextException {
         archivaConfiguration.addListener( this );
         // TODO add indexContexts even if null
 
@@ -129,22 +115,6 @@ public class DefaultDownloadRemoteIndexScheduler
 
     }
 
-    @PreDestroy
-    public void shutdown()
-        throws RepositoryAdminException, IOException
-    {
-        for ( RemoteRepository remoteRepository : remoteRepositoryAdmin.getRemoteRepositories() )
-        {
-            String contextKey = "remote-" + remoteRepository.getId();
-            IndexingContext context = nexusIndexer.getIndexingContexts().get( contextKey );
-            if ( context == null )
-            {
-                continue;
-            }
-            nexusIndexer.removeIndexingContext( context, false );
-        }
-    }
-
     @Override
     public void configurationEvent( ConfigurationEvent event )
     {
@@ -158,36 +128,41 @@ public class DefaultDownloadRemoteIndexScheduler
     {
         try
         {
-            RemoteRepository remoteRepository = remoteRepositoryAdmin.getRemoteRepository( repositoryId );
-            if ( remoteRepository == null )
+            org.apache.archiva.repository.RemoteRepository remoteRepo = repositoryRegistry.getRemoteRepository(repositoryId);
+
+            if ( remoteRepo == null )
             {
                 log.warn( "ignore scheduleDownloadRemote for repo with id {} as not exists", repositoryId );
                 return;
             }
+            if (!remoteRepo.supportsFeature(RemoteIndexFeature.class)) {
+                log.warn("ignore scheduleDownloadRemote for repo with id {}. Does not support remote index.", repositoryId);
+                return;
+            }
+            RemoteIndexFeature rif = remoteRepo.getFeature(RemoteIndexFeature.class).get();
             NetworkProxy networkProxy = null;
-            if ( StringUtils.isNotBlank( remoteRepository.getRemoteDownloadNetworkProxyId() ) )
+            if ( StringUtils.isNotBlank( rif.getProxyId() ) )
             {
-                networkProxy = networkProxyAdmin.getNetworkProxy( remoteRepository.getRemoteDownloadNetworkProxyId() );
+                networkProxy = networkProxyAdmin.getNetworkProxy( rif.getProxyId() );
                 if ( networkProxy == null )
                 {
                     log.warn(
                         "your remote repository is configured to download remote index trought a proxy we cannot find id:{}",
-                        remoteRepository.getRemoteDownloadNetworkProxyId() );
+                        rif.getProxyId() );
                 }
             }
 
             DownloadRemoteIndexTaskRequest downloadRemoteIndexTaskRequest = new DownloadRemoteIndexTaskRequest() //
-                .setRemoteRepository( remoteRepository ) //
+                .setRemoteRepository( remoteRepo ) //
                 .setNetworkProxy( networkProxy ) //
                 .setFullDownload( fullDownload ) //
                 .setWagonFactory( wagonFactory ) //
-                .setRemoteRepositoryAdmin( remoteRepositoryAdmin ) //
                 .setIndexUpdater( indexUpdater ) //
                 .setIndexPacker( this.indexPacker );
 
             if ( now )
             {
-                log.info( "schedule download remote index for repository {}", remoteRepository.getId() );
+                log.info( "schedule download remote index for repository {}", remoteRepo.getId() );
                 // do it now
                 taskScheduler.schedule(
                     new DownloadRemoteIndexTask( downloadRemoteIndexTaskRequest, this.runningRemoteDownloadIds ),
@@ -196,10 +171,10 @@ public class DefaultDownloadRemoteIndexScheduler
             else
             {
                 log.info( "schedule download remote index for repository {} with cron expression {}",
-                          remoteRepository.getId(), remoteRepository.getCronExpression() );
+                          remoteRepo.getId(), remoteRepo.getSchedulingDefinition());
                 try
                 {
-                    CronTrigger cronTrigger = new CronTrigger( remoteRepository.getCronExpression() );
+                    CronTrigger cronTrigger = new CronTrigger( remoteRepo.getSchedulingDefinition());
                     taskScheduler.schedule(
                         new DownloadRemoteIndexTask( downloadRemoteIndexTaskRequest, this.runningRemoteDownloadIds ),
                         cronTrigger );
@@ -209,11 +184,11 @@ public class DefaultDownloadRemoteIndexScheduler
                     log.warn( "Unable to schedule remote index download: {}", e.getLocalizedMessage() );
                 }
 
-                if ( remoteRepository.isDownloadRemoteIndexOnStartup() )
+                if ( rif.isDownloadRemoteIndexOnStartup() )
                 {
                     log.info(
                         "remote repository {} configured with downloadRemoteIndexOnStartup schedule now a download",
-                        remoteRepository.getId() );
+                        remoteRepo.getId() );
                     taskScheduler.schedule(
                         new DownloadRemoteIndexTask( downloadRemoteIndexTaskRequest, this.runningRemoteDownloadIds ),
                         new Date() );

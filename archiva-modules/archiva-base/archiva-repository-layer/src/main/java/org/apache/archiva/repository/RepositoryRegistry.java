@@ -21,7 +21,6 @@ package org.apache.archiva.repository;
 
 import org.apache.archiva.configuration.*;
 import org.apache.archiva.indexer.*;
-import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.repository.features.IndexCreationEvent;
 import org.apache.archiva.repository.features.IndexCreationFeature;
@@ -1017,7 +1016,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
 
     @Override
     public <T> void raise(RepositoryEvent<T> event) {
-        if (event.getType().equals(IndexCreationEvent.Index.URI_CHANGE)) {
+        if (event instanceof IndexCreationEvent ) {
             if (managedRepositories.containsKey(event.getRepository().getId()) ||
                     remoteRepositories.containsKey(event.getRepository().getId())) {
                 EditableRepository repo = (EditableRepository) event.getRepository();

@@ -471,6 +471,15 @@
           </description>
         </field>
         <field>
+          <name>packedIndexDir</name>
+          <version>3.0.0+</version>
+          <type>String</type>
+          <defaultValue></defaultValue>
+          <description>
+            The directory for the packed indexes of this repository.
+          </description>
+        </field>
+        <field>
           <name>description</name>
           <version>1.0.0+</version>
           <type>String</type>

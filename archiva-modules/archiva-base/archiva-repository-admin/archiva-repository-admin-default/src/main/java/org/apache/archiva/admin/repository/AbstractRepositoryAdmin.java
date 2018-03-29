@@ -125,6 +125,7 @@ public abstract class AbstractRepositoryAdmin
         if (repo.supportsFeature( IndexCreationFeature.class )) {
             IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class ).get();
             adminRepo.setIndexDirectory( convertUriToString( icf.getIndexPath() ) );
+            adminRepo.setPackedIndexDirectory(convertUriToString(icf.getPackedIndexPath()));
         }
     }
 
@@ -134,6 +135,7 @@ public abstract class AbstractRepositoryAdmin
         repoConfig.setLayout( repo.getLayout() );
         repoConfig.setDescription( repo.getDescription() );
         repoConfig.setIndexDir( repo.getIndexDirectory() );
+        repoConfig.setPackedIndexDir(repo.getPackedIndexDirectory());
         repoConfig.setType( StringUtils.isEmpty( repo.getType() ) ? "MAVEN" : repo.getType() );
     }
 

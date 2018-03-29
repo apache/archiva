@@ -19,15 +19,22 @@ package org.apache.archiva.scheduler.indexing;
  */
 
 import org.apache.archiva.admin.model.beans.NetworkProxy;
-import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
+import org.apache.archiva.repository.PasswordCredentials;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang.time.StopWatch;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.updater.IndexUpdateRequest;
+import org.apache.maven.index.updater.IndexUpdateResult;
 import org.apache.maven.index.updater.IndexUpdater;
 import org.apache.maven.index.updater.ResourceFetcher;
+import org.apache.maven.index_shaded.lucene.index.IndexNotFoundException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.StreamWagon;
 import org.apache.maven.wagon.TransferFailedException;
@@ -65,8 +72,6 @@ public class DownloadRemoteIndexTask
 
     private RemoteRepository remoteRepository;
 
-    private RemoteRepositoryAdmin remoteRepositoryAdmin;
-
     private WagonFactory wagonFactory;
 
     private NetworkProxy networkProxy;
@@ -87,7 +92,6 @@ public class DownloadRemoteIndexTask
         this.fullDownload = downloadRemoteIndexTaskRequest.isFullDownload();
         this.runningRemoteDownloadIds = runningRemoteDownloadIds;
         this.indexUpdater = downloadRemoteIndexTaskRequest.getIndexUpdater();
-        this.remoteRepositoryAdmin = downloadRemoteIndexTaskRequest.getRemoteRepositoryAdmin();
     }
 
     @Override
@@ -112,8 +116,17 @@ public class DownloadRemoteIndexTask
         try
         {
             log.info( "start download remote index for remote repository {}", this.remoteRepository.getId() );
-            IndexingContext indexingContext = remoteRepositoryAdmin.createIndexContext( this.remoteRepository );
-
+            if (this.remoteRepository.getIndexingContext()==null) {
+                throw new IndexNotFoundException("No index context set for repository "+remoteRepository.getId());
+            }
+            if (this.remoteRepository.getType()!= RepositoryType.MAVEN) {
+                throw new RepositoryException("Bad repository type");
+            }
+            if (!this.remoteRepository.supportsFeature(RemoteIndexFeature.class)) {
+                throw new RepositoryException("Repository does not support RemotIndexFeature "+remoteRepository.getId());
+            }
+            RemoteIndexFeature rif = this.remoteRepository.getFeature(RemoteIndexFeature.class).get();
+            IndexingContext indexingContext = this.remoteRepository.getIndexingContext().getBaseContext(IndexingContext.class);
             // create a temp directory to download files
             tempIndexDirectory = Paths.get(indexingContext.getIndexDirectoryFile().getParent(), ".tmpIndex" );
             Path indexCacheDirectory = Paths.get( indexingContext.getIndexDirectoryFile().getParent(), ".indexCache" );
@@ -126,22 +139,22 @@ public class DownloadRemoteIndexTask
             tempIndexDirectory.toFile().deleteOnExit();
             String baseIndexUrl = indexingContext.getIndexUpdateUrl();
 
-            String wagonProtocol = new URL( this.remoteRepository.getUrl() ).getProtocol();
+            String wagonProtocol = this.remoteRepository.getLocation().getScheme();
 
             final StreamWagon wagon = (StreamWagon) wagonFactory.getWagon(
                 new WagonFactoryRequest( wagonProtocol, this.remoteRepository.getExtraHeaders() ).networkProxy(
                     this.networkProxy )
             );
             // FIXME olamy having 2 config values
-            wagon.setReadTimeout( remoteRepository.getRemoteDownloadTimeout() * 1000 );
-            wagon.setTimeout( remoteRepository.getTimeout() * 1000 );
+            wagon.setReadTimeout( (int)rif.getDownloadTimeout().toMillis());
+            wagon.setTimeout( (int)remoteRepository.getTimeout().toMillis());
 
             if ( wagon instanceof AbstractHttpClientWagon )
             {
                 HttpConfiguration httpConfiguration = new HttpConfiguration();
                 HttpMethodConfiguration httpMethodConfiguration = new HttpMethodConfiguration();
                 httpMethodConfiguration.setUsePreemptive( true );
-                httpMethodConfiguration.setReadTimeout( remoteRepository.getRemoteDownloadTimeout() * 1000 );
+                httpMethodConfiguration.setReadTimeout( (int)rif.getDownloadTimeout().toMillis() );
                 httpConfiguration.setGet( httpMethodConfiguration );
                 AbstractHttpClientWagon.class.cast( wagon ).setHttpConfiguration( httpConfiguration );
             }
@@ -158,12 +171,14 @@ public class DownloadRemoteIndexTask
                 proxyInfo.setPassword( this.networkProxy.getPassword() );
             }
             AuthenticationInfo authenticationInfo = null;
-            if ( this.remoteRepository.getUserName() != null )
+            if ( this.remoteRepository.getLoginCredentials()!=null && this.remoteRepository.getLoginCredentials() instanceof PasswordCredentials )
             {
+                PasswordCredentials creds = (PasswordCredentials) this.remoteRepository.getLoginCredentials();
                 authenticationInfo = new AuthenticationInfo();
-                authenticationInfo.setUserName( this.remoteRepository.getUserName() );
-                authenticationInfo.setPassword( this.remoteRepository.getPassword() );
+                authenticationInfo.setUserName( creds.getUsername());
+                authenticationInfo.setPassword( new String(creds.getPassword()) );
             }
+            log.debug("Connection to {}, authInfo={}", this.remoteRepository.getId(), authenticationInfo);
             wagon.connect( new Repository( this.remoteRepository.getId(), baseIndexUrl ), authenticationInfo,
                            proxyInfo );
 
@@ -172,6 +187,8 @@ public class DownloadRemoteIndexTask
             {
                 Files.createDirectories( indexDirectory );
             }
+            log.debug("Downloading index file to {}", indexDirectory);
+            log.debug("Index cache dir {}", indexCacheDirectory);
 
             ResourceFetcher resourceFetcher =
                 new WagonResourceFetcher( log, tempIndexDirectory, wagon, remoteRepository );
@@ -179,10 +196,11 @@ public class DownloadRemoteIndexTask
             request.setForceFullUpdate( this.fullDownload );
             request.setLocalIndexCacheDir( indexCacheDirectory.toFile() );
 
-            this.indexUpdater.fetchAndUpdateIndex( request );
+            IndexUpdateResult result = this.indexUpdater.fetchAndUpdateIndex(request);
+            log.debug("Update result success: {}", result.isSuccessful());
             stopWatch.stop();
-            log.info( "time update index from remote for repository {}: {} s", this.remoteRepository.getId(),
-                      ( stopWatch.getTime() / 1000 ) );
+            log.info( "time update index from remote for repository {}: {}ms", this.remoteRepository.getId(),
+                      ( stopWatch.getTime() ) );
 
             // index packing optionnal ??
             //IndexPackingRequest indexPackingRequest =
@@ -241,6 +259,7 @@ public class DownloadRemoteIndexTask
         {
             this.totalLength = 0;
             resourceName = transferEvent.getResource().getName();
+            log.info("Transferring: {}, {}",  transferEvent.getResource().getContentLength(), transferEvent.getLocalFile().toString());
             log.info( "start transfer of {}", transferEvent.getResource().getName() );
         }
 
@@ -256,8 +275,8 @@ public class DownloadRemoteIndexTask
         {
             resourceName = transferEvent.getResource().getName();
             long endTime = System.currentTimeMillis();
-            log.info( "end of transfer file {} {} kb: {}s", transferEvent.getResource().getName(),
-                      this.totalLength / 1024, ( endTime - startTime ) / 1000 );
+            log.info( "end of transfer file {}: {}b, {}ms", transferEvent.getResource().getName(),
+                      this.totalLength, ( endTime - startTime ) );
         }
 
         @Override

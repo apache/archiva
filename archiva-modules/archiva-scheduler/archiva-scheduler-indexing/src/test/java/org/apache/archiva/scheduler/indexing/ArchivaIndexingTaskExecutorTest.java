@@ -160,7 +160,7 @@ public class ArchivaIndexingTaskExecutorTest
         FlatSearchResponse response = indexer.searchFlat( request );
 
         assertTrue( Files.exists(basePath.resolve( ".indexer" )) );
-        assertFalse( Files.exists(basePath.resolve(".index" )) );
+        assertTrue( Files.exists(basePath.resolve(".index" )) );
         assertEquals( 1, response.getTotalHits() );
 
         Set<ArtifactInfo> results = response.getResults();
@@ -204,7 +204,7 @@ public class ArchivaIndexingTaskExecutorTest
         ctx.releaseIndexSearcher( searcher );
 
         assertTrue( Files.exists(basePath.resolve(".indexer" )) );
-        assertFalse( Files.exists(basePath.resolve(".index" )) );
+        assertTrue( Files.exists(basePath.resolve(".index" )) );
 
         // should only return 1 hit!
         assertEquals( 1, topDocs.totalHits );
@@ -239,7 +239,7 @@ public class ArchivaIndexingTaskExecutorTest
         FlatSearchResponse response = indexer.searchFlat( flatSearchRequest );
 
         assertTrue( Files.exists(basePath.resolve(".indexer" )) );
-        assertFalse( Files.exists(basePath.resolve( ".index" )) );
+        assertTrue( Files.exists(basePath.resolve( ".index" )) );
 
         // should return 1 hit
         assertEquals( 1, response.getTotalHitsCount() );
@@ -261,7 +261,7 @@ public class ArchivaIndexingTaskExecutorTest
                BooleanClause.Occur.SHOULD );
 
         assertTrue( Files.exists(basePath.resolve( ".indexer" )) );
-        assertFalse( Files.exists(basePath.resolve(".index" )) );
+        assertTrue( Files.exists(basePath.resolve(".index" )) );
 
         flatSearchRequest = new FlatSearchRequest( q, getIndexingContext() );
 
@@ -278,9 +278,9 @@ public class ArchivaIndexingTaskExecutorTest
     {
 
         Path basePath = PathUtil.getPathFromUri( repositoryConfig.getLocation());
-        Path indexerDirectory =basePath.resolve( ".indexer" );
+        Path indexDirectory = basePath.resolve(".index");
 
-        Files.list(indexerDirectory).filter( path -> path.getFileName().toString().startsWith("nexus-maven-repository-index") )
+        Files.list(indexDirectory).filter( path -> path.getFileName().toString().startsWith("nexus-maven-repository-index") )
             .forEach( path ->
             {
                 try
@@ -311,19 +311,19 @@ public class ArchivaIndexingTaskExecutorTest
 
         indexingExecutor.executeTask( task );
 
-        assertTrue( Files.exists(indexerDirectory) );
+        assertTrue( Files.exists(indexDirectory) );
 
         // test packed index file creation
         //no more zip
         //Assertions.assertThat(new File( indexerDirectory, "nexus-maven-repository-index.zip" )).exists();
-        Assertions.assertThat( Files.exists(indexerDirectory.resolve("nexus-maven-repository-index.properties" ) ));
-        Assertions.assertThat( Files.exists(indexerDirectory.resolve("nexus-maven-repository-index.gz" ) ));
+        Assertions.assertThat( Files.exists(indexDirectory.resolve("nexus-maven-repository-index.properties" ) ));
+        Assertions.assertThat( Files.exists(indexDirectory.resolve("nexus-maven-repository-index.gz" ) ));
 
         // unpack .zip index
-        Path destDir = basePath.resolve( ".indexer/tmp" );
+        Path destDir = basePath.resolve( ".index/tmp" );
         //unzipIndex( indexerDirectory.getPath(), destDir.getPath() );
 
-        DefaultIndexUpdater.FileFetcher fetcher = new DefaultIndexUpdater.FileFetcher( indexerDirectory.toFile() );
+        DefaultIndexUpdater.FileFetcher fetcher = new DefaultIndexUpdater.FileFetcher( indexDirectory.toFile() );
         IndexUpdateRequest updateRequest = new IndexUpdateRequest( getIndexingContext(), fetcher );
         //updateRequest.setLocalIndexCacheDir( indexerDirectory );
         indexUpdater.fetchAndUpdateIndex( updateRequest );

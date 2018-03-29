@@ -67,9 +67,6 @@ public class ArchivaIndexingTaskExecutor
     private ArtifactContextProducer artifactContextProducer;
 
     @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
-
-    @Inject
     private NexusIndexer nexusIndexer;
 
 
@@ -241,23 +238,25 @@ public class ArchivaIndexingTaskExecutor
         try
         {
 
+            log.debug("Finishing indexing");
             context.optimize( );
 
             if ( repository.supportsFeature( IndexCreationFeature.class ) )
             {
                 IndexCreationFeature icf = repository.getFeature( IndexCreationFeature.class ).get( );
-                if ( !icf.isSkipPackedIndexCreation( ) )
+                if ( !icf.isSkipPackedIndexCreation( ) && icf.getLocalPackedIndexPath()!=null)
                 {
 
+                    log.debug("Creating packed index from {} on {}", context.getIndexDirectoryFile(), icf.getLocalPackedIndexPath());
                     IndexPackingRequest request = new IndexPackingRequest( context, //
                         context.acquireIndexSearcher( ).getIndexReader( ),
                         //
-                        context.getIndexDirectoryFile( ) );
+                        icf.getLocalPackedIndexPath().toFile() );
 
                     indexPacker.packIndex( request );
                     context.updateTimestamp( true );
 
-                    log.debug( "Index file packaged at '{}'.", context.getIndexDirectoryFile( ) );
+                    log.debug( "Index file packed at '{}'.", icf.getLocalPackedIndexPath() );
                 } else {
                     log.debug( "skip packed index creation" );
                 }

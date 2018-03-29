@@ -216,6 +216,7 @@ public class DefaultRemoteRepositoryAdmin
         Configuration configuration = getArchivaConfiguration().getConfiguration();
         RemoteRepositoryConfiguration remoteRepositoryConfiguration =
             getRepositoryConfiguration( remoteRepository );
+        log.debug("Adding remote repo {}", remoteRepositoryConfiguration);
 
         try
         {

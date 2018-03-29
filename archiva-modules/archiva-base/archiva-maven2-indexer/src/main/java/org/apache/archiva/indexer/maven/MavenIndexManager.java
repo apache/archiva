@@ -123,10 +123,9 @@ public class MavenIndexManager implements ArchivaIndexManager {
     @Inject
     private ArtifactContextProducer artifactContextProducer;
 
-    @Inject
-    RepositoryRegistry repositoryRegistry;
 
     public static final String DEFAULT_INDEXER_DIR = ".indexer";
+    public static final String DEFAULT_PACKED_INDEX_DIR = ".index";
 
     private ConcurrentSkipListSet<Path> activeContexts = new ConcurrentSkipListSet<>( );
 
@@ -523,6 +522,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
             IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
             try {
                 icf.setLocalIndexPath(getIndexPath(repo));
+                icf.setLocalPackedIndexPath(getPackedIndexPath(repo));
             } catch (IOException e) {
                 log.error("Could not set local index path for {}. New URI: {}", repo.getId(), icf.getIndexPath());
             }
@@ -547,6 +547,33 @@ public class MavenIndexManager implements ArchivaIndexManager {
         else
         {
             indexDirectory = repoDir.resolve( DEFAULT_INDEXER_DIR );
+        }
+
+        if ( !Files.exists( indexDirectory ) )
+        {
+            Files.createDirectories( indexDirectory );
+        }
+        return indexDirectory;
+    }
+
+    private Path getPackedIndexPath(Repository repo) throws IOException {
+        IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+        Path repoDir = repo.getLocalPath();
+        URI indexDir = icf.getPackedIndexPath();
+        Path indexDirectory = null;
+        if ( ! StringUtils.isEmpty(indexDir.toString( ) ) )
+        {
+
+            indexDirectory = PathUtil.getPathFromUri( indexDir );
+            // not absolute so create it in repository directory
+            if ( !indexDirectory.isAbsolute( ) )
+            {
+                indexDirectory = repoDir.resolve( indexDirectory );
+            }
+        }
+        else
+        {
+            indexDirectory = repoDir.resolve( DEFAULT_PACKED_INDEX_DIR );
         }
 
         if ( !Files.exists( indexDirectory ) )

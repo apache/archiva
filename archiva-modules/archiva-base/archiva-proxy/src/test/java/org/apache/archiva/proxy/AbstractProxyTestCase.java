@@ -20,27 +20,19 @@ package org.apache.archiva.proxy;
  */
 
 import net.sf.ehcache.CacheManager;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.policies.CachedFailuresPolicy;
-import org.apache.archiva.policies.ChecksumPolicy;
-import org.apache.archiva.policies.PropagateErrorsDownloadPolicy;
-import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
-import org.apache.archiva.policies.ReleasesPolicy;
-import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.policies.*;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentProvider;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.commons.io.FileUtils;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.wagon.Wagon;
@@ -124,10 +116,6 @@ public abstract class AbstractProxyTestCase
 
     WagonDelegate delegate;
 
-
-    @Inject
-    protected NexusIndexer nexusIndexer;
-
     @Before
     public void setUp()
         throws Exception
@@ -154,9 +142,6 @@ public abstract class AbstractProxyTestCase
             ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( config );
 
         applicationContext.getBean( RepositoryRegistry.class ).putRepository( repoConfig );
-
-        // to prevent windauze file leaking
-        removeMavenIndexes();
 
         repositoryRegistry.setArchivaConfiguration( config );
 
@@ -198,25 +183,6 @@ public abstract class AbstractProxyTestCase
 
         log.info( "\n.\\ {}() \\._________________________________________\n", name );
     }
-
-    @After
-    public void shutdown()
-        throws Exception
-    {
-        removeMavenIndexes();
-    }
-
-
-    protected void removeMavenIndexes()
-        throws Exception
-    {
-
-        for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
-        {
-            nexusIndexer.removeIndexingContext( indexingContext, false );
-        }
-    }
-
 
     protected void assertChecksums( Path expectedFile, String expectedSha1Contents, String expectedMd5Contents )
         throws Exception

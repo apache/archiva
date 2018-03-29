@@ -447,8 +447,11 @@ public abstract class AbstractArchivaRestTest
         }
 
         managedRepository.setLocation( Paths.get( repoPath ).toString() );
+        String suffix = Long.toString( new Date().getTime() );
+        String baseDir = System.getProperty("java.io.tmpdir");
         managedRepository.setIndexDirectory(
-            System.getProperty( "java.io.tmpdir" ) + "/.index-" + Long.toString( new Date().getTime() ) );
+            baseDir + "/.indexer-" + suffix );
+        managedRepository.setPackedIndexDirectory(baseDir + "/.index-" + suffix);
 
         managedRepository.setStageRepoNeeded( stageNeeded );
         managedRepository.setSnapshots( true );

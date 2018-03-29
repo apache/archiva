@@ -108,5 +108,8 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
         }
     }
 
-
+    @Override
+    public String toString() {
+        return super.toString()+", remoteIndexFeature="+remoteIndexFeature.toString()+", indexCreationFeature="+indexCreationFeature.toString();
+    }
 }
