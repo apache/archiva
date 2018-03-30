@@ -256,10 +256,10 @@ public class MavenRepositorySearch
         {
             throw new RepositorySearchException( "No search fields set." );
         }
-        System.err.println("CLAUSES "+q.getClauses());
         if (q.getClauses()!=null) {
+            log.debug("CLAUSES ", q.getClauses());
             for (BooleanClause cl : q.getClauses()) {
-                System.err.println("Clause "+cl);
+                log.debug("Clause ",cl);
             }
         }
 
