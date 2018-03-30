@@ -23,7 +23,7 @@
 #  Currently only chrome browser is installed into the image.
 #  Uses selenium version 2.53.1
 
-FROM ubuntu:yakkety
+FROM ubuntu:xenial
 MAINTAINER Apache Archiva <dev@archiva.apache.org>
 
 ENV DEBIAN_FRONTEND noninteractive
