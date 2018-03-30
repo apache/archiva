@@ -20,7 +20,14 @@ package org.apache.archiva.web.security;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.runtime.RedbackRuntimeConfigurationAdmin;
-import org.apache.archiva.redback.authentication.*;
+import org.apache.archiva.redback.authentication.AbstractAuthenticator;
+import org.apache.archiva.redback.authentication.AuthenticationConstants;
+import org.apache.archiva.redback.authentication.AuthenticationDataSource;
+import org.apache.archiva.redback.authentication.AuthenticationException;
+import org.apache.archiva.redback.authentication.AuthenticationFailureCause;
+import org.apache.archiva.redback.authentication.AuthenticationResult;
+import org.apache.archiva.redback.authentication.Authenticator;
+import org.apache.archiva.redback.authentication.PasswordBasedAuthenticationDataSource;
 import org.apache.archiva.redback.policy.AccountLockedException;
 import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.policy.PasswordEncoder;

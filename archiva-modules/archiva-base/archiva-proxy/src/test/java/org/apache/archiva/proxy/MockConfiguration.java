@@ -19,7 +19,12 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import org.apache.archiva.configuration.*;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ConfigurationListener;
+import org.apache.archiva.configuration.FileType;
+import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.configuration.RepositoryScanningConfiguration;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
@@ -31,7 +36,11 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * MockConfiguration

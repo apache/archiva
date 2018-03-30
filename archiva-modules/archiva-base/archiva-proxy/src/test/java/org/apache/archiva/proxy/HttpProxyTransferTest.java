@@ -19,14 +19,8 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
-import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
-import org.apache.archiva.repository.RepositoryContentProvider;
-import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.maven2.MavenManagedRepository;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.NetworkProxyConfiguration;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
@@ -38,7 +32,13 @@ import org.apache.archiva.policies.PropagateErrorsDownloadPolicy;
 import org.apache.archiva.policies.PropagateErrorsOnUpdateDownloadPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RepositoryContentProvider;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.maven2.MavenManagedRepository;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -63,9 +63,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Locale;
-
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.junit.Assert.*;
 

@@ -20,8 +20,6 @@ package org.apache.archiva.repository;
  */
 
 
-import org.apache.archiva.indexer.ArchivaIndexingContext;
-
 import java.util.Set;
 
 /**

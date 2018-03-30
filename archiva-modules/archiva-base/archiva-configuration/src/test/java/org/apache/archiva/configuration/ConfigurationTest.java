@@ -19,13 +19,15 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
-import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
+
 import static org.junit.Assert.*;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
  * Test the generated Configuration class from Modello. This is primarily to test the hand coded methods.

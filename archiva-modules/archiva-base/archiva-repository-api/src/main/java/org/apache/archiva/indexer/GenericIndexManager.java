@@ -21,7 +21,6 @@ package org.apache.archiva.indexer;
 
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.repository.Repository;
-import org.apache.archiva.repository.RepositoryEvent;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.commons.lang.StringUtils;

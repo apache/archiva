@@ -30,11 +30,11 @@ import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.easymock.EasyMock;
 import org.junit.Test;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import javax.inject.Inject;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

@@ -19,12 +19,12 @@ package org.apache.archiva.xml;
  * under the License.
  */
 
+import org.dom4j.Element;
+import org.junit.Test;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.dom4j.Element;
-import org.junit.Test;
 
 /**
  * XMLReaderTest 

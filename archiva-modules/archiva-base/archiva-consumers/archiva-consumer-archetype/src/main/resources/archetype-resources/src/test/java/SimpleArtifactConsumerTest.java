@@ -20,14 +20,12 @@ package $package;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.BasicManagedRepository;
-import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.repository.BasicManagedRepository;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -19,15 +19,15 @@ package org.apache.archiva.metadata.repository;
 * under the License.
 */
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 public abstract class AbstractMetadataRepository
     implements MetadataRepository

@@ -19,21 +19,22 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+
+import javax.inject.Inject;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import javax.inject.Inject;
 
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import static org.junit.Assert.*;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
 
 /**
  * Test the configuration store.

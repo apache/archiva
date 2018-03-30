@@ -20,9 +20,11 @@ package org.apache.archiva.configuration;
  */
 
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test the generated LegacyArtifactPath class from Modello. This is primarily to test the hand coded methods.

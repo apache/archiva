@@ -20,14 +20,13 @@ package org.apache.archiva.repository;
  */
 
 
-import org.apache.archiva.model.RepositoryURL;
-
-import java.net.MalformedURLException;
-
 import junit.framework.TestCase;
+import org.apache.archiva.model.RepositoryURL;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.net.MalformedURLException;
 
 /**
  * RepositoryURLTest 

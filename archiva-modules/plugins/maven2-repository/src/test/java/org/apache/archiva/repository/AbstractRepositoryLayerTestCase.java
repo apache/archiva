@@ -19,8 +19,6 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.archiva.repository.maven2.MavenRemoteRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -35,7 +33,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Locale;
 
 /**
  * AbstractRepositoryLayerTestCase

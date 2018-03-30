@@ -42,8 +42,11 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * RepositoryContentConsumerUtil

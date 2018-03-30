@@ -19,10 +19,10 @@ package org.apache.archiva.metadata.generic;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.MetadataFacet;
+
 import java.util.Map;
 import java.util.TreeMap;
-
-import org.apache.archiva.metadata.model.MetadataFacet;
 
 public class GenericMetadataFacet
     implements MetadataFacet

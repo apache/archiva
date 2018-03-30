@@ -19,8 +19,8 @@ package org.apache.archiva.rest.api.services;
  */
 
 import org.apache.archiva.admin.model.beans.NetworkProxy;
-import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
+import org.apache.archiva.security.common.ArchivaRoleConstants;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

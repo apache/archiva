@@ -18,14 +18,18 @@ package org.apache.archiva.security.mock;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.filter.Filter;
-import org.apache.archiva.metadata.repository.storage.*;
+import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataException;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataNotFoundException;
+import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;

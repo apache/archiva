@@ -21,13 +21,13 @@ package org.apache.archiva.consumers.lucene.test;
 import org.apache.archiva.redback.rbac.Operation;
 import org.apache.archiva.redback.rbac.Permission;
 import org.apache.archiva.redback.rbac.RBACManager;
+import org.apache.archiva.redback.rbac.RBACManagerListener;
 import org.apache.archiva.redback.rbac.RbacManagerException;
 import org.apache.archiva.redback.rbac.RbacObjectInvalidException;
 import org.apache.archiva.redback.rbac.RbacObjectNotFoundException;
 import org.apache.archiva.redback.rbac.Resource;
 import org.apache.archiva.redback.rbac.Role;
 import org.apache.archiva.redback.rbac.UserAssignment;
-import org.apache.archiva.redback.rbac.RBACManagerListener;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;

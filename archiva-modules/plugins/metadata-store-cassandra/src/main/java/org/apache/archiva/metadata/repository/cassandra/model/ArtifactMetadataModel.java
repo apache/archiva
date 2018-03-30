@@ -19,12 +19,12 @@ package org.apache.archiva.metadata.repository.cassandra.model;
  * under the License.
  */
 
-import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames.*;
-
 import org.apache.archiva.metadata.repository.cassandra.CassandraUtils;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames.*;
 
 /**
  * Cassandra storage model for {@link org.apache.archiva.metadata.model.ArtifactMetadata}

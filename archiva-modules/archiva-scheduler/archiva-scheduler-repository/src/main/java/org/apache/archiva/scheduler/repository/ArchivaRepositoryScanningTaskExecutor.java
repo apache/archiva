@@ -19,7 +19,6 @@ package org.apache.archiva.scheduler.repository;
  * under the License.
  */
 
-import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -28,6 +27,10 @@ import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatistics;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
+import org.apache.archiva.redback.components.taskqueue.Task;
+import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutionException;
+import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
@@ -36,9 +39,6 @@ import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.apache.archiva.redback.components.taskqueue.Task;
-import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutionException;
-import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

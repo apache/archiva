@@ -19,7 +19,6 @@ package org.apache.archiva.admin.model.beans;
  */
 
 import java.io.Serializable;
-import java.security.KeyStore;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;

@@ -28,7 +28,6 @@ import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.converter.RepositoryConversionException;
 import org.apache.archiva.converter.legacy.LegacyRepositoryConverter;
 import org.apache.archiva.repository.BasicManagedRepository;
-import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.scanner.RepositoryScanStatistics;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
@@ -48,7 +47,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 

@@ -19,10 +19,6 @@ package $package;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
@@ -34,20 +30,21 @@ import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
-
+import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
-import org.apache.archiva.repository.RepositoryException;
-import org.apache.archiva.repository.LayoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-import org.apache.archiva.repository.ManagedRepository;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * <code>SimpleArtifactConsumer</code>

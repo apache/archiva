@@ -19,7 +19,15 @@ package org.apache.archiva.repository.mock;
  * under the License.
  */
 
-import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryContent;
+import org.apache.archiva.repository.RepositoryContentProvider;
+import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryType;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;

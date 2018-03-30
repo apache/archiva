@@ -19,11 +19,22 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 import org.apache.archiva.metadata.generic.GenericMetadataFacet;
 import org.apache.archiva.metadata.generic.GenericMetadataFacetFactory;
-import org.apache.archiva.metadata.model.*;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.CiManagement;
+import org.apache.archiva.metadata.model.Dependency;
+import org.apache.archiva.metadata.model.IssueManagement;
+import org.apache.archiva.metadata.model.License;
+import org.apache.archiva.metadata.model.MailingList;
+import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.archiva.metadata.model.MetadataFacetFactory;
+import org.apache.archiva.metadata.model.Organization;
+import org.apache.archiva.metadata.model.ProjectMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
+import org.apache.archiva.metadata.model.ProjectVersionReference;
+import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.assertj.core.util.Sets;
 import org.junit.Test;
@@ -33,7 +44,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

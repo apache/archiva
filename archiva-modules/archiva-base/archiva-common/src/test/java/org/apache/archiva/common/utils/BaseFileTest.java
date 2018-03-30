@@ -19,9 +19,8 @@ package org.apache.archiva.common.utils;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
-
 import junit.framework.TestCase;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 

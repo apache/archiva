@@ -19,10 +19,10 @@ package org.apache.archiva.metadata.model.facets;
  * under the License.
  */
 
+import org.apache.archiva.metadata.model.MetadataFacet;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.archiva.metadata.model.MetadataFacet;
 
 public class RepositoryProblemFacet
     implements MetadataFacet

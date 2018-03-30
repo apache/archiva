@@ -19,8 +19,8 @@ package org.apache.archiva.model;
  * under the License.
  */
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * ArchivaArtifact - Mutable artifact object.

@@ -31,7 +31,6 @@ import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryCredentials;
-import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -56,7 +55,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 

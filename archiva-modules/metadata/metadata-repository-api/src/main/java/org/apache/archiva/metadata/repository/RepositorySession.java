@@ -21,7 +21,6 @@ package org.apache.archiva.metadata.repository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.lang.AutoCloseable;
 
 /**
  * The repository session provides a single interface to accessing Archiva repositories. It provides access to three

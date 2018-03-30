@@ -39,7 +39,6 @@ import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.springframework.stereotype.Service;
 
-
 import java.net.URI;
 import java.nio.file.Paths;
 import java.time.Duration;

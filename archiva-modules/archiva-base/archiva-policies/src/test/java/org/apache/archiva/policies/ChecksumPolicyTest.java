@@ -19,6 +19,7 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,15 +27,14 @@ import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
-import javax.inject.Inject;
-import javax.inject.Named;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 import static org.junit.Assert.*;
 

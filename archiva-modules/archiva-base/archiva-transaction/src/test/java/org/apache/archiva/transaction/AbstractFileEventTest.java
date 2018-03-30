@@ -20,10 +20,13 @@ package org.apache.archiva.transaction;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.Md5Digester;
 import org.codehaus.plexus.digest.Sha1Digester;
+import org.junit.Before;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -32,9 +35,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
-import org.junit.Before;
-import org.junit.runner.RunWith;
 
 /**
  *

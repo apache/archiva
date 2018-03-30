@@ -42,7 +42,6 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;

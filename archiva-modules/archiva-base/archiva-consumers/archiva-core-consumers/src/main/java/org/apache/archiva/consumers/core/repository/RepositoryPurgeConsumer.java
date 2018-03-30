@@ -33,8 +33,6 @@ import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
-import org.apache.archiva.repository.RepositoryException;
-import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;

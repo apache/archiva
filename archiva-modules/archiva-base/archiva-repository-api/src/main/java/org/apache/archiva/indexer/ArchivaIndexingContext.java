@@ -20,11 +20,9 @@ package org.apache.archiva.indexer;
  */
 
 import org.apache.archiva.repository.Repository;
-import org.apache.archiva.repository.RepositoryType;
 
 import java.io.IOException;
 import java.net.URI;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Set;
 

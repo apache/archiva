@@ -19,11 +19,11 @@ package org.apache.archiva.common.utils;
  * under the License.
  */
 
+import junit.framework.TestCase;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import junit.framework.TestCase;
 
 /**
  * DateUtilTest 

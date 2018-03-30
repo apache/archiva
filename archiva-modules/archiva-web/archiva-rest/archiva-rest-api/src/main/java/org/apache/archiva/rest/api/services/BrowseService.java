@@ -23,9 +23,21 @@ import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
-import org.apache.archiva.rest.api.model.*;
+import org.apache.archiva.rest.api.model.ArtifactContent;
+import org.apache.archiva.rest.api.model.ArtifactContentEntry;
+import org.apache.archiva.rest.api.model.BrowseResult;
+import org.apache.archiva.rest.api.model.Entry;
+import org.apache.archiva.rest.api.model.MetadataAddRequest;
+import org.apache.archiva.rest.api.model.VersionsList;
 
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 

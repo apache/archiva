@@ -22,10 +22,8 @@ package org.apache.archiva.repository;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.features.RepositoryFeature;
 
-import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 

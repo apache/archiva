@@ -23,13 +23,12 @@ import junit.framework.TestCase;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
+import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
-import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.repository.BasicManagedRepository;
-import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +45,6 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Locale;
 
 import static org.mockito.Mockito.*;
 

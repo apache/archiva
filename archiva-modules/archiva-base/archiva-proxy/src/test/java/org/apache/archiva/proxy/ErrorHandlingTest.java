@@ -33,7 +33,6 @@ import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.easymock.EasyMock;
 import org.junit.Test;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

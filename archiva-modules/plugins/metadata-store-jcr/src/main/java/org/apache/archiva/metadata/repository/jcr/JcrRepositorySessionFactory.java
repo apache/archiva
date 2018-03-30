@@ -20,7 +20,13 @@ package org.apache.archiva.metadata.repository.jcr;
  */
 
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
-import org.apache.archiva.metadata.repository.*;
+import org.apache.archiva.metadata.repository.AbstractRepositorySessionFactory;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.RepositorySessionFactoryBean;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;

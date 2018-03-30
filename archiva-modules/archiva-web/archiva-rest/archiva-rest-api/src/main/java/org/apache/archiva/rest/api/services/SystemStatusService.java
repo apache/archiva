@@ -18,11 +18,11 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
+import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.CacheEntry;
 import org.apache.archiva.rest.api.model.QueueEntry;
 import org.apache.archiva.rest.api.model.RepositoryScannerStatistics;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
-import org.apache.archiva.redback.authorization.RedbackAuthorization;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

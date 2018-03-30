@@ -49,7 +49,11 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Search the artifact repository of known SHA1 Checksums for potential duplicate artifacts.

@@ -22,7 +22,11 @@ package org.apache.archiva.webtest.memory;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 public class TestMetadataRepository
     extends AbstractMetadataRepository

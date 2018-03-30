@@ -19,7 +19,6 @@ package org.apache.archiva.indexer.search;
  */
 
 import org.apache.archiva.model.ArchivaArtifactModel;
-import org.apache.archiva.model.ArtifactReference;
 
 import java.util.Map;
 

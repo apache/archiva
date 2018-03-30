@@ -19,7 +19,12 @@ package org.apache.archiva.mock;
  * under the License.
  */
 
-import org.apache.archiva.metadata.repository.*;
+import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
+import org.apache.archiva.metadata.repository.AbstractRepositorySessionFactory;
+import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.springframework.stereotype.Service;
 
 /**

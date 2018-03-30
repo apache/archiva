@@ -19,11 +19,6 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.RepositoryCommonValidator;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.admin.repository.DefaultRepositoryCommonValidator;
-import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
 import org.apache.archiva.common.utils.BaseFile;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
@@ -38,7 +33,6 @@ import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;

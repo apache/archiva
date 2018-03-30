@@ -19,8 +19,6 @@ package org.apache.archiva.metadata.repository.cassandra;
  * under the License.
  */
 
-import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames.*;
-
 import me.prettyprint.cassandra.model.BasicColumnDefinition;
 import me.prettyprint.cassandra.model.ConfigurableConsistencyLevel;
 import me.prettyprint.cassandra.serializers.StringSerializer;
@@ -46,6 +44,8 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.apache.archiva.metadata.repository.cassandra.model.ColumnNames.*;
 
 /**
  * FIXME make all configuration not hardcoded :-)

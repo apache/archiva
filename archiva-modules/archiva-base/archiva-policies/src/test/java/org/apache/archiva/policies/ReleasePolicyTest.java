@@ -20,7 +20,7 @@ package org.apache.archiva.policies;
  */
 
 import junit.framework.TestCase;
-import org.apache.commons.io.FileUtils;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,9 +33,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * ReleasePolicyTest

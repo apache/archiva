@@ -19,12 +19,15 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
-import javax.inject.Inject;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
+
+import javax.inject.Inject;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath*:/META-INF/spring-context.xml" } )

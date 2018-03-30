@@ -20,7 +20,6 @@ package org.apache.archiva.repository.maven2;
  */
 
 import org.apache.archiva.common.utils.PathUtil;
-import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.AbstractManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryCapabilities;
@@ -38,11 +37,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Locale;
-import java.util.Set;
 
 /**
  * Maven2 managed repository implementation.

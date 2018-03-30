@@ -21,7 +21,6 @@ package org.apache.archiva.common.utils;
 
 import java.io.File;
 import java.net.URI;
-import java.nio.file.Paths;
 
 /**
  * BaseFile - convenient File object that tracks the Base Directory and can provide relative path values

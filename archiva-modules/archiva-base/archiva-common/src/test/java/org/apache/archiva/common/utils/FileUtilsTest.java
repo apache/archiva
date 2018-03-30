@@ -19,7 +19,6 @@ package org.apache.archiva.common.utils;
  * under the License.
  */
 
-import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
 

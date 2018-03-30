@@ -21,9 +21,10 @@ package org.apache.archiva.converter;
 
 import junit.framework.TestCase;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.converter.legacy.LegacyRepositoryConverter;
-import org.apache.commons.io.FileUtils;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.converter.legacy.LegacyRepositoryConverter;
+import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
@@ -40,7 +41,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 
 /**
  * Test the repository converter.

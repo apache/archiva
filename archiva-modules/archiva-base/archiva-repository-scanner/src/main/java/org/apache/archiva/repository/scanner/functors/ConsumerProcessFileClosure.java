@@ -19,9 +19,9 @@ package org.apache.archiva.repository.scanner.functors;
  * under the License.
  */
 
-import org.apache.commons.collections.Closure;
 import org.apache.archiva.common.utils.BaseFile;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
+import org.apache.commons.collections.Closure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

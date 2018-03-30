@@ -19,7 +19,6 @@ package org.apache.archiva.repository.metadata;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -31,7 +30,6 @@ import org.springframework.test.context.ContextConfiguration;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.nio.file.Paths;
-import java.util.Locale;
 
 /**
  * @author Olivier Lamy

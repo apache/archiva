@@ -1,6 +1,5 @@
 package org.apache.archiva.repository.maven2;
 
-import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.AbstractRemoteRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RemoteRepository;
@@ -14,7 +13,6 @@ import org.apache.archiva.repository.features.RepositoryFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Locale;
 

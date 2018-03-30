@@ -20,11 +20,9 @@ package org.apache.archiva.indexer;
  */
 
 import org.apache.archiva.repository.Repository;
-import org.apache.archiva.repository.RepositoryEventListener;
 import org.apache.archiva.repository.RepositoryType;
 
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.Collection;
 
 public interface ArchivaIndexManager {

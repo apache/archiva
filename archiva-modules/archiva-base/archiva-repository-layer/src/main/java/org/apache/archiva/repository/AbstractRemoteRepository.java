@@ -20,10 +20,7 @@ package org.apache.archiva.repository;
  */
 
 
-import org.apache.commons.lang.StringUtils;
-
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;

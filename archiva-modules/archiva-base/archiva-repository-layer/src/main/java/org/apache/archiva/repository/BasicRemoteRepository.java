@@ -19,13 +19,11 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Locale;
 

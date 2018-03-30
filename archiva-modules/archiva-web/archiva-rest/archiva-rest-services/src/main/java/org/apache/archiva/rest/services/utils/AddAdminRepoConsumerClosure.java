@@ -19,9 +19,9 @@ package org.apache.archiva.rest.services.utils;
  * under the License.
  */
 
+import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
 import org.apache.commons.collections.Closure;
-import org.apache.archiva.consumers.RepositoryContentConsumer;
 
 import java.util.ArrayList;
 import java.util.List;

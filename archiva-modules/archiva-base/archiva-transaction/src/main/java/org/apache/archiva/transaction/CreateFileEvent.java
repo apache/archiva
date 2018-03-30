@@ -19,12 +19,12 @@ package org.apache.archiva.transaction;
  * under the License.
  */
 
+import org.codehaus.plexus.digest.Digester;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-
-import org.codehaus.plexus.digest.Digester;
 
 /**
  * Event for creating a file from a string content.

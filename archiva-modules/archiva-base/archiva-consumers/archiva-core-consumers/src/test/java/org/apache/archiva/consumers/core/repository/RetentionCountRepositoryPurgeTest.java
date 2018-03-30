@@ -19,7 +19,6 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;

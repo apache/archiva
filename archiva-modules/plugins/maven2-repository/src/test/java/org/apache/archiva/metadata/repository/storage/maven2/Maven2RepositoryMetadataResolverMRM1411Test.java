@@ -20,8 +20,16 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.configuration.*;
-import org.apache.archiva.metadata.model.*;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.metadata.model.ArtifactMetadata;
+import org.apache.archiva.metadata.model.Dependency;
+import org.apache.archiva.metadata.model.License;
+import org.apache.archiva.metadata.model.MailingList;
+import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;

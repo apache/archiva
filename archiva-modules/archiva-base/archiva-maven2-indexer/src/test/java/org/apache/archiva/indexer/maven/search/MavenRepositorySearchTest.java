@@ -19,7 +19,11 @@ package org.apache.archiva.indexer.maven.search;
  * under the License.
  */
 
-import org.apache.archiva.indexer.search.*;
+import org.apache.archiva.indexer.search.RepositorySearchException;
+import org.apache.archiva.indexer.search.SearchFields;
+import org.apache.archiva.indexer.search.SearchResultHit;
+import org.apache.archiva.indexer.search.SearchResultLimits;
+import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.indexer.util.SearchUtil;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.index_shaded.lucene.index.IndexUpgrader;

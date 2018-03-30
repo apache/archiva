@@ -20,10 +20,10 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  */
 
 import org.apache.archiva.model.ArtifactReference;
+import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
 import org.apache.archiva.repository.content.maven2.RemoteDefaultRepositoryContent;
-import org.apache.archiva.repository.LayoutException;
 import org.junit.Before;
 
 import javax.inject.Inject;

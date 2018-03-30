@@ -22,8 +22,6 @@ package org.apache.archiva.admin.model.managed;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.indexer.ArchivaIndexingContext;
-import org.apache.maven.index.context.IndexingContext;
 
 import java.util.List;
 import java.util.Map;

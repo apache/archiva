@@ -32,7 +32,6 @@ import org.apache.archiva.configuration.UserInterfaceOptions;
 import org.apache.archiva.configuration.WebappConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.springframework.stereotype.Service;

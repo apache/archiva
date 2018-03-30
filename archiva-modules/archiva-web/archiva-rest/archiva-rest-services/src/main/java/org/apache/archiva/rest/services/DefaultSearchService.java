@@ -20,7 +20,12 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.common.utils.VersionComparator;
-import org.apache.archiva.indexer.search.*;
+import org.apache.archiva.indexer.search.RepositorySearch;
+import org.apache.archiva.indexer.search.RepositorySearchException;
+import org.apache.archiva.indexer.search.SearchFields;
+import org.apache.archiva.indexer.search.SearchResultHit;
+import org.apache.archiva.indexer.search.SearchResultLimits;
+import org.apache.archiva.indexer.search.SearchResults;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
@@ -40,7 +45,14 @@ import org.springframework.stereotype.Service;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * @author Olivier Lamy

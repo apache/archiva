@@ -18,8 +18,8 @@ package org.apache.archiva.rest.api.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.admin.model.beans.LdapConfiguration;
+import org.apache.archiva.admin.model.beans.RedbackRuntimeConfiguration;
 import org.apache.archiva.redback.authorization.RedbackAuthorization;
 import org.apache.archiva.rest.api.model.RBACManagerImplementationInformation;
 import org.apache.archiva.rest.api.model.RedbackImplementationsInformations;

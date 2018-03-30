@@ -19,8 +19,19 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.configuration.*;
-import org.apache.archiva.indexer.*;
+import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.Configuration;
+import org.apache.archiva.configuration.ConfigurationEvent;
+import org.apache.archiva.configuration.ConfigurationListener;
+import org.apache.archiva.configuration.IndeterminateConfigurationException;
+import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.indexer.ArchivaIndexManager;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.indexer.IndexCreationFailedException;
+import org.apache.archiva.indexer.IndexManagerFactory;
+import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.repository.features.IndexCreationEvent;
 import org.apache.archiva.repository.features.IndexCreationFeature;
@@ -34,7 +45,13 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
