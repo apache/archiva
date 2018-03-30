@@ -98,7 +98,6 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         ( (DefaultManagedRepositoryAdmin) applicationContext.getBean(
             ManagedRepositoryAdmin.class ) ).setArchivaConfiguration( archivaConfiguration );
-        removeMavenIndexes();
     }
 
     @Test
@@ -106,7 +105,6 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
         throws Exception
     {
         RepositoryRegistry repositoryRegistry = applicationContext.getBean( RepositoryRegistry.class );
-        ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( TEST_REPO_ID );
         repositoryRegistry.removeRepository( TEST_REPO_ID );
         repositoryRegistry.putRepository(
             getRepoConfiguration( TEST_REPO_ID, TEST_REPO_NAME ));

@@ -110,16 +110,11 @@ public abstract class AbstractRepositoryPurgeTest
     @Inject
     protected ApplicationContext applicationContext;
 
-    @Inject
-    protected NexusIndexer nexusIndexer;
-
 
     @Before
     public void setUp()
         throws Exception
     {
-
-        removeMavenIndexes();
 
         listenerControl = EasyMock.createControl();
 
@@ -136,20 +131,11 @@ public abstract class AbstractRepositoryPurgeTest
     public void tearDown()
         throws Exception
     {
-        removeMavenIndexes();
         config = null;
         repo = null;
 
     }
 
-    protected void removeMavenIndexes()
-        throws Exception
-    {
-        for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
-        {
-            nexusIndexer.removeIndexingContext( indexingContext, false );
-        }
-    }
 
     protected static String fixPath( String path )
     {
@@ -214,7 +200,6 @@ public abstract class AbstractRepositoryPurgeTest
     protected String prepareTestRepos()
         throws Exception
     {
-        removeMavenIndexes();
         Path testDir = Paths.get( AbstractRepositoryPurgeTest.fixPath( getTestRepoRoot().toAbsolutePath().toString() ) );
         org.apache.archiva.common.utils.FileUtils.deleteDirectory( testDir );
         Path sourceDir = Paths.get( Paths.get( "target/test-classes/" + TEST_REPO_ID ).toAbsolutePath().toString() );

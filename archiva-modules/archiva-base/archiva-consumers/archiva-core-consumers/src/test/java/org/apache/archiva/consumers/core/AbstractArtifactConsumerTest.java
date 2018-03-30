@@ -27,9 +27,6 @@ import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.context.IndexingContext;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +34,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -58,9 +54,6 @@ public abstract class AbstractArtifactConsumerTest
     @Inject
     ArchivaConfiguration archivaConfiguration;
 
-    @Inject
-    protected NexusIndexer nexusIndexer;
-
 
     @Before
     public void setUp()
@@ -72,16 +65,6 @@ public abstract class AbstractArtifactConsumerTest
         fileType.addPattern( "**/*.xml" );
 
         repoLocation = Paths.get( "target/test-" + getName() + "/test-repo" );
-    }
-
-    @After
-    public void tearDown()
-        throws Exception
-    {
-        for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
-        {
-            nexusIndexer.removeIndexingContext( indexingContext, false );
-        }
     }
 
 
