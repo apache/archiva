@@ -22,6 +22,7 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.apache.archiva.redback.rest.services.FakeCreateAdminService;
@@ -87,17 +88,20 @@ public class DownloadMergedIndexNonDefaultPathTest
     public void downloadMergedIndexWithNonDefaultPath()
         throws Exception
     {
-        Path tmpIndexDir = Paths.get( System.getProperty( "java.io.tmpdir" ),  "tmpIndex" );
-        if ( Files.exists(tmpIndexDir) )
-        {
-            org.apache.archiva.common.utils.FileUtils.deleteDirectory( tmpIndexDir );
+
+        Path indexBaseDir = Paths.get(System.getProperty( "java.io.tmpdir" )).resolve("archiva").resolve("remotedownloadtest");
+        String indexBase = indexBaseDir.toString();
+        FileUtils.deleteQuietly( indexBaseDir);
+        if (!Files.exists(indexBaseDir)) {
+            Files.createDirectories( indexBaseDir );
         }
         String id = Long.toString( System.currentTimeMillis() );
         ManagedRepository managedRepository = new ManagedRepository( Locale.getDefault());
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
         managedRepository.setLocation( System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" );
-        managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex/" + id );
+        managedRepository.setIndexDirectory( indexBase + "/index-" + id );
+        managedRepository.setPackedIndexDirectory( indexBase + "/indexPacked-" + id );
 
         ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService();
 
@@ -143,7 +147,8 @@ public class DownloadMergedIndexNonDefaultPathTest
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
         managedRepository.setLocation( System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" );
-        managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex/" + id );
+        managedRepository.setIndexDirectory( indexBaseDir +  "/index-"+ id );
+        managedRepository.setPackedIndexDirectory( indexBase + "/tmpIndexPacked-" + id );
 
         if ( managedRepositoriesService.getManagedRepository( id ) != null )
         {

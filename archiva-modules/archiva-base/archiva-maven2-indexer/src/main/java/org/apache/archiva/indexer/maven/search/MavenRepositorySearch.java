@@ -42,6 +42,7 @@ import org.apache.maven.index.expr.UserInputSearchExpression;
 import org.apache.maven.index_shaded.lucene.search.BooleanClause;
 import org.apache.maven.index_shaded.lucene.search.BooleanClause.Occur;
 import org.apache.maven.index_shaded.lucene.search.BooleanQuery;
+import org.apache.maven.index_shaded.lucene.search.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -98,30 +99,30 @@ public class MavenRepositorySearch
         // since upgrade to nexus 2.0.0, query has changed from g:[QUERIED TERM]* to g:*[QUERIED TERM]*
         //      resulting to more wildcard searches so we need to increase max clause count
         BooleanQuery.setMaxClauseCount( Integer.MAX_VALUE );
-        BooleanQuery q = new BooleanQuery();
+        BooleanQuery.Builder qb = new BooleanQuery.Builder();
 
         if ( previousSearchTerms == null || previousSearchTerms.isEmpty() )
         {
-            constructQuery( term, q );
+            constructQuery( term, qb );
         }
         else
         {
             for ( String previousTerm : previousSearchTerms )
             {
-                BooleanQuery iQuery = new BooleanQuery();
+                BooleanQuery.Builder iQuery = new BooleanQuery.Builder();
                 constructQuery( previousTerm, iQuery );
 
-                q.add( iQuery, BooleanClause.Occur.MUST );
+                qb.add( iQuery.build(), BooleanClause.Occur.MUST );
             }
 
-            BooleanQuery iQuery = new BooleanQuery();
+            BooleanQuery.Builder iQuery = new BooleanQuery.Builder();
             constructQuery( term, iQuery );
-            q.add( iQuery, BooleanClause.Occur.MUST );
+            qb.add( iQuery.build(), BooleanClause.Occur.MUST );
         }
 
         // we retun only artifacts without classifier in quick search, olamy cannot find a way to say with this field empty
         // FIXME  cannot find a way currently to setup this in constructQuery !!!
-        return search( limits, q, indexingContextIds, NoClassifierArtifactInfoFilter.LIST, selectedRepos, true );
+        return search( limits, qb.build(), indexingContextIds, NoClassifierArtifactInfoFilter.LIST, selectedRepos, true );
 
     }
 
@@ -147,17 +148,17 @@ public class MavenRepositorySearch
             return new SearchResults();
         }
 
-        BooleanQuery q = new BooleanQuery();
+        BooleanQuery.Builder qb = new BooleanQuery.Builder();
         if ( StringUtils.isNotBlank( searchFields.getGroupId() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.GROUP_ID, searchFields.isExactSearch() ? new SourcedSearchExpression(
+            qb.add( indexer.constructQuery( MAVEN.GROUP_ID, searchFields.isExactSearch() ? new SourcedSearchExpression(
                        searchFields.getGroupId() ) : new UserInputSearchExpression( searchFields.getGroupId() ) ),
                    BooleanClause.Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getArtifactId() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID,
+            qb.add( indexer.constructQuery( MAVEN.ARTIFACT_ID,
                                            searchFields.isExactSearch()
                                                ? new SourcedSearchExpression( searchFields.getArtifactId() )
                                                : new UserInputSearchExpression( searchFields.getArtifactId() ) ),
@@ -166,83 +167,83 @@ public class MavenRepositorySearch
 
         if ( StringUtils.isNotBlank( searchFields.getVersion() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.VERSION, searchFields.isExactSearch() ? new SourcedSearchExpression(
+            qb.add( indexer.constructQuery( MAVEN.VERSION, searchFields.isExactSearch() ? new SourcedSearchExpression(
                        searchFields.getVersion() ) : new SourcedSearchExpression( searchFields.getVersion() ) ),
                    BooleanClause.Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getPackaging() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.PACKAGING, searchFields.isExactSearch() ? new SourcedSearchExpression(
+            qb.add( indexer.constructQuery( MAVEN.PACKAGING, searchFields.isExactSearch() ? new SourcedSearchExpression(
                        searchFields.getPackaging() ) : new UserInputSearchExpression( searchFields.getPackaging() ) ),
                    BooleanClause.Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getClassName() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.CLASSNAMES,
+            qb.add( indexer.constructQuery( MAVEN.CLASSNAMES,
                                            new UserInputSearchExpression( searchFields.getClassName() ) ),
                    BooleanClause.Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleSymbolicName() ) )
         {
-            q.add( indexer.constructQuery( OSGI.SYMBOLIC_NAME,
+            qb.add( indexer.constructQuery( OSGI.SYMBOLIC_NAME,
                                            new UserInputSearchExpression( searchFields.getBundleSymbolicName() ) ),
                    BooleanClause.Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleVersion() ) )
         {
-            q.add( indexer.constructQuery( OSGI.VERSION,
+            qb.add( indexer.constructQuery( OSGI.VERSION,
                                            new UserInputSearchExpression( searchFields.getBundleVersion() ) ),
                    BooleanClause.Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleExportPackage() ) )
         {
-            q.add( indexer.constructQuery( OSGI.EXPORT_PACKAGE,
+            qb.add( indexer.constructQuery( OSGI.EXPORT_PACKAGE,
                                            new UserInputSearchExpression( searchFields.getBundleExportPackage() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleExportService() ) )
         {
-            q.add( indexer.constructQuery( OSGI.EXPORT_SERVICE,
+            qb.add( indexer.constructQuery( OSGI.EXPORT_SERVICE,
                                            new UserInputSearchExpression( searchFields.getBundleExportService() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleImportPackage() ) )
         {
-            q.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
+            qb.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
                                            new UserInputSearchExpression( searchFields.getBundleImportPackage() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleName() ) )
         {
-            q.add( indexer.constructQuery( OSGI.NAME, new UserInputSearchExpression( searchFields.getBundleName() ) ),
+            qb.add( indexer.constructQuery( OSGI.NAME, new UserInputSearchExpression( searchFields.getBundleName() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleImportPackage() ) )
         {
-            q.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
+            qb.add( indexer.constructQuery( OSGI.IMPORT_PACKAGE,
                                            new UserInputSearchExpression( searchFields.getBundleImportPackage() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getBundleRequireBundle() ) )
         {
-            q.add( indexer.constructQuery( OSGI.REQUIRE_BUNDLE,
+            qb.add( indexer.constructQuery( OSGI.REQUIRE_BUNDLE,
                                            new UserInputSearchExpression( searchFields.getBundleRequireBundle() ) ),
                    Occur.MUST );
         }
 
         if ( StringUtils.isNotBlank( searchFields.getClassifier() ) )
         {
-            q.add( indexer.constructQuery( MAVEN.CLASSIFIER, searchFields.isExactSearch() ? new SourcedSearchExpression(
+            qb.add( indexer.constructQuery( MAVEN.CLASSIFIER, searchFields.isExactSearch() ? new SourcedSearchExpression(
                        searchFields.getClassifier() ) : new UserInputSearchExpression( searchFields.getClassifier() ) ),
                    Occur.MUST );
         }
@@ -252,18 +253,19 @@ public class MavenRepositorySearch
             // currently it's done in DefaultSearchService with some filtering
         }
 
-        if ( q.getClauses() == null || q.getClauses().length <= 0 )
+        BooleanQuery qu = qb.build();
+        if ( qu.clauses() == null || qu.clauses().size() <= 0 )
         {
             throw new RepositorySearchException( "No search fields set." );
         }
-        if (q.getClauses()!=null) {
-            log.debug("CLAUSES ", q.getClauses());
-            for (BooleanClause cl : q.getClauses()) {
+        if (qu.clauses()!=null) {
+            log.debug("CLAUSES ", qu.clauses());
+            for (BooleanClause cl : qu.clauses()) {
                 log.debug("Clause ",cl);
             }
         }
 
-        return search( limits, q, indexingContextIds, Collections.<ArtifactInfoFilter>emptyList(),
+        return search( limits, qu, indexingContextIds, Collections.<ArtifactInfoFilter>emptyList(),
                        searchFields.getRepositories(), searchFields.isIncludePomArtifacts() );
     }
 
@@ -370,7 +372,7 @@ public class MavenRepositorySearch
         return contexts;
     }
 
-    private void constructQuery( String term, BooleanQuery q )
+    private void constructQuery( String term, BooleanQuery.Builder q )
     {
         q.add( indexer.constructQuery( MAVEN.GROUP_ID, new UserInputSearchExpression( term ) ), Occur.SHOULD );
         q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID, new UserInputSearchExpression( term ) ), Occur.SHOULD );
