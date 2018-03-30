@@ -31,7 +31,6 @@ import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
-import org.apache.archiva.webdav.util.MavenIndexerCleaner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -149,8 +148,6 @@ public abstract class AbstractRepositoryServletTestCase
         saveConfiguration( archivaConfiguration );
 
         CacheManager.getInstance().clearAll();
-
-        applicationContext.getBean( MavenIndexerCleaner.class ).cleanupIndex();
 
 
     }

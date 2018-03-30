@@ -24,36 +24,23 @@ import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryCheckPath;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.PasswordCredentials;
+import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.features.IndexCreationEvent;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang.StringUtils;
-import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
-import org.apache.maven.index_shaded.lucene.index.IndexFormatTooOldException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,11 +59,6 @@ public class DefaultRemoteRepositoryAdmin
     @Inject
     RepositoryRegistry repositoryRegistry;
 
-    @Inject
-    private List<? extends IndexCreator> indexCreators;
-
-    @Inject
-    private NexusIndexer indexer;
 
     @PostConstruct
     private void initialize()
@@ -87,30 +69,6 @@ public class DefaultRemoteRepositoryAdmin
             createIndexContext( remoteRepository );
         }
     }
-
-    @PreDestroy
-    private void shutdown()
-        throws RepositoryAdminException
-    {
-        try
-        {
-            List<org.apache.archiva.admin.model.beans.RemoteRepository> remoteRepositories = getRemoteRepositories();
-            // close index on shutdown
-            for ( org.apache.archiva.admin.model.beans.RemoteRepository remoteRepository : remoteRepositories )
-            {
-                IndexingContext context = indexer.getIndexingContexts().get( remoteRepository.getId() );
-                if ( context != null )
-                {
-                    indexer.removeIndexingContext( context, false );
-                }
-            }
-        }
-        catch ( IOException e )
-        {
-            throw new RepositoryAdminException( e.getMessage(), e );
-        }
-    }
-
 
     /*
  * Conversion between the repository from the registry and the serialized DTO for the admin API
@@ -311,59 +269,6 @@ public class DefaultRemoteRepositoryAdmin
         {
             RemoteRepository repo = repositoryRegistry.getRemoteRepository(remoteRepository.getId());
             return repo.getIndexingContext().getBaseContext(IndexingContext.class);
-            /*String appServerBase = getRegistry().getString( "appserver.base" );
-
-            String contextKey = "remote-" + remoteRepository.getId();
-            IndexingContext indexingContext = indexer.getIndexingContexts().get( contextKey );
-            if ( indexingContext != null )
-            {
-                return indexingContext;
-            }
-            // create remote repository path
-            Path repoDir = Paths.get( appServerBase, "data/remotes/" + remoteRepository.getId() );
-            if ( !Files.exists(repoDir) )
-            {
-                Files.createDirectories(repoDir);
-            }
-
-            Path indexDirectory = null;
-
-            // is there configured indexDirectory ?
-            String indexDirectoryPath = remoteRepository.getIndexDirectory();
-
-            if ( StringUtils.isNotBlank( indexDirectoryPath ) )
-            {
-                repoDir.resolve( indexDirectoryPath );
-            }
-            // if not configured use a default value
-            if ( indexDirectory == null )
-            {
-                indexDirectory = repoDir.resolve(".index" );
-            }
-            if ( !Files.exists(indexDirectory) )
-            {
-                Files.createDirectories(indexDirectory);
-            }
-
-            try
-            {
-
-                return indexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir.toFile(), indexDirectory.toFile(),
-                                                   remoteRepository.getUrl(), calculateIndexRemoteUrl( remoteRepository ),
-                                                   indexCreators );
-            }
-            catch ( IndexFormatTooOldException e )
-            {
-                // existing index with an old lucene format so we need to delete it!!!
-                // delete it first then recreate it.
-                log.warn( "the index of repository {} is too old we have to delete and recreate it", //
-                          remoteRepository.getId() );
-                org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDirectory );
-                return indexer.addIndexingContext( contextKey, remoteRepository.getId(), repoDir.toFile(), indexDirectory.toFile(),
-                                                   remoteRepository.getUrl(), calculateIndexRemoteUrl( remoteRepository ),
-                                                   indexCreators );
-
-            }*/
         } catch (UnsupportedBaseContextException e) {
             throw new RepositoryAdminException( e.getMessage(), e);
         }

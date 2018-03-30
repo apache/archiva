@@ -38,7 +38,6 @@ import org.apache.archiva.repository.audit.TestAuditListener;
 import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.archiva.webdav.util.MavenIndexerCleaner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.webdav.DavSessionProvider;
@@ -211,8 +210,6 @@ public class RepositoryServletSecurityTest
         {
             FileUtils.deleteDirectory( repoRootInternal );
         }*/
-
-        applicationContext.getBean( MavenIndexerCleaner.class ).cleanupIndex();
 
         super.tearDown();
     }
