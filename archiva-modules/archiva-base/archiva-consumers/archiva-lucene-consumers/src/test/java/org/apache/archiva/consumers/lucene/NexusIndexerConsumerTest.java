@@ -31,7 +31,6 @@ import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexCreator;
 import org.junit.After;
 import org.junit.Before;
@@ -46,7 +45,11 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * NexusIndexerConsumerTest
@@ -97,9 +100,6 @@ public class NexusIndexerConsumerTest
     private ApplicationContext applicationContext;
 
     @Inject
-    private NexusIndexer nexusIndexer;
-
-    @Inject
     private List<IndexCreator> indexCreators;
 
     @Inject
@@ -124,7 +124,7 @@ public class NexusIndexerConsumerTest
 
         nexusIndexerConsumer =
             new NexusIndexerConsumer( scheduler, configuration, filetypes, indexCreators,
-                                      managedRepositoryAdmin, nexusIndexer );
+                                      managedRepositoryAdmin);
 
         // initialize to set the file types to be processed
         nexusIndexerConsumer.initialize();

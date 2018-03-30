@@ -32,9 +32,4 @@
 
   <alias name="knownRepositoryContentConsumer#index-content" alias="indexerConsumer"/>
 
-  <bean id="logger" class="org.apache.archiva.common.utils.Slf4JPlexusLogger">
-    <constructor-arg type="java.lang.Class">
-      <value>org.apache.maven.index.DefaultNexusIndexer</value>
-    </constructor-arg>
-  </bean>
 </beans>

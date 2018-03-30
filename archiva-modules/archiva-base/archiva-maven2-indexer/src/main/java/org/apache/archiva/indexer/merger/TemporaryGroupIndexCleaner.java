@@ -18,9 +18,6 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
-import org.apache.maven.index.NexusIndexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -41,13 +38,10 @@ public class TemporaryGroupIndexCleaner
     @Inject
     private IndexMerger indexMerger;
 
-    private NexusIndexer indexer;
 
-    @Inject
-    public TemporaryGroupIndexCleaner( NexusIndexer nexusIndexer )
-        throws PlexusSisuBridgeException
+    public TemporaryGroupIndexCleaner( )
     {
-        this.indexer = nexusIndexer;
+
     }
 
     // 900000

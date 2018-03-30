@@ -19,7 +19,6 @@ package org.apache.archiva.consumers.lucene;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -80,8 +79,6 @@ public class NexusIndexerConsumer
 
     private IndexingContext indexingContext;
 
-    private NexusIndexer nexusIndexer;
-
     private List<String> includes = new ArrayList<>( 0 );
 
     private ManagedRepository repository;
@@ -94,12 +91,11 @@ public class NexusIndexerConsumer
     public NexusIndexerConsumer(
         @Named( value = "archivaTaskScheduler#indexing" ) ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
         @Named( value = "archivaConfiguration" ) ArchivaConfiguration configuration, FileTypes filetypes,
-        List<IndexCreator> indexCreators, ManagedRepositoryAdmin managedRepositoryAdmin, NexusIndexer nexusIndexer )
+        List<IndexCreator> indexCreators, ManagedRepositoryAdmin managedRepositoryAdmin)
     {
         this.configuration = configuration;
         this.filetypes = filetypes;
         this.scheduler = scheduler;
-        this.nexusIndexer = nexusIndexer;
         this.allIndexCreators = indexCreators;
         this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
