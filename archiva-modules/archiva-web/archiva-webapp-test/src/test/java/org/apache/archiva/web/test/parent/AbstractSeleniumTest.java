@@ -88,16 +88,20 @@ public abstract class AbstractSeleniumTest
 
         baseUrl = WebdriverUtility.getBaseUrl()+"/index.html?request_lang=en";
         open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs, remoteSelenium );
+        Assert.assertNotNull( getWebDriver() );
         getWebDriver().manage().window().maximize();
         assertAdminCreated();
     }
 
     /**
-     * this method is called by the Rule after executing a tests
+     * this method is called by the Rule after executing a test
      */
     public void close()
     {
-        getWebDriver().close();
+        if (getWebDriver()!=null)
+        {
+            getWebDriver( ).close( );
+        }
     }
 
     /**

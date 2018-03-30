@@ -52,7 +52,7 @@ public class ArchivaSeleniumExecutionRule
             String fileName =
                 ( (AbstractSeleniumTest) target ).captureScreenShotOnFailure( e, method.getMethod().getName(),
                                                                               target.getClass().getName() );
-            
+            log.info("Screenshot: "+fileName);
             throw new RuntimeException( e.getMessage() + " see screenShot file:" + fileName, e );
         }
         finally
