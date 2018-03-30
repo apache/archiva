@@ -24,7 +24,6 @@ import org.apache.archiva.redback.components.scheduler.DefaultScheduler;
 import org.apache.archiva.redback.components.taskqueue.Task;
 import org.apache.archiva.redback.components.taskqueue.execution.ThreadedTaskQueueExecutor;
 import org.apache.archiva.scheduler.repository.DefaultRepositoryArchivaTaskScheduler;
-import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.quartz.SchedulerException;
 import org.springframework.web.context.WebApplicationContext;
@@ -51,8 +50,6 @@ public class ArchivaStartup
 
     private DefaultRepositoryArchivaTaskScheduler repositoryTaskScheduler;
 
-    private NexusIndexer nexusIndexer;
-
     @Override
     public void contextInitialized( ServletContextEvent contextEvent )
     {
@@ -70,7 +67,6 @@ public class ArchivaStartup
 
         tqeIndexing = wac.getBean( "taskQueueExecutor#indexing", ThreadedTaskQueueExecutor.class );
 
-        nexusIndexer = wac.getBean( NexusIndexer.class );
 
         try
         {
@@ -142,18 +138,6 @@ public class ArchivaStartup
             //applicationContext.
         }
 
-        // closing correctly indexer to close correctly lock and file
-        for ( IndexingContext indexingContext : nexusIndexer.getIndexingContexts().values() )
-        {
-            try
-            {
-                indexingContext.close( false );
-            }
-            catch ( Exception e )
-            {
-                servletContext.log( "skip error closing indexingContext " + e.getMessage(), e );
-            }
-        }
 
     }
 
