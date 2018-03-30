@@ -19,7 +19,6 @@ package org.apache.archiva.scheduler.indexing;
  */
 
 import org.apache.archiva.admin.model.beans.NetworkProxy;
-import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.archiva.repository.PasswordCredentials;
@@ -28,7 +27,6 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdateResult;
@@ -54,7 +52,6 @@ import org.slf4j.LoggerFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

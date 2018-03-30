@@ -20,19 +20,19 @@ package org.apache.archiva.scheduler.indexing;
  */
 
 import junit.framework.TestCase;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
-import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
-import org.apache.archiva.repository.*;
-import org.apache.archiva.repository.features.ArtifactCleanupFeature;
+import org.apache.archiva.repository.BasicManagedRepository;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
+import org.apache.maven.index.Indexer;
 import org.apache.maven.index.MAVEN;
-import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.expr.StringSearchExpression;
@@ -55,9 +55,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -71,16 +68,16 @@ public class ArchivaIndexingTaskExecutorTest
     @Inject
     private ArchivaIndexingTaskExecutor indexingExecutor;
 
-    private BasicManagedRepository repositoryConfig;
-
-    @Inject
-    private NexusIndexer indexer;
-
     @Inject
     RepositoryRegistry repositoryRegistry;
 
     @Inject
     private IndexUpdater indexUpdater;
+
+    private ManagedRepository repo;
+
+    @Inject
+    private Indexer indexer;
 
     @Before
     @Override
@@ -90,7 +87,7 @@ public class ArchivaIndexingTaskExecutorTest
         super.setUp();
 
         Path baseDir = Paths.get(System.getProperty("basedir"), "target/test-classes").toAbsolutePath();
-        repositoryConfig = new BasicManagedRepository( "test-repo", "Test Repository", baseDir);
+        BasicManagedRepository repositoryConfig = new BasicManagedRepository( "test-repo", "Test Repository", baseDir);
         Path repoLocation = baseDir.resolve("test-repo" );
         repositoryConfig.setLocation(repoLocation.toUri() );
         repositoryConfig.setLayout( "default" );
@@ -98,6 +95,7 @@ public class ArchivaIndexingTaskExecutorTest
         repositoryConfig.addActiveReleaseScheme( ReleaseScheme.RELEASE );
         repositoryConfig.removeActiveReleaseScheme( ReleaseScheme.SNAPSHOT );
         repositoryRegistry.putRepository(repositoryConfig);
+        repo = repositoryRegistry.getManagedRepository( repositoryConfig.getId() );
     }
 
     @After
@@ -106,10 +104,6 @@ public class ArchivaIndexingTaskExecutorTest
         throws Exception
     {
 
-        for ( IndexingContext indexingContext : indexer.getIndexingContexts().values() )
-        {
-            indexer.removeIndexingContext( indexingContext, true );
-        }
         repositoryRegistry.destroy();
         /*
         removeIndexingContext with true cleanup files.
@@ -126,7 +120,6 @@ public class ArchivaIndexingTaskExecutorTest
     }
 
     protected IndexingContext getIndexingContext() throws UnsupportedBaseContextException {
-        Repository repo = repositoryRegistry.getRepository(repositoryConfig.getId());
         assert repo != null;
         ArchivaIndexingContext ctx = repo.getIndexingContext();
         assert ctx != null;
@@ -137,26 +130,29 @@ public class ArchivaIndexingTaskExecutorTest
     public void testAddArtifactToIndex()
         throws Exception
     {
-        Path basePath = PathUtil.getPathFromUri( repositoryConfig.getLocation() );
+        Path basePath = repo.getLocalPath();
         Path artifactFile = basePath.resolve(
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
-        ManagedRepository repo = repositoryRegistry.getManagedRepository(repositoryConfig.getId());
         ArtifactIndexingTask task =
-            new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.ADD,
+            new ArtifactIndexingTask( repo, artifactFile, ArtifactIndexingTask.Action.ADD,
                                       repo.getIndexingContext());
 
         indexingExecutor.executeTask( task );
 
-        Map<String, IndexingContext> ctxs = indexer.getIndexingContexts();
-        BooleanQuery q = new BooleanQuery();
-        q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "org.apache.archiva" ) ),
+        task = new ArtifactIndexingTask( repo, null, ArtifactIndexingTask.Action.FINISH,
+            repo.getIndexingContext() );
+        indexingExecutor.executeTask( task );
+
+        BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder( );
+        queryBuilder.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "org.apache.archiva" ) ),
                BooleanClause.Occur.SHOULD );
-        q.add(
+        queryBuilder.add(
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             BooleanClause.Occur.SHOULD );
+        BooleanQuery q = queryBuilder.build();
 
-        FlatSearchRequest request = new FlatSearchRequest( q );
+        FlatSearchRequest request = new FlatSearchRequest( q , getIndexingContext());
         FlatSearchResponse response = indexer.searchFlat( request );
 
         assertTrue( Files.exists(basePath.resolve( ".indexer" )) );
@@ -176,29 +172,28 @@ public class ArchivaIndexingTaskExecutorTest
     public void testUpdateArtifactInIndex()
         throws Exception
     {
-        Path basePath = PathUtil.getPathFromUri( repositoryConfig.getLocation( ) );
+        Path basePath = repo.getLocalPath();
         Path artifactFile = basePath.resolve(
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
-        ManagedRepository repo = repositoryRegistry.getManagedRepository(repositoryConfig.getId());
         ArtifactIndexingTask task =
-            new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.ADD,
+            new ArtifactIndexingTask( repo, artifactFile, ArtifactIndexingTask.Action.ADD,
                                       repo.getIndexingContext() );
 
         indexingExecutor.executeTask( task );
         indexingExecutor.executeTask( task );
 
-        BooleanQuery q = new BooleanQuery();
-        q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "org.apache.archiva" ) ),
+        BooleanQuery.Builder qb = new BooleanQuery.Builder();
+        qb.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "org.apache.archiva" ) ),
                BooleanClause.Occur.SHOULD );
-        q.add(
+        qb.add(
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             BooleanClause.Occur.SHOULD );
 
         IndexingContext ctx = getIndexingContext();
 
         IndexSearcher searcher = ctx.acquireIndexSearcher();
-        TopDocs topDocs = searcher.search( q, null, 10 );
+        TopDocs topDocs = searcher.search( qb.build(), 10 );
 
         //searcher.close();
         ctx.releaseIndexSearcher( searcher );
@@ -214,27 +209,27 @@ public class ArchivaIndexingTaskExecutorTest
     public void testRemoveArtifactFromIndex()
         throws Exception
     {
-        Path basePath = PathUtil.getPathFromUri( repositoryConfig.getLocation( ) );
+        Path basePath = repo.getLocalPath();
         Path artifactFile = basePath.resolve(
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
 
-        ManagedRepository repo = repositoryRegistry.getManagedRepository(repositoryConfig.getId());
         ArtifactIndexingTask task =
-            new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.ADD,
+            new ArtifactIndexingTask( repo, artifactFile, ArtifactIndexingTask.Action.ADD,
                                       repo.getIndexingContext() );
 
         // add artifact to index
         indexingExecutor.executeTask( task );
 
-        BooleanQuery q = new BooleanQuery();
-        q.add( indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.apache.archiva" ) ),
+        BooleanQuery.Builder qb = new BooleanQuery.Builder();
+        qb.add( indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.apache.archiva" ) ),
                BooleanClause.Occur.SHOULD );
         //q.add(
         //    indexer.constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( "archiva-index-methods-jar-test" ) ),
         //    Occur.SHOULD );
 
+        IndexingContext ctx = repo.getIndexingContext( ).getBaseContext( IndexingContext.class );
         FlatSearchRequest flatSearchRequest =
-            new FlatSearchRequest( q, indexer.getIndexingContexts().get( repositoryConfig.getId() ) );
+            new FlatSearchRequest( qb.build(), ctx );
 
         FlatSearchResponse response = indexer.searchFlat( flatSearchRequest );
 
@@ -245,25 +240,25 @@ public class ArchivaIndexingTaskExecutorTest
         assertEquals( 1, response.getTotalHitsCount() );
 
         // remove added artifact from index
-        task = new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.DELETE,
+        task = new ArtifactIndexingTask( repo, artifactFile, ArtifactIndexingTask.Action.DELETE,
                         repo.getIndexingContext());
         indexingExecutor.executeTask( task );
 
-        task = new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.FINISH,
+        task = new ArtifactIndexingTask( repo, artifactFile, ArtifactIndexingTask.Action.FINISH,
                                          repo.getIndexingContext() );
         indexingExecutor.executeTask( task );
 
-        q = new BooleanQuery();
-        q.add( indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.apache.archiva" ) ),
+        qb = new BooleanQuery.Builder();
+        qb.add( indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.apache.archiva" ) ),
                BooleanClause.Occur.SHOULD );
-        q.add( indexer.constructQuery( MAVEN.ARTIFACT_ID,
+        qb.add( indexer.constructQuery( MAVEN.ARTIFACT_ID,
                                        new SourcedSearchExpression( "archiva-index-methods-jar-test" ) ),
                BooleanClause.Occur.SHOULD );
 
         assertTrue( Files.exists(basePath.resolve( ".indexer" )) );
         assertTrue( Files.exists(basePath.resolve(".index" )) );
 
-        flatSearchRequest = new FlatSearchRequest( q, getIndexingContext() );
+        flatSearchRequest = new FlatSearchRequest( qb.build(), getIndexingContext() );
 
         response = indexer.searchFlat( flatSearchRequest );
         // artifact should have been removed from the index!
@@ -277,14 +272,17 @@ public class ArchivaIndexingTaskExecutorTest
         throws Exception
     {
 
-        Path basePath = PathUtil.getPathFromUri( repositoryConfig.getLocation());
-        Path indexDirectory = basePath.resolve(".index");
+        Path basePath = repo.getLocalPath();
+        IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class ).get();
+        Path packedIndexDirectory = icf.getLocalPackedIndexPath();
+        Path indexerDirectory = icf.getLocalIndexPath();
 
-        Files.list(indexDirectory).filter( path -> path.getFileName().toString().startsWith("nexus-maven-repository-index") )
+        Files.list(packedIndexDirectory).filter( path -> path.getFileName().toString().startsWith("nexus-maven-repository-index") )
             .forEach( path ->
             {
                 try
                 {
+                    System.err.println("Deleting "+path);
                     Files.delete( path );
                 }
                 catch ( IOException e )
@@ -296,48 +294,49 @@ public class ArchivaIndexingTaskExecutorTest
 
         Path artifactFile = basePath.resolve(
                                       "org/apache/archiva/archiva-index-methods-jar-test/1.0/archiva-index-methods-jar-test-1.0.jar" );
-        ManagedRepository repo = repositoryRegistry.getManagedRepository(repositoryConfig.getId());
         ArtifactIndexingTask task =
-            new ArtifactIndexingTask( repositoryConfig, artifactFile, ArtifactIndexingTask.Action.ADD,
+            new ArtifactIndexingTask( repo, artifactFile, ArtifactIndexingTask.Action.ADD,
                                       repo.getIndexingContext() );
         task.setExecuteOnEntireRepo( false );
 
         indexingExecutor.executeTask( task );
 
-        task = new ArtifactIndexingTask( repositoryConfig, null, ArtifactIndexingTask.Action.FINISH,
+        task = new ArtifactIndexingTask( repo, null, ArtifactIndexingTask.Action.FINISH,
                                          repo.getIndexingContext() );
 
         task.setExecuteOnEntireRepo( false );
 
         indexingExecutor.executeTask( task );
 
-        assertTrue( Files.exists(indexDirectory) );
+        assertTrue( Files.exists(packedIndexDirectory) );
+        assertTrue( Files.exists(indexerDirectory) );
 
         // test packed index file creation
         //no more zip
         //Assertions.assertThat(new File( indexerDirectory, "nexus-maven-repository-index.zip" )).exists();
-        Assertions.assertThat( Files.exists(indexDirectory.resolve("nexus-maven-repository-index.properties" ) ));
-        Assertions.assertThat( Files.exists(indexDirectory.resolve("nexus-maven-repository-index.gz" ) ));
+        Assertions.assertThat( Files.exists(packedIndexDirectory.resolve("nexus-maven-repository-index.properties" ) ));
+        Assertions.assertThat( Files.exists(packedIndexDirectory.resolve("nexus-maven-repository-index.gz" ) ));
+        assertFalse( Files.exists(packedIndexDirectory.resolve("nexus-maven-repository-index.1.gz" )  ));
 
         // unpack .zip index
-        Path destDir = basePath.resolve( ".index/tmp" );
         //unzipIndex( indexerDirectory.getPath(), destDir.getPath() );
 
-        DefaultIndexUpdater.FileFetcher fetcher = new DefaultIndexUpdater.FileFetcher( indexDirectory.toFile() );
+        DefaultIndexUpdater.FileFetcher fetcher = new DefaultIndexUpdater.FileFetcher( packedIndexDirectory.toFile() );
         IndexUpdateRequest updateRequest = new IndexUpdateRequest( getIndexingContext(), fetcher );
         //updateRequest.setLocalIndexCacheDir( indexerDirectory );
         indexUpdater.fetchAndUpdateIndex( updateRequest );
 
-        BooleanQuery q = new BooleanQuery();
-        q.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "org.apache.archiva" ) ),
+        BooleanQuery.Builder qb = new BooleanQuery.Builder();
+        qb.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "org.apache.archiva" ) ),
                BooleanClause.Occur.SHOULD );
-        q.add(
+        qb.add(
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( "archiva-index-methods-jar-test" ) ),
             BooleanClause.Occur.SHOULD );
 
-        FlatSearchRequest request = new FlatSearchRequest( q, getIndexingContext() );
+        FlatSearchRequest request = new FlatSearchRequest( qb.build(), getIndexingContext() );
         FlatSearchResponse response = indexer.searchFlat( request );
 
+        assertEquals( 1, response.getTotalHitsCount() );
         Set<ArtifactInfo> results = response.getResults();
 
         ArtifactInfo artifactInfo = results.iterator().next();
@@ -345,7 +344,7 @@ public class ArchivaIndexingTaskExecutorTest
         assertEquals( "archiva-index-methods-jar-test", artifactInfo.getArtifactId() );
         assertEquals( "test-repo", artifactInfo.getRepository() );
 
-        assertEquals( 1, response.getTotalHits() );
+
     }
 
 }

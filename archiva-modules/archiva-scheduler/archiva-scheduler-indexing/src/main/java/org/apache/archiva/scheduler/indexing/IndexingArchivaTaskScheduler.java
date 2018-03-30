@@ -19,9 +19,9 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
-import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.redback.components.taskqueue.TaskQueue;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

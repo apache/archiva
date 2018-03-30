@@ -19,7 +19,6 @@ package org.apache.archiva.scheduler.indexing;
  */
 
 import org.apache.archiva.admin.model.beans.NetworkProxy;
-import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.maven.index.packer.IndexPacker;

@@ -23,7 +23,10 @@ import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.maven.index.*;
+import org.apache.maven.index.FlatSearchRequest;
+import org.apache.maven.index.FlatSearchResponse;
+import org.apache.maven.index.Indexer;
+import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.StringSearchExpression;
 import org.apache.maven.index_shaded.lucene.search.BooleanClause;
@@ -80,9 +83,6 @@ public class DownloadRemoteIndexTaskTest
 
     @Inject
     RepositoryRegistry repositoryRegistry;
-
-    @Inject
-    NexusIndexer nexusIndexer;
 
     @Before
     public void initialize()
@@ -149,12 +149,12 @@ public class DownloadRemoteIndexTaskTest
         remoteRepositoryAdmin.deleteRemoteRepository( "test-repo-re", null );
 
         // search
-        BooleanQuery iQuery = new BooleanQuery();
+        BooleanQuery.Builder iQuery = new BooleanQuery.Builder();
         iQuery.add( indexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "commons-logging" ) ),
                     BooleanClause.Occur.SHOULD );
 
         remoteRepositoryAdmin.addRemoteRepository(remoteRepository,  null);
-        FlatSearchRequest rq = new FlatSearchRequest( iQuery );
+        FlatSearchRequest rq = new FlatSearchRequest( iQuery.build() );
         rq.setContexts(
             Arrays.asList( repositoryRegistry.getRemoteRepository(remoteRepository.getId()).getIndexingContext().getBaseContext(IndexingContext.class) ) );
 
