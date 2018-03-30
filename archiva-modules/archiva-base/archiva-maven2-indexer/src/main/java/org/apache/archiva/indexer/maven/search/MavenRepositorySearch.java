@@ -22,7 +22,6 @@ package org.apache.archiva.indexer.maven.search;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.indexer.search.ArtifactInfoFilter;
 import org.apache.archiva.indexer.search.NoClassifierArtifactInfoFilter;
@@ -96,7 +95,6 @@ public class MavenRepositorySearch
     public MavenRepositorySearch( Indexer nexusIndexer, RepositoryRegistry repositoryRegistry,
 
                                   ProxyConnectorAdmin proxyConnectorAdmin, QueryCreator queryCreator )
-        throws PlexusSisuBridgeException
     {
         this.indexer = nexusIndexer;
         this.queryCreator = queryCreator;
