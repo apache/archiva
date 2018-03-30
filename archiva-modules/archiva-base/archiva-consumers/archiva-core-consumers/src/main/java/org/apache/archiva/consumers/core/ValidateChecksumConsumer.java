@@ -19,30 +19,26 @@ package org.apache.archiva.consumers.core;
  * under the License.
  */
 
-import org.apache.archiva.common.plexusbridge.DigesterUtils;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
+import org.apache.archiva.checksum.ChecksumValidationException;
+import org.apache.archiva.checksum.ChecksumValidator;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.repository.ManagedRepository;
-import org.codehaus.plexus.digest.ChecksumFile;
-import org.codehaus.plexus.digest.Digester;
-import org.codehaus.plexus.digest.DigesterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
+import static org.apache.archiva.checksum.ChecksumValidationException.ValidationError.*;
 
 /**
  * ValidateChecksumConsumer - validate the provided checksum against the file it represents.
@@ -67,15 +63,7 @@ public class ValidateChecksumConsumer
 
     private String description = "Validate checksums against file.";
 
-    private ChecksumFile checksum;
-
-    private List<Digester> allDigesters;
-
-    @Inject
-    private PlexusSisuBridge plexusSisuBridge;
-
-    @Inject
-    private DigesterUtils digesterUtils;
+    ThreadLocal<ChecksumValidator> validatorThreadLocal = new ThreadLocal<>();
 
     private Path repositoryDir;
 
@@ -135,30 +123,34 @@ public class ValidateChecksumConsumer
     public void processFile( String path )
         throws ConsumerException
     {
+        ChecksumValidator validator;
+        if ((validator=validatorThreadLocal.get())==null) {
+            validator = new ChecksumValidator();
+            validatorThreadLocal.set(validator);
+        }
         Path checksumFile = this.repositoryDir.resolve( path );
         try
         {
-            if ( !checksum.isValidChecksum( checksumFile.toFile() ) )
+
+            if ( !validator.isValidChecksum( checksumFile ) )
             {
                 log.warn( "The checksum for {} is invalid.", checksumFile );
                 triggerConsumerWarning( NOT_VALID_CHECKSUM, "The checksum for " + checksumFile + " is invalid." );
             }
         }
-        catch ( FileNotFoundException e )
+        catch ( ChecksumValidationException e )
         {
-            log.error( "File not found during checksum validation: ", e );
-            triggerConsumerError( CHECKSUM_NOT_FOUND, "File not found during checksum validation: " + e.getMessage( ) );
-        }
-        catch ( DigesterException e )
-        {
-            log.error( "Digester failure during checksum validation on {}", checksumFile );
-            triggerConsumerError( CHECKSUM_DIGESTER_FAILURE,
-                "Digester failure during checksum validation on " + checksumFile );
-        }
-        catch ( IOException e )
-        {
-            log.error( "Checksum I/O error during validation on {}", checksumFile );
-            triggerConsumerError( CHECKSUM_IO_ERROR, "Checksum I/O error during validation on " + checksumFile );
+            if (e.getErrorType()==READ_ERROR) {
+                log.error( "Checksum read error during validation on {}", checksumFile );
+                triggerConsumerError( CHECKSUM_IO_ERROR, "Checksum I/O error during validation on " + checksumFile );
+            } else if (e.getErrorType()==INVALID_FORMAT || e.getErrorType()==DIGEST_ERROR) {
+                log.error( "Digester failure during checksum validation on {}", checksumFile );
+                triggerConsumerError( CHECKSUM_DIGESTER_FAILURE,
+                    "Digester failure during checksum validation on " + checksumFile );
+            } else if (e.getErrorType()==FILE_NOT_FOUND) {
+                log.error( "File not found during checksum validation: ", e );
+                triggerConsumerError( CHECKSUM_NOT_FOUND, "File not found during checksum validation: " + e.getMessage( ) );
+            }
         }
     }
 
@@ -171,14 +163,17 @@ public class ValidateChecksumConsumer
 
     @PostConstruct
     public void initialize( )
-        throws PlexusSisuBridgeException
     {
-        checksum = plexusSisuBridge.lookup( ChecksumFile.class );
-        List<Digester> allDigesters = new ArrayList<>( digesterUtils.getAllDigesters( ) );
-        includes = new ArrayList<>( allDigesters.size( ) );
-        for ( Digester digester : allDigesters )
+        ChecksumValidator validator;
+        if ((validator=validatorThreadLocal.get())==null) {
+            validator = new ChecksumValidator();
+            validatorThreadLocal.set(validator);
+        }
+        Set<String> extensions = validator.getSupportedExtensions();
+        includes = new ArrayList<>( extensions.size() );
+        for ( String ext : extensions )
         {
-            includes.add( "**/*" + digester.getFilenameExtension( ) );
+            includes.add( "**/*." + ext );
         }
     }
 }
