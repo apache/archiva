@@ -19,6 +19,8 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
+import javax.xml.bind.DatatypeConverter;
+
 /**
  * Hex - simple hex conversions. 
  *
@@ -26,21 +28,15 @@ package org.apache.archiva.checksum;
  */
 public class Hex
 {
-    private static final byte[] DIGITS = "0123456789abcdef".getBytes();
 
     public static String encode( byte[] data )
     {
-        int l = data.length;
-
-        byte[] raw = new byte[l * 2];
-
-        for ( int i = 0, j = 0; i < l; i++ )
+        try
         {
-            raw[j++] = DIGITS[( 0xF0 & data[i] ) >>> 4];
-            raw[j++] = DIGITS[0x0F & data[i]];
+            return DatatypeConverter.printHexBinary( data ).trim( ).toLowerCase( );
+        } catch (IllegalArgumentException e) {
+            return "";
         }
-
-        return new String( raw );
     }
 
     public static String encode( String raw )
@@ -48,4 +44,12 @@ public class Hex
         return encode( raw.getBytes() );
     }
 
+    public static byte[] decode( String data ) {
+        try
+        {
+            return DatatypeConverter.parseHexBinary( data.trim( ) );
+        } catch (IllegalArgumentException e) {
+            return new byte[0];
+        }
+    }
 }

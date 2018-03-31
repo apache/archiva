@@ -19,8 +19,10 @@ package org.apache.archiva.consumers.core;
  * under the License.
  */
 
+import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksumReference;
 import org.apache.archiva.checksum.ChecksumValidationException;
-import org.apache.archiva.checksum.ChecksumValidator;
+import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
@@ -62,8 +64,6 @@ public class ValidateChecksumConsumer
     private String id = "validate-checksums";
 
     private String description = "Validate checksums against file.";
-
-    ThreadLocal<ChecksumValidator> validatorThreadLocal = new ThreadLocal<>();
 
     private Path repositoryDir;
 
@@ -123,16 +123,11 @@ public class ValidateChecksumConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        ChecksumValidator validator;
-        if ((validator=validatorThreadLocal.get())==null) {
-            validator = new ChecksumValidator();
-            validatorThreadLocal.set(validator);
-        }
         Path checksumFile = this.repositoryDir.resolve( path );
         try
         {
-
-            if ( !validator.isValidChecksum( checksumFile ) )
+            ChecksumReference cf = ChecksummedFile.getFromChecksumFile( checksumFile );
+            if ( !cf.getFile().isValidChecksum( cf.getAlgorithm(), true )  )
             {
                 log.warn( "The checksum for {} is invalid.", checksumFile );
                 triggerConsumerWarning( NOT_VALID_CHECKSUM, "The checksum for " + checksumFile + " is invalid." );
@@ -164,12 +159,7 @@ public class ValidateChecksumConsumer
     @PostConstruct
     public void initialize( )
     {
-        ChecksumValidator validator;
-        if ((validator=validatorThreadLocal.get())==null) {
-            validator = new ChecksumValidator();
-            validatorThreadLocal.set(validator);
-        }
-        Set<String> extensions = validator.getSupportedExtensions();
+        Set<String> extensions = ChecksumAlgorithm.getExtensions();
         includes = new ArrayList<>( extensions.size() );
         for ( String ext : extensions )
         {

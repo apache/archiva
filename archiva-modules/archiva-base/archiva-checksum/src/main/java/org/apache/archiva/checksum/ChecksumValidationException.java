@@ -26,11 +26,11 @@ package org.apache.archiva.checksum;
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public class ChecksumValidationException extends Exception
+public class ChecksumValidationException extends RuntimeException
 {
 
     public enum ValidationError {
-        INVALID_FORMAT, DIGEST_ERROR, READ_ERROR, FILE_NOT_FOUND
+        INVALID_FORMAT, DIGEST_ERROR, READ_ERROR, FILE_NOT_FOUND, BAD_CHECKSUM_FILE_REF
     };
 
     final private ValidationError errorType;

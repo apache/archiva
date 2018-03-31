@@ -155,25 +155,16 @@ public class ArtifactMissingChecksumsConsumer
     private void createFixChecksum( String path, ChecksumAlgorithm checksumAlgorithm )
     {
         Path artifactFile = repositoryDir.resolve(path);
-        Path checksumFile = repositoryDir.resolve(path + "." + checksumAlgorithm.getExt( ) );
+        Path checksumFile = repositoryDir.resolve(path + "." + checksumAlgorithm.getExt( ).get(0) );
 
         if ( Files.exists(checksumFile) )
         {
             checksum = new ChecksummedFile( artifactFile);
-            try
+            if ( !checksum.isValidChecksum( checksumAlgorithm ) )
             {
-                if ( !checksum.isValidChecksum( checksumAlgorithm ) )
-                {
-                    checksum.fixChecksums( new ChecksumAlgorithm[]{checksumAlgorithm} );
-                    log.info( "Fixed checksum file {}", checksumFile.toAbsolutePath( ) );
-                    triggerConsumerInfo( "Fixed checksum file " + checksumFile.toAbsolutePath( ) );
-                }
-            }
-            catch ( IOException e )
-            {
-                log.error( "Cannot calculate checksum for file {} :", checksumFile, e );
-                triggerConsumerError( TYPE_CHECKSUM_CANNOT_CALC, "Cannot calculate checksum for file " + checksumFile +
-                    ": " + e.getMessage( ) );
+                checksum.fixChecksums( new ChecksumAlgorithm[]{checksumAlgorithm} );
+                log.info( "Fixed checksum file {}", checksumFile.toAbsolutePath( ) );
+                triggerConsumerInfo( "Fixed checksum file " + checksumFile.toAbsolutePath( ) );
             }
         }
         else if ( !Files.exists(checksumFile) )

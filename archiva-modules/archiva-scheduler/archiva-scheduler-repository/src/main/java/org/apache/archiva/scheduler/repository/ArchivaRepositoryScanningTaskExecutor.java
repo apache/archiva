@@ -38,7 +38,6 @@ import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -83,7 +82,6 @@ public class ArchivaRepositoryScanningTaskExecutor
 
     @PostConstruct
     public void initialize()
-        throws InitializationException
     {
         log.info( "Initialized {}", this.getClass().getName() );
     }

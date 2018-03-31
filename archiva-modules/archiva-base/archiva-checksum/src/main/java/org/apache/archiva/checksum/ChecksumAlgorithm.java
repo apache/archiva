@@ -23,6 +23,14 @@ package org.apache.archiva.checksum;
 import org.apache.commons.io.FilenameUtils;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Enumeration of available ChecksumAlgorithm techniques.
@@ -30,22 +38,34 @@ import java.nio.file.Path;
  *
  */
 public enum ChecksumAlgorithm {
-    SHA1("SHA-1", "sha1", "SHA1"),
-    MD5("MD5", "md5", "MD5");
+    MD5("MD5", "MD5", "md5"),
+    SHA1("SHA-1", "SHA1", "sha1", "sha128", "sha-128"),
+    SHA256("SHA-256", "SHA2", "sha2", "sha256", "sha-256"),
+    SHA384("SHA-384", "SHA3", "sha3", "sha384", "sha-384"),
+    SHA512("SHA-512", "SHA5", "sha5", "sha512", "sha-512");
 
     public static ChecksumAlgorithm getByExtension( Path file )
     {
         String ext = FilenameUtils.getExtension( file.getFileName().toString() ).toLowerCase();
-        if ( ChecksumAlgorithm.SHA1.getExt().equals( ext ) )
-        {
-            return ChecksumAlgorithm.SHA1;
+        if (extensionMap.containsKey(ext)) {
+            return extensionMap.get(ext);
         }
-        else if ( ChecksumAlgorithm.MD5.getExt().equals( ext ) )
-        {
-            return ChecksumAlgorithm.MD5;
-        }
+        throw new IllegalArgumentException( "Filename " + file.getFileName() + " has no valid extension." );
+    }
 
-        throw new IllegalArgumentException( "Filename " + file.getFileName() + " has no associated extension." );
+    private static final Map<String, ChecksumAlgorithm> extensionMap = new HashMap<>(  );
+
+    static {
+        for (ChecksumAlgorithm alg : ChecksumAlgorithm.values()) {
+            for (String extString : alg.getExt())
+            {
+                extensionMap.put( extString, alg );
+            }
+        }
+    }
+
+    public static Set<String> getExtensions() {
+        return extensionMap.keySet();
     }
 
     /**
@@ -56,7 +76,7 @@ public enum ChecksumAlgorithm {
     /**
      * The file extension for this ChecksumAlgorithm.
      */
-    private final String ext;
+    private final List<String> ext;
 
     /**
      * The checksum type, the key that you see in checksum files.
@@ -70,11 +90,12 @@ public enum ChecksumAlgorithm {
      * @param ext the file extension.
      * @param type the checksum type.
      */
-    private ChecksumAlgorithm( String algorithm, String ext, String type )
+    private ChecksumAlgorithm( String algorithm, String type, String... ext )
     {
         this.algorithm = algorithm;
-        this.ext = ext;
+        this.ext = Arrays.asList( ext );
         this.type = type;
+
     }
 
     public String getAlgorithm()
@@ -82,7 +103,7 @@ public enum ChecksumAlgorithm {
         return algorithm;
     }
 
-    public String getExt()
+    public List<String> getExt()
     {
         return ext;
     }

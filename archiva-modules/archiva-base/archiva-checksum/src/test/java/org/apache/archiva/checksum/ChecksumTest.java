@@ -20,12 +20,16 @@ package org.apache.archiva.checksum;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,9 +40,10 @@ import java.util.List;
  */
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ChecksumTest
-    extends TestCase
+    extends AbstractChecksumTestCase
 {
     private static final String UNSET_SHA1 = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
+    private static final Charset FILE_ENCODING = Charset.forName( "UTF-8" );
 
     @Test
     public void testConstructSha1()
@@ -68,7 +73,7 @@ public class ChecksumTest
 
     @Test
     public void testUpdateMany()
-        throws IOException
+        throws IOException, ChecksumValidationException
     {
         Checksum checksumSha1 = new Checksum( ChecksumAlgorithm.SHA1 );
         Checksum checksumMd5 = new Checksum( ChecksumAlgorithm.MD5 );
@@ -76,11 +81,11 @@ public class ChecksumTest
         checksums.add( checksumSha1 );
         checksums.add( checksumMd5 );
 
-        byte buf[] = ( "You know, I'm sick of following my dreams, man. "
-            + "I'm just going to ask where they're going and hook up with 'em later. - Mitch Hedberg" ).getBytes();
+        Path checkFile = getTestOutputDir().resolve( "test-file1.txt" );
+        FileUtils.writeStringToFile( checkFile, FILE_ENCODING,  "You know, I'm sick of following my dreams, man. "
+            + "I'm just going to ask where they're going and hook up with 'em later. - Mitch Hedberg");
 
-        ByteArrayInputStream stream = new ByteArrayInputStream( buf );
-        Checksum.update( checksums, stream );
+        Checksum.update( checksums, checkFile );
 
         assertEquals( "Checksum SHA1", "e396119ae0542e85a74759602fd2f81e5d36d762", checksumSha1.getChecksum() );
         assertEquals( "Checksum MD5", "21c2c5ca87ec018adacb2e2fb3432219", checksumMd5.getChecksum() );

@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -139,7 +140,7 @@ public class ChecksummedFileTest
 
     @Test
     public void testFixChecksum()
-        throws IOException
+        throws IOException, ChecksumValidationException
     {
         Path jarFile = createTestableJar( "examples/redback-authz-open.jar" );
         Path sha1File = jarFile.resolveSibling( jarFile.getFileName()+ ".sha1" );
@@ -167,7 +168,7 @@ public class ChecksummedFileTest
 
     @Test
     public void testIsValidChecksum()
-        throws IOException
+        throws IOException, ChecksumValidationException
     {
         Path jarFile = createTestableJar( "examples/redback-authz-open.jar", true, false );
 
@@ -177,7 +178,7 @@ public class ChecksummedFileTest
 
     @Test
     public void testIsValidChecksumInvalidSha1Format()
-        throws IOException
+        throws IOException, ChecksumValidationException
     {
         Path jarFile = createTestableJar( "examples/redback-authz-open.jar" );
         Path sha1File = jarFile.resolveSibling( jarFile.getFileName() + ".sha1" );
@@ -192,7 +193,7 @@ public class ChecksummedFileTest
 
     @Test
     public void testIsValidChecksumNoChecksumFiles()
-        throws IOException
+        throws IOException, ChecksumValidationException
     {
         Path jarFile = createTestableJar( "examples/redback-authz-open.jar", false, false );
 
@@ -204,7 +205,7 @@ public class ChecksummedFileTest
 
     @Test
     public void testIsValidChecksumSha1AndMd5()
-        throws IOException
+        throws IOException, ChecksumValidationException
     {
         Path jarFile = createTestableJar( "examples/redback-authz-open.jar", true, true );
 
@@ -215,7 +216,7 @@ public class ChecksummedFileTest
 
     @Test
     public void testIsValidChecksumSha1NoMd5()
-        throws IOException
+        throws IOException, ChecksumValidationException
     {
         Path jarFile = createTestableJar( "examples/redback-authz-open.jar", true, false );
 
@@ -227,40 +228,43 @@ public class ChecksummedFileTest
 
     @Test
     public void testParseChecksum()
-        throws IOException
+        throws IOException, ChecksumValidationException
     {
-        String expected = SERVLETAPI_SHA1
-            + "  /home/projects/maven/repository-staging/to-ibiblio/maven2/servletapi/servletapi/2.4/servletapi-2.4.pom";
+        Path expectedFile = getTestOutputDir().resolve("servletapi-2.4.pom.sha1");
+        FileUtils.writeStringToFile( expectedFile, FILE_ENCODING, SERVLETAPI_SHA1
+            + "  /home/projects/maven/repository-staging/to-ibiblio/maven2/servletapi/servletapi/2.4/servletapi-2.4.pom");
 
         Path testfile = getTestResource( "examples/redback-authz-open.jar" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
-        String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.SHA1,
-                                                  "servletapi/servletapi/2.4/servletapi-2.4.pom" );
+        String s = checksummedFile.parseChecksum( expectedFile, ChecksumAlgorithm.SHA1,
+                                                  "servletapi/servletapi/2.4/servletapi-2.4.pom", FILE_ENCODING);
         assertEquals( "Checksum doesn't match", SERVLETAPI_SHA1, s );
 
     }
 
     @Test
     public void testParseChecksumAltDash1()
-        throws IOException
+        throws IOException, ChecksumValidationException
     {
-        String expected = SERVLETAPI_SHA1 + "  -";
+        Path expectedFile = getTestOutputDir().resolve("redback-authz-open.jar.sha1");
+        FileUtils.writeStringToFile( expectedFile, FILE_ENCODING, SERVLETAPI_SHA1 + "  -");
         Path testfile = getTestResource( "examples/redback-authz-open.jar" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
-        String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.SHA1,
-                                                  "servletapi/servletapi/2.4/servletapi-2.4.pom" );
+        String s = checksummedFile.parseChecksum( expectedFile, ChecksumAlgorithm.SHA1,
+                                                  "servletapi/servletapi/2.4/servletapi-2.4.pom", FILE_ENCODING );
         assertEquals( "Checksum doesn't match", SERVLETAPI_SHA1, s );
     }
 
     @Test
     public void testParseChecksumAltDash2()
-        throws IOException
+        throws IOException, ChecksumValidationException
     {
-        String expected = "SHA1(-)=" + SERVLETAPI_SHA1;
+        Path expectedFile = getTestOutputDir().resolve("redback-authz-open.jar.sha1");
+        FileUtils.writeStringToFile( expectedFile, FILE_ENCODING, "SHA1(-)=" + SERVLETAPI_SHA1);
         Path testfile = getTestResource( "examples/redback-authz-open.jar" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
-        String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.SHA1,
-                                                  "servletapi/servletapi/2.4/servletapi-2.4.pom" );
+        String s = checksummedFile.parseChecksum( expectedFile, ChecksumAlgorithm.SHA1,
+                                                  "servletapi/servletapi/2.4/servletapi-2.4.pom" , FILE_ENCODING);
         assertEquals( "Checksum doesn't match", SERVLETAPI_SHA1, s );
     }
 
@@ -268,16 +272,17 @@ public class ChecksummedFileTest
     public void testRemoteMetadataChecksumFilePathSha1()
         throws IOException
     {
-        String expected = REMOTE_METADATA_SHA1 + "  /home/test/repository/examples/metadata/maven-metadata.xml";
+        Path expectedFile = getTestOutputDir().resolve("maven-metadata-remote.xml.sha1");
+        FileUtils.writeStringToFile( expectedFile, FILE_ENCODING, REMOTE_METADATA_SHA1 + "  /home/test/repository/examples/metadata/maven-metadata.xml");
         Path testfile = getTestResource( "examples/metadata/maven-metadata-remote.xml" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
 
         try
         {
-            String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.SHA1, "maven-metadata-remote.xml" );
+            String s = checksummedFile.parseChecksum( expectedFile, ChecksumAlgorithm.SHA1, "maven-metadata-remote.xml", FILE_ENCODING );
             assertEquals( "Checksum doesn't match", REMOTE_METADATA_SHA1, s );
         }
-        catch ( IOException e )
+        catch ( ChecksumValidationException e )
         {
             e.printStackTrace();
             fail( "IOException should not occur." );
@@ -288,16 +293,17 @@ public class ChecksummedFileTest
     public void testRemoteMetadataChecksumFilePathMd5()
         throws IOException
     {
-        String expected = REMOTE_METADATA_MD5 + "  ./examples/metadata/maven-metadata.xml";
+        Path expectedFile = getTestOutputDir().resolve( "maven-metadata.xml.md5" );
+        FileUtils.writeStringToFile( expectedFile, FILE_ENCODING, REMOTE_METADATA_MD5 + "  ./examples/metadata/maven-metadata.xml");
         Path testfile = getTestResource( "examples/metadata/maven-metadata-remote.xml" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testfile );
 
         try
         {
-            String s = checksummedFile.parseChecksum( expected, ChecksumAlgorithm.MD5, "maven-metadata-remote.xml" );
+            String s = checksummedFile.parseChecksum( expectedFile, ChecksumAlgorithm.MD5, "maven-metadata-remote.xml", FILE_ENCODING );
             assertEquals( "Checksum doesn't match", REMOTE_METADATA_MD5, s );
         }
-        catch ( IOException e )
+        catch ( ChecksumValidationException e )
         {
             e.printStackTrace();
             fail( "IOException should not occur." );

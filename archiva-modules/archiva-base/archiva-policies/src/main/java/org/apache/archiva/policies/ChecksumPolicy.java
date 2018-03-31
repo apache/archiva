@@ -118,7 +118,7 @@ public class ChecksumPolicy
 
             for ( ChecksumAlgorithm algorithm : algorithms )
             {
-                Path file = localFile.toAbsolutePath().resolveSibling( localFile.getFileName() + "." + algorithm.getExt() );
+                Path file = checksum.getChecksumFile( algorithm );
                 try
                 {
                     Files.deleteIfExists( file );

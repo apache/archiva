@@ -22,8 +22,14 @@ package org.apache.archiva.checksum;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -35,19 +41,35 @@ import java.util.List;
 public class Checksum
 {
     private static final int BUFFER_SIZE = 32768;
+    private byte[] result = new byte[0];
 
-    public static void update( List<Checksum> checksums, InputStream stream )
-        throws IOException
+    public static void update( List<Checksum> checksums, Path file )
+        throws ChecksumValidationException
     {
-        byte[] buffer = new byte[BUFFER_SIZE];
-        int size = stream.read( buffer, 0, BUFFER_SIZE );
-        while ( size >= 0 )
-        {
-            for ( Checksum checksum : checksums )
+        long fileSize;
+        try (FileChannel channel = FileChannel.open(file, StandardOpenOption.READ )) {
+            fileSize = channel.size();
+            long pos = 0;
+            while (pos<fileSize)
             {
-                checksum.update( buffer, 0, size );
+                long bufferSize = Math.min(BUFFER_SIZE, fileSize-pos);
+                MappedByteBuffer buffer = channel.map( FileChannel.MapMode.READ_ONLY, pos, bufferSize);
+                for ( Checksum checksum : checksums )
+                {
+                    checksum.update( buffer );
+                    buffer.rewind();
+                }
+                fileSize = channel.size();
+                pos += BUFFER_SIZE;
             }
-            size = stream.read( buffer, 0, BUFFER_SIZE );
+            for (Checksum checksum : checksums) {
+                checksum.finish();
+            }
+        } catch(FileNotFoundException e)
+        {
+            throw new ChecksumValidationException( ChecksumValidationException.ValidationError.FILE_NOT_FOUND, "File that should be parsed, not found: "+e.getMessage(), e );
+        } catch(IOException e) {
+            throw new ChecksumValidationException( ChecksumValidationException.ValidationError.READ_ERROR, "Parsing of file failed: "+e.getMessage(), e );
         }
     }
 
@@ -73,7 +95,17 @@ public class Checksum
 
     public String getChecksum()
     {
-        return Hex.encode( md.digest() );
+        if (this.result.length==0) {
+            finish();
+        }
+        return Hex.encode( this.result );
+    }
+
+    public byte[] getChecksumBytes() {
+        if (this.result.length==0) {
+            finish();
+        }
+        return this.result;
     }
 
     public ChecksumAlgorithm getAlgorithm()
@@ -84,21 +116,63 @@ public class Checksum
     public void reset()
     {
         md.reset();
+        this.result = new byte[0];
     }
 
     public Checksum update( byte[] buffer, int offset, int size )
     {
+        if (this.result.length!=0) {
+            reset();
+        }
         md.update( buffer, 0, size );
         return this;
     }
 
-    public Checksum update( InputStream stream )
+    public Checksum update( ByteBuffer buffer)
+    {
+        if (this.result.length!=0) {
+            reset();
+        }
+        md.update( buffer );
+        return this;
+    }
+
+    public Checksum finish() {
+        this.result = md.digest();
+        return this;
+    }
+
+    public void update( Path file )
         throws IOException
     {
-        try (DigestInputStream dig = new DigestInputStream( stream, md ))
-        {
-            IOUtils.copy( dig, new NullOutputStream() );
+        long fileSize;
+        try (FileChannel channel = FileChannel.open(file, StandardOpenOption.READ )) {
+            fileSize = channel.size();
+            long pos = 0;
+            while (pos<fileSize)
+            {
+                long bufferSize = Math.min(BUFFER_SIZE, fileSize-pos);
+                MappedByteBuffer buffer = channel.map( FileChannel.MapMode.READ_ONLY, pos, bufferSize);
+                update( buffer );
+                buffer.rewind();
+                fileSize = channel.size();
+                pos += BUFFER_SIZE;
+            }
+            finish();
         }
-        return this;
+    }
+
+    public boolean compare(byte[] cmp) {
+        if (this.result == null || this.result.length==0) {
+            finish();
+        }
+        return md.isEqual( this.result, cmp );
+    }
+
+    public boolean compare(String hexString) {
+        if (this.result == null || this.result.length==0) {
+            finish();
+        }
+        return md.isEqual(this.result, Hex.decode( hexString ));
     }
 }
