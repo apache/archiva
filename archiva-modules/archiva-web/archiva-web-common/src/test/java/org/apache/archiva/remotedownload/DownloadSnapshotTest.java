@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -126,7 +127,7 @@ public class DownloadSnapshotTest
         List<String> entries = getZipEntriesNames( zipFile );
         ZipEntry zipEntry = zipFile.getEntry( "org/apache/archiva/model/ArchivaArtifact.class" );
         assertNotNull( "cannot find zipEntry org/apache/archiva/model/ArchivaArtifact.class, entries: " + entries + ", content is: "
-                           + FileUtils.readFileToString( file.toFile() ), zipEntry );
+                           + FileUtils.readFileToString( file.toFile(), Charset.forName( "UTF-8") ), zipEntry );
         zipFile.close();
         file.toFile().deleteOnExit();
 

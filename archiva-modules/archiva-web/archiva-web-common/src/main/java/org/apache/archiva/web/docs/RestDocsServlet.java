@@ -56,7 +56,7 @@ public class RestDocsServlet
 
         if ( StringUtils.endsWith( path, ".xsd" ) )
         {
-            StringEscapeUtils.escapeXml( resp.getWriter(), IOUtils.toString( is ) );
+            StringEscapeUtils.escapeXml( resp.getWriter(), IOUtils.toString( is, "UTF-8" ) );
             //IOUtils.copy( is, resp.getOutputStream() );
             return;
         }

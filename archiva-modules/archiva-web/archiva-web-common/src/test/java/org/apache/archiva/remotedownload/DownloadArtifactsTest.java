@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -182,7 +183,7 @@ public class DownloadArtifactsTest
         List<String> entries = getZipEntriesNames( zipFile );
         ZipEntry zipEntry = zipFile.getEntry( "org/junit/runners/JUnit4.class" );
         assertNotNull( "cannot find zipEntry org/junit/runners/JUnit4.class, entries: " + entries + ", content is: "
-                           + FileUtils.readFileToString( file.toFile() ), zipEntry );
+                           + FileUtils.readFileToString( file.toFile(), Charset.forName( "UTF-8") ), zipEntry );
         zipFile.close();
         file.toFile().deleteOnExit();
     }

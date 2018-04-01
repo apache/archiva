@@ -131,10 +131,6 @@ public class MetadataUpdaterConsumer
             this.repositoryDir = Paths.get( repository.getRepoRoot( ) );
             this.scanStartTimestamp = System.currentTimeMillis( );
         }
-        catch ( RepositoryNotFoundException e )
-        {
-            throw new ConsumerException( e.getMessage( ), e );
-        }
         catch ( RepositoryException e )
         {
             throw new ConsumerException( e.getMessage( ), e );

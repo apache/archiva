@@ -133,7 +133,7 @@ public class ChecksummedFileTest
         checksummedFile.createChecksum( ChecksumAlgorithm.SHA1 );
         Path hashFile = checksummedFile.getChecksumFile( ChecksumAlgorithm.SHA1 );
         assertTrue( "ChecksumAlgorithm file should exist.", Files.exists(hashFile) );
-        String hashContents = org.apache.commons.io.FileUtils.readFileToString( hashFile.toFile() );
+        String hashContents = org.apache.commons.io.FileUtils.readFileToString( hashFile.toFile(), "UTF-8" );
         hashContents = StringUtils.trim( hashContents );
         assertEquals( "2bb14b388973351b0a4dfe11d171965f59cc61a1  redback-authz-open.jar", hashContents );
     }
@@ -146,7 +146,7 @@ public class ChecksummedFileTest
         Path sha1File = jarFile.resolveSibling( jarFile.getFileName()+ ".sha1" );
 
         // A typical scenario seen in the wild.
-        org.apache.commons.io.FileUtils.writeStringToFile( sha1File.toFile(), "sha1sum: redback-authz-open.jar: No such file or directory" );
+        org.apache.commons.io.FileUtils.writeStringToFile( sha1File.toFile(), "sha1sum: redback-authz-open.jar: No such file or directory", "UTF-8" );
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
         assertFalse( "ChecksummedFile.isValid(SHA1) == false",

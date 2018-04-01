@@ -89,7 +89,7 @@ public abstract class AbstractFileEventTest
     protected String readFile( Path file )
         throws IOException
     {
-        return FileUtils.readFileToString( file.toFile() );
+        return FileUtils.readFileToString( file.toFile(), Charset.forName( "UTF-8" ) );
     }
 
     protected void writeFile( Path file, String content )
