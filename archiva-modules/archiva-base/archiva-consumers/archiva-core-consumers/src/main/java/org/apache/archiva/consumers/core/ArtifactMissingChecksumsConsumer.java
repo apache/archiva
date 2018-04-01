@@ -162,7 +162,7 @@ public class ArtifactMissingChecksumsConsumer
             checksum = new ChecksummedFile( artifactFile);
             if ( !checksum.isValidChecksum( checksumAlgorithm ) )
             {
-                checksum.fixChecksums( new ChecksumAlgorithm[]{checksumAlgorithm} );
+                checksum.fixChecksum( checksumAlgorithm );
                 log.info( "Fixed checksum file {}", checksumFile.toAbsolutePath( ) );
                 triggerConsumerInfo( "Fixed checksum file " + checksumFile.toAbsolutePath( ) );
             }

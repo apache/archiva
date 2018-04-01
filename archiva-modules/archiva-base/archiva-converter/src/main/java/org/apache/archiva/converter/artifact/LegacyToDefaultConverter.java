@@ -19,6 +19,9 @@ package org.apache.archiva.converter.artifact;
  * under the License.
  */
 
+import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksumValidationException;
+import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.plexusbridge.DigesterUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
@@ -59,6 +62,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,13 +79,10 @@ public class LegacyToDefaultConverter
     /**
      * {@link List}&lt;{@link Digester}
      */
-    private List<? extends Digester> digesters;
+    private List<ChecksumAlgorithm> digesters;
 
     @Inject
     private PlexusSisuBridge plexusSisuBridge;
-
-    @Inject
-    private DigesterUtils digesterUtils;
 
     private ModelConverter translator;
 
@@ -99,7 +100,8 @@ public class LegacyToDefaultConverter
     public void initialize()
         throws PlexusSisuBridgeException
     {
-        this.digesters = digesterUtils.getAllDigesters();
+        // TODO: Should be configurable!
+        this.digesters = Arrays.asList(ChecksumAlgorithm.SHA256, ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5);
         translator = plexusSisuBridge.lookup( ModelConverter.class );
         artifactFactory = plexusSisuBridge.lookup( ArtifactFactory.class );
         artifactHandlerManager = plexusSisuBridge.lookup( ArtifactHandlerManager.class );
@@ -287,7 +289,7 @@ public class LegacyToDefaultConverter
         throws IOException
     {
         boolean result = true;
-        for ( Digester digester : digesters )
+        for ( ChecksumAlgorithm digester : digesters )
         {
             result &= verifyChecksum( file, file.getFileName() + "." + getDigesterFileExtension( digester ), digester,
                                       //$NON-NLS-1$
@@ -297,24 +299,22 @@ public class LegacyToDefaultConverter
         return result;
     }
 
-    private boolean verifyChecksum( Path file, String fileName, Digester digester, Artifact artifact, String key )
+    private boolean verifyChecksum( Path file, String fileName, ChecksumAlgorithm digester, Artifact artifact, String key )
         throws IOException
     {
-        boolean result = true;
-
+        boolean result;
         Path checksumFile = file.resolveSibling( fileName );
-        if ( Files.exists(checksumFile) )
+        // We ignore the check, if the checksum file does not exist
+        if (!Files.exists(checksumFile)) {
+            return true;
+        }
+        ChecksummedFile csFile = new ChecksummedFile( file );
+        try
         {
-            String checksum = org.apache.archiva.common.utils.FileUtils.readFileToString( checksumFile, Charset.defaultCharset() );
-            try
-            {
-                digester.verify( file.toFile(), checksum );
-            }
-            catch ( DigesterException e )
-            {
-                addWarning( artifact, Messages.getString( key ) );
-                result = false;
-            }
+            result = csFile.isValidChecksum( digester, true );
+        } catch (ChecksumValidationException e ) {
+            addWarning( artifact, Messages.getString( key ) );
+            result = false;
         }
         return result;
     }
@@ -323,9 +323,9 @@ public class LegacyToDefaultConverter
      * File extension for checksums
      * TODO should be moved to plexus-digester ?
      */
-    private String getDigesterFileExtension( Digester digester )
+    private String getDigesterFileExtension( ChecksumAlgorithm checksumAlgorithm )
     {
-        return digester.getAlgorithm().toLowerCase().replaceAll( "-", "" ); //$NON-NLS-1$ //$NON-NLS-2$
+        return checksumAlgorithm.getExt().get(0);
     }
 
     private boolean copyArtifact( Artifact artifact, ArtifactRepository targetRepository, FileTransaction transaction )
@@ -672,12 +672,12 @@ public class LegacyToDefaultConverter
     }
 
 
-    public List<? extends Digester> getDigesters()
+    public List<ChecksumAlgorithm> getDigesters()
     {
         return digesters;
     }
 
-    public void setDigesters( List<Digester> digesters )
+    public void setDigesters( List<ChecksumAlgorithm> digesters )
     {
         this.digesters = digesters;
     }

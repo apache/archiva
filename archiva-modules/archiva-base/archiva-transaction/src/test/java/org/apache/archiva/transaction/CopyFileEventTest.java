@@ -77,7 +77,7 @@ public class CopyFileEventTest
     public void testCopyCommitRollback()
         throws Exception
     {
-        CopyFileEvent event = new CopyFileEvent( testSource, testDest, digesters );
+        CopyFileEvent event = new CopyFileEvent( testSource, testDest, checksumAlgorithms );
 
         assertFalse( "Test that the destination is not yet created", Files.exists(testDest) );
 
@@ -110,7 +110,7 @@ public class CopyFileEventTest
 
         assertTrue( "Test that the destination exists", Files.exists(testDest) );
 
-        CopyFileEvent event = new CopyFileEvent( testSource, testDest, digesters );
+        CopyFileEvent event = new CopyFileEvent( testSource, testDest, checksumAlgorithms );
 
         String target = readFile( testDest );
 
@@ -137,7 +137,7 @@ public class CopyFileEventTest
     public void testCreateRollbackCommit()
         throws Exception
     {
-        CopyFileEvent event = new CopyFileEvent( testSource, testDest, digesters );
+        CopyFileEvent event = new CopyFileEvent( testSource, testDest, checksumAlgorithms );
 
         assertFalse( "Test that the destination is not yet created", Files.exists(testDest) );
 

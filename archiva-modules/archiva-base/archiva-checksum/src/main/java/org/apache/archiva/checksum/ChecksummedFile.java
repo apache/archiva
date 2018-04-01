@@ -30,10 +30,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.apache.archiva.checksum.ChecksumValidationException.ValidationError.BAD_CHECKSUM_FILE;
 import static org.apache.archiva.checksum.ChecksumValidationException.ValidationError.BAD_CHECKSUM_FILE_REF;
 
 /**
@@ -157,7 +159,7 @@ public class ChecksummedFile
     public boolean isValidChecksum( ChecksumAlgorithm algorithm, boolean throwExceptions )
         throws ChecksumValidationException
     {
-        return isValidChecksums( new ChecksumAlgorithm[]{algorithm} );
+        return isValidChecksums( Arrays.asList( algorithm ), throwExceptions );
     }
 
     /**
@@ -167,7 +169,7 @@ public class ChecksummedFile
      * @param algorithms the algorithms to check for.
      * @return true if the checksums report that the the reference file is valid, false if invalid.
      */
-    public boolean isValidChecksums( ChecksumAlgorithm algorithms[]) throws ChecksumValidationException
+    public boolean isValidChecksums( List<ChecksumAlgorithm> algorithms) throws ChecksumValidationException
     {
         return isValidChecksums( algorithms, false );
     }
@@ -180,10 +182,10 @@ public class ChecksummedFile
      * @return True, if it is valid, otherwise false.
      * @throws ChecksumValidationException
      */
-    public boolean isValidChecksums( ChecksumAlgorithm algorithms[], boolean throwExceptions) throws ChecksumValidationException
+    public boolean isValidChecksums( List<ChecksumAlgorithm> algorithms, boolean throwExceptions) throws ChecksumValidationException
     {
 
-        List<Checksum> checksums = new ArrayList<>( algorithms.length );
+        List<Checksum> checksums = new ArrayList<>( algorithms.size() );
         // Create checksum object for each algorithm.
         for ( ChecksumAlgorithm checksumAlgorithm : algorithms )
         {
@@ -255,15 +257,20 @@ public class ChecksummedFile
         return referenceFile;
     }
 
+
+
+    public boolean fixChecksum(ChecksumAlgorithm algorithm) {
+        return fixChecksums( Arrays.asList(algorithm) );
+    }
     /**
      * Fix or create checksum files for the reference file.
      *
      * @param algorithms the hashes to check for.
      * @return true if checksums were created successfully.
      */
-    public boolean fixChecksums( ChecksumAlgorithm[] algorithms )
+    public boolean fixChecksums( List<ChecksumAlgorithm> algorithms )
     {
-        List<Checksum> checksums = new ArrayList<>( algorithms.length );
+        List<Checksum> checksums = new ArrayList<>( algorithms.size() );
         // Create checksum object for each algorithm.
         for ( ChecksumAlgorithm checksumAlgorithm : algorithms )
         {
@@ -299,7 +306,13 @@ public class ChecksummedFile
                 Path checksumFile = getChecksumFile( checksumAlgorithm );
                 if ( Files.exists( checksumFile ) )
                 {
-                    String expectedChecksum = parseChecksum( checksumFile, checksumAlgorithm, referenceFile.getFileName( ).toString( ), FILE_ENCODING );
+                    String expectedChecksum;
+                    try
+                    {
+                        expectedChecksum = parseChecksum( checksumFile, checksumAlgorithm, referenceFile.getFileName( ).toString( ), FILE_ENCODING );
+                    } catch (ChecksumValidationException ex) {
+                        expectedChecksum = "";
+                    }
 
                     if ( !checksum.compare( expectedChecksum ) )
                     {
@@ -362,6 +375,8 @@ public class ChecksummedFile
         {
             throw new ChecksumValidationException(BAD_CHECKSUM_FILE_REF,
                 "The file reference '" + fc.getFileReference( ) + "' in the checksum file does not match expected file: '" + expectedPath + "'" );
+        } else if (!fc.isFormatMatch()) {
+            throw new ChecksumValidationException( BAD_CHECKSUM_FILE, "The checksum file content could not be parsed: "+checksumFile );
         }
         return fc.getChecksum( );
     }

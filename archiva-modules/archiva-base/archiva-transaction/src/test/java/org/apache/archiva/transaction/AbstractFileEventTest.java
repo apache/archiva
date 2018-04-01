@@ -20,11 +20,9 @@ package org.apache.archiva.transaction;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.digest.Digester;
-import org.codehaus.plexus.digest.Md5Digester;
-import org.codehaus.plexus.digest.Sha1Digester;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 
@@ -43,7 +41,7 @@ import java.util.List;
 public abstract class AbstractFileEventTest
     extends TestCase
 {
-    protected List<Digester> digesters;
+    protected List<ChecksumAlgorithm> checksumAlgorithms;
 
     @SuppressWarnings( "unchecked" )
     @Before
@@ -53,7 +51,7 @@ public abstract class AbstractFileEventTest
     {
         super.setUp();
 
-        digesters = Arrays.asList( (Digester) new Md5Digester(), (Digester) new Sha1Digester() );
+        checksumAlgorithms = Arrays.asList( ChecksumAlgorithm.SHA256, ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 );
     }
 
     protected void assertChecksumExists(Path file, String algorithm )

@@ -25,13 +25,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 
 /**
  * ChecksummedFileTest
@@ -152,7 +152,7 @@ public class ChecksummedFileTest
         assertFalse( "ChecksummedFile.isValid(SHA1) == false",
                      checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
 
-        boolean fixed = checksummedFile.fixChecksums( new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1 } );
+        boolean fixed = checksummedFile.fixChecksums( Arrays.asList( ChecksumAlgorithm.SHA1 ) );
         assertTrue( "ChecksummedFile.fixChecksums() == true", fixed );
 
         assertTrue( "ChecksummedFile.isValid(SHA1) == true",
@@ -199,7 +199,7 @@ public class ChecksummedFileTest
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
         assertFalse( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums(
-            new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 } ) );
+            Arrays.asList(ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 ) ) );
 
     }
 
@@ -211,7 +211,7 @@ public class ChecksummedFileTest
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
         assertTrue( "ChecksummedFile.isValid(SHA1,MD5)", checksummedFile.isValidChecksums(
-            new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 } ) );
+            Arrays.asList(ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 ) ) );
     }
 
     @Test
@@ -222,7 +222,7 @@ public class ChecksummedFileTest
 
         ChecksummedFile checksummedFile = new ChecksummedFile( jarFile );
         assertTrue( "ChecksummedFile.isValid(SHA1)", checksummedFile.isValidChecksums(
-            new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 } ) );
+            Arrays.asList(ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 ) ) );
 
     }
 

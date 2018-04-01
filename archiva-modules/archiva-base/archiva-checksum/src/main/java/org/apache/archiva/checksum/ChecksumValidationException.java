@@ -30,7 +30,7 @@ public class ChecksumValidationException extends RuntimeException
 {
 
     public enum ValidationError {
-        INVALID_FORMAT, DIGEST_ERROR, READ_ERROR, FILE_NOT_FOUND, BAD_CHECKSUM_FILE_REF
+        INVALID_FORMAT, DIGEST_ERROR, READ_ERROR, FILE_NOT_FOUND, BAD_CHECKSUM_FILE_REF, BAD_CHECKSUM_FILE
     };
 
     final private ValidationError errorType;

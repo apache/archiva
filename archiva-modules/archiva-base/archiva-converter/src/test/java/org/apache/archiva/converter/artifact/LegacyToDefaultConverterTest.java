@@ -84,10 +84,6 @@ public class LegacyToDefaultConverterTest
 
         ArtifactRepositoryFactory factory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
 
-        Map<String, ArtifactRepositoryLayout> layoutsMap = plexusSisuBridge.lookupMap( ArtifactRepositoryLayout.class );
-
-        System.out.println( "hints " + layoutsMap.keySet().toString() );
-
         ArtifactRepositoryLayout layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "legacy" );
 
         Path sourceBase = getTestFile( "src/test/source-repository" );

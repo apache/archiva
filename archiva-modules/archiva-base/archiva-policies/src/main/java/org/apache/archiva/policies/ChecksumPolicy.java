@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -66,7 +67,7 @@ public class ChecksumPolicy
      */
     public static final String FIX = "fix";
 
-    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
+    private List<ChecksumAlgorithm> algorithms = Arrays.asList( ChecksumAlgorithm.SHA256, ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 );
 
     private List<String> options = new ArrayList<>( 3 );
 

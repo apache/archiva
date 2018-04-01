@@ -75,6 +75,7 @@ import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -105,7 +106,7 @@ public class DefaultFileUploadService
     @Inject
     private ArchivaAdministration archivaAdministration;
 
-    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
+    private List<ChecksumAlgorithm> algorithms = Arrays.asList( ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 );
 
     @Inject
     @Named(value = "archivaTaskScheduler#repository")

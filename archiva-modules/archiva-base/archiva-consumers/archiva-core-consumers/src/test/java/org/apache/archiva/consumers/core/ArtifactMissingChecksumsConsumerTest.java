@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Calendar;
 
 /*
@@ -112,7 +113,7 @@ public class ArtifactMissingChecksumsConsumerTest
         Assertions.assertThat( sha1Path.toFile() ).exists();
         Assertions.assertThat( md5Path.toFile() ).exists();
         Assertions.assertThat(
-            checksum.isValidChecksums( new ChecksumAlgorithm[]{ ChecksumAlgorithm.MD5, ChecksumAlgorithm.SHA1 } ) ) //
+            checksum.isValidChecksums( Arrays.asList(ChecksumAlgorithm.MD5, ChecksumAlgorithm.SHA1 ) ) ) //
             .isFalse();
 
         consumer.beginScan( repoConfig, Calendar.getInstance().getTime() );
@@ -122,7 +123,7 @@ public class ArtifactMissingChecksumsConsumerTest
         Assertions.assertThat( sha1Path.toFile() ).exists();
         Assertions.assertThat( md5Path.toFile() ).exists();
         Assertions.assertThat(
-            checksum.isValidChecksums( new ChecksumAlgorithm[]{ ChecksumAlgorithm.MD5, ChecksumAlgorithm.SHA1 } ) ) //
+            checksum.isValidChecksums( Arrays.asList(ChecksumAlgorithm.MD5, ChecksumAlgorithm.SHA1 )) ) //
             .isTrue();
     }
 }

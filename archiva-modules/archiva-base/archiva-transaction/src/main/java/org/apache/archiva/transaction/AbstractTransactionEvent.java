@@ -19,9 +19,10 @@ package org.apache.archiva.transaction;
  * under the License.
  */
 
+import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.digest.Digester;
-import org.codehaus.plexus.digest.DigesterException;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -53,21 +54,21 @@ public abstract class AbstractTransactionEvent
     /**
      * {@link List}&lt;{@link Digester}&gt;
      */
-    private List<? extends Digester> digesters;
+    private List<ChecksumAlgorithm> checksumAlgorithms;
 
     protected AbstractTransactionEvent()
     {
-        this( new ArrayList<Digester>( 0 ) );
+        this( new ArrayList<ChecksumAlgorithm>( 0 ) );
     }
 
-    protected AbstractTransactionEvent( List<? extends Digester> digesters )
+    protected AbstractTransactionEvent( List<ChecksumAlgorithm> checksumAlgorithms)
     {
-        this.digesters = digesters;
+        this.checksumAlgorithms = checksumAlgorithms;
     }
 
-    protected List<? extends Digester> getDigesters()
+    protected List<ChecksumAlgorithm> getChecksumAlgorithms()
     {
-        return digesters;
+        return checksumAlgorithms;
     }
 
     /**
@@ -181,10 +182,10 @@ public abstract class AbstractTransactionEvent
     protected void createChecksums( Path file, boolean force )
         throws IOException
     {
-        for ( Digester digester : getDigesters() )
+        for ( ChecksumAlgorithm checksumAlgorithm : getChecksumAlgorithms() )
         {
-            Path checksumFile = Paths.get(file.toAbsolutePath() + "." + getDigesterFileExtension( digester ) );
-            if ( Files.exists(checksumFile) )
+            Path checksumFile = Paths.get( file.toAbsolutePath( ) + "." + getChecksumFileExtension( checksumAlgorithm ) );
+            if ( Files.exists( checksumFile ) )
             {
                 if ( !force )
                 {
@@ -196,16 +197,9 @@ public abstract class AbstractTransactionEvent
             {
                 createdFiles.add( checksumFile );
             }
-
-            try
-            {
-                writeStringToFile( checksumFile, digester.calc( file.toFile() ) );
-            }
-            catch ( DigesterException e )
-            {
-                throw (IOException) e.getCause();
-            }
         }
+        ChecksummedFile csFile = new ChecksummedFile( file );
+        csFile.fixChecksums( getChecksumAlgorithms() );
     }
 
     /**
@@ -221,9 +215,9 @@ public abstract class AbstractTransactionEvent
      * File extension for checksums
      * TODO should be moved to plexus-digester ?
      */
-    protected String getDigesterFileExtension( Digester digester )
+    protected String getChecksumFileExtension( ChecksumAlgorithm algorithm )
     {
-        return digester.getAlgorithm().toLowerCase().replaceAll( "-", "" );
+        return algorithm.getExt().get(0);
     }
 
 }

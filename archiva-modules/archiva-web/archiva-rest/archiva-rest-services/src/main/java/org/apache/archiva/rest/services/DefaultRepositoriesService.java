@@ -25,7 +25,6 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
@@ -96,6 +95,7 @@ import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -125,8 +125,6 @@ public class DefaultRepositoriesService
     @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
-    @Inject
-    private PlexusSisuBridge plexusSisuBridge;
 
     @Inject
     private SecuritySystem securitySystem;
@@ -156,7 +154,7 @@ public class DefaultRepositoriesService
     @Named(value = "cache#namespaces")
     private Cache<String, Collection<String>> namespacesCache;
 
-    private ChecksumAlgorithm[] algorithms = new ChecksumAlgorithm[]{ ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 };
+    private List<ChecksumAlgorithm> algorithms = Arrays.asList(ChecksumAlgorithm.SHA256, ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 );
 
     @Override
     public Boolean scanRepository( String repositoryId, boolean fullScan )

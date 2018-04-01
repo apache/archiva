@@ -40,7 +40,7 @@ public class CreateFileEventTest
     {
         Path testFile = testDir.resolve("test-file.txt" );
 
-        CreateFileEvent event = new CreateFileEvent( "file contents", testFile, digesters );
+        CreateFileEvent event = new CreateFileEvent( "file contents", testFile, checksumAlgorithms );
 
         assertFalse( "Test file is not yet created", Files.exists(testFile) );
 
@@ -72,7 +72,7 @@ public class CreateFileEventTest
 
         writeFile( testFile, "original contents" );
 
-        CreateFileEvent event = new CreateFileEvent( "modified contents", testFile, digesters );
+        CreateFileEvent event = new CreateFileEvent( "modified contents", testFile, checksumAlgorithms );
 
         String contents = readFile( testFile );
 
@@ -101,7 +101,7 @@ public class CreateFileEventTest
     {
         Path testFile = testDir.resolve( "test-file.txt" );
 
-        CreateFileEvent event = new CreateFileEvent( "file contents", testFile, digesters );
+        CreateFileEvent event = new CreateFileEvent( "file contents", testFile, checksumAlgorithms );
 
         assertFalse( "Test file is not yet created", Files.exists(testFile) );
 

@@ -19,8 +19,8 @@ package org.apache.archiva.transaction;
  * under the License.
  */
 
+import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.digest.Digester;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,11 +44,11 @@ public class CopyFileEvent
      * 
      * @param source
      * @param destination
-     * @param digesters {@link List}&lt;{@link Digester}&gt; digesters to use for checksumming 
+     * @param checksumAlgorithms The checksum algorithms
      */
-    public CopyFileEvent( Path source, Path destination, List<? extends Digester> digesters )
+    public CopyFileEvent( Path source, Path destination, List<ChecksumAlgorithm> checksumAlgorithms )
     {
-        super( digesters );
+        super( checksumAlgorithms );
         this.source = source;
         this.destination = destination;
     }
@@ -77,9 +77,9 @@ public class CopyFileEvent
     private void copyChecksums()
         throws IOException
     {
-        for ( Digester digester : getDigesters() )
+        for ( ChecksumAlgorithm checksumAlgorithm : getChecksumAlgorithms() )
         {
-            copyChecksum( getDigesterFileExtension( digester ) );
+            copyChecksum( getChecksumFileExtension( checksumAlgorithm ) );
         }
     }
 
