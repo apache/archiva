@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.repository.BasicManagedRepository;
 import org.apache.archiva.repository.BasicRemoteRepository;
 import org.apache.archiva.repository.ManagedRepository;
@@ -59,6 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 
 import static org.easymock.EasyMock.*;
 
@@ -347,14 +349,18 @@ public class RepositoryContentConsumersTest
         return path;
     }
 
-    private static Map convertToMap( List objects )
+    private static <T> Map<String, T> convertToMap( List<T> objects)
     {
-        HashMap map = new HashMap();
-        for ( Object o : objects )
+        HashMap<String,T> map = new HashMap<>();
+        for ( T o : objects )
         {
-            map.put( o, o );
+            map.put( o.toString(), o );
         }
         return map;
+    }
+
+    private static <T> Function<List<T>,Map<String,T>> getConversionFunction(Class<T> type) {
+        return ts -> convertToMap( ts );
     }
 
     public class MockApplicationContext
@@ -445,23 +451,25 @@ public class RepositoryContentConsumersTest
             throw new UnsupportedOperationException( "Not supported yet." );
         }
 
+        @SuppressWarnings( "unchecked" )
         @Override
-        public Map getBeansOfType( Class type )
+        public <T> Map<String, T> getBeansOfType( Class<T> type )
             throws BeansException
         {
-            if ( type == KnownRepositoryContentConsumer.class )
-            {
-                return convertToMap( knownRepositoryContentConsumer );
+            List<T> list = null;
+            if (type == KnownRepositoryContentConsumer.class) {
+                list = (List<T>) knownRepositoryContentConsumer;
+            } else if (type == InvalidRepositoryContentConsumer.class) {
+                list = (List<T>) invalidRepositoryContentConsumers;
             }
-            if ( type == InvalidRepositoryContentConsumer.class )
-            {
-                return convertToMap( invalidRepositoryContentConsumers );
+            if (list!=null) {
+                return getConversionFunction( type ).apply( list );
             }
             throw new UnsupportedOperationException( "Should not have been called" );
         }
 
         @Override
-        public Map getBeansOfType( Class type, boolean includeNonSingletons, boolean allowEagerInit )
+        public <T> Map<String, T> getBeansOfType( Class<T> type, boolean includeNonSingletons, boolean allowEagerInit )
             throws BeansException
         {
             throw new UnsupportedOperationException( "Not supported yet." );
@@ -487,7 +495,7 @@ public class RepositoryContentConsumersTest
         }
 
         @Override
-        public Object getBean( String name, Class requiredType )
+        public <T> T getBean( String name, Class<T> requiredType )
             throws BeansException
         {
             throw new UnsupportedOperationException( "Not supported yet." );

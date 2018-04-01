@@ -166,7 +166,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
 
             if ( needsMetadataUpdate )
             {
-                updateMetadata( artifactRef );
+                updateMetadata( path );
             }
         }
         catch ( LayoutException e )
@@ -183,57 +183,17 @@ public class CleanupReleasedSnapshotsRepositoryPurge
         }
     }
 
-    private void updateMetadata( ArtifactReference artifact )
+    private void updateMetadata( String path )
     {
-        VersionedReference versionRef = new VersionedReference( );
-        versionRef.setGroupId( artifact.getGroupId( ) );
-        versionRef.setArtifactId( artifact.getArtifactId( ) );
-        versionRef.setVersion( artifact.getVersion( ) );
-
-        ProjectReference projectRef = new ProjectReference( );
-        projectRef.setGroupId( artifact.getGroupId( ) );
-        projectRef.setArtifactId( artifact.getArtifactId( ) );
 
         try
         {
-            metadataTools.updateMetadata( repository, versionRef );
-        }
-        catch ( ContentNotFoundException e )
-        {
-            // Ignore. (Just means we have no snapshot versions left to reference).
+            metadataTools.updateMetadata( repository, path );
         }
         catch ( RepositoryMetadataException e )
-        {
-            // Ignore. 
-        }
-        catch ( IOException e )
-        {
-            // Ignore. 
-        }
-        catch ( LayoutException e )
         {
             // Ignore.
         }
 
-        try
-        {
-            metadataTools.updateMetadata( repository, projectRef );
-        }
-        catch ( ContentNotFoundException e )
-        {
-            // Ignore. (Just means we have no snapshot versions left to reference).
-        }
-        catch ( RepositoryMetadataException e )
-        {
-            // Ignore. 
-        }
-        catch ( IOException e )
-        {
-            // Ignore. 
-        }
-        catch ( LayoutException e )
-        {
-            // Ignore.
-        }
     }
 }

@@ -145,6 +145,7 @@ public class MavenRepositorySearch
     /**
      * @see RepositorySearch#search(String, SearchFields, SearchResultLimits)
      */
+    @SuppressWarnings( "deprecation" )
     @Override
     public SearchResults search( String principal, SearchFields searchFields, SearchResultLimits limits )
         throws RepositorySearchException
@@ -325,7 +326,7 @@ public class MavenRepositorySearch
 
             FlatSearchResponse response = indexer.searchFlat( request );
 
-            if ( response == null || response.getTotalHits() == 0 )
+            if ( response == null || response.getTotalHitsCount() == 0 )
             {
                 SearchResults results = new SearchResults();
                 results.setLimits( limits );

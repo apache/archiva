@@ -29,7 +29,7 @@ import org.apache.commons.lang.StringUtils;
  *
  */
 public class ProxyConnectorSelectionPredicate
-    implements Predicate
+    implements Predicate<ProxyConnectorConfiguration>
 {
     private String sourceId;
 
@@ -42,7 +42,7 @@ public class ProxyConnectorSelectionPredicate
     }
 
     @Override
-    public boolean evaluate( Object object )
+    public boolean evaluate( ProxyConnectorConfiguration object )
     {
         boolean satisfies = false;
 

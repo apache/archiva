@@ -213,16 +213,8 @@ public class MetadataUpdaterConsumer
                 log.debug( "Skipping uptodate metadata: {}", this.metadataTools.toPath( projectRef ) );
                 return;
             }
-
-            metadataTools.updateMetadata( this.repository, projectRef );
+            metadataTools.updateMetadata( this.repository, metadataPath );
             log.debug( "Updated metadata: {}", this.metadataTools.toPath( projectRef ) );
-        }
-        catch ( LayoutException e )
-        {
-            log.warn( "Unable to convert path [{}] to an internal project reference: ", path, e );
-            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF,
-                "Unable to convert path [" + path + "] to an internal project reference: "
-                    + e.getMessage( ) );
         }
         catch ( RepositoryMetadataException e )
         {
@@ -235,13 +227,6 @@ public class MetadataUpdaterConsumer
             log.warn( "Project metadata not written due to IO warning: ", e );
             triggerConsumerWarning( TYPE_METADATA_IO,
                 "Project metadata not written due to IO warning: " + e.getMessage( ) );
-        }
-        catch ( ContentNotFoundException e )
-        {
-            log.warn( "Project metadata not written because no versions were found to update: ", e );
-            triggerConsumerWarning( TYPE_METADATA_IO,
-                "Project metadata not written because no versions were found to update: "
-                    + e.getMessage( ) );
         }
     }
 
@@ -265,15 +250,8 @@ public class MetadataUpdaterConsumer
                 return;
             }
 
-            metadataTools.updateMetadata( this.repository, versionRef );
+            metadataTools.updateMetadata( this.repository, metadataPath );
             log.debug( "Updated metadata: {}", this.metadataTools.toPath( versionRef ) );
-        }
-        catch ( LayoutException e )
-        {
-            log.warn( "Unable to convert path [{}] to an internal version reference: ", path, e );
-            triggerConsumerWarning( TYPE_METADATA_BAD_INTERNAL_REF,
-                "Unable to convert path [" + path + "] to an internal version reference: "
-                    + e.getMessage( ) );
         }
         catch ( RepositoryMetadataException e )
         {
@@ -286,13 +264,6 @@ public class MetadataUpdaterConsumer
             log.warn( "Version metadata not written due to IO warning: ", e );
             triggerConsumerWarning( TYPE_METADATA_IO,
                 "Version metadata not written due to IO warning: " + e.getMessage( ) );
-        }
-        catch ( ContentNotFoundException e )
-        {
-            log.warn( "Version metadata not written because no versions were found to update: ", e );
-            triggerConsumerWarning( TYPE_METADATA_IO,
-                "Version metadata not written because no versions were found to update: "
-                    + e.getMessage( ) );
         }
     }
 

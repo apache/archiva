@@ -60,6 +60,7 @@ import static org.junit.Assert.*;
 /**
  * MetadataToolsTest
  */
+@SuppressWarnings( "deprecation" )
 @ContextConfiguration (
     { "classpath*:/META-INF/spring-context.xml", "classpath:/spring-context-metadata-tools-test.xml" } )
 public class MetadataToolsTest

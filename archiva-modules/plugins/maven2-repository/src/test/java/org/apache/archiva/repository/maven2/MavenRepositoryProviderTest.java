@@ -154,11 +154,11 @@ public class MavenRepositoryProviderTest
         repo.setUrl( "https://repo.maven.apache.org/maven2/test" );
         repo.setDownloadRemoteIndex( true );
         repo.setDownloadRemoteIndexOnStartup( true );
-        Map header = new HashMap(  );
+        Map<String,String> header = new HashMap<>(  );
         header.put("header1","value1");
         header.put("header2","value2");
         repo.setExtraHeaders( header );
-        Map params = new HashMap(  );
+        Map<String,String> params = new HashMap<>(  );
         params.put("param1","pval1");
         params.put("param2","pval2");
         repo.setExtraParameters( params );

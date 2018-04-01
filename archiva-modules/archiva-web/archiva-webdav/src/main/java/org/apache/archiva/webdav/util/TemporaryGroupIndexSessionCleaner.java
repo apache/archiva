@@ -68,7 +68,7 @@ public class TemporaryGroupIndexSessionCleaner
     @Override
     public void sessionDestroyed( HttpSessionEvent httpSessionEvent )
     {
-        Map<String, TemporaryGroupIndex> tempFilesPerKey =
+        @SuppressWarnings( "unchecked" ) Map<String, TemporaryGroupIndex> tempFilesPerKey =
             (Map<String, TemporaryGroupIndex>) httpSessionEvent.getSession().getAttribute(
                 TEMPORARY_INDEX_SESSION_KEY );
 

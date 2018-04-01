@@ -29,7 +29,7 @@ import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.functors.ProxyConnectorSelectionPredicate;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -205,7 +205,7 @@ public class DefaultProxyConnectorAdmin
         }
 
         ProxyConnectorSelectionPredicate selectedProxy = new ProxyConnectorSelectionPredicate( sourceId, targetId );
-        return (ProxyConnectorConfiguration) CollectionUtils.find( configuration.getProxyConnectors(), selectedProxy );
+        return IterableUtils.find( configuration.getProxyConnectors(), selectedProxy );
     }
 
     protected ProxyConnectorConfiguration getProxyConnectorConfiguration( ProxyConnector proxyConnector )

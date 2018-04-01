@@ -147,6 +147,7 @@ public class MockWagon
 
     }
 
+    @Deprecated
     @Override
     public void openConnection()
         throws ConnectionException, AuthenticationException
