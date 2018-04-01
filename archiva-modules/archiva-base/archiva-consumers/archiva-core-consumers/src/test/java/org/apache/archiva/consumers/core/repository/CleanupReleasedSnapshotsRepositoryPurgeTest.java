@@ -171,6 +171,7 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/release", metadataXml );
         XMLAssert.assertXpathEvaluatesTo( "2.3", "//metadata/versioning/latest", metadataXml );
+        System.out.println(metadataXml);
         XMLAssert.assertXpathsEqual( "//expected/versions/version", expectedVersions,
                                      "//metadata/versioning/versions/version", metadataXml );
         XMLAssert.assertXpathEvaluatesTo( "20070315032817", "//metadata/versioning/lastUpdated", metadataXml );

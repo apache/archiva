@@ -285,6 +285,8 @@ public class MetadataTools
         return reference;
     }
 
+
+
     public String toPath( ProjectReference reference )
     {
         StringBuilder path = new StringBuilder();

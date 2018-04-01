@@ -166,7 +166,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
 
             if ( needsMetadataUpdate )
             {
-                updateMetadata( path );
+                updateMetadata( artifactRef );
             }
         }
         catch ( LayoutException e )
@@ -183,17 +183,63 @@ public class CleanupReleasedSnapshotsRepositoryPurge
         }
     }
 
-    private void updateMetadata( String path )
+
+    /*
+     * TODO: Uses a deprecated API, but if we use the API with location string, it does not work as expected
+     * -> not sure what needs to be changed here.
+     */
+    @SuppressWarnings( "deprecation" )
+    private void updateMetadata( ArtifactReference artifact )
     {
+        VersionedReference versionRef = new VersionedReference( );
+        versionRef.setGroupId( artifact.getGroupId( ) );
+        versionRef.setArtifactId( artifact.getArtifactId( ) );
+        versionRef.setVersion( artifact.getVersion( ) );
+
+        ProjectReference projectRef = new ProjectReference( );
+        projectRef.setGroupId( artifact.getGroupId( ) );
+        projectRef.setArtifactId( artifact.getArtifactId( ) );
 
         try
         {
-            metadataTools.updateMetadata( repository, path );
+            metadataTools.updateMetadata( repository, versionRef );
+        }
+        catch ( ContentNotFoundException e )
+        {
+            // Ignore. (Just means we have no snapshot versions left to reference).
         }
         catch ( RepositoryMetadataException e )
         {
             // Ignore.
         }
+        catch ( IOException e )
+        {
+            // Ignore.
+        }
+        catch ( LayoutException e )
+        {
+            // Ignore.
+        }
 
+        try
+        {
+            metadataTools.updateMetadata( repository, projectRef );
+        }
+        catch ( ContentNotFoundException e )
+        {
+            // Ignore. (Just means we have no snapshot versions left to reference).
+        }
+        catch ( RepositoryMetadataException e )
+        {
+            // Ignore.
+        }
+        catch ( IOException e )
+        {
+            // Ignore.
+        }
+        catch ( LayoutException e )
+        {
+            // Ignore.
+        }
     }
 }
