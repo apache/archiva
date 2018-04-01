@@ -23,7 +23,7 @@ import org.apache.archiva.common.utils.BaseFile;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.features.IndexCreationFeature;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tools.ant.types.selectors.SelectorUtils;

@@ -20,7 +20,7 @@ package org.apache.archiva.configuration.functors;
  */
 
 import org.apache.archiva.configuration.FileType;
-import org.apache.commons.collections.Closure;
+import org.apache.commons.collections4.Closure;
 
 import java.util.HashMap;
 import java.util.Map;

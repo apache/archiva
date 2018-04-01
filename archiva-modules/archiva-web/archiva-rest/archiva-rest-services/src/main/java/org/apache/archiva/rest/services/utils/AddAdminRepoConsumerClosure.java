@@ -21,7 +21,7 @@ package org.apache.archiva.rest.services.utils;
 
 import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
-import org.apache.commons.collections.Closure;
+import org.apache.commons.collections4.Closure;
 
 import java.util.ArrayList;
 import java.util.List;

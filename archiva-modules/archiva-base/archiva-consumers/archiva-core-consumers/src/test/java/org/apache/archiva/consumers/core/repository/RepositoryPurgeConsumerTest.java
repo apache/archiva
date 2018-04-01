@@ -108,6 +108,7 @@ public class RepositoryPurgeConsumerTest
         fileType.removePattern( "**/*.xml" );
     }
 
+    @SuppressWarnings( "deprecation" )
     private void assertNotConsumed( String path )
         throws Exception
     {

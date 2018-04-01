@@ -68,6 +68,7 @@ public abstract class AbstractArtifactConsumerTest
     }
 
 
+    @SuppressWarnings( "deprecation" )
     @Test
     public void testConsumption()
     {
@@ -81,6 +82,7 @@ public abstract class AbstractArtifactConsumerTest
         assertFalse( predicate.evaluate( consumer ) );
     }
 
+    @SuppressWarnings( "deprecation" )
     @Test
     public void testConsumptionOfOtherMetadata()
     {

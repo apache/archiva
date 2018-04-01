@@ -28,9 +28,10 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerBeginScanClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
-import org.apache.commons.collections.Closure;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.functors.IfClosure;
+import org.apache.commons.collections4.Closure;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.collections4.functors.IfClosure;
 import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,8 +121,8 @@ public class RepositoryScannerInstance
         Closure triggerBeginScan =
             new TriggerBeginScanClosure( repository, new Date( System.currentTimeMillis() ), true );
 
-        CollectionUtils.forAllDo( knownConsumerList, triggerBeginScan );
-        CollectionUtils.forAllDo( invalidConsumerList, triggerBeginScan );
+        IterableUtils.forEach( knownConsumerList, triggerBeginScan );
+        IterableUtils.forEach( invalidConsumerList, triggerBeginScan );
 
         if ( SystemUtils.IS_OS_WINDOWS )
         {
@@ -239,13 +240,13 @@ public class RepositoryScannerInstance
             consumerProcessFile.setBasefile( basefile );
             consumerWantsFile.setBasefile( basefile );
 
-            Closure processIfWanted = IfClosure.getInstance( consumerWantsFile, consumerProcessFile );
-            CollectionUtils.forAllDo( this.knownConsumers, processIfWanted );
+            Closure processIfWanted = IfClosure.ifClosure( consumerWantsFile, consumerProcessFile );
+            IterableUtils.forEach( this.knownConsumers, processIfWanted );
 
             if ( consumerWantsFile.getWantedFileCount() <= 0 )
             {
                 // Nothing known processed this file.  It is invalid!
-                CollectionUtils.forAllDo( this.invalidConsumers, consumerProcessFile );
+                IterableUtils.forEach( this.invalidConsumers, consumerProcessFile );
             }
 
         }
@@ -272,8 +273,8 @@ public class RepositoryScannerInstance
     private void finishWalk() {
         this.isRunning = false;
         TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure( repository, true );
-        CollectionUtils.forAllDo( knownConsumers, scanCompletedClosure );
-        CollectionUtils.forAllDo( invalidConsumers, scanCompletedClosure );
+        IterableUtils.forEach( knownConsumers, scanCompletedClosure );
+        IterableUtils.forEach( invalidConsumers, scanCompletedClosure );
 
         stats.setConsumerTimings( consumerTimings );
         stats.setConsumerCounts( consumerCounts );

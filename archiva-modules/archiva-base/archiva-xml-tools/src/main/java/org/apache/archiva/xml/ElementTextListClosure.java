@@ -19,7 +19,7 @@ package org.apache.archiva.xml;
  * under the License.
  */
 
-import org.apache.commons.collections.Closure;
+import org.apache.commons.collections4.Closure;
 import org.dom4j.Element;
 
 import java.util.ArrayList;

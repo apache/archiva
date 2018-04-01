@@ -22,7 +22,7 @@ package org.apache.archiva.repository.scanner.functors;
 import org.apache.archiva.consumers.ConsumerException;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.commons.collections.Closure;
+import org.apache.commons.collections4.Closure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

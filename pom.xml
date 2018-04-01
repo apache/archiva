@@ -49,7 +49,7 @@
 
   <properties>
     <commons-codec.version>1.6</commons-codec.version>
-    <commons-collections.version>3.2.1</commons-collections.version>
+    <commons-collections.version>4.1</commons-collections.version>
     <commons-fileupload.version>1.2.2</commons-fileupload.version>
     <commons-io.version>2.5</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
@@ -699,8 +699,8 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>commons-collections</groupId>
-        <artifactId>commons-collections</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-collections4</artifactId>
         <version>${commons-collections.version}</version>
       </dependency>
       <dependency>

@@ -31,7 +31,8 @@ import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.services.utils.AddAdminRepoConsumerClosure;
 import org.apache.archiva.rest.services.utils.AdminRepositoryConsumerComparator;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -412,7 +413,7 @@ public class DefaultArchivaAdministrationService
         {
             AddAdminRepoConsumerClosure addAdminRepoConsumer =
                 new AddAdminRepoConsumerClosure( archivaAdministration.getKnownContentConsumers() );
-            CollectionUtils.forAllDo( repoConsumerUtil.getAvailableKnownConsumers(), addAdminRepoConsumer );
+            IterableUtils.forEach( repoConsumerUtil.getAvailableKnownConsumers(), addAdminRepoConsumer );
             List<AdminRepositoryConsumer> knownContentConsumers = addAdminRepoConsumer.getList();
             Collections.sort( knownContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
             return knownContentConsumers;
@@ -431,7 +432,7 @@ public class DefaultArchivaAdministrationService
         {
             AddAdminRepoConsumerClosure addAdminRepoConsumer =
                 new AddAdminRepoConsumerClosure( archivaAdministration.getInvalidContentConsumers() );
-            CollectionUtils.forAllDo( repoConsumerUtil.getAvailableInvalidConsumers(), addAdminRepoConsumer );
+            IterableUtils.forEach( repoConsumerUtil.getAvailableInvalidConsumers(), addAdminRepoConsumer );
             List<AdminRepositoryConsumer> invalidContentConsumers = addAdminRepoConsumer.getList();
             Collections.sort( invalidContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
             return invalidContentConsumers;

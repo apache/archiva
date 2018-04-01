@@ -157,7 +157,7 @@ public class ArchivaIndexingTaskExecutorTest
 
         assertTrue( Files.exists(basePath.resolve( ".indexer" )) );
         assertTrue( Files.exists(basePath.resolve(".index" )) );
-        assertEquals( 1, response.getTotalHits() );
+        assertEquals( 1, response.getTotalHitsCount());
 
         Set<ArtifactInfo> results = response.getResults();
 

@@ -20,7 +20,7 @@ package org.apache.archiva.configuration.functors;
  */
 
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang.StringUtils;
 
 /**

@@ -32,9 +32,10 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerBeginScanClosure;
 import org.apache.archiva.repository.scanner.functors.TriggerScanCompletedClosure;
-import org.apache.commons.collections.Closure;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.functors.IfClosure;
+import org.apache.commons.collections4.Closure;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
+import org.apache.commons.collections4.functors.IfClosure;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -296,8 +297,8 @@ public class RepositoryContentConsumers
             }
 
             List<InvalidRepositoryContentConsumer> selectedInvalidConsumers = getSelectedInvalidConsumers();
-            CollectionUtils.forAllDo( selectedKnownConsumers, triggerBeginScan );
-            CollectionUtils.forAllDo( selectedInvalidConsumers, triggerBeginScan );
+            IterableUtils.forEach( selectedKnownConsumers, triggerBeginScan );
+            IterableUtils.forEach( selectedInvalidConsumers, triggerBeginScan );
 
             // yuck. In case you can't read this, it says
             // "process the file if the consumer has it in the includes list, and not in the excludes list"
@@ -311,25 +312,25 @@ public class RepositoryContentConsumers
             closure.setBasefile( baseFile );
             closure.setExecuteOnEntireRepo( false );
 
-            Closure processIfWanted = IfClosure.getInstance( predicate, closure );
+            Closure processIfWanted = IfClosure.ifClosure( predicate, closure );
 
-            CollectionUtils.forAllDo( selectedKnownConsumers, processIfWanted );
+            IterableUtils.forEach( selectedKnownConsumers, processIfWanted );
 
             if ( predicate.getWantedFileCount() <= 0 )
             {
                 // Nothing known processed this file.  It is invalid!
-                CollectionUtils.forAllDo( selectedInvalidConsumers, closure );
+                IterableUtils.forEach( selectedInvalidConsumers, closure );
             }
 
             TriggerScanCompletedClosure scanCompletedClosure = new TriggerScanCompletedClosure( repository, false );
 
-            CollectionUtils.forAllDo( selectedKnownConsumers, scanCompletedClosure );
+            IterableUtils.forEach( selectedKnownConsumers, scanCompletedClosure );
         }
         finally
         {
             /* TODO: This is never called by the repository scanner instance, so not calling here either - but it probably should be?
-                        CollectionUtils.forAllDo( availableKnownConsumers, triggerCompleteScan );
-                        CollectionUtils.forAllDo( availableInvalidConsumers, triggerCompleteScan );
+                        IterableUtils.forEach( availableKnownConsumers, triggerCompleteScan );
+                        IterableUtils.forEach( availableInvalidConsumers, triggerCompleteScan );
             */
             releaseSelectedKnownConsumers( selectedKnownConsumers );
         }
