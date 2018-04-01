@@ -1722,14 +1722,15 @@ public class JcrMetadataRepository
         {
             QueryManager queryManager = session.getWorkspace().getQueryManager();
 
-            // TODO: JCR-SQL2 query will not complete on a large repo in Jackrabbit 2.2.0 - see JCR-2835
+            // TODO: Check, if this is still the case - Switched to Jackrabbit OAK with archiva 3.0
+            // Former statement: JCR-SQL2 query will not complete on a large repo in Jackrabbit 2.2.0 - see JCR-2835
             //    Using the JCR-SQL2 variants gives
             //      "org.apache.lucene.search.BooleanQuery$TooManyClauses: maxClauseCount is set to 1024"
 //            String whereClause = "WHERE ISDESCENDANTNODE([/repositories/" + repositoryId + "/content])";
 //            Query query = queryManager.createQuery( "SELECT size FROM [archiva:artifact] " + whereClause,
 //                                                    Query.JCR_SQL2 );
-            String whereClause = "WHERE jcr:path LIKE '/repositories/" + repositoryId + "/content/%'";
-            Query query = queryManager.createQuery( "SELECT size FROM archiva:artifact " + whereClause, Query.SQL );
+            String whereClause = "WHERE ISDESCENDANTNODE([/repositories/" + repositoryId + "/content])";
+            Query query = queryManager.createQuery( "SELECT size FROM [archiva:artifact] " + whereClause, Query.JCR_SQL2 );
 
             QueryResult queryResult = query.execute();
 
@@ -1766,15 +1767,15 @@ public class JcrMetadataRepository
 
             // The query ordering is a trick to ensure that the size is correct, otherwise due to lazy init it will be -1
 //            query = queryManager.createQuery( "SELECT * FROM [archiva:project] " + whereClause, Query.JCR_SQL2 );
-            query = queryManager.createQuery( "SELECT * FROM archiva:project " + whereClause + " ORDER BY jcr:score",
-                                              Query.SQL );
+            query = queryManager.createQuery( "SELECT * FROM [archiva:project] " + whereClause + " ORDER BY [jcr:score]",
+                                              Query.JCR_SQL2 );
             repositoryStatistics.setTotalProjectCount( query.execute().getRows().getSize() );
 
 //            query = queryManager.createQuery(
 //                "SELECT * FROM [archiva:namespace] " + whereClause + " AND namespace IS NOT NULL", Query.JCR_SQL2 );
             query = queryManager.createQuery(
-                "SELECT * FROM archiva:namespace " + whereClause + " AND namespace IS NOT NULL ORDER BY jcr:score",
-                Query.SQL );
+                "SELECT * FROM [archiva:namespace] " + whereClause + " AND namespace IS NOT NULL ORDER BY [jcr:score]",
+                Query.JCR_SQL2 );
             repositoryStatistics.setTotalGroupCount( query.execute().getRows().getSize() );
         }
         catch ( RepositoryException e )
