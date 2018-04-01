@@ -42,6 +42,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -130,6 +131,17 @@ public class DefaultSystemStatusService
         }
     }
 
+    // Used for generics
+    private class CacheEntryComparator implements Comparator<CacheEntry>
+    {
+
+        @Override
+        public int compare( CacheEntry o1, CacheEntry o2 )
+        {
+            return o1.compareTo( o2 );
+        }
+    }
+
     @Override
     public List<CacheEntry> getCacheEntries()
         throws ArchivaRestServiceException
@@ -147,7 +159,7 @@ public class DefaultSystemStatusService
                                               cacheStatistics.getInMemorySize() ) );
         }
 
-        Collections.sort( cacheEntries );
+        Collections.sort( cacheEntries, new CacheEntryComparator() );
 
         return cacheEntries;
     }

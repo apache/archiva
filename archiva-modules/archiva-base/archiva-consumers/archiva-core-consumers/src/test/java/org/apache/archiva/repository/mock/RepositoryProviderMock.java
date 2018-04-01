@@ -143,6 +143,7 @@ public class RepositoryProviderMock implements RepositoryProvider
         return remoteRepository;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void updateRemoteInstance( EditableRemoteRepository remoteRepository, RemoteRepositoryConfiguration configuration ) throws RepositoryException
     {
@@ -175,7 +176,7 @@ public class RepositoryProviderMock implements RepositoryProvider
     }
 
     @Override
-    public ManagedRepositoryConfiguration getManagedConfiguration( ManagedRepository managedRepository ) throws RepositoryException
+    public ManagedRepositoryConfiguration getManagedConfiguration( ManagedRepository managedRepository )
     {
         ManagedRepositoryConfiguration configuration = new ManagedRepositoryConfiguration( );
         configuration.setId( managedRepository.getId( ) );
@@ -202,7 +203,7 @@ public class RepositoryProviderMock implements RepositoryProvider
 
 
     @Override
-    public RemoteRepositoryConfiguration getRemoteConfiguration( RemoteRepository remoteRepository ) throws RepositoryException
+    public RemoteRepositoryConfiguration getRemoteConfiguration( RemoteRepository remoteRepository )
     {
         RemoteRepositoryConfiguration configuration = new RemoteRepositoryConfiguration( );
         configuration.setId( remoteRepository.getId( ) );

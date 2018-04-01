@@ -94,7 +94,7 @@ public class DefaultBrowseService
     implements BrowseService
 {
 
-    private Charset ARTIFACT_CONTENT_ENCODING=Charset.forName( "UTF-8" );
+    private final Charset ARTIFACT_CONTENT_ENCODING=Charset.forName( "UTF-8" );
 
     @Inject
     private DependencyTreeBuilder dependencyTreeBuilder;
@@ -1269,12 +1269,12 @@ public class DefaultBrowseService
         }
     }
 
-    public Cache getVersionMetadataCache()
+    public Cache<String, ProjectVersionMetadata> getVersionMetadataCache()
     {
         return versionMetadataCache;
     }
 
-    public void setVersionMetadataCache( Cache versionMetadataCache )
+    public void setVersionMetadataCache( Cache<String, ProjectVersionMetadata> versionMetadataCache )
     {
         this.versionMetadataCache = versionMetadataCache;
     }

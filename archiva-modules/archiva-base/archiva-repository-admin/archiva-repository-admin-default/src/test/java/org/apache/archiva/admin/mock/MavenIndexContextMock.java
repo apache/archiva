@@ -108,6 +108,7 @@ public class MavenIndexContextMock implements ArchivaIndexingContext {
         return IndexingContext.class.equals(clazz);
     }
 
+    @SuppressWarnings( "unchecked" )
     @Override
     public <T> T getBaseContext(Class<T> clazz) throws UnsupportedOperationException {
         if (IndexingContext.class.equals(clazz)) {

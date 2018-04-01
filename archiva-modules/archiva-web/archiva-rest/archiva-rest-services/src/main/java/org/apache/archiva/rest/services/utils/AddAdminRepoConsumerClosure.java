@@ -27,14 +27,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * AddAdminRepoConsumerClosure 
- *
- *
+ * AddAdminRepoConsumerClosure
  */
 public class AddAdminRepoConsumerClosure
-    implements Closure
+    implements Closure<RepositoryContentConsumer>
 {
-    private List<AdminRepositoryConsumer> list = new ArrayList<>();
+    private List<AdminRepositoryConsumer> list = new ArrayList<>( );
 
     private List<String> selectedIds;
 
@@ -44,23 +42,20 @@ public class AddAdminRepoConsumerClosure
     }
 
     @Override
-    public void execute( Object input )
+    public void execute( RepositoryContentConsumer input )
     {
-        if ( input instanceof RepositoryContentConsumer )
-        {
-            RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
+        RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
 
-            boolean enabled = this.selectedIds.contains( consumer.getId() );
-            AdminRepositoryConsumer adminconsumer = new AdminRepositoryConsumer();
-            adminconsumer.setEnabled( enabled );
-            adminconsumer.setId( consumer.getId() );
-            adminconsumer.setDescription( consumer.getDescription() );
+        boolean enabled = this.selectedIds.contains( consumer.getId( ) );
+        AdminRepositoryConsumer adminconsumer = new AdminRepositoryConsumer( );
+        adminconsumer.setEnabled( enabled );
+        adminconsumer.setId( consumer.getId( ) );
+        adminconsumer.setDescription( consumer.getDescription( ) );
 
-            list.add( adminconsumer );
-        }
+        list.add( adminconsumer );
     }
 
-    public List<AdminRepositoryConsumer> getList()
+    public List<AdminRepositoryConsumer> getList( )
     {
         return list;
     }

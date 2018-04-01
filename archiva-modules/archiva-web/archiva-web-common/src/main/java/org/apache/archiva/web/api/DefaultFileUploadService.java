@@ -110,13 +110,13 @@ public class DefaultFileUploadService
 
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
-    private ArchivaTaskScheduler scheduler;
+    private ArchivaTaskScheduler<RepositoryTask> scheduler;
 
     private String getStringValue( MultipartBody multipartBody, String attachmentId )
         throws IOException
     {
         Attachment attachment = multipartBody.getAttachment( attachmentId );
-        return attachment == null ? "" : IOUtils.toString( attachment.getDataHandler().getInputStream() );
+        return attachment == null ? "" : IOUtils.toString( attachment.getDataHandler().getInputStream(), "UTF-8" );
     }
 
     @Override
@@ -171,8 +171,7 @@ public class DefaultFileUploadService
      */
     protected synchronized List<FileMetadata> getSessionFilesList()
     {
-        List<FileMetadata> fileMetadatas =
-            (List<FileMetadata>) httpServletRequest.getSession().getAttribute( FILES_SESSION_KEY );
+        @SuppressWarnings("unchecked") List<FileMetadata> fileMetadatas = (List<FileMetadata>) httpServletRequest.getSession().getAttribute( FILES_SESSION_KEY );
         if ( fileMetadatas == null )
         {
             fileMetadatas = new CopyOnWriteArrayList<>();
@@ -208,7 +207,7 @@ public class DefaultFileUploadService
     public Boolean clearUploadedFiles()
         throws ArchivaRestServiceException
     {
-        List<FileMetadata> fileMetadatas = new ArrayList( getSessionFileMetadatas() );
+        List<FileMetadata> fileMetadatas = new ArrayList<>( getSessionFileMetadatas() );
         for ( FileMetadata fileMetadata : fileMetadatas )
         {
             deleteFile( Paths.get( fileMetadata.getServerFileName() ).toString() );
@@ -221,7 +220,7 @@ public class DefaultFileUploadService
     public List<FileMetadata> getSessionFileMetadatas()
         throws ArchivaRestServiceException
     {
-        List<FileMetadata> fileMetadatas =
+        @SuppressWarnings("unchecked") List<FileMetadata> fileMetadatas =
             (List<FileMetadata>) httpServletRequest.getSession().getAttribute( FILES_SESSION_KEY );
 
         return fileMetadatas == null ? Collections.<FileMetadata>emptyList() : fileMetadatas;

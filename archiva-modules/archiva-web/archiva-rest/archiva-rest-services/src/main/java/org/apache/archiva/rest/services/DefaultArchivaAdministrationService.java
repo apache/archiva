@@ -31,7 +31,6 @@ import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.services.utils.AddAdminRepoConsumerClosure;
 import org.apache.archiva.rest.services.utils.AdminRepositoryConsumerComparator;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -274,7 +273,7 @@ public class DefaultArchivaAdministrationService
     {
         try
         {
-            return new ArrayList<String>( archivaAdministration.getKnownContentConsumers() );
+            return new ArrayList<>( archivaAdministration.getKnownContentConsumers( ) );
         }
         catch ( RepositoryAdminException e )
         {
@@ -288,7 +287,7 @@ public class DefaultArchivaAdministrationService
     {
         try
         {
-            return new ArrayList<String>( archivaAdministration.getInvalidContentConsumers() );
+            return new ArrayList<>( archivaAdministration.getInvalidContentConsumers( ) );
         }
         catch ( RepositoryAdminException e )
         {
@@ -415,7 +414,7 @@ public class DefaultArchivaAdministrationService
                 new AddAdminRepoConsumerClosure( archivaAdministration.getKnownContentConsumers() );
             IterableUtils.forEach( repoConsumerUtil.getAvailableKnownConsumers(), addAdminRepoConsumer );
             List<AdminRepositoryConsumer> knownContentConsumers = addAdminRepoConsumer.getList();
-            Collections.sort( knownContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
+            knownContentConsumers.sort( AdminRepositoryConsumerComparator.getInstance( ) );
             return knownContentConsumers;
         }
         catch ( RepositoryAdminException e )
@@ -434,7 +433,7 @@ public class DefaultArchivaAdministrationService
                 new AddAdminRepoConsumerClosure( archivaAdministration.getInvalidContentConsumers() );
             IterableUtils.forEach( repoConsumerUtil.getAvailableInvalidConsumers(), addAdminRepoConsumer );
             List<AdminRepositoryConsumer> invalidContentConsumers = addAdminRepoConsumer.getList();
-            Collections.sort( invalidContentConsumers, AdminRepositoryConsumerComparator.getInstance() );
+            invalidContentConsumers.sort( AdminRepositoryConsumerComparator.getInstance( ) );
             return invalidContentConsumers;
         }
         catch ( RepositoryAdminException e )

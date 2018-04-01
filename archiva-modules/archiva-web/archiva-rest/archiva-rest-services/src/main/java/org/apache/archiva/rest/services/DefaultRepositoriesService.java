@@ -131,7 +131,7 @@ public class DefaultRepositoriesService
 
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
-    private ArchivaTaskScheduler scheduler;
+    private ArchivaTaskScheduler<RepositoryTask> scheduler;
 
     @Inject
     private DownloadRemoteIndexScheduler downloadRemoteIndexScheduler;

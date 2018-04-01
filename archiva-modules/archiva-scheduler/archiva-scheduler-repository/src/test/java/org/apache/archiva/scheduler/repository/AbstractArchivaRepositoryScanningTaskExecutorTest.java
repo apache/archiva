@@ -28,6 +28,7 @@ import org.apache.archiva.mock.MockRepositorySessionFactory;
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.After;
@@ -66,7 +67,7 @@ public abstract class AbstractArchivaRepositoryScanningTaskExecutorTest
 
     @Inject
     @Named( value = "taskExecutor#test-repository-scanning" )
-    protected TaskExecutor taskExecutor;
+    protected TaskExecutor<RepositoryTask> taskExecutor;
 
     @Inject
     @Named( value = "archivaConfiguration#test-repository-scanning" )

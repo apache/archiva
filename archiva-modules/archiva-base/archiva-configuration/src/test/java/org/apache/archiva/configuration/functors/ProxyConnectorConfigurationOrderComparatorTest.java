@@ -37,6 +37,7 @@ import static org.junit.Assert.fail;
  *
  *
  */
+@SuppressWarnings( "deprecation" )
 @RunWith( ArchivaBlockJUnit4ClassRunner.class )
 public class ProxyConnectorConfigurationOrderComparatorTest
 {

@@ -27,6 +27,7 @@ import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.tools.ant.types.selectors.SelectorUtils;
@@ -102,7 +103,7 @@ public class FileTypes
         if ( repositoryScanningConfiguration != null )
         {
             FileType filetype =
-                (FileType) CollectionUtils.find( config.getRepositoryScanning().getFileTypes(), selectedFiletype );
+                IterableUtils.find( config.getRepositoryScanning().getFileTypes(), selectedFiletype );
 
             if ( ( filetype != null ) && CollectionUtils.isNotEmpty( filetype.getPatterns() ) )
             {

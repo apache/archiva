@@ -242,21 +242,14 @@ public class ArchivaDavResourceFactory
             // handle browse requests for virtual repos
             if ( getLogicalResource( archivaLocator, null, true ).endsWith( "/" ) )
             {
-                try
-                {
-                    DavResource davResource =
-                        getResourceFromGroup( request, repoGroupConfig.getRepositories(), archivaLocator,
-                                              repoGroupConfig );
+                DavResource davResource =
+                    getResourceFromGroup( request, repoGroupConfig.getRepositories(), archivaLocator,
+                                          repoGroupConfig );
 
-                    setHeaders( response, locator, davResource, true );
+                setHeaders( response, locator, davResource, true );
 
-                    return davResource;
+                return davResource;
 
-                }
-                catch ( RepositoryAdminException e )
-                {
-                    throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
-                }
             }
             else
             {
@@ -999,7 +992,7 @@ public class ArchivaDavResourceFactory
     private DavResource getResourceFromGroup( DavServletRequest request, List<String> repositories,
                                               ArchivaDavResourceLocator locator,
                                               RepositoryGroupConfiguration repositoryGroupConfiguration )
-        throws DavException, RepositoryAdminException
+        throws DavException
     {
         if ( repositoryGroupConfiguration.getRepositories() == null
             || repositoryGroupConfiguration.getRepositories().isEmpty() )
@@ -1299,7 +1292,7 @@ public class ArchivaDavResourceFactory
         {
             HttpSession session = request.getSession();
 
-            Map<String, TemporaryGroupIndex> temporaryGroupIndexMap =
+            @SuppressWarnings( "unchecked" ) Map<String, TemporaryGroupIndex> temporaryGroupIndexMap =
                 (Map<String, TemporaryGroupIndex>) session.getAttribute(
                     TemporaryGroupIndexSessionCleaner.TEMPORARY_INDEX_SESSION_KEY );
             if ( temporaryGroupIndexMap == null )

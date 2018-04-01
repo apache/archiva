@@ -106,7 +106,7 @@ public class ArchivaDavResource
 
     public static final String COMPLIANCE_CLASS = "1, 2";
 
-    private final ArchivaTaskScheduler scheduler;
+    private final ArchivaTaskScheduler<RepositoryTask> scheduler;
 
     private final FileLockManager fileLockManager;
 
@@ -677,20 +677,20 @@ public class ArchivaDavResource
         // set (or reset) fundamental properties
         if ( getDisplayName() != null )
         {
-            properties.add( new DefaultDavProperty( DavPropertyName.DISPLAYNAME, getDisplayName() ) );
+            properties.add( new DefaultDavProperty<>( DavPropertyName.DISPLAYNAME, getDisplayName() ) );
         }
         if ( isCollection() )
         {
             properties.add( new ResourceType( ResourceType.COLLECTION ) );
             // Windows XP support
-            properties.add( new DefaultDavProperty( DavPropertyName.ISCOLLECTION, "1" ) );
+            properties.add( new DefaultDavProperty<>( DavPropertyName.ISCOLLECTION, "1" ) );
         }
         else
         {
             properties.add( new ResourceType( ResourceType.DEFAULT_RESOURCE ) );
 
             // Windows XP support
-            properties.add( new DefaultDavProperty( DavPropertyName.ISCOLLECTION, "0" ) );
+            properties.add( new DefaultDavProperty<>( DavPropertyName.ISCOLLECTION, "0" ) );
         }
 
         // Need to get the ISO8601 date for properties
@@ -707,18 +707,18 @@ public class ArchivaDavResource
         DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
         String modifiedDate = fmt.print( dt );
 
-        properties.add( new DefaultDavProperty( DavPropertyName.GETLASTMODIFIED, modifiedDate ) );
+        properties.add( new DefaultDavProperty<>( DavPropertyName.GETLASTMODIFIED, modifiedDate ) );
 
-        properties.add( new DefaultDavProperty( DavPropertyName.CREATIONDATE, modifiedDate ) );
+        properties.add( new DefaultDavProperty<>( DavPropertyName.CREATIONDATE, modifiedDate ) );
 
         try
         {
-            properties.add( new DefaultDavProperty( DavPropertyName.GETCONTENTLENGTH, Files.size(localResource) ) );
+            properties.add( new DefaultDavProperty<>( DavPropertyName.GETCONTENTLENGTH, Files.size(localResource) ) );
         }
         catch ( IOException e )
         {
             log.error("Could not get file size of {}: {}", localResource, e.getMessage(), e);
-            properties.add( new DefaultDavProperty( DavPropertyName.GETCONTENTLENGTH, 0 ) );
+            properties.add( new DefaultDavProperty<>( DavPropertyName.GETCONTENTLENGTH, 0 ) );
         }
 
         this.properties = properties;
