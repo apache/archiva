@@ -1386,6 +1386,7 @@ public class JcrMetadataRepository
         return aClass == Session.class;
     }
 
+    @SuppressWarnings( "unchecked" )
     @Override
     public <T> T obtainAccess( Class<T> aClass )
         throws MetadataRepositoryException

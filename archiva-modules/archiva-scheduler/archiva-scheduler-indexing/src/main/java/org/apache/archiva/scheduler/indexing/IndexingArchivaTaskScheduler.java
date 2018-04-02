@@ -45,7 +45,7 @@ public class IndexingArchivaTaskScheduler
      */
     @Inject
     @Named(value = "taskQueue#indexing")
-    private TaskQueue indexingQueue;
+    private TaskQueue<ArtifactIndexingTask> indexingQueue;
 
     @Override
     public void queueTask( ArtifactIndexingTask task )

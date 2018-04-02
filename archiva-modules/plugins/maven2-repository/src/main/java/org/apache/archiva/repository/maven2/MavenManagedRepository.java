@@ -38,6 +38,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
+import java.util.function.Function;
 
 /**
  * Maven2 managed repository implementation.
@@ -85,6 +86,8 @@ public class MavenManagedRepository extends AbstractManagedRepository
         return CAPABILITIES;
     }
 
+
+    @SuppressWarnings( "unchecked" )
     @Override
     public <T extends RepositoryFeature<T>> RepositoryFeature<T> getFeature( Class<T> clazz ) throws UnsupportedFeatureException
     {

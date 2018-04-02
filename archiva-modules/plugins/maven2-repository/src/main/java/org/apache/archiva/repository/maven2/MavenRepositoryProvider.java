@@ -57,7 +57,9 @@ import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Provider for the maven2 repository implementations
@@ -242,8 +244,12 @@ public class MavenRepositoryProvider implements RepositoryProvider {
                 remoteIndexFeature.setDownloadRemoteIndexOnStartup(false);
             }
         }
-        repo.setExtraHeaders(cfg.getExtraHeaders());
-        repo.setExtraParameters(cfg.getExtraParameters());
+        for ( Object key : cfg.getExtraHeaders().keySet() ) {
+            repo.addExtraHeader( key.toString(), cfg.getExtraHeaders().get(key).toString() );
+        }
+        for ( Object key : cfg.getExtraParameters().keySet() ) {
+            repo.addExtraParameter( key.toString(), cfg.getExtraParameters().get(key).toString() );
+        }
         PasswordCredentials credentials = new PasswordCredentials("", new char[0]);
         if (cfg.getPassword() != null && cfg.getUsername() != null) {
             credentials.setPassword(cfg.getPassword().toCharArray());

@@ -26,6 +26,7 @@ import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.repository.ManagedRepository;
@@ -275,7 +276,7 @@ public class RepositoryContentConsumers
         // Run the repository consumers
         try
         {
-            Closure triggerBeginScan = new TriggerBeginScanClosure( repository, getStartTime(), false );
+            Closure<RepositoryContentConsumer> triggerBeginScan = new TriggerBeginScanClosure( repository, getStartTime(), false );
 
             selectedKnownConsumers = getSelectedKnownConsumers();
 
@@ -312,7 +313,7 @@ public class RepositoryContentConsumers
             closure.setBasefile( baseFile );
             closure.setExecuteOnEntireRepo( false );
 
-            Closure processIfWanted = IfClosure.ifClosure( predicate, closure );
+            Closure<RepositoryContentConsumer> processIfWanted = IfClosure.ifClosure( predicate, closure );
 
             IterableUtils.forEach( selectedKnownConsumers, processIfWanted );
 

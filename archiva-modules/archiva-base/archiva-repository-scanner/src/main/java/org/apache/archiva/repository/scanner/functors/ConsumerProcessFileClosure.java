@@ -28,62 +28,59 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 /**
- * ConsumerProcessFileClosure 
- *
+ * ConsumerProcessFileClosure
  */
 public class ConsumerProcessFileClosure
-    implements Closure
+    implements Closure<RepositoryContentConsumer>
 {
     private Logger log = LoggerFactory.getLogger( ConsumerProcessFileClosure.class );
-    
+
     private BaseFile basefile;
 
     private boolean executeOnEntireRepo;
 
-    private Map<String,Long> consumerTimings;
-    
-    private Map<String,Long> consumerCounts;
+    private Map<String, Long> consumerTimings;
+
+    private Map<String, Long> consumerCounts;
 
     @Override
-    public void execute( Object input )
+    public void execute( RepositoryContentConsumer input )
     {
-        if ( input instanceof RepositoryContentConsumer )
+        RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
+
+        String id = consumer.getId( );
+        try
         {
-            RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
+            log.debug( "Sending to consumer: {}", id );
 
-            String id = consumer.getId();
-            try
+            long startTime = System.currentTimeMillis( );
+            consumer.processFile( basefile.getRelativePath( ), executeOnEntireRepo );
+            long endTime = System.currentTimeMillis( );
+
+            if ( consumerTimings != null )
             {
-                log.debug( "Sending to consumer: {}", id );
-
-                long startTime = System.currentTimeMillis();
-                consumer.processFile( basefile.getRelativePath(), executeOnEntireRepo );
-                long endTime = System.currentTimeMillis();
-
-                if ( consumerTimings != null )
-                {
-                    Long value = consumerTimings.get( id );
-                    consumerTimings.put( id, ( value != null ? value : 0 ) + endTime - startTime );
-                }
-
-                if ( consumerCounts != null )
-                {
-                    Long value = consumerCounts.get( id );
-                    consumerCounts.put( id, ( value != null ? value : 0 ) + 1 );
-                }
+                Long value = consumerTimings.get( id );
+                consumerTimings.put( id, ( value != null ? value : 0 ) + endTime - startTime );
             }
-            catch ( Exception e )
+
+            if ( consumerCounts != null )
             {
-                /* Intentionally Catch all exceptions.
-                 * So that the discoverer processing can continue.
-                 */
-                log.error( "Consumer [{}] had an error when processing file ["
-                    + "{}]: {}", id, basefile.getAbsolutePath(), e.getMessage(), e );
+                Long value = consumerCounts.get( id );
+                consumerCounts.put( id, ( value != null ? value : 0 ) + 1 );
             }
         }
+        catch ( Exception e )
+        {
+            /* Intentionally Catch all exceptions.
+             * So that the discoverer processing can continue.
+             */
+            log.error( "Consumer [{}] had an error when processing file ["
+                + "{}]: {}", id, basefile.getAbsolutePath( ), e.getMessage( ), e );
+        }
+
     }
 
-    public BaseFile getBasefile()
+    public BaseFile getBasefile( )
     {
         return basefile;
     }
@@ -93,7 +90,7 @@ public class ConsumerProcessFileClosure
         this.basefile = basefile;
     }
 
-    public boolean isExecuteOnEntireRepo()
+    public boolean isExecuteOnEntireRepo( )
     {
         return executeOnEntireRepo;
     }
@@ -113,7 +110,7 @@ public class ConsumerProcessFileClosure
         this.consumerCounts = consumerCounts;
     }
 
-    public Logger getLogger()
+    public Logger getLogger( )
     {
         return log;
     }

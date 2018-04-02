@@ -29,17 +29,15 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 
 /**
- * TriggerBeginScanClosure 
- *
- *
+ * TriggerBeginScanClosure
  */
 public class TriggerBeginScanClosure
-    implements Closure
+    implements Closure<RepositoryContentConsumer>
 {
     private Logger log = LoggerFactory.getLogger( TriggerBeginScanClosure.class );
-    
+
     private ManagedRepository repository;
-    
+
     private Date whenGathered;
 
     private boolean executeOnEntireRepo = true;
@@ -48,7 +46,7 @@ public class TriggerBeginScanClosure
     {
         this.repository = repository;
     }
-    
+
     public TriggerBeginScanClosure( ManagedRepository repository, Date whenGathered )
     {
         this( repository );
@@ -62,20 +60,17 @@ public class TriggerBeginScanClosure
     }
 
     @Override
-    public void execute( Object input )
+    public void execute( RepositoryContentConsumer input )
     {
-        if ( input instanceof RepositoryContentConsumer )
+        RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
+
+        try
         {
-            RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
-                
-            try
-            {
-                consumer.beginScan( repository, whenGathered, executeOnEntireRepo );
-            }
-            catch ( ConsumerException e )
-            {
-                log.warn( "Consumer [{}] cannot begin: {}",consumer.getId(), e.getMessage(), e );
-            }
+            consumer.beginScan( repository, whenGathered, executeOnEntireRepo );
+        }
+        catch ( ConsumerException e )
+        {
+            log.warn( "Consumer [{}] cannot begin: {}", consumer.getId( ), e.getMessage( ), e );
         }
     }
 }

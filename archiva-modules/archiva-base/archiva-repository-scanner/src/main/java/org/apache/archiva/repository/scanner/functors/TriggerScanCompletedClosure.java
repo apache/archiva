@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * TriggerScanCompletedClosure
  */
 public class TriggerScanCompletedClosure
-    implements Closure
+    implements Closure<RepositoryContentConsumer>
 {
     private Logger log = LoggerFactory.getLogger( TriggerScanCompletedClosure.class );
 
@@ -49,13 +49,10 @@ public class TriggerScanCompletedClosure
     }
 
     @Override
-    public void execute( Object input )
+    public void execute( RepositoryContentConsumer input )
     {
-        if ( input instanceof RepositoryContentConsumer )
-        {
-            RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
-            consumer.completeScan( executeOnEntireRepo );
-            log.debug( "Consumer [{}] completed for repository [{}]", consumer.getId(), repository.getId() );
-        }
+        RepositoryContentConsumer consumer = (RepositoryContentConsumer) input;
+        consumer.completeScan( executeOnEntireRepo );
+        log.debug( "Consumer [{}] completed for repository [{}]", consumer.getId( ), repository.getId( ) );
     }
 }

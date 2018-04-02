@@ -37,7 +37,7 @@ import java.util.List;
  * ConsumerWantsFilePredicate
  */
 public class ConsumerWantsFilePredicate
-    implements Predicate
+    implements Predicate<RepositoryContentConsumer>
 {
     private BaseFile basefile;
 
@@ -49,12 +49,12 @@ public class ConsumerWantsFilePredicate
 
     private ManagedRepository managedRepository;
 
-    private Logger logger = LoggerFactory.getLogger( getClass() );
+    private Logger logger = LoggerFactory.getLogger( getClass( ) );
 
     /**
      * @deprecated use constructor with ManagedRepository
      */
-    public ConsumerWantsFilePredicate()
+    public ConsumerWantsFilePredicate( )
     {
         // no-op
     }
@@ -65,28 +65,25 @@ public class ConsumerWantsFilePredicate
     }
 
     @Override
-    public boolean evaluate( Object object )
+    public boolean evaluate( RepositoryContentConsumer object )
     {
         boolean satisfies = false;
 
-        if ( object instanceof RepositoryContentConsumer )
+        RepositoryContentConsumer consumer = (RepositoryContentConsumer) object;
+        if ( wantsFile( consumer, FilenameUtils.separatorsToUnix( basefile.getRelativePath( ) ) ) )
         {
-            RepositoryContentConsumer consumer = (RepositoryContentConsumer) object;
-            if ( wantsFile( consumer, FilenameUtils.separatorsToUnix( basefile.getRelativePath() ) ) )
+            satisfies = true;
+
+            // regardless of the timestamp, we record that it was wanted so it doesn't get counted as invalid
+            wantedFileCount++;
+
+            if ( !consumer.isProcessUnmodified( ) )
             {
-                satisfies = true;
-
-                // regardless of the timestamp, we record that it was wanted so it doesn't get counted as invalid
-                wantedFileCount++;
-
-                if ( !consumer.isProcessUnmodified() )
+                // Timestamp finished points to the last successful scan, not this current one.
+                if ( basefile.lastModified( ) < changesSince )
                 {
-                    // Timestamp finished points to the last successful scan, not this current one.
-                    if ( basefile.lastModified() < changesSince )
-                    {
-                        // Skip file as no change has occurred.
-                        satisfies = false;
-                    }
+                    // Skip file as no change has occurred.
+                    satisfies = false;
                 }
             }
         }
@@ -94,17 +91,17 @@ public class ConsumerWantsFilePredicate
         return satisfies;
     }
 
-    public BaseFile getBasefile()
+    public BaseFile getBasefile( )
     {
         return basefile;
     }
 
-    public int getWantedFileCount()
+    public int getWantedFileCount( )
     {
         return wantedFileCount;
     }
 
-    public boolean isCaseSensitive()
+    public boolean isCaseSensitive( )
     {
         return isCaseSensitive;
     }
@@ -123,7 +120,7 @@ public class ConsumerWantsFilePredicate
     private boolean wantsFile( RepositoryContentConsumer consumer, String relativePath )
     {
         // Test excludes first.
-        List<String> excludes = consumer.getExcludes();
+        List<String> excludes = consumer.getExcludes( );
         if ( excludes != null )
         {
             for ( String pattern : excludes )
@@ -139,18 +136,24 @@ public class ConsumerWantsFilePredicate
         if ( managedRepository != null )
         {
             String indexDirectory;
-            if (managedRepository.supportsFeature( IndexCreationFeature.class )) {
-                IndexCreationFeature icf = managedRepository.getFeature( IndexCreationFeature.class ).get();
-                if (icf.getIndexPath()==null) {
-                    indexDirectory=".index";
-                } else
+            if ( managedRepository.supportsFeature( IndexCreationFeature.class ) )
+            {
+                IndexCreationFeature icf = managedRepository.getFeature( IndexCreationFeature.class ).get( );
+                if ( icf.getIndexPath( ) == null )
+                {
+                    indexDirectory = ".index";
+                }
+                else
                 {
                     indexDirectory = ( icf.getIndexPath( ).getScheme( ) == null ? Paths.get( icf.getIndexPath( ).getPath( ) ) : Paths.get( icf.getIndexPath( ) ) ).toString( );
                 }
-            } else {
+            }
+            else
+            {
                 indexDirectory = ".index";
             }
-            if (StringUtils.isEmpty( indexDirectory )) {
+            if ( StringUtils.isEmpty( indexDirectory ) )
+            {
                 indexDirectory = ".index";
             }
             if ( StringUtils.startsWith( relativePath, indexDirectory ) )
@@ -161,7 +164,7 @@ public class ConsumerWantsFilePredicate
         }
 
         // Now test includes.
-        for ( String pattern : consumer.getIncludes() )
+        for ( String pattern : consumer.getIncludes( ) )
         {
             if ( SelectorUtils.matchPath( pattern, relativePath, isCaseSensitive ) )
             {
