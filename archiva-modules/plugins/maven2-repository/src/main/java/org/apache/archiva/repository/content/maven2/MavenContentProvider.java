@@ -105,6 +105,7 @@ public class MavenContentProvider implements RepositoryContentProvider
         return content;
     }
 
+    @SuppressWarnings( "unchecked" )
     @Override
     public <T extends RepositoryContent, V extends Repository> T createContent( Class<T> clazz, V repository ) throws RepositoryException
     {

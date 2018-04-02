@@ -169,7 +169,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
 
             if ( managedRepoConfigs == null )
             {
-                return Collections.EMPTY_MAP;
+                return Collections.emptyMap();
             }
 
             Map<String, ManagedRepository> managedRepos = new LinkedHashMap<>( managedRepoConfigs.size( ) );
@@ -332,9 +332,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         if ( repo instanceof EditableRemoteRepository && repo.getContent() == null)
         {
             EditableRemoteRepository editableRepo = (EditableRemoteRepository) repo;
-            if (repo.getContent()==null) {
-                editableRepo.setContent( repositoryContentFactory.getRemoteRepositoryContent( repo ) );
-            }
+            editableRepo.setContent( repositoryContentFactory.getRemoteRepositoryContent( repo ) );
             if (repo.supportsFeature(IndexCreationFeature.class) && repo.getIndexingContext()==null ) {
                 createIndexingContext(editableRepo);
             }
@@ -631,7 +629,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             }
             RemoteRepository originRepo = remoteRepositories.put( id, remoteRepository );
             RemoteRepositoryConfiguration oldCfg=null;
-            RemoteRepositoryConfiguration newCfg=null;
+            RemoteRepositoryConfiguration newCfg;
             try
             {
                 if (originRepo!=null) {

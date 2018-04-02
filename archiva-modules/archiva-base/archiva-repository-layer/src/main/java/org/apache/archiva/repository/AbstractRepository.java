@@ -182,6 +182,7 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
     @Override
     public abstract RepositoryCapabilities getCapabilities( );
 
+    @SuppressWarnings( "unchecked" )
     @Override
     public <T extends RepositoryFeature<T>> RepositoryFeature<T> getFeature( Class<T> clazz ) throws UnsupportedFeatureException
     {
@@ -265,6 +266,7 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
         this.schedulingDefinition = cronExpression;
     }
 
+    @SuppressWarnings( "unchecked" )
     protected <T extends RepositoryFeature<T>> void addFeature(RepositoryFeature<T> feature) {
        featureMap.put( (Class<? extends RepositoryFeature<?>>) feature.getClass(), feature);
     }

@@ -149,7 +149,7 @@ public class FileMetadataRepository
 
             Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
             // remove properties that are not references or artifacts
-            for ( Object key : new ArrayList( properties.keySet() ) )
+            for ( Object key : new ArrayList<>( properties.keySet() ) )
             {
                 String name = (String) key;
                 if ( !name.contains( ":" ) && !name.equals( "facetIds" ) )
@@ -227,7 +227,7 @@ public class FileMetadataRepository
 
                 i++;
             }
-            Set<String> facetIds = new LinkedHashSet<String>( versionMetadata.getFacetIds() );
+            Set<String> facetIds = new LinkedHashSet<>( versionMetadata.getFacetIds( ) );
             facetIds.addAll( Arrays.asList( properties.getProperty( "facetIds", "" ).split( "," ) ) );
             properties.setProperty( "facetIds", join( facetIds ) );
 
@@ -258,7 +258,7 @@ public class FileMetadataRepository
         List<Object> propsToRemove = new ArrayList<>();
         for ( MetadataFacet facet : facetList )
         {
-            for ( Object key : new ArrayList( properties.keySet() ) )
+            for ( Object key : new ArrayList<>( properties.keySet() ) )
             {
                 String keyString = (String) key;
                 if ( keyString.startsWith( prefix + facet.getFacetId() + ":" ) )
@@ -384,7 +384,7 @@ public class FileMetadataRepository
         {
             metadataFacet = metadataFacetFactory.createMetadataFacet( repositoryId, name );
             Map<String, String> map = new HashMap<>();
-            for ( Object key : new ArrayList( properties.keySet() ) )
+            for ( Object key : new ArrayList<>( properties.keySet() ) )
             {
                 String property = (String) key;
                 map.put( property, properties.getProperty( property ) );
@@ -457,7 +457,7 @@ public class FileMetadataRepository
             {
                 getArtifactsByDateRange( artifacts, repoId, ns, startTime, endTime );
             }
-            Collections.sort( artifacts, new ArtifactComparator() );
+            artifacts.sort(new ArtifactComparator() );
             return artifacts;
         }
         catch ( MetadataResolutionException e )
@@ -577,7 +577,7 @@ public class FileMetadataRepository
                                     MetadataFacet facet = factory.createMetadataFacet();
                                     String prefix = propertyPrefix + facet.getFacetId();
                                     Map<String, String> map = new HashMap<>();
-                                    for ( Object key : new ArrayList( properties.keySet() ) )
+                                    for ( Object key : new ArrayList<>( properties.keySet() ) )
                                     {
                                         String property = (String) key;
                                         if ( property.startsWith( prefix ) )
@@ -726,7 +726,7 @@ public class FileMetadataRepository
             properties.remove( "artifact:facetIds:" + id );
 
             String prefix = "artifact:facet:" + id + ":";
-            for ( Object key : new ArrayList( properties.keySet() ) )
+            for ( Object key : new ArrayList<>( properties.keySet() ) )
             {
                 String property = (String) key;
                 if ( property.startsWith( prefix ) )
@@ -763,7 +763,7 @@ public class FileMetadataRepository
             properties.remove( "artifact:facetIds:" + id );
 
             String prefix = "artifact:facet:" + id + ":";
-            for ( Object key : new ArrayList( properties.keySet() ) )
+            for ( Object key : new ArrayList<>( properties.keySet() ) )
             {
                 String property = (String) key;
                 if ( property.startsWith( prefix ) )
@@ -928,7 +928,7 @@ public class FileMetadataRepository
             }
             properties.setProperty( "artifact:version:" + id, artifact.getVersion() );
 
-            Set<String> facetIds = new LinkedHashSet<String>( artifact.getFacetIds() );
+            Set<String> facetIds = new LinkedHashSet<>( artifact.getFacetIds( ) );
             String property = "artifact:facetIds:" + id;
             facetIds.addAll( Arrays.asList( properties.getProperty( property, "" ).split( "," ) ) );
             properties.setProperty( property, join( facetIds ) );
@@ -1102,7 +1102,7 @@ public class FileMetadataRepository
                         }
                         else
                         {
-                            mailingList.setOtherArchives( Collections.<String>emptyList() );
+                            mailingList.setOtherArchives( Collections.emptyList() );
                         }
                         mailingList.setPostAddress( properties.getProperty( "mailingList." + i + ".post" ) );
                         mailingList.setSubscribeAddress( properties.getProperty( "mailingList." + i + ".subscribe" ) );
@@ -1159,7 +1159,7 @@ public class FileMetadataRepository
                         {
                             MetadataFacet facet = factory.createMetadataFacet();
                             Map<String, String> map = new HashMap<>();
-                            for ( Object key : new ArrayList( properties.keySet() ) )
+                            for ( Object key : new ArrayList<>( properties.keySet() ) )
                             {
                                 String property = (String) key;
                                 if ( property.startsWith( facet.getFacetId() ) )
@@ -1195,7 +1195,7 @@ public class FileMetadataRepository
 
             Properties properties = readOrCreateProperties( directory, PROJECT_VERSION_METADATA_KEY );
 
-            Set<String> versions = new HashSet<String>();
+            Set<String> versions = new HashSet<>( );
             for ( Map.Entry entry : properties.entrySet() )
             {
                 String name = (String) entry.getKey();
@@ -1438,24 +1438,19 @@ public class FileMetadataRepository
         {
             for ( String version : getProjectVersions( repoId, ns, project ) )
             {
-                for ( ArtifactMetadata artifact : getArtifacts( repoId, ns, project, version ) )
-                {
-                    artifacts.add( artifact );
-                }
+                artifacts.addAll( getArtifacts( repoId, ns, project, version ) );
             }
         }
     }
 
     @Override
     public List<ArtifactMetadata> searchArtifacts( String text, String repositoryId, boolean exact )
-        throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException( "searchArtifacts not yet implemented in File backend" );
     }
 
     @Override
     public List<ArtifactMetadata> searchArtifacts( String key, String text, String repositoryId, boolean exact )
-        throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException( "searchArtifacts not yet implemented in File backend" );
     }

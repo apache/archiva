@@ -48,7 +48,7 @@ public class StandardCapabilities implements RepositoryCapabilities
                                  boolean indexable, boolean fileBased,
                                  boolean canBlockRedeployments, boolean scannable, boolean allowsFailover )
     {
-        this.supportedReleaseSchemes = new HashSet();
+        this.supportedReleaseSchemes = new HashSet<>();
         for (ReleaseScheme scheme : supportedReleaseSchemes) {
             this.supportedReleaseSchemes.add(scheme);
         }

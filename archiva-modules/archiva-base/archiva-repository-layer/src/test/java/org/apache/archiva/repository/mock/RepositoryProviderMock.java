@@ -144,6 +144,7 @@ public class RepositoryProviderMock implements RepositoryProvider
         return remoteRepository;
     }
 
+    @SuppressWarnings( "unchecked" )
     @Override
     public void updateRemoteInstance( EditableRemoteRepository remoteRepository, RemoteRepositoryConfiguration configuration ) throws RepositoryException
     {

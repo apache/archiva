@@ -56,7 +56,7 @@ public class AbstractFeature {
         this.listener.clear();
     }
 
-    protected void raiseEvent(RepositoryEvent event) {
+    protected <T> void raiseEvent(RepositoryEvent<T> event) {
         for(RepositoryEventListener listr : listener) {
             listr.raise(event);
         }

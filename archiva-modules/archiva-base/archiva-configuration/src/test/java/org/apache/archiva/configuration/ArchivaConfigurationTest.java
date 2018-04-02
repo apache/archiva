@@ -63,6 +63,7 @@ public class ArchivaConfigurationTest
         return Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), path );
     }
 
+    @SuppressWarnings( "unchecked" )
     protected <T> T lookup( Class<T> clazz, String hint )
     {
         return (T) applicationContext.getBean( "archivaConfiguration#" + hint, ArchivaConfiguration.class );

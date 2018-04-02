@@ -84,6 +84,7 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
         return CAPABILITIES;
     }
 
+    @SuppressWarnings( "unchecked" )
     @Override
     public <T extends RepositoryFeature<T>> RepositoryFeature<T> getFeature( Class<T> clazz ) throws UnsupportedFeatureException
     {

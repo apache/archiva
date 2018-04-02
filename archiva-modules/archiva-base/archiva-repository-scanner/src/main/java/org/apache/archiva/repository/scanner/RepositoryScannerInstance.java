@@ -23,6 +23,7 @@ import org.apache.archiva.common.utils.BaseFile;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
+import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.consumers.functors.ConsumerWantsFilePredicate;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.scanner.functors.ConsumerProcessFileClosure;
@@ -118,7 +119,7 @@ public class RepositoryScannerInstance
         stats = new RepositoryScanStatistics();
         stats.setRepositoryId( repository.getId() );
 
-        Closure triggerBeginScan =
+        Closure<RepositoryContentConsumer> triggerBeginScan =
             new TriggerBeginScanClosure( repository, new Date( System.currentTimeMillis() ), true );
 
         IterableUtils.forEach( knownConsumerList, triggerBeginScan );
@@ -240,7 +241,7 @@ public class RepositoryScannerInstance
             consumerProcessFile.setBasefile( basefile );
             consumerWantsFile.setBasefile( basefile );
 
-            Closure processIfWanted = IfClosure.ifClosure( consumerWantsFile, consumerProcessFile );
+            Closure<RepositoryContentConsumer> processIfWanted = IfClosure.ifClosure( consumerWantsFile, consumerProcessFile );
             IterableUtils.forEach( this.knownConsumers, processIfWanted );
 
             if ( consumerWantsFile.getWantedFileCount() <= 0 )

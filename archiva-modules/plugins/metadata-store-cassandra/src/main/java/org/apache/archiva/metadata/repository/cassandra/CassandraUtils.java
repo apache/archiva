@@ -74,8 +74,8 @@ public class CassandraUtils
 
         return HFactory.createColumn( name, //
                                       value, //
-                                      (Serializer<A>) SerializerTypeInferer.getSerializer( name ), //
-                                      (Serializer<B>) SerializerTypeInferer.getSerializer( value ) );
+            SerializerTypeInferer.getSerializer( name ), //
+            SerializerTypeInferer.getSerializer( value ) );
     }
 
     public static String getStringValue( ColumnSlice<String, String> columnSlice, ColumnNames columnName )
@@ -94,14 +94,14 @@ public class CassandraUtils
         return hColumn == null ? null : hColumn.getValue();
     }
 
-    public static Long getLongValue( ColumnSlice<String, ?> columnSlice, String columnName )
+    public static Long getLongValue( ColumnSlice<String, Long> columnSlice, String columnName )
     {
         if ( StringUtils.isEmpty( columnName ) )
         {
             return null;
         }
 
-        HColumn<String, Long> hColumn = (HColumn<String, Long>) columnSlice.getColumnByName( columnName );
+        HColumn<String, Long> hColumn = columnSlice.getColumnByName( columnName );
         return hColumn == null ? null : hColumn.getValue();
     }
 

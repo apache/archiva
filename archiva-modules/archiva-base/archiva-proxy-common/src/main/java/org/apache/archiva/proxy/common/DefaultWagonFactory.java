@@ -85,7 +85,7 @@ public class DefaultWagonFactory
     {
         try
         {
-            Class clazz = wagon.getClass();
+            Class<? extends Wagon> clazz = wagon.getClass();
             Method getHttpHeaders = clazz.getMethod( "getHttpHeaders" );
 
             Properties headers = (Properties) getHttpHeaders.invoke( wagon );
