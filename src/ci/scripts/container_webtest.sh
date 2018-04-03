@@ -70,6 +70,11 @@ function print_usage() {
   echo "Starts or stops the container. Builds the images if necessary"
 }
 
+echo "Date: $(date)"
+docker ps
+echo "netstat"
+netstat -anp |grep 4444
+
 if [ "${START_ARG}" == "start" ]; then
   IMG=`docker images -q ${TAG}`
   # Build the image, if it does not exist
@@ -104,6 +109,11 @@ if [ "${START_ARG}" == "start" ]; then
     RES=$?
   done
   docker logs "${INSTANCE_NAME}"
+  echo "netstat: "
+  netstat -anp |grep 4444
+  echo "Trying curl on Webdriver port: "
+  curl "http://localhost:4444/wd/hub"
+  echo "Result: "$?
 elif [ "${START_ARG}" == "stop" ]; then
   docker logs "${INSTANCE_NAME}"
   stop_instance
