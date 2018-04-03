@@ -61,6 +61,7 @@ function stop_instance() {
 
 function start_instance() {
   echo "Starting container ${INSTANCE_NAME}"
+  echo "ARGS: -d -e SCREEN_WIDTH=${SCREEN_WIDTH} -e SCREEN_HEIGHT=${SCREEN_HEIGHT} --net=${NETWORK_TYPE} -p ${PORT_MAPPING} --name ${INSTANCE_NAME} ${TAG}"
   docker run -d -e "SCREEN_WIDTH=${SCREEN_WIDTH}" -e "SCREEN_HEIGHT=${SCREEN_HEIGHT}" --net="${NETWORK_TYPE}" -p "${PORT_MAPPING}" --name "${INSTANCE_NAME}" "${TAG}"
 }
 
@@ -90,7 +91,21 @@ if [ "${START_ARG}" == "start" ]; then
   stop_instance
   # Starting
   start_instance
+  if [ $? -ne 0 ]; then
+    echo "Error from docker run"
+  fi
+  docker ps
+  TIMEOUT=20
+  RES=1
+  while [ $RES -gt 0 -a $TIMEOUT -gt 0 ]; do
+    sleep 0.2
+    TIMEOUT=$((TIMEOUT-1))
+    docker logs "${INSTANCE_NAME}" | tail -5 |  grep -q "Selenium Server is up and running"
+    RES=$?
+  done
+  docker logs "${INSTANCE_NAME}"
 elif [ "${START_ARG}" == "stop" ]; then
+  docker logs "${INSTANCE_NAME}"
   stop_instance
 else
   print_usage
