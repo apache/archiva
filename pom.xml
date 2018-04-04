@@ -41,8 +41,8 @@
   </modules>
 
   <scm>
-    <connection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva.git</connection>
-    <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/archiva.git</developerConnection>
+    <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-compiler-plugin.git</connection>
+    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-compiler-plugin.git</developerConnection>
     <url>https://github.com/apache/archiva</url>
     <tag>HEAD</tag>
   </scm>
