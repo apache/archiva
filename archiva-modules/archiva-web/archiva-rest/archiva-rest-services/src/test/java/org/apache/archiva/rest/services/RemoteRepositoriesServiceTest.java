@@ -202,7 +202,7 @@ public class RemoteRepositoriesServiceTest
 
     RemoteRepository getRemoteRepository()
     {
-        return new RemoteRepository( Locale.getDefault( ), "id-new", "new one", "http://foo.com", "default", "foo", "foopassword", 120,
+        return new RemoteRepository( Locale.getDefault( ), "id-new", "new one", "http://www.apache.org", "default", "foo", "foopassword", 120,
                                      "cool repo" );
     }
 
