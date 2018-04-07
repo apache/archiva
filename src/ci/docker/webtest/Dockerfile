@@ -28,12 +28,14 @@ MAINTAINER Apache Archiva <dev@archiva.apache.org>
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN true
-
 ARG CHROME_VERSION=google-chrome-stable
-RUN apt-get -qqy update 
+ARG CHROME_DRIVER_VERSION=2.37
+ARG SELENIUM_VERSION=2.53.1
+
+RUN apt-get -qqy update
 RUN apt-get -qqy install apt-utils >/dev/null 2>&1
 RUN apt-get -qqy install wget unzip >/dev/null
-RUN apt-get -qqy upgrade
+RUN apt-get -qqy upgrade && apt-get -qqy autoremove >/dev/null
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
   && apt-get -qqy update \
@@ -41,8 +43,6 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
     $CHROME_VERSION \
   >/dev/null
 
-
-ARG CHROME_DRIVER_VERSION=2.37
 RUN wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip \
   && rm -rf /opt/selenium/chromedriver \
   && unzip /tmp/chromedriver_linux64.zip -d /opt/selenium \
@@ -52,16 +52,13 @@ RUN wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.stor
   && ln -fs /opt/selenium/chromedriver-$CHROME_DRIVER_VERSION /usr/bin/chromedriver \
   >/dev/null
 
-RUN apt-get -qqy install openjdk-8-jdk xvfb dbus locales fluxbox >/dev/null \
-  && rm -rf /var/lib/apt/lists/* /var/cache/apt/* \
-  >/dev/null
+RUN apt-get -qqy install openjdk-8-jre-headless xvfb dbus locales fluxbox \
+  && apt-get -qqy purge perl libtext-iconv-perl cpp-5 Libperl5.22 libx11-doc libsane fonts-dejavu-extra xfonts-base libsane-common iproute2 krb5-locales ifupdown \
+  && apt-get -qqy autoremove \
+  && rm -rf /var/lib/apt/lists/* /var/cache/apt/* >/dev/null
 
-RUN apt-get -qqy purge perl \
-  && apt-get -qqy autoremove
-
-ARG SELENIUM_VERSION=2.53.1
 RUN mkdir -p /opt/bin && wget --no-verbose -O /opt/bin/selenium-server-standalone.jar https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-$SELENIUM_VERSION.jar \
-  && chmod 644 /opt/bin/selenium-server-standalone.jar
+  && chmod 644 /opt/bin/selenium-server-standalone.jar >/dev/null
 
 COPY entry_point.sh /opt/bin/entry_point.sh
 COPY x_run.sh /opt/bin/x_run.sh
