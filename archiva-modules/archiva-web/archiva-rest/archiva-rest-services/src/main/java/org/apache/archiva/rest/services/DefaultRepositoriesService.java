@@ -21,8 +21,6 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.utils.VersionComparator;
@@ -51,6 +49,7 @@ import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManagerException;
 import org.apache.archiva.redback.users.UserNotFoundException;
 import org.apache.archiva.repository.ContentNotFoundException;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
@@ -121,10 +120,6 @@ public class DefaultRepositoriesService
 
     @Inject
     private RepositoryRegistry repositoryRegistry;
-
-    @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
-
 
     @Inject
     private SecuritySystem securitySystem;
@@ -273,14 +268,7 @@ public class DefaultRepositoriesService
         }
 
         ManagedRepository source = null;
-        try
-        {
-            source = managedRepositoryAdmin.getManagedRepository( artifactTransferRequest.getRepositoryId() );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(), e );
-        }
+        source = repositoryRegistry.getManagedRepository( artifactTransferRequest.getRepositoryId() );
 
         if ( source == null )
         {
@@ -289,14 +277,7 @@ public class DefaultRepositoriesService
         }
 
         ManagedRepository target = null;
-        try
-        {
-            target = managedRepositoryAdmin.getManagedRepository( artifactTransferRequest.getTargetRepositoryId() );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(), e );
-        }
+        target = repositoryRegistry.getManagedRepository( artifactTransferRequest.getTargetRepositoryId() );
 
         if ( target == null )
         {
@@ -403,7 +384,7 @@ public class DefaultRepositoriesService
                                                        null );
             }
 
-            Path artifactFile = Paths.get( source.getLocation(), artifactSourcePath );
+            Path artifactFile = source.getLocalPath().resolve( artifactSourcePath );
 
             if ( !Files.exists(artifactFile) )
             {
@@ -420,7 +401,7 @@ public class DefaultRepositoriesService
             int lastIndex = artifactPath.lastIndexOf( '/' );
 
             String path = artifactPath.substring( 0, lastIndex );
-            Path targetPath = Paths.get( target.getLocation(), path );
+            Path targetPath = target.getLocalPath().resolve( path );
 
             Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
             int newBuildNumber = 1;
@@ -440,7 +421,7 @@ public class DefaultRepositoriesService
                 !( archivaAdministration.getKnownContentConsumers().contains( "create-missing-checksums" ) );
 
             Path targetFile = targetPath.resolve( filename );
-            if ( Files.exists(targetFile) && target.isBlockRedeployments() )
+            if ( Files.exists(targetFile) && target.blocksRedeployments())
             {
                 throw new ArchivaRestServiceException(
                     "artifact already exists in target repo: " + artifactTransferRequest.getTargetRepositoryId()
@@ -461,9 +442,8 @@ public class DefaultRepositoriesService
             }
             pomFilename = FilenameUtils.removeExtension( pomFilename ) + ".pom";
 
-            Path pomFile = Paths.get(source.getLocation(),
-                artifactSourcePath.substring( 0, artifactPath.lastIndexOf( '/' ) ) ,
-                pomFilename );
+            Path pomFile = source.getLocalPath().resolve(
+                artifactSourcePath.substring( 0, artifactPath.lastIndexOf( '/' ) )).resolve( pomFilename );
 
             if ( pomFile != null && Files.size( pomFile ) > 0 )
             {
@@ -785,7 +765,7 @@ public class DefaultRepositoriesService
             TimeZone timezone = TimeZone.getTimeZone( "UTC" );
             DateFormat fmt = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
             fmt.setTimeZone( timezone );
-            ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repositoryId );
+            ManagedRepository repoConfig = repositoryRegistry.getManagedRepository( repositoryId );
 
             VersionedReference ref = new VersionedReference();
             ref.setArtifactId( artifact.getArtifactId() );
@@ -821,7 +801,7 @@ public class DefaultRepositoriesService
 
                 int index = path.lastIndexOf( '/' );
                 path = path.substring( 0, index );
-                Path targetPath = Paths.get( repoConfig.getLocation(), path );
+                Path targetPath = repoConfig.getLocalPath().resolve( path );
 
                 if ( !Files.exists(targetPath) )
                 {
@@ -964,10 +944,6 @@ public class DefaultRepositoriesService
         catch ( MetadataRepositoryException e )
         {
             throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ArchivaRestServiceException( "RepositoryAdmin exception: " + e.getMessage(), 500, e );
         }
         finally
         {
@@ -1199,16 +1175,6 @@ public class DefaultRepositoriesService
     public StringList getRunningRemoteDownloadIds()
     {
         return new StringList( downloadRemoteIndexScheduler.getRunningRemoteDownloadIds() );
-    }
-
-    public ManagedRepositoryAdmin getManagedRepositoryAdmin()
-    {
-        return managedRepositoryAdmin;
-    }
-
-    public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
-    {
-        this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 
     public RepositorySessionFactory getRepositorySessionFactory()

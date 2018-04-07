@@ -20,6 +20,7 @@ package org.apache.archiva.rest.api.model;
 
 
 
+
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 
 import javax.xml.bind.annotation.XmlRootElement;

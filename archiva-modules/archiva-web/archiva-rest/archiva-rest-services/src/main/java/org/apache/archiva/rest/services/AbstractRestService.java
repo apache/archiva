@@ -23,7 +23,6 @@ import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.indexer.search.SearchResultHit;
@@ -39,7 +38,6 @@ import org.apache.archiva.redback.rest.services.RedbackRequestInformation;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.events.AuditListener;
@@ -105,9 +103,6 @@ public abstract class AbstractRestService
 
     @Inject
     protected RepositoryRegistry repositoryRegistry;
-
-    @Inject
-    protected RepositoryContentFactory repositoryContentFactory;
 
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
