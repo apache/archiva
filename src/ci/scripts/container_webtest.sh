@@ -98,6 +98,16 @@ cleanup() {
 
 trap cleanup EXIT
 
+function docker_login() {
+  if  [ ! -z "${DOCKER_HUB_PW}" ]; then
+    echo "${DOCKER_HUB_PW}" | docker login --username "${DOCKER_HUB_ID}" --password-stdin 2>/dev/null
+    if [ $? -ne 0 ]; then
+      echo "Seems to be older docker version."
+      docker login --username "${DOCKER_HUB_ID}" --password "${DOCKER_HUB_PW}"
+    fi
+  fi
+}
+
 function build_image() {
     echo "Building image ${TAG}"
     DOCKER_DIR="${HERE}/../docker/${DOCKER_CFG}"
@@ -116,9 +126,7 @@ function build_image() {
 function get_image() {
     IMG_ID=$(docker images -q "${DOCKER_HUB_TAG}")
     if [ -z "${IMG_ID}" ]; then
-      if  [ ! -z "${DOCKER_HUB_PW}" ]; then
-        echo "${DOCKER_HUB_PW}" | docker login --username "${DOCKER_HUB_ID}" --password-stdin
-      fi
+      docker_login
       docker pull "${DOCKER_HUB_TAG}"
       docker logout
       IMG_ID=$(docker images -q "${DOCKER_HUB_TAG}")
