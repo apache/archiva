@@ -38,7 +38,7 @@
 #
 
 # Always change the version, if your Dockerfile or scripts of the container change
-CONTAINER_VERSION="1.2"
+CONTAINER_VERSION="1.3"
 CONTAINER_NAME="archiva/selenium"
 DOCKER_CFG="webtest"
 INSTANCE_NAME="archiva-webtest"
