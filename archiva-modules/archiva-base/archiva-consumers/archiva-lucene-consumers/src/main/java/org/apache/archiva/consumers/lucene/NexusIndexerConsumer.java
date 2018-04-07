@@ -19,7 +19,6 @@ package org.apache.archiva.consumers.lucene;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
@@ -32,11 +31,9 @@ import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,8 +60,6 @@ public class NexusIndexerConsumer
     implements KnownRepositoryContentConsumer, RegistryListener
 {
 
-    @Inject
-    private RepositoryRegistry repositoryRegistry;
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
@@ -82,21 +77,14 @@ public class NexusIndexerConsumer
 
     private ManagedRepository repository;
 
-    private List<? extends IndexCreator> allIndexCreators;
-
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
-
     @Inject
     public NexusIndexerConsumer(
         @Named( value = "archivaTaskScheduler#indexing" ) ArchivaTaskScheduler<ArtifactIndexingTask> scheduler,
-        @Named( value = "archivaConfiguration" ) ArchivaConfiguration configuration, FileTypes filetypes,
-        List<IndexCreator> indexCreators, ManagedRepositoryAdmin managedRepositoryAdmin)
+        @Named( value = "archivaConfiguration" ) ArchivaConfiguration configuration, FileTypes filetypes)
     {
         this.configuration = configuration;
         this.filetypes = filetypes;
         this.scheduler = scheduler;
-        this.allIndexCreators = indexCreators;
-        this.managedRepositoryAdmin = managedRepositoryAdmin;
     }
 
     @Override

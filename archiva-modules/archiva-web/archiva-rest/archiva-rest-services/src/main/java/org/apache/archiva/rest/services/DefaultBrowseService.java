@@ -18,7 +18,6 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
@@ -31,11 +30,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.MetadataFacet;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionReference;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.MetadataResolutionException;
-import org.apache.archiva.metadata.repository.MetadataResolver;
-import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.*;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMetadataVersionComparator;
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.model.ArchivaArtifact;
@@ -43,16 +38,11 @@ import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.metadata.MetadataTools;
-import org.apache.archiva.rest.api.model.ArtifactContent;
-import org.apache.archiva.rest.api.model.ArtifactContentEntry;
-import org.apache.archiva.rest.api.model.BrowseResult;
-import org.apache.archiva.rest.api.model.BrowseResultEntry;
-import org.apache.archiva.rest.api.model.Entry;
-import org.apache.archiva.rest.api.model.MetadataAddRequest;
-import org.apache.archiva.rest.api.model.VersionsList;
+import org.apache.archiva.rest.api.model.*;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
 import org.apache.archiva.rest.services.utils.ArtifactContentEntryComparator;
@@ -71,15 +61,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -847,10 +829,10 @@ public class DefaultBrowseService
             for ( String repoId : selectedRepos )
             {
 
-                ManagedRepository managedRepository = managedRepositoryAdmin.getManagedRepository( repoId );
+                org.apache.archiva.repository.ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(repoId);
 
-                if ( ( snapshot && !managedRepository.isSnapshots() ) || ( !snapshot
-                    && managedRepository.isSnapshots() ) )
+                if ( ( snapshot && !managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT) ) || ( !snapshot
+                    && managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT) ) )
                 {
                     continue;
                 }
@@ -914,14 +896,7 @@ public class DefaultBrowseService
                     return true;
                 }
             }
-        }
-        catch ( RepositoryAdminException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new ArchivaRestServiceException( e.getMessage(),
-                                                   Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
-        }
-        catch ( RepositoryException e )
+        } catch ( RepositoryException e )
         {
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(),

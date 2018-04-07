@@ -19,7 +19,6 @@ package org.apache.archiva.consumers.core.repository;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationNames;
 import org.apache.archiva.configuration.FileTypes;
@@ -72,9 +71,6 @@ public class RepositoryPurgeConsumer
     @Inject
     @Named( value = "archivaConfiguration#default" )
     private ArchivaConfiguration configuration;
-
-    @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
     private RepositoryRegistry repositoryRegistry;

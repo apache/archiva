@@ -104,9 +104,6 @@ public abstract class AbstractRestService
     protected ProxyConnectorAdmin proxyConnectorAdmin;
 
     @Inject
-    protected ManagedRepositoryAdmin managedRepositoryAdmin;
-
-    @Inject
     protected RepositoryRegistry repositoryRegistry;
 
     @Inject

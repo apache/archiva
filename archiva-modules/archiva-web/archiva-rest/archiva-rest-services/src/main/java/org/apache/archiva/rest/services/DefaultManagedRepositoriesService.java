@@ -21,6 +21,7 @@ package org.apache.archiva.rest.services;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.RepositoryCommonValidator;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -57,6 +58,9 @@ public class DefaultManagedRepositoriesService
 
     @Inject
     private RepositoryStatisticsManager repositoryStatisticsManager;
+
+    @Inject
+    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Override
     public List<ManagedRepository> getManagedRepositories()

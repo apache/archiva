@@ -29,6 +29,7 @@ import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.filter.IncludesFilter;
+import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.MergeRepositoriesService;
 import org.apache.archiva.stagerepository.merge.Maven2RepositoryMerger;
@@ -111,11 +112,11 @@ public class DefaultMergeRepositoriesService
 
         try
         {
-            ManagedRepository repository = managedRepositoryAdmin.getManagedRepository( targetRepositoryId );
+            org.apache.archiva.repository.ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(targetRepositoryId);
             MetadataRepository metadataRepository = repositorySession.getRepository();
             List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepositoryId );
 
-            if ( repository.isReleases() && !repository.isSnapshots() )
+            if ( managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.RELEASE) && !managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT) )
             {
                 mergeWithOutSnapshots( metadataRepository, sourceArtifacts, sourceRepositoryId, targetRepositoryId );
             }
@@ -134,12 +135,7 @@ public class DefaultMergeRepositoriesService
         catch ( MetadataRepositoryException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(), e );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(), e );
-        }
-        finally
+        } finally
         {
             repositorySession.close();
         }
@@ -159,9 +155,9 @@ public class DefaultMergeRepositoriesService
             List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepositoryId );
             sourceArtifacts.removeAll( conflictSourceArtifacts );
 
-            ManagedRepository repository = managedRepositoryAdmin.getManagedRepository( targetRepositoryId );
+            org.apache.archiva.repository.ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(targetRepositoryId);
 
-            if ( repository.isReleases() && !repository.isSnapshots() )
+            if ( managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.RELEASE) && !managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT))
             {
                 mergeWithOutSnapshots( metadataRepository, sourceArtifacts, sourceRepositoryId, targetRepositoryId );
             }
@@ -183,13 +179,7 @@ public class DefaultMergeRepositoriesService
         catch ( MetadataRepositoryException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(), e );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new ArchivaRestServiceException( e.getMessage(), e );
-
-        }
-        finally
+        } finally
         {
             repositorySession.close();
         }
