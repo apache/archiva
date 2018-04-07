@@ -38,6 +38,18 @@ security access management, build artifact storage, delivery, browsing, indexing
 
     <release>
       <Version>
+        <name>Apache Archiva 2.2.3</name>
+        <created>2017-05-16</created>
+        <revision>2.2.3</revision>
+        <file-release>http://archive.apache.org/dist/archiva/2.2.3/binaries/apache-archiva-2.2.3-bin.zip</file-release>
+        <file-release>http://archive.apache.org/dist/archiva/2.2.3/binaries/apache-archiva-2.2.3-bin.tar.gz</file-release>
+        <file-release>http://archive.apache.org/dist/archiva/2.2.3/binaries/apache-archiva-2.2.3.war</file-release>
+      </Version>
+    </release>
+
+
+    <release>
+      <Version>
         <name>Apache Archiva 2.2.x</name>
         <created>2015-03-02</created>
         <revision>2.2.0</revision>
@@ -69,8 +81,8 @@ security access management, build artifact storage, delivery, browsing, indexing
     <repository>
       <!-- git first as archiva migrated core to this place-->
       <GitRepository>
-        <location rdf:resource="https://git-wip-us.apache.org/repos/asf?p=archiva.git"/>
-        <browse rdf:resource="https://git-wip-us.apache.org/repos/asf/archiva.git"/>
+        <location rdf:resource="https://gitbox.apache.org/repos/asf/archiva.git"/>
+        <browse rdf:resource="https://gitbox.apache.org/repos/asf?p=archiva.git"/>
       </GitRepository>
     </repository>
     <repository>
