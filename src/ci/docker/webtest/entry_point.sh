@@ -42,9 +42,11 @@ fi
 
 rm -f /tmp/.X*lock
 
+export JAVA_OPTS
+export SE_OPTS
+
 xvfb-run -a -n $X_START_NUM --server-args="-screen 0 $GEOMETRY -ac +extension RANDR" \
-  java ${JAVA_OPTS} -jar /opt/bin/selenium-server-standalone.jar \
-  ${SE_OPTS} &
+  /opt/bin/x_run.sh &
 NODE_PID=$!
 
 trap shutdown SIGTERM SIGINT

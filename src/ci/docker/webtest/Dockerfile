@@ -42,7 +42,7 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
   >/dev/null
 
 
-ARG CHROME_DRIVER_VERSION=2.29
+ARG CHROME_DRIVER_VERSION=2.37
 RUN wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip \
   && rm -rf /opt/selenium/chromedriver \
   && unzip /tmp/chromedriver_linux64.zip -d /opt/selenium \
@@ -52,18 +52,24 @@ RUN wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.stor
   && ln -fs /opt/selenium/chromedriver-$CHROME_DRIVER_VERSION /usr/bin/chromedriver \
   >/dev/null
 
-RUN apt-get -qqy install openjdk-8-jdk xvfb dbus locales >/dev/null \
+RUN apt-get -qqy install openjdk-8-jdk xvfb dbus locales fluxbox >/dev/null \
   && rm -rf /var/lib/apt/lists/* /var/cache/apt/* \
   >/dev/null
+
+RUN apt-get -qqy purge perl \
+  && apt-get -qqy autoremove
 
 ARG SELENIUM_VERSION=2.53.1
 RUN mkdir -p /opt/bin && wget --no-verbose -O /opt/bin/selenium-server-standalone.jar https://selenium-release.storage.googleapis.com/2.53/selenium-server-standalone-$SELENIUM_VERSION.jar \
   && chmod 644 /opt/bin/selenium-server-standalone.jar
 
 COPY entry_point.sh /opt/bin/entry_point.sh
+COPY x_run.sh /opt/bin/x_run.sh
 COPY chrome_launcher.sh /usr/bin/google-chrome
-RUN chmod +x /opt/bin/entry_point.sh
-RUN chmod +x /usr/bin/google-chrome
+RUN chmod +x /opt/bin/entry_point.sh \
+  && chmod +x /usr/bin/google-chrome \
+  && chmod +x /opt/bin/x_run.sh
+
 
 ENV SCREEN_WIDTH 1600
 ENV SCREEN_HEIGHT 1200
