@@ -262,7 +262,7 @@ public class ArchivaRbacManager
         {
             try
             {
-                List<Role> roles = rbacManager.getAllRoles();
+                List<? extends Role> roles = rbacManager.getAllRoles();
                 for ( Role role : roles )
                 {
                     allRoles.put( role.getName(), role );
@@ -400,7 +400,7 @@ public class ArchivaRbacManager
         {
             try
             {
-                List<Permission> permissions = rbacManager.getAllPermissions();
+                List<? extends Permission> permissions = rbacManager.getAllPermissions();
                 for ( Permission p : permissions )
                 {
                     allPermissions.put( p.getName(), p );
@@ -529,7 +529,7 @@ public class ArchivaRbacManager
         {
             try
             {
-                List<Operation> operations = rbacManager.getAllOperations();
+                List<? extends Operation> operations = rbacManager.getAllOperations();
                 for ( Operation o : operations )
                 {
                     allOperations.put( o.getName(), o );
@@ -658,7 +658,7 @@ public class ArchivaRbacManager
         {
             try
             {
-                List<Resource> resources = rbacManager.getAllResources();
+                List<? extends Resource> resources = rbacManager.getAllResources();
                 for ( Resource r : resources )
                 {
                     allResources.put( r.getIdentifier(), r );
@@ -846,7 +846,7 @@ public class ArchivaRbacManager
         {
             try
             {
-                List<UserAssignment> userAssignments = rbacManager.getAllUserAssignments();
+                List<? extends UserAssignment> userAssignments = rbacManager.getAllUserAssignments();
                 for ( UserAssignment ua : userAssignments )
                 {
                     UserAssignment userAssignment = allUserAssignments.get( ua.getPrincipal() );
@@ -885,7 +885,7 @@ public class ArchivaRbacManager
         {
             try
             {
-                List<UserAssignment> userAssignments = rbacManager.getUserAssignmentsForRoles( roleNames );
+                List<? extends UserAssignment> userAssignments = rbacManager.getUserAssignmentsForRoles( roleNames );
 
                 allUserAssignments.addAll( userAssignments );
 

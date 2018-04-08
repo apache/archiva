@@ -438,7 +438,7 @@ public class TestRBACManager implements RBACManager
     }
 
     @Override
-    public Map<String, List<Permission>> getAssignedPermissionMap( String principal )
+    public Map<String, List<? extends Permission>> getAssignedPermissionMap( String principal )
         throws RbacObjectNotFoundException, RbacManagerException
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
