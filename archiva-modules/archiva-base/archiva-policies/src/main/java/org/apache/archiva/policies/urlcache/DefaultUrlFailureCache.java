@@ -33,10 +33,10 @@ import java.util.Date;
 public class DefaultUrlFailureCache
     implements UrlFailureCache
 {
-    private Cache urlCache;
+    private Cache<String, Date> urlCache;
 
     @Inject
-    public DefaultUrlFailureCache( @Named( "cache#url-failures-cache" ) Cache urlCache )
+    public DefaultUrlFailureCache( @Named( "cache#url-failures-cache" ) Cache<String, Date> urlCache )
     {
         this.urlCache = urlCache;
     }

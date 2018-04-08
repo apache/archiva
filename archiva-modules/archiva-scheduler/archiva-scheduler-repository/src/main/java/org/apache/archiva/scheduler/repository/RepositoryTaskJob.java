@@ -39,6 +39,7 @@ public class RepositoryTaskJob
      * @param context
      * @throws org.quartz.JobExecutionException
      */
+    @SuppressWarnings( "unchecked" )
     @Override
     public void execute( JobExecutionContext context )
         throws JobExecutionException

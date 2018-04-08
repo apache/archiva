@@ -212,7 +212,6 @@
             <Import-Package>
               javax.annotation,
               javax.inject,
-              org.apache.archiva.admin.model*;version=${project.version},
               org.apache.archiva.checksum;version=${project.version},
               org.apache.archiva.common.utils;version=${project.version},
               org.apache.archiva.configuration;version=${project.version},

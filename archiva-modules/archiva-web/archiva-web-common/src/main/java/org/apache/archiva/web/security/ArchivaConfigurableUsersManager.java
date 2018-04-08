@@ -270,7 +270,7 @@ public class ArchivaConfigurableUsersManager
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-            List<User> found = userManager.findUsersByEmailKey( emailKey, orderAscending );
+            List<? extends User> found = userManager.findUsersByEmailKey( emailKey, orderAscending );
             if ( found != null )
             {
                 users.addAll( found );
@@ -287,7 +287,7 @@ public class ArchivaConfigurableUsersManager
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-            List<User> found = userManager.findUsersByFullNameKey( fullNameKey, orderAscending );            
+            List<? extends User> found = userManager.findUsersByFullNameKey( fullNameKey, orderAscending );
             if ( found != null )
             {
                 users.addAll( found );
@@ -304,7 +304,7 @@ public class ArchivaConfigurableUsersManager
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-            List<User> found = userManager.findUsersByQuery( query );
+            List<? extends User> found = userManager.findUsersByQuery( query );
             if ( found != null )
             {
                 users.addAll( found );
@@ -321,7 +321,7 @@ public class ArchivaConfigurableUsersManager
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-            List<User> found = userManager.findUsersByUsernameKey( usernameKey, orderAscending );
+            List<? extends User> found = userManager.findUsersByUsernameKey( usernameKey, orderAscending );
             if ( found != null )
             {
                 users.addAll( found );
@@ -344,7 +344,7 @@ public class ArchivaConfigurableUsersManager
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-            List<User> found = userManager.getUsers();
+            List<? extends User> found = userManager.getUsers();
             if ( found != null )
             {
                 users.addAll( found );
@@ -361,7 +361,7 @@ public class ArchivaConfigurableUsersManager
 
         for ( UserManager userManager : userManagerPerId.values() )
         {
-            List<User> found = userManager.getUsers( orderAscending );
+            List<? extends User> found = userManager.getUsers( orderAscending );
             if ( found != null )
             {
                 users.addAll( found );

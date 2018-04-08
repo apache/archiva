@@ -195,7 +195,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         } catch (Throwable e) {
             log.error("Could not initialize repositories from config: {}",e.getMessage(), e );
             //noinspection unchecked
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
     }
 
@@ -209,6 +209,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
 
     }
 
+    @SuppressWarnings( "unchecked" )
     private void updateRepositoryReferences(RepositoryProvider provider, ManagedRepository repo, ManagedRepositoryConfiguration cfg, Configuration configuration) throws RepositoryException
     {
         log.debug("Updating references of repo {}",repo.getId());
@@ -284,7 +285,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             if ( remoteRepoConfigs == null )
             {
                 //noinspection unchecked
-                return Collections.EMPTY_MAP;
+                return Collections.emptyMap();
             }
 
             Map<String, RemoteRepository> remoteRepos = new LinkedHashMap<>( remoteRepoConfigs.size( ) );
@@ -313,7 +314,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         } catch (Throwable e) {
             log.error("Could not initialize remote repositories from config: {}", e.getMessage(), e);
             //noinspection unchecked
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
     }
 
@@ -327,6 +328,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
 
     }
 
+    @SuppressWarnings( "unchecked" )
     private void updateRepositoryReferences( RepositoryProvider provider, RemoteRepository repo, RemoteRepositoryConfiguration cfg, Configuration configuration) throws RepositoryException
     {
         if ( repo instanceof EditableRemoteRepository && repo.getContent() == null)
@@ -570,6 +572,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
      * @return the new or updated repository
      * @throws RepositoryException if the configuration cannot be saved or updated
      */
+    @SuppressWarnings( "unchecked" )
     public ManagedRepository putRepository( ManagedRepositoryConfiguration managedRepositoryConfiguration, Configuration configuration) throws RepositoryException
     {
         rwLock.writeLock( ).lock( );
@@ -751,6 +754,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
      * @return the new or updated repository
      * @throws RepositoryException if the configuration cannot be saved or updated
      */
+    @SuppressWarnings( "unchecked" )
     public RemoteRepository putRepository( RemoteRepositoryConfiguration remoteRepositoryConfiguration, Configuration configuration) throws RepositoryException
     {
         rwLock.writeLock( ).lock( );
@@ -791,6 +795,8 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             removeRepository(repo);
         }
     }
+
+    @SuppressWarnings( "unchecked" )
     public void removeRepository(Repository repo) throws RepositoryException
     {
         if (repo instanceof RemoteRepository ) {
@@ -946,6 +952,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
      * @param repo
      * @throws IndexUpdateFailedException
      */
+    @SuppressWarnings( "unchecked" )
     public void resetIndexingContext(Repository repo) throws IndexUpdateFailedException {
         if (repo.hasIndex() && repo instanceof EditableRepository) {
             EditableRepository eRepo = (EditableRepository) repo;
@@ -975,6 +982,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         return cloned;
     }
 
+    @SuppressWarnings( "unchecked" )
     public <T extends Repository> Repository clone(T repo, String newId) throws RepositoryException {
         if (repo instanceof RemoteRepository ) {
             return this.clone((RemoteRepository)repo, newId);
@@ -1029,6 +1037,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         this.listeners.clear();
     }
 
+    @SuppressWarnings( "unchecked" )
     @Override
     public <T> void raise(RepositoryEvent<T> event) {
         if (event instanceof IndexCreationEvent ) {

@@ -98,7 +98,7 @@ import java.util.Set;
 public class DefaultArchivaConfiguration
     implements ArchivaConfiguration, RegistryListener
 {
-    private Logger log = LoggerFactory.getLogger( DefaultArchivaConfiguration.class );
+    private final Logger log = LoggerFactory.getLogger( DefaultArchivaConfiguration.class );
 
     private static String FILE_ENCODING = "UTF-8";
 

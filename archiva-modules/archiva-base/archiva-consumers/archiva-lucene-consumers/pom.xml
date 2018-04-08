@@ -157,7 +157,6 @@
             <Import-Package>
               javax.annotation,
               javax.inject,
-              org.apache.archiva.admin.model*;version=${project.version},
               org.apache.archiva.common.plexusbridge;version=${project.version},
               org.apache.archiva.configuration;version=${project.version},
               org.apache.archiva.consumers;version=${project.version},

@@ -46,9 +46,9 @@ public class ProxyConnectorSelectionPredicate
     {
         boolean satisfies = false;
 
-        if ( object instanceof ProxyConnectorConfiguration )
+        if ( object != null )
         {
-            ProxyConnectorConfiguration connector = (ProxyConnectorConfiguration) object;
+            ProxyConnectorConfiguration connector = object;
             return ( StringUtils.equals( sourceId, connector.getSourceRepoId() ) && StringUtils.equals( targetId,
                                                                                                         connector.getTargetRepoId() ) );
         }

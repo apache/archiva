@@ -73,7 +73,7 @@ public class DefaultRepositoryArchivaTaskScheduler
 
     @Inject
     @Named( value = "taskQueue#repository-scanning" )
-    private TaskQueue repositoryScanningQueue;
+    private TaskQueue<RepositoryTask> repositoryScanningQueue;
 
     @Inject
     private ArchivaConfiguration archivaConfiguration;
