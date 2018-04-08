@@ -25,7 +25,8 @@ import java.util.Comparator;
 
 /**
  *
- * @deprecated ProxyConnectorConfigurationOrderComparator
+ * Was marked as deprecated before, but is still used.
+ *
  */
 public class ProxyConnectorConfigurationOrderComparator
     implements Comparator<ProxyConnectorConfiguration>
