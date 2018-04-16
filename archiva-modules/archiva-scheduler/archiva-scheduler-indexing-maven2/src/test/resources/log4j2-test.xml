@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one
   ~ or more contributor license agreements.  See the NOTICE file
@@ -18,21 +18,25 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <groupId>org.apache.archiva</groupId>
-    <artifactId>archiva-modules</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>archiva-scheduler</artifactId>
-  <packaging>pom</packaging>
-  <name>Archiva :: Scheduler</name>
-  <modules>
-    <module>archiva-scheduler-api</module>
-    <module>archiva-scheduler-indexing</module>
-    <module>archiva-scheduler-indexing-maven2</module>
-    <module>archiva-scheduler-repository-api</module>
-    <module>archiva-scheduler-repository</module>
-  </modules>
-</project>
+
+<configuration>
+  <appenders>
+    <Console name="console" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d [%t] %-5p %c %x - %m%n"/>
+    </Console>
+  </appenders>
+  <loggers>
+
+    <logger name="org.springframework" level="error"/>
+
+    <logger name="org.apache.archiva.scheduler.indexing" level="info"/>
+    <!--
+    <logger name="org.apache.http" level="debug"/>
+    -->
+    <root level="info">
+      <appender-ref ref="console"/>
+    </root>
+  </loggers>
+</configuration>
+
+

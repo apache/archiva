@@ -1,4 +1,4 @@
-package org.apache.archiva.scheduler.indexing;
+package org.apache.archiva.scheduler.indexing.maven;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -27,6 +27,7 @@ import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutionEx
 import org.apache.archiva.redback.components.taskqueue.execution.TaskExecutor;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.features.IndexCreationFeature;
+import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
 import org.apache.maven.index.DefaultScannerListener;

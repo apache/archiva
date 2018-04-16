@@ -1,4 +1,4 @@
-package org.apache.archiva.scheduler.indexing;
+package org.apache.archiva.scheduler.indexing.maven;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +18,8 @@ package org.apache.archiva.scheduler.indexing;
  * under the License.
  */
 
+import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexException;
+import org.apache.archiva.scheduler.indexing.DownloadRemoteIndexScheduler;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
@@ -84,7 +86,7 @@ public class DefaultDownloadRemoteIndexScheduler
     @PostConstruct
     public void startup()
             throws
-            DownloadRemoteIndexException, UnsupportedBaseContextException {
+        DownloadRemoteIndexException, UnsupportedBaseContextException {
         archivaConfiguration.addListener( this );
         // TODO add indexContexts even if null
 

@@ -1,4 +1,4 @@
-package org.apache.archiva.scheduler.indexing;
+package org.apache.archiva.scheduler.indexing.maven;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

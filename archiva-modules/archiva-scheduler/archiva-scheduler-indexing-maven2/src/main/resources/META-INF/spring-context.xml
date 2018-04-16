@@ -27,8 +27,22 @@
        default-lazy-init="false">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.scheduler.indexing"/>
+  <context:component-scan base-package="org.apache.archiva.scheduler.indexing,org.apache.maven.index"/>
 
-  <bean name="taskQueue#indexing" class="org.apache.archiva.redback.components.taskqueue.DefaultTaskQueue"/>
+
+
+
+  <bean name="taskQueueExecutor#indexing" class="org.apache.archiva.redback.components.taskqueue.execution.ThreadedTaskQueueExecutor">
+    <property name="executor" ref="taskExecutor#indexing"/>
+    <property name="queue" ref="taskQueue#indexing"/>
+    <property name="name" value="indexing"/>
+  </bean>
+
+  <bean name="taskScheduler#indexDownloadRemote"
+        class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+    <property name="poolSize" value="4"/>
+    <property name="threadGroupName" value="indexDownloadRemote"/>
+  </bean>
+
 
 </beans>

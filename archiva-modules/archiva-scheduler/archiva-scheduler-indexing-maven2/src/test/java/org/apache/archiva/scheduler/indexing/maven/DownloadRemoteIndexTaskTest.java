@@ -1,4 +1,4 @@
-package org.apache.archiva.scheduler.indexing;
+package org.apache.archiva.scheduler.indexing.maven;
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -31,6 +31,7 @@ import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.StringSearchExpression;
 import org.apache.maven.index_shaded.lucene.search.BooleanClause;
 import org.apache.maven.index_shaded.lucene.search.BooleanQuery;
+import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -161,7 +162,7 @@ public class DownloadRemoteIndexTaskTest
         FlatSearchResponse response = indexer.searchFlat(rq);
 
         log.info( "returned hit count:{}", response.getReturnedHitsCount() );
-        assertThat( response.getReturnedHitsCount() ).isEqualTo( 8 );
+        Assertions.assertThat( response.getReturnedHitsCount() ).isEqualTo( 8 );
     }
 
 
