@@ -1,7 +1,7 @@
 node ("ubuntu") {
   // System Dependent Locations
   def mvntool = tool name: 'Maven 3.5.2', type: 'hudson.tasks.Maven$MavenInstallation'
-  def jdktool = tool name: 'jdk8', type: 'hudson.model.JDK'
+  def jdktool = tool name: 'JDK 1.8 (latest)', type: 'hudson.model.JDK'
   def deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
 
   // Environment
@@ -22,7 +22,7 @@ node ("ubuntu") {
     stage ('Build') {
       withEnv(mvnEnv) {
         timeout(120) {
-          withMaven(maven: 'Maven 3.5.2', jdk: 'jdk8',
+          withMaven(maven: 'Maven 3.5.2', jdk: 'JDK 1.8 (latest)',
                         globalMavenSettingsConfig: deploySettings,
                         mavenLocalRepo: "${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER}"                  
                    )
