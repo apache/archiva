@@ -1,7 +1,8 @@
 
-  def labels = 'ubuntu'
-  def buildJdk = 'JDK 1.8 (latest)'
-  def buildMvn = 'Maven 3.5.2'  
+def labels = 'ubuntu'
+def buildJdk = 'JDK 1.8 (latest)'
+def buildMvn = 'Maven 3.5.2'  
+def deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
 
 node (labels) {
   try
@@ -19,7 +20,7 @@ node (labels) {
     stage ('Build') {
       timeout(120) {
         withMaven(maven: buildMvn, jdk: buildJdk,
-                      globalMavenSettingsConfig: deploySettings,
+                      mavenSettingsConfig: deploySettings,
                       mavenLocalRepo: "${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER}"                  
                  )
           {
