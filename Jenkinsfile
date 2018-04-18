@@ -1,17 +1,14 @@
 node ("ubuntu") {
   // System Dependent Locations
-  def mvntool = tool name: 'Maven 3.5.2', type: 'hudson.tasks.Maven$MavenInstallation'
-  def jdktool = tool name: 'JDK 1.8 (latest)', type: 'hudson.model.JDK'
+  def mvn = 'Maven 3.5.2'
+  def jdk ='JDK 1.8 (latest)'
   def deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
-
-  // Environment
-  List mvnEnv = ["PATH+MVN=${mvntool}/bin", "PATH+JDK=${jdktool}/bin", "JAVA_HOME=${jdktool}/", "MAVEN_HOME=${mvntool}"]
-  mvnEnv.add("MAVEN_OPTS=-Xms256m -Xmx1024m -Djava.awt.headless=true")
 
   try
   {
-    stage 'Checkout'
-    checkout scm
+    stage ('Checkout') {
+      checkout scm
+    }  
   } catch (Exception e) {
     //notifyBuild("Checkout Failure")
     throw e
@@ -20,23 +17,21 @@ node ("ubuntu") {
   try
   {
     stage ('Build') {
-      withEnv(mvnEnv) {
-        timeout(120) {
-          withMaven(maven: mvntool.name, jdk: jdktool.name,
-                        globalMavenSettingsConfig: deploySettings,
-                        mavenLocalRepo: "${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER}"                  
-                   )
-            {
-              // Run test phase / ignore test failures
-              sh "mvn -B clean deploy -Dmaven.test.failure.ignore=true"
-            }  
-          // Report failures in the jenkins UI
-          //step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
-        }
-        if(isUnstable())
-        {
-          //notifyBuild("Unstable / Test Errors")
-        }
+      timeout(120) {
+        withMaven(maven: mvntool.name, jdk: jdktool.name,
+                      globalMavenSettingsConfig: deploySettings,
+                      mavenLocalRepo: "${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER}"                  
+                 )
+          {
+            // Run test phase / ignore test failures
+            sh "mvn -B clean deploy -Dmaven.test.failure.ignore=true"
+          }  
+        // Report failures in the jenkins UI
+        //step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
+      }
+      if(isUnstable())
+      {
+        //notifyBuild("Unstable / Test Errors")
       }
     }  
   } catch(Exception e) {
