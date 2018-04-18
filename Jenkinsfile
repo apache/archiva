@@ -22,7 +22,7 @@ node ("ubuntu") {
     stage ('Build') {
       withEnv(mvnEnv) {
         timeout(120) {
-          withMaven(maven: 'Maven 3.5.2', jdk: 'JDK 1.8 (latest)',
+          withMaven(maven: mvntool.name, jdk: jdktool.name,
                         globalMavenSettingsConfig: deploySettings,
                         mavenLocalRepo: "${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER}"                  
                    )
