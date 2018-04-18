@@ -26,7 +26,7 @@ node (labels) {
           {
             sh "rm -rf .repository"
             // Run test phase / ignore test failures
-            sh "mvn -B clean deploy -Dmaven.test.failure.ignore=true"
+            sh "mvn -B clean deploy -Dmaven.test.failure.ignore=true -T2"
           }  
         // Report failures in the jenkins UI
         //step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
