@@ -1,7 +1,8 @@
-node {
+node ("ubuntu") {
   // System Dependent Locations
-  def mvntool = tool name: 'maven3', type: 'hudson.tasks.Maven$MavenInstallation'
+  def mvntool = tool name: 'Maven 3.5.2', type: 'hudson.tasks.Maven$MavenInstallation'
   def jdktool = tool name: 'jdk8', type: 'hudson.model.JDK'
+  def deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
 
   // Environment
   List mvnEnv = ["PATH+MVN=${mvntool}/bin", "PATH+JDK=${jdktool}/bin", "JAVA_HOME=${jdktool}/", "MAVEN_HOME=${mvntool}"]
@@ -18,19 +19,26 @@ node {
 
   try
   {
-    stage 'Build'
-    withEnv(mvnEnv) {
-      timeout(60) {
-        // Run test phase / ignore test failures
-        sh "mvn -B clean install -Dmaven.test.failure.ignore=true"
-        // Report failures in the jenkins UI
-        step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
+    stage ('Build') {
+      withEnv(mvnEnv) {
+        timeout(120) {
+          withMaven(maven: 'Maven 3.5.2', jdk: 'jdk8',
+                        globalMavenSettingsConfig: deploySettings,
+                        mavenLocalRepo: "${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER}"                  
+                   )
+            {
+              // Run test phase / ignore test failures
+              sh "mvn -B clean deploy -Dmaven.test.failure.ignore=true"
+            }  
+          // Report failures in the jenkins UI
+          //step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
+        }
+        if(isUnstable())
+        {
+          //notifyBuild("Unstable / Test Errors")
+        }
       }
-      if(isUnstable())
-      {
-        //notifyBuild("Unstable / Test Errors")
-      }
-    }
+    }  
   } catch(Exception e) {
     notifyBuild("Test Failure")
     throw e
@@ -50,7 +58,7 @@ def notifyBuild(String buildStatus)
   // default the value
   buildStatus = buildStatus ?: "UNKNOWN"
 
-  def email = "${env.EMAILADDRESS}"
+  def email = "notifications@archiva.apache.org"
   def summary = "${env.JOB_NAME}#${env.BUILD_NUMBER} - ${buildStatus}"
   def detail = """<h4>Job: <a href='${env.JOB_URL}'>${env.JOB_NAME}</a> [#${env.BUILD_NUMBER}]</h4>
   <p><b>${buildStatus}</b></p>
