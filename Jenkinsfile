@@ -1,9 +1,9 @@
-node ("ubuntu") {
-  // System Dependent Locations
-  def mvn = 'Maven 3.5.2'
-  def jdk ='JDK 1.8 (latest)'
-  def deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
 
+  def labels = 'ubuntu'
+  def buildJdk = 'JDK 1.8 (latest)'
+  def buildMvn = 'Maven 3.5.2'  
+
+node (labels) {
   try
   {
     stage ('Checkout') {
@@ -18,7 +18,7 @@ node ("ubuntu") {
   {
     stage ('Build') {
       timeout(120) {
-        withMaven(maven: mvntool.name, jdk: jdktool.name,
+        withMaven(maven: buildMvn, jdk: buildJdk,
                       globalMavenSettingsConfig: deploySettings,
                       mavenLocalRepo: "${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER}"                  
                  )
