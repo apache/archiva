@@ -21,9 +21,10 @@ node (labels) {
       timeout(120) {
         withMaven(maven: buildMvn, jdk: buildJdk,
                       mavenSettingsConfig: deploySettings,
-                      mavenLocalRepo: "${env.JENKINS_HOME}/${env.EXECUTOR_NUMBER}"                  
+                      mavenLocalRepo: ".repository"                  
                  )
           {
+            sh "rm -rf .repository"
             // Run test phase / ignore test failures
             sh "mvn -B clean deploy -Dmaven.test.failure.ignore=true"
           }  
