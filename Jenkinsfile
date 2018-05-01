@@ -88,10 +88,10 @@ pipeline {
             }
         }
 
-        post {
-            unstable {
-                notifyBuild("Unstable Build")
-            }
+    }
+    post {
+        unstable {
+            notifyBuild("Unstable Build")
         }
     }
 }
