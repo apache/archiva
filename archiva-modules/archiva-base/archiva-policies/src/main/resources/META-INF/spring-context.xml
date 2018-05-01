@@ -39,7 +39,7 @@
         destroy-method="dispose">
     <property name="diskExpiryThreadIntervalSeconds" value="600"/>
     <property name="diskPersistent" value="true"/>
-    <property name="diskStorePath" value="${java.io.tmpdir}/archiva/urlcache"/>
+    <property name="diskStorePath" value="${appserver.base}/tmp/urlcache"/>
     <property name="maxElementsInMemory" value="1000"/>
     <property name="memoryEvictionPolicy" value="LRU"/>
     <property name="name" value="url-failures-cache"/>

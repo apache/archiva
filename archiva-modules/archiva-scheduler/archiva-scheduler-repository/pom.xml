@@ -171,6 +171,7 @@
           <configuration>
             <systemPropertyVariables>
               <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
+              <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             </systemPropertyVariables>
           </configuration>
         </plugin>
