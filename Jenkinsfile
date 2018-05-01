@@ -2,7 +2,6 @@ LABEL = 'ubuntu'
 buildJdk = 'JDK 1.8 (latest)'
 buildMvn = 'Maven 3.5.2'
 deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
-REPO_DIR = "${env.JENKINS_HOME}/.repo-${env.JOB_NAME.replace('/', '_')}"
 
 pipeline {
     agent {
@@ -19,7 +18,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    currentBuild.displayName = "Archiva master build"
                     currentBuild.description = "This builds, tests and deploys the current artifact from archiva master branch."
                     echo "Info: Job-Name=${JOB_NAME}, Branch=${BRANCH_NAME}, Workspace=${PWD}, Repo-Dir=${REPO_DIR}"
                 }
