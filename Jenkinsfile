@@ -5,86 +5,90 @@ def deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
 
 node(labels) {
 
-    def PWD = pwd();
-    echo "Workspace: ${PWD}"
+    def PWD = pwd()
+    def REPO_DIR="${env.JENKINS_HOME}/.repo-${env.JOB_NAME.replace('/','_')}"
+    echo "Info: Job-Name=${JOB_NAME}, Branch=${BRANCH_NAME}, Workspace=${PWD}, Repo-Dir=${REPO_DIR}"
 
-    try {
+    stages {
         stage('Checkout') {
-            checkout scm
+            steps {
+                checkout scm
+                script {
+                    currentBuild.displayName = "Archiva master build"
+                    currentBuild.description = "This builds, tests and deploys the current artifact from archiva master branch."
+                }
+            }
+            post {
+                failure {
+                    notifyBuild("Checkout failure")
+                }
+            }
         }
-    } catch (Exception e) {
-        notifyBuild("Checkout Failure")
-        throw e
-    }
 
-    try {
         stage('Build') {
-            timeout(120) {
-                withMaven(maven: buildMvn, jdk: buildJdk,
-                        mavenSettingsConfig: deploySettings,
-                        mavenLocalRepo: ".repository"
-                )
-                        {
-                            sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
-                            sh "./src/ci/scripts/prepareWorkspace.sh"
-                            // Needs a lot of time to reload the repository files, try without cleanup
-                            // Not sure, but maybe
-                            // sh "rm -rf .repository"
+            steps {
+                timeout(120) {
+                    withMaven(maven: buildMvn, jdk: buildJdk,
+                            mavenSettingsConfig: deploySettings,
+                            mavenLocalRepo: REPO_DIR
+                    )
+                            {
+                                sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
+                                sh "./src/ci/scripts/prepareWorkspace.sh"
+                                // Needs a lot of time to reload the repository files, try without cleanup
+                                // Not sure, but maybe
+                                // sh "rm -rf .repository"
 
-
-                            // Run test phase / ignore test failures
-                            // -B: Batch mode
-                            // -U: Force snapshot update
-                            // -e: Produce execution error messages
-                            // -fae: Fail at the end
-                            // -Dmaven.compiler.fork=false: Do not compile in a separate forked process
-                            // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
-                            // -Pci-build: Profile for CI-Server
-                            sh "mvn clean install -B -U -e -fae -Dmaven.test.failure.ignore=true -T2 -Dmaven.compiler.fork=false -Pci-build"
-                        }
+                                // Run test phase / ignore test failures
+                                // -B: Batch mode
+                                // -U: Force snapshot update
+                                // -e: Produce execution error messages
+                                // -fae: Fail at the end
+                                // -Dmaven.compiler.fork=false: Do not compile in a separate forked process
+                                // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
+                                // -Pci-build: Profile for CI-Server
+                                sh "mvn clean install -B -U -e -fae -Dmaven.test.failure.ignore=true -T2 -Dmaven.compiler.fork=false -Pci-build"
+                            }
+                }
+            }
+            post {
+                success {
+                    junit testDataPublishers: [[$class: 'StabilityTestDataPublisher']], '**/target/surefire-reports/TEST-*.xml'
+                    archiveArtifacts '**/target/*.war,**/target/*-bin.zip'
+                }
+                failure {
+                    notifyBuild("Build / Test failure")
+                }
             }
         }
-    } catch (Exception e) {
-        notifyBuild("Test Failure")
-        throw e
-    }
 
-    try {
         stage('Deploy') {
-            timeout(120) {
-                withMaven(maven: buildMvn, jdk: buildJdk,
-                        mavenSettingsConfig: deploySettings,
-                        mavenLocalRepo: ".repository"
-                )
-                        {
-                            // Repository cleanup causes a lot of time to reload them. We try without cleanup
-                            // sh "rm -rf .repository"
-                            // Run test phase / ignore test failures
-                            sh "mvn -B deploy"
-                        }
+            steps {
+                timeout(120) {
+                    withMaven(maven: buildMvn, jdk: buildJdk,
+                            mavenSettingsConfig: deploySettings,
+                            mavenLocalRepo: REPO_DIR
+                    )
+                            {
+                                sh "mvn deploy -B -Dmaven.test.skip=true"
+                            }
+                }
+            }
+            post {
+                failure {
+                    notifyBuild("Deploy failure")
+                }
             }
         }
-    } catch (Exception e) {
-        notifyBuild("Deploy Failure")
-        throw e
     }
 
     post {
-        always {
-            if (isUnstable()) {
-                notifyBuild("Unstable Build")
-            }
-            junit testDataPublishers: [[$class: 'StabilityTestDataPublisher']], '**/target/surefire-reports/TEST-*.xml'
-            archiveArtifacts '**/target/*.war,**/target/*-bin.zip'
+        unstable {
+            notifyBuild("Unstable Build")
         }
     }
 }
 
-// Test if the Jenkins Pipeline or Step has marked the
-// current build as unstable
-def isUnstable() {
-    return currentBuild.result == "UNSTABLE"
-}
 
 // Send a notification about the build status
 def notifyBuild(String buildStatus) {
