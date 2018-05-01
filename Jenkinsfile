@@ -5,14 +5,15 @@ deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
 REPO_DIR = "${env.JENKINS_HOME}/.repo-${env.JOB_NAME.replace('/', '_')}"
 
 pipeline {
-    stages {
-        agent {
-            label "${LABEL}"
-        }
+    agent {
+        label "${LABEL}"
+    }
 
-        environment {
-            REPO_DIR = "${env.JENKINS_HOME}/.repo-${env.JOB_NAME.replace('/', '_')}"
-        }
+    environment {
+        REPO_DIR = "${env.JENKINS_HOME}/.repo-${env.JOB_NAME.replace('/', '_')}"
+    }
+
+    stages {
 
 
         stage('Checkout') {
@@ -59,7 +60,7 @@ pipeline {
             }
             post {
                 success {
-                    junit testDataPublishers: [[$class: 'StabilityTestDataPublisher']], '**/target/surefire-reports/TEST-*.xml'
+                    junit testDataPublishers: [[$class: 'StabilityTestDataPublisher']], testResults: '**/target/surefire-reports/TEST-*.xml'
                     archiveArtifacts '**/target/*.war,**/target/*-bin.zip'
                 }
                 failure {
