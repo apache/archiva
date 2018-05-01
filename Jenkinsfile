@@ -14,9 +14,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    currentBuild.description = "This builds, tests and deploys the current artifact from archiva master branch."
-                    REPO_DIR = "${PWD}/.repo-${env.JOB_NAME.replace('/', '_')}"
-                    echo "Info: Job-Name=${JOB_NAME}, Branch=${BRANCH_NAME}, Workspace=${PWD}, Repo-Dir=${REPO_DIR}"
+                    echo "Info: Job-Name=${JOB_NAME}, Branch=${BRANCH_NAME}, Workspace=${PWD}"
                 }
                 checkout scm
             }
@@ -32,7 +30,7 @@ pipeline {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
                             mavenSettingsConfig: deploySettings,
-                            mavenLocalRepo: REPO_DIR
+                            mavenLocalRepo: ".repository"
                     )
                             {
                                 sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
@@ -69,7 +67,7 @@ pipeline {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
                             mavenSettingsConfig: deploySettings,
-                            mavenLocalRepo: REPO_DIR
+                            mavenLocalRepo: ".repository"
                     )
                             {
                                 sh "mvn deploy -B -Dmaven.test.skip=true"
@@ -87,6 +85,9 @@ pipeline {
     post {
         unstable {
             notifyBuild("Unstable Build")
+        }
+        always {
+            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
         }
     }
 }
