@@ -10,12 +10,10 @@ node(labels) {
     echo "Info: Job-Name=${JOB_NAME}, Branch=${BRANCH_NAME}, Workspace=${PWD}, Repo-Dir=${REPO_DIR}"
 
     stage('Checkout') {
-        steps {
-            checkout scm
-            script {
-                currentBuild.displayName = "Archiva master build"
-                currentBuild.description = "This builds, tests and deploys the current artifact from archiva master branch."
-            }
+        checkout scm
+        script {
+            currentBuild.displayName = "Archiva master build"
+            currentBuild.description = "This builds, tests and deploys the current artifact from archiva master branch."
         }
         post {
             failure {
@@ -25,30 +23,28 @@ node(labels) {
     }
 
     stage('Build') {
-        steps {
-            timeout(120) {
-                withMaven(maven: buildMvn, jdk: buildJdk,
-                        mavenSettingsConfig: deploySettings,
-                        mavenLocalRepo: REPO_DIR
-                )
-                        {
-                            sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
-                            sh "./src/ci/scripts/prepareWorkspace.sh"
-                            // Needs a lot of time to reload the repository files, try without cleanup
-                            // Not sure, but maybe
-                            // sh "rm -rf .repository"
+        timeout(120) {
+            withMaven(maven: buildMvn, jdk: buildJdk,
+                    mavenSettingsConfig: deploySettings,
+                    mavenLocalRepo: REPO_DIR
+            )
+                    {
+                        sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
+                        sh "./src/ci/scripts/prepareWorkspace.sh"
+                        // Needs a lot of time to reload the repository files, try without cleanup
+                        // Not sure, but maybe
+                        // sh "rm -rf .repository"
 
-                            // Run test phase / ignore test failures
-                            // -B: Batch mode
-                            // -U: Force snapshot update
-                            // -e: Produce execution error messages
-                            // -fae: Fail at the end
-                            // -Dmaven.compiler.fork=false: Do not compile in a separate forked process
-                            // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
-                            // -Pci-build: Profile for CI-Server
-                            sh "mvn clean install -B -U -e -fae -Dmaven.test.failure.ignore=true -T2 -Dmaven.compiler.fork=false -Pci-build"
-                        }
-            }
+                        // Run test phase / ignore test failures
+                        // -B: Batch mode
+                        // -U: Force snapshot update
+                        // -e: Produce execution error messages
+                        // -fae: Fail at the end
+                        // -Dmaven.compiler.fork=false: Do not compile in a separate forked process
+                        // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
+                        // -Pci-build: Profile for CI-Server
+                        sh "mvn clean install -B -U -e -fae -Dmaven.test.failure.ignore=true -T2 -Dmaven.compiler.fork=false -Pci-build"
+                    }
         }
         post {
             success {
@@ -62,16 +58,14 @@ node(labels) {
     }
 
     stage('Deploy') {
-        steps {
-            timeout(120) {
-                withMaven(maven: buildMvn, jdk: buildJdk,
-                        mavenSettingsConfig: deploySettings,
-                        mavenLocalRepo: REPO_DIR
-                )
-                        {
-                            sh "mvn deploy -B -Dmaven.test.skip=true"
-                        }
-            }
+        timeout(120) {
+            withMaven(maven: buildMvn, jdk: buildJdk,
+                    mavenSettingsConfig: deploySettings,
+                    mavenLocalRepo: REPO_DIR
+            )
+                    {
+                        sh "mvn deploy -B -Dmaven.test.skip=true"
+                    }
         }
         post {
             failure {
