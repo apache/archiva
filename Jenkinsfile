@@ -30,7 +30,8 @@ pipeline {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
                             mavenSettingsConfig: deploySettings,
-                            mavenLocalRepo: ".repository"
+                            mavenLocalRepo: ".repository",
+                            options: [artifactsPublisher(disabled: true), junitPublisher(disabled: true, ignoreAttachments: false)]
                     )
                             {
                                 sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
@@ -67,7 +68,8 @@ pipeline {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
                             mavenSettingsConfig: deploySettings,
-                            mavenLocalRepo: ".repository"
+                            mavenLocalRepo: ".repository",
+                            options: [artifactsPublisher(disabled: true), junitPublisher(disabled: true, ignoreAttachments: false)]
                     )
                             {
                                 sh "mvn deploy -B -Dmaven.test.skip=true"
