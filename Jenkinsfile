@@ -8,10 +8,6 @@ pipeline {
         label "${LABEL}"
     }
 
-    environment {
-        REPO_DIR = "${env.JENKINS_HOME}/.repo-${env.JOB_NAME.replace('/', '_')}"
-    }
-
     stages {
 
 
@@ -19,6 +15,7 @@ pipeline {
             steps {
                 script {
                     currentBuild.description = "This builds, tests and deploys the current artifact from archiva master branch."
+                    REPO_DIR = "${env.JENKINS_HOME}/.repo-${env.JOB_NAME.replace('/', '_')}"
                     echo "Info: Job-Name=${JOB_NAME}, Branch=${BRANCH_NAME}, Workspace=${PWD}, Repo-Dir=${REPO_DIR}"
                 }
                 checkout scm
