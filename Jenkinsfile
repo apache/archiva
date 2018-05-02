@@ -31,7 +31,7 @@ pipeline {
                     withMaven(maven: buildMvn, jdk: buildJdk,
                             mavenSettingsConfig: deploySettings,
                             mavenLocalRepo: ".repository",
-                            options: [artifactsPublisher(disabled: true), junitPublisher(disabled: true, ignoreAttachments: false)]
+                            publisherStrategy='EXPLICIT'
                     )
                             {
                                 sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
@@ -54,10 +54,16 @@ pipeline {
             }
             post {
                 always {
-                    junit testDataPublishers: [[$class: 'StabilityTestDataPublisher']], testResults: '**/target/surefire-reports/TEST-*.xml'
+                    junit testResults: '**/target/surefire-reports/TEST-*.xml'
                 }
                 success {
                     archiveArtifacts '**/target/*.war,**/target/*-bin.zip'
+                    script {
+                        def previousResult = currentBuild.previousBuild?.result
+                        if (previousResult && previousResult != currentBuild.result) {
+                            notifyBuild("Fixed")
+                        }
+                    }
                 }
                 failure {
                     notifyBuild("Build / Test failure")

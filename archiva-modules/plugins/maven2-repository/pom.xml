@@ -293,7 +293,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <systemPropertyVariables>
-            <appserver.base>${project.build.directory}/test-repository</appserver.base>
+            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
           </systemPropertyVariables>
         </configuration>
       </plugin>

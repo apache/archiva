@@ -578,7 +578,7 @@ public class Maven2RepositoryMetadataResolverTest
     public void testGetRootNamespaces()
         throws Exception
     {
-        assertEquals( Arrays.asList( "com", "org", "remotes"), storage.listRootNamespaces( TEST_REPO_ID, ALL ) );
+        assertEquals( Arrays.asList( "com", "org"), storage.listRootNamespaces( TEST_REPO_ID, ALL ) );
     }
 
     @Test

@@ -121,7 +121,7 @@ public class TestConfiguration
                 StringUtils.isNotEmpty(configuration.getArchivaRuntimeConfiguration().getDataDirectory())) {
             return Paths.get(configuration.getArchivaRuntimeConfiguration().getDataDirectory());
         } else {
-            return getAppServerBaseDir().resolve("");
+            return getAppServerBaseDir().resolve("data");
         }
     }
 }
