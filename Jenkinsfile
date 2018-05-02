@@ -31,7 +31,11 @@ pipeline {
                     withMaven(maven: buildMvn, jdk: buildJdk,
                             mavenSettingsConfig: deploySettings,
                             mavenLocalRepo: ".repository",
-                            publisherStrategy:'EXPLICIT'
+                            options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
+                                      findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
+                                      invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
+                                      junitPublisher(disabled: true, ignoreAttachments: false),
+                                      openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
                     )
                             {
                                 sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
