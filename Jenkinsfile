@@ -48,37 +48,19 @@ pipeline {
                                 // -Dmaven.compiler.fork=false: Do not compile in a separate forked process
                                 // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
                                 // -Pci-build: Profile for CI-Server
-                                sh "mvn clean install -B -U -e -fae -Dmaven.test.failure.ignore=true -T2 -Dmaven.compiler.fork=false -Pci-build"
+                                sh "mvn clean deploy -B -U -e -fae -Dmaven.test.failure.ignore=true -T2 -Dmaven.compiler.fork=false -Pci-build"
                             }
                 }
             }
             post {
-                success {
+                always {
                     junit testDataPublishers: [[$class: 'StabilityTestDataPublisher']], testResults: '**/target/surefire-reports/TEST-*.xml'
+                }
+                success {
                     archiveArtifacts '**/target/*.war,**/target/*-bin.zip'
                 }
                 failure {
                     notifyBuild("Build / Test failure")
-                }
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                timeout(120) {
-                    withMaven(maven: buildMvn, jdk: buildJdk,
-                            mavenSettingsConfig: deploySettings,
-                            mavenLocalRepo: ".repository",
-                            options: [artifactsPublisher(disabled: true), junitPublisher(disabled: true, ignoreAttachments: false)]
-                    )
-                            {
-                                sh "mvn deploy -B -Dmaven.test.skip=true"
-                            }
-                }
-            }
-            post {
-                failure {
-                    notifyBuild("Deploy failure")
                 }
             }
         }
