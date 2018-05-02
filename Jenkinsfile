@@ -31,7 +31,7 @@ pipeline {
                     withMaven(maven: buildMvn, jdk: buildJdk,
                             mavenSettingsConfig: deploySettings,
                             mavenLocalRepo: ".repository",
-                            publisherStrategy='EXPLICIT'
+                            publisherStrategy:'EXPLICIT'
                     )
                             {
                                 sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
