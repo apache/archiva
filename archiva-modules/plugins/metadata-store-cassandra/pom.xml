@@ -250,6 +250,7 @@
               <jmxPort>${cassandra.jmxPort}</jmxPort>
               <addMainClasspath>false</addMainClasspath>
               <addTestClasspath>false</addTestClasspath>
+              <startWaitSeconds>500</startWaitSeconds>
             </configuration>
           </execution>
           <execution>
