@@ -1,3 +1,32 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+/**
+ * Main build file for Jenkins Multibranch pipeline.
+ *
+ * The pipeline builds, runs the test and deploys to the archiva snapshot repository.
+ *
+ * Uses one stage for build and deploy to avoid running it multiple times.
+ * The settings for deployment with the credentials must be provided by a MavenSettingsProvider.
+ *
+ * Only the war and zip artifacts are archived in the jenkins build archive.
+ */
 LABEL = 'ubuntu'
 buildJdk = 'JDK 1.8 (latest)'
 buildMvn = 'Maven 3.5.2'
@@ -20,7 +49,7 @@ pipeline {
             }
             post {
                 failure {
-                    notifyBuild("Checkout failure")
+                    notifyBuild("Checkout failure (${currentBuild.currentResult})")
                 }
             }
         }
@@ -64,13 +93,13 @@ pipeline {
                     archiveArtifacts '**/target/*.war,**/target/*-bin.zip'
                     script {
                         def previousResult = currentBuild.previousBuild?.result
-                        if (previousResult && previousResult != currentBuild.result) {
-                            notifyBuild("Fixed")
+                        if (previousResult && !currentBuild.isWorseOrEqual(previousResult)) {
+                            notifyBuild("Fixed: ${currentBuild.currentResult}")
                         }
                     }
                 }
                 failure {
-                    notifyBuild("Build / Test failure")
+                    notifyBuild("Build / Test failure (${currentBuild.currentResult})")
                 }
             }
         }
@@ -78,7 +107,7 @@ pipeline {
     }
     post {
         unstable {
-            notifyBuild("Unstable Build")
+            notifyBuild("Unstable Build (${currentBuild.currentResult})")
         }
         always {
             cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
@@ -92,7 +121,7 @@ def notifyBuild(String buildStatus) {
     buildStatus = buildStatus ?: "UNKNOWN"
 
     def email = "notifications@archiva.apache.org"
-    def summary = "${env.JOB_NAME}#${env.BUILD_NUMBER} - ${buildStatus}"
+    def summary = "${env.JOB_NAME}#${env.BUILD_NUMBER} - ${buildStatus} - ${currentBuild?.currentStatus}"
     def detail = """<h4>Job: <a href='${env.JOB_URL}'>${env.JOB_NAME}</a> [#${env.BUILD_NUMBER}]</h4>
   <p><b>${buildStatus}</b></p>
   <table>
