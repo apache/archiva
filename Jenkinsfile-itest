@@ -28,6 +28,7 @@ LABEL = 'ubuntu'
 buildJdk = 'JDK 1.8 (latest)'
 buildMvn = 'Maven 3.5.2'
 deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
+DOCKERHUB_CREDS = '10a5f89e-504b-11e8-945d-7fd7b29cc41c'
 
 pipeline {
     agent {
@@ -106,35 +107,38 @@ pipeline {
         stage('Test chrome') {
             steps {
                 timeout(120) {
-                    withMaven(maven: buildMvn, jdk: buildJdk,
-                            mavenSettingsConfig: deploySettings,
-                            mavenLocalRepo: ".repository",
-                            options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
-                                      findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
-                                      invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
-                                      junitPublisher(disabled: true, ignoreAttachments: false),
-                                      openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
-                    )
-                            {
-                                sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
-                                sh "./src/ci/scripts/prepareWorkspace.sh"
-                                sh "chmod 755 src/ci/scripts/container_webtest.sh"
-                                sh "src/ci/scripts/container_webtest.sh start"
-                                // Needs a lot of time to reload the repository files, try without cleanup
-                                // Not sure, but maybe
-                                // sh "rm -rf .repository"
+                    withCredentials([[$class          : 'UsernamePasswordMultiBinding', credentialsId: DOCKERHUB_CREDS,
+                                      usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PW']]) {
+                        withMaven(maven: buildMvn, jdk: buildJdk,
+                                mavenSettingsConfig: deploySettings,
+                                mavenLocalRepo: ".repository",
+                                options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
+                                          findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
+                                          invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
+                                          junitPublisher(disabled: true, ignoreAttachments: false),
+                                          openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
+                        )
+                                {
+                                    sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
+                                    sh "./src/ci/scripts/prepareWorkspace.sh"
+                                    sh "chmod 755 src/ci/scripts/container_webtest.sh"
+                                    sh "src/ci/scripts/container_webtest.sh start"
+                                    // Needs a lot of time to reload the repository files, try without cleanup
+                                    // Not sure, but maybe
+                                    // sh "rm -rf .repository"
 
-                                // Run test phase / ignore test failures
-                                // -B: Batch mode
-                                // -U: Force snapshot update
-                                // -e: Produce execution error messages
-                                // -fae: Fail at the end
-                                // -Pci-server: Profile for CI Server
-                                // -Pit-js: Runs the Selenium tests
-                                // -Pchrome: Activates the Selenium Chrome Test Agent
-                                sh "mvn clean install -B -V -U -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -DseleniumRemote=true -Pci-server -Pit-js -Pchrome -pl :archiva-webapp-test -DtrimStackTrace=false"
+                                    // Run test phase / ignore test failures
+                                    // -B: Batch mode
+                                    // -U: Force snapshot update
+                                    // -e: Produce execution error messages
+                                    // -fae: Fail at the end
+                                    // -Pci-server: Profile for CI Server
+                                    // -Pit-js: Runs the Selenium tests
+                                    // -Pchrome: Activates the Selenium Chrome Test Agent
+                                    sh "mvn clean install -B -V -U -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -DseleniumRemote=true -Pci-server -Pit-js -Pchrome -pl :archiva-webapp-test -DtrimStackTrace=false"
 
-                            }
+                                }
+                    }
                 }
             }
             post {
