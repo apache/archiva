@@ -94,7 +94,7 @@ pipeline {
                     archiveArtifacts '**/target/*.war,**/target/*-bin.zip'
                     script {
                         def previousResult = currentBuild.previousBuild?.result
-                        if (previousResult && !currentBuild.isWorseOrEqual(previousResult)) {
+                        if (previousResult && !currentBuild.resultIsWorseOrEqualTo(previousResult)) {
                             notifyBuild("Fixed: ${currentBuild.currentResult}")
                         }
                     }
