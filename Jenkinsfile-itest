@@ -170,7 +170,7 @@ def notifyBuild(String buildStatus) {
     buildStatus = buildStatus ?: "UNKNOWN"
 
     def email = "notifications@archiva.apache.org"
-    def summary = "${env.JOB_NAME}#${env.BUILD_NUMBER} - ${buildStatus} - ${currentBuild?.currentStatus}"
+    def summary = "${env.JOB_NAME}#${env.BUILD_NUMBER} - ${buildStatus} - ${currentBuild?.currentResult}"
     def detail = """<h4>Job: <a href='${env.JOB_URL}'>${env.JOB_NAME}</a> [#${env.BUILD_NUMBER}]</h4>
   <p><b>${buildStatus}</b></p>
   <table>
