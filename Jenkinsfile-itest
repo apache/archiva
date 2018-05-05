@@ -86,15 +86,7 @@ pipeline {
             }
             post {
                 always {
-                    junit testResults: '**/target/surefire-reports/TEST-*.xml'
-                }
-                success {
-                    script {
-                        def previousResult = currentBuild.previousBuild?.result
-                        if (previousResult && !currentBuild.isWorseOrEqual(previousResult)) {
-                            notifyBuild("Fixed: ${currentBuild.currentResult}")
-                        }
-                    }
+                    junit testResults: '**/target/failsafe-reports/TEST-*.xml'
                 }
                 failure {
                     notifyBuild("Build / Test failure (${currentBuild.currentResult})")
@@ -144,15 +136,7 @@ pipeline {
             post {
                 always {
                     sh "src/ci/scripts/container_webtest.sh stop"
-                    junit testResults: '**/target/surefire-reports/TEST-*.xml'
-                }
-                success {
-                    script {
-                        def previousResult = currentBuild.previousBuild?.result
-                        if (previousResult && !currentBuild.isWorseOrEqual(previousResult)) {
-                            notifyBuild("Fixed: ${currentBuild.currentResult}")
-                        }
-                    }
+                    junit testResults: '**/target/failsafe-reports/TEST-*.xml'
                 }
                 failure {
                     notifyBuild("Build / Test failure (${currentBuild.currentResult})")
@@ -168,6 +152,15 @@ pipeline {
         always {
             cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
         }
+        success {
+            script {
+                def previousResult = currentBuild.previousBuild?.result
+                if (previousResult && !currentBuild.isWorseOrEqual(previousResult)) {
+                    notifyBuild("Fixed: ${currentBuild.currentResult}")
+                }
+            }
+        }
+
     }
 }
 

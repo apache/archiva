@@ -31,6 +31,7 @@ LABEL = 'ubuntu'
 buildJdk = 'JDK 1.8 (latest)'
 buildMvn = 'Maven 3.5.2'
 deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
+INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
 
 pipeline {
     agent {
@@ -54,7 +55,7 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('BuildAndDeploy') {
             steps {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
@@ -104,6 +105,12 @@ pipeline {
             }
         }
 
+    }
+
+    stage('IntegrationTest') {
+        steps {
+            build(job:"${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate:false, quietPeriod:10)
+        }
     }
     post {
         unstable {
