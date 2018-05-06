@@ -18,20 +18,17 @@
  */
 
 /**
- * Main build file for Jenkins Multibranch pipeline.
+ * UI-Test Build file for Jenkins Multibranch pipeline.
  *
- * The pipeline builds, runs the test and deploys to the archiva snapshot repository.
+ * The pipeline runs only the UI tests.
  *
- * Uses one stage for build and deploy to avoid running it multiple times.
- * The settings for deployment with the credentials must be provided by a MavenSettingsProvider.
- *
- * Only the war and zip artifacts are archived in the jenkins build archive.
  */
+
 LABEL = 'ubuntu'
 buildJdk = 'JDK 1.8 (latest)'
 buildMvn = 'Maven 3.5.2'
 deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
-INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
+DOCKERHUB_CREDS = '10a5f89e-504b-11e8-945d-7fd7b29cc41c'
 
 pipeline {
     agent {
@@ -55,7 +52,7 @@ pipeline {
             }
         }
 
-        stage('BuildAndDeploy') {
+        stage('Test htmlunit') {
             steps {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
@@ -79,38 +76,75 @@ pipeline {
                                 // -U: Force snapshot update
                                 // -e: Produce execution error messages
                                 // -fae: Fail at the end
-                                // -Dmaven.compiler.fork=false: Do not compile in a separate forked process
-                                // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
-                                // -Pci-build: Profile for CI-Server
-                                sh "mvn clean deploy -B -U -e -fae -Dmaven.test.failure.ignore=true -T2 -Dmaven.compiler.fork=false -Pci-build"
+                                // -Dmaven.compiler.fork=true: Compile in a separate forked process
+                                // -Pci-server: Profile for CI-Server
+                                // -Pit-js: Run the selenium testsh
+                                sh "mvn clean install -B -V -U -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -Pci-server -Pit-js -DtrimStackTrace=false -pl :archiva-webapp-test"
+
                             }
                 }
             }
             post {
                 always {
-                    junit testResults: '**/target/surefire-reports/TEST-*.xml'
-                }
-                success {
-                    archiveArtifacts '**/target/*.war,**/target/*-bin.zip'
-                    script {
-                        def previousResult = currentBuild.previousBuild?.result
-                        if (previousResult && !currentBuild.resultIsWorseOrEqualTo(previousResult)) {
-                            notifyBuild("Fixed: ${currentBuild.currentResult}")
-                        }
-                    }
+                    junit testResults: '**/target/failsafe-reports/TEST-*.xml'
                 }
                 failure {
                     notifyBuild("Build / Test failure (${currentBuild.currentResult})")
                 }
             }
         }
-        stage('IntegrationTest') {
+
+        // Uses a docker container that is started by script. Maybe we could use the docker functionality
+        // of the jenkins pipeline in the future.
+        stage('Test chrome') {
             steps {
-                build(job: "${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate: false, quietPeriod: 10)
+                timeout(120) {
+                    withCredentials([[$class          : 'UsernamePasswordMultiBinding', credentialsId: DOCKERHUB_CREDS,
+                                      usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PW']]) {
+                        withMaven(maven: buildMvn, jdk: buildJdk,
+                                mavenSettingsConfig: deploySettings,
+                                mavenLocalRepo: ".repository",
+                                options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
+                                          findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
+                                          invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
+                                          junitPublisher(disabled: true, ignoreAttachments: false),
+                                          openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
+                        )
+                                {
+                                    sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
+                                    sh "./src/ci/scripts/prepareWorkspace.sh"
+                                    sh "chmod 755 src/ci/scripts/container_webtest.sh"
+                                    sh "src/ci/scripts/container_webtest.sh start"
+                                    // Needs a lot of time to reload the repository files, try without cleanup
+                                    // Not sure, but maybe
+                                    // sh "rm -rf .repository"
+
+                                    // Run test phase / ignore test failures
+                                    // -B: Batch mode
+                                    // -U: Force snapshot update
+                                    // -e: Produce execution error messages
+                                    // -fae: Fail at the end
+                                    // -Pci-server: Profile for CI Server
+                                    // -Pit-js: Runs the Selenium tests
+                                    // -Pchrome: Activates the Selenium Chrome Test Agent
+                                    sh "mvn clean install -B -V -U -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -DseleniumRemote=true -Pci-server -Pit-js -Pchrome -pl :archiva-webapp-test -DtrimStackTrace=false"
+
+                                }
+                    }
+                }
+            }
+            post {
+                always {
+                    sh "src/ci/scripts/container_webtest.sh stop"
+                    junit testResults: '**/target/failsafe-reports/TEST-*.xml'
+                }
+                failure {
+                    notifyBuild("Build / Test failure (${currentBuild.currentResult})")
+                }
             }
         }
-    }
 
+    }
     post {
         unstable {
             notifyBuild("Unstable Build (${currentBuild.currentResult})")
@@ -118,6 +152,15 @@ pipeline {
         always {
             cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
         }
+        success {
+            script {
+                def previousResult = currentBuild.previousBuild?.result
+                if (previousResult && !currentBuild.resultIsWorseOrEqualTo(previousResult)) {
+                    notifyBuild("Fixed: ${currentBuild.currentResult}")
+                }
+            }
+        }
+
     }
 }
 
