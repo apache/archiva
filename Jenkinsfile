@@ -103,11 +103,6 @@ pipeline {
                 }
             }
         }
-        stage('IntegrationTest') {
-            steps {
-                build(job: "${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate: false, quietPeriod: 10)
-            }
-        }
     }
 
     post {
