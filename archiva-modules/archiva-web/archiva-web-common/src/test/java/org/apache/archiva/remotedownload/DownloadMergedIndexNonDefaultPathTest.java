@@ -184,6 +184,7 @@ public class DownloadMergedIndexNonDefaultPathTest
             timeout -= 500;
         }*/
         // wait the end
+        Thread.sleep( 500 );
         while ( !repositoriesService.getRunningRemoteDownloadIds().getStrings().isEmpty() )
         {
             Thread.sleep( 500 );
