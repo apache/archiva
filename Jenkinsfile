@@ -28,7 +28,7 @@
  * Only the war and zip artifacts are archived in the jenkins build archive.
  */
 LABEL = 'ubuntu'
-buildJdk = 'JDK 1.8 (latest)'
+buildJdk = 'JDK 1.7 (latest)'
 buildMvn = 'Maven 3.5.2'
 deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
 INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
@@ -50,7 +50,7 @@ pipeline {
             }
             post {
                 failure {
-                    notifyBuild("Checkout failure (${currentBuild.currentResult})")
+                    notifyBuild("Checkout failure")
                 }
             }
         }
@@ -68,8 +68,6 @@ pipeline {
                                       openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
                     )
                             {
-                                sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
-                                sh "./src/ci/scripts/prepareWorkspace.sh"
                                 // Needs a lot of time to reload the repository files, try without cleanup
                                 // Not sure, but maybe
                                 // sh "rm -rf .repository"
@@ -82,7 +80,7 @@ pipeline {
                                 // -Dmaven.compiler.fork=false: Do not compile in a separate forked process
                                 // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
                                 // -Pci-build: Profile for CI-Server
-                                sh "mvn clean deploy -B -U -e -fae -Dmaven.test.failure.ignore=true -T2 -Dmaven.compiler.fork=false -Pci-build"
+                                sh "mvn clean deploy -B -U -e -fae -T2 -Dmaven.compiler.fork=true -Pci-build"
                             }
                 }
             }
@@ -95,12 +93,12 @@ pipeline {
                     script {
                         def previousResult = currentBuild.previousBuild?.result
                         if (previousResult && !currentBuild.resultIsWorseOrEqualTo(previousResult)) {
-                            notifyBuild("Fixed: ${currentBuild.currentResult}")
+                            notifyBuild("Fixed")
                         }
                     }
                 }
                 failure {
-                    notifyBuild("Build / Test failure (${currentBuild.currentResult})")
+                    notifyBuild("Failed in BuildAndDeploy stage")
                 }
             }
         }
@@ -113,7 +111,7 @@ pipeline {
 
     post {
         unstable {
-            notifyBuild("Unstable Build (${currentBuild.currentResult})")
+            notifyBuild("Unstable Build")
         }
         always {
             cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
