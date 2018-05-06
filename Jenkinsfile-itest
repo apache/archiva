@@ -47,7 +47,7 @@ pipeline {
             }
             post {
                 failure {
-                    notifyBuild("Checkout failure (${currentBuild.currentResult})")
+                    notifyBuild("Checkout failure")
                 }
             }
         }
@@ -89,7 +89,7 @@ pipeline {
                     junit testResults: '**/target/failsafe-reports/TEST-*.xml'
                 }
                 failure {
-                    notifyBuild("Build / Test failure (${currentBuild.currentResult})")
+                    notifyBuild("Failure in Htmlunit test stage")
                 }
             }
         }
@@ -139,7 +139,7 @@ pipeline {
                     junit testResults: '**/target/failsafe-reports/TEST-*.xml'
                 }
                 failure {
-                    notifyBuild("Build / Test failure (${currentBuild.currentResult})")
+                    notifyBuild("Failure in Chrome test stage")
                 }
             }
         }
@@ -147,7 +147,7 @@ pipeline {
     }
     post {
         unstable {
-            notifyBuild("Unstable Build (${currentBuild.currentResult})")
+            notifyBuild("Unstable Build")
         }
         always {
             cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
@@ -156,7 +156,7 @@ pipeline {
             script {
                 def previousResult = currentBuild.previousBuild?.result
                 if (previousResult && !currentBuild.resultIsWorseOrEqualTo(previousResult)) {
-                    notifyBuild("Fixed: ${currentBuild.currentResult}")
+                    notifyBuild("Fixed")
                 }
             }
         }
@@ -188,4 +188,4 @@ def notifyBuild(String buildStatus) {
     )
 }
 
-// vim: et:ts=2:sw=2:ft=groovy
+// vim: et:ts=4:sw=4:ft=groovy

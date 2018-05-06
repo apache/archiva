@@ -79,10 +79,10 @@ pipeline {
                                 // -U: Force snapshot update
                                 // -e: Produce execution error messages
                                 // -fae: Fail at the end
-                                // -Dmaven.compiler.fork=false: Do not compile in a separate forked process
+                                // -Dmaven.compiler.fork=true: Do compile in a separate forked process
                                 // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
                                 // -Pci-build: Profile for CI-Server
-                                sh "mvn clean deploy -B -U -e -fae -Dmaven.test.failure.ignore=true -T2 -Dmaven.compiler.fork=false -Pci-build"
+                                sh "mvn clean deploy -B -U -e -fae -T2 -Dmaven.compiler.fork=true -Pci-build"
                             }
                 }
             }
@@ -92,31 +92,33 @@ pipeline {
                 }
                 success {
                     archiveArtifacts '**/target/*.war,**/target/*-bin.zip'
-                    script {
-                        def previousResult = currentBuild.previousBuild?.result
-                        if (previousResult && !currentBuild.resultIsWorseOrEqualTo(previousResult)) {
-                            notifyBuild("Fixed: ${currentBuild.currentResult}")
-                        }
-                    }
                 }
                 failure {
-                    notifyBuild("Build / Test failure (${currentBuild.currentResult})")
+                    notifyBuild("Failure in BuildAndDeploy stage")
                 }
             }
         }
         stage('IntegrationTest') {
             steps {
-                build(job:"${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate:false, quietPeriod:10)
+                build(job: "${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate: false, quietPeriod: 10)
             }
         }
     }
 
     post {
         unstable {
-            notifyBuild("Unstable Build (${currentBuild.currentResult})")
+            notifyBuild("Unstable Build")
         }
         always {
             cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
+        }
+        success {
+            script {
+                def previousResult = currentBuild.previousBuild?.result
+                if (previousResult && !currentBuild.resultIsWorseOrEqualTo(previousResult)) {
+                    notifyBuild("Fixed")
+                }
+            }
         }
     }
 }
@@ -145,4 +147,4 @@ def notifyBuild(String buildStatus) {
     )
 }
 
-// vim: et:ts=2:sw=2:ft=groovy
+// vim: et:ts=4:sw=4:ft=groovy
