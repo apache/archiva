@@ -90,53 +90,55 @@ pipeline {
                 build(job: "${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate: false, quietPeriod: 10)
             }
         }
-    }
 
-    stage('JDKs') {
-        parallel {
-            stage('JDK9') {
-                steps {
-                    ws("${env.JOB_NAME}-JDK9") {
-                        checkout scm
-                        timeout(120) {
-                            withMaven(maven: buildMvn, jdk: buildJdk9,
-                                    mavenSettingsConfig: deploySettings,
-                                    mavenLocalRepo: ".repository",
-                                    options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
-                                              findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
-                                              invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
-                                              junitPublisher(disabled: true, ignoreAttachments: false),
-                                              openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
-                            )
-                                    {
-                                        sh "mvn clean install -B -U -e -fae -T2"
-                                    }
+
+        stage('JDKs') {
+            parallel {
+                stage('JDK9') {
+                    steps {
+                        ws("${env.JOB_NAME}-JDK9") {
+                            checkout scm
+                            timeout(120) {
+                                withMaven(maven: buildMvn, jdk: buildJdk9,
+                                        mavenSettingsConfig: deploySettings,
+                                        mavenLocalRepo: ".repository",
+                                        options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
+                                                  findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
+                                                  invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
+                                                  junitPublisher(disabled: true, ignoreAttachments: false),
+                                                  openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
+                                )
+                                        {
+                                            sh "mvn clean install -B -U -e -fae -T2"
+                                        }
+                            }
                         }
                     }
                 }
-            }
-            stage('JDK10') {
-                steps {
-                    ws("${env.JOB_NAME}-JDK10") {
-                        checkout scm
-                        timeout(120) {
-                            withMaven(maven: buildMvn, jdk: buildJdk10,
-                                    mavenSettingsConfig: deploySettings,
-                                    mavenLocalRepo: ".repository",
-                                    options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
-                                              findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
-                                              invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
-                                              junitPublisher(disabled: true, ignoreAttachments: false),
-                                              openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
-                            )
-                                    {
-                                        sh "mvn clean install -B -U -e -fae -T2"
-                                    }
+                stage('JDK10') {
+                    steps {
+                        ws("${env.JOB_NAME}-JDK10") {
+                            checkout scm
+                            timeout(120) {
+                                withMaven(maven: buildMvn, jdk: buildJdk10,
+                                        mavenSettingsConfig: deploySettings,
+                                        mavenLocalRepo: ".repository",
+                                        options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
+                                                  findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
+                                                  invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
+                                                  junitPublisher(disabled: true, ignoreAttachments: false),
+                                                  openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
+                                )
+                                        {
+                                            sh "mvn clean install -B -U -e -fae -T2"
+                                        }
+                            }
                         }
                     }
                 }
             }
         }
+
     }
 
     post {
