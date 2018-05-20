@@ -673,6 +673,7 @@
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-integrations-security</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
@@ -682,6 +683,7 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-ext</artifactId>
     </dependency>
+    -->
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>

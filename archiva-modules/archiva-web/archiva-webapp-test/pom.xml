@@ -75,7 +75,6 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>22.0</version>
-      <scope>test</scope>
     </dependency>
 
     <!-- Selenium dependencies -->
@@ -576,6 +575,11 @@
                 <artifactId>mail</artifactId>
                 <version>${javaxMailVersion}</version>
               </dependency>
+              <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>22.0</version>
+              </dependency>
 
             </dependencies>
             <executions>
@@ -616,6 +620,14 @@
                     <systemProperty>
                       <name>org.apache.jackrabbit.core.state.validatehierarchy</name>
                       <value>true</value>
+                    </systemProperty>
+                    <systemProperty>
+                      <name>org.apache.logging.log4j.simplelog.StatusLogger.level</name>
+                      <value>TRACE</value>
+                    </systemProperty>
+                    <systemProperty>
+                      <name>log4j.configurationFile</name>
+                      <value>${project.build.directory}/test-classes/log4j2-test.xml</value>
                     </systemProperty>
                   </systemProperties>
                 </configuration>
