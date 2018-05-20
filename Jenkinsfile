@@ -109,7 +109,7 @@ pipeline {
                                                   openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
                                 )
                                         {
-                                            sh "mvn clean install -B -U -e -fae -T2"
+                                            sh "mvn clean install -B -U -e -fae -T2 -Dmaven.compiler.fork=true -Pci-build"
                                         }
                             }
                         }
@@ -130,7 +130,7 @@ pipeline {
                                                   openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
                                 )
                                         {
-                                            sh "mvn clean install -B -U -e -fae -T2"
+                                            sh "mvn clean install -B -U -e -fae -T2 -Dmaven.compiler.fork=true -Pci-build"
                                         }
                             }
                         }
