@@ -80,7 +80,7 @@ pipeline {
                                 // -Pci-server: Profile for CI-Server
                                 // -Pit-js: Run the selenium test
                                 sh "mvn clean install -B -U -Dmaven.test.skip=true -T2"
-                                sh "mvn clean install -B -V -U -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -Pci-server -Pit-js -DtrimStackTrace=false -pl :archiva-webapp-test"
+                                sh "mvn clean install -B -V -U -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -Pci-server -Pit-js -DtrimStackTrace=false -Djava.io.tmpdir=.tmp -pl :archiva-webapp-test"
 
                             }
                 }

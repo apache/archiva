@@ -24,6 +24,7 @@
 ##
 ATTIC_DIRS="archiva-modules/archiva-base/archiva-indexer"
 REMOVE_DIRS=".indexer"
+TMP_DIRECTORY=".tmp"
 
 while [ ! -z "$1" ]; do
   case "$1" in
@@ -38,8 +39,15 @@ while [ ! -z "$1" ]; do
   esac
 done
 
+if [ -e "${TMP_DIRECTORY}" ]; then
+  rm -rf "${TMP_DIRECTORY}"
+fi
+mkdir -p "${TMP_DIRECTORY}"
+
 if [ -d "${REPO_DIR}" ]; then
   rm -rf "${REPO_DIR}"
+else
+  echo "WARNING: Directory not found ${REPO_DIR}"
 fi
 
 for i in ${ATTIC_DIRS}; do
