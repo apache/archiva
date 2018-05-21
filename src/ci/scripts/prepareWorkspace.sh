@@ -25,6 +25,23 @@
 ATTIC_DIRS="archiva-modules/archiva-base/archiva-indexer"
 REMOVE_DIRS=".indexer"
 
+while [ ! -z "$1" ]; do
+  case "$1" in
+    -d)
+      shift
+      REPO_DIR=$1
+      shift
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
+if [ -d "${REPO_DIR}" ]; then
+  rm -rf "${REPO_DIR}"
+fi
+
 for i in ${ATTIC_DIRS}; do
  if [ "X${i}" != "X" -a -d ${i} ]; then
    echo "Deleting directory ${i}"
