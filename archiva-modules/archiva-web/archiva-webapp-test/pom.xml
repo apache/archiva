@@ -50,7 +50,7 @@
       <artifactId>archiva-webapp</artifactId>
       <type>war</type>
     </dependency>
-    <dependency>
+<!--    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
     </dependency>
@@ -63,7 +63,7 @@
           <groupId>org.codehaus.plexus</groupId>
         </exclusion>
       </exclusions>
-    </dependency>
+    </dependency>-->
 
     <!--
       jcr-oak currently needs guava 15.0 and selenium webdriver needs 22.0
