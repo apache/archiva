@@ -35,7 +35,7 @@
     <logger name="com.gargoylesoftware.htmlunit.javascript.StrictErrorReporter" level="off" />
 
 
-    <root level="info">
+    <root level="debug">
       <appender-ref ref="console"/>
     </root>
   </loggers>
