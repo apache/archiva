@@ -46,7 +46,7 @@ pipeline {
             steps {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
-                            mavenSettingsConfig: deploySettings,
+                            
                             mavenLocalRepo: ".repository",
                             options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
                                       findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
