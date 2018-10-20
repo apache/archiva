@@ -153,6 +153,9 @@ pipeline {
                 }
             }
         }
+        always {
+            cleanWs()
+        }
     }
 }
 
