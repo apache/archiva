@@ -32,7 +32,7 @@ buildJdk = 'JDK 1.8 (latest)'
 buildJdk9 = 'JDK 1.9 (latest)'
 buildJdk10 = 'JDK 10 (latest)'
 buildMvn = 'Maven 3.5.2'
-deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
+deploySettings = 'archiva-uid-jenkins'
 INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
 
 pipeline {
@@ -46,7 +46,7 @@ pipeline {
             steps {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
-                            
+                            mavenSettingsConfig: deploySettings,
                             mavenLocalRepo: ".repository",
                             options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
                                       findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
