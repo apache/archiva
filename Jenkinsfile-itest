@@ -27,7 +27,7 @@
 LABEL = 'ubuntu'
 buildJdk = 'JDK 1.8 (latest)'
 buildMvn = 'Maven 3.5.2'
-deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
+deploySettings = 'archiva-uid-jenkins'
 DOCKERHUB_CREDS = '10a5f89e-504b-11e8-945d-7fd7b29cc41c'
 
 pipeline {
