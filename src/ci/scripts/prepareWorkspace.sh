@@ -22,7 +22,7 @@
 #
 #  Removes directories that are not used anymore.
 ##
-ATTIC_DIRS="archiva-modules/archiva-base/archiva-indexer"
+ATTIC_DIRS=""
 REMOVE_DIRS=".indexer"
 TMP_DIRECTORY=".tmp"
 
@@ -44,10 +44,12 @@ if [ -e "${TMP_DIRECTORY}" ]; then
 fi
 mkdir -p "${TMP_DIRECTORY}"
 
-if [ -d "${REPO_DIR}" ]; then
-  rm -rf "${REPO_DIR}"
-else
-  echo "WARNING: Directory not found ${REPO_DIR}"
+if [ ! -z "${REPO_DIR}" ]; then
+  if [ -d "${REPO_DIR}" ]; then
+    rm -rf "${REPO_DIR}"
+  else
+    echo "WARNING: Directory not found ${REPO_DIR}"
+  fi
 fi
 
 for i in ${ATTIC_DIRS}; do
