@@ -30,7 +30,7 @@
 LABEL = 'ubuntu'
 buildJdk = 'JDK 1.7 (latest)'
 buildMvn = 'Maven 3.5.2'
-deploySettings = 'DefaultMavenSettingsProvider.1331204114925'
+deploySettings = 'archiva-uid-jenkins'
 INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
 
 pipeline {
@@ -39,21 +39,6 @@ pipeline {
     }
 
     stages {
-
-
-        stage('Checkout') {
-            steps {
-                script {
-                    echo "Info: Job-Name=${JOB_NAME}, Branch=${BRANCH_NAME}, Workspace=${PWD}"
-                }
-                checkout scm
-            }
-            post {
-                failure {
-                    notifyBuild("Checkout failure")
-                }
-            }
-        }
 
         stage('BuildAndDeploy') {
             steps {
