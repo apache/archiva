@@ -57,6 +57,8 @@ pipeline {
                                 // Needs a lot of time to reload the repository files, try without cleanup
                                 // Not sure, but maybe
                                 // sh "rm -rf .repository"
+                                sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
+                                sh "./src/ci/scripts/prepareWorkspace.sh"
 
                                 // Run test phase / ignore test failures
                                 // -B: Batch mode
