@@ -28,7 +28,7 @@
  * Only the war and zip artifacts are archived in the jenkins build archive.
  */
 LABEL = 'ubuntu'
-buildJdk = 'JDK 1.7 (latest)'
+buildJdk = 'JDK 1.8 (latest)'
 buildMvn = 'Maven 3.5.2'
 deploySettings = 'archiva-uid-jenkins'
 INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
