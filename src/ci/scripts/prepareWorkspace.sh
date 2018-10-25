@@ -44,10 +44,12 @@ if [ -e "${TMP_DIRECTORY}" ]; then
 fi
 mkdir -p "${TMP_DIRECTORY}"
 
-if [ -d "${REPO_DIR}" ]; then
-  rm -rf "${REPO_DIR}"
-else
-  echo "WARNING: Directory not found ${REPO_DIR}"
+if [ ! -z "${REPO_DIR}" ]; then
+  if [ -d "${REPO_DIR}" ]; then
+    rm -rf "${REPO_DIR}"
+  else
+    echo "WARNING: Directory not found ${REPO_DIR}"
+  fi
 fi
 
 for i in ${ATTIC_DIRS}; do
