@@ -22,6 +22,7 @@ package org.apache.archiva.configuration;
 import org.apache.archiva.redback.components.registry.RegistryException;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -326,10 +327,20 @@ public class ArchivaConfigurationTest
     {
         DefaultArchivaConfiguration archivaConfiguration =
             (DefaultArchivaConfiguration) lookup( ArchivaConfiguration.class, "default" );
+        String expectedFile = System.getProperty( "user.home" ) + "/.m2/archiva.xml";
+        String systemFile = System.getProperty(ArchivaConfiguration.USER_CONFIG_PROPERTY);
+        if (StringUtils.isNotEmpty( systemFile )) {
+            expectedFile = systemFile;
+        } else
+        {
+            String envFile = System.getenv( ArchivaConfiguration.USER_CONFIG_ENVVAR );
+            if ( StringUtils.isNotEmpty( envFile ) )
+                expectedFile = envFile;
+        }
 
         archivaConfiguration.reload();
 
-        assertEquals( System.getProperty( "user.home" ) + "/.m2/archiva.xml",
+        assertEquals( expectedFile,
                       archivaConfiguration.getUserConfigFilename() );
         assertEquals( System.getProperty( "appserver.base", "${appserver.base}" ) + "/conf/archiva.xml",
                       archivaConfiguration.getAltConfigFilename() );
@@ -496,6 +507,8 @@ public class ArchivaConfigurationTest
     public void testLoadConfigurationFromInvalidBothLocationsOnDisk()
         throws Exception
     {
+        String propFile = System.getProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY );
+        System.setProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY, "${basedir}/target/*intentionally:invalid*/.m2/archiva-user.xml" );
         ArchivaConfiguration archivaConfiguration =
             lookup( ArchivaConfiguration.class, "test-not-allowed-to-write-to-both" );
         Configuration config = archivaConfiguration.getConfiguration();
@@ -508,6 +521,10 @@ public class ArchivaConfigurationTest
         catch ( RegistryException e )
         {
             /* expected exception */
+        }
+        if (propFile!=null)
+        {
+            System.setProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY, propFile );
         }
     }
 

@@ -33,6 +33,7 @@ buildJdk9 = 'JDK 1.9 (latest)'
 buildJdk10 = 'JDK 10 (latest)'
 buildMvn = 'Maven 3.5.2'
 deploySettings = 'archiva-uid-jenkins'
+
 INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
 
 pipeline {
@@ -40,9 +41,14 @@ pipeline {
         label "${LABEL}"
     }
 
+
+
     stages {
 
         stage('BuildAndDeploy') {
+            environment {
+                ARCHIVA_USER_CONFIG_FILE='/tmp/archiva-master-jdk-8-${env.JOB_NAME}.xml'
+            }
             steps {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
@@ -75,6 +81,7 @@ pipeline {
             }
             post {
                 always {
+                    sh "rm -f /tmp/archiva-master-jdk-8-${env.JOB_NAME}.xml"
                     junit testResults: '**/target/surefire-reports/TEST-*.xml'
                 }
                 success {
@@ -95,6 +102,9 @@ pipeline {
         stage('JDKs') {
             parallel {
                 stage('JDK9') {
+                    environment {
+                        ARCHIVA_USER_CONFIG_FILE='/tmp/archiva-master-jdk-9-${env.JOB_NAME}.xml'
+                    }
                     steps {
                         ws("${env.JOB_NAME}-JDK9") {
                             checkout scm
@@ -114,8 +124,16 @@ pipeline {
                             }
                         }
                     }
+                    post {
+                        always {
+                            sh "rm -f /tmp/archiva-master-jdk-9-${env.JOB_NAME}.xml"
+                        }
+                    }
                 }
                 stage('JDK10') {
+                    environment {
+                        ARCHIVA_USER_CONFIG_FILE='/tmp/archiva-master-jdk-10-${env.JOB_NAME}.xml'
+                    }
                     steps {
                         ws("${env.JOB_NAME}-JDK10") {
                             checkout scm
@@ -133,6 +151,11 @@ pipeline {
                                             sh "mvn clean install -B -U -e -fae -T2 -Dmaven.compiler.fork=true -Pci-build"
                                         }
                             }
+                        }
+                    }
+                    post {
+                        always {
+                            sh "rm -f /tmp/archiva-master-jdk-10-${env.JOB_NAME}.xml"
                         }
                     }
                 }

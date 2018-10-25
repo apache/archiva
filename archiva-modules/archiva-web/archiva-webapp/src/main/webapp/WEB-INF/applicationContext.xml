@@ -77,16 +77,6 @@
         <configuration>
           <system/>
           <jndi prefix="java:comp/env" config-optional="true"/>
-          <xml fileName="${user.home}/.m2/archiva.xml" config-optional="true"
-               config-name="org.apache.archiva.user"
-               config-at="org.apache.archiva"/>
-          <xml fileName="${user.home}/.m2/shared.xml" config-optional="true"
-               config-name="org.apache.maven.shared.app.user" config-at="org.apache.maven.shared.app"
-               config-forceCreate="true"/>
-          <properties fileName="${user.home}/.m2/security.properties" config-optional="true"
-                      config-at="org.apache.archiva.redback"/>
-          <properties fileName="${user.home}/.m2/archiva.properties" config-optional="true"
-                      config-at="org.apache.archiva.redback"/>
           <xml fileName="${appserver.base}/conf/archiva.xml" config-optional="true"
                config-name="org.apache.archiva.base"
                config-at="org.apache.archiva"/>
