@@ -58,7 +58,7 @@ pipeline {
                                 // Not sure, but maybe
                                 // sh "rm -rf .repository"
                                 sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
-                                sh "./src/ci/scripts/prepareWorkspace.sh"
+                                sh "./src/ci/scripts/prepareWorkspace.sh -d .repository"
 
                                 // Run test phase / ignore test failures
                                 // -B: Batch mode
@@ -96,9 +96,9 @@ pipeline {
         unstable {
             notifyBuild("Unstable Build")
         }
-        always {
-            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
-        }
+//        always {
+//            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
+//        }
     }
 }
 
