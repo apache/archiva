@@ -31,6 +31,11 @@ import java.util.Locale;
  */
 public interface ArchivaConfiguration
 {
+
+
+    String USER_CONFIG_PROPERTY = "archiva.user.configFileName";
+    String USER_CONFIG_ENVVAR = "ARCHIVA_USER_CONFIG_FILE";
+
     /**
      * Get the configuration.
      *

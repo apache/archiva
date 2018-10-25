@@ -21,6 +21,7 @@ package org.apache.archiva.web.rss;
 
 
 import junit.framework.TestCase;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.codec.Encoder;
 import org.apache.commons.codec.binary.Base64;
@@ -74,8 +75,8 @@ public class RssFeedServletTest
     public static void initConfigurationPath()
         throws Exception
     {
-        PREVIOUS_ARCHIVA_PATH = System.getProperty( "archiva.user.configFileName" );
-        System.setProperty( "archiva.user.configFileName",
+        PREVIOUS_ARCHIVA_PATH = System.getProperty(ArchivaConfiguration.USER_CONFIG_PROPERTY);
+        System.setProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY,
                             System.getProperty( "test.resources.path/" ) + "empty-archiva.xml" );
     }
 
@@ -84,7 +85,7 @@ public class RssFeedServletTest
     public static void restoreConfigurationPath()
         throws Exception
     {
-        System.setProperty( "archiva.user.configFileName", PREVIOUS_ARCHIVA_PATH );
+        System.setProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY, PREVIOUS_ARCHIVA_PATH );
     }
 
     @Before
