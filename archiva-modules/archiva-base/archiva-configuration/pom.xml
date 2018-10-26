@@ -60,6 +60,10 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva.redback.components</groupId>
+      <artifactId>expression-evaluator</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-configuration</groupId>
       <artifactId>commons-configuration</artifactId>
       <exclusions>
@@ -106,6 +110,7 @@
       <groupId>org.apache.archiva.redback.components</groupId>
       <artifactId>spring-utils</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.apache.archiva.redback.components</groupId>
       <artifactId>expression-evaluator</artifactId>
@@ -116,6 +121,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>

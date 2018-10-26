@@ -54,7 +54,7 @@
     <commons-io.version>2.5</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
 
-    <maven3x.version>3.0.5</maven3x.version>
+    <maven3x.version>3.5.4</maven3x.version>
     <maven.version>2.0.8</maven.version>
     <aether.version>1.13.1</aether.version>
 
@@ -92,10 +92,10 @@
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
-    <sisu-inject-plexus.version>0.0.0.M2a</sisu-inject-plexus.version>
+    <sisu-inject-plexus.version>0.3.3</sisu-inject-plexus.version>
     <plexus-digest.version>1.1</plexus-digest.version>
     <plexus-expression-evaluator.version>2.1</plexus-expression-evaluator.version>
-    <plexus-utils.version>3.0.15</plexus-utils.version>
+    <plexus-utils.version>3.1.0</plexus-utils.version>
     <htmlUnitVersion>2.27</htmlUnitVersion>
 
     <release.preparationGoals>clean install</release.preparationGoals>
@@ -884,11 +884,13 @@
         <artifactId>maven-repository-metadata</artifactId>
         <version>${maven3x.version}</version>
       </dependency>
+      <!--
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-digest</artifactId>
         <version>${plexus-digest.version}</version>
       </dependency>
+      -->
       <dependency>
         <groupId>org.apache.archiva.redback.components</groupId>
         <artifactId>expression-evaluator</artifactId>
@@ -900,6 +902,7 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <!--
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-i18n</artifactId>
@@ -926,6 +929,7 @@
           </exclusion>
         </exclusions>
       </dependency>
+      -->
       <dependency>
         <groupId>org.apache.archiva.redback.components</groupId>
         <artifactId>spring-taskqueue</artifactId>

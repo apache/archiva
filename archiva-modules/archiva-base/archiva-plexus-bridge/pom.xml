@@ -60,6 +60,7 @@
       <artifactId>indexer-core</artifactId>
       <classifier>shaded-lucene</classifier>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-digest</artifactId>
@@ -70,6 +71,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
   </dependencies>
 
   <build>

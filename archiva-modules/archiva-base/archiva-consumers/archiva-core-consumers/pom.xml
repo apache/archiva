@@ -76,6 +76,7 @@
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-plexus-bridge</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-digest</artifactId>
@@ -86,6 +87,7 @@
         </exclusion>
       </exclusions>
     </dependency>
+    -->
 
     <!-- test dependencies -->
     <dependency>

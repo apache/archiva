@@ -450,6 +450,7 @@
                 <seleniumRemote>${seleniumRemote}</seleniumRemote>
                 <container.propertiesPortFilePath>${container.propertiesPortFilePath}</container.propertiesPortFilePath>
                 <container.http.port>${container.http.port}</container.http.port>
+                <org.sonatype.inject.debug>true</org.sonatype.inject.debug>
               </systemPropertyVariables>
             </configuration>
 
@@ -628,6 +629,10 @@
                     <systemProperty>
                       <name>log4j.configurationFile</name>
                       <value>${project.build.directory}/test-classes/log4j2-test.xml</value>
+                    </systemProperty>
+                    <systemProperty>
+                      <name>org.sonatype.inject.debug</name>
+                      <value>true</value>
                     </systemProperty>
                   </systemProperties>
                 </configuration>
