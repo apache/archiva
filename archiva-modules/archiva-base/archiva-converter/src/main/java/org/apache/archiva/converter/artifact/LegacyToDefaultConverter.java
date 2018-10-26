@@ -22,7 +22,6 @@ package org.apache.archiva.converter.artifact;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksumValidationException;
 import org.apache.archiva.checksum.ChecksummedFile;
-import org.apache.archiva.common.plexusbridge.DigesterUtils;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.transaction.FileTransaction;
@@ -46,8 +45,6 @@ import org.apache.maven.model.Relocation;
 import org.apache.maven.model.converter.ModelConverter;
 import org.apache.maven.model.converter.PomTranslationException;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
-import org.codehaus.plexus.digest.Digester;
-import org.codehaus.plexus.digest.DigesterException;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.springframework.stereotype.Service;
 
@@ -77,7 +74,7 @@ public class LegacyToDefaultConverter
     implements ArtifactConverter
 {
     /**
-     * {@link List}&lt;{@link Digester}
+     *
      */
     private List<ChecksumAlgorithm> digesters;
 

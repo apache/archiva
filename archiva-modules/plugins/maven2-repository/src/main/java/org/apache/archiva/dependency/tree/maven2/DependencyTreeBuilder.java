@@ -19,7 +19,7 @@ package org.apache.archiva.dependency.tree.maven2;
  */
 
 import org.apache.archiva.maven2.model.TreeEntry;
-import org.sonatype.aether.graph.DependencyVisitor;
+import org.eclipse.aether.graph.DependencyVisitor;
 
 import java.util.List;
 

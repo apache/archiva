@@ -20,7 +20,6 @@ package org.apache.archiva.transaction;
  */
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
-import org.codehaus.plexus.digest.Digester;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,7 +42,7 @@ public class CreateFileEvent
      * 
      * @param content
      * @param destination
-     * @param checksumAlgorithms {@link List}&lt;{@link Digester}&gt; digesters to use for checksumming
+     * @param checksumAlgorithms digesters to use for checksumming
      */
     public CreateFileEvent( String content, Path destination, List<ChecksumAlgorithm> checksumAlgorithms )
     {

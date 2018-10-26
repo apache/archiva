@@ -18,17 +18,18 @@ package org.apache.archiva.dependency.tree.maven2;
  * under the License.
  */
 
+import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.connector.file.FileRepositoryConnectorFactory;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.spi.connector.ArtifactDownload;
-import org.sonatype.aether.spi.connector.ArtifactUpload;
-import org.sonatype.aether.spi.connector.MetadataDownload;
-import org.sonatype.aether.spi.connector.MetadataUpload;
-import org.sonatype.aether.spi.connector.RepositoryConnector;
-import org.sonatype.aether.transfer.NoRepositoryConnectorException;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.connector.file.FileRepositoryConnectorFactory;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.spi.connector.ArtifactDownload;
+import org.eclipse.aether.spi.connector.ArtifactUpload;
+import org.eclipse.aether.spi.connector.MetadataDownload;
+import org.eclipse.aether.spi.connector.MetadataUpload;
+import org.eclipse.aether.spi.connector.RepositoryConnector;
+import org.eclipse.aether.transfer.NoRepositoryConnectorException;
 
 import java.util.Collection;
 
@@ -37,8 +38,11 @@ import java.util.Collection;
  * @since 1.4-M3
  */
 public class ArchivaRepositoryConnectorFactory
-    extends FileRepositoryConnectorFactory
+    implements RepositoryConnectorFactory
 {
+
+    private FileRepositoryConnectorFactory delegate = new FileRepositoryConnectorFactory();
+
     public ArchivaRepositoryConnectorFactory()
     {
         // no op but empty constructor needed by aether
@@ -50,7 +54,7 @@ public class ArchivaRepositoryConnectorFactory
     {
         try
         {
-            return super.newInstance( session, repository );
+            return delegate.newInstance( session, repository );
         }
         catch ( NoRepositoryConnectorException e )
         {
@@ -82,5 +86,11 @@ public class ArchivaRepositoryConnectorFactory
                 log.debug( "close" );
             }
         };
+    }
+
+    @Override
+    public float getPriority( )
+    {
+        return 0;
     }
 }

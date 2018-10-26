@@ -20,7 +20,6 @@ package org.apache.archiva.transaction;
  */
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
-import org.codehaus.plexus.digest.Digester;
 
 import java.io.IOException;
 import java.nio.file.Path;

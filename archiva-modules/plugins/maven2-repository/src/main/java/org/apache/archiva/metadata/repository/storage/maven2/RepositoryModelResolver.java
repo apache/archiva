@@ -34,6 +34,8 @@ import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Parent;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.building.FileModelSource;
 import org.apache.maven.model.building.ModelSource;
@@ -161,6 +163,20 @@ public class RepositoryModelResolver
         return new FileModelSource( model.toFile() );
     }
 
+    // TODO: v3.0.0 Implement this method
+    @Override
+    public ModelSource resolveModel( Parent parent ) throws UnresolvableModelException
+    {
+        return null;
+    }
+
+    // TODO: v3.0.0 Implement this method
+    @Override
+    public ModelSource resolveModel( Dependency dependency ) throws UnresolvableModelException
+    {
+        return null;
+    }
+
     protected Path findTimeStampedSnapshotPom( String groupId, String artifactId, String version,
                                                String parentDirectory )
     {
@@ -209,6 +225,12 @@ public class RepositoryModelResolver
         // we just ignore repositories outside of the current one for now
         // TODO: it'd be nice to look them up from Archiva's set, but we want to do that by URL / mapping, not just the
         //       ID since they will rarely match
+    }
+
+    @Override
+    public void addRepository( Repository repository, boolean b ) throws InvalidRepositoryException
+    {
+
     }
 
     @Override

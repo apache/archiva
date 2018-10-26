@@ -35,37 +35,39 @@ import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.archiva.proxy.common.WagonFactory;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.model.building.DefaultModelBuilderFactory;
-import org.apache.maven.model.building.ModelBuilder;
 import org.apache.maven.repository.internal.DefaultArtifactDescriptorReader;
 import org.apache.maven.repository.internal.DefaultVersionRangeResolver;
 import org.apache.maven.repository.internal.DefaultVersionResolver;
-import org.apache.maven.repository.internal.MavenRepositorySystemSession;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.LocalRepositoryManager;
+import org.eclipse.aether.repository.NoLocalRepositoryManagerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.collection.CollectResult;
-import org.sonatype.aether.collection.DependencyCollectionException;
-import org.sonatype.aether.collection.DependencySelector;
-import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.graph.DependencyVisitor;
-import org.sonatype.aether.impl.ArtifactDescriptorReader;
-import org.sonatype.aether.impl.VersionRangeResolver;
-import org.sonatype.aether.impl.VersionResolver;
-import org.sonatype.aether.impl.internal.DefaultServiceLocator;
-import org.sonatype.aether.impl.internal.SimpleLocalRepositoryManager;
-import org.sonatype.aether.spi.connector.RepositoryConnectorFactory;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.aether.util.graph.selector.AndDependencySelector;
-import org.sonatype.aether.util.graph.selector.ExclusionDependencySelector;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.collection.CollectResult;
+import org.eclipse.aether.collection.DependencyCollectionException;
+import org.eclipse.aether.collection.DependencySelector;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.DependencyVisitor;
+import org.eclipse.aether.impl.ArtifactDescriptorReader;
+import org.eclipse.aether.impl.VersionRangeResolver;
+import org.eclipse.aether.impl.VersionResolver;
+import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
+import org.eclipse.aether.util.graph.selector.AndDependencySelector;
+import org.eclipse.aether.util.graph.selector.ExclusionDependencySelector;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -97,9 +99,6 @@ public class Maven3DependencyTreeBuilder
     private RepositoryPathTranslator pathTranslator;
 
     @Inject
-    private WagonFactory wagonFactory;
-
-    @Inject
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
@@ -113,7 +112,6 @@ public class Maven3DependencyTreeBuilder
 
     private ArtifactFactory factory;
 
-    private ModelBuilder builder;
 
     @PostConstruct
     public void initialize()
@@ -122,10 +120,11 @@ public class Maven3DependencyTreeBuilder
         factory = plexusSisuBridge.lookup( ArtifactFactory.class, "default" );
 
         DefaultModelBuilderFactory defaultModelBuilderFactory = new DefaultModelBuilderFactory();
-        builder = defaultModelBuilderFactory.newInstance();
+        defaultModelBuilderFactory.newInstance();
     }
 
-    @Override
+
+
     public void buildDependencyTree( List<String> repositoryIds, String groupId, String artifactId, String version,
                                      DependencyVisitor dependencyVisitor )
         throws DependencyTreeBuilderException
@@ -229,7 +228,7 @@ public class Maven3DependencyTreeBuilder
 
         RepositorySystemSession session = newRepositorySystemSession( system, resolveRequest.localRepoDir );
 
-        org.sonatype.aether.artifact.Artifact artifact = new DefaultArtifact(
+        org.eclipse.aether.artifact.Artifact artifact = new DefaultArtifact(
             resolveRequest.groupId + ":" + resolveRequest.artifactId + ":" + resolveRequest.version );
 
         CollectRequest collectRequest = new CollectRequest();
@@ -238,9 +237,8 @@ public class Maven3DependencyTreeBuilder
         // add remote repositories
         for ( RemoteRepository remoteRepository : resolveRequest.remoteRepositories )
         {
-            collectRequest.addRepository(
-                new org.sonatype.aether.repository.RemoteRepository( remoteRepository.getId(), "default",
-                                                                     remoteRepository.getUrl() ) );
+            org.eclipse.aether.repository.RemoteRepository repo = new org.eclipse.aether.repository.RemoteRepository.Builder( remoteRepository.getId( ), "default", remoteRepository.getUrl( ) ).build( );
+            collectRequest.addRepository(repo);
         }
         collectRequest.setRequestContext( "project" );
 
@@ -262,7 +260,7 @@ public class Maven3DependencyTreeBuilder
 
     private RepositorySystem newRepositorySystem()
     {
-        DefaultServiceLocator locator = new DefaultServiceLocator();
+        DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator( );
         locator.addService( RepositoryConnectorFactory.class,
                             ArchivaRepositoryConnectorFactory.class );// FileRepositoryConnectorFactory.class );
         locator.addService( VersionResolver.class, DefaultVersionResolver.class );
@@ -276,13 +274,22 @@ public class Maven3DependencyTreeBuilder
 
     private RepositorySystemSession newRepositorySystemSession( RepositorySystem system, String localRepoDir )
     {
-        MavenRepositorySystemSession session = new MavenRepositorySystemSession();
+        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession( );
+
+        LocalRepository repo = new LocalRepository( localRepoDir );
 
         DependencySelector depFilter = new AndDependencySelector( new ExclusionDependencySelector() );
         session.setDependencySelector( depFilter );
-
-        session.setLocalRepositoryManager(
-            new SimpleLocalRepositoryManager( localRepoDir ) );
+        SimpleLocalRepositoryManagerFactory repFactory = new SimpleLocalRepositoryManagerFactory( );
+        try
+        {
+            LocalRepositoryManager manager = repFactory.newInstance( session, repo );
+            session.setLocalRepositoryManager(manager);
+        }
+        catch ( NoLocalRepositoryManagerException e )
+        {
+            e.printStackTrace( );
+        }
 
         return session;
     }

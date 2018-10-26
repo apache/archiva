@@ -22,7 +22,6 @@ package org.apache.archiva.transaction;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.digest.Digester;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -51,9 +50,6 @@ public abstract class AbstractTransactionEvent
 
     private List<Path> createdFiles = new ArrayList<>();
 
-    /**
-     * {@link List}&lt;{@link Digester}&gt;
-     */
     private List<ChecksumAlgorithm> checksumAlgorithms;
 
     protected AbstractTransactionEvent()

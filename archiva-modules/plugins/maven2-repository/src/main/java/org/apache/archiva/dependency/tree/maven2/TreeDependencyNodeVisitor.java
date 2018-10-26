@@ -20,10 +20,11 @@ package org.apache.archiva.dependency.tree.maven2;
 
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
+import org.eclipse.aether.graph.DependencyVisitor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.sonatype.aether.graph.DependencyNode;
-import org.sonatype.aether.graph.DependencyVisitor;
+import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.graph.DependencyVisitor;
 
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class TreeDependencyNodeVisitor
 
     private TreeEntry currentEntry;
 
-    private org.sonatype.aether.graph.DependencyNode firstDependencyNode;
+    private org.eclipse.aether.graph.DependencyNode firstDependencyNode;
 
     public TreeDependencyNodeVisitor( List<TreeEntry> treeEntries )
     {
