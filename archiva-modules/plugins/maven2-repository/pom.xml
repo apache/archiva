@@ -102,24 +102,6 @@
       <artifactId>maven-resolver-provider</artifactId>
     </dependency>
 
-    <!--
-    <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-util</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-connector-file</artifactId>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-api</artifactId>
@@ -128,12 +110,6 @@
     <dependency>
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-connector-file</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.resolver</groupId>
-      <artifactId>maven-resolver-impl</artifactId>
-      <version>1.0.3</version>
     </dependency>
 
     <dependency>
