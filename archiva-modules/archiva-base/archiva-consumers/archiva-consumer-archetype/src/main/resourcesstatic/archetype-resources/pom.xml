@@ -40,6 +40,7 @@
     <mockito.version>${mockitoVersion}</mockito.version>
     <httpclient.version>${httpclientVersion}</httpclient.version>
     <httpclient.core.version>${httpcoreVersion}</httpclient.core.version>
+    <asm.version>${asmVersion}</asm.version>
   </properties>
   <dependencies>
     <dependency>
@@ -208,6 +209,12 @@
       <version>${springockito.version}</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <!-- match up with those used by Archiva -->
@@ -232,6 +239,11 @@
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
         <version>${httpclient.core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>${asm.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

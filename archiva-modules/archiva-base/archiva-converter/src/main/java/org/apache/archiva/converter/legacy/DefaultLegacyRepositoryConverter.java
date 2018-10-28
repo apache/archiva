@@ -30,6 +30,7 @@ import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +54,7 @@ public class DefaultLegacyRepositoryConverter
     /**
      *
      */
-    private ArtifactRepositoryFactory artifactRepositoryFactory;
+    // private ArtifactRepositoryFactory artifactRepositoryFactory;
 
     /**
      *
@@ -77,7 +78,7 @@ public class DefaultLegacyRepositoryConverter
     public DefaultLegacyRepositoryConverter( PlexusSisuBridge plexusSisuBridge )
         throws PlexusSisuBridgeException
     {
-        artifactRepositoryFactory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
+        // artifactRepositoryFactory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
         defaultLayout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );
     }
 
@@ -95,8 +96,8 @@ public class DefaultLegacyRepositoryConverter
             legacyRepository.setLayout( "legacy" );
 
             ArtifactRepository repository =
-                artifactRepositoryFactory.createArtifactRepository( "default", defaultRepositoryUrl, defaultLayout,
-                                                                    null, null );
+                new MavenArtifactRepository("default", defaultRepositoryUrl, defaultLayout, null, null);
+
             legacyConverterConsumer.setExcludes( fileExclusionPatterns );
             legacyConverterConsumer.setDestinationRepository( repository );
 

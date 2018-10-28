@@ -55,8 +55,9 @@
     <commons-lang.version>2.6</commons-lang.version>
 
     <maven3x.version>3.5.4</maven3x.version>
-    <maven.version>2.0.8</maven.version>
-    <aether.version>1.13.1</aether.version>
+    <maven.artifact-manager.version>2.2.1</maven.artifact-manager.version>
+    <sonatype.aether.version>1.13.1</sonatype.aether.version>
+    <eclipse.aether.version>0.9.0.M2</eclipse.aether.version>
 
     <maven-model-converter.version>2.1</maven-model-converter.version>
     <maven.indexer.version>6.0.0</maven.indexer.version>
@@ -89,9 +90,12 @@
     <guava.version>15.0</guava.version>
     <openjpaVersion>2.4.1</openjpaVersion>
 
+    <asm.version>5.0.4</asm.version>
+
     <!-- restore when we will be able to use a derby in memory database -->
     <redbackTestJdbcUrl>jdbc:derby:memory:users-test;create=true</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.apache.derby.jdbc.EmbeddedDriver</redbackTestJdbcDriver>
+
     <sisu-inject-plexus.version>0.3.3</sisu-inject-plexus.version>
     <plexus-digest.version>1.1</plexus-digest.version>
     <plexus-expression-evaluator.version>2.1</plexus-expression-evaluator.version>
@@ -818,6 +822,9 @@
         <artifactId>mail</artifactId>
         <version>${javaxMailVersion}</version>
       </dependency>
+
+
+      <!-- Maven related dependencies -->
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model</artifactId>
@@ -844,12 +851,12 @@
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-artifact</artifactId>
-        <version>${maven.version}</version>
+        <version>${maven3x.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-artifact-manager</artifactId>
-        <version>${maven.version}</version>
+        <version>${maven.artifact-manager.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>
@@ -858,32 +865,54 @@
         </exclusions>
       </dependency>
 
-      <dependency>
-        <groupId>org.sonatype.aether</groupId>
-        <artifactId>aether-api</artifactId>
-        <version>${aether.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.sonatype.aether</groupId>
-        <artifactId>aether-impl</artifactId>
-        <version>${aether.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.sonatype.aether</groupId>
-        <artifactId>aether-util</artifactId>
-        <version>${aether.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.sonatype.aether</groupId>
-        <artifactId>aether-connector-file</artifactId>
-        <version>${aether.version}</version>
-      </dependency>
 
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-repository-metadata</artifactId>
         <version>${maven3x.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-resolver-provider</artifactId>
+        <version>${maven3x.version}</version>
+      </dependency>
+
+      <!-- Eclipse aether -->
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-api</artifactId>
+        <version>${eclipse.aether.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.eclipse.aether</groupId>
+        <artifactId>aether-connector-file</artifactId>
+        <version>${eclipse.aether.version}</version>
+      </dependency>
+
+      <!-- Sonatype aether -->
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-api</artifactId>
+        <version>${sonatype.aether.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-impl</artifactId>
+        <version>${sonatype.aether.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-util</artifactId>
+        <version>${sonatype.aether.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sonatype.aether</groupId>
+        <artifactId>aether-connector-file</artifactId>
+        <version>${sonatype.aether.version}</version>
+      </dependency>
+
       <!--
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
@@ -1560,6 +1589,15 @@
         <artifactId>jaxb-runtime</artifactId>
         <version>2.3.0</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+
+
+
 
     </dependencies>
   </dependencyManagement>

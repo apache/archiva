@@ -21,6 +21,8 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.dependency.tree.maven2.ArchivaRepositoryConnectorFactory;
+import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
@@ -34,6 +36,7 @@ import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Parent;
 import org.apache.maven.model.Repository;
@@ -42,6 +45,10 @@ import org.apache.maven.model.building.ModelSource;
 import org.apache.maven.model.resolution.InvalidRepositoryException;
 import org.apache.maven.model.resolution.ModelResolver;
 import org.apache.maven.model.resolution.UnresolvableModelException;
+import org.apache.maven.repository.internal.DefaultArtifactDescriptorReader;
+import org.apache.maven.repository.internal.DefaultVersionRangeResolver;
+import org.apache.maven.repository.internal.DefaultVersionResolver;
+import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
@@ -50,6 +57,26 @@ import org.apache.maven.wagon.authentication.AuthenticationException;
 import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.proxy.ProxyInfo;
+import org.eclipse.aether.DefaultRepositorySystemSession;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.collection.DependencySelector;
+import org.eclipse.aether.impl.ArtifactDescriptorReader;
+import org.eclipse.aether.impl.DefaultServiceLocator;
+import org.eclipse.aether.impl.VersionRangeResolver;
+import org.eclipse.aether.impl.VersionResolver;
+import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
+import org.eclipse.aether.repository.LocalRepository;
+import org.eclipse.aether.repository.LocalRepositoryManager;
+import org.eclipse.aether.repository.NoLocalRepositoryManagerException;
+import org.eclipse.aether.resolution.VersionRangeRequest;
+import org.eclipse.aether.resolution.VersionRangeResolutionException;
+import org.eclipse.aether.resolution.VersionRangeResult;
+import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
+import org.eclipse.aether.util.graph.selector.AndDependencySelector;
+import org.eclipse.aether.util.graph.selector.ExclusionDependencySelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +90,10 @@ import java.util.Map;
 public class RepositoryModelResolver
     implements ModelResolver
 {
+
+    private RepositorySystemSession session;
+    private VersionRangeResolver versionRangeResolver;
+
     private Path basedir;
 
     private RepositoryPathTranslator pathTranslator;
@@ -76,6 +107,8 @@ public class RepositoryModelResolver
     private static final Logger log = LoggerFactory.getLogger( RepositoryModelResolver.class );
 
     private static final String METADATA_FILENAME = "maven-metadata.xml";
+
+    private DefaultServiceLocator locator;
 
     // key/value: remote repo ID/network proxy
     Map<String, NetworkProxy> networkProxyMap;
@@ -91,7 +124,7 @@ public class RepositoryModelResolver
 
     public RepositoryModelResolver( ManagedRepository managedRepository, RepositoryPathTranslator pathTranslator,
                                     WagonFactory wagonFactory, List<RemoteRepository> remoteRepositories,
-                                    Map<String, NetworkProxy> networkProxiesMap, ManagedRepository targetRepository )
+                                    Map<String, NetworkProxy> networkProxiesMap, ManagedRepository targetRepository)
     {
         this( Paths.get( managedRepository.getLocation() ), pathTranslator );
 
@@ -104,6 +137,45 @@ public class RepositoryModelResolver
         this.networkProxyMap = networkProxiesMap;
 
         this.targetRepository = targetRepository;
+
+        this.locator =  MavenRepositorySystemUtils.newServiceLocator( );
+
+        locator.addService( RepositoryConnectorFactory.class,
+            ArchivaRepositoryConnectorFactory.class );// FileRepositoryConnectorFactory.class );
+        locator.addService( VersionResolver.class, DefaultVersionResolver.class );
+        locator.addService( VersionRangeResolver.class, DefaultVersionRangeResolver.class );
+        locator.addService( ArtifactDescriptorReader.class, DefaultArtifactDescriptorReader.class );
+
+        this.session = newRepositorySystemSession( newRepositorySystem(), managedRepository.getLocalPath().toString() );
+
+        this.versionRangeResolver = locator.getService(VersionRangeResolver.class);
+    }
+
+    private RepositorySystem newRepositorySystem()
+    {
+        return locator.getService( RepositorySystem.class );
+    }
+
+    private RepositorySystemSession newRepositorySystemSession( RepositorySystem system, String localRepoDir )
+    {
+        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession( );
+
+        LocalRepository repo = new LocalRepository( localRepoDir );
+
+        DependencySelector depFilter = new AndDependencySelector( new ExclusionDependencySelector() );
+        session.setDependencySelector( depFilter );
+        SimpleLocalRepositoryManagerFactory repFactory = new SimpleLocalRepositoryManagerFactory( );
+        try
+        {
+            LocalRepositoryManager manager = repFactory.newInstance( session, repo );
+            session.setLocalRepositoryManager(manager);
+        }
+        catch ( NoLocalRepositoryManagerException e )
+        {
+            e.printStackTrace( );
+        }
+
+        return session;
     }
 
     @Override
@@ -163,18 +235,41 @@ public class RepositoryModelResolver
         return new FileModelSource( model.toFile() );
     }
 
-    // TODO: v3.0.0 Implement this method
-    @Override
-    public ModelSource resolveModel( Parent parent ) throws UnresolvableModelException
-    {
-        return null;
+    public ModelSource resolveModel(Parent parent) throws UnresolvableModelException {
+        try {
+            Artifact artifact = new DefaultArtifact(parent.getGroupId(), parent.getArtifactId(), "", "pom", parent.getVersion());
+            VersionRangeRequest versionRangeRequest;
+            versionRangeRequest = new VersionRangeRequest(artifact, null, null);
+            VersionRangeResult versionRangeResult = this.versionRangeResolver.resolveVersionRange(this.session, versionRangeRequest);
+            if (versionRangeResult.getHighestVersion() == null) {
+                throw new UnresolvableModelException(String.format("No versions matched the requested parent version range '%s'", parent.getVersion()), parent.getGroupId(), parent.getArtifactId(), parent.getVersion());
+            } else if (versionRangeResult.getVersionConstraint() != null && versionRangeResult.getVersionConstraint().getRange() != null && versionRangeResult.getVersionConstraint().getRange().getUpperBound() == null) {
+                throw new UnresolvableModelException(String.format("The requested parent version range '%s' does not specify an upper bound", parent.getVersion()), parent.getGroupId(), parent.getArtifactId(), parent.getVersion());
+            } else {
+                parent.setVersion(versionRangeResult.getHighestVersion().toString());
+                return this.resolveModel(parent.getGroupId(), parent.getArtifactId(), parent.getVersion());
+            }
+        } catch ( VersionRangeResolutionException var5) {
+            throw new UnresolvableModelException(var5.getMessage(), parent.getGroupId(), parent.getArtifactId(), parent.getVersion(), var5);
+        }
     }
 
-    // TODO: v3.0.0 Implement this method
-    @Override
-    public ModelSource resolveModel( Dependency dependency ) throws UnresolvableModelException
-    {
-        return null;
+    public ModelSource resolveModel(Dependency dependency) throws UnresolvableModelException {
+        try {
+            Artifact artifact = new DefaultArtifact(dependency.getGroupId(), dependency.getArtifactId(), "", "pom", dependency.getVersion());
+            VersionRangeRequest versionRangeRequest = new VersionRangeRequest(artifact, null, null);
+            VersionRangeResult versionRangeResult = this.versionRangeResolver.resolveVersionRange(this.session, versionRangeRequest);
+            if (versionRangeResult.getHighestVersion() == null) {
+                throw new UnresolvableModelException(String.format("No versions matched the requested dependency version range '%s'", dependency.getVersion()), dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
+            } else if (versionRangeResult.getVersionConstraint() != null && versionRangeResult.getVersionConstraint().getRange() != null && versionRangeResult.getVersionConstraint().getRange().getUpperBound() == null) {
+                throw new UnresolvableModelException(String.format("The requested dependency version range '%s' does not specify an upper bound", dependency.getVersion()), dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
+            } else {
+                dependency.setVersion(versionRangeResult.getHighestVersion().toString());
+                return this.resolveModel(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
+            }
+        } catch (VersionRangeResolutionException var5) {
+            throw new UnresolvableModelException(var5.getMessage(), dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion(), var5);
+        }
     }
 
     protected Path findTimeStampedSnapshotPom( String groupId, String artifactId, String version,
@@ -237,7 +332,7 @@ public class RepositoryModelResolver
     public ModelResolver newCopy()
     {
         return new RepositoryModelResolver( managedRepository,  pathTranslator, wagonFactory, remoteRepositories, 
-                                            networkProxyMap, targetRepository );
+                                            networkProxyMap, targetRepository);
     }
 
     // FIXME: we need to do some refactoring, we cannot re-use the proxy components of archiva-proxy in maven2-repository

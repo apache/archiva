@@ -22,11 +22,13 @@ package org.apache.archiva.converter;
 import junit.framework.TestCase;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.converter.artifact.LegacyRepositoryLayout;
 import org.apache.archiva.converter.legacy.LegacyRepositoryConverter;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,14 +75,14 @@ public class RepositoryConverterTest
     {
         super.setUp();
 
-        ArtifactRepositoryFactory factory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
+        // ArtifactRepositoryFactory factory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
             //(ArtifactRepositoryFactory) lookup( ArtifactRepositoryFactory.ROLE );
 
-        ArtifactRepositoryLayout layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "legacy" );
+        ArtifactRepositoryLayout layout = new LegacyRepositoryLayout();
             //(ArtifactRepositoryLayout) lookup( ArtifactRepositoryLayout.ROLE, "legacy" );
 
         Path sourceBase = Paths.get( "src/test/source-repository" );
-        sourceRepository = factory.createArtifactRepository( "source", sourceBase.toUri().toURL().toString(), layout, null,
+        sourceRepository = new MavenArtifactRepository( "source", sourceBase.toUri().toURL().toString(), layout, null,
                                                              null );
 
         layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );

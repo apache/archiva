@@ -75,6 +75,7 @@ import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.model.building.ModelProblem;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.eclipse.aether.impl.VersionRangeResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -291,7 +292,7 @@ public class Maven2RepositoryStorage
             // MRM-1411
             req.setModelResolver(
                 new RepositoryModelResolver( managedRepository, pathTranslator, wagonFactory, remoteRepositories,
-                                             networkProxies, managedRepository ) );
+                                             networkProxies, managedRepository ));
 
             Model model;
             try

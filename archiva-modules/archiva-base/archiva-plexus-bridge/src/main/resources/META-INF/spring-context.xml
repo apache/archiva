@@ -28,11 +28,11 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.common.plexusbridge
-                                        org.apache.maven.index"/>
+  <context:component-scan base-package="org.apache.archiva.common.plexusbridge, org.apache.maven.*"/>
+
 
   <!--
-  <bean id="indexer" class="org.apache.maven.index.DefaultIndexer"/>
+  <bean id="indexer" class="org.apache.maven.bridge.MavenRepositorySystem.apache.maven.index.DefaultIndexer"/>
   <bean id="scanner" class="org.apache.maven.index.DefaultScanner"/>
   <bean id="indexerEngine" class="org.apache.maven.index.DefaultIndexerEngine"/>
   <bean id="searchEngine" class="org.apache.maven.index.DefaultSearchEngine"/>

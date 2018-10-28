@@ -99,8 +99,7 @@
 
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-aether-provider</artifactId>
-      <version>3.3.9</version>
+      <artifactId>maven-resolver-provider</artifactId>
     </dependency>
 
     <!--
@@ -124,13 +123,11 @@
     <dependency>
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-api</artifactId>
-      <version>0.9.0.M2</version>
     </dependency>
 
     <dependency>
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-connector-file</artifactId>
-      <version>0.9.0.M2</version>
     </dependency>
 
     <dependency>
@@ -222,6 +219,12 @@
     <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
       <scope>test</scope>
     </dependency>
 

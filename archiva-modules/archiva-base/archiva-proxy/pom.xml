@@ -223,7 +223,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Needed for JDK >= 9 -->
+    <!-- START Needed for JDK >= 9 -->
     <dependency>
       <groupId>javax.annotation</groupId>
       <artifactId>javax.annotation-api</artifactId>
@@ -233,6 +233,14 @@
     <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- END Needed for JDK >= 9 -->
+
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

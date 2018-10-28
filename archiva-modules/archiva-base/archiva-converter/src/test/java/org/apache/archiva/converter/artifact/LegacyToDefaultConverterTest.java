@@ -27,7 +27,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.metadata.ArtifactMetadata;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.ArtifactRepositoryFactory;
+import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.artifact.repository.metadata.ArtifactRepositoryMetadata;
 import org.apache.maven.artifact.repository.metadata.SnapshotArtifactRepositoryMetadata;
@@ -82,13 +82,13 @@ public class LegacyToDefaultConverterTest
     {
         super.setUp();
 
-        ArtifactRepositoryFactory factory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
+        // ArtifactRepositoryFactory factory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
 
-        ArtifactRepositoryLayout layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "legacy" );
+        ArtifactRepositoryLayout layout = new LegacyRepositoryLayout();
 
         Path sourceBase = getTestFile( "src/test/source-repository" );
         sourceRepository =
-            factory.createArtifactRepository( "source", sourceBase.toUri().toURL().toString(), layout, null, null );
+            new MavenArtifactRepository( "source", sourceBase.toUri().toURL().toString(), layout, null, null );
 
         layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );
 
@@ -96,7 +96,7 @@ public class LegacyToDefaultConverterTest
         copyDirectoryStructure( getTestFile( "src/test/target-repository" ), targetBase );
 
         targetRepository =
-            factory.createArtifactRepository( "target", targetBase.toUri().toURL().toString(), layout, null, null );
+            new MavenArtifactRepository( "target", targetBase.toUri().toURL().toString(), layout, null, null );
 
         artifactConverter =
             applicationContext.getBean( "artifactConverter#legacy-to-default", ArtifactConverter.class );
@@ -919,10 +919,9 @@ public class LegacyToDefaultConverterTest
     {
         // test that it fails if the same
 
-        ArtifactRepositoryFactory factory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
 
         sourceRepository =
-            factory.createArtifactRepository( "source", targetRepository.getUrl(), targetRepository.getLayout(), null,
+            new MavenArtifactRepository( "source", targetRepository.getUrl(), targetRepository.getLayout(), null,
                                               null );
 
         Artifact artifact = createArtifact( "test", "repository-artifact", "1.0" );
@@ -1043,12 +1042,10 @@ public class LegacyToDefaultConverterTest
     private void createModernSourceRepository()
         throws Exception
     {
-        ArtifactRepositoryFactory factory = plexusSisuBridge.lookup( ArtifactRepositoryFactory.class );
-
         ArtifactRepositoryLayout layout = plexusSisuBridge.lookup( ArtifactRepositoryLayout.class, "default" );
 
         Path sourceBase = getTestFile( "src/test/source-modern-repository" );
         sourceRepository =
-            factory.createArtifactRepository( "source", sourceBase.toUri().toURL().toString(), layout, null, null );
+            new MavenArtifactRepository( "source", sourceBase.toUri().toURL().toString(), layout, null, null );
     }
 }

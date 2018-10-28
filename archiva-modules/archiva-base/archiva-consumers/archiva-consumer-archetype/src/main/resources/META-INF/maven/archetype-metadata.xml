@@ -67,5 +67,8 @@
     <requiredProperty key="httpcoreVersion">
       <defaultValue>${httpclient.core.version}</defaultValue>
     </requiredProperty>
+    <requiredProperty key="asmVersion">
+      <defaultValue>${asm.version}</defaultValue>
+    </requiredProperty>
   </requiredProperties>
 </archetype-descriptor>

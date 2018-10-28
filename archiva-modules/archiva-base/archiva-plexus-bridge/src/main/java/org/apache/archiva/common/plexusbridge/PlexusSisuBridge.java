@@ -19,6 +19,8 @@ package org.apache.archiva.common.plexusbridge;
  * under the License.
  */
 
+import com.google.inject.AbstractModule;
+import org.apache.maven.bridge.MavenRepositorySystem;
 import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusConstants;
@@ -26,11 +28,13 @@ import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import org.eclipse.sisu.inject.TypeArguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -48,6 +52,8 @@ import java.util.Map;
 public class PlexusSisuBridge
 {
 
+    private MavenRepositorySystem mavenRepositorySystem = new MavenRepositorySystem();
+
     private Logger log = LoggerFactory.getLogger( getClass() );
 
     private boolean containerAutoWiring = true;
@@ -61,6 +67,16 @@ public class PlexusSisuBridge
     private ClassRealm containerRealm;
 
     private DefaultPlexusContainer plexusContainer;
+
+    class InternalBinder extends AbstractModule {
+
+        @Override
+        protected void configure( )
+        {
+            bind( MavenRepositorySystem.class ).toInstance( mavenRepositorySystem );
+            // bind(TypeArguments.implicitKey( MavenRepositorySystem.class )).to(MavenRepositorySystem.class);
+        }
+    }
 
     @PostConstruct
     public void initialize()
@@ -88,6 +104,7 @@ public class PlexusSisuBridge
             for ( URL url : urls )
             {
                 containerRealm.addURL( url );
+                log.debug("Added url {}", url);
             }
         }
 
@@ -100,11 +117,16 @@ public class PlexusSisuBridge
         try
         {
             Thread.currentThread().setContextClassLoader( containerRealm );
-            plexusContainer = new DefaultPlexusContainer( conf );
+            InternalBinder binder = new InternalBinder( );
+            plexusContainer = new DefaultPlexusContainer( conf, binder );
+
         }
         catch ( PlexusContainerException e )
         {
             throw new PlexusSisuBridgeException( e.getMessage(), e );
+        } catch (Throwable ex) {
+            log.error("PlexusSisuBridge initialization failed {}", ex.getMessage(), ex);
+            throw new PlexusSisuBridgeException( ex.getMessage(), ex );
         }
         finally
         {

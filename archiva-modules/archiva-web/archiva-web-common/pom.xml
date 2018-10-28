@@ -403,6 +403,14 @@
       <artifactId>jaxb-runtime</artifactId>
       <scope>test</scope>
     </dependency>
+
+
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>

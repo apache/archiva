@@ -31,7 +31,8 @@
 
   <properties>
     <webappDirectory>${project.build.directory}/container/webapps/archiva</webappDirectory>
-    <container.propertiesPortFilePath>${project.build.directory}/container-port.properties</container.propertiesPortFilePath>
+    <container.propertiesPortFilePath>${project.build.directory}/container-port.properties
+    </container.propertiesPortFilePath>
     <maxWaitTimeInMs>10000</maxWaitTimeInMs>
     <selenium-server.version>3.4.0</selenium-server.version>
     <fluentlenium.version>3.2.0</fluentlenium.version>
@@ -50,20 +51,20 @@
       <artifactId>archiva-webapp</artifactId>
       <type>war</type>
     </dependency>
-<!--    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-utils</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-slf4j-logging</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>plexus-component-api</artifactId>
+    <!--    <dependency>
           <groupId>org.codehaus.plexus</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>-->
+          <artifactId>plexus-utils</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-slf4j-logging</artifactId>
+          <exclusions>
+            <exclusion>
+              <artifactId>plexus-component-api</artifactId>
+              <groupId>org.codehaus.plexus</groupId>
+            </exclusion>
+          </exclusions>
+        </dependency>-->
 
     <!--
       jcr-oak currently needs guava 15.0 and selenium webdriver needs 22.0
@@ -172,7 +173,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-
 
 
     <dependency>
@@ -341,8 +341,26 @@
     </dependency>
 
 
-
-
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-slf4j-logging</artifactId>
+      <version>1.1</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-container-default</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 
   <build>
@@ -811,7 +829,7 @@
                 <configuration>
                   <failOnError>false</failOnError>
                   <target>
-                    <delete file="${user.home}/.m2/archiva.xml" />
+                    <delete file="${user.home}/.m2/archiva.xml"/>
                   </target>
                 </configuration>
               </execution>
