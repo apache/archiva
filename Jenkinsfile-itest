@@ -129,7 +129,6 @@ pipeline {
                                     // -Pit-js: Runs the Selenium tests
                                     // -Pchrome: Activates the Selenium Chrome Test Agent
                                     sh "mvn clean install -B -V -U -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -DseleniumRemote=true -Pci-server -Pit-js -Pchrome -pl :archiva-webapp-test -DtrimStackTrace=false"
-
                                 }
                     }
                 }
@@ -150,9 +149,6 @@ pipeline {
         unstable {
             notifyBuild("Unstable Build")
         }
-        always {
-            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
-        }
         success {
             script {
                 def previousResult = currentBuild.previousBuild?.result
@@ -160,6 +156,7 @@ pipeline {
                     notifyBuild("Fixed")
                 }
             }
+            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
         }
 
     }
