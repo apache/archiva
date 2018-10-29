@@ -18,11 +18,11 @@ package org.apache.archiva.dependency.tree.maven2;
  * under the License.
  */
 
+import org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.connector.file.FileRepositoryConnectorFactory;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.spi.connector.ArtifactDownload;
 import org.eclipse.aether.spi.connector.ArtifactUpload;
@@ -41,7 +41,7 @@ public class ArchivaRepositoryConnectorFactory
     implements RepositoryConnectorFactory
 {
 
-    private FileRepositoryConnectorFactory delegate = new FileRepositoryConnectorFactory();
+    private BasicRepositoryConnectorFactory delegate = new BasicRepositoryConnectorFactory();
 
     public ArchivaRepositoryConnectorFactory()
     {
