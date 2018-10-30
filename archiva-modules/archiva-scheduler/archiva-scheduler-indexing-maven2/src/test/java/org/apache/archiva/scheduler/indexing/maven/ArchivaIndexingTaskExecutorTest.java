@@ -278,19 +278,20 @@ public class ArchivaIndexingTaskExecutorTest
         Path packedIndexDirectory = icf.getLocalPackedIndexPath();
         Path indexerDirectory = icf.getLocalIndexPath();
 
-        Files.list(packedIndexDirectory).filter( path -> path.getFileName().toString().startsWith("nexus-maven-repository-index") )
-            .forEach( path ->
-            {
-                try
-                {
-                    System.err.println("Deleting "+path);
-                    Files.delete( path );
-                }
-                catch ( IOException e )
-                {
-                    e.printStackTrace( );
-                }
-            } );
+        for (Path dir : new Path[] { packedIndexDirectory, indexerDirectory }) {
+            Files.list(dir).filter(path -> path.getFileName().toString().startsWith("nexus-maven-repository-index"))
+                    .forEach(path ->
+                    {
+                        try {
+                            System.err.println("Deleting " + path);
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+        }
+
+
 
 
         Path artifactFile = basePath.resolve(

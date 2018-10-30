@@ -95,9 +95,13 @@ public class Maven2RepositoryMergerTest
         Path pom = Paths.get( targetRepoPath,
                              "com/example/test/test-artifact/1.0-SNAPSHOT/test-artifact-1.0-20100308.230825-1.pom" );
 
-        assertFalse( Files.exists(mergedArtifact) );
-        assertFalse( Files.exists(mavenMetadata) );
-        assertFalse( Files.exists(pom) );
+        for (Path testArtifact : new Path[] { mergedArtifact, mavenMetadata, pom }) {
+            Files.deleteIfExists(testArtifact);
+        }
+
+        assertFalse( "Artifact file exists already", Files.exists(mergedArtifact) );
+        assertFalse( "Metadata file exists already", Files.exists(mavenMetadata) );
+        assertFalse( "Pom File exists already", Files.exists(pom) );
         Configuration c = new Configuration();
         ManagedRepositoryConfiguration testRepo = new ManagedRepositoryConfiguration();
         testRepo.setId( TEST_REPO_ID );
