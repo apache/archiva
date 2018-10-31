@@ -171,7 +171,7 @@ public class SearchServiceTest
             log.info( "url: {}", artifact.getUrl() );
             String version = artifact.getVersion();
             Assertions.assertThat( artifact.getUrl() ) //
-                .isEqualTo( "http://localhost:" + port
+                .isEqualTo( "http://localhost:" + getServerPort()
                                 + "/repository/test-repo/org/apache/karaf/features/org.apache.karaf.features.core/"
                                 + version + "/org.apache.karaf.features.core-" + version + ".jar" );
 

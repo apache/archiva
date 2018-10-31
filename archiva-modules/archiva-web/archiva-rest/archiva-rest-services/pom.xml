@@ -461,19 +461,25 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <forkCount>2</forkCount>
           <reuseForks>false</reuseForks>
           <includes>
             <include>**/*Tests.java</include>
             <include>**/*Test.java</include>
           </includes>
+          <workingDirectory>${project.build.directory}/WDIR-${surefire.forkNumber}</workingDirectory>
+          <trimStackTrace>false</trimStackTrace>
           <!--
-          <argLine>-Xms1024m -Xmx3072m -server -XX:MaxPermSize=256m @{jacocoproperty}</argLine>
+            The property jdk.net.URLClassPath.disableClassPathURLCheck is a workaround for a regression
+            with surefire and OpenJDK 8 181b13 on Debian/Ubuntu,
+            @see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=911925
           -->
-          <argLine>-Xms1024m -Xmx3072m -server -XX:MaxPermSize=256m</argLine>
+          <argLine>-Xms256m -Xmx512m -server -Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
           <systemPropertyVariables>
-            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
-            <plexus.home>${project.build.directory}/appserver-base</plexus.home>
-            <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
+            <mvn.project.base.dir>${project.basedir}</mvn.project.base.dir>
+            <appserver.base>${project.build.directory}/appserver-base-${surefire.forkNumber}</appserver.base>
+            <plexus.home>${project.build.directory}/appserver-base-${surefire.forkNumber}</plexus.home>
+            <derby.system.home>${project.build.directory}/appserver-base-${surefire.forkNumber}</derby.system.home>
             <archiva.baseRestUrl>${archiva.baseRestUrl}</archiva.baseRestUrl>
             <rest.admin.pwd>${rest.admin.pwd}</rest.admin.pwd>
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>

@@ -39,7 +39,7 @@ public class RepositoryGroupServiceTest
     {
         RepositoryGroupService service = getRepositoryGroupService();
         WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client(service).header("Referer","http://localhost:"+getServerPort());
 
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
 

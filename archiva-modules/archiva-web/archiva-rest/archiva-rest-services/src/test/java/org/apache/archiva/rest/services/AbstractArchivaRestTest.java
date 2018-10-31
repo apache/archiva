@@ -45,6 +45,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -59,6 +60,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Olivier Lamy
@@ -67,6 +69,19 @@ import java.util.Locale;
 public abstract class AbstractArchivaRestTest
     extends AbstractRestServicesTest
 {
+    private AtomicReference<Path> buildDir = new AtomicReference<>();
+    private boolean reuseServer = true;
+
+
+    protected void setReuseServer(boolean value) {
+        this.reuseServer = value;
+    }
+
+    protected boolean isReuseServer() {
+        return this.reuseServer;
+    }
+
+
 
     // START SNIPPET: authz-header
     // guest with an empty password
@@ -81,7 +96,7 @@ public abstract class AbstractArchivaRestTest
 
 
     @BeforeClass
-    public static void chekRepo()
+    public static void checkRepo()
     {
         Assume.assumeTrue( !System.getProperty( "appserver.base" ).contains( " " ) );
         LoggerFactory.getLogger( AbstractArchivaRestTest.class.getName() ).
@@ -96,13 +111,31 @@ public abstract class AbstractArchivaRestTest
     public void startServer()
         throws Exception
     {
-        Path appServerBase = Paths.get( System.getProperty( "appserver.base" ) );
+        if ( (!isReuseServer()) || (isReuseServer() && !isServerRunning())) {
+            log.info("Starting new server reuse={}, running={}, instance={}, server={}", isReuseServer(), isServerRunning(), this.hashCode(), getServer()==null ? "" : getServer().hashCode());
+            Path appServerBase = Paths.get(System.getProperty("appserver.base"));
 
-        removeAppsubFolder( appServerBase, "jcr" );
-        removeAppsubFolder( appServerBase, "conf" );
-        removeAppsubFolder( appServerBase, "data" );
+            removeAppsubFolder(appServerBase, "jcr");
+            removeAppsubFolder(appServerBase, "conf");
+            removeAppsubFolder(appServerBase, "data");
+            super.startServer();
+        } else {
+            log.info("Reusing running server instance reuse={}, running={}", isReuseServer(), isServerRunning());
+        }
+    }
 
-        super.startServer();
+    @Override
+    @After
+    public void stopServer()
+            throws Exception
+    {
+        if ( !isReuseServer() )
+        {
+            log.info("Stopping server reuse={}, running={}, instance={}, server={}", isReuseServer(), isServerRunning(), this.hashCode(), getServer()==null ? "" : getServer().hashCode());
+            super.stopServer();
+        } else {
+            log.info("Server not stopping reuse={}, running={}", isReuseServer(), isServerRunning());
+        }
     }
 
 
@@ -142,7 +175,7 @@ public abstract class AbstractArchivaRestTest
         {
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client(service).header("Referer","http://localhost:"+getServerPort());
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
@@ -205,7 +238,7 @@ public abstract class AbstractArchivaRestTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client(service).header("Referer","http://localhost:"+getServerPort());
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
@@ -220,7 +253,7 @@ public abstract class AbstractArchivaRestTest
                                        Collections.singletonList( new JacksonJaxbJsonProvider() ) );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client(service).header("Referer","http://localhost:"+getServerPort());
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
@@ -238,7 +271,7 @@ public abstract class AbstractArchivaRestTest
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client(service).header("Referer","http://localhost:"+getServerPort());
 
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         return service;
@@ -255,7 +288,7 @@ public abstract class AbstractArchivaRestTest
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
 
         WebClient.client( service ).header( "Authorization", authorizationHeader );
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client(service).header("Referer","http://localhost:"+getServerPort());
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 300000 );
         return service;
     }
@@ -273,7 +306,7 @@ public abstract class AbstractArchivaRestTest
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
         // Set the Referer header to your archiva server url
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client(service).header("Referer","http://localhost:"+getServerPort());
 
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
         if ( useXml )
@@ -304,7 +337,7 @@ public abstract class AbstractArchivaRestTest
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
         // Set the Referer header to your archiva server url
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client(service).header("Referer","http://localhost:"+getServerPort());
         // to configure read timeout
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
         // if you want to use json as exchange format xml is supported too
@@ -326,7 +359,7 @@ public abstract class AbstractArchivaRestTest
         {
             WebClient.client( service ).header( "Authorization", authzHeader );
         }
-        WebClient.client(service).header("Referer","http://localhost:"+port);
+        WebClient.client(service).header("Referer","http://localhost:"+getServerPort());
         WebClient.getConfig( service ).getHttpConduit().getClient().setReceiveTimeout( 100000000 );
         WebClient.client( service ).accept( MediaType.APPLICATION_JSON_TYPE );
         WebClient.client( service ).type( MediaType.APPLICATION_JSON_TYPE );
@@ -344,7 +377,21 @@ public abstract class AbstractArchivaRestTest
     protected String getBaseUrl()
     {
         String baseUrlSysProps = System.getProperty( "archiva.baseRestUrl" );
-        return StringUtils.isBlank( baseUrlSysProps ) ? "http://localhost:" + port : baseUrlSysProps;
+        return StringUtils.isBlank( baseUrlSysProps ) ? "http://localhost:" + getServerPort() : baseUrlSysProps;
+    }
+
+    protected Path getBuildDirectory() {
+        if (buildDir.get()==null) {
+            String propVal = System.getProperty("mvn.project.base.dir");
+            Path newVal;
+            if (StringUtils.isEmpty(propVal)) {
+                newVal = Paths.get("").toAbsolutePath();
+            } else {
+                newVal = Paths.get(propVal).toAbsolutePath();
+            }
+            buildDir.compareAndSet(null, newVal);
+        }
+        return buildDir.get();
     }
 
     //-----------------------------------------------------
@@ -384,7 +431,7 @@ public abstract class AbstractArchivaRestTest
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( originRepo );
         }
         assertFalse( Files.exists(originRepo) );
-        FileUtils.copyDirectory( Paths.get( "src/test/repo-with-osgi" ).toAbsolutePath().toFile(), originRepo.toAbsolutePath().toFile() );
+        FileUtils.copyDirectory( getBuildDirectory().resolve("src/test/repo-with-osgi" ).toAbsolutePath().toFile(), originRepo.toAbsolutePath().toFile() );
 
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) != null )
         {

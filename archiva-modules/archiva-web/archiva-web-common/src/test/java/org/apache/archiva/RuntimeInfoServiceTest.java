@@ -74,7 +74,7 @@ public class RuntimeInfoServiceTest
     protected String getBaseUrl()
     {
         String baseUrlSysProps = System.getProperty( "archiva.baseRestUrl" );
-        return StringUtils.isBlank( baseUrlSysProps ) ? "http://localhost:" + port : baseUrlSysProps;
+        return StringUtils.isBlank( baseUrlSysProps ) ? "http://localhost:" + getServerPort() : baseUrlSysProps;
     }
 
     @Test

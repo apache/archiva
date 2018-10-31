@@ -36,6 +36,23 @@ public class RemoteRepositoriesServiceTest
 {
 
 
+    private void removeRemoteRepositories(String... repos) {
+        try {
+            RemoteRepositoriesService service = getRemoteRepositoriesService();
+            WebClient.client( service ).header( "Authorization", authorizationHeader );
+            for (String repo : repos ) {
+                try {
+                    service.deleteRemoteRepository(repo);
+                } catch (Throwable ex) {
+                    log.warn("Could not remove repo {}", repo);
+                    // ignore
+                }
+            }
+        } catch (Throwable ex) {
+            // ignore
+        }
+    }
+
     @Test( expected = ForbiddenException.class )
     public void listRemoteRepositoriesKarmaFailed()
         throws Exception
@@ -150,15 +167,19 @@ public class RemoteRepositoriesServiceTest
     @Test
     public void checkRemoteConnectivity()
             throws Exception {
-        RemoteRepositoriesService service = getRemoteRepositoriesService();
+        try {
+            RemoteRepositoriesService service = getRemoteRepositoriesService();
 
-        WebClient.client(service).header("Authorization", authorizationHeader);
+            WebClient.client(service).header("Authorization", authorizationHeader);
 
-        int initialSize = service.getRemoteRepositories().size();
+            int initialSize = service.getRemoteRepositories().size();
 
-        service.addRemoteRepository(getRemoteRepository());
+            service.addRemoteRepository(getRemoteRepository());
 
-        assertTrue(service.checkRemoteConnectivity("id-new"));
+            assertTrue(service.checkRemoteConnectivity("id-new"));
+        } finally {
+            removeRemoteRepositories("id-new");
+        }
 
     }
 
@@ -168,15 +189,19 @@ public class RemoteRepositoriesServiceTest
     @Test
     public void checkRemoteConnectivity2()
             throws Exception {
-        RemoteRepositoriesService service = getRemoteRepositoriesService();
+        try {
+            RemoteRepositoriesService service = getRemoteRepositoriesService();
 
-        WebClient.client(service).header("Authorization", authorizationHeader);
+            WebClient.client(service).header("Authorization", authorizationHeader);
 
-        int initialSize = service.getRemoteRepositories().size();
+            int initialSize = service.getRemoteRepositories().size();
 
-        service.addRemoteRepository(getRemoteMavenRepository());
+            service.addRemoteRepository(getRemoteMavenRepository());
 
-        assertTrue(service.checkRemoteConnectivity("id-maven1"));
+            assertTrue(service.checkRemoteConnectivity("id-maven1"));
+        } finally {
+            removeRemoteRepositories("id-maven1");
+        }
 
     }
 
@@ -187,16 +212,20 @@ public class RemoteRepositoriesServiceTest
     @Test
     public void checkRemoteConnectivity3()
             throws Exception {
-        RemoteRepositoriesService service = getRemoteRepositoriesService();
+        try {
+            RemoteRepositoriesService service = getRemoteRepositoriesService();
 
-        WebClient.client(service).header("Authorization", authorizationHeader);
-        WebClient.client(service).accept("application/json");
+            WebClient.client(service).header("Authorization", authorizationHeader);
+            WebClient.client(service).accept("application/json");
 
-        int initialSize = service.getRemoteRepositories().size();
+            int initialSize = service.getRemoteRepositories().size();
 
-        service.addRemoteRepository(getRemoteOracleRepository());
+            service.addRemoteRepository(getRemoteOracleRepository());
 
-        assertTrue(service.checkRemoteConnectivity("id-oracle"));
+            assertTrue(service.checkRemoteConnectivity("id-oracle"));
+        } finally {
+            removeRemoteRepositories("id-oracle");
+        }
 
     }
 
