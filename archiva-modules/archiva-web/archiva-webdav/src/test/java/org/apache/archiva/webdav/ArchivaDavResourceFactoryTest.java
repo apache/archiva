@@ -51,6 +51,7 @@ import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryCont
 import org.apache.archiva.repository.content.maven2.RepositoryRequest;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResourceLocator;
 import org.apache.jackrabbit.webdav.DavServletRequest;
@@ -75,6 +76,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.easymock.EasyMock.*;
 
@@ -86,6 +88,8 @@ import static org.easymock.EasyMock.*;
 public class ArchivaDavResourceFactoryTest
     extends TestCase
 {
+    private AtomicReference<Path> projectBase = new AtomicReference<>();
+
     private static final String RELEASES_REPO = "releases";
 
     private static final String INTERNAL_REPO = "internal";
@@ -145,6 +149,19 @@ public class ArchivaDavResourceFactoryTest
     @Inject
     FileTypes fileTypes;
 
+    private Path getProjectBase() {
+        if (this.projectBase.get()==null) {
+            String pathVal = System.getProperty("mvn.project.base.dir");
+            Path baseDir;
+            if (StringUtils.isEmpty(pathVal)) {
+                baseDir= Paths.get("").toAbsolutePath();
+            } else {
+                baseDir = Paths.get(pathVal).toAbsolutePath();
+            }
+            this.projectBase.compareAndSet(null, baseDir);
+        }
+        return this.projectBase.get();
+    }
 
     @Before
     @Override
@@ -181,13 +198,13 @@ public class ArchivaDavResourceFactoryTest
         if ( defaultManagedRepositoryAdmin.getManagedRepository( RELEASES_REPO ) == null )
         {
             defaultManagedRepositoryAdmin.addManagedRepository(
-                createManagedRepository( RELEASES_REPO, Paths.get( "target/test-classes/" + RELEASES_REPO ).toString(),
+                createManagedRepository( RELEASES_REPO, getProjectBase().resolve( "target/test-classes/" + RELEASES_REPO ).toString(),
                                          "default" ), false, null );
         }
         if ( defaultManagedRepositoryAdmin.getManagedRepository( INTERNAL_REPO ) == null )
         {
             defaultManagedRepositoryAdmin.addManagedRepository(
-                createManagedRepository( INTERNAL_REPO, Paths.get( "target/test-classes/" + INTERNAL_REPO ).toString(),
+                createManagedRepository( INTERNAL_REPO, getProjectBase().resolve( "target/test-classes/" + INTERNAL_REPO ).toString(),
                                          "default" ), false, null );
         }
         RepositoryGroup repoGroupConfig = new RepositoryGroup();
@@ -294,6 +311,11 @@ public class ArchivaDavResourceFactoryTest
         throws Exception
     {
         super.tearDown();
+        String appserverBase = System.getProperty( "appserver.base" );
+        if ( StringUtils.isNotEmpty( appserverBase ) )
+        {
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( Paths.get( appserverBase ) );
+        }
     }
 
     // MRM-1232 - Unable to get artifacts from repositories which requires Repository Manager role using repository group
@@ -584,7 +606,8 @@ public class ArchivaDavResourceFactoryTest
         }
         catch ( DavException e )
         {
-            fail( "A DavException should not have been thrown!" );
+            e.printStackTrace();
+            fail( "A DavException should not have been thrown! "+e.getMessage() );
         }
     }
 
@@ -648,7 +671,7 @@ public class ArchivaDavResourceFactoryTest
         RepositoryContentFactory repoContentFactory = applicationContext.getBean( "repositoryContentFactory#default", RepositoryContentFactory.class );
         repoContentFactory.getRepositoryContentProviders().add(provider);
         defaultManagedRepositoryAdmin.addManagedRepository(
-            createManagedRepository( LEGACY_REPO, Paths.get( "target/test-classes/" + LEGACY_REPO ).toString(),
+            createManagedRepository( LEGACY_REPO, getProjectBase().resolve( "target/test-classes/" + LEGACY_REPO ).toString(),
                                      "legacy" ), false, null );
         DavResourceLocator locator =
             new ArchivaDavResourceLocator( "", "/repository/" + LEGACY_REPO + "/eclipse/maven-metadata.xml",
@@ -735,7 +758,7 @@ public class ArchivaDavResourceFactoryTest
             Path target = Paths.get(repository.getRepoRoot(), logicalPath );
             try
             {
-                FileUtils.copyFile( Paths.get( "target/test-classes/maven-metadata.xml" ).toFile(), target.toFile() );
+                FileUtils.copyFile( getProjectBase().resolve( "target/test-classes/maven-metadata.xml" ).toFile(), target.toFile() );
             }
             catch ( IOException e )
             {

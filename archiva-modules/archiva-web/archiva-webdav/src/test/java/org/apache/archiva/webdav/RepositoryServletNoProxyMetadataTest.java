@@ -21,6 +21,7 @@ package org.apache.archiva.webdav;
 
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,6 +42,13 @@ public class RepositoryServletNoProxyMetadataTest
     {
         super.setUp();
         startRepository();
+    }
+
+    @Override
+    @After
+    public void tearDown( ) throws Exception
+    {
+        super.tearDown( );
     }
 
     @Test

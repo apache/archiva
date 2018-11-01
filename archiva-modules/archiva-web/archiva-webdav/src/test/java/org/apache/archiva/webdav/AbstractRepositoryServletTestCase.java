@@ -78,6 +78,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * AbstractRepositoryServletTestCase
@@ -108,6 +109,42 @@ public abstract class AbstractRepositoryServletTestCase
 
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
+    private AtomicReference<Path> projectBase = new AtomicReference<>( );
+    private AtomicReference<Path> appserverBase = new AtomicReference<>( );
+
+
+    public Path getProjectBase() {
+        if (this.projectBase.get()==null) {
+            String pathVal = System.getProperty("mvn.project.base.dir");
+            Path baseDir;
+            if (StringUtils.isEmpty(pathVal)) {
+                baseDir= Paths.get("").toAbsolutePath();
+            } else {
+                baseDir = Paths.get(pathVal).toAbsolutePath();
+            }
+            this.projectBase.compareAndSet(null, baseDir);
+        }
+        return this.projectBase.get();
+    }
+
+    public Path getAppserverBase() {
+        if (appserverBase.get()==null)
+        {
+            String pathVal = System.getProperty( "appserver.base" );
+            Path basePath;
+            if ( StringUtils.isNotEmpty( pathVal ) )
+            {
+                basePath = Paths.get( pathVal );
+            }
+            else
+            {
+                log.warn("Using relative path to working directory, appserver.base was not set!");
+                basePath = Paths.get( "target/appserver-base" );
+            }
+            appserverBase.set( basePath );
+        }
+        return appserverBase.get();
+    }
 
     protected void saveConfiguration()
         throws Exception
@@ -124,19 +161,21 @@ public abstract class AbstractRepositoryServletTestCase
 
         super.setUp();
 
-        String appserverBase = Paths.get( "target/appserver-base" ).toAbsolutePath().toString();
-        System.setProperty( "appserver.base", appserverBase );
+        System.setProperty( "appserver.base", getAppserverBase().toAbsolutePath().toString());
+        log.info("setUp appserverBase={}, projectBase={}, workingDir={}", getAppserverBase(), getProjectBase(), Paths.get("").toString());
 
-        Path testConf = Paths.get( "src/test/resources/repository-archiva.xml" );
-        Path testConfDest = Paths.get(appserverBase, "conf/archiva.xml" );
+        org.apache.archiva.common.utils.FileUtils.deleteDirectory( getAppserverBase() );
+
+        Path testConf = getProjectBase().resolve( "src/test/resources/repository-archiva.xml" );
+        Path testConfDest = getAppserverBase().resolve("conf/archiva.xml" );
         if ( Files.exists(testConfDest) )
         {
             org.apache.archiva.common.utils.FileUtils.deleteQuietly( testConfDest );
         }
         FileUtils.copyFile( testConf.toFile(), testConfDest.toFile() );
 
-        repoRootInternal = Paths.get( appserverBase, "data/repositories/internal" );
-        repoRootLegacy = Paths.get( appserverBase, "data/repositories/legacy" );
+        repoRootInternal = getAppserverBase().resolve("data/repositories/internal" );
+        repoRootLegacy = getAppserverBase().resolve( "data/repositories/legacy" );
         Configuration config = archivaConfiguration.getConfiguration();
 
         config.getManagedRepositories().clear();
@@ -685,6 +724,12 @@ public abstract class AbstractRepositoryServletTestCase
         if ( Files.exists(repoRootLegacy) )
         {
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( repoRootLegacy );
+        }
+
+        String appserverBase = System.getProperty( "appserver.base" );
+        if ( StringUtils.isNotEmpty( appserverBase ) )
+        {
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( Paths.get( appserverBase ) );
         }
 
     }

@@ -178,8 +178,13 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -335,20 +340,31 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine>${webdav.argLine} @{jacocoproperty}</argLine>
+          <forkCount>2</forkCount>
+          <reuseForks>false</reuseForks>
+          <!--
+            The property jdk.net.URLClassPath.disableClassPathURLCheck is a workaround for a regression
+            with surefire and OpenJDK 8 181b13 on Debian/Ubuntu,
+            @see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=911925
+          -->
+          <argLine>${webdav.argLine} -Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+          <workingDirectory>${project.build.directory}/WDIR-${surefire.forkNumber}</workingDirectory>
+          <environmentVariables>
+            <ARCHIVA_USER_CONFIG_FILE>${java.io.tmpdir}/archiva-webdav-${surefire.forkNumber}.xml</ARCHIVA_USER_CONFIG_FILE>
+          </environmentVariables>
           <systemPropertyVariables>
-            <appserver.base>${project.build.directory}/appserver-base</appserver.base>
-            <plexus.home>${project.build.directory}/appserver-base</plexus.home>
-            <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
+            <mvn.project.base.dir>${project.basedir}</mvn.project.base.dir>
+            <appserver.base>${project.build.directory}/appserver-base-${surefire.forkNumber}</appserver.base>
+            <plexus.home>${project.build.directory}/appserver-base-${surefire.forkNumber}</plexus.home>
+            <derby.system.home>${project.build.directory}/appserver-base-${surefire.forkNumber}</derby.system.home>
             <test.resources.path>${project.build.testOutputDirectory}</test.resources.path>
-            <archiva.user.configFileName>${project.build.testOutputDirectory}/repository-archiva.xml</archiva.user.configFileName>
+            <archiva.user.configFileName>${project.build.directory}/appserver-base-${surefire.forkNumber}/conf/archiva.xml</archiva.user.configFileName>
             <redback.jdbc.url>${redbackTestJdbcUrl}</redback.jdbc.url>
             <redback.jdbc.driver.name>${redbackTestJdbcDriver}</redback.jdbc.driver.name>
             <archiva.repositorySessionFactory.id>mock</archiva.repositorySessionFactory.id>
             <openjpa.Log>${openjpa.Log}</openjpa.Log>
             <org.apache.jackrabbit.core.state.validatehierarchy>true</org.apache.jackrabbit.core.state.validatehierarchy>
           </systemPropertyVariables>
-          <forkMode>${webdav.forkMode}</forkMode>
         </configuration>
       </plugin>
     </plugins>

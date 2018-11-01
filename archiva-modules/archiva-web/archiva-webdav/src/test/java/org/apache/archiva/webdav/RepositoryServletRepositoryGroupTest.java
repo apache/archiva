@@ -22,11 +22,13 @@ package org.apache.archiva.webdav;
 
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -140,6 +142,12 @@ public class RepositoryServletRepositoryGroupTest
         setupCleanRepo( repoRootLast );
 
         super.tearDown();
+
+        String appserverBase = System.getProperty( "appserver.base" );
+        if ( StringUtils.isNotEmpty( appserverBase ) )
+        {
+            FileUtils.deleteDirectory( Paths.get( appserverBase ) );
+        }
     }
 
     /*
@@ -265,7 +273,7 @@ public class RepositoryServletRepositoryGroupTest
                 + "dummy-merged-metadata-resource/maven-metadata.xml" );
         WebResponse response = getServletUnitClient().getResource( request );
 
-        Path returnedMetadata = Paths.get( "target/test-classes/retrievedMetadataFile.xml" );
+        Path returnedMetadata = getProjectBase().resolve( "target/test-classes/retrievedMetadataFile.xml" );
         org.apache.archiva.common.utils.FileUtils.writeStringToFile( returnedMetadata, Charset.defaultCharset(), response.getContentAsString() );
         ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( returnedMetadata );
 

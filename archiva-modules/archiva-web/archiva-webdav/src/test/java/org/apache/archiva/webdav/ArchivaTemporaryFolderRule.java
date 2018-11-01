@@ -15,6 +15,7 @@
  */
 package org.apache.archiva.webdav;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -24,18 +25,38 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Rule to help creating folder for repository based on testmethod name
  * @author Eric
  */
 public class ArchivaTemporaryFolderRule implements TestRule {
+
+
+
     private Path d;
     private Description desc = Description.EMPTY;
 
+    private AtomicReference<Path> projectBase = new AtomicReference<>( );
+
+    private Path getProjectBase() {
+        if (this.projectBase.get()==null) {
+            String pathVal = System.getProperty("mvn.project.base.dir");
+            Path baseDir;
+            if ( StringUtils.isEmpty(pathVal)) {
+                baseDir= Paths.get("").toAbsolutePath();
+            } else {
+                baseDir = Paths.get(pathVal).toAbsolutePath();
+            }
+            this.projectBase.compareAndSet(null, baseDir);
+        }
+        return this.projectBase.get();
+    }
+
     public void before() throws IOException {
         // hard coded maven target file
-        Path f1 = Paths.get("target", "archivarepo", ArchivaTemporaryFolderRule.resumepackage(desc.getClassName()), desc.getMethodName());
+        Path f1 = getProjectBase().resolve("target/archivarepo").resolve(ArchivaTemporaryFolderRule.resumepackage(desc.getClassName())).resolve(desc.getMethodName());
         d = Files.createDirectories( f1 );
     }
 

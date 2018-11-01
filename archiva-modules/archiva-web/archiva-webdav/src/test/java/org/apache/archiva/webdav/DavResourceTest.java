@@ -21,10 +21,12 @@ package org.apache.archiva.webdav;
 
 import junit.framework.TestCase;
 import org.apache.archiva.common.filelock.FileLockManager;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.util.MimeTypes;
+import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResource;
 import org.apache.jackrabbit.webdav.DavResourceFactory;
@@ -107,6 +109,11 @@ public class DavResourceTest
     {
         super.tearDown();
         org.apache.archiva.common.utils.FileUtils.deleteDirectory( baseDir );
+        String appserverBase = System.getProperty( "appserver.base" );
+        if ( StringUtils.isNotEmpty( appserverBase ) )
+        {
+            FileUtils.deleteDirectory( Paths.get( appserverBase ) );
+        }
     }
 
     private DavResource getDavResource( String logicalPath, Path file )

@@ -23,6 +23,7 @@ package org.apache.archiva.webdav;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -49,6 +50,13 @@ public class RepositoryServletNoProxyTest
         super.setUp();
         archivaConfiguration.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>() );
         startRepository();
+    }
+
+    @Override
+    @After
+    public void tearDown( ) throws Exception
+    {
+        super.tearDown( );
     }
 
     @Test

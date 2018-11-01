@@ -21,12 +21,14 @@ package org.apache.archiva.webdav;
 
 
 import com.gargoylesoftware.htmlunit.WebClient;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -42,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -116,6 +119,13 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         shutdownServer( remoteCentral );
         shutdownServer( remoteSnapshots );
         super.tearDown();
+        String baseDirProp = System.getProperty( "appserver.base" );
+        if ( StringUtils.isNotEmpty( baseDirProp )) {
+            Path baseDir = Paths.get(baseDirProp);
+            log.info("Deleting appserver base {}", baseDir);
+            FileUtils.deleteDirectory( baseDir );
+            log.info("exist {}", Files.exists(baseDir));
+        }
     }
 
     protected RemoteRepoInfo createServer( String id )
@@ -130,7 +140,7 @@ public abstract class AbstractRepositoryServletProxiedTestCase
         // Remove exising root contents.
         if ( Files.exists(repo.root) )
         {
-            org.apache.archiva.common.utils.FileUtils.deleteDirectory( repo.root );
+            FileUtils.deleteDirectory( repo.root );
         }
 
         // Establish root directory.

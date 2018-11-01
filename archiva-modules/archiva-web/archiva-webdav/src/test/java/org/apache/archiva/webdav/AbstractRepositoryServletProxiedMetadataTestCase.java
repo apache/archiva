@@ -22,11 +22,14 @@ package org.apache.archiva.webdav;
 
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
+import org.apache.archiva.common.utils.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
 import org.junit.Before;
+
+import java.nio.file.Paths;
 
 /**
  * Abstract TestCase for RepositoryServlet Tests, Proxied, Get of Metadata. 
@@ -210,5 +213,12 @@ public abstract class AbstractRepositoryServletProxiedMetadataTestCase
         shutdownServer( remotePrivateSnapshots );
 
         super.tearDown();
+
+        String appserverBase = System.getProperty( "appserver.base" );
+        if ( StringUtils.isNotEmpty( appserverBase ) )
+        {
+            FileUtils.deleteDirectory( Paths.get( appserverBase ) );
+        }
+
     }
 }

@@ -40,6 +40,7 @@ import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavSessionProvider;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
@@ -68,6 +69,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
@@ -107,7 +109,23 @@ public class RepositoryServletSecurityTest
 
     @Rule
     public ArchivaTemporaryFolderRule repoRootInternal = new ArchivaTemporaryFolderRule();
-    
+
+    private AtomicReference<Path> projectBase = new AtomicReference<>( );
+
+    public Path getProjectBase() {
+        if (this.projectBase.get()==null) {
+            String pathVal = System.getProperty("mvn.project.base.dir");
+            Path baseDir;
+            if ( StringUtils.isEmpty(pathVal)) {
+                baseDir= Paths.get("").toAbsolutePath();
+            } else {
+                baseDir = Paths.get(pathVal).toAbsolutePath();
+            }
+            this.projectBase.compareAndSet(null, baseDir);
+        }
+        return this.projectBase.get();
+    }
+
     @Before
     @Override
     public void setUp()
@@ -117,9 +135,9 @@ public class RepositoryServletSecurityTest
         super.setUp();
 
         String appserverBase =
-            System.getProperty( "appserver.base", Paths.get( "target/appserver-base" ).toAbsolutePath().toString() );
+            System.getProperty( "appserver.base", getProjectBase().resolve( "target/appserver-base" ).toAbsolutePath().toString() );
 
-        Path testConf = Paths.get( "src/test/resources/repository-archiva.xml" );
+        Path testConf = getProjectBase().resolve( "src/test/resources/repository-archiva.xml" );
         Path testConfDest = Paths.get(appserverBase, "conf/archiva.xml" );
         FileUtils.copyFile( testConf.toFile(), testConfDest.toFile() );
         
@@ -212,6 +230,10 @@ public class RepositoryServletSecurityTest
         }*/
 
         super.tearDown();
+        String appBaseProp = System.getProperty( "appserver.base" );
+        if (StringUtils.isNotEmpty( appBaseProp )) {
+            org.apache.archiva.common.utils.FileUtils.deleteDirectory( Paths.get(appBaseProp) );
+        }
     }
 
 
