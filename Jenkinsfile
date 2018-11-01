@@ -55,9 +55,9 @@ pipeline {
                             mavenSettingsConfig: deploySettings,
                             mavenLocalRepo: ".repository",
                             options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
-                                      findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
+                                      findbugsPublisher(disabled: true), artifactsPublisher(disabled: false),
                                       invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
-                                      junitPublisher(disabled: true, ignoreAttachments: false),
+                                      junitPublisher(disabled: false, ignoreAttachments: false),
                                       openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
                     )
                             {
@@ -75,7 +75,7 @@ pipeline {
                                 // -Dmaven.compiler.fork=true: Do compile in a separate forked process
                                 // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
                                 // -Pci-build: Profile for CI-Server
-                                sh "mvn clean deploy -B -U -e -fae -T2 -Dmaven.compiler.fork=true -Pci-build"
+                                sh "mvn clean deploy -B -U -e -fae -T1C -Dmaven.compiler.fork=true -Pci-build"
                             }
                 }
             }
@@ -86,28 +86,30 @@ pipeline {
                 }
                 success {
                     archiveArtifacts '**/target/*.war,**/target/*-bin.zip'
+                    stash(name:'archiva-master-build-ws')
                 }
                 failure {
                     notifyBuild("Failure in BuildAndDeploy stage")
                 }
             }
         }
-        stage('IntegrationTest') {
-            steps {
-                build(job: "${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate: false, quietPeriod: 10)
-            }
-        }
 
 
-        stage('JDKs') {
+
+        stage('Postbuild') {
             parallel {
+                stage('IntegrationTest') {
+                    steps {
+                        build(job: "${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate: false, quietPeriod: 10)
+                    }
+                }
                 stage('JDK9') {
                     environment {
                         ARCHIVA_USER_CONFIG_FILE='/tmp/archiva-master-jdk-9-${env.JOB_NAME}.xml'
                     }
                     steps {
                         ws("${env.JOB_NAME}-JDK9") {
-                            checkout scm
+                            unstash(name:'archiva-master-build-ws')
                             timeout(120) {
                                 withMaven(maven: buildMvn, jdk: buildJdk9,
                                         mavenSettingsConfig: deploySettings,
@@ -119,7 +121,7 @@ pipeline {
                                                   openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
                                 )
                                         {
-                                            sh "mvn clean install -B -U -e -fae -T2 -Dmaven.compiler.fork=true -Pci-build"
+                                            sh "mvn clean install -B -e -fae -T1C -Dmaven.compiler.fork=true -Pci-build"
                                         }
                             }
                         }
@@ -136,7 +138,7 @@ pipeline {
                     }
                     steps {
                         ws("${env.JOB_NAME}-JDK10") {
-                            checkout scm
+                            unstash(name:'archiva-master-build-ws')
                             timeout(120) {
                                 withMaven(maven: buildMvn, jdk: buildJdk10,
                                         mavenSettingsConfig: deploySettings,
@@ -148,7 +150,7 @@ pipeline {
                                                   openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
                                 )
                                         {
-                                            sh "mvn clean install -B -U -e -fae -T2 -Dmaven.compiler.fork=true -Pci-build"
+                                            sh "mvn clean install -B -e -fae -T1C -Dmaven.compiler.fork=true -Pci-build"
                                         }
                             }
                         }
