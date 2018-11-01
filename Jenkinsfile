@@ -33,6 +33,7 @@ buildJdk9 = 'JDK 1.9 (latest)'
 buildJdk10 = 'JDK 10 (latest)'
 buildMvn = 'Maven 3.5.2'
 deploySettings = 'archiva-uid-jenkins'
+localRepository = "../.archiva-master-repository"
 
 INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
 
@@ -40,22 +41,39 @@ pipeline {
     agent {
         label "${LABEL}"
     }
-
+    options {
+        disableConcurrentBuilds()
+    }
+    parameters {
+        booleanParam(name: 'PRECLEANUP', defaultValue: false, description: 'Clears the local maven repository before build.')
+    }
 
 
     stages {
 
+        stage('PreCleanup') {
+            when {
+                expression {
+                    params.PRECLEANUP
+                }
+            }
+            steps {
+                sh "rm -rf ${localRepository}"
+            }
+        }
+
         stage('BuildAndDeploy') {
             environment {
-                ARCHIVA_USER_CONFIG_FILE='/tmp/archiva-master-jdk-8-${env.JOB_NAME}.xml'
+                ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-8-${env.JOB_NAME}.xml'
             }
+
             steps {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
                             mavenSettingsConfig: deploySettings,
-                            mavenLocalRepo: ".repository",
+                            mavenLocalRepo: localRepository,
                             options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
-                                      findbugsPublisher(disabled: true), artifactsPublisher(disabled: false),
+                                      findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
                                       invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
                                       junitPublisher(disabled: false, ignoreAttachments: false),
                                       openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
@@ -75,7 +93,7 @@ pipeline {
                                 // -Dmaven.compiler.fork=true: Do compile in a separate forked process
                                 // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
                                 // -Pci-build: Profile for CI-Server
-                                sh "mvn clean deploy -B -U -e -fae -T1C -Dmaven.compiler.fork=true -Pci-build"
+                                sh "mvn clean deploy -B -U -e -fae -Dmaven.compiler.fork=true -Pci-build"
                             }
                 }
             }
@@ -86,7 +104,6 @@ pipeline {
                 }
                 success {
                     archiveArtifacts '**/target/*.war,**/target/*-bin.zip'
-                    stash(name:'archiva-master-build-ws')
                 }
                 failure {
                     notifyBuild("Failure in BuildAndDeploy stage")
@@ -100,16 +117,16 @@ pipeline {
             parallel {
                 stage('IntegrationTest') {
                     steps {
-                        build(job: "${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate: false, quietPeriod: 10)
+                        build(job: "${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate: false, quietPeriod: 5, wait: false)
                     }
                 }
                 stage('JDK9') {
                     environment {
-                        ARCHIVA_USER_CONFIG_FILE='/tmp/archiva-master-jdk-9-${env.JOB_NAME}.xml'
+                        ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-9-${env.JOB_NAME}.xml'
                     }
                     steps {
                         ws("${env.JOB_NAME}-JDK9") {
-                            unstash(name:'archiva-master-build-ws')
+                            checkout scm
                             timeout(120) {
                                 withMaven(maven: buildMvn, jdk: buildJdk9,
                                         mavenSettingsConfig: deploySettings,
@@ -121,7 +138,7 @@ pipeline {
                                                   openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
                                 )
                                         {
-                                            sh "mvn clean install -B -e -fae -T1C -Dmaven.compiler.fork=true -Pci-build"
+                                            sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build"
                                         }
                             }
                         }
@@ -130,15 +147,18 @@ pipeline {
                         always {
                             sh "rm -f /tmp/archiva-master-jdk-9-${env.JOB_NAME}.xml"
                         }
+                        success {
+                            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
+                        }
                     }
                 }
                 stage('JDK10') {
                     environment {
-                        ARCHIVA_USER_CONFIG_FILE='/tmp/archiva-master-jdk-10-${env.JOB_NAME}.xml'
+                        ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-10-${env.JOB_NAME}.xml'
                     }
                     steps {
                         ws("${env.JOB_NAME}-JDK10") {
-                            unstash(name:'archiva-master-build-ws')
+                            checkout scm
                             timeout(120) {
                                 withMaven(maven: buildMvn, jdk: buildJdk10,
                                         mavenSettingsConfig: deploySettings,
@@ -150,7 +170,7 @@ pipeline {
                                                   openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
                                 )
                                         {
-                                            sh "mvn clean install -B -e -fae -T1C -Dmaven.compiler.fork=true -Pci-build"
+                                            sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build"
                                         }
                             }
                         }
@@ -158,6 +178,9 @@ pipeline {
                     post {
                         always {
                             sh "rm -f /tmp/archiva-master-jdk-10-${env.JOB_NAME}.xml"
+                        }
+                        success {
+                            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
                         }
                     }
                 }
@@ -177,9 +200,6 @@ pipeline {
                     notifyBuild("Fixed")
                 }
             }
-        }
-        always {
-            cleanWs()
         }
     }
 }

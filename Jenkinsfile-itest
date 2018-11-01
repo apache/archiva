@@ -29,6 +29,7 @@ buildJdk = 'JDK 1.8 (latest)'
 buildMvn = 'Maven 3.5.2'
 deploySettings = 'archiva-uid-jenkins'
 DOCKERHUB_CREDS = '10a5f89e-504b-11e8-945d-7fd7b29cc41c'
+localRepository = "../.archiva-master-repository"
 
 pipeline {
     agent {
@@ -57,7 +58,7 @@ pipeline {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
                             mavenSettingsConfig: deploySettings,
-                            mavenLocalRepo: ".repository",
+                            mavenLocalRepo: localRepository,
                             options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
                                       findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
                                       invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
@@ -79,8 +80,7 @@ pipeline {
                                 // -Dmaven.compiler.fork=true: Compile in a separate forked process
                                 // -Pci-server: Profile for CI-Server
                                 // -Pit-js: Run the selenium test
-                                sh "mvn clean install -B -U -Dmaven.test.skip=true -T2"
-                                sh "mvn clean install -B -V -U -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -Pci-server -Pit-js -DtrimStackTrace=false -Djava.io.tmpdir=.tmp -pl :archiva-webapp-test"
+                                sh "mvn clean verify -B -V -U -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -Pci-server -Pit-js -DtrimStackTrace=false -Djava.io.tmpdir=.tmp -pl :archiva-webapp-test"
 
                             }
                 }
@@ -104,7 +104,7 @@ pipeline {
                                       usernameVariable: 'DOCKER_HUB_USER', passwordVariable: 'DOCKER_HUB_PW']]) {
                         withMaven(maven: buildMvn, jdk: buildJdk,
                                 mavenSettingsConfig: deploySettings,
-                                mavenLocalRepo: ".repository",
+                                mavenLocalRepo: localRepository,
                                 options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
                                           findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
                                           invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
@@ -128,7 +128,7 @@ pipeline {
                                     // -Pci-server: Profile for CI Server
                                     // -Pit-js: Runs the Selenium tests
                                     // -Pchrome: Activates the Selenium Chrome Test Agent
-                                    sh "mvn clean install -B -V -U -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -DseleniumRemote=true -Pci-server -Pit-js -Pchrome -pl :archiva-webapp-test -DtrimStackTrace=false"
+                                    sh "mvn verify -B -V -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -DseleniumRemote=true -Pci-server -Pit-js -Pchrome -pl :archiva-webapp-test -DtrimStackTrace=false"
                                 }
                     }
                 }
