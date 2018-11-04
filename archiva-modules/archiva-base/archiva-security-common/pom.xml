@@ -28,6 +28,11 @@
   <artifactId>archiva-security-common</artifactId>
   <packaging>bundle</packaging>
   <name>Archiva Base :: Security Common</name>
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <build>
     <plugins>
       <plugin>

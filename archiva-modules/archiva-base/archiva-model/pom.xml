@@ -28,6 +28,11 @@
   <artifactId>archiva-model</artifactId>
   <packaging>bundle</packaging>
   <name>Archiva Base :: Model</name>
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>commons-lang</groupId>

@@ -41,6 +41,7 @@
     <archiva.repositorySessionFactory.id>jcr</archiva.repositorySessionFactory.id>
     <cassandra.host>localhost</cassandra.host>
     <cassandra.port>9160</cassandra.port>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
   </properties>
 
   <dependencies>

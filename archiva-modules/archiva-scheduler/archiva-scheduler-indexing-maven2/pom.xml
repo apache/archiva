@@ -29,6 +29,11 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
 
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <artifactId>archiva-scheduler-indexing-maven2</artifactId>
   <name>Archiva Scheduler :: Maven Indexing</name>
   <packaging>bundle</packaging>

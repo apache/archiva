@@ -30,6 +30,8 @@
   <name>Archiva :: Karaf Features</name>
 
   <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+
     <aopalliance.bundle.version>1.0_5</aopalliance.bundle.version>
     <beanlib.bundle.version>5.0.2beta_1-SNAPSHOT</beanlib.bundle.version>
     <cglib.bundle.version>2.2_2</cglib.bundle.version>

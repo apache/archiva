@@ -28,6 +28,11 @@
   <artifactId>archiva-scheduler</artifactId>
   <packaging>pom</packaging>
   <name>Archiva :: Scheduler</name>
+
+  <properties>
+    <site.staging.base>${project.parent.basedir}</site.staging.base>
+  </properties>
+
   <modules>
     <module>archiva-scheduler-api</module>
     <module>archiva-scheduler-indexing</module>

@@ -29,10 +29,12 @@
   <packaging>maven-archetype</packaging>
   <name>Archiva Consumers :: Consumers Archetype</name>
   <description>Simple archetype to create archiva consumers</description>
+
   <properties>
     <archivaVersion>${project.version}</archivaVersion>
     <archetypeVersion>2.4</archetypeVersion>
     <mavenInvokerVersion>2.2</mavenInvokerVersion>
+    <site.staging.base>${project.parent.parent.parent.basedir}</site.staging.base>
   </properties>
   <dependencies>
     <!-- Used by the archetype, so needed to be built before integration

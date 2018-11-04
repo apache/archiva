@@ -27,6 +27,11 @@
   <artifactId>plugins</artifactId>
   <name>Archiva :: Core Plugins</name>
   <packaging>pom</packaging>
+
+  <properties>
+    <site.staging.base>${project.parent.basedir}</site.staging.base>
+  </properties>
+
   <modules>
     <module>metadata-store-file</module>
     <module>maven2-repository</module>

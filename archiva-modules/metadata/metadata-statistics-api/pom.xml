@@ -27,6 +27,11 @@
   <artifactId>metadata-statistics-api</artifactId>
   <packaging>bundle</packaging>
   <name>Archiva Metadata :: Statistics API</name>
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>

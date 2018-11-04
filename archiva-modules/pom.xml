@@ -17,7 +17,8 @@
 ~ specific language governing permissions and limitations
 ~ under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>archiva</artifactId>
     <groupId>org.apache.archiva</groupId>
@@ -30,13 +31,15 @@
   <url>http://archiva.apache.org/ref/${project.version}</url>
 
   <properties>
-    <siteFilePath>${user.home}/archiva-sites/archiva-ref-${project.version}/</siteFilePath>
-    <siteUrlDeployment>file://${siteFilePath}</siteUrlDeployment>
     <scmPubCheckoutDirectory>${basedir}/.site-content</scmPubCheckoutDirectory>
+    <!-- The git repository, where the site content is placed -->
+    <siteRepositoryUrl>scm:git:https://gitbox.apache.org/repos/asf/archiva-web-content-INVALID.git</siteRepositoryUrl>
+    <site.staging.base>${project.basedir}</site.staging.base>
   </properties>
 
   <modules>
     <module>archiva-base</module>
+
     <module>archiva-scheduler</module>
     <module>archiva-web</module>
     <module>archiva-karaf</module>
@@ -51,27 +54,63 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-scm-publish-plugin</artifactId>
           <configuration>
-            <pubScmUrl>scm:svn:https://svn.apache.org/repos/asf/archiva/site-content/ref/${project.version}</pubScmUrl>
-            <checkinComment>Apache Archiva Versionned ref for ${project.version}</checkinComment>
+            <checkinComment>Apache Archiva versioned module docs for ${project.version}</checkinComment>
+            <skipDeletedFiles>true</skipDeletedFiles>
             <content>${project.build.directory}/staging</content>
+            <tryUpdate>true</tryUpdate>
+            <!--
+                      <ignorePathsToDelete>
+                        <path>%regex[^(?!docs/).*$]</path>
+                      </ignorePathsToDelete>
+            -->
           </configuration>
+
         </plugin>
+
+
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <stagingDirectory>${site.staging.base}/target/staging/refs/${project.version}/</stagingDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-descriptor</id>
+            <goals>
+              <goal>attach-descriptor</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+
   </build>
 
   <reporting>
     <plugins>
-      
+
+
       <!-- jxr first -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
         <version>${jxrVersion}</version>
-        <configuration>
-          <aggregate>true</aggregate>
-        </configuration>
+        <reportSets>
+          <reportSet>
+            <id>aggregate</id>
+            <inherited>false</inherited>
+            <reports>
+              <report>aggregate</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -89,6 +128,13 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
         <version>${maven-project-info-reports-plugin.version}</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>index</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
 
       <plugin>
@@ -101,8 +147,7 @@
           <javadocVersion>1.8</javadocVersion>
           <source>1.8</source>
           <links>
-            <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-            <link>http://docs.oracle.com/javase/8/docs/api</link>
+            <link>https://docs.oracle.com/javase/8/docs/api</link>
             <link>http://commons.apache.org/collections/apidocs-COLLECTIONS_3_0/</link>
             <link>http://commons.apache.org/dbcp/apidocs/</link>
             <link>http://commons.apache.org/fileupload/apidocs/</link>
@@ -114,6 +159,7 @@
             <link>http://jakarta.apache.org/regexp/apidocs/</link>
             <link>http://velocity.apache.org/engine/releases/velocity-1.5/apidocs/</link>
           </links>
+
           <linksource>true</linksource>
           <show>private</show>
           <tags>
@@ -133,6 +179,8 @@
           </reportSet>
         </reportSets>
       </plugin>
+
+
 
     </plugins>
   </reporting>
@@ -161,11 +209,10 @@
   </profiles>
 
 
-
   <distributionManagement>
     <site>
       <id>apache.website</id>
-      <url>${siteUrlDeployment}</url>
+      <url>${siteRepositoryUrl}</url>
     </site>
   </distributionManagement>
 </project>

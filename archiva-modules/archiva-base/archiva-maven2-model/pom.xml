@@ -30,6 +30,11 @@
 
   <name>Archiva Base :: Maven 2 Model</name>
 
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

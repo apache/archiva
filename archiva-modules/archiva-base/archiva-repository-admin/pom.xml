@@ -28,6 +28,11 @@
   <artifactId>archiva-repository-admin</artifactId>
   <name>Archiva Base :: Repository Admin</name>
   <packaging>pom</packaging>
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <modules>
     <module>archiva-repository-admin-api</module>
     <module>archiva-repository-admin-default</module>

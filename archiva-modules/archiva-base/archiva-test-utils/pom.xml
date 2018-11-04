@@ -27,6 +27,11 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-test-utils</artifactId>
   <name>Archiva Base :: Test Utility</name>
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework</groupId>

@@ -27,6 +27,11 @@
   <artifactId>metadata-store-file</artifactId>
   <packaging>bundle</packaging>
   <name>Archiva Core Plugins :: File System Backed Metadata Repository</name>
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>

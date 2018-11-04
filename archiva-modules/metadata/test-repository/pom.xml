@@ -26,6 +26,11 @@
   </parent>
   <artifactId>test-repository</artifactId>
   <name>Archiva Metadata :: Repository for Testing</name>
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <build>
     <pluginManagement>
       <plugins>
