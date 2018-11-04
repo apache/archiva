@@ -48,34 +48,39 @@
   </modules>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-scm-publish-plugin</artifactId>
-          <configuration>
-            <checkinComment>Apache Archiva versioned module docs for ${project.version}</checkinComment>
-            <skipDeletedFiles>true</skipDeletedFiles>
-            <content>${project.build.directory}/staging</content>
-            <tryUpdate>true</tryUpdate>
-            <!--
-                      <ignorePathsToDelete>
-                        <path>%regex[^(?!docs/).*$]</path>
-                      </ignorePathsToDelete>
-            -->
-          </configuration>
-
-        </plugin>
-
-
-      </plugins>
-    </pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-scm-publish-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <checkinComment>Apache Archiva versioned module docs for ${project.version}</checkinComment>
+          <skipDeletedFiles>true</skipDeletedFiles>
+          <content>${project.build.directory}/staging</content>
+          <tryUpdate>true</tryUpdate>
+          <!--
+                    <ignorePathsToDelete>
+                      <path>%regex[^(?!docs/).*$]</path>
+                    </ignorePathsToDelete>
+          -->
+        </configuration>
+        <executions>
+          <execution>
+            <id>scm-publish</id>
+            <phase>site-deploy</phase>
+            <goals>
+              <goal>publish-scm</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
         <configuration>
-          <stagingDirectory>${site.staging.base}/target/staging/refs/${project.version}/</stagingDirectory>
+          <skipDeploy>true</skipDeploy>
+          <stagingDirectory>${site.staging.base}/target/staging/ref/${project.version}/</stagingDirectory>
         </configuration>
         <executions>
           <execution>
@@ -84,9 +89,24 @@
               <goal>attach-descriptor</goal>
             </goals>
           </execution>
-        </executions>
+          <execution>
+            <id>site-generate-resources</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>site</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>stage-for-scm-publish</id>
+            <phase>post-site</phase>
+            <goals>
+              <goal>stage</goal>
+            </goals>
+            <configuration>
+              <skipDeploy>false</skipDeploy>
+            </configuration>
+          </execution>        </executions>
       </plugin>
-
     </plugins>
 
   </build>
@@ -206,6 +226,48 @@
         </plugins>
       </reporting>
     </profile>
+    <!--
+    This runs a sparse git checkout for the web site content repository that contains only the doc directory.
+    The profile is activated only, if the checkout directory does not exist.
+    The executor runs a shell script.
+    -->
+    <profile>
+      <id>site-checkout</id>
+      <activation>
+        <file>
+          <missing>${scmPubCheckoutDirectory}</missing>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <inherited>false</inherited>
+            <executions>
+              <execution>
+                <id>prepare-checkout</id>
+                <phase>pre-site</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>checkoutSite.sh</executable>
+                  <workingDirectory>${project.basedir}</workingDirectory>
+                  <arguments>
+                    <argument>-d</argument>
+                    <argument>${scmPubCheckoutDirectory}</argument>
+                    <argument>${siteRepositoryUrl}</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
   </profiles>
 
 
@@ -215,4 +277,5 @@
       <url>${siteRepositoryUrl}</url>
     </site>
   </distributionManagement>
+
 </project>
