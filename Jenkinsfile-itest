@@ -128,7 +128,7 @@ pipeline {
                                     // -Pci-server: Profile for CI Server
                                     // -Pit-js: Runs the Selenium tests
                                     // -Pchrome: Activates the Selenium Chrome Test Agent
-                                    sh "mvn verify -B -V -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -DseleniumRemote=true -Pci-server -Pit-js -Pchrome -pl :archiva-webapp-test -DtrimStackTrace=false"
+                                    sh "mvn clean verify -B -V -e -fae -Dmaven.compiler.fork=true -DmaxWaitTimeInMs=2000 -DseleniumRemote=true -Pci-server -Pit-js -Pchrome -pl :archiva-webapp-test -DtrimStackTrace=false"
                                 }
                     }
                 }
