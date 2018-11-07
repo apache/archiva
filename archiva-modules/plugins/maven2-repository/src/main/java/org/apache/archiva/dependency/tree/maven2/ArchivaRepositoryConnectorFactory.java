@@ -34,6 +34,9 @@ import org.eclipse.aether.transfer.NoRepositoryConnectorException;
 import java.util.Collection;
 
 /**
+ *
+ * Creates a dummy connector, if the default connectory factory fails to create one.
+ *
  * @author Olivier Lamy
  * @since 1.4-M3
  */

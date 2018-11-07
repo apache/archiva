@@ -39,9 +39,23 @@ import org.eclipse.aether.repository.NoLocalRepositoryManagerException;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.eclipse.aether.util.graph.selector.AndDependencySelector;
 import org.eclipse.aether.util.graph.selector.ExclusionDependencySelector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * Some static utility methods that are used by different classes.
+ */
 public class MavenUtil {
 
+    static Logger log = LoggerFactory.getLogger(MavenUtil.class);
+
+    /**
+     * Creates a new aether repository system session for the given directory and assigns the
+     * repository to this session.
+     *
+     * @param localRepoDir The repository directory
+     * @return The newly created session object.
+     */
     public static RepositorySystemSession newRepositorySystemSession(String localRepoDir)
     {
         DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession( );
@@ -58,12 +72,16 @@ public class MavenUtil {
         }
         catch ( NoLocalRepositoryManagerException e )
         {
-            e.printStackTrace( );
+            log.error("Could not assign the repository manager to the session: {}", e.getMessage(), e);
         }
 
         return session;
     }
 
+    /**
+     * Finds the
+     * @return
+     */
     public static RepositorySystem newRepositorySystem()
     {
         DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator( );
