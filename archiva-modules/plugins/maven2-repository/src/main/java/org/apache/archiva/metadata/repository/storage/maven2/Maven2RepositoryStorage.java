@@ -54,6 +54,7 @@ import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.content.PathParser;
+import org.apache.archiva.repository.maven2.MavenSystemManager;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -148,6 +149,9 @@ public class Maven2RepositoryStorage
     @Inject
     @Named( "pathParser#default" )
     private PathParser pathParser;
+
+    @Inject
+    private MavenSystemManager mavenSystemManager;
 
     private static final String METADATA_FILENAME_START = "maven-metadata";
 
@@ -292,7 +296,7 @@ public class Maven2RepositoryStorage
             // MRM-1411
             req.setModelResolver(
                 new RepositoryModelResolver( managedRepository, pathTranslator, wagonFactory, remoteRepositories,
-                                             networkProxies, managedRepository ));
+                                             networkProxies, managedRepository , mavenSystemManager));
 
             Model model;
             try

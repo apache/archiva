@@ -34,13 +34,12 @@ import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.maven2.MavenUtil;
+import org.apache.archiva.repository.maven2.MavenSystemManager;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.bridge.MavenRepositorySystem;
-import org.apache.maven.model.building.DefaultModelBuilderFactory;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.DefaultArtifact;
@@ -90,6 +89,9 @@ public class Maven3DependencyTreeBuilder
 
     @Inject
     RepositoryRegistry repositoryRegistry;
+
+    @Inject
+    MavenSystemManager mavenSystemManager;
 
 
     @PostConstruct
@@ -193,8 +195,8 @@ public class Maven3DependencyTreeBuilder
     private void resolve( ResolveRequest resolveRequest )
     {
 
-        RepositorySystem system = MavenUtil.newRepositorySystem();
-        RepositorySystemSession session = MavenUtil.newRepositorySystemSession( resolveRequest.localRepoDir );
+        RepositorySystem system = mavenSystemManager.getRepositorySystem();
+        RepositorySystemSession session = MavenSystemManager.newRepositorySystemSession( resolveRequest.localRepoDir );
 
         org.eclipse.aether.artifact.Artifact artifact = new DefaultArtifact(
             resolveRequest.groupId + ":" + resolveRequest.artifactId + ":" + resolveRequest.version );

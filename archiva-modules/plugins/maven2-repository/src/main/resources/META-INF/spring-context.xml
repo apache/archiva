@@ -36,4 +36,5 @@
   <alias name="repositoryStorage#maven2" alias="repositoryStorage#default"/>
   <alias name="repositoryStorage#maven2" alias="repositoryStorage#legacy"/>
 
+
 </beans>

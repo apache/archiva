@@ -32,7 +32,7 @@ import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryCredentials;
-import org.apache.archiva.repository.maven2.MavenUtil;
+import org.apache.archiva.repository.maven2.MavenSystemManager;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -56,7 +56,6 @@ import org.apache.maven.wagon.authentication.AuthenticationException;
 import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.proxy.ProxyInfo;
-import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
@@ -71,6 +70,7 @@ import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -99,7 +99,7 @@ public class RepositoryModelResolver
 
     private static final String METADATA_FILENAME = "maven-metadata.xml";
 
-    private DefaultServiceLocator locator;
+    private MavenSystemManager mavenSystemManager;
 
     // key/value: remote repo ID/network proxy
     Map<String, NetworkProxy> networkProxyMap;
@@ -115,7 +115,8 @@ public class RepositoryModelResolver
 
     public RepositoryModelResolver( ManagedRepository managedRepository, RepositoryPathTranslator pathTranslator,
                                     WagonFactory wagonFactory, List<RemoteRepository> remoteRepositories,
-                                    Map<String, NetworkProxy> networkProxiesMap, ManagedRepository targetRepository)
+                                    Map<String, NetworkProxy> networkProxiesMap, ManagedRepository targetRepository,
+                                    MavenSystemManager mavenSystemManager)
     {
         this( Paths.get( managedRepository.getLocation() ), pathTranslator );
 
@@ -129,23 +130,13 @@ public class RepositoryModelResolver
 
         this.targetRepository = targetRepository;
 
-        this.locator =  MavenRepositorySystemUtils.newServiceLocator( );
+        this.session = MavenSystemManager.newRepositorySystemSession( managedRepository.getLocalPath().toString() );
 
-        locator.addService( RepositoryConnectorFactory.class,
-            ArchivaRepositoryConnectorFactory.class );// FileRepositoryConnectorFactory.class );
-        locator.addService( VersionResolver.class, DefaultVersionResolver.class );
-        locator.addService( VersionRangeResolver.class, DefaultVersionRangeResolver.class );
-        locator.addService( ArtifactDescriptorReader.class, DefaultArtifactDescriptorReader.class );
+        this.versionRangeResolver = mavenSystemManager.getLocator().getService(VersionRangeResolver.class);
 
-        this.session = MavenUtil.newRepositorySystemSession( managedRepository.getLocalPath().toString() );
-
-        this.versionRangeResolver = locator.getService(VersionRangeResolver.class);
+        this.mavenSystemManager = mavenSystemManager;
     }
 
-    private RepositorySystem newRepositorySystem()
-    {
-        return locator.getService( RepositorySystem.class );
-    }
 
     @Override
     public ModelSource resolveModel( String groupId, String artifactId, String version )
@@ -301,7 +292,7 @@ public class RepositoryModelResolver
     public ModelResolver newCopy()
     {
         return new RepositoryModelResolver( managedRepository,  pathTranslator, wagonFactory, remoteRepositories, 
-                                            networkProxyMap, targetRepository);
+                                            networkProxyMap, targetRepository, mavenSystemManager);
     }
 
     // FIXME: we need to do some refactoring, we cannot re-use the proxy components of archiva-proxy in maven2-repository
@@ -316,7 +307,7 @@ public class RepositoryModelResolver
         Path tmpSha1 = null;
         Path tmpResource = null;
         String artifactPath = pathTranslator.toPath( groupId, artifactId, version, filename );
-        Path resource = Paths.get(targetRepository.getLocation()).resolve( artifactPath );
+        Path resource = targetRepository.getLocalPath().resolve( artifactPath );
 
         Path workingDirectory = createWorkingDirectory( targetRepository.getLocation().toString() );
         try
