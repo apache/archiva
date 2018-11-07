@@ -61,7 +61,7 @@
     <sonatype.aether.version>1.13.1</sonatype.aether.version>
 
     <maven-model-converter.version>2.1</maven-model-converter.version>
-    <maven.indexer.version>6.0.0</maven.indexer.version>
+    <maven.indexer.version>6.0.1-SNAPSHOT</maven.indexer.version>
     <wagon.version>3.0.0</wagon.version>
     <redback.version>3.0.0-SNAPSHOT</redback.version>
     <redback.cache.version>2.2</redback.cache.version>
