@@ -22,7 +22,6 @@ package org.apache.archiva.metadata.repository.storage.maven2;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.dependency.tree.maven2.ArchivaRepositoryConnectorFactory;
-import org.apache.archiva.indexer.UnsupportedBaseContextException;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
@@ -33,10 +32,10 @@ import org.apache.archiva.proxy.common.WagonFactoryRequest;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryCredentials;
+import org.apache.archiva.repository.maven2.MavenUtil;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Parent;
 import org.apache.maven.model.Repository;
@@ -57,26 +56,18 @@ import org.apache.maven.wagon.authentication.AuthenticationException;
 import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.proxy.ProxyInfo;
-import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.collection.DependencySelector;
 import org.eclipse.aether.impl.ArtifactDescriptorReader;
 import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.impl.VersionRangeResolver;
 import org.eclipse.aether.impl.VersionResolver;
-import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
-import org.eclipse.aether.repository.LocalRepository;
-import org.eclipse.aether.repository.LocalRepositoryManager;
-import org.eclipse.aether.repository.NoLocalRepositoryManagerException;
 import org.eclipse.aether.resolution.VersionRangeRequest;
 import org.eclipse.aether.resolution.VersionRangeResolutionException;
 import org.eclipse.aether.resolution.VersionRangeResult;
 import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
-import org.eclipse.aether.util.graph.selector.AndDependencySelector;
-import org.eclipse.aether.util.graph.selector.ExclusionDependencySelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,7 +137,7 @@ public class RepositoryModelResolver
         locator.addService( VersionRangeResolver.class, DefaultVersionRangeResolver.class );
         locator.addService( ArtifactDescriptorReader.class, DefaultArtifactDescriptorReader.class );
 
-        this.session = newRepositorySystemSession( newRepositorySystem(), managedRepository.getLocalPath().toString() );
+        this.session = MavenUtil.newRepositorySystemSession( managedRepository.getLocalPath().toString() );
 
         this.versionRangeResolver = locator.getService(VersionRangeResolver.class);
     }
@@ -154,28 +145,6 @@ public class RepositoryModelResolver
     private RepositorySystem newRepositorySystem()
     {
         return locator.getService( RepositorySystem.class );
-    }
-
-    private RepositorySystemSession newRepositorySystemSession( RepositorySystem system, String localRepoDir )
-    {
-        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession( );
-
-        LocalRepository repo = new LocalRepository( localRepoDir );
-
-        DependencySelector depFilter = new AndDependencySelector( new ExclusionDependencySelector() );
-        session.setDependencySelector( depFilter );
-        SimpleLocalRepositoryManagerFactory repFactory = new SimpleLocalRepositoryManagerFactory( );
-        try
-        {
-            LocalRepositoryManager manager = repFactory.newInstance( session, repo );
-            session.setLocalRepositoryManager(manager);
-        }
-        catch ( NoLocalRepositoryManagerException e )
-        {
-            e.printStackTrace( );
-        }
-
-        return session;
     }
 
     @Override

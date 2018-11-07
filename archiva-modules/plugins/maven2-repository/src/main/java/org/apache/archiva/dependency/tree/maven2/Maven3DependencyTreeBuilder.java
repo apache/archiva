@@ -20,14 +20,10 @@ package org.apache.archiva.dependency.tree.maven2;
 
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
-import org.apache.archiva.admin.model.beans.RemoteRepository;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
-import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.common.utils.VersionUtil;
@@ -35,39 +31,26 @@ import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.maven2.model.TreeEntry;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RemoteRepository;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.maven2.MavenUtil;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.bridge.MavenRepositorySystem;
 import org.apache.maven.model.building.DefaultModelBuilderFactory;
-import org.apache.maven.repository.internal.DefaultArtifactDescriptorReader;
-import org.apache.maven.repository.internal.DefaultVersionRangeResolver;
-import org.apache.maven.repository.internal.DefaultVersionResolver;
-import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
-import org.eclipse.aether.DefaultRepositorySystemSession;
-import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.impl.DefaultServiceLocator;
-import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
-import org.eclipse.aether.repository.LocalRepository;
-import org.eclipse.aether.repository.LocalRepositoryManager;
-import org.eclipse.aether.repository.NoLocalRepositoryManagerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.collection.CollectResult;
 import org.eclipse.aether.collection.DependencyCollectionException;
-import org.eclipse.aether.collection.DependencySelector;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.DependencyVisitor;
-import org.eclipse.aether.impl.ArtifactDescriptorReader;
-import org.eclipse.aether.impl.VersionRangeResolver;
-import org.eclipse.aether.impl.VersionResolver;
-import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
-import org.eclipse.aether.util.graph.selector.AndDependencySelector;
-import org.eclipse.aether.util.graph.selector.ExclusionDependencySelector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -75,7 +58,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,17 +71,16 @@ import java.util.Map;
 public class Maven3DependencyTreeBuilder
     implements DependencyTreeBuilder
 {
-    private Logger log = LoggerFactory.getLogger( getClass() );
+    private Logger log = LoggerFactory.getLogger( Maven3DependencyTreeBuilder.class );
 
     @Inject
     private PlexusSisuBridge plexusSisuBridge;
 
+    private MavenRepositorySystem mavenRepositorySystem;
+
     @Inject
     @Named( "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
-
-    @Inject
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
     private ProxyConnectorAdmin proxyConnectorAdmin;
@@ -108,19 +89,14 @@ public class Maven3DependencyTreeBuilder
     private NetworkProxyAdmin networkProxyAdmin;
 
     @Inject
-    private RemoteRepositoryAdmin remoteRepositoryAdmin;
-
-    private ArtifactFactory factory;
+    RepositoryRegistry repositoryRegistry;
 
 
     @PostConstruct
     public void initialize()
         throws PlexusSisuBridgeException
     {
-        factory = plexusSisuBridge.lookup( ArtifactFactory.class, "default" );
-
-        DefaultModelBuilderFactory defaultModelBuilderFactory = new DefaultModelBuilderFactory();
-        defaultModelBuilderFactory.newInstance();
+        mavenRepositorySystem = plexusSisuBridge.lookup(MavenRepositorySystem.class);
     }
 
 
@@ -129,25 +105,18 @@ public class Maven3DependencyTreeBuilder
                                      DependencyVisitor dependencyVisitor )
         throws DependencyTreeBuilderException
     {
-        Artifact projectArtifact = factory.createProjectArtifact( groupId, artifactId, version );
-        ManagedRepository repository = null;
-        try
-        {
-            repository = findArtifactInRepositories( repositoryIds, projectArtifact );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            // FIXME better exception
-            throw new DependencyTreeBuilderException( "Cannot build project dependency tree " + e.getMessage(), e );
-        }
+
+        Artifact projectArtifact = mavenRepositorySystem.createProjectArtifact(groupId, artifactId, version);
+        ManagedRepository repository = findArtifactInRepositories( repositoryIds, projectArtifact );
 
         if ( repository == null )
         {
             // metadata could not be resolved
+            log.info("Did not find repository with artifact {}/{}/{}", groupId, artifactId, version);
             return;
         }
 
-        List<RemoteRepository> remoteRepositories = new ArrayList<>();
+        List<org.apache.archiva.repository.RemoteRepository> remoteRepositories = new ArrayList<>();
         Map<String, NetworkProxy> networkProxies = new HashMap<>();
 
         try
@@ -163,7 +132,7 @@ public class Maven3DependencyTreeBuilder
                 for ( ProxyConnector proxyConnector : proxyConnectors )
                 {
                     remoteRepositories.add(
-                        remoteRepositoryAdmin.getRemoteRepository( proxyConnector.getTargetRepoId() ) );
+                        repositoryRegistry.getRemoteRepository( proxyConnector.getTargetRepoId() ) );
 
                     NetworkProxy networkProxyConfig = networkProxyAdmin.getNetworkProxy( proxyConnector.getProxyId() );
 
@@ -183,7 +152,7 @@ public class Maven3DependencyTreeBuilder
         // FIXME take care of relative path
         ResolveRequest resolveRequest = new ResolveRequest();
         resolveRequest.dependencyVisitor = dependencyVisitor;
-        resolveRequest.localRepoDir = repository.getLocation();
+        resolveRequest.localRepoDir = repository.getContent().getRepoRoot();
         resolveRequest.groupId = groupId;
         resolveRequest.artifactId = artifactId;
         resolveRequest.version = version;
@@ -204,7 +173,7 @@ public class Maven3DependencyTreeBuilder
 
         buildDependencyTree( repositoryIds, groupId, artifactId, version, treeDependencyNodeVisitor );
 
-        log.debug( "treeEntrie: {}", treeEntries );
+        log.debug( "treeEntries: {}", treeEntries );
         return treeEntries;
     }
 
@@ -214,7 +183,7 @@ public class Maven3DependencyTreeBuilder
 
         DependencyVisitor dependencyVisitor;
 
-        List<RemoteRepository> remoteRepositories;
+        List<org.apache.archiva.repository.RemoteRepository> remoteRepositories;
 
         Map<String, NetworkProxy> networkProxies;
 
@@ -224,9 +193,8 @@ public class Maven3DependencyTreeBuilder
     private void resolve( ResolveRequest resolveRequest )
     {
 
-        RepositorySystem system = newRepositorySystem();
-
-        RepositorySystemSession session = newRepositorySystemSession( system, resolveRequest.localRepoDir );
+        RepositorySystem system = MavenUtil.newRepositorySystem();
+        RepositorySystemSession session = MavenUtil.newRepositorySystemSession( resolveRequest.localRepoDir );
 
         org.eclipse.aether.artifact.Artifact artifact = new DefaultArtifact(
             resolveRequest.groupId + ":" + resolveRequest.artifactId + ":" + resolveRequest.version );
@@ -237,7 +205,7 @@ public class Maven3DependencyTreeBuilder
         // add remote repositories
         for ( RemoteRepository remoteRepository : resolveRequest.remoteRepositories )
         {
-            org.eclipse.aether.repository.RemoteRepository repo = new org.eclipse.aether.repository.RemoteRepository.Builder( remoteRepository.getId( ), "default", remoteRepository.getUrl( ) ).build( );
+            org.eclipse.aether.repository.RemoteRepository repo = new org.eclipse.aether.repository.RemoteRepository.Builder( remoteRepository.getId( ), "default", remoteRepository.getLocation( ).toString() ).build( );
             collectRequest.addRepository(repo);
         }
         collectRequest.setRequestContext( "project" );
@@ -248,62 +216,23 @@ public class Maven3DependencyTreeBuilder
         {
             CollectResult collectResult = system.collectDependencies( session, collectRequest );
             collectResult.getRoot().accept( resolveRequest.dependencyVisitor );
-            log.debug( "test" );
+            log.debug("Collected dependency results for resolve");
         }
         catch ( DependencyCollectionException e )
         {
-            log.error( e.getMessage(), e );
+            log.error( "Error while collecting dependencies (resolve): {}", e.getMessage(), e );
         }
 
 
 
     }
 
-    private RepositorySystem newRepositorySystem()
-    {
-        DefaultServiceLocator locator = MavenRepositorySystemUtils.newServiceLocator( );
-        locator.addService( RepositoryConnectorFactory.class,
-                            ArchivaRepositoryConnectorFactory.class );// FileRepositoryConnectorFactory.class );
-        locator.addService( VersionResolver.class, DefaultVersionResolver.class );
-        locator.addService( VersionRangeResolver.class, DefaultVersionRangeResolver.class );
-        locator.addService( ArtifactDescriptorReader.class, DefaultArtifactDescriptorReader.class );
-        //locator.addService( RepositoryConnectorFactory.class, WagonRepositoryConnectorFactory.class );
-        //locator.setServices( WagonProvider.class,  );
-
-        return locator.getService( RepositorySystem.class );
-    }
-
-    private RepositorySystemSession newRepositorySystemSession( RepositorySystem system, String localRepoDir )
-    {
-        DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession( );
-
-        LocalRepository repo = new LocalRepository( localRepoDir );
-
-        DependencySelector depFilter = new AndDependencySelector( new ExclusionDependencySelector() );
-        session.setDependencySelector( depFilter );
-        SimpleLocalRepositoryManagerFactory repFactory = new SimpleLocalRepositoryManagerFactory( );
-        try
-        {
-            LocalRepositoryManager manager = repFactory.newInstance( session, repo );
-            session.setLocalRepositoryManager(manager);
-        }
-        catch ( NoLocalRepositoryManagerException e )
-        {
-            e.printStackTrace( );
-        }
-
-        return session;
-    }
-
-
-    private ManagedRepository findArtifactInRepositories( List<String> repositoryIds, Artifact projectArtifact )
-        throws RepositoryAdminException
-    {
+    private ManagedRepository findArtifactInRepositories( List<String> repositoryIds, Artifact projectArtifact ) {
         for ( String repoId : repositoryIds )
         {
-            ManagedRepository managedRepository = managedRepositoryAdmin.getManagedRepository( repoId );
+            ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(repoId);
+            Path repoDir = managedRepo.getLocalPath();
 
-            Path repoDir = Paths.get( managedRepository.getLocation() );
             Path file = pathTranslator.toFile( repoDir, projectArtifact.getGroupId(), projectArtifact.getArtifactId(),
                                                projectArtifact.getBaseVersion(),
                                                projectArtifact.getArtifactId() + "-" + projectArtifact.getVersion()
@@ -311,7 +240,7 @@ public class Maven3DependencyTreeBuilder
 
             if ( Files.exists(file) )
             {
-                return managedRepository;
+                return managedRepo;
             }
             // try with snapshot version
             if ( StringUtils.endsWith( projectArtifact.getBaseVersion(), VersionUtil.SNAPSHOT ) )
@@ -335,7 +264,7 @@ public class Maven3DependencyTreeBuilder
                         log.debug( "try to find timestamped snapshot version file: {}", timeStampFile);
                         if ( Files.exists(timeStampFile) )
                         {
-                            return managedRepository;
+                            return managedRepo;
                         }
                     }
                     catch ( XMLException e )
