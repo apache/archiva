@@ -48,6 +48,17 @@
   </modules>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <configuration>
+            <skipDeploy>true</skipDeploy>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -89,13 +100,14 @@
               <goal>attach-descriptor</goal>
             </goals>
           </execution>
-          <execution>
+<!--          <execution>
             <id>site-generate-resources</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>site</goal>
             </goals>
-          </execution>
+          </execution>-->
+          <!--
           <execution>
             <id>stage-for-scm-publish</id>
             <phase>post-site</phase>
@@ -105,7 +117,9 @@
             <configuration>
               <skipDeploy>false</skipDeploy>
             </configuration>
-          </execution>        </executions>
+          </execution>
+          -->
+        </executions>
       </plugin>
     </plugins>
 
@@ -166,6 +180,7 @@
           <notimestamp>true</notimestamp>
           <javadocVersion>1.8</javadocVersion>
           <source>1.8</source>
+          <doclint>none</doclint>
           <links>
             <link>https://docs.oracle.com/javase/8/docs/api</link>
             <link>http://commons.apache.org/collections/apidocs-COLLECTIONS_3_0/</link>
