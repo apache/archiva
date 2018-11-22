@@ -27,15 +27,15 @@
   <artifactId>archiva-docs</artifactId>
   <packaging>pom</packaging>
   <name>Archiva :: Documentation</name>
-  <url>http://archiva.apache.org/docs/${project.version}/</url>
+  <url>https://archiva.apache.org/docs/${project.version}/</url>
 
   <properties>
     <siteFilePath>${user.home}/archiva-sites/archiva-docs-${project.version}/</siteFilePath>
-    <scmPubCheckoutDirectory>${basedir}/.site-content</scmPubCheckoutDirectory>
     <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
     <releaseDate>${maven.build.timestamp}</releaseDate>
     <!-- The git repository, where the site content is placed -->
     <siteRepositoryUrl>scm:git:https://gitbox.apache.org/repos/asf/archiva-web-content-INVALID.git</siteRepositoryUrl>
+    <scmPubCheckoutDirectory>${basedir}/.site-content</scmPubCheckoutDirectory>
   </properties>
 
   <build>
@@ -161,8 +161,8 @@
         <reportSets>
           <reportSet>
             <reports>
-              <report>license</report>
-              <report>project-team</report>
+              <report>licenses</report>
+              <report>team</report>
             </reports>
           </reportSet>
         </reportSets>

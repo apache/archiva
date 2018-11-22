@@ -31,7 +31,7 @@
   <packaging>pom</packaging>
 
   <name>Apache Archiva</name>
-  <url>http://archiva.apache.org</url>
+  <url>https://archiva.apache.org</url>
 
   <modules>
     <module>archiva-cli</module>

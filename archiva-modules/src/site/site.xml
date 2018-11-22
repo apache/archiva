@@ -51,9 +51,9 @@
   
   <body>
     <breadcrumbs>
-<!-- TODO: need to stop them inheriting 
-      <item name="Reports" href="/reports" />
--->
+      <item name="Apache" href="https://www.apache.org" />
+      <item name="Archiva" href="https://archiva.apache.org" />
+      <item name="Archiva Modules" href="index.html" />
     </breadcrumbs>
 
     <menu name="Developers">

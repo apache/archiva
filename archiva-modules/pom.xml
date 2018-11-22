@@ -28,7 +28,7 @@
   <artifactId>archiva-modules</artifactId>
   <packaging>pom</packaging>
   <name>Archiva :: Modules</name>
-  <url>http://archiva.apache.org/ref/${project.version}</url>
+  <url>https://archiva.apache.org/ref/${project.version}</url>
 
   <properties>
     <scmPubCheckoutDirectory>${basedir}/.site-content</scmPubCheckoutDirectory>
