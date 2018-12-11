@@ -37,6 +37,7 @@
     -->
     <redbackTestJdbcUrl>jdbc:hsqldb:mem:redback-test</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.hsqldb.jdbcDriver</redbackTestJdbcDriver>
+    <site.staging.base>${project.parent.parent.parent.basedir}</site.staging.base>
   </properties>
 
   <dependencies>

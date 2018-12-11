@@ -28,6 +28,12 @@
   <artifactId>archiva-common</artifactId>
   <packaging>bundle</packaging>
   <name>Archiva Base :: Common</name>
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
+
   <dependencies>
     <!-- TO OTHER DEVELOPERS:
          This module should depend on NO OTHER ARCHIVA MODULES.

@@ -27,6 +27,11 @@
   <artifactId>archiva-scheduler-repository</artifactId>
   <packaging>bundle</packaging>
   <name>Archiva Scheduler :: Repository Scanning</name>
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>

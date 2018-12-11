@@ -35,16 +35,25 @@
       </twitter>
       <ohloh>
         <projectId>6670</projectId>
-        <widget>stats</widget>
+        <widget>thin-badge</widget>
       </ohloh>
+      <gitHub>
+        <projectId>apache/archiva</projectId>
+        <ribbonOrientation>right</ribbonOrientation>
+        <ribbonColor>black</ribbonColor>
+      </gitHub>
     </fluidoSkin>
 
   </custom>
+
+  <publishDate format="yyyy-MM-dd" position="right" />
+  <version position="right" />
+  
   <body>
     <breadcrumbs>
-<!-- TODO: need to stop them inheriting 
-      <item name="Reports" href="/reports" />
--->
+      <item name="Apache" href="https://www.apache.org" />
+      <item name="Archiva" href="https://archiva.apache.org" />
+      <item name="Archiva Modules" href="index.html" />
     </breadcrumbs>
 
     <menu name="Developers">

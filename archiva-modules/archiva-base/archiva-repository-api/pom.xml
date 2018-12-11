@@ -28,6 +28,11 @@
   <artifactId>archiva-repository-api</artifactId>
   <packaging>bundle</packaging>
   <name>Archiva Base :: Repository API</name>
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <dependencies>
 
     <dependency>

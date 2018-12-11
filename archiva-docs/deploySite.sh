@@ -29,7 +29,7 @@ THIS_DIR=$(readlink -f ${THIS_DIR})
 CONTENT_DIR=".site-content"
 
 PROJECT_VERSION=$(grep '<version>' pom.xml |head -1 | sed -e 's/.*<version>\(.*\)<\/version>.*/\1/g')
-SUB_DIR="ref/${PROJECT_VERSION}"
+SUB_DIR="docs/${PROJECT_VERSION}"
 
 if [ -d "${CONTENT_DIR}/.git" ]; then
   git -C "${CONTENT_DIR}" fetch origin
@@ -37,7 +37,7 @@ if [ -d "${CONTENT_DIR}/.git" ]; then
 fi
 
 echo ">>>> Creating site and reports <<<<" 
-mvn clean site site:stage -Preporting "$@"
+mvn clean site site:stage "$@"
 
 echo "*****************************************"
 echo ">>>> Finished the site stage process <<<<"

@@ -27,6 +27,11 @@
   <artifactId>metadata</artifactId>
   <name>Archiva :: Metadata</name>
   <packaging>pom</packaging>
+
+  <properties>
+    <site.staging.base>${project.parent.basedir}</site.staging.base>
+  </properties>
+
   <modules>
     <module>metadata-model</module>
     <module>metadata-repository-api</module>

@@ -39,6 +39,8 @@
     <redbackTestJdbcUrl>jdbc:hsqldb:mem:redback-test</redbackTestJdbcUrl>
     <redbackTestJdbcDriver>org.hsqldb.jdbcDriver</redbackTestJdbcDriver>
     <webdav.argLine>-Xmx512m -Xms512m -client</webdav.argLine>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+
   </properties>
 
   <dependencies>

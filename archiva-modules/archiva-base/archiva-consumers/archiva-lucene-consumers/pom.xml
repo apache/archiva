@@ -28,6 +28,11 @@
   <artifactId>archiva-lucene-consumers</artifactId>
   <packaging>bundle</packaging>
   <name>Archiva Base :: Consumers :: Lucene</name>
+
+  <properties>
+    <site.staging.base>${project.parent.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>

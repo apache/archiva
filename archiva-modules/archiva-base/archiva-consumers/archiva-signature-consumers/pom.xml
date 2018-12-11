@@ -25,4 +25,10 @@
 
   <artifactId>archiva-signature-consumers</artifactId>
   <name>Archiva Base :: Consumers :: GPG Signature</name>
+
+
+  <properties>
+    <site.staging.base>${project.parent.parent.parent.basedir}</site.staging.base>
+  </properties>
+
 </project>

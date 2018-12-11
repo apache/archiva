@@ -28,6 +28,9 @@
   <artifactId>archiva-test-mocks</artifactId>
 
   <name>Archiva Web :: Tests Mocks</name>
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
 
   <dependencies>
     <dependency>

@@ -28,6 +28,11 @@
   <artifactId>archiva-maven2-indexer</artifactId>
   <packaging>bundle</packaging>
   <name>Archiva Base :: Maven2 Indexer</name>
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <dependencies>
 
     <dependency>

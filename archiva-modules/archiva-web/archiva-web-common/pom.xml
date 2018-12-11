@@ -32,6 +32,7 @@
 
   <properties>
     <enunciate.docsDir>${project.build.outputDirectory}/rest-docs-archiva-ui</enunciate.docsDir>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
   </properties>
 
   <dependencies>

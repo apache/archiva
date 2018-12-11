@@ -28,6 +28,11 @@
   <artifactId>archiva-policies</artifactId>
   <packaging>bundle</packaging>
   <name>Archiva Base :: Policies</name>
+
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.archiva</groupId>

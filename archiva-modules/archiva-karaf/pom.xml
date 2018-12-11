@@ -28,6 +28,11 @@
   <packaging>pom</packaging>
   <name>Archiva :: Karaf</name>
 
+
+  <properties>
+    <site.staging.base>${project.parent.basedir}</site.staging.base>
+  </properties>
+
   <modules>
     <module>archiva-features</module>
     <!-- <module>archiva-commands</module> -->

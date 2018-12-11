@@ -26,6 +26,10 @@
   <name>Archiva :: Web</name>
   <packaging>pom</packaging>
 
+  <properties>
+    <site.staging.base>${project.parent.basedir}</site.staging.base>
+  </properties>
+
   <modules>
     <module>archiva-security</module>
     <module>archiva-webdav</module>

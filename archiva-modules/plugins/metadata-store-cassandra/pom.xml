@@ -30,9 +30,8 @@
   <name>Archiva Core Plugins :: Cassandra Storage for Metadata</name>
 
   <properties>
-
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
     <cassandraVersion>3.11.2</cassandraVersion>
-
   </properties>
 
   <dependencies>

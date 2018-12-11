@@ -29,6 +29,10 @@
   <packaging>bundle</packaging>
   <name>Archiva Core Plugins :: Stage Repository Merge</name>
 
+  <properties>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

@@ -38,6 +38,8 @@
     <fluentlenium.version>3.2.0</fluentlenium.version>
     <fluentlenium.festassert.version>0.13.2</fluentlenium.festassert.version>
     <browserPath/>
+    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+
   </properties>
 
   <dependencies>
