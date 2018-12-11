@@ -50,6 +50,8 @@
               <exclude>src/site/resources/js/*.js</exclude>
               <exclude>*.sh</exclude>
               <exclude>.site-content/**</exclude>
+              <exclude>git-sparse-checkout-pattern</exclude>
+              <exclude>README.*</exclude> 
             </excludes>
           </configuration>
         </plugin>
