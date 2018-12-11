@@ -1876,6 +1876,8 @@
               <exclude>out/**</exclude>
               <exclude>Jenkinsfile</exclude>
               <exclude>**/*.log</exclude>
+              <exclude>**/.site-content/**</exclude>
+              <exclude>**/git-sparse-checkout-pattern</exclude>
             </excludes>
           </configuration>
         </plugin>
