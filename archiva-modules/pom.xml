@@ -33,7 +33,7 @@
   <properties>
     <scmPubCheckoutDirectory>${basedir}/.site-content</scmPubCheckoutDirectory>
     <!-- The git repository, where the site content is placed -->
-    <siteRepositoryUrl>scm:git:https://gitbox.apache.org/repos/asf/archiva-web-content-INVALID.git</siteRepositoryUrl>
+    <siteRepositoryUrl>scm:git:https://gitbox.apache.org/repos/asf/archiva-web-content.git</siteRepositoryUrl>
     <site.staging.base>${project.basedir}</site.staging.base>
   </properties>
 

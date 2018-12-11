@@ -34,7 +34,7 @@
     <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
     <releaseDate>${maven.build.timestamp}</releaseDate>
     <!-- The git repository, where the site content is placed -->
-    <siteRepositoryUrl>scm:git:https://gitbox.apache.org/repos/asf/archiva-web-content-INVALID.git</siteRepositoryUrl>
+    <siteRepositoryUrl>scm:git:https://gitbox.apache.org/repos/asf/archiva-web-content.git</siteRepositoryUrl>
     <scmPubCheckoutDirectory>${basedir}/.site-content</scmPubCheckoutDirectory>
   </properties>
 
