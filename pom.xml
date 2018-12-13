@@ -72,7 +72,7 @@
     <slf4j.version>1.7.25</slf4j.version>
     <log4j.version>2.8.2</log4j.version>
 
-    <jsoup.version>1.7.1</jsoup.version>
+    <jsoup.version>1.7.2</jsoup.version>
     <rome.version>0.9</rome.version>
     <cronutils.version>6.0.2</cronutils.version>
 
