@@ -34,6 +34,7 @@ buildJdk10 = 'JDK 10 (latest)'
 buildMvn = 'Maven 3.5.2'
 deploySettings = 'archiva-uid-jenkins'
 localRepository = "../.archiva-master-repository"
+mavenOpts = '-Xms1g -Xmx2g -Djava.awt.headless=true'
 
 INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
 
@@ -72,11 +73,11 @@ pipeline {
                     withMaven(maven: buildMvn, jdk: buildJdk,
                             mavenSettingsConfig: deploySettings,
                             mavenLocalRepo: localRepository,
-                            options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
-                                      findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
-                                      invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
+                            publisherStrategy: 'EXPLICIT',
+                            mavenOpts: mavenOpts,
+                            options: [artifactsPublisher(disabled: false),
                                       junitPublisher(disabled: false, ignoreAttachments: false),
-                                      openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
+                                      pipelineGraphPublisher(disabled: false)]
                     )
                             {
                                 sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
@@ -100,10 +101,6 @@ pipeline {
             post {
                 always {
                     sh "rm -f /tmp/archiva-master-jdk-8-${env.JOB_NAME}.xml"
-                    junit testResults: '**/target/surefire-reports/TEST-*.xml'
-                }
-                success {
-                    archiveArtifacts '**/target/*.war,**/target/*-bin.zip'
                 }
                 failure {
                     notifyBuild("Failure in BuildAndDeploy stage")
@@ -129,13 +126,11 @@ pipeline {
                             checkout scm
                             timeout(120) {
                                 withMaven(maven: buildMvn, jdk: buildJdk9,
-                                        mavenSettingsConfig: deploySettings,
+                                          publisherStrategy: 'EXPLICIT',
+                                          mavenOpts: mavenOpts,
+                                          mavenSettingsConfig: deploySettings,
                                         mavenLocalRepo: ".repository",
-                                        options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
-                                                  findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
-                                                  invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
-                                                  junitPublisher(disabled: true, ignoreAttachments: false),
-                                                  openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
+                                        options: [junitPublisher(disabled: false, ignoreAttachments: false)]
                                 )
                                         {
                                             sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build"
@@ -163,11 +158,9 @@ pipeline {
                                 withMaven(maven: buildMvn, jdk: buildJdk10,
                                         mavenSettingsConfig: deploySettings,
                                         mavenLocalRepo: ".repository",
-                                        options: [concordionPublisher(disabled: true), dependenciesFingerprintPublisher(disabled: true),
-                                                  findbugsPublisher(disabled: true), artifactsPublisher(disabled: true),
-                                                  invokerPublisher(disabled: true), jgivenPublisher(disabled: true),
-                                                  junitPublisher(disabled: true, ignoreAttachments: false),
-                                                  openTasksPublisher(disabled: true), pipelineGraphPublisher(disabled: true)]
+                                          publisherStrategy: 'EXPLICIT',
+                                          mavenOpts: mavenOpts,
+                                          options: [junitPublisher(disabled: false, ignoreAttachments: false)]
                                 )
                                         {
                                             sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build"
