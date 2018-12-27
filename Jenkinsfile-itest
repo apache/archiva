@@ -35,6 +35,9 @@ pipeline {
     agent {
         label "${LABEL}"
     }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
+    }
 
     stages {
 
