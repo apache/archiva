@@ -179,36 +179,36 @@ pipeline {
                         }
                     }
                 }
-                stage('JDK11') {
-                    environment {
-                        ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-11-${env.JOB_NAME}.xml'
-                    }
-                    steps {
-                        ws("${env.JOB_NAME}-JDK10") {
-                            checkout scm
-                            timeout(120) {
-                                withMaven(maven: buildMvn, jdk: buildJdk11,
-                                          mavenSettingsConfig: deploySettings,
-                                          mavenLocalRepo: ".repository",
-                                          publisherStrategy: 'EXPLICIT',
-                                          mavenOpts: mavenOpts,
-                                          options: [junitPublisher(disabled: false, ignoreAttachments: false)]
-                                )
-                                        {
-                                            sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build"
-                                        }
-                            }
-                        }
-                    }
-                    post {
-                        always {
-                            sh "rm -f /tmp/archiva-master-jdk-11-${env.JOB_NAME}.xml"
-                        }
-                        success {
-                            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
-                        }
-                    }
-                }
+//                stage('JDK11') {
+//                    environment {
+//                        ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-11-${env.JOB_NAME}.xml'
+//                    }
+//                    steps {
+//                        ws("${env.JOB_NAME}-JDK10") {
+//                            checkout scm
+//                            timeout(120) {
+//                                withMaven(maven: buildMvn, jdk: buildJdk11,
+//                                          mavenSettingsConfig: deploySettings,
+//                                          mavenLocalRepo: ".repository",
+//                                          publisherStrategy: 'EXPLICIT',
+//                                          mavenOpts: mavenOpts,
+//                                          options: [junitPublisher(disabled: false, ignoreAttachments: false)]
+//                                )
+//                                        {
+//                                            sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build"
+//                                        }
+//                            }
+//                        }
+//                    }
+//                    post {
+//                        always {
+//                            sh "rm -f /tmp/archiva-master-jdk-11-${env.JOB_NAME}.xml"
+//                        }
+//                        success {
+//                            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
+//                        }
+//                    }
+//                }
             }
         }
 
