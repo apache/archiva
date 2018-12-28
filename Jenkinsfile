@@ -99,9 +99,9 @@ pipeline {
         unstable {
             notifyBuild("Unstable Build")
         }
-//        always {
-//            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
-//        }
+        always {
+            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
+        }
     }
 }
 
