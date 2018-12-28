@@ -34,7 +34,7 @@ buildJdk10 = 'JDK 10 (latest)'
 buildJdk11 = 'JDK 11 (latest)'
 buildMvn = 'Maven 3.5.2'
 deploySettings = 'archiva-uid-jenkins'
-localRepository = "../.archiva-master-repository"
+localRepository = ".repository"
 mavenOpts = '-Xms1g -Xmx2g -Djava.awt.headless=true'
 
 INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
@@ -45,7 +45,7 @@ pipeline {
     }
     options {
         disableConcurrentBuilds()
-        buildDiscarder(logRotator(numToKeepStr: '15', artifactNumToKeepStr: '15'))
+        buildDiscarder(logRotator(numToKeepStr: '7', artifactNumToKeepStr: '5'))
     }
     parameters {
         booleanParam(name: 'PRECLEANUP', defaultValue: false, description: 'Clears the local maven repository before build.')
