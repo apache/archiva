@@ -252,7 +252,9 @@
           </execution>
         </executions>
         <configuration>
-          <descriptor>src/main/assembly/bin.xml</descriptor>
+          <descriptors>
+            <descriptor>src/main/assembly/bin.xml</descriptor>
+          </descriptors>
           <finalName>apache-archiva-${project.version}</finalName>
         </configuration>
       </plugin>
