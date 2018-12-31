@@ -34,7 +34,8 @@ buildJdk10 = 'JDK 10 (latest)'
 buildJdk11 = 'JDK 11 (latest)'
 buildMvn = 'Maven 3.5.2'
 deploySettings = 'archiva-uid-jenkins'
-localRepository = ".repository"
+//localRepository = ".repository"
+localRepository = "../.maven_repositories/${env.EXECUTOR_NUMBER}"
 mavenOpts = '-Xms1g -Xmx2g -Djava.awt.headless=true'
 
 INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
@@ -79,7 +80,7 @@ pipeline {
                             mavenOpts: mavenOpts,
                             options: [artifactsPublisher(disabled: false),
                                       junitPublisher(disabled: false, ignoreAttachments: false),
-                                      pipelineGraphPublisher(disabled: false)]
+                                      pipelineGraphPublisher(disabled: false),mavenLinkerPublisher(disabled: false)]
                     )
                             {
                                 sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
