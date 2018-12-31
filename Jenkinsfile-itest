@@ -29,14 +29,17 @@ buildJdk = 'JDK 1.8 (latest)'
 buildMvn = 'Maven 3.5.2'
 deploySettings = 'archiva-uid-jenkins'
 DOCKERHUB_CREDS = '10a5f89e-504b-11e8-945d-7fd7b29cc41c'
-localRepository = ".repository"
+//localRepository = ".repository"
+localRepository = "../.maven_repositories/${env.EXECUTOR_NUMBER}"
 
 pipeline {
     agent {
         label "${LABEL}"
     }
     options {
-        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
+        disableConcurrentBuilds()
+        durabilityHint('PERFORMANCE_OPTIMIZED')
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '3'))
     }
 
     stages {

@@ -384,12 +384,12 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
-      <version>${jettyVersion}</version>
+      <version>${jetty.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-servlet</artifactId>
-      <version>${jettyVersion}</version>
+      <version>${jetty.version}</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
