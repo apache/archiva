@@ -104,7 +104,9 @@ pipeline {
                     sh "rm -f /tmp/archiva-master-jdk-8-${env.JOB_NAME}.xml"
                 }
                 failure {
-                    asfStandardBuild.notifyBuild("Failure in BuildAndDeploy stage")
+                    script{
+                        asfStandardBuild.notifyBuild("Failure in BuildAndDeploy stage")
+                    }
                 }
             }
         }
@@ -155,7 +157,9 @@ pipeline {
 
     post {
         unstable {
-            asfStandardBuild.notifyBuild("Unstable Build")
+            script {
+                asfStandardBuild.notifyBuild("Unstable Build")
+            }
         }
         success {
             script {
