@@ -25,7 +25,6 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-transaction</artifactId>
-  <packaging>bundle</packaging>
   <name>Archiva Base :: Transactions</name>
   <description>API for managing transaction.</description>
 
@@ -87,25 +86,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.transaction</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.apache.archiva.transaction;version=${project.version};-split-package:=merge-first
-            </Export-Package>
-            <Import-Package>
-              org.apache.commons.io;version="[1.4,2)",
-              org.codehaus.plexus.digest
-            </Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

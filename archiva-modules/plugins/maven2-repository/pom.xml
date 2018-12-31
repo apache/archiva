@@ -25,7 +25,6 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>maven2-repository</artifactId>
-  <packaging>bundle</packaging>
   <name>Archiva Core Plugins :: Maven 2.x Repository Support</name>
 
   <properties>
@@ -206,80 +205,6 @@
   </dependencies>
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.maven2</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.apache.archiva.dependency.tree.maven2;version=${project.version};-split-package:=merge-first,
-              org.apache.archiva.metadata.repository.storage.maven2;version=${project.version};-split-package:=merge-first,
-            </Export-Package>
-            <Import-Package>
-              !org.apache.archiva.metadata.repository.filter,
-              javax.annotation,
-              javax.xml.bind.annotation,
-              javax.inject,
-              org.apache.archiva.maven2.metadata*;version=${project.version},
-              org.apache.archiva.model*;version=${project.version},
-              org.apache.archiva.common*;version=${project.version},
-              org.apache.archiva.checksum;version=${project.version},
-              org.apache.archiva.configuration;version=${project.version},
-              org.apache.archiva.metadata.model;version=${project.version},
-              org.apache.archiva.metadata.repository;version=${project.version},
-              org.apache.archiva.metadata.repository.filter;version=${project.version},
-              org.apache.archiva.metadata.repository.storage;version=${project.version},
-              org.apache.archiva.proxy.common;version=${project.version},
-              org.apache.archiva.reports;version=${project.version},
-              org.apache.archiva.xml;version=${project.version},
-              org.apache.archiva.admin.model;version=${project.version},
-              org.apache.archiva.admin.model.beans;version=${project.version},
-              org.apache.archiva.admin.model.managed;version=${project.version},
-              org.apache.archiva.admin.model.networkproxy;version=${project.version},
-              org.apache.archiva.admin.model.proxyconnector;version=${project.version},
-              org.apache.archiva.admin.model.remote;version=${project.version},
-              org.apache.commons.collections;version="[3.2,4)",
-              org.apache.commons.configuration;version="[1.4,2)",
-              org.apache.commons.lang*;version="[2.4,3)",
-              org.apache.maven.artifact*,
-              org.apache.maven.model*,
-              org.apache.maven.wagon*,
-              org.codehaus.plexus*,
-              com.google.common.io,
-              org.springframework*;version="[3,4)",
-              org.slf4j;resolution:=optional,
-              org.apache.maven.repository.internal,
-              org.sonatype.aether.connector.file,
-              org.sonatype.aether.impl,
-              org.sonatype.aether.spi.connector,
-              org.sonatype.aether.transfer,
-              org.sonatype.aether,
-              org.sonatype.aether.artifact,
-              org.sonatype.aether.collection,
-              org.sonatype.aether.graph,
-              org.sonatype.aether.impl.internal,
-              org.sonatype.aether.repository,
-              org.sonatype.aether.util,
-              org.sonatype.aether.util.artifact,
-              org.modelmapper,
-              org.modelmapper.config,
-              org.modelmapper.convention,
-              org.modelmapper.spi,
-              org.apache.archiva.maven2.model,
-              org.sonatype.aether.util.graph.selector,
-              org.apache.archiva.metadata.model.maven2,
-              org.apache.archiva.policies,
-              org.apache.archiva.proxy,
-              org.apache.archiva.repository,
-              org.apache.archiva.repository.content,
-              org.apache.archiva.repository.layout,
-              org.apache.archiva.proxy.model
-            </Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>

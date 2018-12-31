@@ -26,7 +26,6 @@
   </parent>
 
   <artifactId>archiva-maven2-model</artifactId>
-  <packaging>bundle</packaging>
 
   <name>Archiva Base :: Maven 2 Model</name>
 
@@ -41,27 +40,5 @@
       <artifactId>jackson-annotations</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.maven2.model</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Import-Package>
-              javax.xml.bind.annotation,
-              com.fasterxml.jackson.annotation
-            </Import-Package>
-            <Export-Package>
-              org.apache.archiva.maven2.model*;version=${project.version}
-            </Export-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

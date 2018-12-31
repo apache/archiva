@@ -25,7 +25,6 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-scheduler-api</artifactId>
-  <packaging>bundle</packaging>
   <name>Archiva Scheduler :: API</name>
 
   <properties>
@@ -42,25 +41,4 @@
       <artifactId>spring-taskqueue</artifactId>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.scheduler.api</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.apache.archiva.scheduler;version=${project.version}
-            </Export-Package>
-            <Import-Package>
-              org.apache.archiva.redback.components.taskqueue,
-              org.apache.archiva.admin.model.beans
-            </Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

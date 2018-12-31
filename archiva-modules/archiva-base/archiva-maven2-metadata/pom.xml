@@ -26,7 +26,6 @@
   </parent>
 
   <artifactId>archiva-maven2-metadata</artifactId>
-  <packaging>bundle</packaging>
 
   <name>Archiva Base :: Maven 2 Metadata</name>
 
@@ -54,29 +53,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.maven2.metadata</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.apache.archiva.maven2.metadata*;version=${project.version}
-            </Export-Package>
-            <Import-Package>
-              org.apache.archiva.model;version=${project.version},
-              org.apache.archiva.xml;version=${project.version},
-              org.apache.commons.lang.math,
-              org.dom4j
-            </Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

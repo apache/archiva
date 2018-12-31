@@ -26,7 +26,6 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-maven2-indexer</artifactId>
-  <packaging>bundle</packaging>
   <name>Archiva Base :: Maven2 Indexer</name>
 
   <properties>
@@ -271,34 +270,6 @@
       </plugins>
     </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.indexer</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.apache.archiva.indexer.*;version=${project.version};-split-package:=merge-first
-            </Export-Package>
-            <Import-Package>
-              javax.annotation,
-              javax.inject,
-              com.google.common.io,
-              org.apache.archiva.admin.model*;version=${project.version},
-              org.apache.archiva.common.plexusbridge;version=${project.version},
-              org.apache.commons.io;version="[1.4,2)",
-              org.apache.commons.lang*;version="[2.4,3)",
-              org.springframework*;version="[3,4)",
-              org.apache.maven.index*,
-              org.apache.archiva.redback.components.scheduler,
-              org.quartz,
-              org.apache.archiva.scheduler,
-              org.slf4j;resolution:=optional
-            </Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

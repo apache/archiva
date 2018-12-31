@@ -25,7 +25,6 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>metadata-statistics-api</artifactId>
-  <packaging>bundle</packaging>
   <name>Archiva Metadata :: Statistics API</name>
 
   <properties>
@@ -42,26 +41,4 @@
       <artifactId>metadata-model-maven2</artifactId>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.metadata.repository.api</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.apache.archiva.metadata.repository.stats.model;version=${project.version}
-            </Export-Package>
-            <Import-Package>
-              org.apache.archiva.metadata.model;version=${project.version},
-              org.apache.archiva.maven2.model;version=${project.version},
-              org.slf4j;resolution:=optional,
-            </Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

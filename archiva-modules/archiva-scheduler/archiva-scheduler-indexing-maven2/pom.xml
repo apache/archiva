@@ -36,7 +36,7 @@
 
   <artifactId>archiva-scheduler-indexing-maven2</artifactId>
   <name>Archiva Scheduler :: Maven Indexing</name>
-  <packaging>bundle</packaging>
+
   <description>Scheduler for downloading remote Maven indexes.</description>
 
   <dependencies>
@@ -164,33 +164,6 @@
       </plugins>
     </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.scheduler.indexing</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.apache.archiva.scheduler.indexing;version=${project.version}
-            </Export-Package>
-            <Import-Package>
-              javax.annotation,
-              javax.inject,
-              org.apache.archiva.admin.model*;version=${project.version},
-              org.apache.archiva.common*;version=${project.version},
-              org.apache.archiva.configuration;version=${project.version},
-              org.apache.archiva.proxy.common;version=${project.version},
-              org.apache.archiva.scheduler;version=${project.version},
-              org.apache.commons.io;version="[1.4,2)",
-              org.apache.commons.lang*;version="[2.4,3)",
-              org.springframework*;version="[3,4)",
-              org.apache.archiva.redback.components.taskqueue*,
-              org.slf4j;resolution:=optional
-            </Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

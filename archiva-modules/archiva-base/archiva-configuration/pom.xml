@@ -26,7 +26,6 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-configuration</artifactId>
-  <packaging>bundle</packaging>
   <name>Archiva Base :: Configuration</name>
 
   <properties>
@@ -197,38 +196,6 @@
           <systemPropertyVariables>
             <basedir>${basedir}</basedir>
           </systemPropertyVariables>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.configuration</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.apache.archiva.configuration*;version=${project.version}
-            </Export-Package>
-            <Import-Package>
-              javax.annotation,
-              javax.inject,
-              org.apache.archiva.common;version=${project.version},
-              org.apache.archiva.policies;version=${project.version},
-              org.apache.commons.collections;version="[3.2,4)",
-              org.apache.commons.lang;version="[2.4,3)",
-              org.apache.commons.configuration;version="[1.3,2)",
-              org.apache.commons.io;version="[1.4,2)",
-              org.apache.archiva.redback.components.evaluator*,
-              org.apache.archiva.redback.components.registry,
-              org.codehaus.plexus.util,
-              org.apache.tools.ant.types.selectors,
-              org.apache.archiva.redback.components.registry,
-              org.apache.archiva.redback.components.registry.commons,
-              org.apache.archiva.redback.components.springutils,
-              org.springframework.stereotype;version="[3,4)",
-              org.slf4j;resolution:=optional
-            </Import-Package>
-          </instructions>
         </configuration>
       </plugin>
     </plugins>

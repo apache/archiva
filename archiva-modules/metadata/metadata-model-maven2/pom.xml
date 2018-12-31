@@ -25,7 +25,6 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>metadata-model-maven2</artifactId>
-  <packaging>bundle</packaging>
   <name>Archiva Metadata :: Maven 2 Model</name>
 
   <properties>
@@ -43,26 +42,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.metadata.model.maven2</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.apache.archiva.metadata.model.maven2;version=${project.version}
-            </Export-Package>
-            <Import-Package>
-              javax.xml.bind.annotation,
-              org.apache.commons.lang,
-              javax.persistence
-            </Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

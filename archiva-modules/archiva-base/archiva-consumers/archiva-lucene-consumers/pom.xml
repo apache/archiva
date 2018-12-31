@@ -26,7 +26,6 @@
     <version>3.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>archiva-lucene-consumers</artifactId>
-  <packaging>bundle</packaging>
   <name>Archiva Base :: Consumers :: Lucene</name>
 
   <properties>
@@ -154,34 +153,6 @@
     </dependency>
   </dependencies>
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.consumers.lucene</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.apache.archiva.consumers.lucene;version=${project.version}
-            </Export-Package>
-            <Import-Package>
-              javax.annotation,
-              javax.inject,
-              org.apache.archiva.common.plexusbridge;version=${project.version},
-              org.apache.archiva.configuration;version=${project.version},
-              org.apache.archiva.consumers;version=${project.version},
-              org.apache.archiva.scheduler*;version=${project.version},
-              org.springframework*;version="[3,4)",
-              org.apache.maven.index*,
-              org.apache.archiva.redback.components.registry,
-              org.apache.archiva.redback.components.taskqueue,
-              org.slf4j;resolution:=optional
-            </Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
     <pluginManagement>
       <plugins>
         <plugin>

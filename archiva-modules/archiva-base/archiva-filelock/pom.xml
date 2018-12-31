@@ -26,7 +26,6 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>archiva-filelock</artifactId>
-  <packaging>bundle</packaging>
   <name>Archiva Base :: FileLock</name>
 
   <properties>
@@ -101,25 +100,6 @@
   </dependencies>
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.common</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.apache.archiva.common*;version=${project.version}
-            </Export-Package>
-            <Import-Package>
-              org.slf4j,
-              org.springframework.stereotype,
-              org.springframework.util,
-              org.apache.commons.lang.time
-            </Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

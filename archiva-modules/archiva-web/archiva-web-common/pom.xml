@@ -26,7 +26,6 @@
   </parent>
 
   <artifactId>archiva-web-common</artifactId>
-  <!-- DO NOT USE bundle packaging generated documentation is not included in the jar !!! -->
   <packaging>jar</packaging>
   <name>Archiva Web :: Web Common</name>
 
@@ -439,76 +438,10 @@
       </plugins>
     </pluginManagement>
     <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>org.apache.archiva.web.common</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.apache.archiva.web.startup;version=${project.version}
-            </Export-Package>
-            <Import-Package>
-              javax.annotation,
-              javax.inject,
-              javax.servlet,
-              javax.servlet.http,
-              org.apache.archiva.common;version=${project.version},
-              org.apache.archiva.common.plexusbridge;version=${project.version},
-              org.apache.archiva.configuration;version=${project.version},
-              org.apache.archiva.repository.events;version=${project.version},
-              org.apache.archiva.scheduler.repository;version=${project.version},
-              org.apache.archiva.security.common;version=${project.version},
-              org.apache.commons.collections;version="[3.2,4)",
-              org.apache.commons.lang;version="[2.4,3)",
-              org.apache.commons.lang.math;version="[2.4,3)",
-              org.apache.maven.index,
-              org.apache.maven.index.context,
-              org.apache.archiva.redback.rbac,
-              org.apache.archiva.redback.role,
-              org.apache.archiva.redback.system.check,
-              org.apache.archiva.redback.components.registry,
-              org.apache.archiva.redback.components.taskqueue,
-              org.apache.archiva.redback.components.taskqueue.execution,
-              org.apache.archiva.redback.components.scheduler,
-              org.quartz;version="[2,3)",
-              org.slf4j;resolution:=optional,
-              org.springframework*;version="[3,4)",
-              com.sun.syndication.feed.synd,
-              com.sun.syndication.io,
-              org.apache.archiva.metadata.repository,
-              org.apache.archiva.rss.processor,
-              org.apache.archiva.security,
-              org.apache.commons.codec,
-              org.apache.commons.codec.binary,
-              org.apache.archiva.redback.authentication,
-              org.apache.archiva.redback.authorization,
-              org.apache.archiva.redback.policy,
-              org.apache.archiva.redback.system,
-              org.apache.archiva.redback.users,
-              org.apache.archiva.redback.integration.filter.authentication
-            </Import-Package>
-          </instructions>
-        </configuration>
-        <executions>
-          <execution>
-            <id>create-manifest</id>
-            <phase>process-test-classes</phase>
-            <goals>
-              <goal>manifest</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-          </archive>
-        </configuration>
         <executions>
           <execution>
             <goals>
