@@ -33,10 +33,12 @@ buildJdk9 = 'JDK 1.9 (latest)'
 buildJdk10 = 'JDK 10 (latest)'
 buildJdk11 = 'JDK 11 (latest)'
 buildMvn = 'Maven 3.5.2'
-deploySettings = 'archiva-uid-jenkins'
 //localRepository = ".repository"
 localRepository = "../.maven_repositories/${env.EXECUTOR_NUMBER}"
 mavenOpts = '-Xms1g -Xmx2g -Djava.awt.headless=true'
+publishers = [artifactsPublisher(disabled: false),
+              junitPublisher(disabled: false, ignoreAttachments: false),
+              pipelineGraphPublisher(disabled: false),mavenLinkerPublisher(disabled: false)]
 
 INTEGRATION_PIPELINE = "Archiva-IntegrationTests-Gitbox"
 
@@ -74,14 +76,10 @@ pipeline {
             steps {
                 timeout(120) {
                     withMaven(maven: buildMvn, jdk: buildJdk,
-                            mavenSettingsConfig: deploySettings,
                             mavenLocalRepo: localRepository,
                             publisherStrategy: 'EXPLICIT',
                             mavenOpts: mavenOpts,
-                            options: [artifactsPublisher(disabled: false),
-                                      junitPublisher(disabled: false, ignoreAttachments: false),
-                                      pipelineGraphPublisher(disabled: false),mavenLinkerPublisher(disabled: false)]
-                    )
+                            options: publishers )
                             {
                                 sh "chmod 755 ./src/ci/scripts/prepareWorkspace.sh"
                                 sh "./src/ci/scripts/prepareWorkspace.sh"
@@ -97,7 +95,7 @@ pipeline {
                                 // -Dmaven.compiler.fork=true: Do compile in a separate forked process
                                 // -Dmaven.test.failure.ignore=true: Do not stop, if some tests fail
                                 // -Pci-build: Profile for CI-Server
-                                sh "mvn clean deploy -B -U -e -fae -Dmaven.compiler.fork=true -Pci-build"
+                                sh "mvn clean deploy -B -U -e -fae -Dmaven.compiler.fork=true -Pci-build -T3"
                             }
                 }
             }
@@ -106,7 +104,7 @@ pipeline {
                     sh "rm -f /tmp/archiva-master-jdk-8-${env.JOB_NAME}.xml"
                 }
                 failure {
-                    notifyBuild("Failure in BuildAndDeploy stage")
+                    asfStandardBuild.notifyBuild("Failure in BuildAndDeploy stage")
                 }
             }
         }
@@ -120,96 +118,36 @@ pipeline {
                         build(job: "${INTEGRATION_PIPELINE}/archiva/${env.BRANCH_NAME}", propagate: false, quietPeriod: 5, wait: false)
                     }
                 }
-                stage('JDK9') {
+
+                stage('JDK11') {
                     environment {
-                        ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-9-${env.JOB_NAME}.xml'
-                    }
-                    steps {
-                        ws("${env.JOB_NAME}-JDK9") {
-                            checkout scm
-                            timeout(120) {
-                                withMaven(maven: buildMvn, jdk: buildJdk9,
-                                          publisherStrategy: 'EXPLICIT',
-                                          mavenOpts: mavenOpts,
-                                          mavenSettingsConfig: deploySettings,
-                                        mavenLocalRepo: ".repository",
-                                        options: [junitPublisher(disabled: false, ignoreAttachments: false)]
-                                )
-                                        {
-                                            sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build"
-                                        }
-                            }
-                        }
-                    }
-                    post {
-                        always {
-                            sh "rm -f /tmp/archiva-master-jdk-9-${env.JOB_NAME}.xml"
-                        }
-                        success {
-                            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
-                        }
-                    }
-                }
-                stage('JDK10') {
-                    environment {
-                        ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-10-${env.JOB_NAME}.xml'
+                        ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-11-${env.JOB_NAME}.xml'
                     }
                     steps {
                         ws("${env.JOB_NAME}-JDK10") {
                             checkout scm
                             timeout(120) {
-                                withMaven(maven: buildMvn, jdk: buildJdk10,
-                                        mavenSettingsConfig: deploySettings,
-                                        mavenLocalRepo: ".repository",
+                                withMaven(maven: buildMvn, jdk: buildJdk11,
+                                          mavenLocalRepo: ".repository",
                                           publisherStrategy: 'EXPLICIT',
                                           mavenOpts: mavenOpts,
-                                          options: [junitPublisher(disabled: false, ignoreAttachments: false)]
+                                          options: publishers
                                 )
                                         {
-                                            sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build"
+                                            sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build -T3"
                                         }
                             }
                         }
                     }
                     post {
                         always {
-                            sh "rm -f /tmp/archiva-master-jdk-10-${env.JOB_NAME}.xml"
+                            sh "rm -f /tmp/archiva-master-jdk-11-${env.JOB_NAME}.xml"
                         }
                         success {
-                            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
+                            cleanWs()
                         }
                     }
                 }
-//                stage('JDK11') {
-//                    environment {
-//                        ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-11-${env.JOB_NAME}.xml'
-//                    }
-//                    steps {
-//                        ws("${env.JOB_NAME}-JDK10") {
-//                            checkout scm
-//                            timeout(120) {
-//                                withMaven(maven: buildMvn, jdk: buildJdk11,
-//                                          mavenSettingsConfig: deploySettings,
-//                                          mavenLocalRepo: ".repository",
-//                                          publisherStrategy: 'EXPLICIT',
-//                                          mavenOpts: mavenOpts,
-//                                          options: [junitPublisher(disabled: false, ignoreAttachments: false)]
-//                                )
-//                                        {
-//                                            sh "mvn clean install -U -B -e -fae -Dmaven.compiler.fork=true -Pci-build"
-//                                        }
-//                            }
-//                        }
-//                    }
-//                    post {
-//                        always {
-//                            sh "rm -f /tmp/archiva-master-jdk-11-${env.JOB_NAME}.xml"
-//                        }
-//                        success {
-//                            cleanWs deleteDirs: true, notFailBuild: true, patterns: [[pattern: '.repository', type: 'EXCLUDE']]
-//                        }
-//                    }
-//                }
             }
         }
 
@@ -217,41 +155,17 @@ pipeline {
 
     post {
         unstable {
-            notifyBuild("Unstable Build")
+            asfStandardBuild.notifyBuild("Unstable Build")
         }
         success {
             script {
                 def previousResult = currentBuild.previousBuild?.result
                 if (previousResult && !currentBuild.resultIsWorseOrEqualTo(previousResult)) {
-                    notifyBuild("Fixed")
+                    asfStandardBuild.notifyBuild("Fixed")
                 }
             }
         }
     }
-}
-
-// Send a notification about the build status
-def notifyBuild(String buildStatus) {
-    // default the value
-    buildStatus = buildStatus ?: "UNKNOWN"
-
-    def email = "notifications@archiva.apache.org"
-    def summary = "${env.JOB_NAME}#${env.BUILD_NUMBER} - ${buildStatus} - ${currentBuild?.currentResult}"
-    def detail = """<h4>Job: <a href='${env.JOB_URL}'>${env.JOB_NAME}</a> [#${env.BUILD_NUMBER}]</h4>
-  <p><b>${buildStatus}</b></p>
-  <table>
-    <tr><td>Build</td><td><a href='${env.BUILD_URL}'>${env.BUILD_URL}</a></td><tr>
-    <tr><td>Console</td><td><a href='${env.BUILD_URL}console'>${env.BUILD_URL}console</a></td><tr>
-    <tr><td>Test Report</td><td><a href='${env.BUILD_URL}testReport/'>${env.BUILD_URL}testReport/</a></td><tr>
-  </table>
-  """
-
-    emailext(
-            to: email,
-            subject: summary,
-            body: detail,
-            mimeType: 'text/html'
-    )
 }
 
 // vim: et:ts=4:sw=4:ft=groovy
