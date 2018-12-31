@@ -126,7 +126,7 @@ pipeline {
                         ARCHIVA_USER_CONFIG_FILE = '/tmp/archiva-master-jdk-11-${env.JOB_NAME}.xml'
                     }
                     steps {
-                        ws("${env.JOB_NAME}-JDK10") {
+                        ws("${env.JOB_NAME}-JDK11") {
                             checkout scm
                             timeout(120) {
                                 withMaven(maven: buildMvn, jdk: buildJdk11,
