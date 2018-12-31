@@ -69,8 +69,6 @@
     <redback.registry.version>2.4</redback.registry.version>
     <redback.spring-utils.version>2.1</redback.spring-utils.version>
     <redback.taskqueue.version>2.1</redback.taskqueue.version>
-    <slf4j.version>1.7.25</slf4j.version>
-    <log4j.version>2.8.2</log4j.version>
 
     <jsoup.version>1.7.2</jsoup.version>
     <rome.version>0.9</rome.version>
@@ -93,7 +91,7 @@
     <httpclient.version>4.5.2</httpclient.version>
     <httpclient.core.version>4.4.4</httpclient.core.version>
     <javaxMailVersion>1.4</javaxMailVersion>
-    <jetty.version>9.4.14.v20181114</jetty.version>
+
     <guava.version>15.0</guava.version>
     <openjpaVersion>2.4.1</openjpaVersion>
 
