@@ -90,7 +90,7 @@ public class WebDriverBrowseTest
         goTo( url );
 
         // wait until topbar-menu-container is feeded
-        await().atMost( 5, TimeUnit.SECONDS ).untilPredicate( ( fl ) -> $( "#topbar-menu" ).present() );
+        await().atMost( 10, TimeUnit.SECONDS ).untilPredicate( ( fl ) -> $( "#topbar-menu" ).present() );
         await().atMost( 10, TimeUnit.SECONDS).untilPredicate( (fl) -> el("#create-admin-link-a").conditions().clickable() ||
             el("#login-link-a").conditions().clickable()
         );

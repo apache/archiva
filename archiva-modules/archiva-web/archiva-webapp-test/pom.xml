@@ -560,7 +560,7 @@
           <plugin>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-maven-plugin</artifactId>
-            <version>9.4.5.v20170502</version>
+            <version>${jetty.version}</version>
             <configuration>
               <stopKey>archivastop</stopKey>
               <stopPort>${container.stop.port}</stopPort>
@@ -568,6 +568,9 @@
               <httpConnector>
                 <port>${container.http.port}</port>
               </httpConnector>
+              <supportedPackagings>
+                <supportedPackaging>pom</supportedPackaging>
+              </supportedPackagings>
             </configuration>
             <dependencies>
               <dependency>
