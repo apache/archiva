@@ -43,12 +43,13 @@
     <module>archiva-plexus-bridge</module>
     <module>archiva-policies</module>
     <module>archiva-repository-api</module>
+    <module>archiva-maven2-common</module>
     <module>archiva-maven2-indexer</module>
     <module>archiva-consumers</module>
     <module>archiva-repository-layer</module>
     <module>archiva-xml-tools</module>
     <module>archiva-proxy-api</module>
-    <module>archiva-proxy-common</module>
+    <module>archiva-proxy-maven</module>
     <module>archiva-proxy</module>
     <module>archiva-transaction</module>
     <module>archiva-converter</module>

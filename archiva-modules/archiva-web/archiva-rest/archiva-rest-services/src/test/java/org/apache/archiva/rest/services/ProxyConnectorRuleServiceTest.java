@@ -20,7 +20,7 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.beans.ProxyConnectorRule;
-import org.apache.archiva.admin.model.beans.ProxyConnectorRuleType;
+import org.apache.archiva.proxy.model.ProxyConnectorRuleType;
 import org.apache.archiva.rest.api.services.ProxyConnectorRuleService;
 import org.junit.Test;
 

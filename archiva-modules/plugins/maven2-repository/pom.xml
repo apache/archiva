@@ -54,7 +54,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-proxy-common</artifactId>
+      <artifactId>archiva-proxy-maven</artifactId>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>

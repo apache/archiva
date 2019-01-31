@@ -52,7 +52,8 @@
   </bean>
 
 
-  <bean name="repositoryProxyConnectors#test" class="org.apache.archiva.proxy.DefaultRepositoryProxyConnectors">
+
+  <bean name="repositoryProxyConnectors#test" class="org.apache.archiva.proxy.maven.MavenRepositoryProxyHandler">
     <property name="archivaConfiguration" ref="archivaConfiguration#mock"/>
     <property name="repositoryFactory" ref="repositoryContentFactory#mocked"/>
     <property name="metadataTools" ref="metadataTools#mocked"/>

@@ -20,12 +20,12 @@ package org.apache.archiva.rest.services;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
-import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
-import org.apache.archiva.proxy.common.WagonFactory;
-import org.apache.archiva.proxy.common.WagonFactoryRequest;
+import org.apache.archiva.proxy.ProxyRegistry;
+import org.apache.archiva.proxy.maven.WagonFactory;
+import org.apache.archiva.proxy.maven.WagonFactoryRequest;
+import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
 import org.apache.commons.lang.StringUtils;
@@ -58,9 +58,8 @@ public class DefaultRemoteRepositoriesService
     @Inject
     private WagonFactory wagonFactory;
 
-
     @Inject
-    private NetworkProxyAdmin networkProxyAdmin;
+    private ProxyRegistry proxyRegistry;
 
     int checkReadTimeout = 10000;
     int checkTimeout = 9000;
@@ -135,7 +134,7 @@ public class DefaultRemoteRepositoriesService
             }
             NetworkProxy networkProxy = null;
             if (StringUtils.isNotBlank(remoteRepository.getRemoteDownloadNetworkProxyId())) {
-                networkProxy = networkProxyAdmin.getNetworkProxy(remoteRepository.getRemoteDownloadNetworkProxyId());
+                networkProxy = proxyRegistry.getNetworkProxy(remoteRepository.getRemoteDownloadNetworkProxyId());
                 if (networkProxy == null) {
                     log.warn(
                             "your remote repository is configured to download remote index trought a proxy we cannot find id:{}",

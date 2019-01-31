@@ -160,6 +160,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
+        <artifactId>archiva-maven2-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.archiva</groupId>
         <artifactId>archiva-maven2-metadata</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -447,7 +452,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-proxy-common</artifactId>
+        <artifactId>archiva-proxy-maven</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

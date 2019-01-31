@@ -46,7 +46,7 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
-import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
+import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
 import org.apache.archiva.redback.authorization.AuthorizationException;
@@ -138,7 +138,7 @@ public class ArchivaDavResourceFactory
 
     @Inject
     @Named( value = "repositoryProxyConnectors#default" )
-    private RepositoryProxyConnectors connectors;
+    private RepositoryProxyHandler connectors;
 
     @Inject
     private MetadataTools metadataTools;
@@ -1416,7 +1416,7 @@ public class ArchivaDavResourceFactory
         this.repositoryRequest = repositoryRequest;
     }
 
-    public void setConnectors( RepositoryProxyConnectors connectors )
+    public void setConnectors( RepositoryProxyHandler connectors )
     {
         this.connectors = connectors;
     }

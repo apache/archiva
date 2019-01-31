@@ -19,16 +19,15 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.NetworkProxy;
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.dependency.tree.maven2.ArchivaRepositoryConnectorFactory;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.SnapshotVersion;
-import org.apache.archiva.proxy.common.WagonFactory;
-import org.apache.archiva.proxy.common.WagonFactoryException;
-import org.apache.archiva.proxy.common.WagonFactoryRequest;
+import org.apache.archiva.proxy.maven.WagonFactory;
+import org.apache.archiva.proxy.maven.WagonFactoryException;
+import org.apache.archiva.proxy.maven.WagonFactoryRequest;
+import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryCredentials;
@@ -44,10 +43,6 @@ import org.apache.maven.model.building.ModelSource;
 import org.apache.maven.model.resolution.InvalidRepositoryException;
 import org.apache.maven.model.resolution.ModelResolver;
 import org.apache.maven.model.resolution.UnresolvableModelException;
-import org.apache.maven.repository.internal.DefaultArtifactDescriptorReader;
-import org.apache.maven.repository.internal.DefaultVersionRangeResolver;
-import org.apache.maven.repository.internal.DefaultVersionResolver;
-import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
@@ -59,28 +54,26 @@ import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
-import org.eclipse.aether.impl.ArtifactDescriptorReader;
-import org.eclipse.aether.impl.DefaultServiceLocator;
 import org.eclipse.aether.impl.VersionRangeResolver;
-import org.eclipse.aether.impl.VersionResolver;
 import org.eclipse.aether.resolution.VersionRangeRequest;
 import org.eclipse.aether.resolution.VersionRangeResolutionException;
 import org.eclipse.aether.resolution.VersionRangeResult;
-import org.eclipse.aether.spi.connector.RepositoryConnectorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class RepositoryModelResolver
     implements ModelResolver
 {
+
+    private final Map<String, NetworkProxy> networkProxyMap = new HashMap<>();
 
     private RepositorySystemSession session;
     private VersionRangeResolver versionRangeResolver;
@@ -101,8 +94,7 @@ public class RepositoryModelResolver
 
     private MavenSystemManager mavenSystemManager;
 
-    // key/value: remote repo ID/network proxy
-    Map<String, NetworkProxy> networkProxyMap;
+
 
     private ManagedRepository managedRepository;
 
@@ -113,10 +105,10 @@ public class RepositoryModelResolver
         this.pathTranslator = pathTranslator;
     }
 
-    public RepositoryModelResolver( ManagedRepository managedRepository, RepositoryPathTranslator pathTranslator,
-                                    WagonFactory wagonFactory, List<RemoteRepository> remoteRepositories,
-                                    Map<String, NetworkProxy> networkProxiesMap, ManagedRepository targetRepository,
-                                    MavenSystemManager mavenSystemManager)
+    public RepositoryModelResolver(ManagedRepository managedRepository, RepositoryPathTranslator pathTranslator,
+                                   WagonFactory wagonFactory, List<RemoteRepository> remoteRepositories,
+                                   Map<String, NetworkProxy> networkProxiesMap, ManagedRepository targetRepository,
+                                   MavenSystemManager mavenSystemManager)
     {
         this( Paths.get( managedRepository.getLocation() ), pathTranslator );
 
@@ -126,7 +118,8 @@ public class RepositoryModelResolver
 
         this.remoteRepositories = remoteRepositories;
 
-        this.networkProxyMap = networkProxiesMap;
+        this.networkProxyMap.clear();
+        this.networkProxyMap.putAll(networkProxiesMap);
 
         this.targetRepository = targetRepository;
 

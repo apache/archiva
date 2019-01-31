@@ -18,9 +18,9 @@ package org.apache.archiva.scheduler.indexing.maven;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.NetworkProxy;
-import org.apache.archiva.proxy.common.WagonFactory;
-import org.apache.archiva.proxy.common.WagonFactoryRequest;
+import org.apache.archiva.proxy.maven.WagonFactory;
+import org.apache.archiva.proxy.maven.WagonFactoryRequest;
+import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.repository.PasswordCredentials;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryException;

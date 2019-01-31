@@ -49,6 +49,8 @@ public class ProxyConnector
 
     private boolean disabled;
 
+    private Map<String, String> properties;
+
     public ProxyConnector()
     {
         // no op
@@ -166,5 +168,14 @@ public class ProxyConnector
     public void setOrder( int order )
     {
         this.order = order;
+    }
+
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 }

@@ -35,7 +35,7 @@ import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMetadataVer
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
-import org.apache.archiva.proxy.model.RepositoryProxyConnectors;
+import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.ReleaseScheme;
@@ -83,7 +83,7 @@ public class DefaultBrowseService
 
     @Inject
     @Named( value = "repositoryProxyConnectors#default" )
-    private RepositoryProxyConnectors connectors;
+    private RepositoryProxyHandler connectors;
 
     @Inject
     @Named( value = "browse#versionMetadata" )

@@ -34,7 +34,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
-import org.apache.archiva.proxy.DefaultRepositoryProxyConnectors;
+import org.apache.archiva.proxy.maven.MavenRepositoryProxyHandler;
 import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -229,7 +229,7 @@ public class ArchivaDavResourceFactoryTest
         resourceFactory.setArchivaConfiguration( archivaConfiguration );
         resourceFactory.setRepositoryFactory( repoFactory );
         resourceFactory.setRepositoryRequest( repoRequest );
-        resourceFactory.setConnectors( new OverridingRepositoryProxyConnectors() );
+        resourceFactory.setConnectors( new OverridingRepositoryProxyHandler() );
         resourceFactory.setRemoteRepositoryAdmin( remoteRepositoryAdmin );
         resourceFactory.setManagedRepositoryAdmin( defaultManagedRepositoryAdmin );
         resourceFactory.setRepositoryRegistry( repositoryRegistry );
@@ -749,8 +749,8 @@ public class ArchivaDavResourceFactoryTest
         }
     }
 
-    class OverridingRepositoryProxyConnectors
-        extends DefaultRepositoryProxyConnectors
+    class OverridingRepositoryProxyHandler
+        extends MavenRepositoryProxyHandler
     {
         @Override
         public ProxyFetchResult fetchMetadataFromProxies( ManagedRepositoryContent repository, String logicalPath )

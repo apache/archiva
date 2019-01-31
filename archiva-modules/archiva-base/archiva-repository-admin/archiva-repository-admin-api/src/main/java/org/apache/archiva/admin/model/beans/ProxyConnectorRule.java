@@ -18,6 +18,8 @@ package org.apache.archiva.admin.model.beans;
  * under the License.
  */
 
+import org.apache.archiva.proxy.model.ProxyConnectorRuleType;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;

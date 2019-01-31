@@ -20,8 +20,6 @@ package org.apache.archiva.admin.mock;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.NetworkProxy;
-import org.apache.archiva.admin.model.networkproxy.NetworkProxyAdmin;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -30,9 +28,11 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
-import org.apache.archiva.proxy.common.WagonFactory;
-import org.apache.archiva.proxy.common.WagonFactoryException;
-import org.apache.archiva.proxy.common.WagonFactoryRequest;
+import org.apache.archiva.proxy.ProxyRegistry;
+import org.apache.archiva.proxy.maven.WagonFactory;
+import org.apache.archiva.proxy.maven.WagonFactoryException;
+import org.apache.archiva.proxy.maven.WagonFactoryRequest;
+import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.repository.EditableRepository;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.PasswordCredentials;
@@ -118,8 +118,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
     private WagonFactory wagonFactory;
 
     @Inject
-    private NetworkProxyAdmin networkProxyAdmin;
-
+    ProxyRegistry proxyRegistry;
 
     @Inject
     private ArtifactContextProducer artifactContextProducer;
@@ -277,14 +276,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
                             RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class ).get( );
                             if ( StringUtils.isNotBlank( rif.getProxyId( ) ) )
                             {
-                                try
-                                {
-                                    networkProxy = networkProxyAdmin.getNetworkProxy( rif.getProxyId( ) );
-                                }
-                                catch ( RepositoryAdminException e )
-                                {
-                                    log.error( "Error occured while retrieving proxy {}", e.getMessage( ) );
-                                }
+                                networkProxy = proxyRegistry.getNetworkProxy( rif.getProxyId( ) );
                                 if ( networkProxy == null )
                                 {
                                     log.warn(

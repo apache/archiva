@@ -24,7 +24,7 @@ import org.apache.archiva.metadata.repository.filter.AllFilter;
 import org.apache.archiva.metadata.repository.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageRuntimeException;
-import org.apache.archiva.proxy.common.WagonFactory;
+import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.junit.Before;
 import org.junit.Test;
