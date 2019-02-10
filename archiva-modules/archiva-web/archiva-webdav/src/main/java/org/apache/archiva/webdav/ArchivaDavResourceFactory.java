@@ -46,6 +46,7 @@ import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.policies.ProxyDownloadException;
+import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.redback.authentication.AuthenticationException;
 import org.apache.archiva.redback.authentication.AuthenticationResult;
@@ -137,8 +138,7 @@ public class ArchivaDavResourceFactory
     private RepositoryRequest repositoryRequest;
 
     @Inject
-    @Named( value = "repositoryProxyConnectors#default" )
-    private RepositoryProxyHandler connectors;
+    private ProxyRegistry proxyRegistry;
 
     @Inject
     private MetadataTools metadataTools;
@@ -753,9 +753,13 @@ public class ArchivaDavResourceFactory
         throws DavException
     {
         String path = resource.getPath();
+        if (!proxyRegistry.hasHandler(managedRepository.getRepository().getType())) {
+            throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "No proxy handler found for repository type "+managedRepository.getRepository().getType());
+        }
+        RepositoryProxyHandler proxyHandler = proxyRegistry.getHandler(managedRepository.getRepository().getType()).get(0);
         if ( repositoryRequest.isSupportFile( path ) )
         {
-            Path proxiedFile = connectors.fetchFromProxies( managedRepository, path );
+            Path proxiedFile = proxyHandler.fetchFromProxies( managedRepository, path );
 
             return ( proxiedFile != null );
         }
@@ -763,14 +767,14 @@ public class ArchivaDavResourceFactory
         // Is it a Metadata resource?
         if ( repositoryRequest.isDefault( path ) && repositoryRequest.isMetadata( path ) )
         {
-            return connectors.fetchMetadataFromProxies( managedRepository, path ).isModified();
+            return proxyHandler.fetchMetadataFromProxies( managedRepository, path ).isModified();
         }
 
         // Is it an Archetype Catalog?
         if ( repositoryRequest.isArchetypeCatalog( path ) )
         {
             // FIXME we must implement a merge of remote archetype catalog from remote servers.
-            Path proxiedFile = connectors.fetchFromProxies( managedRepository, path );
+            Path proxiedFile = proxyHandler.fetchFromProxies( managedRepository, path );
 
             return ( proxiedFile != null );
         }
@@ -789,7 +793,7 @@ public class ArchivaDavResourceFactory
                     this.applicationContext.getBean( "repositoryStorage#" + repositoryLayout, RepositoryStorage.class );
                 repositoryStorage.applyServerSideRelocation( managedRepository, artifact );
 
-                Path proxiedFile = connectors.fetchFromProxies( managedRepository, artifact );
+                Path proxiedFile = proxyHandler.fetchFromProxies( managedRepository, artifact );
 
                 resource.setPath( managedRepository.toPath( artifact ) );
 
@@ -915,6 +919,14 @@ public class ArchivaDavResourceFactory
         return prefix + ( StringUtils.startsWith( path, "/" ) ? "" :
                         ( StringUtils.endsWith( prefix, "/" ) ? "" : "/" ) )
                       + path;
+    }
+
+    public void setProxyRegistry(ProxyRegistry proxyRegistry) {
+        this.proxyRegistry = proxyRegistry;
+    }
+
+    public ProxyRegistry getProxyRegistry() {
+        return this.proxyRegistry;
     }
 
     private static class LogicalResource
@@ -1414,11 +1426,6 @@ public class ArchivaDavResourceFactory
     public void setRepositoryRequest( RepositoryRequest repositoryRequest )
     {
         this.repositoryRequest = repositoryRequest;
-    }
-
-    public void setConnectors( RepositoryProxyHandler connectors )
-    {
-        this.connectors = connectors;
     }
 
     public RemoteRepositoryAdmin getRemoteRepositoryAdmin()

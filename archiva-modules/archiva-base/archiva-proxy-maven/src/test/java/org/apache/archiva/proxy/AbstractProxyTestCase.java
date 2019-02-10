@@ -381,6 +381,7 @@ public abstract class AbstractProxyTestCase
         ProxyConnectorConfiguration connectorConfig = new ProxyConnectorConfiguration();
         connectorConfig.setSourceRepoId( sourceRepoId );
         connectorConfig.setTargetRepoId( targetRepoId );
+        connectorConfig.setProxyId(sourceRepoId);
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_CHECKSUM, checksumPolicy );
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_RELEASES, releasePolicy );
         connectorConfig.addPolicy( ProxyConnectorConfiguration.POLICY_SNAPSHOTS, snapshotPolicy );

@@ -155,6 +155,11 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
     {
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-module-a",
                                     "target/test-repository/com/example/test/test-artifact-module-a" );
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-parent",
+                "target/test-repository/com/example/test/test-artifact-parent" );
+
+        copyTestArtifactWithParent( "target/test-classes/com/example/test/test-artifact-root",
+                "target/test-repository/com/example/test/test-artifact-root" );
 
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata(
             new ReadMetadataRequest( TEST_REPO_ID, "com.example.test", "test-artifact-module-a", "1.0" ) );
@@ -258,8 +263,11 @@ public class Maven2RepositoryMetadataResolverMRM1411Test
         copyTestArtifactWithParent( "target/test-classes/com/example/test/test-snapshot-artifact-module-a",
                                     "target/test-repository/com/example/test/test-snapshot-artifact-module-a" );
 
-        //copyTestArtifactWithParent( "target/test-classes/com/example/test/test-snapshot-artifact-root",
-        //                            "target/test-repository/com/example/test/test-snapshot-artifact-root" );
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-parent",
+                "target/test-repository/com/example/test/test-artifact-parent" );
+
+        copyTestArtifactWithParent( "target/test-classes/com/example/test/test-snapshot-artifact-root",
+                                    "target/test-repository/com/example/test/test-snapshot-artifact-root" );
 
         ProjectVersionMetadata metadata = storage.readProjectVersionMetadata(
             new ReadMetadataRequest( TEST_REPO_ID, "com.example.test", "test-snapshot-artifact-module-a",

@@ -35,6 +35,7 @@ import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMetadataVer
 import org.apache.archiva.metadata.repository.storage.maven2.MavenProjectFacet;
 import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
+import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -82,8 +83,7 @@ public class DefaultBrowseService
     private DependencyTreeBuilder dependencyTreeBuilder;
 
     @Inject
-    @Named( value = "repositoryProxyConnectors#default" )
-    private RepositoryProxyHandler connectors;
+    ProxyRegistry proxyRegistry;
 
     @Inject
     @Named( value = "browse#versionMetadata" )
@@ -830,7 +830,10 @@ public class DefaultBrowseService
             {
 
                 org.apache.archiva.repository.ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(repoId);
-
+                if (!proxyRegistry.hasHandler(managedRepo.getType())) {
+                    throw new RepositoryException( "No proxy handler found for repository type "+managedRepo.getType());
+                }
+                RepositoryProxyHandler proxyHandler = proxyRegistry.getHandler(managedRepo.getType()).get(0);
                 if ( ( snapshot && !managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT) ) || ( !snapshot
                     && managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT) ) )
                 {
@@ -886,13 +889,13 @@ public class DefaultBrowseService
 
                 String path = managedRepositoryContent.toPath( archivaArtifact );
 
-                file = connectors.fetchFromProxies( managedRepositoryContent, path );
+                file = proxyHandler.fetchFromProxies( managedRepositoryContent, path );
 
                 if ( file != null && Files.exists(file) )
                 {
                     // download pom now
                     String pomPath = StringUtils.substringBeforeLast( path, ".jar" ) + ".pom";
-                    connectors.fetchFromProxies( managedRepositoryContent, pomPath );
+                    proxyHandler.fetchFromProxies( managedRepositoryContent, pomPath );
                     return true;
                 }
             }

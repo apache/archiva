@@ -60,6 +60,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHandler, RegistryListener {
 
@@ -97,13 +98,13 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     @PostConstruct
     public void initialize()
     {
-        initConnectorsAndNetworkProxies();
+        initConnectors();
         archivaConfiguration.addChangeListener( this );
 
     }
 
     @SuppressWarnings("unchecked")
-    private void initConnectorsAndNetworkProxies()
+    private void initConnectors()
     {
 
         ProxyConnectorOrderComparator proxyOrderSorter = new ProxyConnectorOrderComparator();
@@ -224,6 +225,21 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         }
 
         return proxyConnectorRuleConfigurations;
+    }
+
+    private void updateNetworkProxies() {
+        Map<String, NetworkProxy> proxies = archivaConfiguration.getConfiguration().getNetworkProxies().stream().map(p -> {
+            NetworkProxy np = new NetworkProxy();
+            np.setId(p.getId());
+            np.setUseNtlm(p.isUseNtlm());
+            np.setUsername(p.getUsername());
+            np.setPassword(p.getPassword());
+            np.setProtocol(p.getProtocol());
+            np.setHost(p.getHost());
+            np.setPort(p.getPort());
+            return np;
+        }).collect(Collectors.toMap(p -> p.getId(), p -> p));
+        setNetworkProxies(proxies);
     }
 
     @Override
@@ -911,12 +927,13 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     @Override
     public void afterConfigurationChange(Registry registry, String propertyName, Object propertyValue )
     {
-        if ( ConfigurationNames.isNetworkProxy( propertyName ) //
-            || ConfigurationNames.isManagedRepositories( propertyName ) //
+        if ( ConfigurationNames.isManagedRepositories( propertyName ) //
             || ConfigurationNames.isRemoteRepositories( propertyName ) //
             || ConfigurationNames.isProxyConnector( propertyName ) ) //
         {
-            initConnectorsAndNetworkProxies();
+            initConnectors();
+        } else if (ConfigurationNames.isNetworkProxy(propertyName)) {
+            updateNetworkProxies();
         }
     }
 

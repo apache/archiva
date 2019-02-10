@@ -45,12 +45,7 @@ import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
-import org.apache.archiva.repository.LayoutException;
-import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.RemoteRepository;
-import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.repository.maven2.MavenSystemManager;
 import org.apache.archiva.xml.XMLException;
@@ -623,11 +618,15 @@ public class Maven2RepositoryStorage
         pomReference.setVersion(artifact.getVersion());
         pomReference.setType("pom");
 
-        RepositoryProxyHandler connectors =
-                applicationContext.getBean("repositoryProxyConnectors#default", RepositoryProxyHandler.class);
+        RepositoryType repositoryType = managedRepository.getRepository().getType();
+        if (!proxyRegistry.hasHandler(repositoryType)) {
+            throw new ProxyDownloadException("No proxy handler found for repository type "+repositoryType, new HashMap<>());
+        }
+
+        RepositoryProxyHandler proxyHandler = proxyRegistry.getHandler(repositoryType).get(0);
 
         // Get the artifact POM from proxied repositories if needed
-        connectors.fetchFromProxies(managedRepository, pomReference);
+        proxyHandler.fetchFromProxies(managedRepository, pomReference);
 
         // Open and read the POM from the managed repo
         Path pom = managedRepository.toFile(pomReference);

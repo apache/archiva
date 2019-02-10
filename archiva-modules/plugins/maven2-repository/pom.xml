@@ -54,6 +54,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-proxy-maven</artifactId>
       <exclusions>
         <exclusion>
@@ -201,6 +205,7 @@
       <artifactId>asm</artifactId>
       <scope>test</scope>
     </dependency>
+
 
   </dependencies>
   <build>

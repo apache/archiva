@@ -395,8 +395,10 @@ public class Maven2RepositoryMetadataResolverMRM1411RepoGroupTest
     {
         copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-module-b",
                                     "target/test-repository/com/example/test/test-artifact-module-b" );
+        copyTestArtifactWithParent( "src/test/resources/com/example/test/test-artifact-parent",
+                "target/test-repository/com/example/test/test-artifact-parent" );
         copyTestArtifactWithParent( "src/test/resources/com/example/test/test-snapshot-artifact-root",
-                "target/test-repositorys/com/example/test/test-snapshot-artifact-root" );
+                "target/test-repository/com/example/test/test-snapshot-artifact-root" );
 
         ReadMetadataRequest readMetadataRequest =
             new ReadMetadataRequest().repositoryId( TEST_REPO_ID ).namespace( "com.example.test" ).projectId(

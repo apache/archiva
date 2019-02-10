@@ -19,11 +19,13 @@ package org.apache.archiva.repository.mock;
  * under the License.
  */
 
+import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.RepositoryURL;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 /**
@@ -34,22 +36,26 @@ public class RemoteRepositoryContentMock implements RemoteRepositoryContent
 {
     RemoteRepository repository;
 
+    RemoteRepositoryContentMock(RemoteRepository repo) {
+        this.repository = repo;
+    }
+
     @Override
     public String getId( )
     {
-        return null;
+        return repository.getId();
     }
 
     @Override
     public RemoteRepository getRepository( )
     {
-        return null;
+        return repository;
     }
 
     @Override
     public RepositoryURL getURL( )
     {
-        return null;
+        return new RepositoryURL(repository.getLocation().toString());
     }
 
     @Override
@@ -67,7 +73,15 @@ public class RemoteRepositoryContentMock implements RemoteRepositoryContent
     @Override
     public String toPath( ArtifactReference reference )
     {
-        return null;
+        String baseVersion;
+        if (VersionUtil.isSnapshot(reference.getVersion())) {
+            baseVersion=VersionUtil.getBaseVersion(reference.getVersion());
+        } else {
+            baseVersion=reference.getVersion();
+        }
+        return reference.getGroupId().replaceAll("\\.", "/")+"/"+reference.getArtifactId()+"/"+baseVersion+"/"
+                +reference.getArtifactId()+"-"+reference.getVersion()+(
+                StringUtils.isNotEmpty(reference.getClassifier()) ? "-"+reference.getClassifier() : "")+"."+reference.getType();
     }
 
     @Override

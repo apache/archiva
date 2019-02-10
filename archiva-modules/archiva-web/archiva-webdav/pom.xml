@@ -89,6 +89,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-proxy-maven</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-security</artifactId>
     </dependency>
     <dependency>

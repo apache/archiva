@@ -34,8 +34,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
-import org.apache.archiva.proxy.maven.MavenRepositoryProxyHandler;
-import org.apache.archiva.proxy.model.ProxyFetchResult;
+import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepository;
@@ -50,7 +49,6 @@ import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.content.maven2.RepositoryRequest;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavResourceLocator;
@@ -68,7 +66,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -139,6 +136,9 @@ public class ArchivaDavResourceFactoryTest
     @Inject
     RemoteRepositoryAdmin remoteRepositoryAdmin;
 
+    @Inject
+    ProxyRegistry proxyRegistry;
+
 
     @Inject
     DefaultRepositoryGroupAdmin defaultRepositoryGroupAdmin;
@@ -149,7 +149,7 @@ public class ArchivaDavResourceFactoryTest
     @Inject
     FileTypes fileTypes;
 
-    private Path getProjectBase() {
+    public Path getProjectBase() {
         if (this.projectBase.get()==null) {
             String pathVal = System.getProperty("mvn.project.base.dir");
             Path baseDir;
@@ -229,7 +229,9 @@ public class ArchivaDavResourceFactoryTest
         resourceFactory.setArchivaConfiguration( archivaConfiguration );
         resourceFactory.setRepositoryFactory( repoFactory );
         resourceFactory.setRepositoryRequest( repoRequest );
-        resourceFactory.setConnectors( new OverridingRepositoryProxyHandler() );
+        proxyRegistry.getAllHandler().get(RepositoryType.MAVEN).clear();
+        proxyRegistry.getAllHandler().get(RepositoryType.MAVEN).add(new OverridingRepositoryProxyHandler(this));
+        resourceFactory.setProxyRegistry(proxyRegistry);
         resourceFactory.setRemoteRepositoryAdmin( remoteRepositoryAdmin );
         resourceFactory.setManagedRepositoryAdmin( defaultManagedRepositoryAdmin );
         resourceFactory.setRepositoryRegistry( repositoryRegistry );
@@ -749,23 +751,4 @@ public class ArchivaDavResourceFactoryTest
         }
     }
 
-    class OverridingRepositoryProxyHandler
-        extends MavenRepositoryProxyHandler
-    {
-        @Override
-        public ProxyFetchResult fetchMetadataFromProxies( ManagedRepositoryContent repository, String logicalPath )
-        {
-            Path target = Paths.get(repository.getRepoRoot(), logicalPath );
-            try
-            {
-                FileUtils.copyFile( getProjectBase().resolve( "target/test-classes/maven-metadata.xml" ).toFile(), target.toFile() );
-            }
-            catch ( IOException e )
-            {
-
-            }
-
-            return new ProxyFetchResult( target, true );
-        }
-    }
 }

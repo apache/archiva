@@ -35,7 +35,7 @@ import java.nio.file.Paths;
  * @author Olivier Lamy
  */
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
-@ContextConfiguration( { "classpath*:/META-INF/spring-context.xml" } )
+@ContextConfiguration( { "classpath*:/spring-context-storage.xml", "classpath*:META-INF/spring-context.xml" } )
 public class Maven2RepositoryStorageTest
 {
     @Inject

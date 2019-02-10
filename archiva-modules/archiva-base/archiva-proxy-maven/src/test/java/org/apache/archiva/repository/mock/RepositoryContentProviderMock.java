@@ -51,12 +51,12 @@ public class RepositoryContentProviderMock implements RepositoryContentProvider 
 
     @Override
     public RemoteRepositoryContent createRemoteContent(RemoteRepository repository) throws RepositoryException {
-        return new RemoteRepositoryContentMock();
+        return new RemoteRepositoryContentMock(repository);
     }
 
     @Override
     public ManagedRepositoryContent createManagedContent(ManagedRepository repository) throws RepositoryException {
-        return new ManagedRepositoryContentMock();
+        return new ManagedRepositoryContentMock(repository);
     }
 
     @Override

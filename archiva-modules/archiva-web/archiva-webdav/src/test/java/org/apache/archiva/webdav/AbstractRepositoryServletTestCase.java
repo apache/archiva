@@ -19,15 +19,10 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import com.gargoylesoftware.htmlunit.HttpMethod;
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebRequest;
-import com.gargoylesoftware.htmlunit.WebResponse;
+import com.gargoylesoftware.htmlunit.*;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
@@ -101,8 +96,6 @@ public abstract class AbstractRepositoryServletTestCase
     @Inject
     protected ApplicationContext applicationContext;
 
-    @Inject
-    protected ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
     RepositoryRegistry repositoryRegistry;

@@ -150,6 +150,11 @@ public class ArchivaProxyRegistry implements ProxyRegistry, ConfigurationListene
     }
 
     @Override
+    public boolean hasHandler(RepositoryType type) {
+        return this.handlerMap.containsKey(type);
+    }
+
+    @Override
     public void configurationEvent(ConfigurationEvent event) {
         log.debug("Config changed updating proxy list");
         updateNetworkProxies();

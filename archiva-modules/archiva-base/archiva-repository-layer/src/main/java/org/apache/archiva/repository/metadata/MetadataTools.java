@@ -357,6 +357,7 @@ public class MetadataTools
     @PostConstruct
     public void initialize()
     {
+        assert(configuration != null);
         this.artifactPatterns = new ArrayList<>();
         this.proxies = new HashMap<>();
         initConfigVariables();
@@ -898,6 +899,8 @@ public class MetadataTools
 
     private void initConfigVariables()
     {
+        assert(this.artifactPatterns!=null);
+        assert(proxies!=null);
         synchronized ( this.artifactPatterns )
         {
             this.artifactPatterns.clear();

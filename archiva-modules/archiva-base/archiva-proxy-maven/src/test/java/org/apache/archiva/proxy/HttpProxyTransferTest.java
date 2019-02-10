@@ -125,7 +125,6 @@ public class HttpProxyTransferTest
         // Make the destination dir.
         Files.createDirectories(destRepoDir);
 
-        managedDefaultRepository = createRepository(MANAGED_ID, "Default Managed Repository", repoPath, "default");
 
         Handler handler = new AbstractHandler()
         {
@@ -168,6 +167,7 @@ public class HttpProxyTransferTest
         proxyConfig.setProtocol( "http" );
         proxyConfig.setId( PROXY_ID );
         config.getConfiguration().addNetworkProxy( proxyConfig );
+        ( (MockConfiguration) config ).triggerChange("networkProxies.networkProxy(0).host", "localhost");
 
         // Setup target (proxied to) repository.
         RemoteRepositoryConfiguration repoConfig = new RemoteRepositoryConfiguration();
@@ -178,6 +178,10 @@ public class HttpProxyTransferTest
         repoConfig.setUrl( "http://www.example.com/" );
 
         config.getConfiguration().addRemoteRepository( repoConfig );
+
+        repositoryRegistry.reload();
+
+        managedDefaultRepository = createRepository(MANAGED_ID, "Default Managed Repository", repoPath, "default");
 
     }
 
@@ -192,8 +196,8 @@ public class HttpProxyTransferTest
     public void testGetOverHttpProxy()
         throws Exception
     {
-        Assertions.assertThat( System.getProperty( "http.proxyHost" ) ).isEmpty();
-        Assertions.assertThat( System.getProperty( "http.proxyPort" ) ).isEmpty();
+        Assertions.assertThat( System.getProperty( "http.proxyHost", "" ) ).isEmpty();
+        Assertions.assertThat( System.getProperty( "http.proxyPort", "" ) ).isEmpty();
 
         String path = "org/apache/maven/test/get-default-layout/1.0/get-default-layout-1.0.jar";
 
@@ -218,8 +222,8 @@ public class HttpProxyTransferTest
         String actualContents = FileUtils.readFileToString( downloadedFile.toFile(), Charset.defaultCharset() );
         assertEquals( "Check file contents.", expectedContents, actualContents );
 
-        Assertions.assertThat( System.getProperty( "http.proxyHost" ) ).isEmpty();
-        Assertions.assertThat( System.getProperty( "http.proxyPort" ) ).isEmpty();
+        Assertions.assertThat( System.getProperty( "http.proxyHost" , "") ).isEmpty();
+        Assertions.assertThat( System.getProperty( "http.proxyPort" , "") ).isEmpty();
     }
 
     private void addConnector()

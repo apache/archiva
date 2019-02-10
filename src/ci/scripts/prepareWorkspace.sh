@@ -22,7 +22,7 @@
 #
 #  Removes directories that are not used anymore.
 ##
-ATTIC_DIRS="archiva-modules/archiva-base/archiva-indexer"
+ATTIC_DIRS="archiva-modules/archiva-base/archiva-indexer archiva-modules/archiva-base/archiva-proxy-common"
 REMOVE_DIRS=".indexer"
 TMP_DIRECTORY=".tmp"
 

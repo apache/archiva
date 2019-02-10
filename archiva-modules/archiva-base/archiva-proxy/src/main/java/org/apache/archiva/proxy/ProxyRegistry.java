@@ -52,6 +52,14 @@ public interface ProxyRegistry {
     List<RepositoryProxyHandler> getHandler(RepositoryType type);
 
     /**
+     * Returns true, if there are proxy handler registered for the given type.
+     *
+     * @param type The repository type
+     * @return True, if a handler is registered, otherwise false.
+     */
+    boolean hasHandler(RepositoryType type);
+
+    /**
      * Returns the list of all proxy connectors.
      * @return
      */
