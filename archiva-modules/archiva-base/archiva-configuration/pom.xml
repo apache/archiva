@@ -148,48 +148,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.modello</groupId>
-        <artifactId>modello-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>java</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>archiva-registry-reader</id>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <generatorId>registry-reader</generatorId>
-            </configuration>
-          </execution>
-          <execution>
-            <id>archiva-registry-writer</id>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <generatorId>registry-writer</generatorId>
-            </configuration>
-          </execution>
-          <execution>
-            <id>site-docs</id>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>xdoc</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <version>3.0.0</version>
-          <models>
-            <model>src/main/mdo/configuration.mdo</model>
-          </models>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
