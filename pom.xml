@@ -1810,21 +1810,6 @@
           </dependencies>
         </plugin>
         <plugin>
-          <groupId>org.codehaus.modello</groupId>
-          <artifactId>modello-maven-plugin</artifactId>
-          <version>1.7</version>
-          <configuration>
-            <useJava5>true</useJava5>
-          </configuration>
-          <dependencies>
-            <dependency>
-              <groupId>org.apache.archiva.redback.components.modello</groupId>
-              <artifactId>modello-plugin-redback-registry</artifactId>
-              <version>1.0</version>
-            </dependency>
-          </dependencies>
-        </plugin>
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <configuration>
