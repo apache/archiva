@@ -57,28 +57,5 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.modello</groupId>
-        <artifactId>modello-maven-plugin</artifactId>
-        <configuration>
-          <version>1.3.0</version>
-          <packageWithVersion>false</packageWithVersion>
-          <models>
-            <model>src/main/mdo/archiva-base.xml</model>
-          </models>
-        </configuration>
-        <executions>
-          <execution>
-            <id>archiva-base</id>
-            <goals>
-              <goal>java</goal>
-              <goal>xsd</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+
 </project>
