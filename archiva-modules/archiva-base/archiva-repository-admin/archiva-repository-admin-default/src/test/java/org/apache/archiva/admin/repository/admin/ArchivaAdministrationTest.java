@@ -217,6 +217,43 @@ public class ArchivaAdministrationTest
     }
 
     @Test
+    public void badOrganisationInfoLogoLocation( )
+    {
+        try
+        {
+            OrganisationInformation newOrganisationInformation = new OrganisationInformation( );
+            newOrganisationInformation.setLogoLocation( "'/><svg/onload=alert(/logoLocation_xss/)>" );
+            newOrganisationInformation.setName( "foo org" );
+            newOrganisationInformation.setUrl( "http://foo.com" );
+            archivaAdministration.setOrganisationInformation( newOrganisationInformation );
+            fail( "RepositoryAdminException expected. Bad URL content should not be allowed for logo location." );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            // OK
+        }
+    }
+
+    @Test
+    public void badOrganisationInfoUrl( )
+    {
+        try
+        {
+            OrganisationInformation newOrganisationInformation = new OrganisationInformation( );
+            newOrganisationInformation.setUrl( "'/><svg/onload=alert(/url_xss/)>" );
+            newOrganisationInformation.setName( "foo org" );
+            newOrganisationInformation.setLogoLocation( "http://foo.com/bar.png" );
+            archivaAdministration.setOrganisationInformation( newOrganisationInformation );
+            fail( "RepositoryAdminException expected. Bad URL content should not be allowed for logo location." );
+        }
+        catch ( RepositoryAdminException e )
+        {
+            // OK
+        }
+
+    }
+
+    @Test
     public void uiConfiguration()
         throws Exception
     {

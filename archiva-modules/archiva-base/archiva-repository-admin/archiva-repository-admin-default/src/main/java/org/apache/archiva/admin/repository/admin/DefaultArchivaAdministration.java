@@ -35,9 +35,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -320,16 +325,29 @@ public class DefaultArchivaAdministration
         return getModelMapper().map( organisationInformation, OrganisationInformation.class );
     }
 
+    private void checkUrl(String url, String propertyName)  throws RepositoryAdminException {
+        if ( StringUtils.isNotEmpty( url ) )
+        {
+            if ( !ResourceUtils.isUrl( url ) )
+            {
+                throw new RepositoryAdminException( "Bad URL in " + propertyName + ": " + url );
+            }
+        }
+
+    }
+
     @Override
     public void setOrganisationInformation( OrganisationInformation organisationInformation )
         throws RepositoryAdminException
     {
-        Configuration configuration = getArchivaConfiguration().getConfiguration();
+        checkUrl(organisationInformation.getUrl(), "url");
+        checkUrl( organisationInformation.getLogoLocation(), "logoLocation" );
+        Configuration configuration = getArchivaConfiguration( ).getConfiguration( );
         if ( organisationInformation != null )
         {
             org.apache.archiva.configuration.OrganisationInformation organisationInformationModel =
-                getModelMapper().map( organisationInformation,
-                                      org.apache.archiva.configuration.OrganisationInformation.class );
+                getModelMapper( ).map( organisationInformation,
+                    org.apache.archiva.configuration.OrganisationInformation.class );
             configuration.setOrganisationInfo( organisationInformationModel );
         }
         else
