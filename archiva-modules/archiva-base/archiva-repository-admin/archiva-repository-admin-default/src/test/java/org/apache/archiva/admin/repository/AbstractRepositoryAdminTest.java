@@ -27,17 +27,21 @@ import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.proxyconnector.ProxyConnectorAdmin;
 import org.apache.archiva.admin.model.proxyconnectorrule.ProxyConnectorRuleAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.redback.role.RoleManager;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.memory.SimpleUser;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.lang.StringUtils;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -76,6 +80,23 @@ public abstract class AbstractRepositoryAdminTest
 
     @Inject
     protected ProxyConnectorRuleAdmin proxyConnectorRuleAdmin;
+
+    @Inject
+    private ArchivaConfiguration archivaConfiguration;
+
+    @Before
+    public void initialize() {
+        Path confFile = Paths.get(APPSERVER_BASE_PATH, "conf/archiva.xml");
+        try
+        {
+            Files.deleteIfExists( confFile );
+            archivaConfiguration.reload();
+        }
+        catch ( IOException e )
+        {
+            // ignore
+        }
+    }
 
     protected AuditInformation getFakeAuditInformation()
     {
