@@ -70,6 +70,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -183,15 +184,17 @@ public class DefaultFileUploadService
     public Boolean deleteFile( String fileName )
         throws ArchivaRestServiceException
     {
-        File file = new File( SystemUtils.getJavaIoTmpDir(), fileName );
+        // we make sure, that there are no other path components in the filename:
+        String checkedFileName = Paths.get(fileName).getFileName().toString();
+        File file = new File( SystemUtils.getJavaIoTmpDir(), checkedFileName );
         log.debug( "delete file:{},exists:{}", file.getPath(), file.exists() );
         boolean removed = getSessionFileMetadatas().remove( new FileMetadata( fileName ) );
         // try with full name as ui only know the file name
         if ( !removed )
         {
-            /* unused */ getSessionFileMetadatas().remove( new FileMetadata( file.getPath() ) );
+            removed = getSessionFileMetadatas().remove( new FileMetadata( file.getPath() ) );
         }
-        if ( file.exists() )
+        if (removed && file.exists() )
         {
             return file.delete();
         }
