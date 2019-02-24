@@ -184,21 +184,22 @@ public class DefaultFileUploadService
     public Boolean deleteFile( String fileName )
         throws ArchivaRestServiceException
     {
-        Path file = SystemUtils.getJavaIoTmpDir().toPath().resolve( fileName );
+        // we make sure, that there are no other path components in the filename:
+        String checkedFileName = Paths.get(fileName).getFileName().toString();
+        Path file = SystemUtils.getJavaIoTmpDir().toPath().resolve( checkedFileName );
         log.debug( "delete file:{},exists:{}", file, Files.exists(file) );
         boolean removed = getSessionFileMetadatas().remove( new FileMetadata( fileName ) );
         // try with full name as ui only know the file name
-        if ( !removed )
-        {
-            /* unused */ getSessionFileMetadatas().remove( new FileMetadata( file.toString() ) );
+        if ( !removed ) {
+            removed = getSessionFileMetadatas().remove(new FileMetadata(file.toString()));
         }
-        try
-        {
-            Files.deleteIfExists( file );
-        }
-        catch ( IOException e )
-        {
-            log.error("Could not delete file {}: {}", file, e.getMessage(), e);
+        if (removed) {
+            try {
+                Files.deleteIfExists(file);
+                return Boolean.TRUE;
+            } catch (IOException e) {
+                log.error("Could not delete file {}: {}", file, e.getMessage(), e);
+            }
         }
         return Boolean.FALSE;
     }
