@@ -108,6 +108,8 @@ public class DefaultFileUploadService
 
     private List<ChecksumAlgorithm> algorithms = Arrays.asList( ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5 );
 
+    private final String FS = FileSystems.getDefault().getSeparator();
+
     @Inject
     @Named(value = "archivaTaskScheduler#repository")
     private ArchivaTaskScheduler<RepositoryTask> scheduler;
@@ -137,6 +139,14 @@ public class DefaultFileUploadService
 
             //Content-Disposition: form-data; name="files[]"; filename="org.apache.karaf.features.command-2.2.2.jar"
             String fileName = file.getContentDisposition().getParameter( "filename" );
+            Path fileNamePath = Paths.get(fileName);
+            if (!fileName.equals(fileNamePath.getFileName().toString())) {
+                ArchivaRestServiceException e = new ArchivaRestServiceException("Bad filename in upload content: " + fileName + " - File traversal chars (..|/) are not allowed"
+                        , null);
+                e.setHttpErrorCode(422);
+                e.setErrorKey("error.upload.malformed.filename");
+                throw e;
+            }
 
             Path tmpFile = Files.createTempFile( "upload-artifact", ".tmp" );
             tmpFile.toFile().deleteOnExit();
@@ -227,6 +237,29 @@ public class DefaultFileUploadService
         return fileMetadatas == null ? Collections.<FileMetadata>emptyList() : fileMetadatas;
     }
 
+    private boolean hasValidChars(String checkString) {
+        if (checkString.contains(FS)) {
+            return false;
+        }
+        if (checkString.contains("../")) {
+            return false;
+        }
+        if (checkString.contains("/..")) {
+            return false;
+        }
+        return true;
+    }
+
+    private void checkParamChars(String param, String value) throws ArchivaRestServiceException {
+        if (!hasValidChars(value)) {
+            ArchivaRestServiceException e = new ArchivaRestServiceException("Bad characters in " + param, null);
+            e.setHttpErrorCode(422);
+            e.setErrorKey("error.upload.malformed.param." + param);
+            e.setFieldName(param);
+            throw e;
+        }
+    }
+
     @Override
     public Boolean save( String repositoryId, String groupId, String artifactId, String version, String packaging,
                          boolean generatePom )
@@ -237,6 +270,11 @@ public class DefaultFileUploadService
         artifactId = StringUtils.trim( artifactId );
         version = StringUtils.trim( version );
         packaging = StringUtils.trim( packaging );
+
+        checkParamChars("repositoryId", repositoryId);
+        checkParamChars("groupId", groupId);
+        checkParamChars("artifactId", artifactId);
+        checkParamChars("packaging", packaging);
 
         List<FileMetadata> fileMetadatas = getSessionFilesList();
         if ( fileMetadatas == null || fileMetadatas.isEmpty() )

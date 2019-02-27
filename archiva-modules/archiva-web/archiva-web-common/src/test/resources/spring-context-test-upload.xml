@@ -81,8 +81,6 @@
     <property name="queue" ref="taskQueue#repository-scanning"/>
   </bean>
 
-
-
   <alias name="repositorySessionFactory#jcr" alias="repositorySessionFactory"/>
   <alias name="userConfiguration#archiva" alias="userConfiguration#default"/>
   <alias name="authorizer#rbac" alias="authorizer#default"/>

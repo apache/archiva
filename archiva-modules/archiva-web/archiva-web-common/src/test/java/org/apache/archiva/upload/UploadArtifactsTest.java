@@ -35,7 +35,7 @@ import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.message.Message;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import javax.ws.rs.ClientErrorException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
@@ -130,9 +130,9 @@ public class UploadArtifactsTest
                 service.post( body );
                 fail( "FileNames with path contents should not be allowed." );
             }
-            catch ( ArchivaRestServiceException e )
+            catch ( ClientErrorException e )
             {
-                // OK
+                assertEquals(422, e.getResponse().getStatus());
             }
         }
         finally
@@ -241,15 +241,15 @@ public class UploadArtifactsTest
             log.debug( "Metadata {}", meta.toString( ) );
             assertTrue( service.save( "internal", "org.archiva", "archiva-model", "1.2", "jar", true ) );
 
-            fileAttachment = new AttachmentBuilder( ).object( Files.newInputStream( file ) ).contentDisposition( new ContentDisposition( "form-data; filename=\"/../TestFile.FileExt\"; name=\"files[]\"" ) ).build( );
+            fileAttachment = new AttachmentBuilder( ).object( Files.newInputStream( file ) ).contentDisposition( new ContentDisposition( "form-data; filename=\"TestFile.FileExt\"; name=\"files[]\"" ) ).build( );
             body = new MultipartBody( fileAttachment );
             meta = service.post( body );
             log.debug( "Metadata {}", meta.toString( ) );
             try {
                 service.save("internal", "org", URLEncoder.encode("../../../test", "UTF-8"), URLEncoder.encode("testSave", "UTF-8"), "4", true);
                 fail("Error expected, if the content contains bad characters.");
-            } catch (ArchivaRestServiceException e) {
-                // OK
+            } catch (ClientErrorException e) {
+                assertEquals(422, e.getResponse().getStatus());
             }
             assertFalse( Files.exists( Paths.get( "target/test-testSave.4" ) ) );
         }
