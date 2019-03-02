@@ -47,8 +47,11 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
         displayErrorMessage( $.i18n.prop("fileupload.upload.required"));
         return;
       }
-      var url="restServices/archivaUiServices/fileUploadService/save/"+this.repositoryId()+"/"+this.groupId()+"/"+this.artifactId();
-      url+="/"+this.version()+"/"+this.packaging();
+      var url="restServices/archivaUiServices/fileUploadService/save/"+encodeURI(this.repositoryId())
+        +"/"+encodeURIComponent(this.groupId())
+        +"/"+encodeURIComponent(this.artifactId())
+        +"/"+encodeURIComponent(this.version())
+        +"/"+encodeURIComponent(this.packaging());
       $.log("this.generatePom():'"+this.generatePom()+"'");
       if (this.generatePom()==true){
         url+="?generatePom=true";
@@ -117,9 +120,9 @@ define("archiva.artifacts-management",["jquery","i18n","utils","jquery.tmpl","kn
                   if (!data.formData){
                     data.formData={};
                   }
-                  data.formData.pomFile = pomFile;
-                  data.formData.classifier = classifier;
-                  data.formData.packaging = packaging;
+                  data.formData.pomFile = encodeURIComponent(pomFile);
+                  data.formData.classifier = encodeURIComponent(classifier);
+                  data.formData.packaging = encodeURIComponent(packaging);
                 });
               }
           });

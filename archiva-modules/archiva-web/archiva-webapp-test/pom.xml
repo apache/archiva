@@ -574,6 +574,7 @@
             <executions>
               <execution>
                 <id>cleanup-files</id>
+                <phase>initialize</phase>
                 <goals>
                   <goal>run</goal>
                 </goals>

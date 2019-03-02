@@ -653,7 +653,7 @@
       {% if (file.error) { %}
       <td class="error" colspan="2">
         <span class="label label-important">{%=$.i18n.prop('fileupload.error')%}</span>
-        {%=$.i18n.prop('fileupload.errors.'+[file.error]) || file.error%}
+        {%=$.i18n.prop('fileupload.errors.'+file.error.replace(/\s+/,'_')) || file.error%}
       </td>
       {% } else if (o.files.valid && !i) { %}
       <td>
@@ -692,7 +692,7 @@
     {% if (file.error) { %}
       <td class="error" colspan="2">
         <span class="label label-important">{%=$.i18n.prop('fileupload.error')%}</span>
-        {%=$.i18n.prop('fileupload.errors.'+[file.error]) || file.error%}
+        {%=$.i18n.prop('fileupload.errors.'+file.error.replace(/\s+/,'_')) || file.error%}
       </td>
     {% } else { %}
       <td colspan="2"></td>
