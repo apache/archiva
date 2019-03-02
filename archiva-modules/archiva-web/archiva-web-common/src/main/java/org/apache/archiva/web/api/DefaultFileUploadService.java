@@ -69,6 +69,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.nio.file.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -115,7 +116,8 @@ public class DefaultFileUploadService
         throws IOException
     {
         Attachment attachment = multipartBody.getAttachment( attachmentId );
-        return attachment == null ? "" : IOUtils.toString( attachment.getDataHandler().getInputStream() );
+        return attachment == null ? "" :
+            StringUtils.trim(URLDecoder.decode(IOUtils.toString( attachment.getDataHandler().getInputStream() ), "UTF-8"));
     }
 
     @Override
@@ -128,9 +130,26 @@ public class DefaultFileUploadService
 
             String classifier = getStringValue( multipartBody, "classifier" );
             String packaging = getStringValue( multipartBody, "packaging" );
+
+            checkParamChars( "classifier", classifier );
+            checkParamChars( "packaging", packaging);
+
             // skygo: http header form pomFile was once sending 1 for true and void for false
             // leading to permanent false value for pomFile if using toBoolean(); use , "1", ""
-            boolean pomFile = BooleanUtils.toBoolean( getStringValue( multipartBody, "pomFile" ) );
+
+            boolean pomFile = false;
+            try
+            {
+                pomFile = BooleanUtils.toBoolean( getStringValue( multipartBody, "pomFile" ) );
+            }
+            catch ( IllegalArgumentException ex )
+            {
+                ArchivaRestServiceException e = new ArchivaRestServiceException("Bad value for boolean pomFile field.", null);
+                e.setHttpErrorCode(422);
+                e.setFieldName( "pomFile" );
+                e.setErrorKey("fileupload.malformed.pomFile");
+                throw e;
+            }
 
             Attachment file = multipartBody.getAttachment( "files[]" );
 
@@ -141,7 +160,7 @@ public class DefaultFileUploadService
                 ArchivaRestServiceException e = new ArchivaRestServiceException("Bad filename in upload content: " + fileName + " - File traversal chars (..|/) are not allowed"
                         , null);
                 e.setHttpErrorCode(422);
-                e.setErrorKey("error.upload.malformed.filename");
+                e.setErrorKey("fileupload.malformed.filename");
                 throw e;
             }
 
@@ -249,7 +268,7 @@ public class DefaultFileUploadService
         if (!hasValidChars(value)) {
             ArchivaRestServiceException e = new ArchivaRestServiceException("Bad characters in " + param, null);
             e.setHttpErrorCode(422);
-            e.setErrorKey("error.upload.malformed.param." + param);
+            e.setErrorKey("fileupload.malformed.param");
             e.setFieldName(param);
             throw e;
         }
@@ -269,7 +288,9 @@ public class DefaultFileUploadService
         checkParamChars("repositoryId", repositoryId);
         checkParamChars("groupId", groupId);
         checkParamChars("artifactId", artifactId);
+        checkParamChars( "version", version);
         checkParamChars("packaging", packaging);
+
 
         List<FileMetadata> fileMetadatas = getSessionFilesList();
         if ( fileMetadatas == null || fileMetadatas.isEmpty() )
