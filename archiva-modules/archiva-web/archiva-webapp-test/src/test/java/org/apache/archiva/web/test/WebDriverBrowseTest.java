@@ -115,12 +115,16 @@ public class WebDriverBrowseTest
             fill( "#confirmPassword" ).with( p.getProperty( "ADMIN_PASSWORD" ) );
             find( "#user-create-form-register-button" ).click();
 
-            await().atMost( 2, TimeUnit.SECONDS ).until( "#logout-link" ).isPresent();
+            await().atMost( 10, TimeUnit.SECONDS ).until( "#logout-link" ).isPresent();
+            await().atMost( 10, TimeUnit.SECONDS ).until( "#footer-content" ).isPresent();
 
-            FluentList<FluentWebElement> elementss = find( "#menu-find-browse-a" );
+            FluentList<FluentWebElement> elementss = find( "#menu-find-search-a" );
             WebElement webElsement = elementss.get( 0 ).getElement();
             webElsement.click();
-            await().atMost( 2, TimeUnit.SECONDS ).until( "#main_browse_result" ).isPresent();
+            elementss = find( "#menu-find-browse-a" );
+            webElsement = elementss.get( 0 ).getElement();
+            webElsement.click();
+            await().atMost( 120, TimeUnit.SECONDS ).until( "#main_browse_result" ).isPresent();
             // give me search page :( not  browse page
 
             takeScreenShot( "search.png" );

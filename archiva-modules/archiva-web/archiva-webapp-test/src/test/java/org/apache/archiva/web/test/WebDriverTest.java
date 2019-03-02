@@ -44,6 +44,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.fluentlenium.core.Fluent;
 import org.junit.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Olivier Lamy
@@ -51,13 +53,15 @@ import org.junit.Before;
 public class WebDriverTest
         extends FluentTest {
 
+    Logger logger = LoggerFactory.getLogger( WebDriverTest.class );
+
     @Override
     public Fluent takeScreenShot(String fileName) {
         try {
             // save html to have a minimum feedback if jenkins firefox not up
             File fileNameHTML = new File(fileName + ".html");
             FileUtils.writeStringToFile(fileNameHTML, getDriver().getPageSource());
-        } catch (IOException e) {
+        } catch (Throwable e) {
             System.out.print(e.getMessage());
             e.printStackTrace();
         }
@@ -104,6 +108,7 @@ public class WebDriverTest
         String seleniumHost = System.getProperty("seleniumHost", "localhost");
         int seleniumPort = Integer.getInteger("seleniumPort", 4444);
         try {
+            logger.info("Remote Web Driver: {}, {}", seleniumBrowser, seleniumPort);
 
             if (StringUtils.contains(seleniumBrowser, "chrome")) {
                 return new RemoteWebDriver(new URL("http://" + seleniumHost + ":" + seleniumPort + "/wd/hub"),

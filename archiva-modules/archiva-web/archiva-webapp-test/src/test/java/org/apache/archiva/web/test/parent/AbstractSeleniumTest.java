@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author <a href="mailto:evenisse@apache.org">Emmanuel Venisse</a>
@@ -45,6 +47,7 @@ import org.apache.commons.io.FileUtils;
 
 public abstract class AbstractSeleniumTest
 {
+    final Logger logger = LoggerFactory.getLogger( AbstractSeleniumTest.class );
 
     @Rule
     public ArchivaSeleniumExecutionRule archivaSeleniumExecutionRule = new ArchivaSeleniumExecutionRule();
@@ -83,7 +86,9 @@ public abstract class AbstractSeleniumTest
 
         baseUrl = "http://localhost:" + tomcatPort + "/archiva/index.html?request_lang=en";
 
+
         open( baseUrl, browser, seleniumHost, seleniumPort, maxWaitTimeInMs );
+        logger.info("Selected Browser: {}", browser);
         archivaSeleniumExecutionRule.selenium = selenium;
         assertAdminCreated();
     }
@@ -701,7 +706,17 @@ public abstract class AbstractSeleniumTest
         
         File fileName = new File( targetPath, fileBaseName + ".png" );
 
-        selenium.captureEntirePageScreenshot( fileName.getAbsolutePath(), "background=#FFFFFF" );
+        try
+        {
+            selenium.captureEntirePageScreenshot( fileName.getAbsolutePath( ), "background=#FFFFFF" );
+        } catch (Throwable e) {
+            try
+            {
+                selenium.captureScreenshot( fileName.getAbsolutePath( ) );
+            } catch (Throwable e1) {
+                logger.error("Could not capture screenshot {}:", e1.getMessage(), e1);
+            }
+        }
         
         return fileName.getAbsolutePath();
     }
