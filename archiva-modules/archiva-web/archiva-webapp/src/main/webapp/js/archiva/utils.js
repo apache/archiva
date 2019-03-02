@@ -284,7 +284,7 @@ require(["jquery","jquery.tmpl","i18n","knockout"], function(jquery,jqueryTmpl,i
       if (mainContent.find("#"+data.fieldName)){
         var message=null;
         if (data.errorKey) {
-          message=$.i18n.prop('data.errorKey');
+          message=$.i18n.prop(data.errorKey);
         } else {
           message=data.errorMessage;
         }
