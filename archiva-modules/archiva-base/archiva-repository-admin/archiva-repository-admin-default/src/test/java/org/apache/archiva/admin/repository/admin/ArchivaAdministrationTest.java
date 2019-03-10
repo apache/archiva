@@ -254,6 +254,23 @@ public class ArchivaAdministrationTest
     }
 
     @Test
+    public void badOrganisationName( )
+    {
+        try
+        {
+            OrganisationInformation newOrganisationInformation = new OrganisationInformation( );
+            newOrganisationInformation.setName( "/><svg/onload=alert(/url_xss/)>Test Org\"" );
+            archivaAdministration.setOrganisationInformation( newOrganisationInformation );
+            assertEquals("/&gt;&lt;svg/onload=alert(/url_xss/)&gt;Test Org&quot;", archivaAdministration.getOrganisationInformation().getName());
+        }
+        catch ( RepositoryAdminException e )
+        {
+            // OK
+        }
+
+    }
+
+    @Test
     public void uiConfiguration()
         throws Exception
     {

@@ -31,6 +31,8 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.UserInterfaceOptions;
 import org.apache.archiva.configuration.WebappConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
+import org.apache.commons.codec.net.URLCodec;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -337,6 +339,10 @@ public class DefaultArchivaAdministration
 
     }
 
+    private String convertName(String name) {
+        return StringEscapeUtils.escapeHtml( StringUtils.trimToEmpty( name ) );
+    }
+
     @Override
     public void setOrganisationInformation( OrganisationInformation organisationInformation )
         throws RepositoryAdminException
@@ -346,6 +352,7 @@ public class DefaultArchivaAdministration
         Configuration configuration = getArchivaConfiguration( ).getConfiguration( );
         if ( organisationInformation != null )
         {
+            organisationInformation.setName( convertName( organisationInformation.getName() ));
             org.apache.archiva.configuration.OrganisationInformation organisationInformationModel =
                 getModelMapper( ).map( organisationInformation,
                     org.apache.archiva.configuration.OrganisationInformation.class );
