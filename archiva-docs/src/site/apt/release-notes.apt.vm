@@ -21,28 +21,67 @@
 
 Release Notes for Archiva ${project.version}
 
-  The Apache Archiva team is pleased to announce the release of Archiva
-  ${project.version}.  Archiva is {{{http://archiva.apache.org/download.html}
-  available for download from the web site}}.
+ The Apache Archiva team is pleased to announce the release of Archiva
+ ${project.version}.  Archiva is {{{http://archiva.apache.org/download.html}
+ available for download from the web site}}.
 
-  Archiva is an application for managing one or more remote repositories,
-  including administration, artifact handling, browsing and searching.
+ Archiva is an application for managing one or more remote repositories,
+ including administration, artifact handling, browsing and searching.
 
-  If you have any questions, please consult:
+ If you have any questions, please consult:
 
-    * the web site: {{http://archiva.apache.org/}}
+  * the web site: {{http://archiva.apache.org/}}
 
-    * the archiva-user mailing list: {{http://archiva.apache.org/mail-lists.html}}
+  * the archiva-user mailing list: {{http://archiva.apache.org/mail-lists.html}}
 
 * New in Archiva ${project.version}
 
-  Apache Archiva ${project.version} is a bug fix release:
+ Apache Archiva ${project.version} is a bug fix release:
+
+  * Fixes for handling of artifacts
+
+  * Improved validation of REST calls
+
+** Compatibility Changes
+
+ No API changes or known side effects.
+
+** List of Changes in Archiva ${project.version}
+
+ Released: <<${releaseDate}>>
+
+** New Feature
+
+  *  There are no new features in this release.
+
+** Improvements
+
+  * Adding additional validation to REST service calls for artifact upload
+
+** Bug Fix
+
+  * [MRM-1972] Stored XSS in Web UI Organization Name
+
+  * [MRM-1966] Repository-purge not working
+
+  * [MRM-1958] Purge by retention count deletes files but leaves history on website.
+
+  * [MRM-1929] Repository purge is not reflected in index
+
+
+Previous Release Notes
+
+* Release Notes for Archiva 2.2.3
+
+** New in Archiva 2.2.3
+
+  Apache Archiva 2.2.3 is a bug fix release:
 
   * Some fixes for the REST API were added to detect requests from unknown origin
 
   * Some bugfixes were added
 
-* Compatibility Changes
+** Compatibility Changes
 
   * The REST services are now checking for the origin of the requests by analysing Origin
     and Referer header of the HTTP requests and adding an validation token to the Header.
@@ -59,19 +98,16 @@ Release Notes for Archiva ${project.version}
 
   * Archiva uses redback for authentication and authorization in version 2.6
 
-* Release Notes
 
-  The Archiva ${project.version} features set can be seen in the {{{./tour/index.html} feature tour}}.
+** Change List
 
-* Changes in Archiva ${project.version}
-
-  Released: <<${releaseDate}>>
+  Released: <<2017-05-13>>
 
 
-** New Feature
+*** New Feature
 
 
-** Improvement
+*** Improvement
 
      * [MRM-1925] - Make User-Agent header configurable for HTTP requests
 
@@ -81,7 +117,7 @@ Release Notes for Archiva ${project.version}
 
      * Adding origin header validation checks for REST requests
 
-** Bugs fixed
+*** Bug Fix
 
      * [MRM-1859] - Error upon viewing 'Artifacts' tab when browsing an artifact
 
@@ -102,11 +138,129 @@ Release Notes for Archiva ${project.version}
      * [MRM-1940] - Slashes appended to remote repo url
 
 
-** Task
+* Release Notes for Archiva 2.2.1
+
+** New in Archiva 2.2.1
+
+ Apache Archiva 2.2.1 is a bugs fix release:
+
+ NOTE: jdk 1.7 is now prerequisite with Apache Archiva 2.2.1
+
+** Compatibility Changes
+
+  If using the Cassandra backend, the metadatafacet column 'key' has been renamed to 'facetKey' in 2.2.0 so you should copy the data to the new column manually.
+  If upgrading from earlier versions of Archiva, the list of libraries in wrapper.conf has changed. If you have customized your copy of wrapper.conf, please update it for compatibility with the version distributed with the current release.
+  As the database storage has been removed, you can remove the JNDI entry for jdbc/archiva.
+
+  Refer to the Upgrading Archiva guide for more information.
+
+** List of Changes
+
+*** Improvement
+
+  * [MRM-1201] - Artifact upload success message should mention the classifier
+
+  * [MRM-1906] - Allowing filtering of LDAP groups
+
+*** Bug Fix
+
+  * [MRM-1873] - archiva doesn't recognise ldap-group to ldap-users mapping
+
+  * [MRM-1877] - Checksum files always recreated
+
+  * [MRM-1879] - Bug in create-missing-checksum consumer
+
+  * [MRM-1886] - View Artifact Content Action does not Work
+
+  * [MRM-1887] - Syntax error in DOAP file release section; wrong bug- database URL
+
+  * [MRM-1892] - Only One Page of Proxy Connector Rules Shown
+
+  * [MRM-1893] - Please delete old releases from mirroring system
+
+  * [MRM-1896] - Invalid link to license
+
+  * [MRM-1914] - Maven cannot find dependency
 
 
+* Release Notes for Archiva 2.2.0
 
-* History
+** New in Archiva 2.2.0
+
+ Apache Archiva 2.2.0 is a bugs fix release:
+
+ NOTE: jdk 1.7 is now prerequisite with Apache Archiva 2.2.0
+
+** Compatibility Changes
+
+ If using the Cassandra backend, the metadatafacet column 'key' has been renamed to 'facetKey' in 2.2.0 so you should
+ copy the data to the new column manually.
+ If upgrading from earlier versions of Archiva, the list of libraries in wrapper.conf has changed. If you have customized
+ your copy of wrapper.conf, please update it for compatibility with the version distributed with the current release.
+ As the database storage has been removed, you can remove the JNDI entry for jdbc/archiva. After upgrading from a previous
+ version, you will have to run a full scan to populate the new JCR Repository. This will be done on first start of Archiva.
+
+ Refer to the Upgrading Archiva guide for more information.
+
+** List of Changes in Archiva 2.2.0
+
+*** New Feature
+
+  * [MRM-1867] - Adding a find jar by checksum functionality to the REST api
+
+*** Improvement
+
+  * [MRM-1390] - Generic metadata should be searcheable in Archiva search
+
+  * [MRM-1844] - Allow LDAP groupOfNames
+
+*** Bug Fix
+
+  * [MRM-770] - Archiva web client does not recognize classifier
+
+  * [MRM-813] - Audit log is reporting "Modify File (proxied)" when no proxy connectors exist and the file has not changed
+
+  * [MRM-837] - Cannot download SNAPSHOT version
+
+  * [MRM-935] - Archiva doesn't supports artifact with <version>SNAPSHOT</version>
+
+  * [MRM-1145] - RSS tests do not correctly check responses
+
+  * [MRM-1311] - Logging in ArtifactMissingChecksumsConsumer does not appear in the logs even if configured properly
+
+  * [MRM-1486] - ldap.config.mapper.attribute.user.filter using ldap not working correctly with commas.
+
+  * [MRM-1767] - When selecting a specific repository to browse, I get an error that I don't have sufficient privileges.
+
+  * [MRM-1807] - Archiva wrapper fail to start
+
+  * [MRM-1810] - LDAP - groups config not available in Users Runtime Configuration - Properties
+
+  * [MRM-1811] - Users - Manage section: pagination needs to change
+
+  * [MRM-1846] - Regression in 2.0.1 : uniqueVersion false not supported
+
+  * [MRM-1848] - download links for files mult-dot extensions incorrect in Browse view
+
+  * [MRM-1851] - generic metadata GUI broken
+
+  * [MRM-1860] - ClassNotFound exception with JBoss
+
+  * [MRM-1863] - RepositoryGroup URL is not build using the Application URL
+
+  * [MRM-1864] - Default configuration for central should now use SSL
+
+  * [MRM-1871] - ConcurrentModificationException in DefaultRepositoryProxyConnectors
+
+  * [MRM-1873] - archiva doesn't recognise ldap-group to ldap-users mapping
+
+*** Task
+
+  * [MRM-1359] - Remove Maven 1.x functionality
+
+  * [MRM-1865] - remove isPermanent from Consumer API
+
+History
 
   Archiva was started in November 2005, building a simple framework on top of some existing repository conversion
   tools within the Maven project. Initial development focused on repository conversion, error reporting, and indexing.
