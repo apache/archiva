@@ -222,7 +222,7 @@ public class ArchivaAdministrationTest
         try
         {
             OrganisationInformation newOrganisationInformation = new OrganisationInformation( );
-            newOrganisationInformation.setLogoLocation( "'/><svg/onload=alert(/logoLocation_xss/)>" );
+            newOrganisationInformation.setLogoLocation( "http://www.foo.com'/><svg/onload=alert(/logoLocation_xss/)>" );
             newOrganisationInformation.setName( "foo org" );
             newOrganisationInformation.setUrl( "http://foo.com" );
             archivaAdministration.setOrganisationInformation( newOrganisationInformation );
@@ -240,7 +240,7 @@ public class ArchivaAdministrationTest
         try
         {
             OrganisationInformation newOrganisationInformation = new OrganisationInformation( );
-            newOrganisationInformation.setUrl( "'/><svg/onload=alert(/url_xss/)>" );
+            newOrganisationInformation.setUrl( "http://foo.com'/><svg/onload=alert(/url_xss/)>" );
             newOrganisationInformation.setName( "foo org" );
             newOrganisationInformation.setLogoLocation( "http://foo.com/bar.png" );
             archivaAdministration.setOrganisationInformation( newOrganisationInformation );

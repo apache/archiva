@@ -22,9 +22,11 @@ import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.OrganisationInformation;
 import org.apache.archiva.admin.model.beans.UiConfiguration;
 import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
+import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
+import javax.ws.rs.BadRequestException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -89,6 +91,53 @@ public class ArchivaAdministrationServiceTest
         assertEquals( "http://foo.com/bar.png", organisationInformation.getLogoLocation() );
         assertEquals( "foo org", organisationInformation.getName() );
         assertEquals( "http://foo.com", organisationInformation.getUrl() );
+    }
+
+    @Test
+    public void badOrganizationLogoLocation()
+            throws Exception
+    {
+        OrganisationInformation organisationInformation =
+                getArchivaAdministrationService().getOrganisationInformation();
+
+        // rest return an empty bean
+        assertNotNull( organisationInformation );
+        organisationInformation = new OrganisationInformation();
+        organisationInformation.setLogoLocation( "http://foo.com'/><svg/onload=alert(/logoLocation_xss/)>" );
+        organisationInformation.setName( "foo org" );
+        organisationInformation.setUrl( "http://foo.com" );
+
+        try {
+            getArchivaAdministrationService().setOrganisationInformation(organisationInformation);
+            fail("RepositoryAdminException expected. Bad URL content should not be allowed for logo location.");
+        } catch (BadRequestException e) {
+            // OK
+        }
+
+    }
+
+    @Test
+    public void  badOrganizationUrl()
+            throws Exception
+    {
+        OrganisationInformation organisationInformation =
+                getArchivaAdministrationService().getOrganisationInformation();
+
+        // rest return an empty bean
+        assertNotNull( organisationInformation );
+
+        organisationInformation = new OrganisationInformation();
+        organisationInformation.setLogoLocation( "http://foo.com/logo.jpg" );
+        organisationInformation.setName( "foo org" );
+        organisationInformation.setUrl( "http://foo.com'/><svg/onload=alert(/url_xss/)>" );
+
+        try {
+            getArchivaAdministrationService().setOrganisationInformation(organisationInformation);
+            fail("RepositoryAdminException expected. Bad URL content should not be allowed for logo location.");
+        } catch (BadRequestException e) {
+            // OK
+        }
+
     }
 
     @Test
