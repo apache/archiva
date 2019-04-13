@@ -21,20 +21,14 @@ package org.apache.archiva.admin.repository.admin;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
-import org.apache.archiva.admin.model.beans.FileType;
-import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
-import org.apache.archiva.admin.model.beans.NetworkConfiguration;
-import org.apache.archiva.admin.model.beans.OrganisationInformation;
-import org.apache.archiva.admin.model.beans.UiConfiguration;
+import org.apache.archiva.admin.model.beans.*;
 import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.UserInterfaceOptions;
 import org.apache.archiva.configuration.WebappConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.springframework.stereotype.Service;
@@ -42,10 +36,8 @@ import org.springframework.util.ResourceUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -328,14 +320,21 @@ public class DefaultArchivaAdministration
         return getModelMapper().map( organisationInformation, OrganisationInformation.class );
     }
 
-    private void checkUrl(String url, String propertyName)  throws RepositoryAdminException {
+    private String fixUrl(String url, String propertyName)  throws RepositoryAdminException {
         if ( StringUtils.isNotEmpty( url ) )
         {
             if ( !ResourceUtils.isUrl( url ) )
             {
                 throw new RepositoryAdminException( "Bad URL in " + propertyName + ": " + url );
             }
+            try {
+                URI urlToCheck = new URI(url);
+                return urlToCheck.toString();
+            } catch (URISyntaxException e) {
+                throw new RepositoryAdminException( "Bad URL in " + propertyName + ": " + url );
+            }
         }
+        return url;
 
     }
 
@@ -347,8 +346,9 @@ public class DefaultArchivaAdministration
     public void setOrganisationInformation( OrganisationInformation organisationInformation )
         throws RepositoryAdminException
     {
-        checkUrl(organisationInformation.getUrl(), "url");
-        checkUrl( organisationInformation.getLogoLocation(), "logoLocation" );
+
+        organisationInformation.setUrl(fixUrl(organisationInformation.getUrl(), "url"));
+        organisationInformation.setLogoLocation(fixUrl( organisationInformation.getLogoLocation(), "logoLocation" ));
         Configuration configuration = getArchivaConfiguration( ).getConfiguration( );
         if ( organisationInformation != null )
         {

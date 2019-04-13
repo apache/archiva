@@ -20,11 +20,7 @@ package org.apache.archiva.rest.services;
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.admin.ArchivaAdministration;
-import org.apache.archiva.admin.model.beans.FileType;
-import org.apache.archiva.admin.model.beans.LegacyArtifactPath;
-import org.apache.archiva.admin.model.beans.NetworkConfiguration;
-import org.apache.archiva.admin.model.beans.OrganisationInformation;
-import org.apache.archiva.admin.model.beans.UiConfiguration;
+import org.apache.archiva.admin.model.beans.*;
 import org.apache.archiva.repository.scanner.RepositoryContentConsumers;
 import org.apache.archiva.rest.api.model.AdminRepositoryConsumer;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
@@ -319,7 +315,7 @@ public class DefaultArchivaAdministrationService
         }
         catch ( RepositoryAdminException e )
         {
-            throw new ArchivaRestServiceException( e.getMessage(), e );
+            throw new ArchivaRestServiceException( e.getMessage(), 400, e );
         }
     }
 
