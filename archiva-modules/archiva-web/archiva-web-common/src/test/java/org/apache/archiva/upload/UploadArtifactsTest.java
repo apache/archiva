@@ -19,25 +19,11 @@ package org.apache.archiva.upload;
  */
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import org.apache.archiva.admin.model.beans.RemoteRepository;
-import org.apache.archiva.redback.rest.api.model.User;
-import org.apache.archiva.redback.rest.api.services.RoleManagementService;
-import org.apache.archiva.redback.rest.api.services.UserService;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
-import org.apache.archiva.redback.rest.services.FakeCreateAdminService;
-import org.apache.archiva.remotedownload.AbstractDownloadTest;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
-import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.archiva.web.api.FileUploadService;
-import org.apache.archiva.web.api.RuntimeInfoService;
-import org.apache.archiva.web.model.ApplicationRuntimeInfo;
 import org.apache.archiva.web.model.FileMetadata;
-import org.apache.catalina.Context;
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.deploy.ApplicationParameter;
-import org.apache.catalina.startup.Tomcat;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
@@ -47,38 +33,15 @@ import org.apache.cxf.jaxrs.ext.multipart.AttachmentBuilder;
 import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
 import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.message.Message;
-import org.apache.cxf.transport.servlet.CXFServlet;
-import org.apache.maven.wagon.providers.http.HttpWagon;
-import org.apache.maven.wagon.repository.Repository;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.bridge.SLF4JBridgeHandler;
-import org.springframework.web.context.ContextLoaderListener;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Collections;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 /**
  * @author Olivier Lamy
@@ -87,78 +50,7 @@ import java.util.zip.ZipFile;
 public class UploadArtifactsTest
     extends AbstractRestServicesTest
 {
-    private Tomcat tomcat;
 
-    @Override
-    @Before
-    public void startServer( )
-        throws Exception
-    {
-        System.setProperty( "org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH", "true" );
-        System.setProperty("appserver.base", Paths.get("target/appserver-base").toAbsolutePath().toString());
-        Path appServerBase = Paths.get("target/appserver-base");
-        FileUtils.deleteDirectory(appServerBase.toAbsolutePath().toFile());
-        Path confDir = appServerBase.resolve( "conf" );
-        if ( !Files.exists(confDir))
-        {
-            Files.createDirectories(confDir);
-        }
-        Path log4jCfg = Paths.get( "src/test/resources/log4j2-test.xml" );
-        Path log4jCfgDst = confDir.resolve( log4jCfg.getFileName( ) );
-
-        Files.copy( log4jCfg, log4jCfgDst, StandardCopyOption.REPLACE_EXISTING );
-
-        Path archivaCfg = Paths.get( "src/test/resources/archiva.xml" );
-        Files.copy( archivaCfg, confDir.resolve( archivaCfg.getFileName( ) ), StandardCopyOption.REPLACE_EXISTING );
-
-        Path jcrDirectory = appServerBase.resolve("jcr" );
-
-        if ( Files.exists(jcrDirectory) )
-        {
-            FileUtils.deleteDirectory( jcrDirectory.toAbsolutePath().toFile() );
-        }
-        // We have to activate this to verify the bad path traversal protection. We cannot rely on
-        // the application server only.
-
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
-        this.tomcat = new Tomcat();
-        this.tomcat.setBaseDir(System.getProperty("java.io.tmpdir"));
-        this.tomcat.setPort(0);
-        this.tomcat.setSilent(false);
-        Context context = this.tomcat.addContext("", System.getProperty("java.io.tmpdir"));
-        ApplicationParameter applicationParameter = new ApplicationParameter();
-        applicationParameter.setName("contextConfigLocation");
-        applicationParameter.setValue(this.getSpringConfigLocation());
-        context.addApplicationParameter(applicationParameter);
-        context.addApplicationListener(ContextLoaderListener.class.getName());
-        Tomcat.addServlet(context, "cxf", new CXFServlet());
-        context.addServletMapping("/" + this.getRestServicesPath() + "/*", "cxf");
-        this.tomcat.start();
-        this.port = this.tomcat.getConnector().getLocalPort();
-        this.log.info("start server on port {}", this.port);
-        UserService userService = this.getUserService();
-        User adminUser = new User();
-        adminUser.setUsername("admin");
-        adminUser.setPassword("rose210208");
-        adminUser.setFullName("the admin user");
-        adminUser.setEmail("toto@toto.fr");
-        userService.createAdminUser(adminUser);
-        FakeCreateAdminService fakeCreateAdminService = this.getFakeCreateAdminService();
-        // super.startServer( );
-    }
-
-    @After
-    public void stop( ) {
-        if (this.tomcat != null) {
-            try {
-                this.tomcat.stop();
-            } catch (LifecycleException e) {
-                //
-            }
-        }
-        System.clearProperty( "org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH" );
-    }
 
     @Override
     protected String getSpringConfigLocation( )
