@@ -68,10 +68,7 @@ import javax.ws.rs.core.Response;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -194,6 +191,7 @@ public class DefaultFileUploadService
     public Boolean deleteFile( String fileName )
         throws ArchivaRestServiceException
     {
+        log.debug("Deleting file {}", fileName);
         // we make sure, that there are no other path components in the filename:
         String checkedFileName = Paths.get(fileName).getFileName().toString();
         Path file = SystemUtils.getJavaIoTmpDir().toPath().resolve( checkedFileName );
@@ -354,6 +352,7 @@ public class DefaultFileUploadService
         throws ArchivaRestServiceException
     {
 
+        log.debug("Saving POM");
         try
         {
             boolean fixChecksums =
@@ -387,19 +386,23 @@ public class DefaultFileUploadService
             copyFile( Paths.get( fileMetadata.getServerFileName() ), targetPath, pomFilename, fixChecksums );
             triggerAuditEvent( repoConfig.getId(), path + "/" + pomFilename, AuditEvent.UPLOAD_FILE );
             queueRepositoryTask( repoConfig.getId(), targetPath.resolve(pomFilename ) );
+            log.debug("Finished Saving POM");
         }
         catch ( IOException ie )
         {
+            log.error("IOException for POM {}", ie.getMessage());
             throw new ArchivaRestServiceException( "Error encountered while uploading pom file: " + ie.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), ie );
         }
         catch ( RepositoryException rep )
         {
+            log.error("RepositoryException for POM {}", rep.getMessage());
             throw new ArchivaRestServiceException( "Repository exception: " + rep.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rep );
         }
         catch ( RepositoryAdminException e )
         {
+            log.error("RepositoryAdminException for POM {}", e.getMessage());
             throw new ArchivaRestServiceException( "RepositoryAdmin exception: " + e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
@@ -409,10 +412,11 @@ public class DefaultFileUploadService
                              String artifactId, String version, String packaging )
         throws ArchivaRestServiceException
     {
+        log.debug("Saving file");
         try
         {
 
-            ManagedRepository repoConfig = managedRepositoryAdmin.getManagedRepository( repositoryId );
+            org.apache.archiva.repository.ManagedRepository repoConfig = repositoryRegistry.getManagedRepository(repositoryId);
 
             ArtifactReference artifactReference = new ArtifactReference();
             artifactReference.setArtifactId( artifactId );
@@ -422,14 +426,14 @@ public class DefaultFileUploadService
             artifactReference.setType(
                 StringUtils.isEmpty( fileMetadata.getPackaging() ) ? packaging : fileMetadata.getPackaging() );
 
-            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repositoryId );
+            ManagedRepositoryContent repository = repositoryFactory.getManagedRepositoryContent( repoConfig );
 
             String artifactPath = repository.toPath( artifactReference );
 
             int lastIndex = artifactPath.lastIndexOf( '/' );
 
             String path = artifactPath.substring( 0, lastIndex );
-            Path targetPath = Paths.get( repoConfig.getLocation(), path );
+            Path targetPath = Paths.get(repoConfig.getLocation()).resolve(path);
 
             log.debug( "artifactPath: {} found targetPath: {}", artifactPath, targetPath );
 
@@ -473,7 +477,7 @@ public class DefaultFileUploadService
             try
             {
                 Path targetFile = targetPath.resolve( filename );
-                if ( Files.exists(targetFile) && !VersionUtil.isSnapshot( version ) && repoConfig.isBlockRedeployments() )
+                if ( Files.exists(targetFile) && !VersionUtil.isSnapshot( version ) && repoConfig.blocksRedeployments())
                 {
                     throw new ArchivaRestServiceException(
                         "Overwriting released artifacts in repository '" + repoConfig.getId() + "' is not allowed.",
@@ -538,21 +542,26 @@ public class DefaultFileUploadService
         }
         catch ( RepositoryNotFoundException re )
         {
+            log.error("RepositoryNotFoundException during save {}", re.getMessage());
+            re.printStackTrace();
             throw new ArchivaRestServiceException( "Target repository cannot be found: " + re.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), re );
         }
         catch ( RepositoryException rep )
         {
+            log.error("RepositoryException during save {}", rep.getMessage());
             throw new ArchivaRestServiceException( "Repository exception: " + rep.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rep );
         }
         catch ( RepositoryAdminException e )
         {
+            log.error("RepositoryAdminException during save {}", e.getMessage());
             throw new ArchivaRestServiceException( "RepositoryAdmin exception: " + e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
         }
         catch ( IOException e )
         {
+            log.error("IOException during save {}", e.getMessage());
             throw new ArchivaRestServiceException("Repository exception "+ e.getMessage(),
                 Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e);
         }
