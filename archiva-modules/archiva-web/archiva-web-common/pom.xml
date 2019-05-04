@@ -460,7 +460,6 @@
 -->
           <argLine>-Xms1024m -Xmx2048m -server -XX:MaxPermSize=256m</argLine>
           <systemPropertyVariables>
-            <org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH>true</org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH>
             <appserver.base>${project.build.directory}/appserver-base</appserver.base>
             <plexus.home>${project.build.directory}/appserver-base</plexus.home>
             <derby.system.home>${project.build.directory}/appserver-base</derby.system.home>
