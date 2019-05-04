@@ -23,7 +23,7 @@ import org.apache.archiva.common.utils.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.ValidationException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -98,21 +98,21 @@ public class ChecksummedFile
     {
 
         Checksum checksum = new Checksum( checksumAlgorithm );
-        checksum.update( referenceFile );
+        ChecksumUtil.update(checksum, referenceFile );
         return checksum.getChecksum( );
     }
 
     /**
-     * Creates a checksum file of the provided referenceFile.
+     * Writes a checksum file for the referenceFile.
      *
      * @param checksumAlgorithm the hash to use.
      * @return the checksum File that was created.
      * @throws IOException if there was a problem either reading the referenceFile, or writing the checksum file.
      */
-    public Path createChecksum( ChecksumAlgorithm checksumAlgorithm )
+    public Path writeFile(ChecksumAlgorithm checksumAlgorithm )
         throws IOException
     {
-        Path checksumFile = referenceFile.resolveSibling( referenceFile.getFileName( ) + "." + checksumAlgorithm.getExt( ).get( 0 ) );
+        Path checksumFile = referenceFile.resolveSibling( referenceFile.getFileName( ) + "." + checksumAlgorithm.getDefaultExtension() );
         Files.deleteIfExists( checksumFile );
         String checksum = calculateChecksum( checksumAlgorithm );
         Files.write( checksumFile, //
@@ -123,6 +123,8 @@ public class ChecksummedFile
 
     /**
      * Get the checksum file for the reference file and hash.
+     * It returns a file for the given checksum, if one exists with one of the possible extensions.
+     * If it does not exist, a default path will be returned.
      *
      * @param checksumAlgorithm the hash that we are interested in.
      * @return the checksum file to return
@@ -137,7 +139,7 @@ public class ChecksummedFile
                 return file;
             }
         }
-        return referenceFile.resolveSibling( referenceFile.getFileName( ) + "." + checksumAlgorithm.getExt( ).get( 0 ) );
+        return referenceFile.resolveSibling( referenceFile.getFileName( ) + "." + checksumAlgorithm.getDefaultExtension() );
     }
 
     /**
@@ -175,66 +177,65 @@ public class ChecksummedFile
     }
 
     /**
-     * Checks if the checksums are valid for the referenced file.
+     * Checks if the checksum files are valid for the referenced file.
+     * It tries to find a checksum file for each algorithm in the same directory as the referenceFile.
+     * The method returns true, if at least one checksum file exists for one of the given algorithms
+     * and all existing checksum files are valid.
+     *
      * This method throws only exceptions, if throwExceptions is true. Otherwise false will be returned instead.
+     *
+     * It verifies only the existing checksum files. If the checksum file for a particular algorithm does not exist,
+     * but others exist and are valid, it will return true.
+     *
      * @param algorithms The algorithms to verify
      * @param throwExceptions If true, exceptions will be thrown, otherwise false will be returned, if a exception occurred.
-     * @return True, if it is valid, otherwise false.
+     * @return True, if it is valid for all existing checksum files, otherwise false.
      * @throws ChecksumValidationException
      */
     public boolean isValidChecksums( List<ChecksumAlgorithm> algorithms, boolean throwExceptions) throws ChecksumValidationException
     {
 
-        List<Checksum> checksums = new ArrayList<>( algorithms.size() );
-        // Create checksum object for each algorithm.
-        for ( ChecksumAlgorithm checksumAlgorithm : algorithms )
-        {
-            Path checksumFile = getChecksumFile( checksumAlgorithm );
-
-            // Only add algorithm if checksum file exists.
-            if ( Files.exists( checksumFile ) )
-            {
-                checksums.add( new Checksum( checksumAlgorithm ) );
-            }
-        }
-
-        // Any checksums?
-        if ( checksums.isEmpty( ) )
-        {
-            // No checksum objects, no checksum files, default to is invalid.
-            return false;
-        }
-
+        List<Checksum> checksums;
         // Parse file once, for all checksums.
         try
         {
-            Checksum.update( checksums, referenceFile );
+            checksums = ChecksumUtil.initializeChecksums( referenceFile, algorithms );
         }
-        catch ( ChecksumValidationException e )
+        catch (IOException e )
         {
             log.warn( "Unable to update checksum:{}", e.getMessage( ) );
             if (throwExceptions) {
-                throw e;
+                if (e instanceof FileNotFoundException) {
+                    throw new ChecksumValidationException(ChecksumValidationException.ValidationError.FILE_NOT_FOUND, e);
+                } else {
+                    throw new ChecksumValidationException(ChecksumValidationException.ValidationError.READ_ERROR, e);
+                }
             } else {
                 return false;
             }
         }
 
         boolean valid = true;
+        boolean fileExists = false;
+
+        // No file exists -> return false
+        // if at least one file exists:
+        // -> all existing files must be valid
 
         // check the checksum files
         try
         {
+
             for ( Checksum checksum : checksums )
             {
                 ChecksumAlgorithm checksumAlgorithm = checksum.getAlgorithm( );
                 Path checksumFile = getChecksumFile( checksumAlgorithm );
 
-                String expectedChecksum = parseChecksum( checksumFile, checksumAlgorithm, referenceFile.getFileName( ).toString( ), FILE_ENCODING );
+                if (Files.exists(checksumFile)) {
+                    fileExists = true;
+                    String expectedChecksum = parseChecksum(checksumFile, checksumAlgorithm, referenceFile.getFileName().toString(), FILE_ENCODING);
 
-                if ( !checksum.compare( expectedChecksum ) )
-                {
-                    valid = false;
+                    valid &= checksum.compare(expectedChecksum);
                 }
             }
         }
@@ -249,7 +250,7 @@ public class ChecksummedFile
             }
         }
 
-        return valid;
+        return fileExists && valid;
     }
 
     public Path getReferenceFile( )
@@ -259,40 +260,39 @@ public class ChecksummedFile
 
 
 
-    public boolean fixChecksum(ChecksumAlgorithm algorithm) {
+    public UpdateStatusList fixChecksum(ChecksumAlgorithm algorithm) {
         return fixChecksums( Arrays.asList(algorithm) );
     }
+
     /**
-     * Fix or create checksum files for the reference file.
+     * Writes a checksum file, if it does not exist or if it exists and has a different
+     * checksum value.
      *
      * @param algorithms the hashes to check for.
      * @return true if checksums were created successfully.
      */
-    public boolean fixChecksums( List<ChecksumAlgorithm> algorithms )
+    public UpdateStatusList fixChecksums( List<ChecksumAlgorithm> algorithms )
     {
-        List<Checksum> checksums = new ArrayList<>( algorithms.size() );
-        // Create checksum object for each algorithm.
-        for ( ChecksumAlgorithm checksumAlgorithm : algorithms )
-        {
-            checksums.add( new Checksum( checksumAlgorithm ) );
-        }
+        UpdateStatusList result = UpdateStatusList.INITIALIZE(algorithms);
+        List<Checksum> checksums;
 
-        // Any checksums?
-        if ( checksums.isEmpty( ) )
-        {
-            // No checksum objects, no checksum files, default to is valid.
-            return true;
-        }
 
         try
         {
             // Parse file once, for all checksums.
-            Checksum.update( checksums, referenceFile );
+            checksums = ChecksumUtil.initializeChecksums(getReferenceFile(), algorithms);
         }
-        catch ( ChecksumValidationException e )
+        catch (IOException e )
         {
             log.warn( e.getMessage( ), e );
-            return false;
+            result.setTotalError(e);
+            return result;
+        }
+        // Any checksums?
+        if ( checksums.isEmpty( ) )
+        {
+            // No checksum objects, no checksum files, default to is valid.
+            return result;
         }
 
         boolean valid = true;
@@ -316,23 +316,25 @@ public class ChecksummedFile
 
                     if ( !checksum.compare( expectedChecksum ) )
                     {
-                        // create checksum (again)
+                        // overwrite checksum file
                         writeChecksumFile( checksumFile, FILE_ENCODING, checksum.getChecksum( ) );
+                        result.setStatus(checksumAlgorithm,UpdateStatus.UPDATED);
                     }
                 }
                 else
                 {
                     writeChecksumFile( checksumFile, FILE_ENCODING, checksum.getChecksum( ) );
+                    result.setStatus(checksumAlgorithm, UpdateStatus.CREATED);
                 }
             }
             catch ( ChecksumValidationException e )
             {
                 log.warn( e.getMessage( ), e );
-                valid = false;
+                result.setErrorStatus(checksumAlgorithm, e);
             }
         }
 
-        return valid;
+        return result;
 
     }
 
@@ -362,33 +364,33 @@ public class ChecksummedFile
      * </p>
      *
      * @param checksumFile The file where the checksum is stored
-     * @param expectedHash The checksum algorithm to check
-     * @param expectedPath The filename of the reference file
+     * @param checksumAlgorithm The checksum algorithm to check
+     * @param fileName The filename of the reference file
      * @return
      * @throws IOException
      */
-    public String parseChecksum( Path checksumFile, ChecksumAlgorithm expectedHash, String expectedPath, Charset encoding )
+    public String parseChecksum( Path checksumFile, ChecksumAlgorithm checksumAlgorithm, String fileName, Charset encoding )
         throws ChecksumValidationException
     {
-        ChecksumFileContent fc = parseChecksumFile( checksumFile, expectedHash, encoding );
-        if ( fc.isFormatMatch() && !isValidChecksumPattern( fc.getFileReference( ), expectedPath ) )
+        ChecksumFileContent fc = parseChecksumFile( checksumFile, checksumAlgorithm, encoding );
+        if ( fc.isFormatMatch() && !isValidChecksumPattern( fc.getFileReference( ), fileName ) )
         {
             throw new ChecksumValidationException(BAD_CHECKSUM_FILE_REF,
-                "The file reference '" + fc.getFileReference( ) + "' in the checksum file does not match expected file: '" + expectedPath + "'" );
+                "The file reference '" + fc.getFileReference( ) + "' in the checksum file does not match expected file: '" + fileName + "'" );
         } else if (!fc.isFormatMatch()) {
             throw new ChecksumValidationException( BAD_CHECKSUM_FILE, "The checksum file content could not be parsed: "+checksumFile );
         }
         return fc.getChecksum( );
-    }
 
-    public ChecksumFileContent parseChecksumFile( Path checksumFile, ChecksumAlgorithm expectedHash, Charset encoding )
+    }
+    public ChecksumFileContent parseChecksumFile( Path checksumFile, ChecksumAlgorithm checksumAlgorithm, Charset encoding )
     {
         ChecksumFileContent fc = new ChecksumFileContent( );
         String rawChecksumString = FileUtils.readFileToString( checksumFile, encoding );
         String trimmedChecksum = rawChecksumString.replace( '\n', ' ' ).trim( );
 
         // Free-BSD / openssl
-        String regex = expectedHash.getType( ) + "\\s*\\(([^)]*)\\)\\s*=\\s*([a-fA-F0-9]+)";
+        String regex = checksumAlgorithm.getType( ) + "\\s*\\(([^)]*)\\)\\s*=\\s*([a-fA-F0-9]+)";
         Matcher m = Pattern.compile( regex ).matcher( trimmedChecksum );
         if ( m.matches( ) )
         {

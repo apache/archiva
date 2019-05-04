@@ -24,6 +24,7 @@ import org.apache.archiva.configuration.*;
 import org.apache.archiva.redback.components.registry.Registry;
 
 import java.util.Iterator;
+import java.util.List;
 
 // Util imports
 // Model class imports
@@ -35,6 +36,20 @@ import java.util.Iterator;
 public class ConfigurationRegistryWriter {
     public void write(Configuration model, Registry registry) {
         writeConfiguration("", model, registry);
+    }
+
+    private void writeList(Registry registry, List<String> subList, String subsetPath, String elementName) {
+        if (subList != null && subList.size() > 0
+        ) {
+            registry.removeSubset(subsetPath);
+
+            int count = 0;
+            for (Iterator<String> iter = subList.iterator(); iter.hasNext(); count++) {
+                String name = subsetPath + "." + elementName + "(" + count + ")";
+                String value = iter.next();
+                registry.setString(name, value);
+            }
+        }
     }
 
     private void writeConfiguration(String prefix, Configuration value, Registry registry) {
@@ -882,6 +897,7 @@ public class ConfigurationRegistryWriter {
                 String languageRange = "languageRange";
                 registry.setString(prefix + languageRange, value.getLanguageRange());
             }
+            writeList(registry, value.getChecksumTypes(), prefix+"checksumTypes", "type");
         }
     }
 

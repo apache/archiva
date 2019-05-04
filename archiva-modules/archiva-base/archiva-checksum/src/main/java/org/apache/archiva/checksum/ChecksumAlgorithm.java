@@ -35,14 +35,18 @@ import java.util.Set;
 /**
  * Enumeration of available ChecksumAlgorithm techniques.
  *
+ * Each algorithm represents a message digest algorithm and has a unique type.
+ * The type string may be used in the hash files (FreeBSD and OpenSSL add the type to the hash file)
+ *
+ * There are multiple file extensions. The first one is considered the default extension.
  *
  */
 public enum ChecksumAlgorithm {
     MD5("MD5", "MD5", "md5"),
     SHA1("SHA-1", "SHA1", "sha1", "sha128", "sha-128"),
-    SHA256("SHA-256", "SHA2", "sha2", "sha256", "sha-256"),
-    SHA384("SHA-384", "SHA3", "sha3", "sha384", "sha-384"),
-    SHA512("SHA-512", "SHA5", "sha5", "sha512", "sha-512");
+    SHA256("SHA-256", "SHA256", "sha256", "sha2", "sha-256"),
+    SHA384("SHA-384", "SHA384", "sha384", "sha3", "sha-384"),
+    SHA512("SHA-512", "SHA512", "sha512", "sha5", "sha-512");
 
     public static ChecksumAlgorithm getByExtension( Path file )
     {
@@ -59,12 +63,12 @@ public enum ChecksumAlgorithm {
         for (ChecksumAlgorithm alg : ChecksumAlgorithm.values()) {
             for (String extString : alg.getExt())
             {
-                extensionMap.put( extString, alg );
+                extensionMap.put( extString.toLowerCase(), alg );
             }
         }
     }
 
-    public static Set<String> getExtensions() {
+    public static Set<String> getAllExtensions() {
         return extensionMap.keySet();
     }
 
@@ -74,7 +78,7 @@ public enum ChecksumAlgorithm {
     private final String algorithm;
 
     /**
-     * The file extension for this ChecksumAlgorithm.
+     * The file extensions for this ChecksumAlgorithm.
      */
     private final List<String> ext;
 
@@ -87,8 +91,8 @@ public enum ChecksumAlgorithm {
      * Construct a ChecksumAlgorithm
      * 
      * @param algorithm the MessageDigest algorithm
-     * @param ext the file extension.
-     * @param type the checksum type.
+     * @param type a unique identifier for the type
+     * @param ext the list of file extensions
      */
     private ChecksumAlgorithm( String algorithm, String type, String... ext )
     {
@@ -98,19 +102,39 @@ public enum ChecksumAlgorithm {
 
     }
 
+    /**
+     * Returns the message digest algorithm identifier
+     * @return
+     */
     public String getAlgorithm()
     {
         return algorithm;
     }
 
+    /**
+     * Returns the list of extensions
+     * @return
+     */
     public List<String> getExt()
     {
         return ext;
     }
 
+    /**
+     * Returns the checksum identifier
+     * @return
+     */
     public String getType()
     {
         return type;
+    }
+
+    /**
+     * Returns the default extension of the current algorithm
+     * @return
+     */
+    public String getDefaultExtension() {
+        return ext.get(0);
     }
     
     

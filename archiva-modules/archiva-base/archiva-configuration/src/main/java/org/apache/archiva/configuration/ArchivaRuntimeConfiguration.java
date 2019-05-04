@@ -19,6 +19,10 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * 
  *         The runtime configuration.
@@ -75,6 +79,11 @@ public class ArchivaRuntimeConfiguration
      * strings.
      */
     private String languageRange = "en,fr,de";
+
+    /**
+     * List of checksum types (algorithms) that should be applied to repository artifacts.
+     */
+    private List<String> checksumTypes = new ArrayList(Arrays.asList("MD5","SHA1","SHA256"));
 
 
       //-----------/
@@ -232,5 +241,50 @@ public class ArchivaRuntimeConfiguration
     {
         this.urlFailureCacheConfiguration = urlFailureCacheConfiguration;
     } //-- void setUrlFailureCacheConfiguration( CacheConfiguration )
+
+
+    /**
+     * Returns the list of checksum types to generate
+     * @return
+     */
+    public List<String> getChecksumTypes()
+    {
+        if ( this.checksumTypes == null )
+        {
+            this.checksumTypes = new java.util.ArrayList<String>();
+        }
+
+        return this.checksumTypes;
+    }
+
+    /**
+     * Adds a checksum type
+     * @param type
+     */
+    public void addChecksumType(String type) {
+
+        if (!getChecksumTypes().contains(type)) {
+            getChecksumTypes().add(type);
+        }
+    }
+
+    /**
+     * Removes a checksum type
+     * @param type
+     */
+    public void removeChecksumType(String type) {
+        getChecksumTypes().remove(type);
+    }
+
+    /**
+     * Set all checksum types
+     * @param checksumTypes
+     */
+    public void setChecksumTypes(List<String> checksumTypes) {
+        if (checksumTypes!=null) {
+            getChecksumTypes().clear();
+            getChecksumTypes().addAll(checksumTypes);
+        }
+    }
 
 }

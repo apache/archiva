@@ -1423,6 +1423,9 @@ public class ConfigurationRegistryReader {
 
         value.setLanguageRange(languageRange);
 
+        List<String> checksumTypeList = registry.getList(prefix + "checksumTypes.type");
+        value.setChecksumTypes(checksumTypeList);
+
         return value;
     }
 

@@ -25,9 +25,11 @@ import org.apache.archiva.admin.model.admin.ArchivaAdministration;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksumUtil;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
@@ -59,6 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
@@ -74,9 +77,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 /**
+ *
+ * Service for uploading files to the repository.
+ *
  * @author Olivier Lamy
+ * @author Martin Stockhammer
  */
 @Service("fileUploadService#rest")
 public class DefaultFileUploadService
@@ -96,7 +104,10 @@ public class DefaultFileUploadService
     @Inject
     private ArchivaAdministration archivaAdministration;
 
-    private List<ChecksumAlgorithm> algorithms = Arrays.asList(ChecksumAlgorithm.SHA1, ChecksumAlgorithm.MD5);
+    @Inject
+    ArchivaConfiguration configuration;
+
+    private List<ChecksumAlgorithm> algorithms;
 
     private final String FS = FileSystems.getDefault().getSeparator();
 
@@ -109,6 +120,11 @@ public class DefaultFileUploadService
         Attachment attachment = multipartBody.getAttachment(attachmentId);
         return attachment == null ? "" :
                 StringUtils.trim(URLDecoder.decode(IOUtils.toString(attachment.getDataHandler().getInputStream(), "UTF-8"), "UTF-8"));
+    }
+
+    @PostConstruct
+    private void initialize() {
+        algorithms = ChecksumUtil.getAlgorithms(configuration.getConfiguration().getArchivaRuntimeConfiguration().getChecksumTypes());
     }
 
     @Override
@@ -233,11 +249,9 @@ public class DefaultFileUploadService
     @Override
     public List<FileMetadata> getSessionFileMetadatas()
             throws ArchivaRestServiceException {
-        @SuppressWarnings("unchecked") List<FileMetadata> fileMetadatas =
-                (List<FileMetadata>) httpServletRequest.getSession().getAttribute(FILES_SESSION_KEY);
-
-        return fileMetadatas == null ? Collections.<FileMetadata>emptyList() : fileMetadatas;
+        return getSessionFilesList();
     }
+
 
     private boolean hasValidChars(String checkString) {
         if (checkString.contains(FS)) {
@@ -427,8 +441,9 @@ public class DefaultFileUploadService
                 filename = filename.replaceAll(VersionUtil.SNAPSHOT, timestamp + "-" + newBuildNumber);
             }
 
-            boolean fixChecksums =
-                    !(archivaAdministration.getKnownContentConsumers().contains("create-missing-checksums"));
+            // We always fix checksums for newly uploaded files, even if the content consumer is active.
+            boolean fixChecksums = true;
+            // !(archivaAdministration.getKnownContentConsumers().contains("create-missing-checksums"));
 
             try {
                 Path targetFile = targetPath.resolve(filename);

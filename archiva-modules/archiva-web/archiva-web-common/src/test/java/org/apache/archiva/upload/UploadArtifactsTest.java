@@ -21,6 +21,7 @@ package org.apache.archiva.upload;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
+import org.apache.archiva.redback.rest.services.FakeCreateAdminService;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.archiva.web.api.FileUploadService;
@@ -248,4 +249,26 @@ public class UploadArtifactsTest
         service.post(body);
         service.save("internal", "org.apache.archiva", "archiva-model", "1.2", "jar", true);
     }
+
+    @Test
+    public void saveFileWithOtherExtension() throws IOException, ArchivaRestServiceException {
+        log.debug("Starting saveFileWithOtherExtension()");
+
+        Path path = Paths.get("target/appserver-base/repositories/internal/data/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.bin");
+        log.debug("Jar exists: {}",Files.exists(path));
+        Files.deleteIfExists(path);
+        Path pomPath = Paths.get("target/appserver-base/repositories/internal/data/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.pom");
+        Files.deleteIfExists(pomPath);
+        FileUploadService service = getUploadService();
+        service.clearUploadedFiles();
+        Path file = Paths.get("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
+        log.debug("Upload file exists: {}", Files.exists(file));
+        final Attachment fileAttachment = new AttachmentBuilder().object(Files.newInputStream(file)).contentDisposition(new ContentDisposition("form-data; filename=\"archiva-model.bin\"; name=\"files[]\"")).build();
+        MultipartBody body = new MultipartBody(fileAttachment);
+        service.post(body);
+        assertTrue(service.save("internal", "org.apache.archiva", "archiva-model", "1.2", "bin", false));
+        assertTrue(Files.exists(path));
+    }
+
+
 }

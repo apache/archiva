@@ -19,59 +19,21 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.NullOutputStream;
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 /**
  * Checksum - simple checksum hashing routines.
  */
 public class Checksum
 {
-    private static final int BUFFER_SIZE = 32768;
     private byte[] result = new byte[0];
-
-    public static void update( List<Checksum> checksums, Path file )
-        throws ChecksumValidationException
-    {
-        long fileSize;
-        try (FileChannel channel = FileChannel.open(file, StandardOpenOption.READ )) {
-            fileSize = channel.size();
-            long pos = 0;
-            while (pos<fileSize)
-            {
-                long bufferSize = Math.min(BUFFER_SIZE, fileSize-pos);
-                MappedByteBuffer buffer = channel.map( FileChannel.MapMode.READ_ONLY, pos, bufferSize);
-                for ( Checksum checksum : checksums )
-                {
-                    checksum.update( buffer );
-                    buffer.rewind();
-                }
-                fileSize = channel.size();
-                pos += BUFFER_SIZE;
-            }
-            for (Checksum checksum : checksums) {
-                checksum.finish();
-            }
-        } catch(FileNotFoundException e)
-        {
-            throw new ChecksumValidationException( ChecksumValidationException.ValidationError.FILE_NOT_FOUND, "File that should be parsed, not found: "+e.getMessage(), e );
-        } catch(IOException e) {
-            throw new ChecksumValidationException( ChecksumValidationException.ValidationError.READ_ERROR, "Parsing of file failed: "+e.getMessage(), e );
-        }
-    }
 
     private final MessageDigest md;
 
@@ -140,26 +102,6 @@ public class Checksum
     public Checksum finish() {
         this.result = md.digest();
         return this;
-    }
-
-    public void update( Path file )
-        throws IOException
-    {
-        long fileSize;
-        try (FileChannel channel = FileChannel.open(file, StandardOpenOption.READ )) {
-            fileSize = channel.size();
-            long pos = 0;
-            while (pos<fileSize)
-            {
-                long bufferSize = Math.min(BUFFER_SIZE, fileSize-pos);
-                MappedByteBuffer buffer = channel.map( FileChannel.MapMode.READ_ONLY, pos, bufferSize);
-                update( buffer );
-                buffer.rewind();
-                fileSize = channel.size();
-                pos += BUFFER_SIZE;
-            }
-            finish();
-        }
     }
 
     public boolean compare(byte[] cmp) {

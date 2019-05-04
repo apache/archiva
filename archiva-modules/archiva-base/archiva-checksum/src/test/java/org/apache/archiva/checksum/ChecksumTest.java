@@ -19,15 +19,12 @@ package org.apache.archiva.checksum;
  * under the License.
  */
 
-import junit.framework.TestCase;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -85,7 +82,7 @@ public class ChecksumTest
         FileUtils.writeStringToFile( checkFile, FILE_ENCODING,  "You know, I'm sick of following my dreams, man. "
             + "I'm just going to ask where they're going and hook up with 'em later. - Mitch Hedberg");
 
-        Checksum.update( checksums, checkFile );
+        ChecksumUtil.update( checksums, checkFile );
 
         assertEquals( "Checksum SHA1", "e396119ae0542e85a74759602fd2f81e5d36d762", checksumSha1.getChecksum() );
         assertEquals( "Checksum MD5", "21c2c5ca87ec018adacb2e2fb3432219", checksumMd5.getChecksum() );

@@ -19,8 +19,7 @@ package org.apache.archiva.consumers.core;
  * under the License.
  */
 
-import org.apache.archiva.checksum.ChecksumAlgorithm;
-import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.archiva.checksum.*;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.AbstractMonitoredConsumer;
@@ -58,13 +57,11 @@ public class ArtifactMissingChecksumsConsumer
 
     private String id = "create-missing-checksums";
 
-    private String description = "Create Missing and/or Fix Invalid Checksums (.sha1, .md5)";
+    private String description = "Create Missing and/or Fix Invalid Checksum files.";
 
     private ArchivaConfiguration configuration;
 
     private FileTypes filetypes;
-
-    private ChecksummedFile checksum;
 
     private static final String TYPE_CHECKSUM_NOT_FILE = "checksum-bad-not-file";
 
@@ -75,6 +72,7 @@ public class ArtifactMissingChecksumsConsumer
     private Path repositoryDir;
 
     private List<String> includes = new ArrayList<>( 0 );
+    private List<ChecksumAlgorithm> algorithms;
 
     @Inject
     public ArtifactMissingChecksumsConsumer( ArchivaConfiguration configuration, FileTypes filetypes )
@@ -141,8 +139,36 @@ public class ArtifactMissingChecksumsConsumer
     public void processFile( String path )
         throws ConsumerException
     {
-        createFixChecksum( path, ChecksumAlgorithm.SHA1 );
-        createFixChecksum( path, ChecksumAlgorithm.MD5 );
+        Path artifactPath = repositoryDir.resolve(path);
+        ChecksummedFile csFile = new ChecksummedFile(artifactPath);
+        UpdateStatusList result = csFile.fixChecksums(algorithms);
+        if (result.getTotalStatus()== UpdateStatus.ERROR) {
+            log.warn( "Error accessing file {}. ", path );
+            triggerConsumerWarning( TYPE_CHECKSUM_NOT_FILE,
+                    "Error accessing file " + path + "." );
+        } else {
+            result.getStatusList().stream().forEach(st ->
+                    triggerInfo(path, st));
+        }
+    }
+
+    private void triggerInfo(String path, UpdateStatus status) {
+        switch (status.getValue()) {
+            case UpdateStatus.ERROR:
+                log.error( "Cannot create checksum for file {} :", path, status.getError() );
+                triggerConsumerError( TYPE_CHECKSUM_CANNOT_CREATE, "Cannot create checksum for file " + path +
+                        ": " + status.getError().getMessage( ) );
+                break;
+            case UpdateStatus.CREATED:
+                log.info( "Created missing checksum file {}", path );
+                triggerConsumerInfo( "Created missing checksum file " + path );
+                break;
+            case UpdateStatus.UPDATED:
+                log.info( "Fixed checksum file {}", path );
+                triggerConsumerInfo( "Fixed checksum file " + path );
+                break;
+
+        }
     }
 
     @Override
@@ -152,44 +178,6 @@ public class ArtifactMissingChecksumsConsumer
         processFile( path );
     }
 
-    private void createFixChecksum( String path, ChecksumAlgorithm checksumAlgorithm )
-    {
-        Path artifactFile = repositoryDir.resolve(path);
-        Path checksumFile = repositoryDir.resolve(path + "." + checksumAlgorithm.getExt( ).get(0) );
-
-        if ( Files.exists(checksumFile) )
-        {
-            checksum = new ChecksummedFile( artifactFile);
-            if ( !checksum.isValidChecksum( checksumAlgorithm ) )
-            {
-                checksum.fixChecksum( checksumAlgorithm );
-                log.info( "Fixed checksum file {}", checksumFile.toAbsolutePath( ) );
-                triggerConsumerInfo( "Fixed checksum file " + checksumFile.toAbsolutePath( ) );
-            }
-        }
-        else if ( !Files.exists(checksumFile) )
-        {
-            checksum = new ChecksummedFile( artifactFile);
-            try
-            {
-                checksum.createChecksum( checksumAlgorithm );
-                log.info( "Created missing checksum file {}", checksumFile.toAbsolutePath( ) );
-                triggerConsumerInfo( "Created missing checksum file " + checksumFile.toAbsolutePath( ) );
-            }
-            catch ( IOException e )
-            {
-                log.error( "Cannot create checksum for file {} :", checksumFile, e );
-                triggerConsumerError( TYPE_CHECKSUM_CANNOT_CREATE, "Cannot create checksum for file " + checksumFile +
-                    ": " + e.getMessage( ) );
-            }
-        }
-        else
-        {
-            log.warn( "Checksum file {} is not a file. ", checksumFile.toAbsolutePath( ) );
-            triggerConsumerWarning( TYPE_CHECKSUM_NOT_FILE,
-                "Checksum file " + checksumFile.toAbsolutePath( ) + " is not a file." );
-        }
-    }
 
     /*
     @Override
@@ -222,5 +210,6 @@ public class ArtifactMissingChecksumsConsumer
         //configuration.addChangeListener( this );
 
         initIncludes( );
+        algorithms = ChecksumUtil.getAlgorithms(configuration.getConfiguration().getArchivaRuntimeConfiguration().getChecksumTypes());
     }
 }

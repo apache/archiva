@@ -63,6 +63,9 @@ public abstract class AbstractArtifactConsumerTest
             (FileType) archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
         assertEquals( FileTypes.ARTIFACTS, fileType.getId() );
         fileType.addPattern( "**/*.xml" );
+        archivaConfiguration.getConfiguration().getArchivaRuntimeConfiguration().addChecksumType("MD5");
+        archivaConfiguration.getConfiguration().getArchivaRuntimeConfiguration().addChecksumType("SHA1");
+        archivaConfiguration.getConfiguration().getArchivaRuntimeConfiguration().addChecksumType("SHA256");
 
         repoLocation = Paths.get( "target/test-" + getName() + "/test-repo" );
     }

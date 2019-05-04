@@ -159,7 +159,7 @@ public class ValidateChecksumConsumer
     @PostConstruct
     public void initialize( )
     {
-        Set<String> extensions = ChecksumAlgorithm.getExtensions();
+        Set<String> extensions = ChecksumAlgorithm.getAllExtensions();
         includes = new ArrayList<>( extensions.size() );
         for ( String ext : extensions )
         {

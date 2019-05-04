@@ -130,7 +130,7 @@ public class ChecksummedFileTest
     {
         Path testableJar = createTestableJar( "examples/redback-authz-open.jar" );
         ChecksummedFile checksummedFile = new ChecksummedFile( testableJar );
-        checksummedFile.createChecksum( ChecksumAlgorithm.SHA1 );
+        checksummedFile.writeFile( ChecksumAlgorithm.SHA1 );
         Path hashFile = checksummedFile.getChecksumFile( ChecksumAlgorithm.SHA1 );
         assertTrue( "ChecksumAlgorithm file should exist.", Files.exists(hashFile) );
         String hashContents = org.apache.commons.io.FileUtils.readFileToString( hashFile.toFile(), "UTF-8" );
@@ -152,8 +152,10 @@ public class ChecksummedFileTest
         assertFalse( "ChecksummedFile.isValid(SHA1) == false",
                      checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );
 
-        boolean fixed = checksummedFile.fixChecksums( Arrays.asList( ChecksumAlgorithm.SHA1 ) );
-        assertTrue( "ChecksummedFile.fixChecksums() == true", fixed );
+        UpdateStatusList fixed = checksummedFile.fixChecksums( Arrays.asList( ChecksumAlgorithm.SHA1 ) );
+        assertEquals(1, fixed.getStatusList().size());
+        assertFalse(fixed.getTotalStatus()==UpdateStatus.ERROR);
+        assertTrue( "ChecksummedFile.fixChecksums() == true", fixed.getStatusList().get(0).getValue()==UpdateStatus.UPDATED );
 
         assertTrue( "ChecksummedFile.isValid(SHA1) == true",
                     checksummedFile.isValidChecksum( ChecksumAlgorithm.SHA1 ) );

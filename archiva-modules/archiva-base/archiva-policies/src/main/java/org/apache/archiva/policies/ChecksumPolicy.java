@@ -21,6 +21,7 @@ package org.apache.archiva.policies;
 
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.archiva.checksum.UpdateStatus;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,7 +147,7 @@ public class ChecksumPolicy
         if ( FIX.equals( policySetting ) )
         {
             ChecksummedFile checksum = new ChecksummedFile( localFile );
-            if ( checksum.fixChecksums( algorithms ) )
+            if ( checksum.fixChecksums( algorithms ).getTotalStatus() != UpdateStatus.ERROR )
             {
                 log.debug( "Checksum policy set to FIX, checksum files have been updated." );
                 return;
