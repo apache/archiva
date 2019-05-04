@@ -28,6 +28,6 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.repository"/>
+  <context:component-scan base-package="org.apache.archiva.repository,org.apache.archiva.repository.content"/>
 
 </beans>
