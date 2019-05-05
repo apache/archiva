@@ -83,8 +83,8 @@
       <artifactId>archiva-scheduler-repository</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-maven2-indexer</artifactId>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-indexer</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -96,8 +96,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-maven2-model</artifactId>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-model</artifactId>
     </dependency>
 
     <dependency>

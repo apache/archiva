@@ -60,8 +60,8 @@
       <version>${slf4j.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-maven2-indexer</artifactId>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-indexer</artifactId>
       <version>${archivaVersion}</version>
     </dependency>
     <dependency>

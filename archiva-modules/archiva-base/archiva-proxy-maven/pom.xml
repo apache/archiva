@@ -34,8 +34,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-maven2-common</artifactId>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>

@@ -43,8 +43,6 @@
     <module>archiva-plexus-bridge</module>
     <module>archiva-policies</module>
     <module>archiva-repository-api</module>
-    <module>archiva-maven2-common</module>
-    <module>archiva-maven2-indexer</module>
     <module>archiva-consumers</module>
     <module>archiva-repository-layer</module>
     <module>archiva-xml-tools</module>
@@ -56,7 +54,5 @@
     <module>archiva-repository-scanner</module>
     <module>archiva-repository-admin</module>
     <module>archiva-security-common</module>
-    <module>archiva-maven2-metadata</module>
-    <module>archiva-maven2-model</module>
   </modules>
 </project>

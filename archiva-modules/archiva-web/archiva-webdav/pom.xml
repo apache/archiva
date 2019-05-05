@@ -96,8 +96,8 @@
       <artifactId>archiva-security</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-maven2-indexer</artifactId>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-indexer</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>

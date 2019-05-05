@@ -159,13 +159,13 @@
         <version>1.1</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-maven2-common</artifactId>
+        <groupId>org.apache.archiva.maven</groupId>
+        <artifactId>archiva-maven-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-maven2-metadata</artifactId>
+        <groupId>org.apache.archiva.maven</groupId>
+        <artifactId>archiva-maven-metadata</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -174,8 +174,8 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-maven2-model</artifactId>
+        <groupId>org.apache.archiva.maven</groupId>
+        <artifactId>archiva-maven-model</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -301,8 +301,8 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.archiva</groupId>
-        <artifactId>archiva-maven2-indexer</artifactId>
+        <groupId>org.apache.archiva.maven</groupId>
+        <artifactId>archiva-maven-indexer</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

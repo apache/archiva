@@ -56,8 +56,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-maven2-model</artifactId>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-model</artifactId>
     </dependency>
 
     <dependency>

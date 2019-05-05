@@ -39,11 +39,11 @@
 
   <modules>
     <module>archiva-base</module>
-
     <module>archiva-scheduler</module>
     <module>archiva-web</module>
     <module>metadata</module>
     <module>plugins</module>
+    <module>archiva-maven</module>
   </modules>
 
   <build>

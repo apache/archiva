@@ -17,28 +17,28 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.archiva</groupId>
-    <artifactId>archiva-base</artifactId>
+    <artifactId>archiva-modules</artifactId>
     <version>3.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>archiva-maven2-model</artifactId>
-
-  <name>Archiva Base :: Maven 2 Model</name>
-
+  <groupId>org.apache.archiva.maven</groupId>
+  <artifactId>archiva-maven</artifactId>
+  <name>Archiva :: Maven</name>
+  <packaging>pom</packaging>
 
   <properties>
-    <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
+    <site.staging.base>${project.parent.basedir}</site.staging.base>
   </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-    </dependency>
-  </dependencies>
-
+  <modules>
+    <module>archiva-maven-common</module>
+    <module>archiva-maven-model</module>
+    <module>archiva-maven-metadata</module>
+    <module>archiva-maven-indexer</module>
+  </modules>
 </project>
