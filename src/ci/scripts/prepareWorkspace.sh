@@ -22,7 +22,17 @@
 #
 #  Removes directories that are not used anymore.
 ##
-ATTIC_DIRS="archiva-modules/archiva-base/archiva-indexer archiva-modules/archiva-base/archiva-proxy-common"
+ATTIC_DIRS="archiva-modules/archiva-base/archiva-indexer\
+ archiva-modules/archiva-base/archiva-proxy-common\
+ archiva-modules/archiva-base/archiva-maven2-common\
+ archiva-modules/archiva-base/archiva-maven2-indexer\
+ archiva-modules/archiva-base/archiva-maven2-metadata\
+ archiva-modules/archiva-base/archiva-maven2-model\
+ archiva-modules/archiva-base/archiva-proxy-maven\
+ archiva-modules/archiva-scheduler/archiva-scheduler-indexing-maven2\
+ archiva-modules/metadata/metadata-model-maven2\
+ archiva-modules/plugins/maven2-repository\
+"
 REMOVE_DIRS=".indexer"
 TMP_DIRECTORY=".tmp"
 

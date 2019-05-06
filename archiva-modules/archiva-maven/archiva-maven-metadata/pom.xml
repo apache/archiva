@@ -44,6 +44,14 @@
       <artifactId>archiva-xml-tools</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>

@@ -20,12 +20,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.archiva</groupId>
-    <artifactId>plugins</artifactId>
+    <groupId>org.apache.archiva.maven</groupId>
+    <artifactId>archiva-maven</artifactId>
     <version>3.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>maven2-repository</artifactId>
-  <name>Archiva Core Plugins :: Maven 2.x Repository Support</name>
+  <artifactId>archiva-maven-repository</artifactId>
+  <name>Archiva :: Maven :: Repository Support</name>
 
   <properties>
     <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
@@ -37,8 +37,8 @@
       <artifactId>metadata-model</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>metadata-model-maven2</artifactId>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-metadata</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -57,8 +57,8 @@
       <artifactId>archiva-model</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-proxy-maven</artifactId>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-proxy</artifactId>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>

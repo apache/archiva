@@ -36,7 +36,6 @@
   <modules>
     <module>archiva-scheduler-api</module>
     <module>archiva-scheduler-indexing</module>
-    <module>archiva-scheduler-indexing-maven2</module>
     <module>archiva-scheduler-repository-api</module>
     <module>archiva-scheduler-repository</module>
   </modules>

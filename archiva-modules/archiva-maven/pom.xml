@@ -40,5 +40,8 @@
     <module>archiva-maven-model</module>
     <module>archiva-maven-metadata</module>
     <module>archiva-maven-indexer</module>
+    <module>archiva-maven-scheduler</module>
+    <module>archiva-maven-repository</module>
+    <module>archiva-maven-proxy</module>
   </modules>
 </project>

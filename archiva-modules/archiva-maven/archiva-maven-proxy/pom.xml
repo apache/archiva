@@ -21,12 +21,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>archiva-base</artifactId>
-    <groupId>org.apache.archiva</groupId>
+    <groupId>org.apache.archiva.maven</groupId>
+    <artifactId>archiva-maven</artifactId>
     <version>3.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>archiva-proxy-maven</artifactId>
-  <name>Archiva Base :: Proxy Maven</name>
+  <artifactId>archiva-maven-proxy</artifactId>
+  <name>Archiva :: Maven :: Proxy</name>
 
   <properties>
     <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
@@ -84,13 +84,6 @@
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>maven2-repository</artifactId>
-      <scope>test</scope>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-test-utils</artifactId>

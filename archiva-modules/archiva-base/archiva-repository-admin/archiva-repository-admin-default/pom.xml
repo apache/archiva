@@ -79,8 +79,8 @@
       <artifactId>metadata-model</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>maven2-repository</artifactId>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-repository</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.inject</groupId>

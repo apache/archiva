@@ -24,8 +24,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>archiva-scheduler</artifactId>
-    <groupId>org.apache.archiva</groupId>
+    <artifactId>archiva-maven</artifactId>
+    <groupId>org.apache.archiva.maven</groupId>
     <version>3.0.0-SNAPSHOT</version>
   </parent>
 
@@ -34,8 +34,8 @@
     <site.staging.base>${project.parent.parent.basedir}</site.staging.base>
   </properties>
 
-  <artifactId>archiva-scheduler-indexing-maven2</artifactId>
-  <name>Archiva Scheduler :: Maven Indexing</name>
+  <artifactId>archiva-maven-scheduler</artifactId>
+  <name>Archiva :: Maven :: Scheduler</name>
 
   <description>Scheduler for downloading remote Maven indexes.</description>
 
@@ -57,8 +57,8 @@
       <artifactId>archiva-repository-layer</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-proxy-maven</artifactId>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-proxy</artifactId>
     </dependency>
 
     <dependency>
@@ -84,8 +84,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>maven2-repository</artifactId>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-repository</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

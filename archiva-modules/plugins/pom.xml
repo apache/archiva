@@ -34,7 +34,6 @@
 
   <modules>
     <module>metadata-store-file</module>
-    <module>maven2-repository</module>
     <module>repository-statistics</module>
     <module>problem-reports</module>
     <module>audit</module>

@@ -35,7 +35,6 @@
   <modules>
     <module>metadata-model</module>
     <module>metadata-repository-api</module>
-    <module>metadata-model-maven2</module>
     <module>metadata-statistics-api</module>
     <module>test-repository</module>
   </modules>

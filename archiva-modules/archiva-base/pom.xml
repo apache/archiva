@@ -47,7 +47,6 @@
     <module>archiva-repository-layer</module>
     <module>archiva-xml-tools</module>
     <module>archiva-proxy-api</module>
-    <module>archiva-proxy-maven</module>
     <module>archiva-proxy</module>
     <module>archiva-transaction</module>
     <module>archiva-converter</module>

@@ -60,8 +60,8 @@
       -->
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>maven2-repository</artifactId>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-repository</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
@@ -88,8 +88,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.archiva</groupId>
-      <artifactId>archiva-proxy-maven</artifactId>
+      <groupId>org.apache.archiva.maven</groupId>
+      <artifactId>archiva-maven-proxy</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
