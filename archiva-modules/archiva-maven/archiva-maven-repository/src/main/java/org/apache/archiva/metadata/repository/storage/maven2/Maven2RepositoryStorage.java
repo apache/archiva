@@ -28,7 +28,7 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
 import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
-import org.apache.archiva.metadata.repository.filter.Filter;
+import org.apache.archiva.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RelocationException;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;

@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.repository.filter;
+package org.apache.archiva.filter;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,21 +19,7 @@ package org.apache.archiva.metadata.repository.filter;
  * under the License.
  */
 
-import java.util.Collection;
-
-public class IncludesFilter<T>
-    implements Filter<T>
+public interface Filter<T>
 {
-    private Collection<T> includes;
-
-    public IncludesFilter( Collection<T> includes )
-    {
-        this.includes = includes;
-    }
-
-    @Override
-    public boolean accept( T value )
-    {
-        return includes.contains( value );
-    }
+    boolean accept( T value );
 }

@@ -1,4 +1,4 @@
-package org.apache.archiva.metadata.repository.filter;
+package org.apache.archiva.filter;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

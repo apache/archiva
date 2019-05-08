@@ -21,7 +21,7 @@ package org.apache.archiva.stagerepository.merge;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.filter.Filter;
+import org.apache.archiva.filter.Filter;
 
 import java.util.List;
 

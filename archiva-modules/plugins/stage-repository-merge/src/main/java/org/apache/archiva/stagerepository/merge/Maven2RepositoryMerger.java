@@ -28,7 +28,7 @@ import org.apache.archiva.maven2.metadata.MavenMetadataReader;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.filter.Filter;
+import org.apache.archiva.filter.Filter;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.repository.RepositoryException;

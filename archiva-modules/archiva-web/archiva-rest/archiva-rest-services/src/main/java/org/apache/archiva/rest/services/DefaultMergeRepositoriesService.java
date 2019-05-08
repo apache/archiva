@@ -18,8 +18,6 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
@@ -27,8 +25,8 @@ import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.filter.Filter;
-import org.apache.archiva.metadata.repository.filter.IncludesFilter;
+import org.apache.archiva.filter.Filter;
+import org.apache.archiva.filter.IncludesFilter;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.MergeRepositoriesService;

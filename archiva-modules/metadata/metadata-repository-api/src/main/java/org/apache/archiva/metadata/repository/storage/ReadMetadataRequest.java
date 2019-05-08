@@ -18,7 +18,7 @@ package org.apache.archiva.metadata.repository.storage;
  * under the License.
  */
 
-import org.apache.archiva.metadata.repository.filter.Filter;
+import org.apache.archiva.filter.Filter;
 
 /**
  * @author Olivier Lamy
