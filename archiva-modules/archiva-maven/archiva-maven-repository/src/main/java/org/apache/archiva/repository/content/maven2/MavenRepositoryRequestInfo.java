@@ -20,9 +20,9 @@ package org.apache.archiva.repository.content.maven2;
  */
 
 import org.apache.archiva.model.ArtifactReference;
-import org.apache.archiva.repository.LayoutException;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.PathParser;
+import org.apache.archiva.repository.features.RepositoryFeature;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.commons.lang.StringUtils;
 
@@ -30,13 +30,15 @@ import org.apache.commons.lang.StringUtils;
  * RepositoryRequest is used to determine the type of request that is incoming, and convert it to an appropriate
  * ArtifactReference.
  */
-public class RepositoryRequest
+public class MavenRepositoryRequestInfo implements RepositoryRequestInfo
 {
     private PathParser defaultPathParser = new DefaultPathParser();
 
-    public RepositoryRequest()
+    ManagedRepository repository;
+
+    public MavenRepositoryRequestInfo(ManagedRepository repository)
     {
-        // no op
+        this.repository = repository;
     }
 
     /**
@@ -150,6 +152,17 @@ public class RepositoryRequest
         return false;
     }
 
+    @Override
+    public String getLayout(String requestPath) {
+        if (isDefault(requestPath)) {
+            return "default";
+        } else if (isLegacy(requestPath)) {
+            return "legacy";
+        } else {
+            return "unknown";
+        }
+    }
+
     /**
      * <p>
      * Tests the path to see if it conforms to the expectations of a default layout request.
@@ -164,7 +177,7 @@ public class RepositoryRequest
      * @param requestedPath the path to test.
      * @return true if the requestedPath is likely that of a default layout request.
      */
-    public boolean isDefault( String requestedPath )
+    private boolean isDefault( String requestedPath )
     {
         if ( StringUtils.isBlank( requestedPath ) )
         {
@@ -219,7 +232,7 @@ public class RepositoryRequest
      * @param requestedPath the path to test.
      * @return true if the requestedPath is likely that of a legacy layout request.
      */
-    public boolean isLegacy( String requestedPath )
+    private boolean isLegacy( String requestedPath )
     {
         if ( StringUtils.isBlank( requestedPath ) )
         {
@@ -234,11 +247,10 @@ public class RepositoryRequest
      * Adjust the requestedPath to conform to the native layout of the provided {@link org.apache.archiva.repository.ManagedRepositoryContent}.
      *
      * @param requestedPath the incoming requested path.
-     * @param repository    the repository to adjust to.
      * @return the adjusted (to native) path.
      * @throws LayoutException if the path cannot be parsed.
      */
-    public String toNativePath( String requestedPath, ManagedRepositoryContent repository )
+    public String toNativePath( String requestedPath)
         throws LayoutException
     {
         if ( StringUtils.isBlank( requestedPath ) )
@@ -269,7 +281,17 @@ public class RepositoryRequest
 
         // Treat as an artifact reference.
         ArtifactReference ref = toArtifactReference( referencedResource );
-        String adjustedPath = repository.toPath( ref );
+        String adjustedPath = repository.getContent().toPath( ref );
         return adjustedPath + supportfile;
+    }
+
+    @Override
+    public <T extends RepositoryFeature<T>> RepositoryFeature<T> getFeature(Class<T> clazz) throws UnsupportedFeatureException {
+        return null;
+    }
+
+    @Override
+    public <T extends RepositoryFeature<T>> boolean supportsFeature(Class<T> clazz) {
+        return false;
     }
 }

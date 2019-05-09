@@ -20,12 +20,8 @@ package org.apache.archiva.repository.maven2;
  */
 
 import org.apache.archiva.common.utils.PathUtil;
-import org.apache.archiva.repository.AbstractManagedRepository;
-import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.RepositoryCapabilities;
-import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.repository.StandardCapabilities;
-import org.apache.archiva.repository.UnsupportedFeatureException;
+import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.content.maven2.MavenRepositoryRequestInfo;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RepositoryFeature;
@@ -137,4 +133,8 @@ public class MavenManagedRepository extends AbstractManagedRepository
         }
     }
 
+    @Override
+    public RepositoryRequestInfo getRequestInfo() {
+        return new MavenRepositoryRequestInfo(this);
+    }
 }

@@ -80,4 +80,9 @@ public class BasicManagedRepository extends AbstractManagedRepository
         return CAPABILITIES;
     }
 
+
+    @Override
+    public RepositoryRequestInfo getRequestInfo() {
+        return null;
+    }
 }

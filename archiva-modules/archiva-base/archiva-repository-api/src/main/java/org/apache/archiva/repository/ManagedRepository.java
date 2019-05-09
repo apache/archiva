@@ -47,4 +47,11 @@ public interface ManagedRepository extends Repository {
      */
     Set<ReleaseScheme> getActiveReleaseSchemes();
 
+
+    /**
+     * Returns the request info object, which you can use for gathering information from the web request path.
+     * @return Instance of a request info object that corresponds to this repository
+     */
+    RepositoryRequestInfo getRequestInfo();
+
 }

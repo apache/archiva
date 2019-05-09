@@ -118,7 +118,7 @@ public interface RepositoryRequestInfo
      * @return the adjusted (to native) path.
      * @throws LayoutException if the path cannot be parsed.
      */
-    void toNativePath( String requestPath);
+    String toNativePath( String requestPath)  throws LayoutException;
 
     /**
      * Extension method that allows to provide different features that are not supported by all

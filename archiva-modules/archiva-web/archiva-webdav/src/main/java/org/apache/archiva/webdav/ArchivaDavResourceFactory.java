@@ -58,13 +58,8 @@ import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.repository.LayoutException;
-import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.RepositoryContentFactory;
-import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.content.maven2.RepositoryRequest;
+import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.content.maven2.MavenRepositoryRequestInfo;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.metadata.MetadataTools;
@@ -133,11 +128,6 @@ public class ArchivaDavResourceFactory
     private List<AuditListener> auditListeners = new ArrayList<>();
 
     @Inject
-    private RepositoryContentFactory repositoryFactory;
-
-    private RepositoryRequest repositoryRequest;
-
-    @Inject
     private ProxyRegistry proxyRegistry;
 
     @Inject
@@ -203,8 +193,6 @@ public class ArchivaDavResourceFactory
         this.digestMd5 = plexusSisuBridge.lookup( Digester.class, "md5" );
         this.digestSha1 = plexusSisuBridge.lookup( Digester.class, "sha1" );
 
-        // TODO remove this hard dependency on maven !!
-        repositoryRequest = new RepositoryRequest( );
     }
 
     @PostConstruct
@@ -228,6 +216,7 @@ public class ArchivaDavResourceFactory
         List<String> resourcesInAbsolutePath = new ArrayList<>();
 
         boolean readMethod = WebdavMethodUtil.isReadMethod( request.getMethod() );
+        RepositoryRequestInfo repositoryRequestInfo = null;
         DavResource resource;
         if ( repoGroupConfig != null )
         {
@@ -259,6 +248,13 @@ public class ArchivaDavResourceFactory
                 List<String> repositories = new ArrayList<>( repoGroupConfig.getRepositories() );
                 resource = processRepositoryGroup( request, archivaLocator, repositories, activePrincipal,
                                                    resourcesInAbsolutePath, repoGroupConfig );
+                for (String repoId: repositories ) {
+                    ManagedRepository repo = repositoryRegistry.getManagedRepository(repoId);
+                    if (repo!=null) {
+                        repositoryRequestInfo = repo.getRequestInfo();
+                        break;
+                    }
+                }
             }
         }
         else
@@ -315,7 +311,7 @@ public class ArchivaDavResourceFactory
 
             resource = processRepository( request, archivaLocator, activePrincipal, managedRepositoryContent,
                                           repo);
-
+            repositoryRequestInfo = repo.getRequestInfo();
             String logicalResource = getLogicalResource( archivaLocator, null, false );
             resourcesInAbsolutePath.add(
                 Paths.get( managedRepositoryContent.getRepoRoot(), logicalResource ).toAbsolutePath().toString() );
@@ -326,7 +322,7 @@ public class ArchivaDavResourceFactory
 
         // MRM-872 : merge all available metadata
         // merge metadata only when requested via the repo group
-        if ( ( repositoryRequest.isMetadata( requestedResource ) || repositoryRequest.isMetadataSupportFile(
+        if ( ( repositoryRequestInfo.isMetadata( requestedResource ) || repositoryRequestInfo.isMetadataSupportFile(
             requestedResource ) ) && repoGroupConfig != null )
         {
             // this should only be at the project level not version level!
@@ -340,7 +336,7 @@ public class ArchivaDavResourceFactory
                 filePath = filePath + "/maven-metadata-" + repoGroupConfig.getId() + ".xml";
 
                 // for MRM-872 handle checksums of the merged metadata files
-                if ( repositoryRequest.isSupportFile( requestedResource ) )
+                if ( repositoryRequestInfo.isSupportFile( requestedResource ) )
                 {
                     Path metadataChecksum =
                         Paths.get( filePath + "." + StringUtils.substringAfterLast( requestedResource, "." ) );
@@ -609,8 +605,7 @@ public class ArchivaDavResourceFactory
                         {
                             // Perform an adjustment of the resource to the managed
                             // repository expected path.
-                            String localResourcePath =
-                                repositoryRequest.toNativePath( logicalResource.getPath(), managedRepositoryContent );
+                            String localResourcePath = managedRepository.getRequestInfo().toNativePath( logicalResource.getPath() );
                             resourceFile = Paths.get( managedRepositoryContent.getRepoRoot(), localResourcePath );
                             resource =
                                 new ArchivaDavResource( resourceFile.toAbsolutePath().toString(), logicalResource.getPath(),
@@ -650,11 +645,11 @@ public class ArchivaDavResourceFactory
             if ( request.getMethod().equals( HTTP_PUT_METHOD ) )
             {
                 String resourcePath = logicalResource.getPath();
-
+                RepositoryRequestInfo repositoryRequestInfo = managedRepository.getRequestInfo();
                 // check if target repo is enabled for releases
                 // we suppose that release-artifacts can be deployed only to repos enabled for releases
-                if ( managedRepositoryContent.getRepository().getActiveReleaseSchemes().contains( ReleaseScheme.RELEASE ) && !repositoryRequest.isMetadata(
-                    resourcePath ) && !repositoryRequest.isSupportFile( resourcePath ) )
+                if ( managedRepositoryContent.getRepository().getActiveReleaseSchemes().contains( ReleaseScheme.RELEASE ) && !repositoryRequestInfo.isMetadata(
+                    resourcePath ) && !repositoryRequestInfo.isSupportFile( resourcePath ) )
                 {
                     ArtifactReference artifact = null;
                     try
@@ -756,8 +751,9 @@ public class ArchivaDavResourceFactory
         if (!proxyRegistry.hasHandler(managedRepository.getRepository().getType())) {
             throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "No proxy handler found for repository type "+managedRepository.getRepository().getType());
         }
+        RepositoryRequestInfo repositoryRequestInfo = managedRepository.getRepository().getRequestInfo();
         RepositoryProxyHandler proxyHandler = proxyRegistry.getHandler(managedRepository.getRepository().getType()).get(0);
-        if ( repositoryRequest.isSupportFile( path ) )
+        if ( repositoryRequestInfo.isSupportFile( path ) )
         {
             Path proxiedFile = proxyHandler.fetchFromProxies( managedRepository, path );
 
@@ -765,13 +761,13 @@ public class ArchivaDavResourceFactory
         }
 
         // Is it a Metadata resource?
-        if ( repositoryRequest.isDefault( path ) && repositoryRequest.isMetadata( path ) )
+        if ( "default".equals(repositoryRequestInfo.getLayout( path )) && repositoryRequestInfo.isMetadata( path ) )
         {
             return proxyHandler.fetchMetadataFromProxies( managedRepository, path ).isModified();
         }
 
         // Is it an Archetype Catalog?
-        if ( repositoryRequest.isArchetypeCatalog( path ) )
+        if ( repositoryRequestInfo.isArchetypeCatalog( path ) )
         {
             // FIXME we must implement a merge of remote archetype catalog from remote servers.
             Path proxiedFile = proxyHandler.fetchFromProxies( managedRepository, path );
@@ -783,7 +779,7 @@ public class ArchivaDavResourceFactory
         try
         {
             // Get the artifact reference in a layout neutral way.
-            ArtifactReference artifact = repositoryRequest.toArtifactReference( path );
+            ArtifactReference artifact = repositoryRequestInfo.toArtifactReference( path );
 
             if ( artifact != null )
             {
@@ -1416,16 +1412,6 @@ public class ArchivaDavResourceFactory
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration )
     {
         this.archivaConfiguration = archivaConfiguration;
-    }
-
-    public void setRepositoryFactory( RepositoryContentFactory repositoryFactory )
-    {
-        this.repositoryFactory = repositoryFactory;
-    }
-
-    public void setRepositoryRequest( RepositoryRequest repositoryRequest )
-    {
-        this.repositoryRequest = repositoryRequest;
     }
 
     public RemoteRepositoryAdmin getRemoteRepositoryAdmin()

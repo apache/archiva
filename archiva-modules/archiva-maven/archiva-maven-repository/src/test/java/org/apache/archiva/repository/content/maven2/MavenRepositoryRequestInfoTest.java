@@ -21,6 +21,9 @@ package org.apache.archiva.repository.content.maven2;
 
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.FileType;
+import org.apache.archiva.configuration.FileTypes;
+import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -38,6 +41,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -47,23 +51,52 @@ import static org.junit.Assert.*;
 @RunWith( ArchivaSpringJUnit4ClassRunner.class )
 @ContextConfiguration( { "classpath*:/META-INF/spring-context.xml",
     "classpath:/spring-context-repo-request-test.xml" } )
-public class RepositoryRequestTest
+public class MavenRepositoryRequestInfoTest
 {
 
     @Inject
     protected ApplicationContext applicationContext;
 
     @Inject
+    FileTypes fileTypes;
+
+    @Inject
     @Named( "archivaConfiguration#repo-request-test" )
     private ArchivaConfiguration archivaConfiguration;
 
-    private RepositoryRequest repoRequest;
+    @Inject
+    List<? extends ArtifactMappingProvider> artifactMappingProviders;
+
+    private MavenRepositoryRequestInfo repoRequest;
+
+
+    protected MavenManagedRepository createRepository( String id, String name, Path location )
+    {
+        MavenManagedRepository repo = new MavenManagedRepository( id, name, location.getParent().toAbsolutePath());
+        repo.setLocation( location.toAbsolutePath().toUri() );
+        return repo;
+    }
+
 
     @Before
     public void setUp()
         throws Exception
     {
-        repoRequest = new RepositoryRequest();
+
+        Path repoDir = Paths.get( "src/test/repositories/default-repository" );
+        MavenManagedRepository repository = createRepository( "testRepo", "Unit Test Repo", repoDir );
+
+        FileType fileType = archivaConfiguration.getConfiguration().getRepositoryScanning().getFileTypes().get( 0 );
+        fileType.addPattern( "**/*.xml" );
+        assertEquals( FileTypes.ARTIFACTS, fileType.getId() );
+
+        fileTypes.afterConfigurationChange( null, "fileType", null );
+
+        ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent(artifactMappingProviders, fileTypes);
+        //repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
+        repoContent.setRepository( repository );
+        repository.setContent(repoContent);
+        repoRequest = new MavenRepositoryRequestInfo(repository);
     }
 
     @Test
@@ -330,41 +363,41 @@ public class RepositoryRequestTest
     @Test
     public void testIsDefault()
     {
-        assertFalse( repoRequest.isDefault( "test.maven-arch/poms/test-arch-2.0.3-SNAPSHOT.pom" ) );
-        assertFalse( repoRequest.isDefault( "directory-clients/poms/ldap-clients-0.9.1-SNAPSHOT.pom" ) );
-        assertFalse( repoRequest.isDefault( "commons-lang/jars/commons-lang-2.1-javadoc.jar" ) );
+        assertNotEquals( "default", repoRequest.getLayout( "test.maven-arch/poms/test-arch-2.0.3-SNAPSHOT.pom" ) );
+        assertNotEquals("default", repoRequest.getLayout( "directory-clients/poms/ldap-clients-0.9.1-SNAPSHOT.pom" ) );
+        assertNotEquals("default", repoRequest.getLayout( "commons-lang/jars/commons-lang-2.1-javadoc.jar" ) );
 
-        assertTrue( repoRequest.isDefault( "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.jar" ) );
-        assertTrue( repoRequest.isDefault( "org/apache/archiva/archiva-api/1.0/archiva-api-1.0.xml.zip" ) );
-        assertTrue( repoRequest.isDefault( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz" ) );
-        assertTrue( repoRequest.isDefault( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.pgp" ) );
-        assertTrue( repoRequest.isDefault( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1" ) );
-        assertTrue( repoRequest.isDefault( "eclipse/jdtcore/maven-metadata.xml" ) );
-        assertTrue( repoRequest.isDefault( "eclipse/jdtcore/maven-metadata.xml.sha1" ) );
-        assertTrue( repoRequest.isDefault( "eclipse/jdtcore/maven-metadata.xml.md5" ) );
+        assertEquals("default", repoRequest.getLayout( "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.jar" ) );
+        assertEquals("default", repoRequest.getLayout( "org/apache/archiva/archiva-api/1.0/archiva-api-1.0.xml.zip" ) );
+        assertEquals("default", repoRequest.getLayout( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz" ) );
+        assertEquals("default", repoRequest.getLayout( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.pgp" ) );
+        assertEquals("default", repoRequest.getLayout( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1" ) );
+        assertEquals("default", repoRequest.getLayout( "eclipse/jdtcore/maven-metadata.xml" ) );
+        assertEquals("default", repoRequest.getLayout( "eclipse/jdtcore/maven-metadata.xml.sha1" ) );
+        assertEquals("default", repoRequest.getLayout( "eclipse/jdtcore/maven-metadata.xml.md5" ) );
 
-        assertFalse( repoRequest.isDefault( null ) );
-        assertFalse( repoRequest.isDefault( "" ) );
-        assertFalse( repoRequest.isDefault( "foo" ) );
-        assertFalse( repoRequest.isDefault( "some.short/path" ) );
+        assertNotEquals("default", repoRequest.getLayout( null ) );
+        assertNotEquals("default", repoRequest.getLayout( "" ) );
+        assertNotEquals("default", repoRequest.getLayout( "foo" ) );
+        assertNotEquals("default", repoRequest.getLayout( "some.short/path" ) );
     }
 
     @Test
     public void testIsLegacy()
     {
-        assertTrue( repoRequest.isLegacy( "test.maven-arch/poms/test-arch-2.0.3-SNAPSHOT.pom" ) );
-        assertTrue( repoRequest.isLegacy( "directory-clients/poms/ldap-clients-0.9.1-SNAPSHOT.pom" ) );
-        assertTrue( repoRequest.isLegacy( "commons-lang/jars/commons-lang-2.1-javadoc.jar" ) );
+        assertEquals("legacy", repoRequest.getLayout( "test.maven-arch/poms/test-arch-2.0.3-SNAPSHOT.pom" ) );
+        assertEquals("legacy", repoRequest.getLayout( "directory-clients/poms/ldap-clients-0.9.1-SNAPSHOT.pom" ) );
+        assertEquals("legacy", repoRequest.getLayout( "commons-lang/jars/commons-lang-2.1-javadoc.jar" ) );
 
-        assertFalse( repoRequest.isLegacy( "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.jar" ) );
-        assertFalse( repoRequest.isLegacy( "org/apache/archiva/archiva-api/1.0/archiva-api-1.0.xml.zip" ) );
-        assertFalse( repoRequest.isLegacy( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz" ) );
-        assertFalse( repoRequest.isLegacy( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.pgp" ) );
-        assertFalse( repoRequest.isLegacy( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1" ) );
+        assertNotEquals("legacy", repoRequest.getLayout( "test/maven-arch/test-arch/2.0.3-SNAPSHOT/test-arch-2.0.3-SNAPSHOT.jar" ) );
+        assertNotEquals("legacy", repoRequest.getLayout( "org/apache/archiva/archiva-api/1.0/archiva-api-1.0.xml.zip" ) );
+        assertNotEquals("legacy", repoRequest.getLayout( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz" ) );
+        assertNotEquals("legacy", repoRequest.getLayout( "org/apache/derby/derby/10.2.2.0/derby-10.2.2.0-bin.tar.gz.pgp" ) );
+        assertNotEquals("legacy", repoRequest.getLayout( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1" ) );
 
-        assertFalse( repoRequest.isLegacy( null ) );
-        assertFalse( repoRequest.isLegacy( "" ) );
-        assertFalse( repoRequest.isLegacy( "some.short/path" ) );
+        assertNotEquals("legacy", repoRequest.getLayout( null ) );
+        assertNotEquals("legacy", repoRequest.getLayout( "" ) );
+        assertNotEquals("legacy", repoRequest.getLayout( "some.short/path" ) );
     }
 
     private ManagedRepositoryContent createManagedRepo( String layout )
@@ -385,8 +418,7 @@ public class RepositoryRequestTest
 
         // Test (artifact) default to default - dual extension
         assertEquals( "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip",
-                      repoRequest.toNativePath( "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip",
-                                                repository ) );
+                      repoRequest.toNativePath( "org/project/example-presentation/3.2/example-presentation-3.2.xml.zip") );
     }
 
 
@@ -398,8 +430,7 @@ public class RepositoryRequestTest
 
         // Test (metadata) default to default
         assertEquals( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1",
-                      repoRequest.toNativePath( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1",
-                                                repository ) );
+                      repoRequest.toNativePath( "org/apache/derby/derby/10.2.2.0/maven-metadata.xml.sha1") );
     }
 
 
@@ -412,7 +443,7 @@ public class RepositoryRequestTest
         // Test bad request path (too short)
         try
         {
-            repoRequest.toNativePath( "org.apache.derby/license.txt", repository );
+            repoRequest.toNativePath( "org.apache.derby/license.txt");
             fail( "Should have thrown an exception about a too short path." );
         }
         catch ( LayoutException e )
@@ -430,7 +461,7 @@ public class RepositoryRequestTest
         // Test bad request path (too short)
         try
         {
-            repoRequest.toNativePath( "", repository );
+            repoRequest.toNativePath( "");
             fail( "Should have thrown an exception about an blank request." );
         }
         catch ( LayoutException e )
@@ -448,7 +479,7 @@ public class RepositoryRequestTest
         // Test bad request path (too short)
         try
         {
-            repoRequest.toNativePath( null, repository );
+            repoRequest.toNativePath( null);
             fail( "Should have thrown an exception about an null request." );
         }
         catch ( LayoutException e )
@@ -466,7 +497,7 @@ public class RepositoryRequestTest
         // Test bad request path (too short)
         try
         {
-            repoRequest.toNativePath( "org/apache/derby/derby/10.2.2.0/license.txt", repository );
+            repoRequest.toNativePath( "org/apache/derby/derby/10.2.2.0/license.txt");
             fail( "Should have thrown an exception about an invalid type." );
         }
         catch ( LayoutException e )
