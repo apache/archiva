@@ -19,6 +19,10 @@ package org.apache.archiva.repository.content.maven2;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.FileLockException;
+import org.apache.archiva.common.filelock.FileLockManager;
+import org.apache.archiva.common.filelock.FileLockTimeoutException;
+import org.apache.archiva.common.filelock.Lock;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
@@ -28,12 +32,19 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.ContentNotFoundException;
+import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.content.FilesystemAsset;
+import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,6 +54,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,25 +66,37 @@ public class ManagedDefaultRepositoryContent
     implements ManagedRepositoryContent
 {
 
+    private final FileLockManager fileLockManager;
+
     private FileTypes filetypes;
 
     public void setFileTypes(FileTypes fileTypes) {
         this.filetypes = fileTypes;
     }
 
+    private ManagedRepository repository;
 
+    private Path repoDir;
 
-    private org.apache.archiva.repository.ManagedRepository repository;
-
-    public ManagedDefaultRepositoryContent(FileTypes fileTypes) {
+    public ManagedDefaultRepositoryContent(ManagedRepository repository, FileTypes fileTypes, FileLockManager lockManager) {
         super(Collections.singletonList( new DefaultArtifactMappingProvider() ));
         setFileTypes( fileTypes );
+        this.fileLockManager = lockManager;
+        setRepository( repository );
     }
-    public ManagedDefaultRepositoryContent( List<? extends ArtifactMappingProvider> artifactMappingProviders, FileTypes fileTypes )
+
+    public ManagedDefaultRepositoryContent( ManagedRepository repository, List<? extends ArtifactMappingProvider> artifactMappingProviders, FileTypes fileTypes, FileLockManager lockManager )
     {
         super(artifactMappingProviders==null ? Collections.singletonList( new DefaultArtifactMappingProvider() ) : artifactMappingProviders);
         setFileTypes( fileTypes );
+        this.fileLockManager = lockManager;
+        setRepository( repository );
     }
+
+    private Path getRepoDir() {
+        return repoDir;
+    }
+
 
     @Override
     public void deleteVersion( VersionedReference reference )
@@ -246,7 +270,6 @@ public class ManagedDefaultRepositoryContent
      *
      * @return the Set of available versions, based on the project reference.
      * @throws LayoutException
-     * @throws LayoutException
      */
     @Override
     public Set<String> getVersions( ProjectReference reference )
@@ -386,9 +409,14 @@ public class ManagedDefaultRepositoryContent
     }
 
     @Override
-    public void setRepository( org.apache.archiva.repository.ManagedRepository repository )
+    public void setRepository( ManagedRepository repo )
     {
-        this.repository = repository;
+        this.repository = repo;
+        this.repoDir = PathUtil.getPathFromUri( repository.getLocation() );
+        if (repository instanceof EditableManagedRepository ) {
+            ((EditableManagedRepository)repository).setContent(this);
+        }
+
     }
 
     /**
@@ -502,4 +530,111 @@ public class ManagedDefaultRepositoryContent
     {
         this.filetypes = filetypes;
     }
+
+
+    @Override
+    public void consumeData( StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock ) throws IOException
+    {
+        final Path path = asset.getFilePath();
+        try {
+        if (readLock) {
+            consumeDataLocked( path, consumerFunction );
+        } else
+        {
+            try ( InputStream is = Files.newInputStream( path ) )
+            {
+                consumerFunction.accept( is );
+            }
+            catch ( IOException e )
+            {
+                log.error("Could not read the input stream from file {}", path);
+                throw e;
+            }
+        }
+        } catch (RuntimeException e)
+        {
+            log.error( "Runtime exception during data consume from artifact {}. Error: {}", path, e.getMessage() );
+            throw new IOException( e );
+        }
+
+    }
+
+    public void consumeDataLocked( Path file, Consumer<InputStream> consumerFunction) throws IOException
+    {
+
+        final Lock lock;
+        try
+        {
+            lock = fileLockManager.readFileLock( file );
+            try ( InputStream is = Files.newInputStream( lock.getFile()))
+            {
+                consumerFunction.accept( is );
+            }
+            catch ( IOException e )
+            {
+                log.error("Could not read the input stream from file {}", file);
+                throw e;
+            } finally
+            {
+                fileLockManager.release( lock );
+            }
+        }
+        catch ( FileLockException | FileNotFoundException | FileLockTimeoutException e)
+        {
+            log.error("Locking error on file {}", file);
+            throw new IOException(e);
+        }
+    }
+
+
+    @Override
+    public StorageAsset getAsset( String path )
+    {
+        final Path repoPath = getRepoDir();
+        return new FilesystemAsset( repoPath, path);
+    }
+
+    @Override
+    public StorageAsset addAsset( String path, boolean container )
+    {
+        final Path repoPath = getRepoDir();
+        FilesystemAsset asset = new FilesystemAsset( repoPath, path , container);
+        return asset;
+    }
+
+    @Override
+    public void removeAsset( StorageAsset asset ) throws IOException
+    {
+        Files.delete(asset.getFilePath());
+    }
+
+    @Override
+    public StorageAsset moveAsset( StorageAsset origin, String destination ) throws IOException
+    {
+        final Path repoPath = getRepoDir();
+        boolean container = origin.isContainer();
+        FilesystemAsset newAsset = new FilesystemAsset( repoPath, destination, container );
+        Files.move(origin.getFilePath(), newAsset.getFilePath());
+        return newAsset;
+    }
+
+    @Override
+    public StorageAsset copyAsset( StorageAsset origin, String destination ) throws IOException
+    {
+        final Path repoPath = getRepoDir();
+        boolean container = origin.isContainer();
+        FilesystemAsset newAsset = new FilesystemAsset( repoPath, destination, container );
+        if (Files.exists(newAsset.getFilePath())) {
+            throw new IOException("Destination file exists already "+ newAsset.getFilePath());
+        }
+        if (Files.isDirectory( origin.getFilePath() ))
+        {
+            FileUtils.copyDirectory(origin.getFilePath( ).toFile(), newAsset.getFilePath( ).toFile() );
+        } else if (Files.isRegularFile( origin.getFilePath() )) {
+            FileUtils.copyFile(origin.getFilePath( ).toFile(), newAsset.getFilePath( ).toFile() );
+        }
+        return newAsset;
+    }
+
+
 }

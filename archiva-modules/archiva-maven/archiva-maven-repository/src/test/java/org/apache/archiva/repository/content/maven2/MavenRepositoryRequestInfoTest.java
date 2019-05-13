@@ -19,6 +19,7 @@ package org.apache.archiva.repository.content.maven2;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
@@ -67,6 +68,9 @@ public class MavenRepositoryRequestInfoTest
     @Inject
     List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
+    @Inject
+    FileLockManager fileLockManager;
+
     private MavenRepositoryRequestInfo repoRequest;
 
 
@@ -92,9 +96,8 @@ public class MavenRepositoryRequestInfoTest
 
         fileTypes.afterConfigurationChange( null, "fileType", null );
 
-        ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent(artifactMappingProviders, fileTypes);
+        ManagedDefaultRepositoryContent repoContent = new ManagedDefaultRepositoryContent(repository, artifactMappingProviders, fileTypes, fileLockManager);
         //repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
-        repoContent.setRepository( repository );
         repository.setContent(repoContent);
         repoRequest = new MavenRepositoryRequestInfo(repository);
     }

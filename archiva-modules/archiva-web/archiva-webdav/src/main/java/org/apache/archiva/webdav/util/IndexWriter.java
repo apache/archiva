@@ -19,6 +19,8 @@ package org.apache.archiva.webdav.util;
  * under the License.
  */
 
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.webdav.DavResource;
 import org.apache.jackrabbit.webdav.io.OutputContext;
@@ -27,18 +29,17 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  */
@@ -49,22 +50,45 @@ public class IndexWriter
 
     private final String logicalResource;
 
-    private final List<Path> localResources;
+    private final List<RepoAsset> repositoryAssets;
+
 
     private final boolean isVirtual;
 
-    public IndexWriter( DavResource resource, Path localResource, String logicalResource )
+    public class RepoAsset
     {
-        this.localResources = new ArrayList<>();
-        this.localResources.add( localResource );
+        private ManagedRepositoryContent repo;
+        private StorageAsset asset;
+
+        public RepoAsset( ManagedRepositoryContent repo, StorageAsset asset) {
+            this.repo = repo;
+            this.asset = asset;
+        }
+
+        public ManagedRepositoryContent getRepo( )
+        {
+            return repo;
+        }
+
+        public StorageAsset getAsset( )
+        {
+            return asset;
+        }
+
+    }
+
+    public IndexWriter( ManagedRepositoryContent repo, StorageAsset reference, String logicalResource )
+    {
+        this.repositoryAssets = new ArrayList<>(  );
+        this.repositoryAssets.add(new RepoAsset( repo, reference));
         this.logicalResource = logicalResource;
         this.isVirtual = false;
     }
 
-    public IndexWriter( DavResource resource, List<Path> localResources, String logicalResource )
+    public IndexWriter( List<RepoAsset> localResources, String logicalResource )
     {
         this.logicalResource = logicalResource;
-        this.localResources = localResources;
+        this.repositoryAssets = localResources;
         this.isVirtual = true;
     }
 
@@ -152,61 +176,36 @@ public class IndexWriter
     {
         if ( !isVirtual )
         {
-            for ( Path localResource : localResources )
+            for ( RepoAsset localResource : repositoryAssets )
             {
-                List<Path> files = Files.list(localResource).collect( Collectors.toList( ) );
-                Collections.sort( files );
-
-                for ( Path file : files )
-                {
-                    writeHyperlink( writer, file.getFileName().toString(), Files.getLastModifiedTime( file ).toMillis(), Files.size(file),
-                        Files.isDirectory( file ) );
-                }
+                localResource.getAsset().list().stream().sorted(
+                    Comparator.comparing( StorageAsset::getName )
+                ).forEach( asset -> {
+                    writeHyperlink( writer, asset.getName(), asset.getModificationTime().toEpochMilli(), asset.getSize(),
+                        asset.isContainer() );
+                } );
             }
         }
         else
         {
             // virtual repository - filter unique directories
-            Map<String, List<String>> uniqueChildFiles = new HashMap<>();
-            List<String> sortedList = new ArrayList<>();
-            for ( Path resource : localResources )
+            SortedMap<String, StorageAsset> uniqueChildFiles = new TreeMap<>();
+            for ( RepoAsset resource : repositoryAssets )
             {
-                List<Path> files = Files.list(resource).collect( Collectors.toList() );
-                for ( Path file : files )
+                List<StorageAsset> files = resource.getAsset().list();
+                for ( StorageAsset file : files )
                 {
-                    List<String> mergedChildFiles = new ArrayList<>();
-                    if ( uniqueChildFiles.get( file.getFileName() ) == null )
-                    {
-                        mergedChildFiles.add( file.toAbsolutePath().toString() );
+                    // the first entry wins
+                    if (!uniqueChildFiles.containsKey( file.getName() )) {
+                        uniqueChildFiles.put(file.getName(), file);
                     }
-                    else
-                    {
-                        mergedChildFiles = uniqueChildFiles.get( file.getFileName() );
-                        if ( !mergedChildFiles.contains( file.toAbsolutePath().toString() ) )
-                        {
-                            mergedChildFiles.add( file.toAbsolutePath().toString() );
-                        }
-                    }
-                    uniqueChildFiles.put( file.getFileName().toString(), mergedChildFiles );
-                    sortedList.add( file.getFileName().toString() );
                 }
             }
-
-            Collections.sort( sortedList );
-            List<String> written = new ArrayList<>();
-            for ( String fileName : sortedList )
+            for ( Map.Entry<String, StorageAsset> entry : uniqueChildFiles.entrySet())
             {
-                List<String> childFilesFromMap = uniqueChildFiles.get( fileName );
-                for ( String childFilePath : childFilesFromMap )
-                {
-                    Path childFile = Paths.get( childFilePath );
-                    if ( !written.contains( childFile.getFileName().toString() ) )
-                    {
-                        written.add( childFile.getFileName().toString() );
-                        writeHyperlink( writer, fileName, Files.getLastModifiedTime( childFile).toMillis(),
-                            Files.size(childFile), Files.isDirectory( childFile) );
-                    }
-                }
+                final StorageAsset asset = entry.getValue();
+                 writeHyperlink( writer, asset.getName(), asset.getModificationTime().toEpochMilli(),
+                            asset.getSize(), asset.isContainer());
             }
         }
     }

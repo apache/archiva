@@ -19,6 +19,7 @@ package org.apache.archiva.repository.content.maven2;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
 import org.apache.archiva.repository.ManagedRepository;
@@ -49,6 +50,9 @@ public class MavenContentProvider implements RepositoryContentProvider
     @Inject
     @Named( "fileTypes" )
     private FileTypes filetypes;
+
+    @Inject
+    private FileLockManager fileLockManager;
 
     @Inject
     protected List<? extends ArtifactMappingProvider> artifactMappingProviders;
@@ -100,8 +104,7 @@ public class MavenContentProvider implements RepositoryContentProvider
         if (!supportsLayout( repository.getLayout() )) {
             throw new RepositoryException( "Repository layout "+repository.getLayout()+" is not supported by this implementation." );
         }
-        ManagedDefaultRepositoryContent content = new ManagedDefaultRepositoryContent(artifactMappingProviders, filetypes);
-        content.setRepository( repository );
+        ManagedDefaultRepositoryContent content = new ManagedDefaultRepositoryContent(repository, artifactMappingProviders, filetypes ,fileLockManager);
         return content;
     }
 

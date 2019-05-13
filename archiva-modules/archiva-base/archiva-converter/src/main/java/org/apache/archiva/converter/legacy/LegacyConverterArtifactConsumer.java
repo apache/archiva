@@ -19,6 +19,7 @@ package org.apache.archiva.converter.legacy;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.FileTypes;
@@ -71,6 +72,9 @@ public class LegacyConverterArtifactConsumer
     @Inject
     private FileTypes fileTypes;
 
+    @Inject
+    private FileLockManager fileLockManager;
+
     private ArtifactFactory artifactFactory;
 
     private ManagedRepositoryContent managedRepository;
@@ -93,11 +97,10 @@ public class LegacyConverterArtifactConsumer
     }
 
     @Override
-    public void beginScan( org.apache.archiva.repository.ManagedRepository repository, Date whenGathered )
+    public void beginScan( ManagedRepository repository, Date whenGathered )
         throws ConsumerException
     {
-        this.managedRepository = new ManagedDefaultRepositoryContent(artifactMappingProviders, fileTypes);
-        this.managedRepository.setRepository( repository );
+        this.managedRepository = new ManagedDefaultRepositoryContent(repository, artifactMappingProviders, fileTypes, fileLockManager);
     }
 
     @Override

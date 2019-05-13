@@ -19,12 +19,13 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import org.apache.archiva.common.filelock.FileLockException;
-import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.archiva.common.filelock.FileLockTimeoutException;
-import org.apache.archiva.common.filelock.Lock;
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
+import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
 import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskScheduler;
@@ -57,8 +58,6 @@ import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
 import org.apache.jackrabbit.webdav.property.ResourceType;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,9 +67,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -84,7 +86,7 @@ public class ArchivaDavResource
 
     private final DavResourceFactory factory;
 
-    private final Path localResource;
+    // private final Path localResource;
 
     private final String logicalResource;
 
@@ -96,7 +98,7 @@ public class ArchivaDavResource
 
     private String remoteAddr;
 
-    private final org.apache.archiva.repository.ManagedRepository repository;
+    private final ManagedRepository repository;
 
     private final MimeTypes mimeTypes;
 
@@ -108,16 +110,17 @@ public class ArchivaDavResource
 
     private final ArchivaTaskScheduler<RepositoryTask> scheduler;
 
-    private final FileLockManager fileLockManager;
-
     private Logger log = LoggerFactory.getLogger( ArchivaDavResource.class );
 
-    public ArchivaDavResource( String localResource, String logicalResource, org.apache.archiva.repository.ManagedRepository repository,
+    private StorageAsset asset;
+
+    public ArchivaDavResource( StorageAsset localResource, String logicalResource, ManagedRepository repository,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
-                               RepositoryArchivaTaskScheduler scheduler, FileLockManager fileLockManager )
+                               RepositoryArchivaTaskScheduler scheduler) throws LayoutException
     {
-        this.localResource = Paths.get( localResource );
+        // this.localResource = Paths.get( localResource );
+        this.asset = localResource;
         this.logicalResource = logicalResource;
         this.locator = locator;
         this.factory = factory;
@@ -130,20 +133,23 @@ public class ArchivaDavResource
         this.mimeTypes = mimeTypes;
         this.auditListeners = auditListeners;
         this.scheduler = scheduler;
-        this.fileLockManager = fileLockManager;
+
     }
 
-    public ArchivaDavResource( String localResource, String logicalResource, org.apache.archiva.repository.ManagedRepository repository,
+    public ArchivaDavResource( StorageAsset localResource, String logicalResource, ManagedRepository repository,
                                String remoteAddr, String principal, DavSession session,
                                ArchivaDavResourceLocator locator, DavResourceFactory factory, MimeTypes mimeTypes,
-                               List<AuditListener> auditListeners, RepositoryArchivaTaskScheduler scheduler,
-                               FileLockManager fileLockManager )
+                               List<AuditListener> auditListeners, RepositoryArchivaTaskScheduler scheduler) throws LayoutException
     {
         this( localResource, logicalResource, repository, session, locator, factory, mimeTypes, auditListeners,
-              scheduler, fileLockManager );
+              scheduler );
 
         this.remoteAddr = remoteAddr;
         this.principal = principal;
+    }
+
+    private ManagedRepositoryContent getContent() {
+        return repository.getContent();
     }
 
     @Override
@@ -161,13 +167,13 @@ public class ArchivaDavResource
     @Override
     public boolean exists()
     {
-        return Files.exists(localResource);
+        return asset.exists();
     }
 
     @Override
     public boolean isCollection()
     {
-        return Files.isDirectory(localResource);
+        return asset.isContainer();
     }
 
     @Override
@@ -181,11 +187,6 @@ public class ArchivaDavResource
     public DavResourceLocator getLocator()
     {
         return locator;
-    }
-
-    public Path getLocalResource()
-    {
-        return localResource;
     }
 
     @Override
@@ -203,15 +204,7 @@ public class ArchivaDavResource
     @Override
     public long getModificationTime()
     {
-        try
-        {
-            return Files.getLastModifiedTime(localResource).toMillis();
-        }
-        catch ( IOException e )
-        {
-            log.error("Could not get modification time of {}: {}", localResource, e.getMessage(), e);
-            return 0;
-        }
+        return asset.getModificationTime().toEpochMilli();
     }
 
     @Override
@@ -220,33 +213,29 @@ public class ArchivaDavResource
     {
         if ( !isCollection() )
         {
-            outputContext.setContentLength( Files.size( localResource ) );
-            outputContext.setContentType( mimeTypes.getMimeType( localResource.getFileName().toString() ) );
+            outputContext.setContentLength( asset.getSize());
+            outputContext.setContentType( mimeTypes.getMimeType( asset.getName() ) );
         }
 
+        if ( !isCollection() && outputContext.hasStream() )
+        {
+            getContent().consumeData( asset, is -> {copyStream(is, outputContext.getOutputStream());}, true );
+        }
+        else if ( outputContext.hasStream() )
+        {
+            IndexWriter writer = new IndexWriter( getContent(), asset, logicalResource );
+            writer.write( outputContext );
+        }
+    }
+
+    private void copyStream(InputStream is, OutputStream os) throws RuntimeException {
         try
         {
-            if ( !isCollection() && outputContext.hasStream() )
-            {
-                Lock lock = fileLockManager.readFileLock( localResource );
-                try (InputStream is = Files.newInputStream( lock.getFile()))
-                {
-                    IOUtils.copy( is, outputContext.getOutputStream() );
-                }
-            }
-            else if ( outputContext.hasStream() )
-            {
-                IndexWriter writer = new IndexWriter( this, localResource, logicalResource );
-                writer.write( outputContext );
-            }
+            IOUtils.copy(is, os);
         }
-        catch ( FileLockException e )
+        catch ( IOException e )
         {
-            throw new IOException( e.getMessage(), e );
-        }
-        catch ( FileLockTimeoutException e )
-        {
-            throw new IOException( e.getMessage(), e );
+            throw new RuntimeException( "Copy failed "+e.getMessage(), e );
         }
     }
 
@@ -323,57 +312,75 @@ public class ArchivaDavResource
     public void addMember( DavResource resource, InputContext inputContext )
         throws DavException
     {
-        Path localFile = localResource.resolve( resource.getDisplayName() );
-        boolean exists = Files.exists(localFile);
+        // Path localFile = localResource.resolve( resource.getDisplayName() );
+        boolean exists = asset.exists();
+        final String newPath = asset.getPath()+"/"+resource.getDisplayName();
 
         if ( isCollection() && inputContext.hasStream() ) // New File
         {
-            try (OutputStream stream = Files.newOutputStream( localFile ))
+            Path tempFile = null;
+            try
             {
-                IOUtils.copy( inputContext.getInputStream(), stream );
+                tempFile = Files.createTempFile( "archiva_upload","dat" );
+                try(OutputStream os = Files.newOutputStream( tempFile, StandardOpenOption.CREATE ))
+                {
+                    IOUtils.copy( inputContext.getInputStream( ), os );
+                }
+                long expectedContentLength = inputContext.getContentLength();
+                long actualContentLength = 0;
+                try
+                {
+                    actualContentLength = Files.size(tempFile);
+                }
+                catch ( IOException e )
+                {
+                    log.error( "Could not get length of file {}: {}", tempFile, e.getMessage(), e );
+                }
+                // length of -1 is given for a chunked request or unknown length, in which case we accept what was uploaded
+                if ( expectedContentLength >= 0 && expectedContentLength != actualContentLength )
+                {
+                    String msg = "Content Header length was " + expectedContentLength + " but was " + actualContentLength;
+                    log.debug( "Upload failed: {}", msg );
+                    throw new DavException( HttpServletResponse.SC_BAD_REQUEST, msg );
+                }
+                StorageAsset member = getContent( ).addAsset( newPath, false );
+                member.create();
+                member.storeDataFile( tempFile );
             }
             catch ( IOException e )
             {
                 throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
+            } finally {
+                if (tempFile!=null)
+                {
+                    try
+                    {
+                        Files.deleteIfExists( tempFile );
+                    }
+                    catch ( IOException e )
+                    {
+                        log.error("Could not delete temporary file {}", tempFile);
+                    }
+                }
             }
 
-            // TODO: a bad deployment shouldn't delete an existing file - do we need to write to a temporary location first?
-            long expectedContentLength = inputContext.getContentLength();
-            long actualContentLength = 0;
-            try
-            {
-                actualContentLength = Files.size(localFile);
-            }
-            catch ( IOException e )
-            {
-                log.error( "Could not get length of file {}: {}", localFile, e.getMessage(), e );
-            }
-            // length of -1 is given for a chunked request or unknown length, in which case we accept what was uploaded
-            if ( expectedContentLength >= 0 && expectedContentLength != actualContentLength )
-            {
-                String msg = "Content Header length was " + expectedContentLength + " but was " + actualContentLength;
-                log.debug( "Upload failed: {}", msg );
-
-                org.apache.archiva.common.utils.FileUtils.deleteQuietly( localFile );
-                throw new DavException( HttpServletResponse.SC_BAD_REQUEST, msg );
-            }
-
-            queueRepositoryTask( localFile );
+            // queueRepositoryTask( asset );
 
             log.debug( "File '{}{}(current user '{}')", resource.getDisplayName(),
                        ( exists ? "' modified " : "' created " ), this.principal );
 
-            triggerAuditEvent( resource, exists ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE );
+            // triggerAuditEvent( resource, exists ? AuditEvent.MODIFY_FILE : AuditEvent.CREATE_FILE );
         }
         else if ( !inputContext.hasStream() && isCollection() ) // New directory
         {
             try
             {
-                Files.createDirectories( localFile );
+                StorageAsset member = getContent( ).addAsset( newPath, true );
+                member.create();
             }
             catch ( IOException e )
             {
-                log.error("Could not create directory {}: {}", localFile, e.getMessage(), e);
+                log.error("Could not create directory {}: {}", newPath, e.getMessage(), e);
             }
 
             log.debug( "Directory '{}' (current user '{}')", resource.getDisplayName(), this.principal );
@@ -389,41 +396,33 @@ public class ArchivaDavResource
         }
     }
 
+    public StorageAsset getAsset() {
+        return asset;
+    }
+
     @Override
     public DavResourceIterator getMembers()
     {
-        List<DavResource> list = new ArrayList<>();
+        List<DavResource> list;
         if ( exists() && isCollection() )
         {
-            try ( Stream<Path> stream = Files.list(localResource))
-            {
-                stream.forEach ( p ->
-                {
-                    String item = p.toString();
+            list = asset.list().stream().filter( m -> !m.getName().startsWith( HIDDEN_PATH_PREFIX ) )
+                .map(m -> {
+                    String path = locator.getResourcePath( ) + '/' + m.getName();
+                    DavResourceLocator resourceLocator =
+                        locator.getFactory( ).createResourceLocator( locator.getPrefix( ), path );
                     try
                     {
-                        if ( !item.startsWith( HIDDEN_PATH_PREFIX ) )
-                        {
-                            String path = locator.getResourcePath( ) + '/' + item;
-                            DavResourceLocator resourceLocator =
-                                locator.getFactory( ).createResourceLocator( locator.getPrefix( ), path );
-                            DavResource resource = factory.createResource( resourceLocator, session );
-
-                            if ( resource != null )
-                            {
-                                list.add( resource );
-                            }
-                            log.debug( "Resource '{}' retrieved by '{}'", item, this.principal );
-                        }
+                        return factory.createResource( resourceLocator, session );
                     }
                     catch ( DavException e )
                     {
-                        // Should not occur
+                        return null;
                     }
-                });
-            } catch (IOException e) {
-                log.error("Error while listing {}", localResource);
-            }
+
+                }).filter( Objects::nonNull ).collect( Collectors.toList());
+        } else {
+            list = Collections.emptyList( );
         }
         return new DavResourceIteratorImpl( list );
     }
@@ -432,24 +431,24 @@ public class ArchivaDavResource
     public void removeMember( DavResource member )
         throws DavException
     {
-        Path resource = checkDavResourceIsArchivaDavResource( member ).getLocalResource();
+        StorageAsset resource = checkDavResourceIsArchivaDavResource( member ).getAsset( );
 
-        if ( Files.exists(resource) )
+        if ( resource.exists() )
         {
             try
             {
-                if ( Files.isDirectory(resource) )
+                if ( resource.isContainer() )
                 {
-                    org.apache.archiva.common.utils.FileUtils.deleteDirectory( resource );
+                    getContent().removeAsset( resource );
                     triggerAuditEvent( member, AuditEvent.REMOVE_DIR );
                 }
                 else
                 {
-                    Files.deleteIfExists( resource );
+                    getContent().removeAsset( resource );
                     triggerAuditEvent( member, AuditEvent.REMOVE_FILE );
                 }
 
-                log.debug( "{}{}' removed (current user '{}')", ( Files.isDirectory(resource) ? "Directory '" : "File '" ),
+                log.debug( "{}{}' removed (current user '{}')", ( resource.isContainer() ? "Directory '" : "File '" ),
                            member.getDisplayName(), this.principal );
 
             }
@@ -493,19 +492,17 @@ public class ArchivaDavResource
             ArchivaDavResource resource = checkDavResourceIsArchivaDavResource( destination );
             if ( isCollection() )
             {
-                FileUtils.moveDirectory( getLocalResource().toFile(), resource.getLocalResource().toFile() );
-
+                this.asset = getContent().moveAsset( asset, destination.getResourcePath() );
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_DIRECTORY );
             }
             else
             {
-                FileUtils.moveFile( getLocalResource().toFile(), resource.getLocalResource().toFile() );
-
+                this.asset = getContent().moveAsset( asset, destination.getResourcePath() );
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_FILE );
             }
 
             log.debug( "{}{}' moved to '{}' (current user '{}')", ( isCollection() ? "Directory '" : "File '" ),
-                       getLocalResource().getFileName(), destination, this.principal );
+                       asset.getPath(), destination, this.principal );
 
         }
         catch ( IOException e )
@@ -533,19 +530,19 @@ public class ArchivaDavResource
             ArchivaDavResource resource = checkDavResourceIsArchivaDavResource( destination );
             if ( isCollection() )
             {
-                FileUtils.copyDirectory( getLocalResource().toFile(), resource.getLocalResource().toFile() );
+                getContent().copyAsset( asset, destination.getResourcePath() );
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_DIRECTORY );
             }
             else
             {
-                FileUtils.copyFile( getLocalResource().toFile(), resource.getLocalResource().toFile() );
+                getContent().copyAsset( asset, destination.getResourcePath() );
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_FILE );
             }
 
             log.debug( "{}{}' copied to '{}' (current user '{}')", ( isCollection() ? "Directory '" : "File '" ),
-                       getLocalResource().getFileName(), destination, this.principal );
+                       asset.getPath(), destination, this.principal );
 
         }
         catch ( IOException e )
@@ -694,32 +691,11 @@ public class ArchivaDavResource
         }
 
         // Need to get the ISO8601 date for properties
-        DateTime dt = null;
-        try
-        {
-            dt = new DateTime( Files.getLastModifiedTime( localResource ).toMillis() );
-        }
-        catch ( IOException e )
-        {
-            log.error("Could not get modification time of {}: {}", localResource, e.getMessage(), e);
-            dt = new DateTime();
-        }
-        DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
-        String modifiedDate = fmt.print( dt );
-
+        String modifiedDate = DateTimeFormatter.ISO_INSTANT.format( asset.getModificationTime() );
         properties.add( new DefaultDavProperty<>( DavPropertyName.GETLASTMODIFIED, modifiedDate ) );
-
         properties.add( new DefaultDavProperty<>( DavPropertyName.CREATIONDATE, modifiedDate ) );
 
-        try
-        {
-            properties.add( new DefaultDavProperty<>( DavPropertyName.GETCONTENTLENGTH, Files.size(localResource) ) );
-        }
-        catch ( IOException e )
-        {
-            log.error("Could not get file size of {}: {}", localResource, e.getMessage(), e);
-            properties.add( new DefaultDavProperty<>( DavPropertyName.GETCONTENTLENGTH, 0 ) );
-        }
+        properties.add( new DefaultDavProperty<>( DavPropertyName.GETCONTENTLENGTH, asset.getSize() ) );
 
         this.properties = properties;
 
@@ -748,6 +724,7 @@ public class ArchivaDavResource
         }
     }
 
+    /**
     private void queueRepositoryTask( Path localFile )
     {
         RepositoryTask task = new RepositoryTask();
@@ -766,4 +743,5 @@ public class ArchivaDavResource
                            + "'].", localFile.getFileName() );
         }
     }
+     **/
 }

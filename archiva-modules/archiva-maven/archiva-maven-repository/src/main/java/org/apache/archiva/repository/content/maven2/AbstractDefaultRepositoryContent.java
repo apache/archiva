@@ -72,6 +72,7 @@ public abstract class AbstractDefaultRepositoryContent implements RepositoryCont
         this.artifactMappingProviders = artifactMappingProviders;
     }
 
+    @Override
     public ArtifactReference toArtifactReference( String path )
         throws LayoutException
     {

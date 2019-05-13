@@ -27,6 +27,7 @@ import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.admin.repository.DefaultRepositoryCommonValidator;
 import org.apache.archiva.admin.repository.group.DefaultRepositoryGroupAdmin;
 import org.apache.archiva.admin.repository.managed.DefaultManagedRepositoryAdmin;
+import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -147,6 +148,9 @@ public class ArchivaDavResourceFactoryTest
     List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
     @Inject
+    FileLockManager fileLockManager;
+
+    @Inject
     FileTypes fileTypes;
 
     public Path getProjectBase() {
@@ -249,9 +253,8 @@ public class ArchivaDavResourceFactoryTest
     private ManagedRepositoryContent createManagedRepositoryContent( String repoId )
         throws RepositoryAdminException
     {
-        ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent(artifactMappingProviders, fileTypes);
         org.apache.archiva.repository.ManagedRepository repo = repositoryRegistry.getManagedRepository( repoId );
-        repoContent.setRepository( repo );
+        ManagedRepositoryContent repoContent = new ManagedDefaultRepositoryContent(repo, artifactMappingProviders, fileTypes, fileLockManager);
         if (repo!=null && repo instanceof EditableManagedRepository)
         {
             ( (EditableManagedRepository) repo ).setContent( repoContent );

@@ -19,6 +19,7 @@ package org.apache.archiva.metadata.repository.storage.maven2;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.FileType;
@@ -64,6 +65,9 @@ public class ManagedDefaultRepositoryContentTest
     @Inject
     List<? extends ArtifactMappingProvider> artifactMappingProviders;
 
+    @Inject
+    FileLockManager fileLockManager;
+
     @Before
     public void setUp()
         throws Exception
@@ -78,9 +82,8 @@ public class ManagedDefaultRepositoryContentTest
 
         fileTypes.afterConfigurationChange( null, "fileType", null );
 
-        repoContent = new ManagedDefaultRepositoryContent(artifactMappingProviders, fileTypes);
+        repoContent = new ManagedDefaultRepositoryContent(repository, artifactMappingProviders, fileTypes, fileLockManager);
         //repoContent = (ManagedRepositoryContent) lookup( ManagedRepositoryContent.class, "default" );
-        repoContent.setRepository( repository );
     }
 
     @Test
