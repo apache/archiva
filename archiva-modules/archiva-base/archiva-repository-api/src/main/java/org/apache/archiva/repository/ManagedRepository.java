@@ -20,6 +20,8 @@ package org.apache.archiva.repository;
  */
 
 
+import org.apache.archiva.repository.content.RepositoryStorage;
+
 import java.util.Set;
 
 /**

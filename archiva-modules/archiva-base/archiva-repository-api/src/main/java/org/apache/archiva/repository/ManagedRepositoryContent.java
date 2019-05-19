@@ -23,6 +23,7 @@ import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
+import org.apache.archiva.repository.content.RepositoryStorage;
 import org.apache.archiva.repository.content.StorageAsset;
 
 import java.io.IOException;
@@ -41,7 +42,7 @@ import java.util.function.Function;
  *
  * This interface
  */
-public interface ManagedRepositoryContent extends RepositoryContent
+public interface ManagedRepositoryContent extends RepositoryContent, RepositoryStorage
 {
 
 
@@ -233,56 +234,5 @@ public interface ManagedRepositoryContent extends RepositoryContent
      */
     String toPath( ArchivaArtifact reference );
 
-    /**
-     * Returns information about a specific storage asset.
-     * @param path
-     * @return
-     */
-    StorageAsset getAsset(String path);
 
-    /**
-     * Consumes the data and sets a lock for the file during the operation.
-     *
-     * @param asset
-     * @param consumerFunction
-     * @param readLock
-     * @throws IOException
-     */
-    void consumeData( StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock ) throws IOException;
-
-    /**
-     * Adds a new asset to the underlying storage.
-     * @param path The path to the asset.
-     * @param container True, if the asset should be a container, false, if it is a file.
-     * @return
-     */
-    StorageAsset addAsset(String path, boolean container);
-
-    /**
-     * Removes the given asset from the storage.
-     *
-     * @param asset
-     * @throws IOException
-     */
-    void removeAsset(StorageAsset asset) throws IOException;
-
-    /**
-     * Moves the asset to the given location and returns the asset object for the destination.
-     *
-     * @param origin
-     * @param destination
-     * @return
-     */
-    StorageAsset moveAsset(StorageAsset origin, String destination) throws IOException;
-
-
-    /**
-     * Copies the given asset to the new destination.
-     *
-     * @param origin
-     * @param destination
-     * @return
-     * @throws IOException
-     */
-    StorageAsset copyAsset(StorageAsset origin, String destination) throws IOException;
 }

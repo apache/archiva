@@ -28,10 +28,14 @@ import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -164,6 +168,36 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     @Override
     public String toPath( ArchivaArtifact reference )
     {
+        return null;
+    }
+
+    @Override
+    public StorageAsset getAsset(String path) {
+        return null;
+    }
+
+    @Override
+    public void consumeData(StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock) throws IOException {
+
+    }
+
+    @Override
+    public StorageAsset addAsset(String path, boolean container) {
+        return null;
+    }
+
+    @Override
+    public void removeAsset(StorageAsset asset) throws IOException {
+
+    }
+
+    @Override
+    public StorageAsset moveAsset(StorageAsset origin, String destination) throws IOException {
+        return null;
+    }
+
+    @Override
+    public StorageAsset copyAsset(StorageAsset origin, String destination) throws IOException {
         return null;
     }
 }

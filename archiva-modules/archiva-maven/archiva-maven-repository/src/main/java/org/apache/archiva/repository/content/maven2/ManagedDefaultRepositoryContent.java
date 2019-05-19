@@ -38,6 +38,7 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.content.FilesystemAsset;
+import org.apache.archiva.repository.content.FilesystemStorage;
 import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -66,7 +67,7 @@ public class ManagedDefaultRepositoryContent
     implements ManagedRepositoryContent
 {
 
-    private final FileLockManager fileLockManager;
+    private final FilesystemStorage storage;
 
     private FileTypes filetypes;
 
@@ -81,16 +82,16 @@ public class ManagedDefaultRepositoryContent
     public ManagedDefaultRepositoryContent(ManagedRepository repository, FileTypes fileTypes, FileLockManager lockManager) {
         super(Collections.singletonList( new DefaultArtifactMappingProvider() ));
         setFileTypes( fileTypes );
-        this.fileLockManager = lockManager;
         setRepository( repository );
+        storage = new FilesystemStorage(getRepoDir(), lockManager);
     }
 
     public ManagedDefaultRepositoryContent( ManagedRepository repository, List<? extends ArtifactMappingProvider> artifactMappingProviders, FileTypes fileTypes, FileLockManager lockManager )
     {
         super(artifactMappingProviders==null ? Collections.singletonList( new DefaultArtifactMappingProvider() ) : artifactMappingProviders);
         setFileTypes( fileTypes );
-        this.fileLockManager = lockManager;
         setRepository( repository );
+        storage = new FilesystemStorage(getRepoDir(), lockManager);
     }
 
     private Path getRepoDir() {
@@ -535,105 +536,38 @@ public class ManagedDefaultRepositoryContent
     @Override
     public void consumeData( StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock ) throws IOException
     {
-        final Path path = asset.getFilePath();
-        try {
-        if (readLock) {
-            consumeDataLocked( path, consumerFunction );
-        } else
-        {
-            try ( InputStream is = Files.newInputStream( path ) )
-            {
-                consumerFunction.accept( is );
-            }
-            catch ( IOException e )
-            {
-                log.error("Could not read the input stream from file {}", path);
-                throw e;
-            }
-        }
-        } catch (RuntimeException e)
-        {
-            log.error( "Runtime exception during data consume from artifact {}. Error: {}", path, e.getMessage() );
-            throw new IOException( e );
-        }
-
-    }
-
-    public void consumeDataLocked( Path file, Consumer<InputStream> consumerFunction) throws IOException
-    {
-
-        final Lock lock;
-        try
-        {
-            lock = fileLockManager.readFileLock( file );
-            try ( InputStream is = Files.newInputStream( lock.getFile()))
-            {
-                consumerFunction.accept( is );
-            }
-            catch ( IOException e )
-            {
-                log.error("Could not read the input stream from file {}", file);
-                throw e;
-            } finally
-            {
-                fileLockManager.release( lock );
-            }
-        }
-        catch ( FileLockException | FileNotFoundException | FileLockTimeoutException e)
-        {
-            log.error("Locking error on file {}", file);
-            throw new IOException(e);
-        }
+        storage.consumeData(asset, consumerFunction, readLock);
     }
 
 
     @Override
     public StorageAsset getAsset( String path )
     {
-        final Path repoPath = getRepoDir();
-        return new FilesystemAsset( repoPath, path);
+        return storage.getAsset(path);
     }
 
     @Override
     public StorageAsset addAsset( String path, boolean container )
     {
-        final Path repoPath = getRepoDir();
-        FilesystemAsset asset = new FilesystemAsset( repoPath, path , container);
-        return asset;
+        return storage.addAsset(path, container);
     }
 
     @Override
     public void removeAsset( StorageAsset asset ) throws IOException
     {
-        Files.delete(asset.getFilePath());
+        storage.removeAsset(asset);
     }
 
     @Override
     public StorageAsset moveAsset( StorageAsset origin, String destination ) throws IOException
     {
-        final Path repoPath = getRepoDir();
-        boolean container = origin.isContainer();
-        FilesystemAsset newAsset = new FilesystemAsset( repoPath, destination, container );
-        Files.move(origin.getFilePath(), newAsset.getFilePath());
-        return newAsset;
+        return storage.moveAsset(origin, destination);
     }
 
     @Override
     public StorageAsset copyAsset( StorageAsset origin, String destination ) throws IOException
     {
-        final Path repoPath = getRepoDir();
-        boolean container = origin.isContainer();
-        FilesystemAsset newAsset = new FilesystemAsset( repoPath, destination, container );
-        if (Files.exists(newAsset.getFilePath())) {
-            throw new IOException("Destination file exists already "+ newAsset.getFilePath());
-        }
-        if (Files.isDirectory( origin.getFilePath() ))
-        {
-            FileUtils.copyDirectory(origin.getFilePath( ).toFile(), newAsset.getFilePath( ).toFile() );
-        } else if (Files.isRegularFile( origin.getFilePath() )) {
-            FileUtils.copyFile(origin.getFilePath( ).toFile(), newAsset.getFilePath( ).toFile() );
-        }
-        return newAsset;
+        return storage.copyAsset(origin, destination);
     }
 
 

@@ -321,4 +321,8 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
         this.listeners.clear();
     }
 
+    protected Path getRepositoryBase() {
+        return repositoryBase;
+    }
+
 }
