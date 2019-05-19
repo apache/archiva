@@ -206,10 +206,14 @@ public class ArchivaDavResourceFactory
                                        final DavServletResponse response )
         throws DavException
     {
-        ArchivaDavResourceLocator archivaLocator = checkLocatorIsInstanceOfRepositoryLocator( locator );
+        final ArchivaDavResourceLocator archivaLocator = checkLocatorIsInstanceOfRepositoryLocator( locator );
+
+        final String sRepoId = archivaLocator.getRepositoryId();
 
         RepositoryGroupConfiguration repoGroupConfig =
-            archivaConfiguration.getConfiguration().getRepositoryGroupsAsMap().get( archivaLocator.getRepositoryId() );
+            archivaConfiguration.getConfiguration().getRepositoryGroupsAsMap().get( sRepoId );
+
+        final boolean isGroupRepo = repoGroupConfig != null;
 
         String activePrincipal = getActivePrincipal( request );
 
@@ -218,7 +222,7 @@ public class ArchivaDavResourceFactory
         boolean readMethod = WebdavMethodUtil.isReadMethod( request.getMethod() );
         RepositoryRequestInfo repositoryRequestInfo = null;
         DavResource resource;
-        if ( repoGroupConfig != null )
+        if ( isGroupRepo )
         {
             if ( !readMethod )
             {
@@ -260,42 +264,10 @@ public class ArchivaDavResourceFactory
         else
         {
 
-            try
-            {
-                RemoteRepository remoteRepository =
-                    remoteRepositoryAdmin.getRemoteRepository( archivaLocator.getRepositoryId() );
-
-                if ( remoteRepository != null )
-                {
-                    String logicalResource = getLogicalResource( archivaLocator, null, false );
-                    IndexingContext indexingContext = remoteRepositoryAdmin.createIndexContext( remoteRepository );
-                    Path resourceFile = StringUtils.equals( logicalResource, "/" )
-                        ? Paths.get( indexingContext.getIndexDirectoryFile().getParent() )
-                        : Paths.get( indexingContext.getIndexDirectoryFile().getParent(), logicalResource );
-                    resource = new ArchivaDavResource( resourceFile.toAbsolutePath().toString(), //
-                                                       locator.getResourcePath(), //
-                                                       null, //
-                                                       request.getRemoteAddr(), //
-                                                       activePrincipal, //
-                                                       request.getDavSession(), //
-                                                       archivaLocator, //
-                                                       this, //
-                                                       mimeTypes, //
-                                                       auditListeners, //
-                                                       scheduler, //
-                                                       fileLockManager );
-                    setHeaders( response, locator, resource, false );
-                    return resource;
-                }
-            }
-            catch ( RepositoryAdminException e )
-            {
-                log.debug( "RepositoryException remote repository with d'{}' not found, msg: {}",
-                           archivaLocator.getRepositoryId(), e.getMessage() );
-            }
+            // We do not provide folders for remote repositories
 
 
-            ManagedRepository repo = repositoryRegistry.getManagedRepository( archivaLocator.getRepositoryId() );
+            ManagedRepository repo = repositoryRegistry.getManagedRepository( sRepoId );
             if (repo==null) {
                 throw new DavException( HttpServletResponse.SC_NOT_FOUND,
                     "Invalid repository: " + archivaLocator.getRepositoryId() );
@@ -323,7 +295,7 @@ public class ArchivaDavResourceFactory
         // MRM-872 : merge all available metadata
         // merge metadata only when requested via the repo group
         if ( ( repositoryRequestInfo.isMetadata( requestedResource ) || repositoryRequestInfo.isMetadataSupportFile(
-            requestedResource ) ) && repoGroupConfig != null )
+            requestedResource ) ) && isGroupRepo )
         {
             // this should only be at the project level not version level!
             if ( isProjectReference( requestedResource ) )
