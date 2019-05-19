@@ -1,24 +1,32 @@
 package org.apache.archiva.repository.content;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.AclEntry;
-import java.nio.file.attribute.AclEntryPermission;
-import java.nio.file.attribute.AclEntryType;
-import java.nio.file.attribute.AclFileAttributeView;
-import java.nio.file.attribute.PosixFileAttributeView;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
+import java.nio.file.*;
+import java.nio.file.attribute.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,330 +35,365 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
+ * Implementation of an asset that is stored on the filesystem.
+ * <p>
+ * The implementation does not check the given paths. Caller should normalize the asset path
+ * and check, if the base path is a parent of the resulting path.
+ * <p>
+ * The file must not exist for all operations.
+ *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public class FilesystemAsset implements StorageAsset
-{
+public class FilesystemAsset implements StorageAsset {
 
-    private final static Logger log = LoggerFactory.getLogger( FilesystemAsset.class );
+    private final static Logger log = LoggerFactory.getLogger(FilesystemAsset.class);
 
-    private final Path basePath;
     private final Path assetPath;
-    private final Path completeAssetPath;
+    private final String relativePath;
 
-    public String DEFAULT_POSIX_FILE_PERMS = "rw-rw----";
-    public String DEFAULT_POSIX_DIR_PERMS = "rwxrwx---";
+    public static final String DEFAULT_POSIX_FILE_PERMS = "rw-rw----";
+    public static final String DEFAULT_POSIX_DIR_PERMS = "rwxrwx---";
+
+    public static final Set<PosixFilePermission> DEFAULT_POSIX_FILE_PERMISSIONS;
+    public static final Set<PosixFilePermission> DEFAULT_POSIX_DIR_PERMISSIONS;
+
+    public static final AclEntryPermission[] DEFAULT_ACL_FILE_PERMISSIONS = new AclEntryPermission[]{
+            AclEntryPermission.DELETE, AclEntryPermission.READ_ACL, AclEntryPermission.READ_ATTRIBUTES, AclEntryPermission.READ_DATA, AclEntryPermission.WRITE_ACL,
+            AclEntryPermission.WRITE_ATTRIBUTES, AclEntryPermission.WRITE_DATA, AclEntryPermission.APPEND_DATA
+    };
+
+    public static final AclEntryPermission[] DEFAULT_ACL_DIR_PERMISSIONS = new AclEntryPermission[]{
+            AclEntryPermission.ADD_FILE, AclEntryPermission.ADD_SUBDIRECTORY, AclEntryPermission.DELETE_CHILD,
+            AclEntryPermission.DELETE, AclEntryPermission.READ_ACL, AclEntryPermission.READ_ATTRIBUTES, AclEntryPermission.READ_DATA, AclEntryPermission.WRITE_ACL,
+            AclEntryPermission.WRITE_ATTRIBUTES, AclEntryPermission.WRITE_DATA, AclEntryPermission.APPEND_DATA
+    };
+
+    static {
+
+        DEFAULT_POSIX_FILE_PERMISSIONS = PosixFilePermissions.fromString(DEFAULT_POSIX_FILE_PERMS);
+        DEFAULT_POSIX_DIR_PERMISSIONS = PosixFilePermissions.fromString(DEFAULT_POSIX_DIR_PERMS);
+    }
+
+    Set<PosixFilePermission> defaultPosixFilePermissions = DEFAULT_POSIX_FILE_PERMISSIONS;
+    Set<PosixFilePermission> defaultPosixDirectoryPermissions = DEFAULT_POSIX_DIR_PERMISSIONS;
 
     List<AclEntry> defaultFileAcls;
-    Set<PosixFilePermission> defaultPosixFilePermissions;
     List<AclEntry> defaultDirectoryAcls;
-    Set<PosixFilePermission> defaultPosixDirectoryPermissions;
 
     boolean supportsAcl = false;
     boolean supportsPosix = false;
+    final boolean setPermissionsForNew;
 
-    boolean directory = false;
+    boolean directoryHint = false;
 
-    public FilesystemAsset( Path basePath, String assetPath )
-    {
-        this.basePath = basePath;
-        this.assetPath = Paths.get( assetPath );
-        this.completeAssetPath = basePath.resolve( assetPath ).toAbsolutePath( );
-        init( );
+    /**
+     * Creates an asset for the given path. The given paths are not checked.
+     * The base path should be an absolute path.
+     *
+     * @param path The logical path for the asset relative to the repository.
+     * @param assetPath The asset path.
+     */
+    public FilesystemAsset(String path, Path assetPath) {
+        this.assetPath = assetPath;
+        this.relativePath = path;
+        this.setPermissionsForNew = false;
+        init();
     }
 
-    public FilesystemAsset( Path basePath, String assetPath, boolean directory )
-    {
-        this.basePath = basePath;
-        this.assetPath = Paths.get( assetPath );
-        this.completeAssetPath = basePath.resolve( assetPath ).toAbsolutePath( );
-        this.directory = directory;
-        init( );
+    /**
+     * Creates an asset for the given path. The given paths are not checked.
+     * The base path should be an absolute path.
+     *
+     * @param path The logical path for the asset relative to the repository
+     * @param assetPath The asset path.
+     * @param directory This is only relevant, if the represented file or directory does not exist yet and
+     *                  is a hint.
+     */
+    public FilesystemAsset(String path, Path assetPath, boolean directory) {
+        this.assetPath = assetPath;
+        this.relativePath = path;
+        this.directoryHint = directory;
+        this.setPermissionsForNew = false;
+        init();
     }
 
-    private void init( )
-    {
-        defaultFileAcls = new ArrayList<>( );
-        AclEntry.Builder aclBuilder = AclEntry.newBuilder( );
-        aclBuilder.setPermissions( AclEntryPermission.DELETE, AclEntryPermission.READ_ACL, AclEntryPermission.READ_ATTRIBUTES, AclEntryPermission.READ_DATA, AclEntryPermission.WRITE_ACL,
-            AclEntryPermission.WRITE_ATTRIBUTES, AclEntryPermission.WRITE_DATA, AclEntryPermission.APPEND_DATA );
-        aclBuilder.setType( AclEntryType.ALLOW );
-        defaultFileAcls.add( aclBuilder.build( ) );
-        AclEntry.Builder aclDirBuilder = AclEntry.newBuilder( );
-        aclDirBuilder.setPermissions( AclEntryPermission.ADD_FILE, AclEntryPermission.ADD_SUBDIRECTORY, AclEntryPermission.DELETE_CHILD,
-            AclEntryPermission.DELETE, AclEntryPermission.READ_ACL, AclEntryPermission.READ_ATTRIBUTES, AclEntryPermission.READ_DATA, AclEntryPermission.WRITE_ACL,
-            AclEntryPermission.WRITE_ATTRIBUTES, AclEntryPermission.WRITE_DATA, AclEntryPermission.APPEND_DATA );
-        aclDirBuilder.setType( AclEntryType.ALLOW );
-        defaultDirectoryAcls.add( aclDirBuilder.build( ) );
+    /**
+     * Creates an asset for the given path. The given paths are not checked.
+     * The base path should be an absolute path.
+     *
+     * @param path The logical path for the asset relative to the repository
+     * @param assetPath The asset path.
+     * @param directory This is only relevant, if the represented file or directory does not exist yet and
+     *                  is a hint.
+     */
+    public FilesystemAsset(String path, Path assetPath, boolean directory, boolean setPermissionsForNew) {
+        this.assetPath = assetPath;
+        this.relativePath = path;
+        this.directoryHint = directory;
+        this.setPermissionsForNew = setPermissionsForNew;
+        init();
+    }
 
-        defaultPosixFilePermissions = PosixFilePermissions.fromString( DEFAULT_POSIX_FILE_PERMS );
-        defaultPosixDirectoryPermissions = PosixFilePermissions.fromString( DEFAULT_POSIX_DIR_PERMS );
+    private void init() {
 
-        try
-        {
-            supportsAcl = Files.getFileStore( completeAssetPath ).supportsFileAttributeView( AclFileAttributeView.class );
-        }
-        catch ( IOException e )
-        {
-            log.error( "Could not check filesystem capabilities {}", e.getMessage( ) );
-        }
-        try
-        {
-            supportsPosix = Files.getFileStore( completeAssetPath ).supportsFileAttributeView( PosixFileAttributeView.class );
-        }
-        catch ( IOException e )
-        {
-            log.error( "Could not check filesystem capabilities {}", e.getMessage( ) );
-        }
+        if (setPermissionsForNew) {
+            try {
+                supportsAcl = Files.getFileStore(assetPath.getRoot()).supportsFileAttributeView(AclFileAttributeView.class);
+            } catch (IOException e) {
+                log.error("Could not check filesystem capabilities {}", e.getMessage());
+            }
+            try {
+                supportsPosix = Files.getFileStore(assetPath.getRoot()).supportsFileAttributeView(PosixFileAttributeView.class);
+            } catch (IOException e) {
+                log.error("Could not check filesystem capabilities {}", e.getMessage());
+            }
 
+            if (supportsAcl) {
+                AclFileAttributeView aclView = Files.getFileAttributeView(assetPath.getParent(), AclFileAttributeView.class);
+                UserPrincipal owner = null;
+                try {
+                    owner = aclView.getOwner();
+                    setDefaultFileAcls(processPermissions(owner, DEFAULT_ACL_FILE_PERMISSIONS));
+                    setDefaultDirectoryAcls(processPermissions(owner, DEFAULT_ACL_DIR_PERMISSIONS));
+
+                } catch (IOException e) {
+                    supportsAcl = false;
+                }
+
+
+            }
+        }
+    }
+
+    private List<AclEntry> processPermissions(UserPrincipal owner, AclEntryPermission[] defaultAclFilePermissions) {
+        AclEntry.Builder aclBuilder = AclEntry.newBuilder();
+        aclBuilder.setPermissions(defaultAclFilePermissions);
+        aclBuilder.setType(AclEntryType.ALLOW);
+        aclBuilder.setPrincipal(owner);
+        ArrayList<AclEntry> aclList = new ArrayList<>();
+        aclList.add(aclBuilder.build());
+        return aclList;
     }
 
 
     @Override
-    public String getPath( )
-    {
-        return assetPath.toString( );
+    public String getPath() {
+        return relativePath;
     }
 
     @Override
-    public String getName( )
-    {
-        return assetPath.getFileName( ).toString( );
+    public String getName() {
+        return assetPath.getFileName().toString();
     }
 
     @Override
-    public Instant getModificationTime( )
-    {
-        try
-        {
-            return Files.getLastModifiedTime( completeAssetPath ).toInstant( );
-        }
-        catch ( IOException e )
-        {
-            log.error( "Could not read modification time of {}", completeAssetPath );
-            return Instant.now( );
+    public Instant getModificationTime() {
+        try {
+            return Files.getLastModifiedTime(assetPath).toInstant();
+        } catch (IOException e) {
+            log.error("Could not read modification time of {}", assetPath);
+            return Instant.now();
         }
     }
 
+    /**
+     * Returns true, if the path of this asset points to a directory
+     *
+     * @return
+     */
     @Override
-    public boolean isContainer( )
-    {
-        return Files.isDirectory( completeAssetPath );
+    public boolean isContainer() {
+        if (Files.exists(assetPath)) {
+            return Files.isDirectory(assetPath);
+        } else {
+            return directoryHint;
+        }
     }
 
+    /**
+     * Returns the list of directory entries, if this asset represents a directory.
+     * Otherwise a empty list will be returned.
+     *
+     * @return The list of entries in the directory, if it exists.
+     */
     @Override
-    public List<StorageAsset> list( )
-    {
-        try
-        {
-            return Files.list( completeAssetPath ).map( p -> new FilesystemAsset( basePath, basePath.relativize( p ).toString( ) ) )
-                .collect( Collectors.toList( ) );
-        }
-        catch ( IOException e )
-        {
+    public List<StorageAsset> list() {
+        try {
+            return Files.list(assetPath).map(p -> new FilesystemAsset(relativePath + "/" + p.getFileName().toString(), assetPath.resolve(p)))
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
             return Collections.EMPTY_LIST;
         }
     }
 
+    /**
+     * Returns the size of the represented file. If it cannot be determined, -1 is returned.
+     *
+     * @return
+     */
     @Override
-    public long getSize( )
-    {
-        try
-        {
-            return Files.size( completeAssetPath );
-        }
-        catch ( IOException e )
-        {
+    public long getSize() {
+        try {
+            return Files.size(assetPath);
+        } catch (IOException e) {
             return -1;
         }
     }
 
+    /**
+     * Returns a input stream to the underlying file, if it exists. The caller has to make sure, that
+     * the stream is closed after it was used.
+     *
+     * @return
+     * @throws IOException
+     */
     @Override
-    public InputStream getData( ) throws IOException
-    {
-        return Files.newInputStream( completeAssetPath );
+    public InputStream getData() throws IOException {
+        if (isContainer()) {
+            throw new IOException("Can not create input stream for container");
+        }
+        return Files.newInputStream(assetPath);
     }
 
     @Override
-    public OutputStream writeData( boolean replace ) throws IOException
-    {
+    public OutputStream writeData(boolean replace) throws IOException {
         OpenOption[] options;
-        if ( replace )
-        {
+        if (replace) {
             options = new OpenOption[]{StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE};
-        }
-        else
-        {
+        } else {
             options = new OpenOption[]{StandardOpenOption.APPEND};
         }
-        return Files.newOutputStream( completeAssetPath, options );
+        return Files.newOutputStream(assetPath, options);
     }
 
     @Override
-    public boolean storeDataFile( Path newData ) throws IOException
-    {
-        final boolean createNew = !Files.exists( completeAssetPath );
+    public boolean storeDataFile(Path newData) throws IOException {
+        final boolean createNew = !Files.exists(assetPath);
         Path backup = null;
-        if ( !createNew )
-        {
-            backup = findBackupFile( completeAssetPath );
+        if (!createNew) {
+            backup = findBackupFile(assetPath);
         }
-        try
-        {
-            if ( !createNew )
-            {
-                Files.move( completeAssetPath, backup );
+        try {
+            if (!createNew) {
+                Files.move(assetPath, backup);
             }
-            Files.move( newData, completeAssetPath, StandardCopyOption.REPLACE_EXISTING );
-            setDefaultPermissions( completeAssetPath );
+            Files.move(newData, assetPath, StandardCopyOption.REPLACE_EXISTING);
+            applyDefaultPermissions(assetPath);
             return true;
-        }
-        catch ( IOException e )
-        {
-            log.error( "Could not overwrite file {}", completeAssetPath );
+        } catch (IOException e) {
+            log.error("Could not overwrite file {}", assetPath);
             // Revert if possible
-            if ( backup != null && Files.exists( backup ) )
-            {
-                Files.move( backup, completeAssetPath, StandardCopyOption.REPLACE_EXISTING );
+            if (backup != null && Files.exists(backup)) {
+                Files.move(backup, assetPath, StandardCopyOption.REPLACE_EXISTING);
             }
             throw e;
-        }
-        finally
-        {
-            if ( backup != null )
-            {
-                try
-                {
-                    Files.deleteIfExists( backup );
-                }
-                catch ( IOException e )
-                {
-                    log.error( "Could not delete backup file {}", backup );
+        } finally {
+            if (backup != null) {
+                try {
+                    Files.deleteIfExists(backup);
+                } catch (IOException e) {
+                    log.error("Could not delete backup file {}", backup);
                 }
             }
         }
 
     }
 
-    private void setDefaultPermissions(Path filePath) {
-        try
-        {
-            if ( supportsPosix )
-            {
+    private void applyDefaultPermissions(Path filePath) {
+        try {
+            if (supportsPosix) {
                 Set<PosixFilePermission> perms;
-                if ( Files.isDirectory( filePath ) )
-                {
+                if (Files.isDirectory(filePath)) {
                     perms = defaultPosixFilePermissions;
-                }
-                else
-                {
+                } else {
                     perms = defaultPosixDirectoryPermissions;
                 }
-                Files.setPosixFilePermissions( filePath, perms );
-            }
-            else if ( supportsAcl )
-            {
+                Files.setPosixFilePermissions(filePath, perms);
+            } else if (supportsAcl) {
                 List<AclEntry> perms;
-                if ( Files.isDirectory( filePath ) )
-                {
-                    perms = defaultDirectoryAcls;
+                if (Files.isDirectory(filePath)) {
+                    perms = getDefaultDirectoryAcls();
+                } else {
+                    perms = getDefaultFileAcls();
                 }
-                else
-                {
-                    perms = defaultFileAcls;
-                }
-                AclFileAttributeView aclAttr = Files.getFileAttributeView( filePath, AclFileAttributeView.class );
-                aclAttr.setAcl( perms );
+                AclFileAttributeView aclAttr = Files.getFileAttributeView(filePath, AclFileAttributeView.class);
+                aclAttr.setAcl(perms);
             }
         } catch (IOException e) {
             log.error("Could not set permissions for {}: {}", filePath, e.getMessage());
         }
     }
 
-    private Path findBackupFile( Path file )
-    {
+    private Path findBackupFile(Path file) {
         String ext = ".bak";
-        Path backupPath = file.getParent( ).resolve( file.getFileName( ).toString( ) + ext );
+        Path backupPath = file.getParent().resolve(file.getFileName().toString() + ext);
         int idx = 0;
-        while ( Files.exists( backupPath ) )
-        {
-            backupPath = file.getParent( ).resolve( file.getFileName( ).toString( ) + ext + idx++ );
+        while (Files.exists(backupPath)) {
+            backupPath = file.getParent().resolve(file.getFileName().toString() + ext + idx++);
         }
         return backupPath;
     }
 
     @Override
-    public boolean exists( )
-    {
-        return Files.exists( completeAssetPath );
+    public boolean exists() {
+        return Files.exists(assetPath);
     }
 
     @Override
-    public Path getFilePath( ) throws UnsupportedOperationException
-    {
-        return completeAssetPath;
+    public Path getFilePath() throws UnsupportedOperationException {
+        return assetPath;
     }
 
 
-    public void setDefaultFileAcls( List<AclEntry> acl )
-    {
+    public void setDefaultFileAcls(List<AclEntry> acl) {
         defaultFileAcls = acl;
     }
 
-    public List<AclEntry> getDefaultFileAcls( )
-    {
+    public List<AclEntry> getDefaultFileAcls() {
         return defaultFileAcls;
     }
 
-    public void setDefaultPosixFilePermissions( Set<PosixFilePermission> perms )
-    {
+    public void setDefaultPosixFilePermissions(Set<PosixFilePermission> perms) {
         defaultPosixFilePermissions = perms;
     }
 
-    public Set<PosixFilePermission> getDefaultPosixFilePermissions( )
-    {
+    public Set<PosixFilePermission> getDefaultPosixFilePermissions() {
         return defaultPosixFilePermissions;
     }
 
-    public void setDefaultDirectoryAcls( List<AclEntry> acl )
-    {
+    public void setDefaultDirectoryAcls(List<AclEntry> acl) {
         defaultDirectoryAcls = acl;
     }
 
-    public List<AclEntry> getDefaultDirectoryAcls( )
-    {
+    public List<AclEntry> getDefaultDirectoryAcls() {
         return defaultDirectoryAcls;
     }
 
-    public void setDefaultPosixDirectoryPermissions( Set<PosixFilePermission> perms )
-    {
+    public void setDefaultPosixDirectoryPermissions(Set<PosixFilePermission> perms) {
         defaultPosixDirectoryPermissions = perms;
     }
 
-    public Set<PosixFilePermission> getDefaultPosixDirectoryPermissions( )
-    {
+    public Set<PosixFilePermission> getDefaultPosixDirectoryPermissions() {
         return defaultPosixDirectoryPermissions;
     }
 
     @Override
-    public void create( ) throws IOException
-    {
-        if ( !Files.exists( completeAssetPath ) )
-        {
-            if ( directory )
-            {
-                Files.createDirectories( completeAssetPath );
+    public void create() throws IOException {
+        if (!Files.exists(assetPath)) {
+            if (directoryHint) {
+                Files.createDirectories(assetPath);
             } else {
-                Files.createFile( completeAssetPath );
+                Files.createFile(assetPath);
             }
-            setDefaultPermissions( completeAssetPath );
+            if (setPermissionsForNew) {
+                applyDefaultPermissions(assetPath);
+            }
         }
     }
 
     @Override
-    public String toString( )
-    {
-        return assetPath.toString();
+    public String toString() {
+        return relativePath;
     }
 
 
