@@ -19,24 +19,9 @@ package org.apache.archiva.repository.maven2;
  * under the License.
  */
 
-import org.apache.archiva.configuration.AbstractRepositoryConfiguration;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
-import org.apache.archiva.repository.BasicManagedRepository;
-import org.apache.archiva.repository.EditableManagedRepository;
-import org.apache.archiva.repository.EditableRemoteRepository;
-import org.apache.archiva.repository.EditableRepository;
-import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.PasswordCredentials;
-import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.RemoteRepository;
-import org.apache.archiva.repository.RepositoryCredentials;
-import org.apache.archiva.repository.RepositoryEvent;
-import org.apache.archiva.repository.RepositoryException;
-import org.apache.archiva.repository.RepositoryProvider;
-import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.repository.UnsupportedURIException;
+import org.apache.archiva.common.filelock.FileLockManager;
+import org.apache.archiva.configuration.*;
+import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
@@ -57,6 +42,7 @@ import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,6 +56,12 @@ public class MavenRepositoryProvider implements RepositoryProvider {
 
     @Inject
     private ArchivaConfiguration archivaConfiguration;
+
+    @Inject
+    private RepositoryRegistry repositoryRegistry;
+
+    @Inject
+    private FileLockManager fileLockManager;
 
     private static final Logger log = LoggerFactory.getLogger(MavenRepositoryProvider.class);
 
@@ -92,6 +84,11 @@ public class MavenRepositoryProvider implements RepositoryProvider {
     @Override
     public EditableRemoteRepository createRemoteInstance(String id, String name) {
         return new MavenRemoteRepository(id, name, archivaConfiguration.getRemoteRepositoryBaseDir());
+    }
+
+    @Override
+    public EditableRepositoryGroup createRepositoryGroup(String id, String name) {
+        return new MavenRepositoryGroup(id, name, archivaConfiguration.getRepositoryBaseDir(), fileLockManager);
     }
 
     private URI getURIFromString(String uriStr) throws RepositoryException {
@@ -165,26 +162,6 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         indexCreationFeature.setSkipPackedIndexCreation(cfg.isSkipPackedIndexCreation());
         indexCreationFeature.setIndexPath(getURIFromString(cfg.getIndexDir()));
         indexCreationFeature.setPackedIndexPath(getURIFromString(cfg.getPackedIndexDir()));
-        /* -> Should be created by MavenIndexProvider
-
-        Path indexPath;
-        if (indexCreationFeature.getIndexPath().getScheme() == null) {
-            indexPath = Paths.get(indexCreationFeature.getIndexPath().getPath());
-        } else {
-            indexPath = Paths.get(indexCreationFeature.getIndexPath());
-        }
-        Path absoluteIndexPath;
-        if (indexPath.isAbsolute()) {
-            absoluteIndexPath = indexPath;
-        } else {
-            absoluteIndexPath = PathUtil.getPathFromUri(repo.getLocation()).resolve(indexCreationFeature.getIndexPath().getPath());
-        }
-        try {
-            Files.createDirectories(absoluteIndexPath);
-        } catch (IOException e) {
-            log.error("Could not create index directory {}", absoluteIndexPath);
-            throw new RepositoryException("Could not create index directory " + absoluteIndexPath);
-        }*/
 
         ArtifactCleanupFeature artifactCleanupFeature = repo.getFeature(ArtifactCleanupFeature.class).get();
 
@@ -266,6 +243,22 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             indexCreationFeature.setPackedIndexPath(getURIFromString(cfg.getPackedIndexDir()));
         }
         log.debug("Updated remote instance {}", repo);
+    }
+
+    @Override
+    public RepositoryGroup createRepositoryGroup(RepositoryGroupConfiguration configuration) throws RepositoryException {
+        Path repositoryGroupBase = getArchivaConfiguration().getRepositoryGroupBaseDir();
+        return new MavenRepositoryGroup(configuration.getId(), configuration.getId(),
+                repositoryGroupBase, fileLockManager);
+    }
+
+    @Override
+    public void updateRepositoryGroupInstance(EditableRepositoryGroup repositoryGroup, RepositoryGroupConfiguration configuration) throws RepositoryException {
+        repositoryGroup.setName(repositoryGroup.getPrimaryLocale(), configuration.getName());
+        repositoryGroup.setRepositories(configuration.getRepositories().stream().map(rid -> repositoryRegistry.getManagedRepository(rid)).collect(Collectors.toList()));
+        repositoryGroup.setMergedIndexPath(configuration.getMergedIndexPath());
+        repositoryGroup.setMergedIndexTTL(configuration.getMergedIndexTtl());
+        repositoryGroup.setSchedulingDefinition(configuration.getCronExpression());
     }
 
     @Override
@@ -351,6 +344,21 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         }
         return cfg;
 
+    }
+
+    @Override
+    public RepositoryGroupConfiguration getRepositoryGroupConfiguration(RepositoryGroup repositoryGroup) throws RepositoryException {
+        if (repositoryGroup.getType() != RepositoryType.MAVEN) {
+            throw new RepositoryException("The given repository group is not of MAVEN type");
+        }
+        RepositoryGroupConfiguration cfg = new RepositoryGroupConfiguration();
+        cfg.setId(repositoryGroup.getId());
+        cfg.setName(repositoryGroup.getName());
+        cfg.setMergedIndexPath(repositoryGroup.getMergedIndexPath().getPath());
+        cfg.setMergedIndexTtl(repositoryGroup.getMergedIndexTTL());
+        cfg.setRepositories(repositoryGroup.getRepositories().stream().map(r -> r.getId()).collect(Collectors.toList()));
+        cfg.setCronExpression(repositoryGroup.getSchedulingDefinition());
+        return cfg;
     }
 
     private ManagedRepositoryConfiguration getStageRepoConfig(ManagedRepositoryConfiguration repository) {

@@ -21,6 +21,7 @@ package org.apache.archiva.repository;
 
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 
 import java.util.Set;
 
@@ -68,6 +69,17 @@ public interface RepositoryProvider extends RepositoryEventListener
      * @return a new created remote repository instance
      */
     EditableRemoteRepository createRemoteInstance(String id, String name);
+
+    /**
+     * Creates a editable repository group. . The provider must not check the uniqueness of the
+     * id parameter and must not track the already created instances. Each call to this method will create
+     * a new instance.
+     *
+     * @param id the repository identifier
+     * @param name the repository name
+     * @return A new instance of the repository group implementation
+     */
+    EditableRepositoryGroup createRepositoryGroup(String id, String name);
 
     /**
      * Creates a new managed repository instance from the given configuration. All attributes are filled from the
@@ -119,6 +131,27 @@ public interface RepositoryProvider extends RepositoryEventListener
      */
     void updateRemoteInstance(EditableRemoteRepository repo, RemoteRepositoryConfiguration configuration) throws RepositoryException;
 
+
+    /**
+     * Creates a new repository group instance from the given configuration. All attributes are filled from the
+     * provided configuration object.
+     *
+     * @param configuration the repository group configuration
+     * @return a new created repository group instance
+     * @throws RepositoryException if some of the configuration values are not valid
+     */
+    RepositoryGroup createRepositoryGroup(RepositoryGroupConfiguration configuration) throws RepositoryException;
+
+    /**
+     * Updates the given remote repository instance from the given configuration. All attributes are filled from the
+     * provided configuration object.
+     *
+     * @param repositoryGroup the repository group instance that should be updated
+     * @param configuration the repository group configuration that contains the group data
+     * @throws RepositoryException if some of the configuration values are not valid
+     */
+    void updateRepositoryGroupInstance(EditableRepositoryGroup repositoryGroup, RepositoryGroupConfiguration configuration) throws RepositoryException;
+
     /**
      * Returns a configuration object from the given remote repository instance.
      *
@@ -136,4 +169,13 @@ public interface RepositoryProvider extends RepositoryEventListener
      * @throws RepositoryException if the data cannot be converted
      */
     ManagedRepositoryConfiguration getManagedConfiguration(ManagedRepository managedRepository) throws RepositoryException;
+
+    /**
+     * Returns a configuration object from the given repository group instance.
+     *
+     * @param repositoryGroup the repository group
+     * @return the repository group configuration with all the data that is stored in the repository instance
+     * @throws RepositoryException if the data cannot be converted
+     */
+    RepositoryGroupConfiguration getRepositoryGroupConfiguration(RepositoryGroup repositoryGroup) throws RepositoryException;
 }
