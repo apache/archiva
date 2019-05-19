@@ -68,6 +68,12 @@ public class ArchivaRuntimeConfiguration
     private String remoteRepositoryBaseDirectory;
 
     /**
+     * The base directory for local storage of repository group files.
+     * If not set, it's ${dataDirectory}/groups
+     */
+    private String repositoryGroupBaseDirectory;
+
+    /**
      * The default language used for setting internationalized
      * strings.
      */
@@ -157,6 +163,17 @@ public class ArchivaRuntimeConfiguration
     } //-- String getRepositoryBaseDirectory()
 
     /**
+     * Get the base directory for local storage of repository group data.
+     * If not set it's ${dataDirectory}/groups
+     *
+     * @return The path to the directory. Either a absolute path, or a path
+     * relative to ${dataDirectory}
+     */
+    public String getRepositoryGroupBaseDirectory() {
+        return this.repositoryGroupBaseDirectory;
+    }
+
+    /**
      * Get the url failure cache configuration.
      * 
      * @return CacheConfiguration
@@ -231,6 +248,11 @@ public class ArchivaRuntimeConfiguration
     {
         this.repositoryBaseDirectory = repositoryBaseDirectory;
     } //-- void setRepositoryBaseDirectory( String )
+
+
+    public void setRepositoryGroupBaseDirectory(String repositoryGroupBaseDirectory) {
+        this.repositoryGroupBaseDirectory = repositoryGroupBaseDirectory;
+    }
 
     /**
      * Set the url failure cache configuration.

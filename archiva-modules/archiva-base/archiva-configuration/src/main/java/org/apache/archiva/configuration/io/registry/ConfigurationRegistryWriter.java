@@ -419,6 +419,9 @@ public class ConfigurationRegistryWriter {
                 String id = "id";
                 registry.setString(prefix + id, value.getId());
             }
+            if (value.getName() != null) {
+                registry.setString(prefix + "name", value.getName());
+            }
             if (value.getMergedIndexPath() != null && !value.getMergedIndexPath().equals(".indexer")
             ) {
                 String mergedIndexPath = "mergedIndexPath";
@@ -887,6 +890,12 @@ public class ConfigurationRegistryWriter {
                 String remoteRepositoryBaseDirectory = "remoteRepositoryBaseDirectory";
                 registry.setString(prefix + remoteRepositoryBaseDirectory, value.getRemoteRepositoryBaseDirectory());
             }
+            if (value.getRepositoryGroupBaseDirectory() != null
+            ) {
+                String repositoryGroupBaseDirectory = "repositoryGroupBaseDirectory";
+                registry.setString(prefix + repositoryGroupBaseDirectory, value.getRepositoryGroupBaseDirectory());
+            }
+
             if (value.getDefaultLanguage() != null && !value.getDefaultLanguage().equals("en-US")
             ) {
                 String defaultLanguage = "defaultLanguage";

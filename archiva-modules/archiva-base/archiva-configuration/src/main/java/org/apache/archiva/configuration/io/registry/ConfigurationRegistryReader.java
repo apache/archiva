@@ -729,6 +729,9 @@ public class ConfigurationRegistryReader {
         }
 
         value.setId(id);
+
+        value.setName(registry.getString(prefix + "name"));
+
         //String mergedIndexPath = registry.getString( prefix + "mergedIndexPath", value.getMergedIndexPath() );
 
         List<String> mergedIndexPathList = registry.getList(prefix + "mergedIndexPath");
@@ -1391,6 +1394,22 @@ public class ConfigurationRegistryReader {
 
         value.setRemoteRepositoryBaseDirectory(remoteRepositoryBaseDirectory);
         //String defaultLanguage = registry.getString( prefix + "defaultLanguage", value.getDefaultLanguage() );
+
+
+        List<String> repositoryGroupBaseDirectoryList = registry.getList(prefix + "repositoryGroupBaseDirectory");
+        String repositoryGroupBaseDirectory = value.getRepositoryGroupBaseDirectory();
+        if (repositoryGroupBaseDirectoryList != null && !repositoryGroupBaseDirectoryList.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0, size = repositoryGroupBaseDirectoryList.size(); i < size; i++) {
+                sb.append(repositoryGroupBaseDirectoryList.get(i));
+                if (i < size - 1) {
+                    sb.append(',');
+                }
+            }
+            repositoryGroupBaseDirectory = sb.toString();
+        }
+
+        value.setRepositoryGroupBaseDirectory(repositoryGroupBaseDirectory);
 
         List<String> defaultLanguageList = registry.getList(prefix + "defaultLanguage");
         String defaultLanguage = value.getDefaultLanguage();

@@ -19,6 +19,10 @@ package org.apache.archiva.configuration;
  * under the License.
  */
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Class RepositoryGroupConfiguration.
  * 
@@ -26,7 +30,7 @@ package org.apache.archiva.configuration;
  */
 @SuppressWarnings( "all" )
 public class RepositoryGroupConfiguration
-    implements java.io.Serializable
+    implements Serializable
 {
 
       //--------------------------/
@@ -37,6 +41,11 @@ public class RepositoryGroupConfiguration
      * The id of the repository group.
      */
     private String id;
+
+    /**
+     * The name of the repository group
+     */
+    private String name;
 
     /**
      * The path of the merged index.
@@ -59,7 +68,7 @@ public class RepositoryGroupConfiguration
     /**
      * Field repositories.
      */
-    private java.util.List<String> repositories;
+    private List<String> repositories;
 
 
       //-----------/
@@ -123,11 +132,11 @@ public class RepositoryGroupConfiguration
      * 
      * @return List
      */
-    public java.util.List<String> getRepositories()
+    public List<String> getRepositories()
     {
         if ( this.repositories == null )
         {
-            this.repositories = new java.util.ArrayList<String>();
+            this.repositories = new ArrayList<String>();
         }
 
         return this.repositories;
@@ -190,9 +199,16 @@ public class RepositoryGroupConfiguration
      * 
      * @param repositories
      */
-    public void setRepositories( java.util.List<String> repositories )
+    public void setRepositories( List<String> repositories )
     {
         this.repositories = repositories;
     } //-- void setRepositories( java.util.List )
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

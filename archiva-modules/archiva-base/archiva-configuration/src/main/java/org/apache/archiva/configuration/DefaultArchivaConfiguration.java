@@ -178,6 +178,7 @@ public class DefaultArchivaConfiguration
     private volatile Path dataDirectory;
     private volatile Path repositoryBaseDirectory;
     private volatile Path remoteRepositoryBaseDirectory;
+    private volatile Path repositoryGroupBaseDirectory;
 
     @PostConstruct
     private void init() {
@@ -254,6 +255,7 @@ public class DefaultArchivaConfiguration
                 dataDirectory.resolve(tmpRepoBaseDir);
             }
         }
+
         String remoteRepoBaseDir = config.getArchivaRuntimeConfiguration().getRemoteRepositoryBaseDirectory();
         if (StringUtils.isEmpty(remoteRepoBaseDir)) {
             remoteRepositoryBaseDirectory = dataDirectory.resolve("remotes");
@@ -263,6 +265,18 @@ public class DefaultArchivaConfiguration
                 remoteRepositoryBaseDirectory = tmpRemoteRepoDir;
             } else {
                 dataDirectory.resolve(tmpRemoteRepoDir);
+            }
+        }
+
+        String repositoryGroupBaseDir = config.getArchivaRuntimeConfiguration().getRepositoryGroupBaseDirectory();
+        if (StringUtils.isEmpty(repositoryGroupBaseDir)) {
+            repositoryGroupBaseDirectory = dataDirectory.resolve("groups");
+        } else {
+            Path tmpGroupDir = Paths.get(repositoryGroupBaseDir);
+            if (tmpGroupDir.isAbsolute()) {
+                repositoryGroupBaseDirectory = tmpGroupDir;
+            } else {
+                dataDirectory.resolve(tmpGroupDir);
             }
         }
 
@@ -848,6 +862,14 @@ public class DefaultArchivaConfiguration
             getConfiguration();
         }
         return remoteRepositoryBaseDirectory;
+    }
+
+    @Override
+    public Path getRepositoryGroupBaseDir() {
+        if (repositoryGroupBaseDirectory == null) {
+            getConfiguration();
+        }
+        return repositoryGroupBaseDirectory;
     }
 
     @Override
