@@ -22,13 +22,11 @@ package org.apache.archiva.repository.maven2;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.FilesystemStorage;
-import org.apache.archiva.repository.features.ArtifactCleanupFeature;
-import org.apache.archiva.repository.features.IndexCreationFeature;
-import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
 
@@ -38,12 +36,11 @@ public class MavenRepositoryGroup extends AbstractRepositoryGroup implements Edi
             new ReleaseScheme[] { ReleaseScheme.RELEASE, ReleaseScheme.SNAPSHOT },
             new String[] { MavenManagedRepository.DEFAULT_LAYOUT, MavenManagedRepository.LEGACY_LAYOUT},
             new String[] {},
-            new String[] {ArtifactCleanupFeature.class.getName(), IndexCreationFeature.class.getName(),
-                    StagingRepositoryFeature.class.getName()},
-            true,
-            true,
-            true,
-            true,
+            new String[] {},
+            false,
+            false,
+            false,
+            false,
             false
     );
 
@@ -71,6 +68,10 @@ public class MavenRepositoryGroup extends AbstractRepositoryGroup implements Edi
     private void init() {
         setCapabilities(CAPABILITIES);
         try {
+            Path repoPath = getRepositoryPath();
+            if (!Files.exists(repoPath)) {
+                Files.createDirectories(repoPath);
+            }
             fsStorage = new FilesystemStorage(getRepositoryPath(), lockManager);
         } catch (IOException e) {
             log.error("IOException while initializing repository group with path {}",getRepositoryBase());
