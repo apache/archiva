@@ -116,6 +116,11 @@ public class TestConfiguration
     }
 
     @Override
+    public Path getRepositoryGroupBaseDir() {
+        return getDataDirectory().resolve("groups");
+    }
+
+    @Override
     public Path getDataDirectory() {
         if (configuration!=null && configuration.getArchivaRuntimeConfiguration()!=null &&
                 StringUtils.isNotEmpty(configuration.getArchivaRuntimeConfiguration().getDataDirectory())) {

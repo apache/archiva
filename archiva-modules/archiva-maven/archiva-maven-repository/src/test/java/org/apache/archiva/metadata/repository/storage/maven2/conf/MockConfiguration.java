@@ -160,6 +160,11 @@ public class MockConfiguration
     }
 
     @Override
+    public Path getRepositoryGroupBaseDir() {
+        return getDataDirectory().resolve("groups");
+    }
+
+    @Override
     public Path getDataDirectory() {
         if (configuration!=null && StringUtils.isNotEmpty(configuration.getArchivaRuntimeConfiguration().getDataDirectory())) {
             return Paths.get(configuration.getArchivaRuntimeConfiguration().getDataDirectory());
@@ -167,4 +172,6 @@ public class MockConfiguration
             return getAppServerBaseDir().resolve("data");
         }
     }
+
+
 }

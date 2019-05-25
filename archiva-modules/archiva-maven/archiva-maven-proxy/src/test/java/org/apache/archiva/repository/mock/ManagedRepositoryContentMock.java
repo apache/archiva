@@ -28,14 +28,18 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.PathParser;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -382,6 +386,36 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     @Override
     public String toPath( ArchivaArtifact reference )
     {
+        return null;
+    }
+
+    @Override
+    public StorageAsset getAsset(String path) {
+        return null;
+    }
+
+    @Override
+    public void consumeData(StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock) throws IOException {
+
+    }
+
+    @Override
+    public StorageAsset addAsset(String path, boolean container) {
+        return null;
+    }
+
+    @Override
+    public void removeAsset(StorageAsset asset) throws IOException {
+
+    }
+
+    @Override
+    public StorageAsset moveAsset(StorageAsset origin, String destination) throws IOException {
+        return null;
+    }
+
+    @Override
+    public StorageAsset copyAsset(StorageAsset origin, String destination) throws IOException {
         return null;
     }
 }
