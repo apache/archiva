@@ -80,11 +80,13 @@ public class AbstractRepositoryGroup extends AbstractRepository implements Edita
     }
 
     @Override
-    public void setRepositories(List<ManagedRepository> repositories) {
+    public void setRepositories(List<ManagedRepository> newRepositories) {
         rwl.writeLock().lock();
         try {
             repositories.clear();
-            repositories.addAll(repositories);
+            for(ManagedRepository repo : newRepositories) {
+                repositories.put(repo.getId(), repo);
+            }
         } finally {
             rwl.writeLock().unlock();
         }
