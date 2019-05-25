@@ -19,17 +19,15 @@ package org.apache.archiva.repository.maven2;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.configuration.ArchivaRuntimeConfiguration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.metadata.repository.storage.maven2.conf.MockConfiguration;
-import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.PasswordCredentials;
-import org.apache.archiva.repository.ReleaseScheme;
-import org.apache.archiva.repository.RemoteRepository;
-import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.repository.UnsupportedFeatureException;
+import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.content.maven2.MavenContentProvider;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
@@ -45,7 +43,9 @@ import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -57,6 +57,7 @@ public class MavenRepositoryProviderTest
 {
 
     MavenRepositoryProvider provider;
+    RepositoryRegistry reg;
 
     Path repoLocation;
 
@@ -70,6 +71,10 @@ public class MavenRepositoryProviderTest
         mockConfiguration.getConfiguration().setArchivaRuntimeConfiguration( new ArchivaRuntimeConfiguration() );
         mockConfiguration.getConfiguration().getArchivaRuntimeConfiguration().setRepositoryBaseDirectory( "repositories" );
         provider.setArchivaConfiguration( mockConfiguration );
+
+        reg = new RepositoryRegistryMock();
+        reg.setArchivaConfiguration(mockConfiguration);
+        provider.setRepositoryRegistry(reg);
     }
 
     @After
@@ -290,6 +295,78 @@ public class MavenRepositoryProviderTest
         assertEquals("/this/local/.index", cfg.getIndexDir());
 
 
+    }
+
+    @Test
+    public void getRepositoryGroupConfiguration() throws RepositoryException {
+        MavenRepositoryGroup repositoryGroup = new MavenRepositoryGroup("group1","group1",Paths.get("target/groups"),
+                new DefaultFileLockManager());
+        MavenManagedRepository repo1 = new MavenManagedRepository( "test01", "My Test repo", Paths.get("target/repositories") );
+        MavenManagedRepository repo2 = new MavenManagedRepository( "test02", "My Test repo", Paths.get("target/repositories") );
+
+
+        repositoryGroup.setDescription(repositoryGroup.getPrimaryLocale(), "Repository group");
+        repositoryGroup.setLayout("non-default");
+        repositoryGroup.setMergedIndexPath(".index2");
+        repositoryGroup.setName(repositoryGroup.getPrimaryLocale(), "Repo Group 1");
+        repositoryGroup.setMergedIndexTTL(1005);
+        repositoryGroup.setSchedulingDefinition("0 0 04 ? * THU");
+        repositoryGroup.addRepository(repo1);
+        repositoryGroup.addRepository(repo2);
+
+
+        RepositoryGroupConfiguration cfg = provider.getRepositoryGroupConfiguration(repositoryGroup);
+        assertEquals("group1", cfg.getId());
+        assertEquals(".index2", cfg.getMergedIndexPath());
+        assertEquals("0 0 04 ? * THU", cfg.getCronExpression());
+        assertEquals("Repo Group 1", cfg.getName());
+        assertEquals(1005, cfg.getMergedIndexTtl());
+        assertTrue(cfg.getRepositories().contains("test01"));
+        assertTrue(cfg.getRepositories().contains("test02"));
+        assertEquals(2, cfg.getRepositories().size());
+    }
+
+
+    @Test
+    public void createRepositoryGroup() {
+        EditableRepositoryGroup gr = provider.createRepositoryGroup("group1", "Group 1");
+        assertEquals("group1",gr.getId());
+        assertEquals("Group 1", gr.getName());
+        assertEquals(MavenRepositoryGroup.class, gr.getClass());
+    }
+
+    @Test
+    public void createRepositoryGroupWithCfg() throws RepositoryException {
+        MavenManagedRepository repo1 = new MavenManagedRepository( "test01", "My Test repo", Paths.get("target/repositories") );
+
+        MavenManagedRepository repo2 = new MavenManagedRepository( "test02", "My Test repo", Paths.get("target/repositories") );
+        reg.putRepository(repo1);
+        reg.putRepository(repo2);
+
+        assertNotNull(reg.getManagedRepository("test01"));
+        assertNotNull(reg.getManagedRepository("test02"));
+
+        RepositoryGroupConfiguration cfg = new RepositoryGroupConfiguration();
+        cfg.setId("group2");
+        cfg.setName("Group 2");
+        cfg.setCronExpression("0 0 03 ? * MON");
+        cfg.setMergedIndexTtl(504);
+        cfg.setMergedIndexPath(".index-abc");
+        ArrayList<String> repos = new ArrayList<>();
+        repos.add("test01");
+        repos.add("test02");
+        cfg.setRepositories(repos);
+
+        RepositoryGroup grp = provider.createRepositoryGroup(cfg);
+
+        assertEquals("group2", grp.getId());
+        assertEquals("Group 2", grp.getName());
+        assertEquals("0 0 03 ? * MON", grp.getSchedulingDefinition());
+        assertEquals(".index-abc", grp.getMergedIndexPath().getName());
+        assertEquals(504, grp.getMergedIndexTTL());
+        assertEquals(2, grp.getRepositories().size());
+        assertTrue(grp.getRepositories().stream().anyMatch(r -> "test01".equals(r.getId())));
+        assertTrue(grp.getRepositories().stream().anyMatch(r -> "test02".equals(r.getId())));
     }
 
 }
