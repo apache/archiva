@@ -83,7 +83,12 @@ public class ManagedDefaultRepositoryContent
         super(Collections.singletonList( new DefaultArtifactMappingProvider() ));
         setFileTypes( fileTypes );
         setRepository( repository );
-        storage = new FilesystemStorage(getRepoDir(), lockManager);
+        try {
+            storage = new FilesystemStorage(getRepoDir(), lockManager);
+        } catch (IOException e) {
+            log.error("Could not initialize the filesystem storage to repository: {}", getRepoDir());
+            throw new RuntimeException("Fatal error. Could not initialize the filesystem storage for "+getRepoDir());
+        }
     }
 
     public ManagedDefaultRepositoryContent( ManagedRepository repository, List<? extends ArtifactMappingProvider> artifactMappingProviders, FileTypes fileTypes, FileLockManager lockManager )
@@ -91,7 +96,12 @@ public class ManagedDefaultRepositoryContent
         super(artifactMappingProviders==null ? Collections.singletonList( new DefaultArtifactMappingProvider() ) : artifactMappingProviders);
         setFileTypes( fileTypes );
         setRepository( repository );
-        storage = new FilesystemStorage(getRepoDir(), lockManager);
+        try {
+            storage = new FilesystemStorage(getRepoDir(), lockManager);
+        } catch (IOException e) {
+            log.error("Could not initialize the filesystem storage to repository: {}", getRepoDir());
+            throw new RuntimeException("Fatal error. Could not initialize the filesystem storage for "+getRepoDir());
+        }
     }
 
     private Path getRepoDir() {
