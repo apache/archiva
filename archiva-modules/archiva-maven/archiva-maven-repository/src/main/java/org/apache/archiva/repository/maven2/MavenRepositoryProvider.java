@@ -248,8 +248,10 @@ public class MavenRepositoryProvider implements RepositoryProvider {
     @Override
     public RepositoryGroup createRepositoryGroup(RepositoryGroupConfiguration configuration) throws RepositoryException {
         Path repositoryGroupBase = getArchivaConfiguration().getRepositoryGroupBaseDir();
-        return new MavenRepositoryGroup(configuration.getId(), configuration.getId(),
+        MavenRepositoryGroup newGrp = new MavenRepositoryGroup(configuration.getId(), configuration.getName(),
                 repositoryGroupBase, fileLockManager);
+        updateRepositoryGroupInstance(newGrp, configuration);
+        return newGrp;
     }
 
     @Override
@@ -443,5 +445,9 @@ public class MavenRepositoryProvider implements RepositoryProvider {
     @Override
     public <T> void raise(RepositoryEvent<T> event) {
         //
+    }
+
+    public void setRepositoryRegistry(RepositoryRegistry reg) {
+        this.repositoryRegistry = reg;
     }
 }
