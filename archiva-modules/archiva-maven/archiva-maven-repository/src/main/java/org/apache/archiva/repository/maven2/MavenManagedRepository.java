@@ -69,11 +69,13 @@ public class MavenManagedRepository extends AbstractManagedRepository
     {
         super( RepositoryType.MAVEN, id, name, basePath);
         this.indexCreationFeature = new IndexCreationFeature(this, this);
+        setLocation(basePath.resolve(id).toUri());
     }
 
     public MavenManagedRepository( Locale primaryLocale, String id, String name, Path basePath )
     {
         super( primaryLocale, RepositoryType.MAVEN, id, name, basePath );
+        setLocation(basePath.resolve(id).toUri());
     }
 
     @Override
