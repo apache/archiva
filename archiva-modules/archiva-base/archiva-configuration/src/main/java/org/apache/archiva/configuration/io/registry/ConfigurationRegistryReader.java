@@ -731,6 +731,7 @@ public class ConfigurationRegistryReader {
         value.setId(id);
 
         value.setName(registry.getString(prefix + "name"));
+        value.setType(registry.getString(prefix + "type"));
 
         //String mergedIndexPath = registry.getString( prefix + "mergedIndexPath", value.getMergedIndexPath() );
 

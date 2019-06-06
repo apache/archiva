@@ -19,7 +19,8 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.RepositoryGroup;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.scheduler.MergedRemoteIndexesScheduler;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
 /**
  * @author Olivier Lamy
@@ -57,25 +59,26 @@ public class DefaultMergedRemoteIndexesScheduler
     private Map<String, ScheduledFuture> scheduledFutureMap = new ConcurrentHashMap<>();
 
     @Override
-    public void schedule( RepositoryGroup repositoryGroup, Path directory )
+    public void schedule(RepositoryGroup repositoryGroup, Path directory )
     {
-        if ( StringUtils.isEmpty( repositoryGroup.getCronExpression() ) )
+        if ( StringUtils.isEmpty( repositoryGroup.getSchedulingDefinition() ) )
         {
             return;
         }
-        CronTrigger cronTrigger = new CronTrigger( repositoryGroup.getCronExpression() );
+        CronTrigger cronTrigger = new CronTrigger( repositoryGroup.getSchedulingDefinition() );
 
-        List<String> repositories = repositoryGroup.getRepositories();
+        List<ManagedRepository> repositories = repositoryGroup.getRepositories();
 
         IndexMergerRequest indexMergerRequest =
-            new IndexMergerRequest( repositories, true, repositoryGroup.getId(), repositoryGroup.getMergedIndexPath(),
-                                    repositoryGroup.getMergedIndexTtl() ).mergedIndexDirectory( directory );
+            new IndexMergerRequest( repositories.stream().map(r -> r.getId()).collect(Collectors.toList()), true, repositoryGroup.getId(),
+                    repositoryGroup.getMergedIndexPath().getFilePath().toString(),
+                                    repositoryGroup.getMergedIndexTTL() ).mergedIndexDirectory( directory );
 
         MergedRemoteIndexesTaskRequest taskRequest =
             new MergedRemoteIndexesTaskRequest( indexMergerRequest, indexMerger );
 
         logger.info( "schedule merge remote index for group {} with cron {}", repositoryGroup.getId(),
-                     repositoryGroup.getCronExpression() );
+                     repositoryGroup.getSchedulingDefinition() );
 
         ScheduledFuture scheduledFuture =
             taskScheduler.schedule( new MergedRemoteIndexesTask( taskRequest ), cronTrigger );

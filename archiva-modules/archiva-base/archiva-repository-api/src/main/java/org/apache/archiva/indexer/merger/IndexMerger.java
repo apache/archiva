@@ -18,7 +18,7 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
-import org.apache.maven.index.context.IndexingContext;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 
 import java.util.Collection;
 
@@ -33,7 +33,7 @@ public interface IndexMerger
      * @return a temporary directory with a merge index (directory marked deleteOnExit)
      * @throws IndexMergerException
      */
-    IndexingContext buildMergedIndex( IndexMergerRequest indexMergerRequest )
+    ArchivaIndexingContext buildMergedIndex(IndexMergerRequest indexMergerRequest )
         throws IndexMergerException;
 
     void cleanTemporaryGroupIndex( TemporaryGroupIndex temporaryGroupIndex );

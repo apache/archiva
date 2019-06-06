@@ -1,4 +1,4 @@
-package org.apache.archiva.scheduler;
+package org.apache.archiva.indexer.merger;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,24 +19,28 @@ package org.apache.archiva.scheduler;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.RepositoryGroup;
-
-import java.nio.file.Path;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 
 /**
  * @author Olivier Lamy
  * @since 2.0.0
  */
-public interface MergedRemoteIndexesScheduler
+public class MergedRemoteIndexesTaskResult
 {
+    private ArchivaIndexingContext indexingContext;
 
-    /**
-     * will check if this repository group need to a schedule a cron to download/merge
-     * remote indexes
-     * @param repositoryGroup
-     */
-    void schedule( RepositoryGroup repositoryGroup, Path directory );
+    public MergedRemoteIndexesTaskResult( ArchivaIndexingContext indexingContext )
+    {
+        this.indexingContext = indexingContext;
+    }
 
-    void unschedule( RepositoryGroup repositoryGroup );
+    public ArchivaIndexingContext getIndexingContext()
+    {
+        return indexingContext;
+    }
 
+    public void setIndexingContext( ArchivaIndexingContext indexingContext )
+    {
+        this.indexingContext = indexingContext;
+    }
 }

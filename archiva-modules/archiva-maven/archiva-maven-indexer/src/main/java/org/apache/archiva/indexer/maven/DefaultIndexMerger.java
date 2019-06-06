@@ -19,7 +19,9 @@ package org.apache.archiva.indexer.maven.merger;
  */
 
 import org.apache.archiva.common.utils.FileUtils;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
+import org.apache.archiva.indexer.maven.MavenIndexContext;
 import org.apache.archiva.indexer.merger.IndexMerger;
 import org.apache.archiva.indexer.merger.IndexMergerException;
 import org.apache.archiva.indexer.merger.IndexMergerRequest;
@@ -86,7 +88,7 @@ public class DefaultIndexMerger
     }
 
     @Override
-    public IndexingContext buildMergedIndex( IndexMergerRequest indexMergerRequest )
+    public ArchivaIndexingContext buildMergedIndex(IndexMergerRequest indexMergerRequest )
         throws IndexMergerException
     {
         String groupId = indexMergerRequest.getGroupId();
@@ -146,7 +148,7 @@ public class DefaultIndexMerger
             stopWatch.stop();
             log.info( "merged index for repos {} in {} s", indexMergerRequest.getRepositoriesIds(),
                       stopWatch.getTime() );
-            return mergedCtx;
+            return new MavenIndexContext(repositoryRegistry.getRepositoryGroup(groupId), mergedCtx);
         }
         catch ( IOException e)
         {

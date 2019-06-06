@@ -48,6 +48,15 @@ public class RepositoryGroupConfiguration
     private String name;
 
     /**
+     *
+     *             The repository type. Currently only MAVEN type
+     * is known.
+     *
+     */
+    private String type = "MAVEN";
+
+
+    /**
      * The path of the merged index.
      */
     private String mergedIndexPath = ".indexer";
@@ -210,5 +219,13 @@ public class RepositoryGroupConfiguration
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -19,7 +19,7 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
-import org.apache.maven.index.context.IndexingContext;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +58,7 @@ public class MergedRemoteIndexesTask
     {
         IndexMerger indexMerger = mergedRemoteIndexesTaskRequest.getIndexMerger();
 
-        IndexingContext indexingContext =
+        ArchivaIndexingContext indexingContext =
             indexMerger.buildMergedIndex( mergedRemoteIndexesTaskRequest.getIndexMergerRequest() );
 
         return new MergedRemoteIndexesTaskResult( indexingContext );
