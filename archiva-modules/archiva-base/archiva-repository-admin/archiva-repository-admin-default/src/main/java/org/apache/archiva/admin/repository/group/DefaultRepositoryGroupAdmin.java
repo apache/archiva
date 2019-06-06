@@ -28,7 +28,7 @@ import org.apache.archiva.admin.repository.AbstractRepositoryAdmin;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.scheduler.MergedRemoteIndexesScheduler;
+import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

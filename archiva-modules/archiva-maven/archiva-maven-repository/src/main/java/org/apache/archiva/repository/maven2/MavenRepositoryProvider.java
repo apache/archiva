@@ -42,8 +42,6 @@ import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -56,9 +54,6 @@ public class MavenRepositoryProvider implements RepositoryProvider {
 
     @Inject
     private ArchivaConfiguration archivaConfiguration;
-
-    @Inject
-    private RepositoryRegistry repositoryRegistry;
 
     @Inject
     private FileLockManager fileLockManager;
@@ -257,10 +252,10 @@ public class MavenRepositoryProvider implements RepositoryProvider {
     @Override
     public void updateRepositoryGroupInstance(EditableRepositoryGroup repositoryGroup, RepositoryGroupConfiguration configuration) throws RepositoryException {
         repositoryGroup.setName(repositoryGroup.getPrimaryLocale(), configuration.getName());
-        repositoryGroup.setRepositories(configuration.getRepositories().stream().map(rid -> repositoryRegistry.getManagedRepository(rid)).collect(Collectors.toList()));
         repositoryGroup.setMergedIndexPath(configuration.getMergedIndexPath());
         repositoryGroup.setMergedIndexTTL(configuration.getMergedIndexTtl());
         repositoryGroup.setSchedulingDefinition(configuration.getCronExpression());
+        // References to other repositories are set filled by the registry
     }
 
     @Override
@@ -447,7 +442,4 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         //
     }
 
-    public void setRepositoryRegistry(RepositoryRegistry reg) {
-        this.repositoryRegistry = reg;
-    }
 }

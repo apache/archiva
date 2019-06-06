@@ -96,7 +96,7 @@ public interface ArchivaIndexManager {
     ArchivaIndexingContext move(ArchivaIndexingContext context, Repository repo) throws IndexCreationFailedException;
 
     /**
-     * Returns the local path where the index is stored.
+     * Updates the local path where the index is stored using the repository information.
      * @return
      */
     public void updateLocalIndexPath(Repository repo);

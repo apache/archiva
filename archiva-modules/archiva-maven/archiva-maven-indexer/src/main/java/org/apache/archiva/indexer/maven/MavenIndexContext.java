@@ -39,7 +39,7 @@ public class MavenIndexContext implements ArchivaIndexingContext {
     private IndexingContext delegate;
     private Repository repository;
 
-    MavenIndexContext(Repository repository, IndexingContext delegate) {
+    protected MavenIndexContext(Repository repository, IndexingContext delegate) {
         this.delegate = delegate;
         this.repository = repository;
 

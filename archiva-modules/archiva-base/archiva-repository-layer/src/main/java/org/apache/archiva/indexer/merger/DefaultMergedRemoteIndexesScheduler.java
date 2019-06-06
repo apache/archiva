@@ -21,7 +21,6 @@ package org.apache.archiva.indexer.merger;
 
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryGroup;
-import org.apache.archiva.scheduler.MergedRemoteIndexesScheduler;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

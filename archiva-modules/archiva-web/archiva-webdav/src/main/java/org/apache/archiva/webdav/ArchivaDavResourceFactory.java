@@ -31,6 +31,7 @@ import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.merger.IndexMerger;
 import org.apache.archiva.indexer.merger.IndexMergerException;
 import org.apache.archiva.indexer.merger.IndexMergerRequest;
@@ -59,6 +60,7 @@ import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.content.FilesystemAsset;
 import org.apache.archiva.repository.content.maven2.MavenRepositoryRequestInfo;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.repository.features.IndexCreationFeature;
@@ -210,10 +212,9 @@ public class ArchivaDavResourceFactory
 
         final String sRepoId = archivaLocator.getRepositoryId();
 
-        RepositoryGroupConfiguration repoGroupConfig =
-            archivaConfiguration.getConfiguration().getRepositoryGroupsAsMap().get( sRepoId );
+        RepositoryGroup repoGroup = repositoryRegistry.getRepositoryGroup(sRepoId);
 
-        final boolean isGroupRepo = repoGroupConfig != null;
+        final boolean isGroupRepo = repoGroup != null;
 
         String activePrincipal = getActivePrincipal( request );
 
@@ -230,14 +231,14 @@ public class ArchivaDavResourceFactory
                                         "Write method not allowed for repository groups." );
             }
 
-            log.debug( "Repository group '{}' accessed by '{}", repoGroupConfig.getId(), activePrincipal );
+            log.debug( "Repository group '{}' accessed by '{}", repoGroup.getId(), activePrincipal );
 
             // handle browse requests for virtual repos
             if ( getLogicalResource( archivaLocator, null, true ).endsWith( "/" ) )
             {
                 DavResource davResource =
-                    getResourceFromGroup( request, repoGroupConfig.getRepositories(), archivaLocator,
-                                          repoGroupConfig );
+                    getResourceFromGroup( request, archivaLocator,
+                                          repoGroup );
 
                 setHeaders( response, locator, davResource, true );
 
@@ -249,11 +250,9 @@ public class ArchivaDavResourceFactory
                 // make a copy to avoid potential concurrent modifications (eg. by configuration)
                 // TODO: ultimately, locking might be more efficient than copying in this fashion since updates are
                 //  infrequent
-                List<String> repositories = new ArrayList<>( repoGroupConfig.getRepositories() );
-                resource = processRepositoryGroup( request, archivaLocator, repositories, activePrincipal,
-                                                   resourcesInAbsolutePath, repoGroupConfig );
-                for (String repoId: repositories ) {
-                    ManagedRepository repo = repositoryRegistry.getManagedRepository(repoId);
+                resource = processRepositoryGroup( request, archivaLocator, activePrincipal,
+                                                   resourcesInAbsolutePath, repoGroup );
+                for (ManagedRepository repo : repoGroup.getRepositories() ) {
                     if (repo!=null) {
                         repositoryRequestInfo = repo.getRequestInfo();
                         break;
@@ -397,9 +396,9 @@ public class ArchivaDavResourceFactory
     }
 
     private DavResource processRepositoryGroup( final DavServletRequest request,
-                                                ArchivaDavResourceLocator archivaLocator, List<String> repositories,
+                                                ArchivaDavResourceLocator archivaLocator,
                                                 String activePrincipal, List<String> resourcesInAbsolutePath,
-                                                RepositoryGroupConfiguration repoGroupConfig )
+                                                RepositoryGroup repoGroup )
         throws DavException
     {
         DavResource resource = null;
@@ -409,18 +408,23 @@ public class ArchivaDavResourceFactory
 
         String rootPath = StringUtils.substringBeforeLast( pathInfo, "/" );
 
-        if ( StringUtils.endsWith( rootPath, repoGroupConfig.getMergedIndexPath() ) )
+        if ( StringUtils.endsWith( rootPath, repoGroup.getMergedIndexPath().getPath() ) )
         {
             // we are in the case of index file request
             String requestedFileName = StringUtils.substringAfterLast( pathInfo, "/" );
             Path temporaryIndexDirectory =
-                buildMergedIndexDirectory( repositories, activePrincipal, request, repoGroupConfig );
+                buildMergedIndexDirectory( activePrincipal, request, repoGroup );
+            asset = new FilesystemAsset()
 
             Path resourceFile = temporaryIndexDirectory.resolve( requestedFileName );
-            resource = new ArchivaDavResource( resourceFile.toAbsolutePath().toString(), requestedFileName, null,
-                                               request.getRemoteAddr(), activePrincipal, request.getDavSession(),
-                                               archivaLocator, this, mimeTypes, auditListeners, scheduler,
-                                               fileLockManager );
+            try {
+                resource = new ArchivaDavResource( resourceFile.toAbsolutePath().toString(), requestedFileName, null,
+                                                   request.getRemoteAddr(), activePrincipal, request.getDavSession(),
+                                                   archivaLocator, this, mimeTypes, auditListeners, scheduler );
+            } catch (LayoutException e) {
+                log.error("Bad layout: {}", e.getMessage(), e);
+                throw new DavException(500, e);
+            }
 
         }
         else
@@ -969,28 +973,29 @@ public class ArchivaDavResourceFactory
         }
     }
 
-    private DavResource getResourceFromGroup( DavServletRequest request, List<String> repositories,
+    private DavResource getResourceFromGroup( DavServletRequest request,
                                               ArchivaDavResourceLocator locator,
-                                              RepositoryGroupConfiguration repositoryGroupConfiguration )
+                                              RepositoryGroup repositoryGroup )
         throws DavException
     {
-        if ( repositoryGroupConfiguration.getRepositories() == null
-            || repositoryGroupConfiguration.getRepositories().isEmpty() )
+        final String id = repositoryGroup.getId();
+        final List<ManagedRepository> repositories = repositoryGroup.getRepositories();
+        if ( repositories == null
+            || repositories.isEmpty() )
         {
-            Path file =
-                Paths.get( System.getProperty( "appserver.base" ), "groups/" + repositoryGroupConfiguration.getId() );
-
-            return new ArchivaDavResource( file.toString(), "groups/" + repositoryGroupConfiguration.getId(), null,
-                                           request.getDavSession(), locator, this, mimeTypes, auditListeners, scheduler,
-                                           fileLockManager );
+            try {
+                return new ArchivaDavResource( repositoryGroup.getAsset("/"), "groups/" + id, null,
+                                               request.getDavSession(), locator, this, mimeTypes, auditListeners, scheduler);
+            } catch (LayoutException e) {
+                log.error("Bad repository layout: {}", e.getMessage(), e);
+                throw new DavException(500, e);
+            }
         }
         List<Path> mergedRepositoryContents = new ArrayList<>();
-        // multiple repo types so we guess they are all the same type
-        // so use the first one
-        // FIXME add a method with group in the repository storage
-        String firstRepoId = repositoryGroupConfiguration.getRepositories().get( 0 );
 
-        String path = getLogicalResource( locator, repositoryRegistry.getManagedRepository( firstRepoId ), false );
+        ManagedRepository firstRepo = repositories.get( 0 );
+
+        String path = getLogicalResource( locator, firstRepo, false );
         if ( path.startsWith( "/" ) )
         {
             path = path.substring( 1 );
@@ -1012,19 +1017,19 @@ public class ArchivaDavResourceFactory
         if ( allow )
         {
 
-            if ( StringUtils.endsWith( pathInfo, repositoryGroupConfiguration.getMergedIndexPath() ) )
+            if ( StringUtils.endsWith( pathInfo, repositoryGroup.getMergedIndexPath().getPath() ) )
             {
                 Path mergedRepoDir =
-                    buildMergedIndexDirectory( repositories, activePrincipal, request, repositoryGroupConfiguration );
+                    buildMergedIndexDirectory( activePrincipal, request, repositoryGroup );
                 mergedRepositoryContents.add( mergedRepoDir );
             }
             else
             {
-                if ( StringUtils.equalsIgnoreCase( pathInfo, "/" + repositoryGroupConfiguration.getId() ) )
+                if ( StringUtils.equalsIgnoreCase( pathInfo, "/" + id ) )
                 {
                     Path tmpDirectory = Paths.get( SystemUtils.getJavaIoTmpDir().toString(),
-                                                  repositoryGroupConfiguration.getId(),
-                                                      repositoryGroupConfiguration.getMergedIndexPath() );
+                                                  id,
+                                                      repositoryGroup.getMergedIndexPath().getFilePath().toString() );
                     if ( !Files.exists(tmpDirectory) )
                     {
                         synchronized ( tmpDirectory.toAbsolutePath().toString() )
@@ -1044,19 +1049,18 @@ public class ArchivaDavResourceFactory
                     }
                     mergedRepositoryContents.add( tmpDirectory.getParent() );
                 }
-                for ( String repository : repositories )
+                for ( ManagedRepository repo : repositories )
                 {
                     ManagedRepositoryContent managedRepository = null;
-                    ManagedRepository repo = repositoryRegistry.getManagedRepository( repository );
                     if (repo == null) {
                         throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                            "Invalid managed repository <" + repository + ">");
+                            "Invalid managed repository <" + repo.getId() + ">");
                     }
                     managedRepository = repo.getContent();
                     if (managedRepository==null) {
-                        log.error("Inconsistency detected. Repository content not found for '{}'",repository);
+                        log.error("Inconsistency detected. Repository content not found for '{}'",repo.getId());
                         throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                            "Invalid managed repository <" + repository + ">");
+                            "Invalid managed repository <" + repo.getId() + ">");
                     }
                     Path resourceFile = Paths.get( managedRepository.getRepoRoot(), logicalResource.getPath() );
                     if ( Files.exists(resourceFile) )
@@ -1088,10 +1092,10 @@ public class ArchivaDavResourceFactory
                             {
                                 try
                                 {
-                                    if ( isAuthorized( request, repository ) )
+                                    if ( isAuthorized( request, repo.getId() ) )
                                     {
                                         mergedRepositoryContents.add( resourceFile );
-                                        log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
+                                        log.debug( "Repository '{}' accessed by '{}'", repo.getId(), activePrincipal );
                                     }
                                 }
                                 catch ( DavException e )
@@ -1109,12 +1113,12 @@ public class ArchivaDavResourceFactory
                                 // for the current user logged in
                                 try
                                 {
-                                    if ( servletAuth.isAuthorized( activePrincipal, repository,
+                                    if ( servletAuth.isAuthorized( activePrincipal, repo.getId(),
                                                                    WebdavMethodUtil.getMethodPermission(
                                                                        request.getMethod() ) ) )
                                     {
                                         mergedRepositoryContents.add( resourceFile );
-                                        log.debug( "Repository '{}' accessed by '{}'", repository, activePrincipal );
+                                        log.debug( "Repository '{}' accessed by '{}'", repo.getId(), activePrincipal );
                                     }
                                 }
                                 catch ( UnauthorizedException e )
@@ -1163,7 +1167,7 @@ public class ArchivaDavResourceFactory
      * @param activePrincipal
      * @return
      */
-    private boolean isAllowedToContinue( DavServletRequest request, List<String> repositories, String activePrincipal )
+    private boolean isAllowedToContinue( DavServletRequest request, List<ManagedRepository> repositories, String activePrincipal )
     {
         // when no repositories configured it's impossible to browse nothing !
         // at least make possible to see nothing :-)
@@ -1177,11 +1181,11 @@ public class ArchivaDavResourceFactory
         // if securitySession != null, it means that the user was prompted for authentication
         if ( httpAuth.getSecuritySession( request.getSession() ) != null )
         {
-            for ( String repository : repositories )
+            for ( ManagedRepository repository : repositories )
             {
                 try
                 {
-                    if ( isAuthorized( request, repository ) )
+                    if ( isAuthorized( request, repository.getId() ) )
                     {
                         allow = true;
                         break;
@@ -1195,11 +1199,11 @@ public class ArchivaDavResourceFactory
         }
         else
         {
-            for ( String repository : repositories )
+            for ( ManagedRepository repository : repositories )
             {
                 try
                 {
-                    if ( servletAuth.isAuthorized( activePrincipal, repository,
+                    if ( servletAuth.isAuthorized( activePrincipal, repository.getId(),
                                                    WebdavMethodUtil.getMethodPermission( request.getMethod() ) ) )
                     {
                         allow = true;
@@ -1262,14 +1266,15 @@ public class ArchivaDavResourceFactory
         }
     }
 
-    protected Path buildMergedIndexDirectory( List<String> repositories, String activePrincipal,
+    protected Path buildMergedIndexDirectory( String activePrincipal,
                                               DavServletRequest request,
-                                              RepositoryGroupConfiguration repositoryGroupConfiguration )
+                                              RepositoryGroup repositoryGroup )
         throws DavException
     {
 
         try
         {
+            final List<ManagedRepository> repositories = repositoryGroup.getRepositories();
             HttpSession session = request.getSession();
 
             @SuppressWarnings( "unchecked" ) Map<String, TemporaryGroupIndex> temporaryGroupIndexMap =
@@ -1280,21 +1285,22 @@ public class ArchivaDavResourceFactory
                 temporaryGroupIndexMap = new HashMap<>();
             }
 
-            TemporaryGroupIndex tmp = temporaryGroupIndexMap.get( repositoryGroupConfiguration.getId() );
+            final String id = repositoryGroup.getId();
+            TemporaryGroupIndex tmp = temporaryGroupIndexMap.get(id);
 
             if ( tmp != null && tmp.getDirectory() != null && Files.exists(tmp.getDirectory()))
             {
                 if ( System.currentTimeMillis() - tmp.getCreationTime() > (
-                    repositoryGroupConfiguration.getMergedIndexTtl() * 60 * 1000 ) )
+                    repositoryGroup.getMergedIndexTTL() * 60 * 1000 ) )
                 {
                     log.debug( MarkerFactory.getMarker( "group.merged.index" ),
-                               "tmp group index '{}' is too old so delete it", repositoryGroupConfiguration.getId() );
+                               "tmp group index '{}' is too old so delete it", id);
                     indexMerger.cleanTemporaryGroupIndex( tmp );
                 }
                 else
                 {
                     log.debug( MarkerFactory.getMarker( "group.merged.index" ),
-                               "merged index for group '{}' found in cache", repositoryGroupConfiguration.getId() );
+                               "merged index for group '{}' found in cache", id);
                     return tmp.getDirectory();
                 }
             }
@@ -1303,14 +1309,14 @@ public class ArchivaDavResourceFactory
 
             String permission = WebdavMethodUtil.getMethodPermission( request.getMethod() );
 
-            for ( String repository : repositories )
+            for ( ManagedRepository repository : repositories )
             {
                 try
                 {
-                    if ( servletAuth.isAuthorized( activePrincipal, repository, permission ) )
+                    if ( servletAuth.isAuthorized( activePrincipal, repository.getId(), permission ) )
                     {
-                        authzRepos.add( repository );
-                        authzRepos.addAll( this.repositorySearch.getRemoteIndexingContextIds( repository ) );
+                        authzRepos.add( repository.getId() );
+                        authzRepos.addAll( this.repositorySearch.getRemoteIndexingContextIds( repository.getId() ) );
                     }
                 }
                 catch ( UnauthorizedException e )
@@ -1323,15 +1329,15 @@ public class ArchivaDavResourceFactory
 
             }
             log.info( "generate temporary merged index for repository group '{}' for repositories '{}'",
-                      repositoryGroupConfiguration.getId(), authzRepos );
+                    id, authzRepos );
 
             Path tempRepoFile = Files.createTempDirectory( "temp" );
             tempRepoFile.toFile().deleteOnExit();
 
             IndexMergerRequest indexMergerRequest =
-                new IndexMergerRequest( authzRepos, true, repositoryGroupConfiguration.getId(),
-                                        repositoryGroupConfiguration.getMergedIndexPath(),
-                                        repositoryGroupConfiguration.getMergedIndexTtl() ).mergedIndexDirectory(
+                new IndexMergerRequest( authzRepos, true, id,
+                                        repositoryGroup.getMergedIndexPath().getFilePath().toString(),
+                                        repositoryGroup.getMergedIndexTTL() ).mergedIndexDirectory(
                     tempRepoFile ).temporary( true );
 
             MergedRemoteIndexesTaskRequest taskRequest =
@@ -1339,14 +1345,14 @@ public class ArchivaDavResourceFactory
 
             MergedRemoteIndexesTask job = new MergedRemoteIndexesTask( taskRequest );
 
-            IndexingContext indexingContext = job.execute().getIndexingContext();
+            ArchivaIndexingContext indexingContext = job.execute().getIndexingContext();
 
-            Path mergedRepoDir = indexingContext.getIndexDirectoryFile().toPath();
+            Path mergedRepoDir = Paths.get(indexingContext.getPath());
             TemporaryGroupIndex temporaryGroupIndex =
-                new TemporaryGroupIndex( mergedRepoDir, indexingContext.getId(), repositoryGroupConfiguration.getId(),
-                                         repositoryGroupConfiguration.getMergedIndexTtl() ) //
+                new TemporaryGroupIndex( mergedRepoDir, indexingContext.getId(), id,
+                                         repositoryGroup.getMergedIndexTTL() ) //
                     .setCreationTime( new Date().getTime() );
-            temporaryGroupIndexMap.put( repositoryGroupConfiguration.getId(), temporaryGroupIndex );
+            temporaryGroupIndexMap.put( id, temporaryGroupIndex );
             session.setAttribute( TemporaryGroupIndexSessionCleaner.TEMPORARY_INDEX_SESSION_KEY,
                                   temporaryGroupIndexMap );
             return mergedRepoDir;

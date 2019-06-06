@@ -19,14 +19,7 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.Configuration;
-import org.apache.archiva.configuration.ConfigurationEvent;
-import org.apache.archiva.configuration.ConfigurationListener;
-import org.apache.archiva.configuration.IndeterminateConfigurationException;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.*;
 import org.apache.archiva.indexer.ArchivaIndexManager;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
@@ -95,6 +88,9 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
     private Map<String, RemoteRepository> remoteRepositories = new HashMap<>( );
     private Map<String, RemoteRepository> uRemoteRepositories = Collections.unmodifiableMap( remoteRepositories );
 
+    private Map<String, RepositoryGroup> repositoryGroups = new HashMap<>();
+    private Map<String, RepositoryGroup> uRepositoryGroups = Collections.unmodifiableMap(repositoryGroups);
+
     private ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock( );
 
     public void setArchivaConfiguration( ArchivaConfiguration archivaConfiguration) {
@@ -118,6 +114,10 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             }
             remoteRepositories.clear( );
             remoteRepositories.putAll( getRemoteRepositoriesFromConfig( ) );
+
+            repositoryGroups.clear();
+            repositoryGroups.putAll(getRepositorGroupsFromConfig());
+
             // archivaConfiguration.addChangeListener(this);
             archivaConfiguration.addListener(this);
         }
@@ -341,6 +341,59 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         }
     }
 
+    private Map<String, RepositoryGroup> getRepositorGroupsFromConfig( )
+    {
+        try
+        {
+            List<RepositoryGroupConfiguration> repositoryGroupConfigurations =
+                    getArchivaConfiguration( ).getConfiguration( ).getRepositoryGroups();
+
+            if ( repositoryGroupConfigurations == null )
+            {
+                return Collections.emptyMap();
+            }
+
+            Map<String, RepositoryGroup> repositoryGroupMap = new LinkedHashMap<>( repositoryGroupConfigurations.size( ) );
+
+            Map<RepositoryType, RepositoryProvider> providerMap = createProviderMap( );
+            for ( RepositoryGroupConfiguration repoConfig : repositoryGroupConfigurations )
+            {
+                RepositoryType repositoryType = RepositoryType.valueOf( repoConfig.getType( ) );
+                if ( providerMap.containsKey( repositoryType ) )
+                {
+                    try
+                    {
+                        RepositoryGroup repo = createNewRepositoryGroup( providerMap.get( repositoryType ), repoConfig );
+                        repositoryGroupMap.put( repo.getId( ), repo );
+                    }
+                    catch ( Exception e )
+                    {
+                        log.error( "Could not create repository group {}: {}", repoConfig.getId( ), e.getMessage( ), e );
+                    }
+                }
+            }
+            return repositoryGroupMap;
+        } catch (Throwable e) {
+            log.error("Could not initialize repositories from config: {}",e.getMessage(), e );
+            //noinspection unchecked
+            return Collections.emptyMap();
+        }
+    }
+
+    RepositoryGroup createNewRepositoryGroup(RepositoryProvider provider, RepositoryGroupConfiguration config) throws RepositoryException {
+        RepositoryGroup repositoryGroup = provider.createRepositoryGroup(config);
+        repositoryGroup.addListener(this);
+        updateRepositoryReferences(provider, repositoryGroup, config);
+        return repositoryGroup;
+    }
+
+    private void updateRepositoryReferences(RepositoryProvider provider, RepositoryGroup group, RepositoryGroupConfiguration configuration) {
+        if (group instanceof EditableRepositoryGroup) {
+            EditableRepositoryGroup eGroup = (EditableRepositoryGroup) group;
+            eGroup.setRepositories(configuration.getRepositories().stream().map(r -> getManagedRepository(r)).collect(Collectors.toList()));
+        }
+    }
+
     private ArchivaConfiguration getArchivaConfiguration( )
     {
         return this.archivaConfiguration;
@@ -356,7 +409,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         rwLock.readLock( ).lock( );
         try
         {
-            return Stream.concat( managedRepositories.values( ).stream( ), remoteRepositories.values( ).stream( ) ).collect( Collectors.toList( ) );
+            return Stream.concat( managedRepositories.values( ).stream( ), remoteRepositories.values( ).stream( )).collect( Collectors.toList( ) );
         }
         finally
         {
@@ -394,6 +447,15 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             return uRemoteRepositories.values( );
         } finally
         {
+            rwLock.readLock().unlock();
+        }
+    }
+
+    public Collection<RepositoryGroup>  getRepositoryGroups() {
+        rwLock.readLock().lock();
+        try {
+            return uRepositoryGroups.values();
+        } finally {
             rwLock.readLock().unlock();
         }
     }
@@ -465,6 +527,15 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         finally
         {
             rwLock.readLock( ).unlock( );
+        }
+    }
+
+    public RepositoryGroup getRepositoryGroup( String groupId ) {
+        rwLock.readLock().lock();
+        try {
+            return repositoryGroups.get(groupId);
+        } finally {
+            rwLock.readLock().unlock();
         }
     }
 
