@@ -21,10 +21,12 @@ package org.apache.archiva.repository.mock;
 
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.repository.BasicManagedRepository;
 import org.apache.archiva.repository.BasicRemoteRepository;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.EditableRemoteRepository;
+import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.PasswordCredentials;
 import org.apache.archiva.repository.ReleaseScheme;
@@ -32,6 +34,7 @@ import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.repository.RepositoryEvent;
 import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryProvider;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
@@ -78,6 +81,12 @@ public class RepositoryProviderMock implements RepositoryProvider
     public EditableRemoteRepository createRemoteInstance( String id, String name )
     {
         return new BasicRemoteRepository( id, name, Paths.get("target/remotes") );
+    }
+
+    @Override
+    public EditableRepositoryGroup createRepositoryGroup( String id, String name )
+    {
+        return null;
     }
 
     @Override
@@ -178,6 +187,18 @@ public class RepositoryProviderMock implements RepositoryProvider
     }
 
     @Override
+    public RepositoryGroup createRepositoryGroup( RepositoryGroupConfiguration configuration ) throws RepositoryException
+    {
+        return null;
+    }
+
+    @Override
+    public void updateRepositoryGroupInstance( EditableRepositoryGroup repositoryGroup, RepositoryGroupConfiguration configuration ) throws RepositoryException
+    {
+
+    }
+
+    @Override
     public ManagedRepositoryConfiguration getManagedConfiguration( ManagedRepository managedRepository ) throws RepositoryException
     {
         ManagedRepositoryConfiguration configuration = new ManagedRepositoryConfiguration( );
@@ -201,6 +222,12 @@ public class RepositoryProviderMock implements RepositoryProvider
         StagingRepositoryFeature srf = managedRepository.getFeature( StagingRepositoryFeature.class ).get( );
         configuration.setStageRepoNeeded( srf.isStageRepoNeeded( ) );
         return configuration;
+    }
+
+    @Override
+    public RepositoryGroupConfiguration getRepositoryGroupConfiguration( RepositoryGroup repositoryGroup ) throws RepositoryException
+    {
+        return null;
     }
 
 
