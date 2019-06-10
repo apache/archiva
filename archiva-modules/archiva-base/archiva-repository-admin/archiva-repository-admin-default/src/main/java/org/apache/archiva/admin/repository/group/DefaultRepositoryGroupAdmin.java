@@ -29,6 +29,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,12 +43,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author Olivier Lamy
@@ -68,6 +71,9 @@ public class DefaultRepositoryGroupAdmin
     @Inject
     private MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler;
 
+    @Inject
+    private RepositoryRegistry repositoryRegistry;
+
     private Path groupsDirectory;
 
     @PostConstruct
@@ -80,27 +86,20 @@ public class DefaultRepositoryGroupAdmin
             Files.exists(groupsDirectory);
         }
 
-        try
+        for ( org.apache.archiva.repository.RepositoryGroup repositoryGroup : repositoryRegistry.getRepositoryGroups() )
         {
-            for ( RepositoryGroup repositoryGroup : getRepositoriesGroups() )
+            mergedRemoteIndexesScheduler.schedule( repositoryGroup,
+                                                   getMergedIndexDirectory( repositoryGroup.getId() ));
+            // create the directory for each group if not exists
+            Path groupPath = groupsDirectory.resolve(repositoryGroup.getId() );
+            if ( !Files.exists(groupPath) )
             {
-                mergedRemoteIndexesScheduler.schedule( repositoryGroup,
-                                                       getMergedIndexDirectory( repositoryGroup.getId() ));
-                // create the directory for each group if not exists
-                Path groupPath = groupsDirectory.resolve(repositoryGroup.getId() );
-                if ( !Files.exists(groupPath) )
-                {
-                    try {
-                        Files.createDirectories(groupPath);
-                    } catch (IOException e) {
-                        log.error("Could not create directory {}", groupPath);
-                    }
+                try {
+                    Files.createDirectories(groupPath);
+                } catch (IOException e) {
+                    log.error("Could not create directory {}", groupPath);
                 }
             }
-        }
-        catch ( RepositoryAdminException e )
-        {
-            log.warn( "fail to getRepositoriesGroups {}", e.getMessage(), e );
         }
 
     }
@@ -116,34 +115,14 @@ public class DefaultRepositoryGroupAdmin
     public List<RepositoryGroup> getRepositoriesGroups()
         throws RepositoryAdminException
     {
-        List<RepositoryGroup> repositoriesGroups =
-            new ArrayList<>( getArchivaConfiguration().getConfiguration().getRepositoryGroups().size() );
-
-        for ( RepositoryGroupConfiguration repositoryGroupConfiguration : getArchivaConfiguration().getConfiguration().getRepositoryGroups() )
-        {
-            repositoriesGroups.add( new RepositoryGroup( repositoryGroupConfiguration.getId(), new ArrayList<String>(
-                repositoryGroupConfiguration.getRepositories() ) ).mergedIndexPath(
-                repositoryGroupConfiguration.getMergedIndexPath() ).mergedIndexTtl(
-                repositoryGroupConfiguration.getMergedIndexTtl() ).cronExpression(
-                repositoryGroupConfiguration.getCronExpression() ) );
-        }
-
-        return repositoriesGroups;
+        return repositoryRegistry.getRepositoryGroups().stream().map( r -> convertRepositoryGroupObject( r ) ).collect( Collectors.toList());
     }
 
     @Override
     public RepositoryGroup getRepositoryGroup( String repositoryGroupId )
         throws RepositoryAdminException
     {
-        List<RepositoryGroup> repositoriesGroups = getRepositoriesGroups();
-        for ( RepositoryGroup repositoryGroup : repositoriesGroups )
-        {
-            if ( StringUtils.equals( repositoryGroupId, repositoryGroup.getId() ) )
-            {
-                return repositoryGroup;
-            }
-        }
-        return null;
+        return convertRepositoryGroupObject( repositoryRegistry.getRepositoryGroup( repositoryGroupId ) );
     }
 
     @Override
@@ -163,7 +142,7 @@ public class DefaultRepositoryGroupAdmin
         configuration.addRepositoryGroup( repositoryGroupConfiguration );
         saveConfiguration( configuration );
         triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.ADD_REPO_GROUP, auditInformation );
-        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ) );
+        mergedRemoteIndexesScheduler.schedule( repositoryRegistry.getRepositoryGroup( repositoryGroup.getId()), getMergedIndexDirectory( repositoryGroup.getId() ) );
         return Boolean.TRUE;
     }
 
@@ -175,7 +154,7 @@ public class DefaultRepositoryGroupAdmin
         RepositoryGroupConfiguration repositoryGroupConfiguration =
             configuration.getRepositoryGroupsAsMap().get( repositoryGroupId );
         mergedRemoteIndexesScheduler.unschedule(
-            new RepositoryGroup( repositoryGroupId, Collections.<String>emptyList() ) );
+            repositoryRegistry.getRepositoryGroup( repositoryGroupId ) );
         if ( repositoryGroupConfiguration == null )
         {
             throw new RepositoryAdminException(
@@ -218,8 +197,9 @@ public class DefaultRepositoryGroupAdmin
         {
             triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.MODIFY_REPO_GROUP, auditInformation );
         }
-        mergedRemoteIndexesScheduler.unschedule( repositoryGroup );
-        mergedRemoteIndexesScheduler.schedule( repositoryGroup, getMergedIndexDirectory( repositoryGroup.getId() ) );
+        org.apache.archiva.repository.RepositoryGroup rg = repositoryRegistry.getRepositoryGroup( repositoryGroup.getId( ) );
+        mergedRemoteIndexesScheduler.unschedule( rg );
+        mergedRemoteIndexesScheduler.schedule( rg, getMergedIndexDirectory( repositoryGroup.getId() ) );
         return Boolean.TRUE;
     }
 
@@ -410,5 +390,13 @@ public class DefaultRepositoryGroupAdmin
     public void setManagedRepositoryAdmin( ManagedRepositoryAdmin managedRepositoryAdmin )
     {
         this.managedRepositoryAdmin = managedRepositoryAdmin;
+    }
+
+    private RepositoryGroup convertRepositoryGroupObject( org.apache.archiva.repository.RepositoryGroup group ) {
+        RepositoryGroup rg = new RepositoryGroup( group.getId( ), group.getRepositories().stream().map(r -> r.getId()).collect( Collectors.toList()) );
+        rg.setMergedIndexPath( group.getMergedIndexPath().getPath() );
+        rg.setCronExpression( group.getSchedulingDefinition() );
+        rg.setMergedIndexTtl( group.getMergedIndexTTL() );
+        return rg;
     }
 }
