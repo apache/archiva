@@ -19,18 +19,19 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.audit.Auditable;
+import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksumUtil;
+import org.apache.archiva.checksum.ChecksummedFile;
+import org.apache.archiva.checksum.StreamingChecksum;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.merger.IndexMerger;
 import org.apache.archiva.indexer.merger.IndexMergerException;
@@ -59,9 +60,15 @@ import org.apache.archiva.redback.policy.MustChangePasswordException;
 import org.apache.archiva.redback.system.SecuritySession;
 import org.apache.archiva.redback.users.User;
 import org.apache.archiva.redback.users.UserManager;
-import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.ReleaseScheme;
+import org.apache.archiva.repository.RepositoryGroup;
+import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryRequestInfo;
 import org.apache.archiva.repository.content.FilesystemAsset;
-import org.apache.archiva.repository.content.maven2.MavenRepositoryRequestInfo;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.metadata.MetadataTools;
@@ -86,8 +93,6 @@ import org.apache.jackrabbit.webdav.DavServletResponse;
 import org.apache.jackrabbit.webdav.DavSession;
 import org.apache.jackrabbit.webdav.lock.LockManager;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
-import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.digest.ChecksumFile;
 import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
 import org.slf4j.Logger;
@@ -102,6 +107,8 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -111,7 +118,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -167,7 +176,7 @@ public class ArchivaDavResourceFactory
      */
     private final LockManager lockManager = new SimpleLockManager();
 
-    private ChecksumFile checksum;
+    private ChecksummedFile checksum;
 
     private Digester digestSha1;
 
@@ -190,10 +199,6 @@ public class ArchivaDavResourceFactory
     {
         this.archivaConfiguration = archivaConfiguration;
         this.applicationContext = applicationContext;
-        this.checksum = plexusSisuBridge.lookup( ChecksumFile.class );
-
-        this.digestMd5 = plexusSisuBridge.lookup( Digester.class, "md5" );
-        this.digestSha1 = plexusSisuBridge.lookup( Digester.class, "sha1" );
 
     }
 
@@ -301,27 +306,29 @@ public class ArchivaDavResourceFactory
             {
 
                 ArchivaDavResource res = (ArchivaDavResource) resource;
-                String filePath =
-                    StringUtils.substringBeforeLast( res.getLocalResource().toAbsolutePath().toString().replace( '\\', '/' ),
-                                                     "/" );
-                filePath = filePath + "/maven-metadata-" + repoGroupConfig.getId() + ".xml";
-
+                String newPath = res.getAsset().getPath()+"/maven-metadata-" + sRepoId + ".xml";
                 // for MRM-872 handle checksums of the merged metadata files
                 if ( repositoryRequestInfo.isSupportFile( requestedResource ) )
                 {
-                    Path metadataChecksum =
-                        Paths.get( filePath + "." + StringUtils.substringAfterLast( requestedResource, "." ) );
-
-                    if ( Files.exists(metadataChecksum) )
+                    String metadataChecksumPath = newPath + "." + StringUtils.substringAfterLast( requestedResource, "." );
+                    StorageAsset metadataChecksum = repoGroup.getAsset( metadataChecksumPath );
+                    if ( repoGroup.getAsset( metadataChecksumPath ).exists() )
                     {
                         LogicalResource logicalResource =
                             new LogicalResource( getLogicalResource( archivaLocator, null, false ) );
 
-                        resource =
-                            new ArchivaDavResource( metadataChecksum.toAbsolutePath().toString(), logicalResource.getPath(), null,
-                                                    request.getRemoteAddr(), activePrincipal, request.getDavSession(),
-                                                    archivaLocator, this, mimeTypes, auditListeners, scheduler,
-                                                    fileLockManager );
+                        try
+                        {
+                            resource =
+                                new ArchivaDavResource( metadataChecksum, logicalResource.getPath(), null,
+                                                        request.getRemoteAddr(), activePrincipal, request.getDavSession(),
+                                                        archivaLocator, this, mimeTypes, auditListeners, scheduler);
+                        }
+                        catch ( LayoutException e )
+                        {
+                            log.error("Incompatible layout: {}", e.getMessage(), e);
+                            throw new DavException( 500, e );
+                        }
                     }
                 }
                 else
@@ -352,16 +359,16 @@ public class ArchivaDavResourceFactory
 
                         try
                         {
-                            Path resourceFile = writeMergedMetadataToFile( mergedMetadata, filePath );
+                            StorageAsset resourceFile = writeMergedMetadataToFile( repoGroup, mergedMetadata, newPath );
 
                             LogicalResource logicalResource =
                                 new LogicalResource( getLogicalResource( archivaLocator, null, false ) );
 
                             resource =
-                                new ArchivaDavResource( resourceFile.toAbsolutePath().toString(), logicalResource.getPath(), null,
+                                new ArchivaDavResource( resourceFile, logicalResource.getPath(), null,
                                                         request.getRemoteAddr(), activePrincipal,
                                                         request.getDavSession(), archivaLocator, this, mimeTypes,
-                                                        auditListeners, scheduler, fileLockManager );
+                                                        auditListeners, scheduler);
                         }
                         catch ( RepositoryMetadataException r )
                         {
@@ -378,6 +385,11 @@ public class ArchivaDavResourceFactory
                             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                                     "Error occurred while generating checksum files."
                                                         + de.getMessage() );
+                        }
+                        catch ( LayoutException e )
+                        {
+                            log.error("Incompatible layout: {}", e.getMessage(), e);
+                            throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Incompatible layout for repository "+repoGroup.getId());
                         }
                     }
                 }
@@ -414,11 +426,11 @@ public class ArchivaDavResourceFactory
             String requestedFileName = StringUtils.substringAfterLast( pathInfo, "/" );
             Path temporaryIndexDirectory =
                 buildMergedIndexDirectory( activePrincipal, request, repoGroup );
-            asset = new FilesystemAsset()
+            FilesystemAsset asset = new FilesystemAsset( pathInfo, temporaryIndexDirectory.resolve(requestedFileName) );
 
             Path resourceFile = temporaryIndexDirectory.resolve( requestedFileName );
             try {
-                resource = new ArchivaDavResource( resourceFile.toAbsolutePath().toString(), requestedFileName, null,
+                resource = new ArchivaDavResource( asset, requestedFileName, null,
                                                    request.getRemoteAddr(), activePrincipal, request.getDavSession(),
                                                    archivaLocator, this, mimeTypes, auditListeners, scheduler );
             } catch (LayoutException e) {
@@ -429,8 +441,9 @@ public class ArchivaDavResourceFactory
         }
         else
         {
-            for ( String repositoryId : repositories )
+            for ( ManagedRepository repository : repoGroup.getRepositories() )
             {
+                String repositoryId = repository.getId();
                 ManagedRepositoryContent managedRepositoryContent;
                 ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( repositoryId );
                 if (managedRepository==null) {
@@ -554,15 +567,24 @@ public class ArchivaDavResourceFactory
                 path = path.substring( 1 );
             }
             LogicalResource logicalResource = new LogicalResource( path );
-            Path resourceFile = Paths.get( managedRepositoryContent.getRepoRoot(), path );
-            resource =
-                new ArchivaDavResource( resourceFile.toAbsolutePath().toString(), path, managedRepositoryContent.getRepository(),
-                                        request.getRemoteAddr(), activePrincipal, request.getDavSession(),
-                                        archivaLocator, this, mimeTypes, auditListeners, scheduler, fileLockManager );
+            StorageAsset repoAsset = managedRepositoryContent.getAsset( path );
+            // Path resourceFile = Paths.get( managedRepositoryContent.getRepoRoot(), path );
+            try
+            {
+                resource =
+                    new ArchivaDavResource( repoAsset, path, managedRepositoryContent.getRepository(),
+                                            request.getRemoteAddr(), activePrincipal, request.getDavSession(),
+                                            archivaLocator, this, mimeTypes, auditListeners, scheduler );
+            }
+            catch ( LayoutException e )
+            {
+                log.error("Incompatible layout: {}", e.getMessage(), e);
+                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
+            }
 
             if ( WebdavMethodUtil.isReadMethod( request.getMethod() ) )
             {
-                if ( archivaLocator.getHref( false ).endsWith( "/" ) && !Files.isDirectory( resourceFile ) )
+                if ( archivaLocator.getHref( false ).endsWith( "/" ) && !repoAsset.isContainer() )
                 {
                     // force a resource not found
                     throw new DavException( HttpServletResponse.SC_NOT_FOUND, "Resource does not exist" );
@@ -571,10 +593,11 @@ public class ArchivaDavResourceFactory
                 {
                     if ( !resource.isCollection() )
                     {
-                        boolean previouslyExisted = Files.exists(resourceFile);
+                        boolean previouslyExisted = repoAsset.exists();
 
                         boolean fromProxy = fetchContentFromProxies( managedRepositoryContent, request, logicalResource );
 
+                        StorageAsset resourceAsset=null;
                         // At this point the incoming request can either be in default or
                         // legacy layout format.
                         try
@@ -582,17 +605,17 @@ public class ArchivaDavResourceFactory
                             // Perform an adjustment of the resource to the managed
                             // repository expected path.
                             String localResourcePath = managedRepository.getRequestInfo().toNativePath( logicalResource.getPath() );
-                            resourceFile = Paths.get( managedRepositoryContent.getRepoRoot(), localResourcePath );
+                            resourceAsset = managedRepositoryContent.getAsset( localResourcePath );
                             resource =
-                                new ArchivaDavResource( resourceFile.toAbsolutePath().toString(), logicalResource.getPath(),
+                                new ArchivaDavResource( resourceAsset, logicalResource.getPath(),
                                                         managedRepositoryContent.getRepository(),
                                                         request.getRemoteAddr(), activePrincipal,
                                                         request.getDavSession(), archivaLocator, this, mimeTypes,
-                                                        auditListeners, scheduler, fileLockManager );
+                                                        auditListeners, scheduler );
                         }
                         catch ( LayoutException e )
                         {
-                            if ( !Files.exists(resourceFile) )
+                            if ( resourceAsset!=null && !resourceAsset.exists() )
                             {
                                 throw new DavException( HttpServletResponse.SC_NOT_FOUND, e );
                             }
@@ -604,13 +627,13 @@ public class ArchivaDavResourceFactory
                                 + PROXIED_SUFFIX;
 
                             log.debug( "Proxied artifact '{}' in repository '{}' (current user '{}')",
-                                       resourceFile.getFileName(), managedRepositoryContent.getId(), activePrincipal );
+                                       resourceAsset.getName(), managedRepositoryContent.getId(), activePrincipal );
 
                             triggerAuditEvent( request.getRemoteAddr(), archivaLocator.getRepositoryId(),
                                                logicalResource.getPath(), action, activePrincipal );
                         }
 
-                        if ( !Files.exists(resourceFile) )
+                        if ( !resourceAsset.exists() )
                         {
                             throw new DavException( HttpServletResponse.SC_NOT_FOUND, "Resource does not exist" );
                         }
@@ -710,10 +733,18 @@ public class ArchivaDavResourceFactory
         {
             logicalResource = logicalResource.substring( 1 );
         }
-        Path resourceFile = Paths.get( managedRepositoryContent.getRepoRoot(), logicalResource );
-        resource = new ArchivaDavResource( resourceFile.toAbsolutePath().toString(), logicalResource,
-                                           repo, davSession, archivaLocator,
-                                           this, mimeTypes, auditListeners, scheduler, fileLockManager );
+        StorageAsset resourceAsset = managedRepositoryContent.getAsset( logicalResource );
+        try
+        {
+            resource = new ArchivaDavResource( resourceAsset, logicalResource,
+                                               repo, davSession, archivaLocator,
+                                               this, mimeTypes, auditListeners, scheduler);
+        }
+        catch ( LayoutException e )
+        {
+            log.error( "Incompatible layout: {}", e.getMessage( ), e );
+            throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
+        }
 
         resource.addLockManager( lockManager );
         return resource;
@@ -826,7 +857,7 @@ public class ArchivaDavResourceFactory
         // [MRM-503] - Metadata file need Pragma:no-cache response
         // header.
         if ( locator.getResourcePath().endsWith( "/maven-metadata.xml" ) || ( resource instanceof ArchivaDavResource
-            && ( Files.isDirectory( ArchivaDavResource.class.cast( resource ).getLocalResource()) ) ) )
+            && ( ArchivaDavResource.class.cast( resource ).getAsset().isContainer() ) ) )
         {
             response.setHeader( "Pragma", "no-cache" );
             response.setHeader( "Cache-Control", "no-cache" );
@@ -1220,38 +1251,44 @@ public class ArchivaDavResourceFactory
         return allow;
     }
 
-    private Path writeMergedMetadataToFile( ArchivaRepositoryMetadata mergedMetadata, String outputFilename )
+    private StorageAsset writeMergedMetadataToFile( RepositoryGroup repoGroup, ArchivaRepositoryMetadata mergedMetadata, String outputFilename )
         throws RepositoryMetadataException, DigesterException, IOException
     {
-        Path outputFile = Paths.get( outputFilename );
-        if ( Files.exists(outputFile) )
-        {
-            org.apache.archiva.common.utils.FileUtils.deleteQuietly( outputFile );
-        }
+        StorageAsset asset = repoGroup.addAsset( outputFilename, false );
+        OutputStream stream = asset.writeData( true );
+        OutputStreamWriter sw = new OutputStreamWriter( stream, "UTF-8" );
+        RepositoryMetadataWriter.write( mergedMetadata, sw );
 
-        Files.createDirectories(outputFile.getParent());
-        RepositoryMetadataWriter.write( mergedMetadata, outputFile );
-
-        createChecksumFile( outputFilename, digestSha1 );
-        createChecksumFile( outputFilename, digestMd5 );
-
-        return outputFile;
+        createChecksumFiles( repoGroup, outputFilename );
+        return asset;
     }
 
-    private void createChecksumFile( String path, Digester digester )
-        throws DigesterException, IOException
-    {
-        Path checksumFile = Paths.get( path + digester.getFilenameExtension() );
-        if ( !Files.exists(checksumFile) )
+
+    private void createChecksumFiles(RepositoryGroup repo, String path) {
+        List<ChecksumAlgorithm> algorithms = ChecksumUtil.getAlgorithms( archivaConfiguration.getConfiguration( ).getArchivaRuntimeConfiguration( ).getChecksumTypes( ) );
+        List<OutputStream> outStreams = algorithms.stream( ).map( algo -> {
+            String ext = algo.getDefaultExtension( );
+            try
+            {
+                return repo.getAsset( path + "." + ext ).writeData( true );
+            }
+            catch ( IOException e )
+            {
+                e.printStackTrace( );
+                return null;
+            }
+        } ).filter( Objects::nonNull ).collect( Collectors.toList( ) );
+        try
         {
-            org.apache.archiva.common.utils.FileUtils.deleteQuietly( checksumFile );
-            checksum.createChecksum( Paths.get( path ).toFile(), digester );
+            StreamingChecksum.updateChecksums( repo.getAsset(path).getData(), algorithms, outStreams );
         }
-        else if ( !Files.isRegularFile( checksumFile) )
+        catch ( IOException e )
         {
-            log.error( "Checksum file is not a file." );
+            e.printStackTrace( );
         }
     }
+
+
 
     private boolean isProjectReference( String requestedResource )
     {
