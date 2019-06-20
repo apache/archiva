@@ -50,42 +50,20 @@ public class IndexWriter
 
     private final String logicalResource;
 
-    private final List<RepoAsset> repositoryAssets;
+    private final List<StorageAsset> repositoryAssets;
 
 
     private final boolean isVirtual;
 
-    public class RepoAsset
-    {
-        private ManagedRepositoryContent repo;
-        private StorageAsset asset;
-
-        public RepoAsset( ManagedRepositoryContent repo, StorageAsset asset) {
-            this.repo = repo;
-            this.asset = asset;
-        }
-
-        public ManagedRepositoryContent getRepo( )
-        {
-            return repo;
-        }
-
-        public StorageAsset getAsset( )
-        {
-            return asset;
-        }
-
-    }
-
-    public IndexWriter( ManagedRepositoryContent repo, StorageAsset reference, String logicalResource )
+    public IndexWriter( StorageAsset reference, String logicalResource )
     {
         this.repositoryAssets = new ArrayList<>(  );
-        this.repositoryAssets.add(new RepoAsset( repo, reference));
+        this.repositoryAssets.add(reference);
         this.logicalResource = logicalResource;
         this.isVirtual = false;
     }
 
-    public IndexWriter( List<RepoAsset> localResources, String logicalResource )
+    public IndexWriter( List<StorageAsset> localResources, String logicalResource )
     {
         this.logicalResource = logicalResource;
         this.repositoryAssets = localResources;
@@ -176,9 +154,9 @@ public class IndexWriter
     {
         if ( !isVirtual )
         {
-            for ( RepoAsset localResource : repositoryAssets )
+            for ( StorageAsset localResource : repositoryAssets )
             {
-                localResource.getAsset().list().stream().sorted(
+                localResource.list().stream().sorted(
                     Comparator.comparing( StorageAsset::getName )
                 ).forEach( asset -> {
                     writeHyperlink( writer, asset.getName(), asset.getModificationTime().toEpochMilli(), asset.getSize(),
@@ -190,9 +168,9 @@ public class IndexWriter
         {
             // virtual repository - filter unique directories
             SortedMap<String, StorageAsset> uniqueChildFiles = new TreeMap<>();
-            for ( RepoAsset resource : repositoryAssets )
+            for ( StorageAsset resource : repositoryAssets )
             {
-                List<StorageAsset> files = resource.getAsset().list();
+                List<StorageAsset> files = resource.list();
                 for ( StorageAsset file : files )
                 {
                     // the first entry wins

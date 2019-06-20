@@ -1022,7 +1022,7 @@ public class ArchivaDavResourceFactory
                 throw new DavException(500, e);
             }
         }
-        List<Path> mergedRepositoryContents = new ArrayList<>();
+        List<StorageAsset> mergedRepositoryContents = new ArrayList<>();
 
         ManagedRepository firstRepo = repositories.get( 0 );
 
@@ -1050,8 +1050,9 @@ public class ArchivaDavResourceFactory
 
             if ( StringUtils.endsWith( pathInfo, repositoryGroup.getMergedIndexPath().getPath() ) )
             {
-                Path mergedRepoDir =
+                Path mergedRepoDirPath =
                     buildMergedIndexDirectory( activePrincipal, request, repositoryGroup );
+                FilesystemAsset mergedRepoDir = new FilesystemAsset(pathInfo, mergedRepoDirPath);
                 mergedRepositoryContents.add( mergedRepoDir );
             }
             else
@@ -1078,7 +1079,8 @@ public class ArchivaDavResourceFactory
                             }
                         }
                     }
-                    mergedRepositoryContents.add( tmpDirectory.getParent() );
+                    FilesystemAsset parentDir = new FilesystemAsset(pathInfo, tmpDirectory.getParent());
+                    mergedRepositoryContents.add( parentDir );
                 }
                 for ( ManagedRepository repo : repositories )
                 {
@@ -1093,8 +1095,9 @@ public class ArchivaDavResourceFactory
                         throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                             "Invalid managed repository <" + repo.getId() + ">");
                     }
-                    Path resourceFile = Paths.get( managedRepository.getRepoRoot(), logicalResource.getPath() );
-                    if ( Files.exists(resourceFile) )
+                    // Path resourceFile = Paths.get( managedRepository.getRepoRoot(), logicalResource.getPath() );
+                    StorageAsset resourceFile = managedRepository.getAsset(logicalResource.getPath());
+                    if ( resourceFile.exists() )
                     {
                         // in case of group displaying index directory doesn't have sense !!
                         IndexCreationFeature idf = managedRepository.getRepository().getFeature(IndexCreationFeature.class).get();

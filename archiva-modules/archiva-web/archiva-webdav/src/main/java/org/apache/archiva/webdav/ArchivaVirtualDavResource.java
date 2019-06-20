@@ -19,6 +19,8 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
+import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.archiva.webdav.util.IndexWriter;
 import org.apache.archiva.webdav.util.MimeTypes;
 import org.apache.jackrabbit.util.Text;
@@ -49,9 +51,8 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * DavResource for virtual repositories
@@ -73,10 +74,10 @@ public class ArchivaVirtualDavResource
 
     private static final String METHODS = "OPTIONS, GET, HEAD, POST, TRACE, PROPFIND, PROPPATCH, MKCOL";
 
-    private final List<Path> localResources;
+    private final List<StorageAsset> localResources;
 
-    public ArchivaVirtualDavResource( List<Path> localResources, String logicalResource, MimeTypes mimeTypes,
-                                      ArchivaDavResourceLocator locator, DavResourceFactory factory )
+    public ArchivaVirtualDavResource(List<StorageAsset> localResources, String logicalResource, MimeTypes mimeTypes,
+                                     ArchivaDavResourceLocator locator, DavResourceFactory factory )
     {
         this.localResources = localResources;
         this.logicalResource = logicalResource;
@@ -86,23 +87,14 @@ public class ArchivaVirtualDavResource
     }
 
     @Override
-    public void spool( OutputContext outputContext )
-        throws IOException
-    {
+    public void spool( OutputContext outputContext ) {
         if ( outputContext.hasStream() )
         {
-            Collections.sort( localResources );
-            List<Path> localResourceFiles = new ArrayList<>();
+            List<StorageAsset> localResourceFiles = localResources.stream().filter(Objects::nonNull)
+                    .filter(repoAsset -> repoAsset.exists())
+                    .sorted(Comparator.comparing(o -> o.getName())).collect(Collectors.toList());
 
-            for ( Path resourceFile : localResources )
-            {
-                if ( Files.exists(resourceFile) )
-                {
-                    localResourceFiles.add( resourceFile );
-                }
-            }
-
-            IndexWriter writer = new IndexWriter( this, localResourceFiles, logicalResource );
+            IndexWriter writer = new IndexWriter(localResourceFiles, logicalResource );
             writer.write( outputContext );
         }
     }
