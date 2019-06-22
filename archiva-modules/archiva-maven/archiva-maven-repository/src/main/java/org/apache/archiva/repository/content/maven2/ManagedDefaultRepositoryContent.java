@@ -423,9 +423,11 @@ public class ManagedDefaultRepositoryContent
     public void setRepository( ManagedRepository repo )
     {
         this.repository = repo;
-        this.repoDir = PathUtil.getPathFromUri( repository.getLocation() );
-        if (repository instanceof EditableManagedRepository ) {
-            ((EditableManagedRepository)repository).setContent(this);
+        if (repo!=null) {
+            this.repoDir = PathUtil.getPathFromUri(repository.getLocation());
+            if (repository instanceof EditableManagedRepository) {
+                ((EditableManagedRepository) repository).setContent(this);
+            }
         }
 
     }

@@ -1029,6 +1029,10 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
     @SuppressWarnings( "unchecked" )
     public void removeRepository(Repository repo) throws RepositoryException
     {
+        if (repo==null) {
+            log.warn("Trying to remove null repository");
+            return;
+        }
         if (repo instanceof RemoteRepository ) {
             removeRepository( (RemoteRepository)repo );
         } else if (repo instanceof ManagedRepository) {
@@ -1057,6 +1061,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                 repo = managedRepositories.remove( id );
                 if (repo!=null) {
                     repo.close();
+                    removeRepositoryFromGroups(repo);
                     Configuration configuration = getArchivaConfiguration().getConfiguration();
                     ManagedRepositoryConfiguration cfg = configuration.findManagedRepositoryById( id );
                     if (cfg!=null) {
@@ -1079,6 +1084,13 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         }
     }
 
+    private void removeRepositoryFromGroups(ManagedRepository repo) {
+        if (repo!=null) {
+            repositoryGroups.values().stream().filter(repoGroup -> repoGroup instanceof EditableRepository).
+                    map(repoGroup -> (EditableRepositoryGroup) repoGroup).forEach(repoGroup -> repoGroup.removeRepository(repo));
+        }
+    }
+
     public void removeRepository(ManagedRepository managedRepository, Configuration configuration) throws RepositoryException
     {
         final String id = managedRepository.getId();
@@ -1089,6 +1101,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                 repo = managedRepositories.remove( id );
                 if (repo!=null) {
                     repo.close();
+                    removeRepositoryFromGroups(repo);
                     ManagedRepositoryConfiguration cfg = configuration.findManagedRepositoryById( id );
                     if (cfg!=null) {
                         configuration.removeManagedRepository( cfg );
