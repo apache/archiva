@@ -56,7 +56,7 @@ import java.util.stream.Stream;
  * The modification methods addXX and removeXX persist the changes immediately to the configuration. If the
  * configuration save fails the changes are rolled back.
  *
- * TODO: Audit events should be sent, but we don't want dependency to the repsitory-metadata-api
+ * TODO: Audit events
  */
 @Service( "repositoryRegistry" )
 public class RepositoryRegistry implements ConfigurationListener, RepositoryEventHandler, RepositoryEventListener {
@@ -241,7 +241,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
 
     }
 
-    private ArchivaIndexManager getIndexManager(RepositoryType type) {
+    public ArchivaIndexManager getIndexManager(RepositoryType type) {
         return indexManagerFactory.getIndexManager(type);
     }
 
@@ -478,10 +478,14 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
                 log.debug("Managed repo");
                 return managedRepositories.get( repoId );
             }
-            else
+            else if (remoteRepositories.containsKey(repoId))
             {
                 log.debug("Remote repo");
                 return remoteRepositories.get( repoId );
+            } else if (repositoryGroups.containsKey(repoId)) {
+                return repositoryGroups.get(repoId);
+            } else {
+                return null;
             }
         }
         finally
@@ -676,6 +680,153 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
         }
     }
 
+
+    /**
+     * Adds a new repository group to the current list, or replaces the repository group definition with
+     * the same id, if it exists already.
+     * The change is saved to the configuration immediately.
+     *
+     * @param repositoryGroup the new repository group.
+     * @throws RepositoryException if the new repository group could not be saved to the configuration.
+     */
+    public RepositoryGroup putRepositoryGroup( RepositoryGroup repositoryGroup ) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            final String id = repositoryGroup.getId();
+            RepositoryGroup originRepo = repositoryGroups.put( id, repositoryGroup );
+            try
+            {
+                if (originRepo!=null) {
+                    originRepo.close();
+                }
+                RepositoryProvider provider = getProvider( repositoryGroup.getType() );
+                RepositoryGroupConfiguration newCfg = provider.getRepositoryGroupConfiguration( repositoryGroup );
+                Configuration configuration = getArchivaConfiguration( ).getConfiguration( );
+                updateRepositoryReferences( provider, repositoryGroup, newCfg );
+                RepositoryGroupConfiguration oldCfg = configuration.findRepositoryGroupById( id );
+                if (oldCfg!=null) {
+                    configuration.removeRepositoryGroup( oldCfg );
+                }
+                configuration.addRepositoryGroup( newCfg );
+                getArchivaConfiguration( ).save( configuration );
+                return repositoryGroup;
+            }
+            catch ( Exception e )
+            {
+                // Rollback
+                if ( originRepo != null )
+                {
+                    repositoryGroups.put( id, originRepo );
+                } else {
+                    repositoryGroups.remove(id);
+                }
+                log.error("Exception during configuration update {}", e.getMessage(), e);
+                throw new RepositoryException( "Could not save the configuration" + (e.getMessage( )==null?"":": "+e.getMessage()) );
+            }
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
+        }
+    }
+
+    /**
+     * Adds a new repository group or updates the repository with the same id, if it exists already.
+     * The configuration is saved immediately.
+     *
+     * @param repositoryGroupConfiguration the repository configuration
+     * @return the updated or created repository
+     * @throws RepositoryException if an error occurs, or the configuration is not valid.
+     */
+    public RepositoryGroup putRepositoryGroup( RepositoryGroupConfiguration repositoryGroupConfiguration) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            final String id = repositoryGroupConfiguration.getId();
+            final RepositoryType repositoryType = RepositoryType.valueOf( repositoryGroupConfiguration.getType() );
+            Configuration configuration = getArchivaConfiguration().getConfiguration();
+            RepositoryGroup repo = repositoryGroups.get(id);
+            RepositoryGroupConfiguration oldCfg = repo!=null ? getProvider( repositoryType ).getRepositoryGroupConfiguration( repo ) : null;
+            repo = putRepositoryGroup( repositoryGroupConfiguration, configuration );
+            try
+            {
+                getArchivaConfiguration().save(configuration);
+            }
+            catch ( IndeterminateConfigurationException | RegistryException e )
+            {
+                if (oldCfg!=null) {
+                    getProvider( repositoryType ).updateRepositoryGroupInstance( (EditableRepositoryGroup) repo, oldCfg );
+                }
+                log.error("Could not save the configuration for repository group {}: {}", id, e.getMessage(),e );
+                throw new RepositoryException( "Could not save the configuration for repository group "+id+": "+e.getMessage() );
+            }
+            return repo;
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
+        }
+
+    }
+
+    /**
+     * Adds a new repository group or updates the repository group with the same id. The given configuration object is updated, but
+     * the configuration is not saved.
+     *
+     * @param repositoryGroupConfiguration the new or changed repository configuration
+     * @param configuration the configuration object
+     * @return the new or updated repository
+     * @throws RepositoryException if the configuration cannot be saved or updated
+     */
+    @SuppressWarnings( "unchecked" )
+    public RepositoryGroup putRepositoryGroup( RepositoryGroupConfiguration repositoryGroupConfiguration, Configuration configuration) throws RepositoryException
+    {
+        rwLock.writeLock( ).lock( );
+        try
+        {
+            final String id = repositoryGroupConfiguration.getId();
+            final RepositoryType repoType = RepositoryType.valueOf( repositoryGroupConfiguration.getType() );
+            RepositoryGroup repo;
+            setRepositoryGroupDefaults(repositoryGroupConfiguration);
+            if (repositoryGroups.containsKey( id )) {
+                repo = repositoryGroups.get(id);
+                if (repo instanceof EditableRepositoryGroup)
+                {
+                    getProvider( repoType ).updateRepositoryGroupInstance( (EditableRepositoryGroup) repo, repositoryGroupConfiguration );
+                } else {
+                    throw new RepositoryException( "The repository is not editable "+id );
+                }
+            } else
+            {
+                repo = getProvider( repoType ).createRepositoryGroup( repositoryGroupConfiguration );
+                repo.addListener(this);
+                repositoryGroups.put(id, repo);
+            }
+            updateRepositoryReferences( getProvider( repoType  ), repo, repositoryGroupConfiguration );
+            replaceOrAddRepositoryConfig( repositoryGroupConfiguration, configuration );
+            return repo;
+        }
+        finally
+        {
+            rwLock.writeLock( ).unlock( );
+        }
+    }
+
+    private void setRepositoryGroupDefaults(RepositoryGroupConfiguration repositoryGroupConfiguration) {
+        if (StringUtils.isEmpty(repositoryGroupConfiguration.getMergedIndexPath())) {
+            repositoryGroupConfiguration.setMergedIndexPath(".indexer");
+        }
+        if (repositoryGroupConfiguration.getMergedIndexTtl()<=0) {
+            repositoryGroupConfiguration.setMergedIndexTtl(300);
+        }
+        if (StringUtils.isEmpty(repositoryGroupConfiguration.getCronExpression())) {
+            repositoryGroupConfiguration.setCronExpression("0 0 03 ? * MON");
+        }
+    }
+
     private void replaceOrAddRepositoryConfig(ManagedRepositoryConfiguration managedRepositoryConfiguration, Configuration configuration) {
         ManagedRepositoryConfiguration oldCfg = configuration.findManagedRepositoryById( managedRepositoryConfiguration.getId() );
         if ( oldCfg !=null) {
@@ -690,6 +841,14 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             configuration.removeRemoteRepository( oldCfg );
         }
         configuration.addRemoteRepository( remoteRepositoryConfiguration );
+    }
+
+    private void replaceOrAddRepositoryConfig(RepositoryGroupConfiguration repositoryGroupConfiguration, Configuration configuration) {
+        RepositoryGroupConfiguration oldCfg = configuration.findRepositoryGroupById( repositoryGroupConfiguration.getId() );
+        if ( oldCfg !=null) {
+            configuration.removeRepositoryGroup( oldCfg );
+        }
+        configuration.addRepositoryGroup( repositoryGroupConfiguration);
     }
 
     public RemoteRepository putRepository( RemoteRepository remoteRepository, Configuration configuration) throws RepositoryException
@@ -874,7 +1033,9 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             removeRepository( (RemoteRepository)repo );
         } else if (repo instanceof ManagedRepository) {
             removeRepository( (ManagedRepository)repo);
-        } else {
+        } else if (repo instanceof RepositoryGroup ) {
+            removeRepositoryGroup((RepositoryGroup) repo);
+        }else {
             throw new RepositoryException( "Repository type not known: "+repo.getClass() );
         }
     }
@@ -941,6 +1102,68 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
 
     }
 
+
+    /**
+     * Removes a repository group from the registry and configuration, if it exists.
+     * The change is saved to the configuration immediately.
+     *
+     * @param repositoryGroup the repository group to remove
+     * @throws RepositoryException if a error occurs during configuration save
+     */
+    public void removeRepositoryGroup( RepositoryGroup repositoryGroup ) throws RepositoryException
+    {
+        final String id = repositoryGroup.getId();
+        RepositoryGroup repo = getRepositoryGroup( id );
+        if (repo!=null) {
+            rwLock.writeLock().lock();
+            try {
+                repo = repositoryGroups.remove( id );
+                if (repo!=null) {
+                    repo.close();
+                    Configuration configuration = getArchivaConfiguration().getConfiguration();
+                    RepositoryGroupConfiguration cfg = configuration.findRepositoryGroupById( id );
+                    if (cfg!=null) {
+                        configuration.removeRepositoryGroup( cfg );
+                    }
+                    getArchivaConfiguration().save( configuration );
+                }
+
+            }
+            catch ( RegistryException | IndeterminateConfigurationException e )
+            {
+                // Rollback
+                log.error("Could not save config after repository removal: {}", e.getMessage(), e);
+                repositoryGroups.put(repo.getId(), repo);
+                throw new RepositoryException( "Could not save configuration after repository removal: "+e.getMessage() );
+            } finally
+            {
+                rwLock.writeLock().unlock();
+            }
+        }
+    }
+
+    public void removeRepositoryGroup(RepositoryGroup repositoryGroup, Configuration configuration) throws RepositoryException
+    {
+        final String id = repositoryGroup.getId();
+        RepositoryGroup repo = getRepositoryGroup( id );
+        if (repo!=null) {
+            rwLock.writeLock().lock();
+            try {
+                repo = repositoryGroups.remove( id );
+                if (repo!=null) {
+                    repo.close();
+                    RepositoryGroupConfiguration cfg = configuration.findRepositoryGroupById( id );
+                    if (cfg!=null) {
+                        configuration.removeRepositoryGroup( cfg );
+                    }
+                }
+            } finally
+            {
+                rwLock.writeLock().unlock();
+            }
+        }
+
+    }
 
     private void doRemoveRepo(RemoteRepository repo, Configuration configuration) {
             repo.close();

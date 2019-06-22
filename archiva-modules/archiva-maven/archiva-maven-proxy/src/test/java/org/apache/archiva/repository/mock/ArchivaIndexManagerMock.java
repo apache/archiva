@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -86,5 +87,10 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
     @Override
     public void updateLocalIndexPath(Repository repo) {
 
+    }
+
+    @Override
+    public ArchivaIndexingContext mergeContexts(Repository destinationRepo, List<ArchivaIndexingContext> contexts, boolean packIndex) throws UnsupportedOperationException, IndexCreationFailedException {
+        return null;
     }
 }

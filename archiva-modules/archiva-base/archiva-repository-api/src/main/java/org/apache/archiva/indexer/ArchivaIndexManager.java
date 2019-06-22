@@ -21,9 +21,12 @@ package org.apache.archiva.indexer;
 
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryType;
+import org.apache.archiva.repository.content.StorageAsset;
 
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 
 public interface ArchivaIndexManager {
 
@@ -99,5 +102,19 @@ public interface ArchivaIndexManager {
      * Updates the local path where the index is stored using the repository information.
      * @return
      */
-    public void updateLocalIndexPath(Repository repo);
+    void updateLocalIndexPath(Repository repo);
+
+
+    /**
+     * Merges a list of contexts into a single one.
+     *
+     * @param destinationRepo The destination repository
+     * @param contexts The contexts of the indexes that should be merged.
+     * @param packIndex True, if the merged index should be packed, otherwise false.
+     * @return The merged context
+     * @throws UnsupportedOperationException if the underlying implementation does not allow to merge indexing contexts
+     */
+    ArchivaIndexingContext mergeContexts(Repository destinationRepo, List<ArchivaIndexingContext> contexts,
+                                         boolean packIndex) throws UnsupportedOperationException,
+            IndexCreationFailedException;
 }

@@ -28,6 +28,12 @@
        default-lazy-init="true">
 
   <context:annotation-config/>
-  <context:component-scan base-package="org.apache.archiva.repository,org.apache.archiva.repository.content"/>
+  <context:component-scan base-package="org.apache.archiva.repository,org.apache.archiva.repository.content,org.apache.archiva.indexer.merger"/>
+
+  <bean name="taskScheduler#mergeRemoteIndexes"
+        class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+    <property name="poolSize" value="4"/>
+    <property name="threadGroupName" value="mergeRemoteIndexes"/>
+  </bean>
 
 </beans>

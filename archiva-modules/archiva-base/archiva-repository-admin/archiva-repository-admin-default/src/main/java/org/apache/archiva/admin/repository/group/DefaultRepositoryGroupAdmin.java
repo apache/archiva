@@ -29,6 +29,9 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
+import org.apache.archiva.repository.EditableRepository;
+import org.apache.archiva.repository.EditableRepositoryGroup;
+import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +41,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -70,6 +74,7 @@ public class DefaultRepositoryGroupAdmin
     private ManagedRepositoryAdmin managedRepositoryAdmin;
 
     @Inject
+    @Named("mergedRemoteIndexesScheduler#default")
     private MergedRemoteIndexesScheduler mergedRemoteIndexesScheduler;
 
     @Inject
@@ -113,16 +118,12 @@ public class DefaultRepositoryGroupAdmin
     }
 
     @Override
-    public List<RepositoryGroup> getRepositoriesGroups()
-        throws RepositoryAdminException
-    {
+    public List<RepositoryGroup> getRepositoriesGroups() {
         return repositoryRegistry.getRepositoryGroups().stream().map( r -> convertRepositoryGroupObject( r ) ).collect( Collectors.toList());
     }
 
     @Override
-    public RepositoryGroup getRepositoryGroup( String repositoryGroupId )
-        throws RepositoryAdminException
-    {
+    public RepositoryGroup getRepositoryGroup( String repositoryGroupId ) {
         return convertRepositoryGroupObject( repositoryRegistry.getRepositoryGroup( repositoryGroupId ) );
     }
 
@@ -138,10 +139,14 @@ public class DefaultRepositoryGroupAdmin
         repositoryGroupConfiguration.setRepositories( repositoryGroup.getRepositories() );
         repositoryGroupConfiguration.setMergedIndexPath( repositoryGroup.getMergedIndexPath() );
         repositoryGroupConfiguration.setMergedIndexTtl( repositoryGroup.getMergedIndexTtl() );
-        repositoryGroupConfiguration.setCronExpression( repositoryGroup.getCronExpression() );
-        Configuration configuration = getArchivaConfiguration().getConfiguration();
-        configuration.addRepositoryGroup( repositoryGroupConfiguration );
-        saveConfiguration( configuration );
+        repositoryGroupConfiguration.setCronExpression( StringUtils.isEmpty(repositoryGroup.getCronExpression()) ? "0 0 03 ? * MON" : repositoryGroup.getCronExpression() );
+
+        try {
+            repositoryRegistry.putRepositoryGroup(repositoryGroupConfiguration);
+        } catch (RepositoryException e) {
+            e.printStackTrace();
+        }
+
         triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.ADD_REPO_GROUP, auditInformation );
         mergedRemoteIndexesScheduler.schedule( repositoryRegistry.getRepositoryGroup( repositoryGroup.getId()), getMergedIndexDirectory( repositoryGroup.getId() ) );
         return Boolean.TRUE;
@@ -151,17 +156,16 @@ public class DefaultRepositoryGroupAdmin
     public Boolean deleteRepositoryGroup( String repositoryGroupId, AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        Configuration configuration = getArchivaConfiguration().getConfiguration();
-        RepositoryGroupConfiguration repositoryGroupConfiguration =
-            configuration.getRepositoryGroupsAsMap().get( repositoryGroupId );
+
+        org.apache.archiva.repository.RepositoryGroup repositoryGroup = repositoryRegistry.getRepositoryGroup(repositoryGroupId);
+        try {
+            repositoryRegistry.removeRepositoryGroup(repositoryGroup);
+        } catch (RepositoryException e) {
+            log.error("Removal of repository group {} failed: {}", repositoryGroup.getId(), e.getMessage(), e);
+            throw new RepositoryAdminException("Removal of repository failed: " + e.getMessage(), e);
+        }
         mergedRemoteIndexesScheduler.unschedule(
             repositoryRegistry.getRepositoryGroup( repositoryGroupId ) );
-        if ( repositoryGroupConfiguration == null )
-        {
-            throw new RepositoryAdminException(
-                "repositoryGroup with id " + repositoryGroupId + " doesn't not exists so cannot remove" );
-        }
-        configuration.removeRepositoryGroup( repositoryGroupConfiguration );
         triggerAuditEvent( repositoryGroupId, null, AuditEvent.DELETE_REPO_GROUP, auditInformation );
 
         return Boolean.TRUE;
@@ -180,24 +184,23 @@ public class DefaultRepositoryGroupAdmin
     {
         validateRepositoryGroup( repositoryGroup, true );
         validateManagedRepositoriesExists( repositoryGroup.getRepositories() );
+
+
         Configuration configuration = getArchivaConfiguration().getConfiguration();
 
         RepositoryGroupConfiguration repositoryGroupConfiguration =
             configuration.getRepositoryGroupsAsMap().get( repositoryGroup.getId() );
 
-        configuration.removeRepositoryGroup( repositoryGroupConfiguration );
-
         repositoryGroupConfiguration.setRepositories( repositoryGroup.getRepositories() );
         repositoryGroupConfiguration.setMergedIndexPath( repositoryGroup.getMergedIndexPath() );
         repositoryGroupConfiguration.setMergedIndexTtl( repositoryGroup.getMergedIndexTtl() );
         repositoryGroupConfiguration.setCronExpression( repositoryGroup.getCronExpression() );
-        configuration.addRepositoryGroup( repositoryGroupConfiguration );
-
-        saveConfiguration( configuration );
-        if ( triggerAuditEvent )
-        {
-            triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.MODIFY_REPO_GROUP, auditInformation );
+        try {
+            repositoryRegistry.putRepositoryGroup(repositoryGroupConfiguration);
+        } catch (RepositoryException e) {
+            e.printStackTrace();
         }
+
         org.apache.archiva.repository.RepositoryGroup rg = repositoryRegistry.getRepositoryGroup( repositoryGroup.getId( ) );
         mergedRemoteIndexesScheduler.unschedule( rg );
         mergedRemoteIndexesScheduler.schedule( rg, getMergedIndexDirectory( repositoryGroup.getId() ) );
@@ -210,22 +213,33 @@ public class DefaultRepositoryGroupAdmin
                                          AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        RepositoryGroup repositoryGroup = getRepositoryGroup( repositoryGroupId );
+        org.apache.archiva.repository.RepositoryGroup repositoryGroup = repositoryRegistry.getRepositoryGroup( repositoryGroupId );
         if ( repositoryGroup == null )
         {
             throw new RepositoryAdminException(
-                "repositoryGroup with id " + repositoryGroupId + " doesn't not exists so cannot add repository to it" );
+                    "repositoryGroup with id " + repositoryGroupId + " doesn't not exists so cannot add repository to it" );
         }
 
-        if ( repositoryGroup.getRepositories().contains( repositoryId ) )
+        if (!(repositoryGroup instanceof EditableRepositoryGroup)) {
+            throw new RepositoryAdminException("The repository group is not editable "+repositoryGroupId);
+        }
+        EditableRepositoryGroup editableRepositoryGroup = (EditableRepositoryGroup) repositoryGroup;
+        if ( editableRepositoryGroup.getRepositories().stream().anyMatch( repo -> repositoryId.equals(repo.getId())) )
         {
             throw new RepositoryAdminException(
                 "repositoryGroup with id " + repositoryGroupId + " already contain repository with id" + repositoryId );
         }
-        validateManagedRepositoriesExists( Arrays.asList( repositoryId ) );
+        org.apache.archiva.repository.ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(repositoryId);
+        if (managedRepo==null) {
+            throw new RepositoryAdminException("Repository with id "+repositoryId+" does not exist" );
+        }
 
-        repositoryGroup.addRepository( repositoryId );
-        updateRepositoryGroup( repositoryGroup, auditInformation, false );
+        editableRepositoryGroup.addRepository( managedRepo );
+        try {
+            repositoryRegistry.putRepositoryGroup(editableRepositoryGroup);
+        } catch (RepositoryException e) {
+            throw new RepositoryAdminException("Could not store the repository group "+repositoryGroupId, e);
+        }
         triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.ADD_REPO_TO_GROUP, auditInformation );
         return Boolean.TRUE;
     }
@@ -235,23 +249,31 @@ public class DefaultRepositoryGroupAdmin
                                               AuditInformation auditInformation )
         throws RepositoryAdminException
     {
-        RepositoryGroup repositoryGroup = getRepositoryGroup( repositoryGroupId );
+        org.apache.archiva.repository.RepositoryGroup repositoryGroup = repositoryRegistry.getRepositoryGroup( repositoryGroupId );
         if ( repositoryGroup == null )
         {
             throw new RepositoryAdminException( "repositoryGroup with id " + repositoryGroupId
                                                     + " doesn't not exists so cannot remove repository from it" );
         }
 
-        if ( !repositoryGroup.getRepositories().contains( repositoryId ) )
+        if ( !repositoryGroup.getRepositories().stream().anyMatch( repo -> repositoryId.equals(repo.getId()) ) )
         {
             throw new RepositoryAdminException(
                 "repositoryGroup with id " + repositoryGroupId + " doesn't not contains repository with id"
                     + repositoryId
             );
         }
+        if (!(repositoryGroup instanceof EditableRepositoryGroup)) {
+            throw new RepositoryAdminException("Repository group is not editable " + repositoryGroupId);
+        }
+        EditableRepositoryGroup editableRepositoryGroup = (EditableRepositoryGroup) repositoryGroup;
 
-        repositoryGroup.removeRepository( repositoryId );
-        updateRepositoryGroup( repositoryGroup, auditInformation, false );
+        editableRepositoryGroup.removeRepository( repositoryId );
+        try {
+            repositoryRegistry.putRepositoryGroup(editableRepositoryGroup);
+        } catch (RepositoryException e) {
+            throw new RepositoryAdminException("Could not store repository group " + repositoryGroupId, e);
+        }
         triggerAuditEvent( repositoryGroup.getId(), null, AuditEvent.DELETE_REPO_FROM_GROUP, auditInformation );
         return Boolean.TRUE;
     }

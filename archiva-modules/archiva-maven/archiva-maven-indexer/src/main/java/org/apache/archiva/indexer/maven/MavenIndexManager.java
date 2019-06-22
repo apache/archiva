@@ -28,6 +28,8 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
+import org.apache.archiva.indexer.merger.IndexMergerException;
+import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.proxy.maven.WagonFactoryException;
@@ -53,8 +55,10 @@ import org.apache.maven.index.IndexerEngine;
 import org.apache.maven.index.Scanner;
 import org.apache.maven.index.ScanningRequest;
 import org.apache.maven.index.ScanningResult;
+import org.apache.maven.index.context.ContextMemberProvider;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.context.StaticContextMemberProvider;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.IndexUpdateRequest;
@@ -91,6 +95,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
@@ -532,6 +537,62 @@ public class MavenIndexManager implements ArchivaIndexManager {
             } catch (IOException e) {
                 log.error("Could not set local index path for {}. New URI: {}", repo.getId(), icf.getIndexPath());
             }
+        }
+    }
+
+    @Override
+    public ArchivaIndexingContext mergeContexts(Repository destinationRepo, List<ArchivaIndexingContext> contexts,
+                                                boolean packIndex) throws UnsupportedOperationException,
+            IndexCreationFailedException, IllegalArgumentException {
+        if (!destinationRepo.supportsFeature(IndexCreationFeature.class)) {
+            throw new IllegalArgumentException("The given repository does not support the indexcreation feature");
+        }
+        Path mergedIndexDirectory = null;
+        try {
+            mergedIndexDirectory = Files.createTempDirectory("archivaMergedIndex");
+        } catch (IOException e) {
+            log.error("Could not create temporary directory for merged index: {}", e.getMessage(), e);
+            throw new IndexCreationFailedException("IO error while creating temporary directory for merged index: "+e.getMessage(), e);
+        }
+        IndexCreationFeature indexCreationFeature = destinationRepo.getFeature(IndexCreationFeature.class).get();
+        if (indexCreationFeature.getLocalIndexPath()== null) {
+            throw new IllegalArgumentException("The given repository does not have a local index path");
+        }
+        StorageAsset destinationPath = indexCreationFeature.getLocalIndexPath();
+
+        String tempRepoId = mergedIndexDirectory.getFileName().toString();
+
+        try
+        {
+            Path indexLocation = destinationPath.getFilePath();
+
+            List<IndexingContext> members = contexts.stream( ).filter(ctx -> ctx.supports(IndexingContext.class)).map( ctx ->
+            {
+                try {
+                    return ctx.getBaseContext(IndexingContext.class);
+                } catch (UnsupportedBaseContextException e) {
+                    // does not happen here
+                    return null;
+                }
+            }).filter( Objects::nonNull ).collect( Collectors.toList() );
+            ContextMemberProvider memberProvider = new StaticContextMemberProvider(members);
+            IndexingContext mergedCtx = indexer.createMergedIndexingContext( tempRepoId, tempRepoId, mergedIndexDirectory.toFile(),
+                    indexLocation.toFile(), true, memberProvider);
+            mergedCtx.optimize();
+
+            if ( packIndex )
+            {
+                IndexPackingRequest request = new IndexPackingRequest( mergedCtx, //
+                        mergedCtx.acquireIndexSearcher().getIndexReader(), //
+                        indexLocation.toFile() );
+                indexPacker.packIndex( request );
+            }
+
+            return new MavenIndexContext(destinationRepo, mergedCtx);
+        }
+        catch ( IOException e)
+        {
+            throw new IndexCreationFailedException( "IO Error during index merge: "+ e.getMessage(), e );
         }
     }
 

@@ -1,5 +1,4 @@
 package org.apache.archiva.indexer.merger;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +8,7 @@ package org.apache.archiva.indexer.merger;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -20,12 +19,20 @@ package org.apache.archiva.indexer.merger;
  */
 
 import org.apache.archiva.common.utils.FileUtils;
+import org.apache.archiva.indexer.ArchivaIndexManager;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.indexer.IndexCreationFailedException;
+import org.apache.archiva.indexer.merger.IndexMerger;
+import org.apache.archiva.indexer.merger.IndexMergerException;
+import org.apache.archiva.indexer.merger.IndexMergerRequest;
+import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
+import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -33,32 +40,37 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
- * @author Martin Stockhammer <martin_s@apache.org>
+ * @author Olivier Lamy
+ * @since 1.4-M2
  */
-public class BasicIndexMerger implements IndexMerger
+@Service("indexMerger#default")
+public class DefaultIndexMerger
+    implements IndexMerger
 {
+
     @Inject
     RepositoryRegistry repositoryRegistry;
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
-
     private List<TemporaryGroupIndex> temporaryGroupIndexes = new CopyOnWriteArrayList<>();
+
+    private List<ArchivaIndexingContext>  temporaryContextes = new CopyOnWriteArrayList<>(  );
 
     private List<String> runningGroups = new CopyOnWriteArrayList<>();
 
     @Inject
-    public BasicIndexMerger( )
+    public DefaultIndexMerger( )
     {
     }
 
     @Override
-    public ArchivaIndexingContext buildMergedIndex( IndexMergerRequest indexMergerRequest )
+    public ArchivaIndexingContext buildMergedIndex(IndexMergerRequest indexMergerRequest )
         throws IndexMergerException
     {
         String groupId = indexMergerRequest.getGroupId();
@@ -70,49 +82,35 @@ public class BasicIndexMerger implements IndexMerger
         }
 
         runningGroups.add( groupId );
-
         StopWatch stopWatch = new StopWatch();
-        stopWatch.reset();
-        stopWatch.start();
+        try {
+            stopWatch.reset();
+            stopWatch.start();
 
-        Path mergedIndexDirectory = indexMergerRequest.getMergedIndexDirectory();
+            Path mergedIndexDirectory = indexMergerRequest.getMergedIndexDirectory();
+            Repository destinationRepository = repositoryRegistry.getRepository(indexMergerRequest.getGroupId());
 
-        String tempRepoId = mergedIndexDirectory.getFileName().toString();
-
-        try
-        {
-            Path indexLocation = mergedIndexDirectory.resolve( indexMergerRequest.getMergedIndexPath() );
-
-            List<ArchivaIndexingContext> members = indexMergerRequest.getRepositoriesIds( ).stream( ).map( id ->
-                repositoryRegistry.getRepository( id ) )
-                .map( repo -> repo.getIndexingContext() ).filter( Objects::nonNull ).collect( Collectors.toList() );
-
-            members.get( 0 ).
-            if ( indexMergerRequest.isPackIndex() )
-            {
-                IndexPackingRequest request = new IndexPackingRequest( mergedCtx, //
-                    mergedCtx.acquireIndexSearcher().getIndexReader(), //
-                    indexLocation.toFile() );
-                indexPacker.packIndex( request );
+            ArchivaIndexManager idxManager = repositoryRegistry.getIndexManager(destinationRepository.getType());
+            List<ArchivaIndexingContext> sourceContexts = indexMergerRequest.getRepositoriesIds().stream().map(id -> repositoryRegistry.getRepository(id).getIndexingContext()).collect(Collectors.toList());
+            try {
+                ArchivaIndexingContext result = idxManager.mergeContexts(destinationRepository, sourceContexts, indexMergerRequest.isPackIndex());
+                if ( indexMergerRequest.isTemporary() )
+                {
+                    String tempRepoId = destinationRepository.getId()+System.currentTimeMillis();
+                    temporaryGroupIndexes.add( new TemporaryGroupIndex( mergedIndexDirectory, tempRepoId, groupId,
+                            indexMergerRequest.getMergedIndexTtl() ) );
+                    temporaryContextes.add(result);
+                }
+                return result;
+            } catch (IndexCreationFailedException e) {
+                throw new IndexMergerException("Index merging failed " + e.getMessage(), e);
             }
 
-            if ( indexMergerRequest.isTemporary() )
-            {
-                temporaryGroupIndexes.add( new TemporaryGroupIndex( mergedIndexDirectory, tempRepoId, groupId,
-                    indexMergerRequest.getMergedIndexTtl() ) );
-            }
+        } finally {
             stopWatch.stop();
             log.info( "merged index for repos {} in {} s", indexMergerRequest.getRepositoriesIds(),
-                stopWatch.getTime() );
-            return new MavenIndexContext(repositoryRegistry.getRepositoryGroup(groupId), mergedCtx);
-        }
-        catch ( IOException e)
-        {
-            throw new IndexMergerException( e.getMessage(), e );
-        }
-        finally
-        {
-            runningGroups.remove( groupId );
+                    stopWatch.getTime() );
+            runningGroups.remove(groupId);
         }
     }
 
@@ -127,11 +125,10 @@ public class BasicIndexMerger implements IndexMerger
 
         try
         {
-
-            Optional<IndexingContext> ctxOpt = temporaryContextes.stream( ).filter( ctx -> ctx.getId( ).equals( temporaryGroupIndex.getIndexId( ) ) ).findFirst( );
+            Optional<ArchivaIndexingContext> ctxOpt = temporaryContextes.stream( ).filter( ctx -> ctx.getId( ).equals( temporaryGroupIndex.getIndexId( ) ) ).findFirst( );
             if (ctxOpt.isPresent()) {
-                IndexingContext ctx = ctxOpt.get();
-                indexer.closeIndexingContext( ctx, true );
+                ArchivaIndexingContext ctx = ctxOpt.get();
+                ctx.close(true);
                 temporaryGroupIndexes.remove( temporaryGroupIndex );
                 temporaryContextes.remove( ctx );
                 Path directory = temporaryGroupIndex.getDirectory();
@@ -152,5 +149,4 @@ public class BasicIndexMerger implements IndexMerger
     {
         return this.temporaryGroupIndexes;
     }
-
 }

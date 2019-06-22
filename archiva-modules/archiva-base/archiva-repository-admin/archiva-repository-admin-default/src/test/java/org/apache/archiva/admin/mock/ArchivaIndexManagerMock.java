@@ -519,6 +519,11 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
         }
     }
 
+    @Override
+    public ArchivaIndexingContext mergeContexts(Repository destinationRepo, List<ArchivaIndexingContext> contexts, boolean packIndex) throws UnsupportedOperationException, IndexCreationFailedException {
+        return null;
+    }
+
     private StorageAsset getIndexPath( Repository repo) throws IOException {
         IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
         Path repoDir = repo.getLocalPath();

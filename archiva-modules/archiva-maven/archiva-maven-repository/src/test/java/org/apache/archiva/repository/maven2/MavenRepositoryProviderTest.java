@@ -355,7 +355,11 @@ public class MavenRepositoryProviderTest
         assertEquals("Group 2", grp.getName());
         assertEquals("0 0 03 ? * MON", grp.getSchedulingDefinition());
         IndexCreationFeature indexCreationFeature = grp.getFeature( IndexCreationFeature.class ).get();
-        assertEquals(".index-abc", indexCreationFeature.getIndexPath());
+        try {
+            assertEquals(new URI("file://.index-abc"), indexCreationFeature.getIndexPath());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
         assertEquals(504, grp.getMergedIndexTTL());
         assertEquals(0, grp.getRepositories().size());
         // assertTrue(grp.getRepositories().stream().anyMatch(r -> "test01".equals(r.getId())));

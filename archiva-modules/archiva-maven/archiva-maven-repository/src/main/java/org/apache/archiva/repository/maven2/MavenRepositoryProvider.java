@@ -257,20 +257,13 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         repositoryGroup.setSchedulingDefinition(configuration.getCronExpression());
         if (repositoryGroup.supportsFeature( IndexCreationFeature.class )) {
             IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
-            try
+            indexCreationFeature.setIndexPath( getURIFromString(configuration.getMergedIndexPath()) );
+            Path localPath = Paths.get(configuration.getMergedIndexPath());
+            if (localPath.isAbsolute()) {
+                indexCreationFeature.setLocalIndexPath( new FilesystemAsset(localPath.getFileName().toString(), localPath) );
+            } else
             {
-                indexCreationFeature.setIndexPath( new URI(configuration.getMergedIndexPath()) );
-                Path localPath = Paths.get(indexCreationFeature.getIndexPath());
-                if (localPath.isAbsolute()) {
-                    indexCreationFeature.setLocalIndexPath( new FilesystemAsset(localPath.getFileName().toString(), localPath) );
-                } else
-                {
-                    indexCreationFeature.setLocalIndexPath( new FilesystemAsset(localPath.toString(), archivaConfiguration.getRepositoryGroupBaseDir( ).resolve( localPath )));
-                }
-            }
-            catch ( URISyntaxException e )
-            {
-                log.error("Could not set the index path for repository group {}", repositoryGroup.getId());
+                indexCreationFeature.setLocalIndexPath( new FilesystemAsset(localPath.toString(), archivaConfiguration.getRepositoryGroupBaseDir( ).resolve( localPath )));
             }
         }
         // References to other repositories are set filled by the registry
