@@ -35,7 +35,5 @@ public interface EditableRepositoryGroup extends EditableRepository,RepositoryGr
 
     ManagedRepository removeRepository(String repoId);
 
-    void setMergedIndexPath(String path);
-
     void setMergedIndexTTL(int timeInSeconds);
 }

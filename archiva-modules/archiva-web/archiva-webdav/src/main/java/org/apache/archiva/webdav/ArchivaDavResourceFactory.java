@@ -176,12 +176,6 @@ public class ArchivaDavResourceFactory
      */
     private final LockManager lockManager = new SimpleLockManager();
 
-    private ChecksummedFile checksum;
-
-    private Digester digestSha1;
-
-    private Digester digestMd5;
-
     @Inject
     @Named( value = "archivaTaskScheduler#repository" )
     private RepositoryArchivaTaskScheduler scheduler;
@@ -193,8 +187,7 @@ public class ArchivaDavResourceFactory
     private ApplicationContext applicationContext;
 
     @Inject
-    public ArchivaDavResourceFactory( ApplicationContext applicationContext, PlexusSisuBridge plexusSisuBridge,
-                                      ArchivaConfiguration archivaConfiguration )
+    public ArchivaDavResourceFactory( ApplicationContext applicationContext, ArchivaConfiguration archivaConfiguration )
         throws PlexusSisuBridgeException
     {
         this.archivaConfiguration = archivaConfiguration;
@@ -420,7 +413,12 @@ public class ArchivaDavResourceFactory
 
         String rootPath = StringUtils.substringBeforeLast( pathInfo, "/" );
 
-        if ( StringUtils.endsWith( rootPath, repoGroup.getMergedIndexPath().getPath() ) )
+        String mergedIndexPath = "/";
+        if (repoGroup.supportsFeature( IndexCreationFeature.class )) {
+            mergedIndexPath = repoGroup.getFeature( IndexCreationFeature.class ).get().getIndexPath().getPath();
+        }
+
+        if ( StringUtils.endsWith( rootPath, mergedIndexPath ) )
         {
             // we are in the case of index file request
             String requestedFileName = StringUtils.substringAfterLast( pathInfo, "/" );
@@ -1044,11 +1042,16 @@ public class ArchivaDavResourceFactory
 
         // remove last /
         String pathInfo = StringUtils.removeEnd( request.getPathInfo(), "/" );
+        String mergedIndexPath = "/";
+        if (repositoryGroup.supportsFeature( IndexCreationFeature.class )) {
+            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
+            mergedIndexPath = indexCreationFeature.getIndexPath().getPath();
+        }
 
         if ( allow )
         {
 
-            if ( StringUtils.endsWith( pathInfo, repositoryGroup.getMergedIndexPath().getPath() ) )
+            if ( StringUtils.endsWith( pathInfo, mergedIndexPath ) )
             {
                 Path mergedRepoDirPath =
                     buildMergedIndexDirectory( activePrincipal, request, repositoryGroup );
@@ -1061,7 +1064,7 @@ public class ArchivaDavResourceFactory
                 {
                     Path tmpDirectory = Paths.get( SystemUtils.getJavaIoTmpDir().toString(),
                                                   id,
-                                                      repositoryGroup.getMergedIndexPath().getFilePath().toString() );
+                                                      mergedIndexPath );
                     if ( !Files.exists(tmpDirectory) )
                     {
                         synchronized ( tmpDirectory.toAbsolutePath().toString() )
@@ -1101,25 +1104,9 @@ public class ArchivaDavResourceFactory
                     {
                         // in case of group displaying index directory doesn't have sense !!
                         IndexCreationFeature idf = managedRepository.getRepository().getFeature(IndexCreationFeature.class).get();
-                        String repoIndexDirectory = idf.getIndexPath().toString();
-                        if ( StringUtils.isNotEmpty( repoIndexDirectory ) )
-                        {
-                            if ( !Paths.get( repoIndexDirectory ).isAbsolute() )
-                            {
-                                repoIndexDirectory = Paths.get( managedRepository.getRepository().getLocation() ).resolve(
-                                                               StringUtils.isEmpty( repoIndexDirectory )
-                                                                   ? ".indexer"
-                                                                   : repoIndexDirectory ).toAbsolutePath().toString();
-                            }
-                        }
-                        if ( StringUtils.isEmpty( repoIndexDirectory ) )
-                        {
-                            repoIndexDirectory = Paths.get( managedRepository.getRepository().getLocation() ).resolve(
-                                                           ".indexer" ).toAbsolutePath().toString();
-                        }
-
-                        if ( !StringUtils.equals( FilenameUtils.normalize( repoIndexDirectory ),
-                                                  FilenameUtils.normalize( resourceFile.toAbsolutePath().toString() ) ) )
+                        StorageAsset repoIndexDirectory = idf.getLocalIndexPath();
+                        if ( !StringUtils.equals( FilenameUtils.normalize( repoIndexDirectory.getPath() ),
+                                                  FilenameUtils.normalize( logicalResource.getPath() ) ) )
                         {
                             // for prompted authentication
                             if ( httpAuth.getSecuritySession( request.getSession( true ) ) != null )
@@ -1368,34 +1355,43 @@ public class ArchivaDavResourceFactory
                 }
 
             }
+
             log.info( "generate temporary merged index for repository group '{}' for repositories '{}'",
                     id, authzRepos );
 
-            Path tempRepoFile = Files.createTempDirectory( "temp" );
-            tempRepoFile.toFile().deleteOnExit();
+            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
+            Path indexPath = indexCreationFeature.getLocalIndexPath().getFilePath();
+            if (indexPath!=null)
+            {
+                Path tempRepoFile = Files.createTempDirectory( "temp" );
+                tempRepoFile.toFile( ).deleteOnExit( );
 
-            IndexMergerRequest indexMergerRequest =
-                new IndexMergerRequest( authzRepos, true, id,
-                                        repositoryGroup.getMergedIndexPath().getFilePath().toString(),
-                                        repositoryGroup.getMergedIndexTTL() ).mergedIndexDirectory(
-                    tempRepoFile ).temporary( true );
+                IndexMergerRequest indexMergerRequest =
+                    new IndexMergerRequest( authzRepos, true, id,
+                        indexPath.toString( ),
+                        repositoryGroup.getMergedIndexTTL( ) ).mergedIndexDirectory(
+                        tempRepoFile ).temporary( true );
 
-            MergedRemoteIndexesTaskRequest taskRequest =
-                new MergedRemoteIndexesTaskRequest( indexMergerRequest, indexMerger );
+                MergedRemoteIndexesTaskRequest taskRequest =
+                    new MergedRemoteIndexesTaskRequest( indexMergerRequest, indexMerger );
 
-            MergedRemoteIndexesTask job = new MergedRemoteIndexesTask( taskRequest );
+                MergedRemoteIndexesTask job = new MergedRemoteIndexesTask( taskRequest );
 
-            ArchivaIndexingContext indexingContext = job.execute().getIndexingContext();
+                ArchivaIndexingContext indexingContext = job.execute( ).getIndexingContext( );
 
-            Path mergedRepoDir = Paths.get(indexingContext.getPath());
-            TemporaryGroupIndex temporaryGroupIndex =
-                new TemporaryGroupIndex( mergedRepoDir, indexingContext.getId(), id,
-                                         repositoryGroup.getMergedIndexTTL() ) //
-                    .setCreationTime( new Date().getTime() );
-            temporaryGroupIndexMap.put( id, temporaryGroupIndex );
-            session.setAttribute( TemporaryGroupIndexSessionCleaner.TEMPORARY_INDEX_SESSION_KEY,
-                                  temporaryGroupIndexMap );
-            return mergedRepoDir;
+                Path mergedRepoDir = Paths.get( indexingContext.getPath( ) );
+                TemporaryGroupIndex temporaryGroupIndex =
+                    new TemporaryGroupIndex( mergedRepoDir, indexingContext.getId( ), id,
+                        repositoryGroup.getMergedIndexTTL( ) ) //
+                        .setCreationTime( new Date( ).getTime( ) );
+                temporaryGroupIndexMap.put( id, temporaryGroupIndex );
+                session.setAttribute( TemporaryGroupIndexSessionCleaner.TEMPORARY_INDEX_SESSION_KEY,
+                    temporaryGroupIndexMap );
+                return mergedRepoDir;
+            } else {
+                log.error("Local index path for repository group {} does not exist.", repositoryGroup.getId());
+                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
+            }
         }
         catch ( RepositorySearchException e )
         {

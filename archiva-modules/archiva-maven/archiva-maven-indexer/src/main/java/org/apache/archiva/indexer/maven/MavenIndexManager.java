@@ -40,6 +40,8 @@ import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.UnsupportedRepositoryTypeException;
+import org.apache.archiva.repository.content.FilesystemAsset;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.commons.lang.StringUtils;
@@ -492,7 +494,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
         }
         if (context.supports(IndexingContext.class)) {
             try {
-                Path newPath = getIndexPath(repo);
+                StorageAsset newPath = getIndexPath(repo);
                 IndexingContext ctx = context.getBaseContext(IndexingContext.class);
                 Path oldPath = ctx.getIndexDirectoryFile().toPath();
                 if (oldPath.equals(newPath)) {
@@ -506,7 +508,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
                     return createContext(repo);
                 } else {
                     context.close(false);
-                    Files.move(oldPath, newPath);
+                    Files.move(oldPath, newPath.getFilePath());
                     return createContext(repo);
                 }
             } catch (IOException e) {
@@ -533,58 +535,45 @@ public class MavenIndexManager implements ArchivaIndexManager {
         }
     }
 
-    private Path getIndexPath(Repository repo) throws IOException {
-        IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
-        Path repoDir = repo.getLocalPath();
-        URI indexDir = icf.getIndexPath();
+    private StorageAsset getIndexPath(URI indexDir, Path repoDir, String defaultDir) throws IOException
+    {
+        String indexPath = indexDir.getPath();
         Path indexDirectory = null;
         if ( ! StringUtils.isEmpty(indexDir.toString( ) ) )
         {
 
             indexDirectory = PathUtil.getPathFromUri( indexDir );
             // not absolute so create it in repository directory
-            if ( !indexDirectory.isAbsolute( ) )
+            if ( indexDirectory.isAbsolute( ) )
+            {
+                indexPath = indexDirectory.getFileName().toString();
+            }
+            else
             {
                 indexDirectory = repoDir.resolve( indexDirectory );
             }
         }
         else
         {
-            indexDirectory = repoDir.resolve( DEFAULT_INDEXER_DIR );
+            indexDirectory = repoDir.resolve( defaultDir );
+            indexPath = defaultDir;
         }
 
         if ( !Files.exists( indexDirectory ) )
         {
             Files.createDirectories( indexDirectory );
         }
-        return indexDirectory;
+        return new FilesystemAsset( indexPath, indexDirectory);
     }
 
-    private Path getPackedIndexPath(Repository repo) throws IOException {
+    private StorageAsset getIndexPath( Repository repo) throws IOException {
         IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
-        Path repoDir = repo.getLocalPath();
-        URI indexDir = icf.getPackedIndexPath();
-        Path indexDirectory = null;
-        if ( ! StringUtils.isEmpty(indexDir.toString( ) ) )
-        {
+        return getIndexPath( icf.getIndexPath(), repo.getLocalPath(), DEFAULT_INDEXER_DIR );
+    }
 
-            indexDirectory = PathUtil.getPathFromUri( indexDir );
-            // not absolute so create it in repository directory
-            if ( !indexDirectory.isAbsolute( ) )
-            {
-                indexDirectory = repoDir.resolve( indexDirectory );
-            }
-        }
-        else
-        {
-            indexDirectory = repoDir.resolve( DEFAULT_PACKED_INDEX_DIR );
-        }
-
-        if ( !Files.exists( indexDirectory ) )
-        {
-            Files.createDirectories( indexDirectory );
-        }
-        return indexDirectory;
+    private StorageAsset getPackedIndexPath(Repository repo) throws IOException {
+        IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+        return getIndexPath(icf.getPackedIndexPath(), repo.getLocalPath(), DEFAULT_PACKED_INDEX_DIR);
     }
 
     private IndexingContext createRemoteContext(RemoteRepository remoteRepository ) throws IOException
@@ -601,7 +590,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
             Files.createDirectories( repoDir );
         }
 
-        Path indexDirectory = null;
+        StorageAsset indexDirectory = null;
 
         // is there configured indexDirectory ?
         if ( remoteRepository.supportsFeature( RemoteIndexFeature.class ) )
@@ -620,7 +609,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
                 // delete it first then recreate it.
                 log.warn( "the index of repository {} is too old we have to delete and recreate it", //
                     remoteRepository.getId( ) );
-                org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDirectory );
+                org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDirectory.getFilePath() );
                 return getIndexingContext( remoteRepository, contextKey, repoDir, indexDirectory, remoteIndexUrl );
 
             }
@@ -631,9 +620,9 @@ public class MavenIndexManager implements ArchivaIndexManager {
         }
     }
 
-    private IndexingContext getIndexingContext( Repository repository, String contextKey, Path repoDir, Path indexDirectory, String indexUrl ) throws IOException
+    private IndexingContext getIndexingContext( Repository repository, String contextKey, Path repoDir, StorageAsset indexDirectory, String indexUrl ) throws IOException
     {
-        return indexer.createIndexingContext( contextKey, repository.getId( ), repoDir.toFile( ), indexDirectory.toFile( ),
+        return indexer.createIndexingContext( contextKey, repository.getId( ), repoDir.toFile( ), indexDirectory.getFilePath().toFile( ),
             repository.getLocation( ) == null ? null : repository.getLocation( ).toString( ),
             indexUrl,
             true, false,
@@ -659,7 +648,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
             }
         }
 
-        Path indexDirectory = null;
+        StorageAsset indexDirectory = null;
 
         if ( repository.supportsFeature( IndexCreationFeature.class ) )
         {
@@ -677,7 +666,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
                 // delete it first then recreate it.
                 log.warn( "the index of repository {} is too old we have to delete and recreate it", //
                     repository.getId( ) );
-                org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDirectory );
+                org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDirectory.getFilePath() );
                 context = getIndexingContext( repository, repository.getId( ), repositoryDirectory, indexDirectory, indexUrl );
                 context.setSearchable( repository.isScanned( ) );
             }

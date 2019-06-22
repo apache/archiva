@@ -40,8 +40,6 @@ public class AbstractRepositoryGroup extends AbstractRepository implements Edita
 
     private ListOrderedMap<String, ManagedRepository> repositories = new ListOrderedMap<>();
 
-    private String mergedIndexPath;
-
     private int mergedIndexTTL;
 
     private final ReadWriteLock rwl = new ReentrantReadWriteLock();
@@ -133,11 +131,6 @@ public class AbstractRepositoryGroup extends AbstractRepository implements Edita
     }
 
     @Override
-    public void setMergedIndexPath(String path) {
-        this.mergedIndexPath = path;
-    }
-
-    @Override
     public void setMergedIndexTTL(int timeInSeconds) {
         this.mergedIndexTTL = timeInSeconds;
     }
@@ -170,11 +163,6 @@ public class AbstractRepositoryGroup extends AbstractRepository implements Edita
         } finally {
             rwl.readLock().unlock();
         }
-    }
-
-    @Override
-    public StorageAsset getMergedIndexPath() {
-        return storage.getAsset(mergedIndexPath);
     }
 
     @Override

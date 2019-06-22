@@ -22,6 +22,7 @@ package org.apache.archiva.repository.maven2;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.configuration.*;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.content.FilesystemAsset;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
@@ -252,9 +253,26 @@ public class MavenRepositoryProvider implements RepositoryProvider {
     @Override
     public void updateRepositoryGroupInstance(EditableRepositoryGroup repositoryGroup, RepositoryGroupConfiguration configuration) throws RepositoryException {
         repositoryGroup.setName(repositoryGroup.getPrimaryLocale(), configuration.getName());
-        repositoryGroup.setMergedIndexPath(configuration.getMergedIndexPath());
         repositoryGroup.setMergedIndexTTL(configuration.getMergedIndexTtl());
         repositoryGroup.setSchedulingDefinition(configuration.getCronExpression());
+        if (repositoryGroup.supportsFeature( IndexCreationFeature.class )) {
+            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
+            try
+            {
+                indexCreationFeature.setIndexPath( new URI(configuration.getMergedIndexPath()) );
+                Path localPath = Paths.get(indexCreationFeature.getIndexPath());
+                if (localPath.isAbsolute()) {
+                    indexCreationFeature.setLocalIndexPath( new FilesystemAsset(localPath.getFileName().toString(), localPath) );
+                } else
+                {
+                    indexCreationFeature.setLocalIndexPath( new FilesystemAsset(localPath.toString(), archivaConfiguration.getRepositoryGroupBaseDir( ).resolve( localPath )));
+                }
+            }
+            catch ( URISyntaxException e )
+            {
+                log.error("Could not set the index path for repository group {}", repositoryGroup.getId());
+            }
+        }
         // References to other repositories are set filled by the registry
     }
 
@@ -351,7 +369,12 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         RepositoryGroupConfiguration cfg = new RepositoryGroupConfiguration();
         cfg.setId(repositoryGroup.getId());
         cfg.setName(repositoryGroup.getName());
-        cfg.setMergedIndexPath(repositoryGroup.getMergedIndexPath().getPath());
+        if (repositoryGroup.supportsFeature( IndexCreationFeature.class ))
+        {
+            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
+
+            cfg.setMergedIndexPath( indexCreationFeature.getIndexPath().toString() );
+        }
         cfg.setMergedIndexTtl(repositoryGroup.getMergedIndexTTL());
         cfg.setRepositories(repositoryGroup.getRepositories().stream().map(r -> r.getId()).collect(Collectors.toList()));
         cfg.setCronExpression(repositoryGroup.getSchedulingDefinition());

@@ -718,7 +718,7 @@ public class ArchivaDavResourceFactoryTest
                                              ArchivaConfiguration archivaConfiguration )
             throws PlexusSisuBridgeException
         {
-            super( applicationContext, plexusSisuBridge, archivaConfiguration );
+            super( applicationContext, archivaConfiguration );
         }
 
         @Override

@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -295,7 +296,8 @@ public class MavenRepositoryProviderTest
     }
 
     @Test
-    public void getRepositoryGroupConfiguration() throws RepositoryException {
+    public void getRepositoryGroupConfiguration() throws RepositoryException, URISyntaxException
+    {
         MavenRepositoryGroup repositoryGroup = new MavenRepositoryGroup("group1","group1",Paths.get("target/groups"),
                 new DefaultFileLockManager());
         MavenManagedRepository repo1 = new MavenManagedRepository( "test01", "My Test repo", Paths.get("target/repositories") );
@@ -304,7 +306,8 @@ public class MavenRepositoryProviderTest
 
         repositoryGroup.setDescription(repositoryGroup.getPrimaryLocale(), "Repository group");
         repositoryGroup.setLayout("non-default");
-        repositoryGroup.setMergedIndexPath(".index2");
+        IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
+        indexCreationFeature.setIndexPath( new URI(".index2") );
         repositoryGroup.setName(repositoryGroup.getPrimaryLocale(), "Repo Group 1");
         repositoryGroup.setMergedIndexTTL(1005);
         repositoryGroup.setSchedulingDefinition("0 0 04 ? * THU");
@@ -351,7 +354,8 @@ public class MavenRepositoryProviderTest
         assertEquals("group2", grp.getId());
         assertEquals("Group 2", grp.getName());
         assertEquals("0 0 03 ? * MON", grp.getSchedulingDefinition());
-        assertEquals(".index-abc", grp.getMergedIndexPath().getName());
+        IndexCreationFeature indexCreationFeature = grp.getFeature( IndexCreationFeature.class ).get();
+        assertEquals(".index-abc", indexCreationFeature.getIndexPath());
         assertEquals(504, grp.getMergedIndexTTL());
         assertEquals(0, grp.getRepositories().size());
         // assertTrue(grp.getRepositories().stream().anyMatch(r -> "test01".equals(r.getId())));

@@ -116,6 +116,12 @@ public class StubConfiguration
     }
 
     @Override
+    public Path getRepositoryGroupBaseDir( )
+    {
+        return getDataDirectory().resolve("group");
+    }
+
+    @Override
     public Path getDataDirectory() {
         if (configuration!=null && StringUtils.isNotEmpty(configuration.getArchivaRuntimeConfiguration().getDataDirectory())) {
             Path dataDir = Paths.get(configuration.getArchivaRuntimeConfiguration().getDataDirectory());

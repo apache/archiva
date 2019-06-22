@@ -1,4 +1,5 @@
-package org.apache.archiva.indexer.maven;
+package org.apache.archiva.indexer.merger;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -8,7 +9,7 @@ package org.apache.archiva.indexer.maven;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -20,25 +21,11 @@ package org.apache.archiva.indexer.maven;
 
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
-import org.apache.archiva.indexer.UnsupportedBaseContextException;
-import org.apache.archiva.indexer.merger.IndexMerger;
-import org.apache.archiva.indexer.merger.IndexMergerException;
-import org.apache.archiva.indexer.merger.IndexMergerRequest;
-import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.RepositoryType;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.maven.index.Indexer;
-import org.apache.maven.index.context.ContextMemberProvider;
-import org.apache.maven.index.context.IndexCreator;
-import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.context.StaticContextMemberProvider;
-import org.apache.maven.index.packer.IndexPacker;
-import org.apache.maven.index.packer.IndexPackingRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -47,47 +34,31 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
- * @author Olivier Lamy
- * @since 1.4-M2
+ * @author Martin Stockhammer <martin_s@apache.org>
  */
-@Service("indexMerger#default")
-public class DefaultIndexMerger
-    implements IndexMerger
+public class BasicIndexMerger implements IndexMerger
 {
-
     @Inject
     RepositoryRegistry repositoryRegistry;
 
     private Logger log = LoggerFactory.getLogger( getClass() );
 
 
-    private final IndexPacker indexPacker;
-
-    private Indexer indexer;
-
-    private final List<IndexCreator> indexCreators;
-
     private List<TemporaryGroupIndex> temporaryGroupIndexes = new CopyOnWriteArrayList<>();
-
-    private List<IndexingContext>  temporaryContextes = new CopyOnWriteArrayList<>(  );
 
     private List<String> runningGroups = new CopyOnWriteArrayList<>();
 
     @Inject
-    public DefaultIndexMerger( Indexer indexer, IndexPacker indexPacker, List<IndexCreator> indexCreators )
+    public BasicIndexMerger( )
     {
-        this.indexer = indexer;
-        this.indexPacker = indexPacker;
-        this.indexCreators = indexCreators;
     }
 
     @Override
-    public ArchivaIndexingContext buildMergedIndex(IndexMergerRequest indexMergerRequest )
+    public ArchivaIndexingContext buildMergedIndex( IndexMergerRequest indexMergerRequest )
         throws IndexMergerException
     {
         String groupId = indexMergerRequest.getGroupId();
@@ -112,41 +83,27 @@ public class DefaultIndexMerger
         {
             Path indexLocation = mergedIndexDirectory.resolve( indexMergerRequest.getMergedIndexPath() );
 
-            List<IndexingContext> members = indexMergerRequest.getRepositoriesIds( ).stream( ).map( id ->
-                repositoryRegistry.getRepository( id ) ).filter( repo -> repo.getType().equals( RepositoryType.MAVEN ) )
-                .map( repo -> {
-                    try
-                    {
-                        return repo.getIndexingContext().getBaseContext( IndexingContext.class );
-                    }
-                    catch ( UnsupportedBaseContextException e )
-                    {
-                        return null;
-                        // Ignore
-                    }
-                } ).filter( Objects::nonNull ).collect( Collectors.toList() );
-            ContextMemberProvider memberProvider = new StaticContextMemberProvider(members);
-            IndexingContext mergedCtx = indexer.createMergedIndexingContext( tempRepoId, tempRepoId, mergedIndexDirectory.toFile(),
-                indexLocation.toFile(), true, memberProvider);
-            mergedCtx.optimize();
+            List<ArchivaIndexingContext> members = indexMergerRequest.getRepositoriesIds( ).stream( ).map( id ->
+                repositoryRegistry.getRepository( id ) )
+                .map( repo -> repo.getIndexingContext() ).filter( Objects::nonNull ).collect( Collectors.toList() );
 
+            members.get( 0 ).
             if ( indexMergerRequest.isPackIndex() )
             {
                 IndexPackingRequest request = new IndexPackingRequest( mergedCtx, //
-                                                                       mergedCtx.acquireIndexSearcher().getIndexReader(), //
-                                                                       indexLocation.toFile() );
+                    mergedCtx.acquireIndexSearcher().getIndexReader(), //
+                    indexLocation.toFile() );
                 indexPacker.packIndex( request );
             }
 
             if ( indexMergerRequest.isTemporary() )
             {
                 temporaryGroupIndexes.add( new TemporaryGroupIndex( mergedIndexDirectory, tempRepoId, groupId,
-                                                                    indexMergerRequest.getMergedIndexTtl() ) );
-                temporaryContextes.add(mergedCtx);
+                    indexMergerRequest.getMergedIndexTtl() ) );
             }
             stopWatch.stop();
             log.info( "merged index for repos {} in {} s", indexMergerRequest.getRepositoriesIds(),
-                      stopWatch.getTime() );
+                stopWatch.getTime() );
             return new MavenIndexContext(repositoryRegistry.getRepositoryGroup(groupId), mergedCtx);
         }
         catch ( IOException e)
@@ -195,4 +152,5 @@ public class DefaultIndexMerger
     {
         return this.temporaryGroupIndexes;
     }
+
 }

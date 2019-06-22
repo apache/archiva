@@ -21,6 +21,7 @@ package org.apache.archiva.indexer.merger;
 
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryGroup;
+import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,20 +69,33 @@ public class DefaultMergedRemoteIndexesScheduler
 
         List<ManagedRepository> repositories = repositoryGroup.getRepositories();
 
-        IndexMergerRequest indexMergerRequest =
-            new IndexMergerRequest( repositories.stream().map(r -> r.getId()).collect(Collectors.toList()), true, repositoryGroup.getId(),
-                    repositoryGroup.getMergedIndexPath().getFilePath().toString(),
-                                    repositoryGroup.getMergedIndexTTL() ).mergedIndexDirectory( directory );
+        if (repositoryGroup.supportsFeature( IndexCreationFeature.class ))
+        {
 
-        MergedRemoteIndexesTaskRequest taskRequest =
-            new MergedRemoteIndexesTaskRequest( indexMergerRequest, indexMerger );
+            IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
+            Path indexPath = indexCreationFeature.getLocalIndexPath().getFilePath();
+            if (indexPath!=null)
+            {
+                IndexMergerRequest indexMergerRequest =
+                    new IndexMergerRequest( repositories.stream( ).map( r -> r.getId( ) ).collect( Collectors.toList( ) ), true, repositoryGroup.getId( ),
+                        indexPath.toString( ),
+                        repositoryGroup.getMergedIndexTTL( ) ).mergedIndexDirectory( directory );
 
-        logger.info( "schedule merge remote index for group {} with cron {}", repositoryGroup.getId(),
-                     repositoryGroup.getSchedulingDefinition() );
+                MergedRemoteIndexesTaskRequest taskRequest =
+                    new MergedRemoteIndexesTaskRequest( indexMergerRequest, indexMerger );
 
-        ScheduledFuture scheduledFuture =
-            taskScheduler.schedule( new MergedRemoteIndexesTask( taskRequest ), cronTrigger );
-        scheduledFutureMap.put( repositoryGroup.getId(), scheduledFuture );
+                logger.info( "schedule merge remote index for group {} with cron {}", repositoryGroup.getId( ),
+                    repositoryGroup.getSchedulingDefinition( ) );
+
+                ScheduledFuture scheduledFuture =
+                    taskScheduler.schedule( new MergedRemoteIndexesTask( taskRequest ), cronTrigger );
+                scheduledFutureMap.put( repositoryGroup.getId( ), scheduledFuture );
+            } else {
+                logger.error("Requested index merger for repository group {} with non local index path {}", repositoryGroup.getId(), indexCreationFeature.getLocalIndexPath());
+            }
+        } else {
+            logger.error("Scheduling merged index for repository group {}, but it does not support IndexCreationFeature.", repositoryGroup.getId());
+        }
     }
 
     @Override

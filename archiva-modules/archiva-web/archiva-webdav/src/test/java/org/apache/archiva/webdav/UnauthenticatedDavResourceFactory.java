@@ -43,7 +43,7 @@ public class UnauthenticatedDavResourceFactory
                                               ArchivaConfiguration archivaConfiguration )
         throws PlexusSisuBridgeException
     {
-        super( applicationContext, plexusSisuBridge, archivaConfiguration );
+        super( applicationContext, archivaConfiguration );
     }
 
     @Override

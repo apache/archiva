@@ -30,6 +30,7 @@ import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -394,7 +395,11 @@ public class DefaultRepositoryGroupAdmin
 
     private RepositoryGroup convertRepositoryGroupObject( org.apache.archiva.repository.RepositoryGroup group ) {
         RepositoryGroup rg = new RepositoryGroup( group.getId( ), group.getRepositories().stream().map(r -> r.getId()).collect( Collectors.toList()) );
-        rg.setMergedIndexPath( group.getMergedIndexPath().getPath() );
+        if (group.supportsFeature( IndexCreationFeature.class ))
+        {
+            IndexCreationFeature indexCreationFeature = group.getFeature( IndexCreationFeature.class ).get();
+            rg.setMergedIndexPath( indexCreationFeature.getIndexPath().getPath() );
+        }
         rg.setCronExpression( group.getSchedulingDefinition() );
         rg.setMergedIndexTtl( group.getMergedIndexTTL() );
         return rg;

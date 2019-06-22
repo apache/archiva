@@ -22,6 +22,7 @@ package org.apache.archiva.repository.maven2;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.FilesystemStorage;
+import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,7 @@ public class MavenRepositoryGroup extends AbstractRepositoryGroup implements Edi
             new ReleaseScheme[] { ReleaseScheme.RELEASE, ReleaseScheme.SNAPSHOT },
             new String[] { MavenManagedRepository.DEFAULT_LAYOUT, MavenManagedRepository.LEGACY_LAYOUT},
             new String[] {},
-            new String[] {},
+            new String[] {IndexCreationFeature.class.getName()},
             false,
             false,
             false,
@@ -48,6 +49,8 @@ public class MavenRepositoryGroup extends AbstractRepositoryGroup implements Edi
 
     private FileLockManager lockManager;
     private FilesystemStorage fsStorage;
+    private IndexCreationFeature indexCreationFeature;
+
 
     public MavenRepositoryGroup(String id, String name, Path repositoryBase, FileLockManager lockManager) {
         super(RepositoryType.MAVEN, id, name, repositoryBase);
@@ -78,5 +81,7 @@ public class MavenRepositoryGroup extends AbstractRepositoryGroup implements Edi
             throw new RuntimeException("Fatal error while accessing repository path "+ getRepositoryBase(), e);
         }
         setStorage(fsStorage);
+        this.indexCreationFeature = new IndexCreationFeature(this, this);
+        addFeature( this.indexCreationFeature );
     }
 }

@@ -64,12 +64,6 @@ public interface RepositoryGroup extends Repository, RepositoryStorage {
     boolean contains(String id);
 
     /**
-     * Returns the path to the merged index
-     * @return
-     */
-    StorageAsset getMergedIndexPath();
-
-    /**
      * Returns the time to live in seconds for the merged index.
      *
      * @return

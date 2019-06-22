@@ -19,8 +19,8 @@ package org.apache.archiva.admin.mock;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.RepositoryGroup;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
+import org.apache.archiva.repository.RepositoryGroup;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;

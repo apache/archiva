@@ -22,6 +22,8 @@ package org.apache.archiva.webdav;
 import junit.framework.TestCase;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
+import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.content.FilesystemAsset;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -47,6 +49,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -116,10 +119,10 @@ public class DavResourceTest
         }
     }
 
-    private DavResource getDavResource( String logicalPath, Path file )
+    private DavResource getDavResource( String logicalPath, Path file ) throws LayoutException
     {
-        return new ArchivaDavResource( file.toAbsolutePath().toString(), logicalPath, repository, session, resourceLocator,
-                                       resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(), null, fileLockManager );
+        return new ArchivaDavResource( new FilesystemAsset( logicalPath, file.toAbsolutePath()) , logicalPath, repository, session, resourceLocator,
+                                       resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(), null);
     }
 
     @Test
@@ -338,9 +341,16 @@ public class DavResourceTest
         public DavResource createResource( DavResourceLocator locator, DavSession session )
             throws DavException
         {
-            return new ArchivaDavResource( baseDir.toAbsolutePath().toString(), "/", repository, session, resourceLocator,
-                                           resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(),
-                                           null, fileLockManager );
+            try
+            {
+                return new ArchivaDavResource( new FilesystemAsset( "/" , baseDir.toAbsolutePath()), "/", repository, session, resourceLocator,
+                                               resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(),
+                                               null );
+            }
+            catch ( LayoutException e )
+            {
+                throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
+            }
         }
     }
 }

@@ -223,7 +223,7 @@ public class ArchivaDavResource
         }
         else if ( outputContext.hasStream() )
         {
-            IndexWriter writer = new IndexWriter( getContent(), asset, logicalResource );
+            IndexWriter writer = new IndexWriter( asset, logicalResource );
             writer.write( outputContext );
         }
     }

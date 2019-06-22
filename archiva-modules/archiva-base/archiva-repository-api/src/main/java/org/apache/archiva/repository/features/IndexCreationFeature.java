@@ -22,6 +22,7 @@ package org.apache.archiva.repository.features;
 
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryEventListener;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 
 import java.net.URI;
@@ -44,9 +45,9 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
 
     private URI packedIndexPath;
 
-    private Path localIndexPath;
+    private StorageAsset localIndexPath;
 
-    private Path localPackedIndexPath;
+    private StorageAsset localPackedIndexPath;
 
     private Repository repo;
 
@@ -126,7 +127,7 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
      *
      * @return
      */
-    public Path getLocalIndexPath() {
+    public StorageAsset getLocalIndexPath() {
         return localIndexPath;
     }
 
@@ -136,7 +137,7 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
      *
      * @param localIndexPath
      */
-    public void setLocalIndexPath(Path localIndexPath) {
+    public void setLocalIndexPath(StorageAsset localIndexPath) {
         this.localIndexPath = localIndexPath;
     }
 
@@ -163,7 +164,7 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
      * Returns the directory where the packed index is stored.
      * @return
      */
-    public Path getLocalPackedIndexPath() {
+    public StorageAsset getLocalPackedIndexPath() {
         return localPackedIndexPath;
     }
 
@@ -173,7 +174,7 @@ public class IndexCreationFeature extends AbstractFeature implements RepositoryF
      *
      * @param localPackedIndexPath
      */
-    public void setLocalPackedIndexPath(Path localPackedIndexPath) {
+    public void setLocalPackedIndexPath(StorageAsset localPackedIndexPath) {
         this.localPackedIndexPath = localPackedIndexPath;
     }
 

@@ -26,6 +26,7 @@ import org.apache.archiva.repository.BasicManagedRepository;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.scheduler.indexing.ArtifactIndexingTask;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -275,20 +276,27 @@ public class ArchivaIndexingTaskExecutorTest
 
         Path basePath = repo.getLocalPath();
         IndexCreationFeature icf = repo.getFeature( IndexCreationFeature.class ).get();
-        Path packedIndexDirectory = icf.getLocalPackedIndexPath();
-        Path indexerDirectory = icf.getLocalIndexPath();
+        StorageAsset packedIndexDirectory = icf.getLocalPackedIndexPath();
+        StorageAsset indexerDirectory = icf.getLocalIndexPath();
 
-        for (Path dir : new Path[] { packedIndexDirectory, indexerDirectory }) {
-            Files.list(dir).filter(path -> path.getFileName().toString().startsWith("nexus-maven-repository-index"))
-                    .forEach(path ->
+        for (StorageAsset dir : new StorageAsset[] { packedIndexDirectory, indexerDirectory }) {
+            if (dir.getFilePath()!=null)
+            {
+                Path localDirPath = dir.getFilePath();
+                Files.list( localDirPath ).filter( path -> path.getFileName( ).toString( ).startsWith( "nexus-maven-repository-index" ) )
+                    .forEach( path ->
                     {
-                        try {
-                            System.err.println("Deleting " + path);
-                            Files.delete(path);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        try
+                        {
+                            System.err.println( "Deleting " + path );
+                            Files.delete( path );
                         }
-                    });
+                        catch ( IOException e )
+                        {
+                            e.printStackTrace( );
+                        }
+                    } );
+            }
         }
 
 
@@ -310,20 +318,20 @@ public class ArchivaIndexingTaskExecutorTest
 
         indexingExecutor.executeTask( task );
 
-        assertTrue( Files.exists(packedIndexDirectory) );
-        assertTrue( Files.exists(indexerDirectory) );
+        assertTrue( Files.exists(packedIndexDirectory.getFilePath()) );
+        assertTrue( Files.exists(indexerDirectory.getFilePath()) );
 
         // test packed index file creation
         //no more zip
         //Assertions.assertThat(new File( indexerDirectory, "nexus-maven-repository-index.zip" )).exists();
-        Assertions.assertThat( Files.exists(packedIndexDirectory.resolve("nexus-maven-repository-index.properties" ) ));
-        Assertions.assertThat( Files.exists(packedIndexDirectory.resolve("nexus-maven-repository-index.gz" ) ));
-        assertFalse( Files.exists(packedIndexDirectory.resolve("nexus-maven-repository-index.1.gz" )  ));
+        Assertions.assertThat( Files.exists(packedIndexDirectory.getFilePath().resolve("nexus-maven-repository-index.properties" ) ));
+        Assertions.assertThat( Files.exists(packedIndexDirectory.getFilePath().resolve("nexus-maven-repository-index.gz" ) ));
+        assertFalse( Files.exists(packedIndexDirectory.getFilePath().resolve("nexus-maven-repository-index.1.gz" )  ));
 
         // unpack .zip index
         //unzipIndex( indexerDirectory.getPath(), destDir.getPath() );
 
-        DefaultIndexUpdater.FileFetcher fetcher = new DefaultIndexUpdater.FileFetcher( packedIndexDirectory.toFile() );
+        DefaultIndexUpdater.FileFetcher fetcher = new DefaultIndexUpdater.FileFetcher( packedIndexDirectory.getFilePath().toFile() );
         IndexUpdateRequest updateRequest = new IndexUpdateRequest( getIndexingContext(), fetcher );
         //updateRequest.setLocalIndexCacheDir( indexerDirectory );
         indexUpdater.fetchAndUpdateIndex( updateRequest );

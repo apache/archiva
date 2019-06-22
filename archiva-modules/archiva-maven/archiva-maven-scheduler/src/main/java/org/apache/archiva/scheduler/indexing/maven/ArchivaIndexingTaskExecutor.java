@@ -262,14 +262,14 @@ public class ArchivaIndexingTaskExecutor
             if ( repository.supportsFeature( IndexCreationFeature.class ) )
             {
                 IndexCreationFeature icf = repository.getFeature( IndexCreationFeature.class ).get( );
-                if ( !icf.isSkipPackedIndexCreation( ) && icf.getLocalPackedIndexPath( ) != null )
+                if ( !icf.isSkipPackedIndexCreation( ) && icf.getLocalPackedIndexPath( ) != null && icf.getLocalIndexPath().getFilePath()!=null )
                 {
 
                     log.debug( "Creating packed index from {} on {}", context.getIndexDirectoryFile( ), icf.getLocalPackedIndexPath( ) );
                     IndexPackingRequest request = new IndexPackingRequest( context, //
                         context.acquireIndexSearcher( ).getIndexReader( ),
                         //
-                        icf.getLocalPackedIndexPath( ).toFile( ) );
+                        icf.getLocalPackedIndexPath( ).getFilePath().toFile( ) );
 
                     indexPacker.packIndex( request );
                     context.updateTimestamp( true );
