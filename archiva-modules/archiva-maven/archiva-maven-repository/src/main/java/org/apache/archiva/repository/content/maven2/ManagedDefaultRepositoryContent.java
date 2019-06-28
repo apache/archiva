@@ -96,11 +96,12 @@ public class ManagedDefaultRepositoryContent
         super(artifactMappingProviders==null ? Collections.singletonList( new DefaultArtifactMappingProvider() ) : artifactMappingProviders);
         setFileTypes( fileTypes );
         setRepository( repository );
+        final Path repositoryDir = getRepoDir();
         try {
-            storage = new FilesystemStorage(getRepoDir(), lockManager);
+            storage = new FilesystemStorage(repositoryDir, lockManager);
         } catch (IOException e) {
-            log.error("Could not initialize the filesystem storage to repository: {}", getRepoDir());
-            throw new RuntimeException("Fatal error. Could not initialize the filesystem storage for "+getRepoDir());
+            log.error("Could not initialize the filesystem storage to repository {}: {}", repositoryDir, e.getMessage(), e);
+            throw new RuntimeException("Fatal error. Could not initialize the filesystem storage for "+repositoryDir+": "+e.getMessage());
         }
     }
 

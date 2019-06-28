@@ -356,7 +356,7 @@ public class MavenRepositoryProviderTest
         assertEquals("0 0 03 ? * MON", grp.getSchedulingDefinition());
         IndexCreationFeature indexCreationFeature = grp.getFeature( IndexCreationFeature.class ).get();
         try {
-            assertEquals(new URI("file://.index-abc"), indexCreationFeature.getIndexPath());
+            assertEquals(new URI(".index-abc"), indexCreationFeature.getIndexPath());
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }

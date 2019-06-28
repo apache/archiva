@@ -21,10 +21,13 @@ package $package;
 
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.repository.BasicManagedRepository;
 import org.apache.archiva.repository.BasicRemoteRepository;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.EditableRemoteRepository;
+import org.apache.archiva.repository.RepositoryGroup;
+import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.PasswordCredentials;
 import org.apache.archiva.repository.ReleaseScheme;
@@ -233,4 +236,21 @@ public class RepositoryProviderMock implements RepositoryProvider
     public <T> void raise(org.apache.archiva.repository.RepositoryEvent<T> event) {
 
     }
+
+    @Override
+    public RepositoryGroupConfiguration getRepositoryGroupConfiguration(RepositoryGroup repositoryGroup) throws RepositoryException {
+        return null;
+    }
+
+    @Override
+    public RepositoryGroup createRepositoryGroup(RepositoryGroupConfiguration configuration) throws RepositoryException {
+        return null;
+    }
+
+    @Override
+    public void updateRepositoryGroupInstance(EditableRepositoryGroup repositoryGroup, RepositoryGroupConfiguration configuration) throws RepositoryException {
+
+    }
+
+
 }

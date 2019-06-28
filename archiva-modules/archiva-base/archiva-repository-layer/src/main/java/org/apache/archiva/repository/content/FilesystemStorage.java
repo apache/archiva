@@ -49,6 +49,9 @@ public class FilesystemStorage implements RepositoryStorage {
     private final FileLockManager fileLockManager;
 
     public FilesystemStorage(Path basePath, FileLockManager fileLockManager) throws IOException {
+        if (!Files.exists(basePath)) {
+            Files.createDirectories(basePath);
+        }
         this.basePath = basePath.normalize().toRealPath();
         this.fileLockManager = fileLockManager;
     }
