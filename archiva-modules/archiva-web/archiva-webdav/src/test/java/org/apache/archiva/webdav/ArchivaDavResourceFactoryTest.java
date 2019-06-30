@@ -191,7 +191,7 @@ public class ArchivaDavResourceFactoryTest
         expectLastCall().times(0, 4);
         archivaConfiguration.save( config );
 
-        expectLastCall().times( 0, 4 );
+        expectLastCall().times( 0, 5 );
         archivaConfigurationControl.replay();
 
         defaultManagedRepositoryAdmin.setArchivaConfiguration( archivaConfiguration );
@@ -493,6 +493,8 @@ public class ArchivaDavResourceFactoryTest
         ManagedRepositoryContent internalRepo = createManagedRepositoryContent( INTERNAL_REPO );
         ManagedRepositoryContent localMirrorRepo = createManagedRepositoryContent( LOCAL_MIRROR_REPO );
 
+        repositoryRegistry.putRepositoryGroup( repoGroup );
+
         try
         {
             archivaConfigurationControl.reset();
@@ -571,8 +573,6 @@ public class ArchivaDavResourceFactoryTest
         try
         {
             archivaConfigurationControl.reset();
-
-            expect( archivaConfiguration.getConfiguration() ).andReturn( config ).times( 1 );
 
             expect( request.getMethod() ).andReturn( "GET" ).times( 4 );
 
@@ -670,7 +670,8 @@ public class ArchivaDavResourceFactoryTest
         repoContentFactory.getRepositoryContentProviders().add(provider);
         defaultManagedRepositoryAdmin.addManagedRepository(
             createManagedRepository( LEGACY_REPO, getProjectBase().resolve( "target/test-classes/" + LEGACY_REPO ).toString(),
-                                     "legacy" ), false, null );
+                "legacy" ), false, null );
+
         DavResourceLocator locator =
             new ArchivaDavResourceLocator( "", "/repository/" + LEGACY_REPO + "/eclipse/maven-metadata.xml",
                                            LEGACY_REPO, new ArchivaDavLocatorFactory() );

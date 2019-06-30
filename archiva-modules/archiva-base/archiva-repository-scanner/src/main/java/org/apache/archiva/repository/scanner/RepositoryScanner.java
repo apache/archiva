@@ -26,6 +26,9 @@ import org.apache.archiva.repository.ManagedRepository;
 import java.util.List;
 import java.util.Set;
 
+import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
+import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_PACKED_INDEX_PATH;
+
 /**
  * RepositoryScanner
  *
@@ -51,9 +54,9 @@ public interface RepositoryScanner
      * </p>
      */
     static final String[] IGNORABLE_CONTENT =
-        { "bin/**", "reports/**", ".index", ".reports/**", ".maven/**", "**/.svn/**", "**/*snapshot-version",
+        { "bin/**", "reports/**", DEFAULT_PACKED_INDEX_PATH, ".reports/**", ".maven/**", "**/.svn/**", "**/*snapshot-version",
             "*/website/**", "*/licences/**", "**/.htaccess", "**/*.html", "**/*.txt", "**/README*", "**/CHANGELOG*",
-            "**/KEYS*", ".indexer" };
+            "**/KEYS*", DEFAULT_INDEX_PATH };
 
     /**
      * Scan the repository for content changes.

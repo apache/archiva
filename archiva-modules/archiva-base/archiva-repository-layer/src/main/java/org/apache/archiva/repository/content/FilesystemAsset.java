@@ -19,6 +19,7 @@ package org.apache.archiva.repository.content;
  * under the License.
  */
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,7 @@ public class FilesystemAsset implements StorageAsset {
 
     private final static Logger log = LoggerFactory.getLogger(FilesystemAsset.class);
 
+    private final Path basePath;
     private final Path assetPath;
     private final String relativePath;
 
@@ -86,6 +88,15 @@ public class FilesystemAsset implements StorageAsset {
 
     boolean directoryHint = false;
 
+
+    FilesystemAsset(String path, Path assetPath, Path basePath) {
+        this.assetPath = assetPath;
+        this.relativePath = path;
+        this.setPermissionsForNew=false;
+        this.basePath = basePath;
+        init();
+    }
+
     /**
      * Creates an asset for the given path. The given paths are not checked.
      * The base path should be an absolute path.
@@ -97,6 +108,7 @@ public class FilesystemAsset implements StorageAsset {
         this.assetPath = assetPath;
         this.relativePath = path;
         this.setPermissionsForNew = false;
+        this.basePath = null;
         init();
     }
 
@@ -109,11 +121,12 @@ public class FilesystemAsset implements StorageAsset {
      * @param directory This is only relevant, if the represented file or directory does not exist yet and
      *                  is a hint.
      */
-    public FilesystemAsset(String path, Path assetPath, boolean directory) {
+    public FilesystemAsset(String path, Path assetPath, Path basePath, boolean directory) {
         this.assetPath = assetPath;
         this.relativePath = path;
         this.directoryHint = directory;
         this.setPermissionsForNew = false;
+        this.basePath = basePath;
         init();
     }
 
@@ -126,11 +139,12 @@ public class FilesystemAsset implements StorageAsset {
      * @param directory This is only relevant, if the represented file or directory does not exist yet and
      *                  is a hint.
      */
-    public FilesystemAsset(String path, Path assetPath, boolean directory, boolean setPermissionsForNew) {
+    public FilesystemAsset(String path, Path assetPath, Path basePath, boolean directory, boolean setPermissionsForNew) {
         this.assetPath = assetPath;
         this.relativePath = path;
         this.directoryHint = directory;
         this.setPermissionsForNew = setPermissionsForNew;
+        this.basePath = basePath;
         init();
     }
 
@@ -263,6 +277,9 @@ public class FilesystemAsset implements StorageAsset {
         } else {
             options = new OpenOption[]{StandardOpenOption.APPEND};
         }
+        if (!Files.exists( assetPath )) {
+            create();
+        }
         return Files.newOutputStream(assetPath, options);
     }
 
@@ -344,6 +361,33 @@ public class FilesystemAsset implements StorageAsset {
         return assetPath;
     }
 
+    @Override
+    public boolean hasParent( )
+    {
+        if (basePath!=null && assetPath.equals(basePath)) {
+                return false;
+        }
+        return assetPath.getParent()!=null;
+    }
+
+    @Override
+    public StorageAsset getParent( )
+    {
+        Path parentPath;
+        if (basePath!=null && assetPath.equals( basePath )) {
+            parentPath=null;
+        } else
+        {
+            parentPath = assetPath.getParent( );
+        }
+        String relativeParent = StringUtils.substringBeforeLast( relativePath,"/");
+        if (parentPath!=null) {
+            return new FilesystemAsset( relativeParent, parentPath, basePath, true, setPermissionsForNew );
+        } else {
+            return null;
+        }
+    }
+
 
     public void setDefaultFileAcls(List<AclEntry> acl) {
         defaultFileAcls = acl;
@@ -383,6 +427,9 @@ public class FilesystemAsset implements StorageAsset {
             if (directoryHint) {
                 Files.createDirectories(assetPath);
             } else {
+                if (!Files.exists( assetPath.getParent() )) {
+                    Files.createDirectories( assetPath.getParent( ) );
+                }
                 Files.createFile(assetPath);
             }
             if (setPermissionsForNew) {
@@ -393,8 +440,7 @@ public class FilesystemAsset implements StorageAsset {
 
     @Override
     public String toString() {
-        return relativePath;
+        return relativePath+":"+assetPath;
     }
-
 
 }

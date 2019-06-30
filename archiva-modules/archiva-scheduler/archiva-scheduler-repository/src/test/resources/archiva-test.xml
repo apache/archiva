@@ -88,6 +88,7 @@
           <pattern>**/*.sh</pattern>
           <pattern>**/.svn/**</pattern>
           <pattern>**/.DAV/**</pattern>
+          <pattern>.indexer/**</pattern>
         </patterns>
       </fileType>
     </fileTypes>

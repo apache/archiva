@@ -128,4 +128,16 @@ public interface StorageAsset
      * @throws UnsupportedOperationException
      */
     Path getFilePath() throws UnsupportedOperationException;
+
+    /**
+     * Returns true, if there is a parent to this asset.
+     * @return
+     */
+    boolean hasParent();
+
+    /**
+     * Returns the parent of this asset.
+     * @return The asset, or <code>null</code>, if it does not exist.
+     */
+    StorageAsset getParent();
 }

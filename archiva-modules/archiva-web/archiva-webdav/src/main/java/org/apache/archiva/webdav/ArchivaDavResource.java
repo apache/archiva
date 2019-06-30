@@ -21,10 +21,8 @@ package org.apache.archiva.webdav;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.LayoutException;
-import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.content.RepositoryStorage;
 import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
@@ -32,7 +30,6 @@ import org.apache.archiva.scheduler.repository.model.RepositoryArchivaTaskSchedu
 import org.apache.archiva.scheduler.repository.model.RepositoryTask;
 import org.apache.archiva.webdav.util.IndexWriter;
 import org.apache.archiva.webdav.util.MimeTypes;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.util.Text;
 import org.apache.jackrabbit.webdav.DavException;
@@ -57,7 +54,6 @@ import org.apache.jackrabbit.webdav.property.DavPropertyNameSet;
 import org.apache.jackrabbit.webdav.property.DavPropertySet;
 import org.apache.jackrabbit.webdav.property.DefaultDavProperty;
 import org.apache.jackrabbit.webdav.property.ResourceType;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,11 +65,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  */
@@ -98,7 +92,7 @@ public class ArchivaDavResource
 
     private String remoteAddr;
 
-    private final ManagedRepository repository;
+    private final RepositoryStorage repositoryStorage;
 
     private final MimeTypes mimeTypes;
 
@@ -114,7 +108,7 @@ public class ArchivaDavResource
 
     private StorageAsset asset;
 
-    public ArchivaDavResource( StorageAsset localResource, String logicalResource, ManagedRepository repository,
+    public ArchivaDavResource( StorageAsset localResource, String logicalResource, RepositoryStorage repositoryStorage,
                                DavSession session, ArchivaDavResourceLocator locator, DavResourceFactory factory,
                                MimeTypes mimeTypes, List<AuditListener> auditListeners,
                                RepositoryArchivaTaskScheduler scheduler) throws LayoutException
@@ -127,7 +121,7 @@ public class ArchivaDavResource
         this.session = session;
 
         // TODO: push into locator as well as moving any references out of the resource factory
-        this.repository = repository;
+        this.repositoryStorage = repositoryStorage;
 
         // TODO: these should be pushed into the repository layer, along with the physical file operations in this class
         this.mimeTypes = mimeTypes;
@@ -136,21 +130,18 @@ public class ArchivaDavResource
 
     }
 
-    public ArchivaDavResource( StorageAsset localResource, String logicalResource, ManagedRepository repository,
+    public ArchivaDavResource( StorageAsset localResource, String logicalResource, RepositoryStorage repositoryStorage,
                                String remoteAddr, String principal, DavSession session,
                                ArchivaDavResourceLocator locator, DavResourceFactory factory, MimeTypes mimeTypes,
                                List<AuditListener> auditListeners, RepositoryArchivaTaskScheduler scheduler) throws LayoutException
     {
-        this( localResource, logicalResource, repository, session, locator, factory, mimeTypes, auditListeners,
+        this( localResource, logicalResource, repositoryStorage, session, locator, factory, mimeTypes, auditListeners,
               scheduler );
 
         this.remoteAddr = remoteAddr;
         this.principal = principal;
     }
 
-    private ManagedRepositoryContent getContent() {
-        return repository.getContent();
-    }
 
     @Override
     public String getComplianceClass()
@@ -219,7 +210,7 @@ public class ArchivaDavResource
 
         if ( !isCollection() && outputContext.hasStream() )
         {
-            getContent().consumeData( asset, is -> {copyStream(is, outputContext.getOutputStream());}, true );
+            repositoryStorage.consumeData( asset, is -> {copyStream(is, outputContext.getOutputStream());}, true );
         }
         else if ( outputContext.hasStream() )
         {
@@ -343,7 +334,7 @@ public class ArchivaDavResource
                     log.debug( "Upload failed: {}", msg );
                     throw new DavException( HttpServletResponse.SC_BAD_REQUEST, msg );
                 }
-                StorageAsset member = getContent( ).addAsset( newPath, false );
+                StorageAsset member = repositoryStorage.addAsset( newPath, false );
                 member.create();
                 member.storeDataFile( tempFile );
             }
@@ -375,7 +366,7 @@ public class ArchivaDavResource
         {
             try
             {
-                StorageAsset member = getContent( ).addAsset( newPath, true );
+                StorageAsset member = repositoryStorage.addAsset( newPath, true );
                 member.create();
             }
             catch ( IOException e )
@@ -439,12 +430,12 @@ public class ArchivaDavResource
             {
                 if ( resource.isContainer() )
                 {
-                    getContent().removeAsset( resource );
+                    repositoryStorage.removeAsset( resource );
                     triggerAuditEvent( member, AuditEvent.REMOVE_DIR );
                 }
                 else
                 {
-                    getContent().removeAsset( resource );
+                    repositoryStorage.removeAsset( resource );
                     triggerAuditEvent( member, AuditEvent.REMOVE_FILE );
                 }
 
@@ -492,12 +483,12 @@ public class ArchivaDavResource
             ArchivaDavResource resource = checkDavResourceIsArchivaDavResource( destination );
             if ( isCollection() )
             {
-                this.asset = getContent().moveAsset( asset, destination.getResourcePath() );
+                this.asset = repositoryStorage.moveAsset( asset, destination.getResourcePath() );
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_DIRECTORY );
             }
             else
             {
-                this.asset = getContent().moveAsset( asset, destination.getResourcePath() );
+                this.asset = repositoryStorage.moveAsset( asset, destination.getResourcePath() );
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.MOVE_FILE );
             }
 
@@ -530,13 +521,13 @@ public class ArchivaDavResource
             ArchivaDavResource resource = checkDavResourceIsArchivaDavResource( destination );
             if ( isCollection() )
             {
-                getContent().copyAsset( asset, destination.getResourcePath() );
+                repositoryStorage.copyAsset( asset, destination.getResourcePath() );
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_DIRECTORY );
             }
             else
             {
-                getContent().copyAsset( asset, destination.getResourcePath() );
+                repositoryStorage.copyAsset( asset, destination.getResourcePath() );
 
                 triggerAuditEvent( remoteAddr, locator.getRepositoryId(), logicalResource, AuditEvent.COPY_FILE );
             }

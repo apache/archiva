@@ -87,7 +87,8 @@ public class RepositoryServletRepositoryGroupTest
     {
         super.setUp();
 
-        String appserverBase = System.getProperty( "appserver.base" );
+        String appserverBase = getAppserverBase().toAbsolutePath().toString();
+        log.debug( "Appserver Base {}", appserverBase );
 
         Configuration configuration = archivaConfiguration.getConfiguration();
 
@@ -110,11 +111,7 @@ public class RepositoryServletRepositoryGroupTest
         ManagedRepositoryConfiguration managedRepositoryConfiguration =
             createManagedRepository( MANAGED_REPO_INVALID, "Invalid Test Repo", repoRootInvalid, true );
 
-        configuration.addManagedRepository(
-            createManagedRepository( MANAGED_REPO_FIRST, "First Test Repo", repoRootFirst, true ) );
         configuration.addManagedRepository( managedRepositoryConfiguration );
-        configuration.addManagedRepository(
-            createManagedRepository( MANAGED_REPO_LAST, "Last Test Repo", repoRootLast, true ) );
 
         List<String> invalidManagedRepoIds = new ArrayList<>();
         invalidManagedRepoIds.add( MANAGED_REPO_FIRST );
@@ -133,6 +130,7 @@ public class RepositoryServletRepositoryGroupTest
         startRepository();
     }
 
+
     @Override
     @After
     public void tearDown()
@@ -140,6 +138,8 @@ public class RepositoryServletRepositoryGroupTest
     {
         setupCleanRepo( repoRootFirst );
         setupCleanRepo( repoRootLast );
+
+        repositoryRegistry.destroy();
 
         super.tearDown();
 
@@ -210,22 +210,6 @@ public class RepositoryServletRepositoryGroupTest
     }
 
     /*
-    * Test Case 3.a
-    */
-    @Test
-    public void testGetInvalidManagedRepositoryInGroupReturnNotFound()
-        throws Exception
-    {
-        String resourceName = "dummy/dummy-no-resource/1.0/dummy-no-resource-1.0.txt";
-
-        WebRequest request = new GetMethodWebRequest(
-            "http://machine.com/repository/" + REPO_GROUP_WITH_INVALID_REPOS + "/" + resourceName );
-        WebResponse response = getServletUnitClient().getResponse( request );
-
-        assertResponseInternalServerError( response );
-    }
-
-    /*
     * Test Case 4
     */
     @Test
@@ -274,6 +258,7 @@ public class RepositoryServletRepositoryGroupTest
         WebResponse response = getServletUnitClient().getResource( request );
 
         Path returnedMetadata = getProjectBase().resolve( "target/test-classes/retrievedMetadataFile.xml" );
+        System.out.println( response.getContentAsString() );
         org.apache.archiva.common.utils.FileUtils.writeStringToFile( returnedMetadata, Charset.defaultCharset(), response.getContentAsString() );
         ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( returnedMetadata );
 
@@ -300,7 +285,7 @@ public class RepositoryServletRepositoryGroupTest
         assertResponseOK( response );
 
         assertThat( response.getContentAsString() )
-            .isEqualTo( "add113b0d7f8c6adb92a5015a7a3701081edf998  maven-metadata-group-with-valid-repos.xml" );
+            .startsWith( "add113b0d7f8c6adb92a5015a7a3701081edf998" );
 
         // request the md5 checksum of the metadata
         request = new GetMethodWebRequest( "http://machine.com/repository/" + REPO_GROUP_WITH_VALID_REPOS + "/dummy/"
@@ -310,7 +295,7 @@ public class RepositoryServletRepositoryGroupTest
         assertResponseOK( response );
 
         assertThat( response.getContentAsString() )
-            .isEqualTo( "5b85ea4aa5f52bb76760041a52f98de8  maven-metadata-group-with-valid-repos.xml" );
+            .startsWith( "5b85ea4aa5f52bb76760041a52f98de8" );
     }
 
     // MRM-901

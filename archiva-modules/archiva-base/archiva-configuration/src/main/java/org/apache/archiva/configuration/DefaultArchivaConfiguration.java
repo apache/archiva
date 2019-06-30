@@ -606,7 +606,7 @@ public class DefaultArchivaConfiguration
 
         if (!writeFile("user configuration", userConfigFilename, contents)) {
             fileLocation = altConfigFilename;
-            if (!writeFile("alternative configuration", altConfigFilename, contents)) {
+            if (!writeFile("alternative configuration", altConfigFilename, contents, true)) {
                 throw new RegistryException(
                         "Unable to create configuration file in either user [" + userConfigFilename + "] or alternative ["
                                 + altConfigFilename
@@ -632,6 +632,10 @@ public class DefaultArchivaConfiguration
         return section == null ? new CommonsConfigurationRegistry(new BaseConfiguration()) : section;
     }
 
+    private boolean writeFile(String filetype, String path, String contents) {
+        return writeFile( filetype, path, contents, false );
+    }
+
     /**
      * Attempts to write the contents to a file, if an IOException occurs, return false.
      * <p/>
@@ -642,14 +646,18 @@ public class DefaultArchivaConfiguration
      * @param contents the contents to write.
      * @return true if write successful.
      */
-    private boolean writeFile(String filetype, String path, String contents) {
+    private boolean writeFile(String filetype, String path, String contents, boolean createDirs) {
         Path file = Paths.get(path);
 
         try {
             // Check parent directory (if it is declared)
-            if (file.getParent() != null) {
+            final Path parent = file.getParent();
+            if (parent != null) {
                 // Check that directory exists
-                if (!Files.isDirectory(file.getParent())) {
+                if (!Files.exists( parent ) && createDirs) {
+                    Files.createDirectories( parent );
+                }
+                if (!Files.isDirectory(parent)) {
                     // Directory to file must exist for file to be created
                     return false;
                 }

@@ -246,6 +246,11 @@ public class RepositoryProviderMock implements RepositoryProvider
     public RepositoryGroup createRepositoryGroup(RepositoryGroupConfiguration configuration) throws RepositoryException {
         return null;
     }
+    @Override
+    public EditableRepositoryGroup createRepositoryGroup(String id, String name) {
+        return null;
+    }
+
 
     @Override
     public void updateRepositoryGroupInstance(EditableRepositoryGroup repositoryGroup, RepositoryGroupConfiguration configuration) throws RepositoryException {

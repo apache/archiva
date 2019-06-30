@@ -34,6 +34,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -508,7 +509,7 @@ public class ArchivaConfigurationTest
         throws Exception
     {
         String propFile = System.getProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY );
-        System.setProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY, "${basedir}/target/*intentionally:invalid*/.m2/archiva-user.xml" );
+        System.setProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY, "/../../..//*intentionally:invalid*/.m2/archiva-user.xml" );
         ArchivaConfiguration archivaConfiguration =
             lookup( ArchivaConfiguration.class, "test-not-allowed-to-write-to-both" );
         Configuration config = archivaConfiguration.getConfiguration();

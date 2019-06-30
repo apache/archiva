@@ -61,6 +61,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 
+import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
+
 /**
  * @author Olivier Lamy
  */
@@ -192,7 +194,7 @@ public abstract class AbstractMavenRepositorySearch
         repositoryConfig.setScanned( true );
         repositoryConfig.setSnapshots( false );
         repositoryConfig.setReleases( true );
-        repositoryConfig.setIndexDir(".indexer");
+        repositoryConfig.setIndexDir(DEFAULT_INDEX_PATH);
 
         return repositoryConfig;
     }

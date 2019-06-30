@@ -69,8 +69,7 @@ public class RepositoryGroupConfiguration
     /**
      * 
      *           When to run the index merging for this group.
-     *           No default value.
-     *           
+     *
      */
     private String cronExpression = "";
 

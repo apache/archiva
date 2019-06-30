@@ -21,6 +21,8 @@ package org.apache.archiva.indexer.merger;
 import java.nio.file.Path;
 import java.util.Collection;
 
+import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
+
 /**
  * @author Olivier Lamy
  */
@@ -41,7 +43,7 @@ public class IndexMergerRequest
      */
     private String groupId;
 
-    private String mergedIndexPath = ".indexer";
+    private String mergedIndexPath = DEFAULT_INDEX_PATH;
 
     private int mergedIndexTtl;
 

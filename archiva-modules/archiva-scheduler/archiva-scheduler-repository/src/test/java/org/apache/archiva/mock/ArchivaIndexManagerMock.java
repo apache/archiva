@@ -1,4 +1,4 @@
-package org.apache.archiva.indexer.maven;
+package org.apache.archiva.mock;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,7 +9,7 @@ package org.apache.archiva.indexer.maven;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,7 +19,6 @@ package org.apache.archiva.indexer.maven;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -28,8 +27,6 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
-import org.apache.archiva.indexer.merger.IndexMergerException;
-import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.proxy.maven.WagonFactoryException;
@@ -55,14 +52,11 @@ import org.apache.maven.index.IndexerEngine;
 import org.apache.maven.index.Scanner;
 import org.apache.maven.index.ScanningRequest;
 import org.apache.maven.index.ScanningResult;
-import org.apache.maven.index.context.ContextMemberProvider;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.context.StaticContextMemberProvider;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.IndexUpdateRequest;
-import org.apache.maven.index.updater.IndexUpdater;
 import org.apache.maven.index.updater.ResourceFetcher;
 import org.apache.maven.index_shaded.lucene.index.IndexFormatTooOldException;
 import org.apache.maven.wagon.ConnectionException;
@@ -95,21 +89,13 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 
-/**
- * Maven implementation of index manager.
- * The index manager is a singleton, so we try to make sure, that index operations are not running
- * parallel by synchronizing on the index path.
- * A update operation waits for parallel running methods to finish before starting, but after a certain
- * time of retries a IndexUpdateFailedException is thrown.
- */
-@Service( "archivaIndexManager#maven" )
-public class MavenIndexManager implements ArchivaIndexManager {
+@Service("archivaIndexManager#maven")
+public class ArchivaIndexManagerMock implements ArchivaIndexManager {
 
-    private static final Logger log = LoggerFactory.getLogger( MavenIndexManager.class );
+    private static final Logger log = LoggerFactory.getLogger( ArchivaIndexManagerMock.class );
 
     @Inject
     private Indexer indexer;
@@ -132,15 +118,9 @@ public class MavenIndexManager implements ArchivaIndexManager {
     @Inject
     private WagonFactory wagonFactory;
 
-    @Inject
-    private IndexUpdater indexUpdater;
 
     @Inject
     private ArtifactContextProducer artifactContextProducer;
-
-    @Inject
-    private ProxyRegistry proxyRegistry;
-
 
     private ConcurrentSkipListSet<Path> activeContexts = new ConcurrentSkipListSet<>( );
 
@@ -148,7 +128,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
     private static final int MAX_WAIT = 10;
 
 
-    public static IndexingContext getMvnContext( ArchivaIndexingContext context ) throws UnsupportedBaseContextException
+    public static IndexingContext getMvnContext(ArchivaIndexingContext context ) throws UnsupportedBaseContextException
     {
         if ( !context.supports( IndexingContext.class ) )
         {
@@ -221,20 +201,20 @@ public class MavenIndexManager implements ArchivaIndexManager {
     public void pack( final ArchivaIndexingContext context ) throws IndexUpdateFailedException
     {
         executeUpdateFunction( context, indexingContext -> {
-                try
-                {
-                    IndexPackingRequest request = new IndexPackingRequest( indexingContext,
-                        indexingContext.acquireIndexSearcher( ).getIndexReader( ),
-                        indexingContext.getIndexDirectoryFile( ) );
-                    indexPacker.packIndex( request );
-                    indexingContext.updateTimestamp( true );
+                    try
+                    {
+                        IndexPackingRequest request = new IndexPackingRequest( indexingContext,
+                                indexingContext.acquireIndexSearcher( ).getIndexReader( ),
+                                indexingContext.getIndexDirectoryFile( ) );
+                        indexPacker.packIndex( request );
+                        indexingContext.updateTimestamp( true );
+                    }
+                    catch ( IOException e )
+                    {
+                        log.error( "IOException while packing index of context " + context.getId( ) + ( StringUtils.isNotEmpty( e.getMessage( ) ) ? ": " + e.getMessage( ) : "" ) );
+                        throw new IndexUpdateFailedException( "IOException during update of " + context.getId( ), e );
+                    }
                 }
-                catch ( IOException e )
-                {
-                    log.error( "IOException while packing index of context " + context.getId( ) + ( StringUtils.isNotEmpty( e.getMessage( ) ) ? ": " + e.getMessage( ) : "" ) );
-                    throw new IndexUpdateFailedException( "IOException during update of " + context.getId( ), e );
-                }
-            }
         );
 
     }
@@ -250,7 +230,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
             {
                 log.error( "Exceptions occured during index scan of " + context.getId( ) );
                 result.getExceptions( ).stream( ).map( e -> e.getMessage( ) ).distinct( ).limit( 5 ).forEach(
-                    s -> log.error( "Message: " + s )
+                        s -> log.error( "Message: " + s )
                 );
             }
 
@@ -262,7 +242,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
     {
         log.info( "start download remote index for remote repository {}", context.getRepository( ).getId( ) );
         URI remoteUpdateUri;
-        if ( !( context.getRepository( ) instanceof RemoteRepository ) || !(context.getRepository().supportsFeature(RemoteIndexFeature.class)) )
+        if ( !( context.getRepository( ) instanceof RemoteRepository) || !(context.getRepository().supportsFeature(RemoteIndexFeature.class)) )
         {
             throw new IndexUpdateFailedException( "The context is not associated to a remote repository with remote index " + context.getId( ) );
         } else {
@@ -272,123 +252,113 @@ public class MavenIndexManager implements ArchivaIndexManager {
         final RemoteRepository remoteRepository = (RemoteRepository) context.getRepository( );
 
         executeUpdateFunction( context,
-            indexingContext -> {
-                try
-                {
-                    // create a temp directory to download files
-                    Path tempIndexDirectory = Paths.get( indexingContext.getIndexDirectoryFile( ).getParent( ), ".tmpIndex" );
-                    Path indexCacheDirectory = Paths.get( indexingContext.getIndexDirectoryFile( ).getParent( ), ".indexCache" );
-                    Files.createDirectories( indexCacheDirectory );
-                    if ( Files.exists( tempIndexDirectory ) )
+                indexingContext -> {
+                    try
                     {
-                        org.apache.archiva.common.utils.FileUtils.deleteDirectory( tempIndexDirectory );
-                    }
-                    Files.createDirectories( tempIndexDirectory );
-                    tempIndexDirectory.toFile( ).deleteOnExit( );
-                    String baseIndexUrl = indexingContext.getIndexUpdateUrl( );
-
-                    String wagonProtocol = remoteUpdateUri.toURL( ).getProtocol( );
-
-                    NetworkProxy networkProxy = null;
-                    if ( remoteRepository.supportsFeature( RemoteIndexFeature.class ) )
-                    {
-                        RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class ).get( );
-                        if ( StringUtils.isNotBlank( rif.getProxyId( ) ) )
+                        // create a temp directory to download files
+                        Path tempIndexDirectory = Paths.get( indexingContext.getIndexDirectoryFile( ).getParent( ), ".tmpIndex" );
+                        Path indexCacheDirectory = Paths.get( indexingContext.getIndexDirectoryFile( ).getParent( ), ".indexCache" );
+                        Files.createDirectories( indexCacheDirectory );
+                        if ( Files.exists( tempIndexDirectory ) )
                         {
-                            networkProxy = proxyRegistry.getNetworkProxy( rif.getProxyId( ) );
-                            if ( networkProxy == null )
+                            FileUtils.deleteDirectory( tempIndexDirectory );
+                        }
+                        Files.createDirectories( tempIndexDirectory );
+                        tempIndexDirectory.toFile( ).deleteOnExit( );
+                        String baseIndexUrl = indexingContext.getIndexUpdateUrl( );
+
+                        String wagonProtocol = remoteUpdateUri.toURL( ).getProtocol( );
+
+                        NetworkProxy networkProxy = null;
+                        if ( remoteRepository.supportsFeature( RemoteIndexFeature.class ) )
+                        {
+                            RemoteIndexFeature rif = remoteRepository.getFeature( RemoteIndexFeature.class ).get( );
+
+                            final StreamWagon wagon = (StreamWagon) wagonFactory.getWagon(
+                                    new WagonFactoryRequest( wagonProtocol, remoteRepository.getExtraHeaders( ) ).networkProxy(
+                                            networkProxy )
+                            );
+                            int readTimeout = (int) rif.getDownloadTimeout( ).toMillis( ) * 1000;
+                            wagon.setReadTimeout( readTimeout );
+                            wagon.setTimeout( (int) remoteRepository.getTimeout( ).toMillis( ) * 1000 );
+
+                            if ( wagon instanceof AbstractHttpClientWagon)
                             {
-                                log.warn(
-                                    "your remote repository is configured to download remote index trought a proxy we cannot find id:{}",
-                                    rif.getProxyId( ) );
+                                HttpConfiguration httpConfiguration = new HttpConfiguration( );
+                                HttpMethodConfiguration httpMethodConfiguration = new HttpMethodConfiguration( );
+                                httpMethodConfiguration.setUsePreemptive( true );
+                                httpMethodConfiguration.setReadTimeout( readTimeout );
+                                httpConfiguration.setGet( httpMethodConfiguration );
+                                AbstractHttpClientWagon.class.cast( wagon ).setHttpConfiguration( httpConfiguration );
                             }
+
+                            wagon.addTransferListener( new DownloadListener( ) );
+                            ProxyInfo proxyInfo = null;
+                            if ( networkProxy != null )
+                            {
+                                proxyInfo = new ProxyInfo( );
+                                proxyInfo.setType( networkProxy.getProtocol( ) );
+                                proxyInfo.setHost( networkProxy.getHost( ) );
+                                proxyInfo.setPort( networkProxy.getPort( ) );
+                                proxyInfo.setUserName( networkProxy.getUsername( ) );
+                                proxyInfo.setPassword( networkProxy.getPassword( ) );
+                            }
+                            AuthenticationInfo authenticationInfo = null;
+                            if ( remoteRepository.getLoginCredentials( ) != null && ( remoteRepository.getLoginCredentials( ) instanceof PasswordCredentials) )
+                            {
+                                PasswordCredentials creds = (PasswordCredentials) remoteRepository.getLoginCredentials( );
+                                authenticationInfo = new AuthenticationInfo( );
+                                authenticationInfo.setUserName( creds.getUsername( ) );
+                                authenticationInfo.setPassword( new String( creds.getPassword( ) ) );
+                            }
+                            wagon.connect( new org.apache.maven.wagon.repository.Repository( remoteRepository.getId( ), baseIndexUrl ), authenticationInfo,
+                                    proxyInfo );
+
+                            Path indexDirectory = indexingContext.getIndexDirectoryFile( ).toPath( );
+                            if ( !Files.exists( indexDirectory ) )
+                            {
+                                Files.createDirectories( indexDirectory );
+                            }
+
+                            ResourceFetcher resourceFetcher =
+                                    new WagonResourceFetcher( log, tempIndexDirectory, wagon, remoteRepository );
+                            IndexUpdateRequest request = new IndexUpdateRequest( indexingContext, resourceFetcher );
+                            request.setForceFullUpdate( fullUpdate );
+                            request.setLocalIndexCacheDir( indexCacheDirectory.toFile( ) );
+
+                            // indexUpdater.fetchAndUpdateIndex( request );
+
+                            indexingContext.updateTimestamp( true );
                         }
 
-                        final StreamWagon wagon = (StreamWagon) wagonFactory.getWagon(
-                            new WagonFactoryRequest( wagonProtocol, remoteRepository.getExtraHeaders( ) ).networkProxy(
-                                networkProxy )
-                        );
-                        int readTimeout = (int) rif.getDownloadTimeout( ).toMillis( ) * 1000;
-                        wagon.setReadTimeout( readTimeout );
-                        wagon.setTimeout( (int) remoteRepository.getTimeout( ).toMillis( ) * 1000 );
-
-                        if ( wagon instanceof AbstractHttpClientWagon )
-                        {
-                            HttpConfiguration httpConfiguration = new HttpConfiguration( );
-                            HttpMethodConfiguration httpMethodConfiguration = new HttpMethodConfiguration( );
-                            httpMethodConfiguration.setUsePreemptive( true );
-                            httpMethodConfiguration.setReadTimeout( readTimeout );
-                            httpConfiguration.setGet( httpMethodConfiguration );
-                            AbstractHttpClientWagon.class.cast( wagon ).setHttpConfiguration( httpConfiguration );
-                        }
-
-                        wagon.addTransferListener( new DownloadListener( ) );
-                        ProxyInfo proxyInfo = null;
-                        if ( networkProxy != null )
-                        {
-                            proxyInfo = new ProxyInfo( );
-                            proxyInfo.setType( networkProxy.getProtocol( ) );
-                            proxyInfo.setHost( networkProxy.getHost( ) );
-                            proxyInfo.setPort( networkProxy.getPort( ) );
-                            proxyInfo.setUserName( networkProxy.getUsername( ) );
-                            proxyInfo.setPassword( networkProxy.getPassword( ) );
-                        }
-                        AuthenticationInfo authenticationInfo = null;
-                        if ( remoteRepository.getLoginCredentials( ) != null && ( remoteRepository.getLoginCredentials( ) instanceof PasswordCredentials ) )
-                        {
-                            PasswordCredentials creds = (PasswordCredentials) remoteRepository.getLoginCredentials( );
-                            authenticationInfo = new AuthenticationInfo( );
-                            authenticationInfo.setUserName( creds.getUsername( ) );
-                            authenticationInfo.setPassword( new String( creds.getPassword( ) ) );
-                        }
-                        wagon.connect( new org.apache.maven.wagon.repository.Repository( remoteRepository.getId( ), baseIndexUrl ), authenticationInfo,
-                            proxyInfo );
-
-                        Path indexDirectory = indexingContext.getIndexDirectoryFile( ).toPath( );
-                        if ( !Files.exists( indexDirectory ) )
-                        {
-                            Files.createDirectories( indexDirectory );
-                        }
-
-                        ResourceFetcher resourceFetcher =
-                            new WagonResourceFetcher( log, tempIndexDirectory, wagon, remoteRepository );
-                        IndexUpdateRequest request = new IndexUpdateRequest( indexingContext, resourceFetcher );
-                        request.setForceFullUpdate( fullUpdate );
-                        request.setLocalIndexCacheDir( indexCacheDirectory.toFile( ) );
-
-                        indexUpdater.fetchAndUpdateIndex( request );
-
-                        indexingContext.updateTimestamp( true );
                     }
-
-                }
-                catch ( AuthenticationException e )
-                {
-                    log.error( "Could not login to the remote proxy for updating index of {}", remoteRepository.getId( ), e );
-                    throw new IndexUpdateFailedException( "Login in to proxy failed while updating remote repository " + remoteRepository.getId( ), e );
-                }
-                catch ( ConnectionException e )
-                {
-                    log.error( "Connection error during index update for remote repository {}", remoteRepository.getId( ), e );
-                    throw new IndexUpdateFailedException( "Connection error during index update for remote repository " + remoteRepository.getId( ), e );
-                }
-                catch ( MalformedURLException e )
-                {
-                    log.error( "URL for remote index update of remote repository {} is not correct {}", remoteRepository.getId( ), remoteUpdateUri, e );
-                    throw new IndexUpdateFailedException( "URL for remote index update of repository is not correct " + remoteUpdateUri, e );
-                }
-                catch ( IOException e )
-                {
-                    log.error( "IOException during index update of remote repository {}: {}", remoteRepository.getId( ), e.getMessage( ), e );
-                    throw new IndexUpdateFailedException( "IOException during index update of remote repository " + remoteRepository.getId( )
-                        + ( StringUtils.isNotEmpty( e.getMessage( ) ) ? ": " + e.getMessage( ) : "" ), e );
-                }
-                catch ( WagonFactoryException e )
-                {
-                    log.error( "Wagon for remote index download of {} could not be created: {}", remoteRepository.getId( ), e.getMessage( ), e );
-                    throw new IndexUpdateFailedException( "Error while updating the remote index of " + remoteRepository.getId( ), e );
-                }
-            } );
+                    catch ( AuthenticationException e )
+                    {
+                        log.error( "Could not login to the remote proxy for updating index of {}", remoteRepository.getId( ), e );
+                        throw new IndexUpdateFailedException( "Login in to proxy failed while updating remote repository " + remoteRepository.getId( ), e );
+                    }
+                    catch ( ConnectionException e )
+                    {
+                        log.error( "Connection error during index update for remote repository {}", remoteRepository.getId( ), e );
+                        throw new IndexUpdateFailedException( "Connection error during index update for remote repository " + remoteRepository.getId( ), e );
+                    }
+                    catch ( MalformedURLException e )
+                    {
+                        log.error( "URL for remote index update of remote repository {} is not correct {}", remoteRepository.getId( ), remoteUpdateUri, e );
+                        throw new IndexUpdateFailedException( "URL for remote index update of repository is not correct " + remoteUpdateUri, e );
+                    }
+                    catch ( IOException e )
+                    {
+                        log.error( "IOException during index update of remote repository {}: {}", remoteRepository.getId( ), e.getMessage( ), e );
+                        throw new IndexUpdateFailedException( "IOException during index update of remote repository " + remoteRepository.getId( )
+                                + ( StringUtils.isNotEmpty( e.getMessage( ) ) ? ": " + e.getMessage( ) : "" ), e );
+                    }
+                    catch ( WagonFactoryException e )
+                    {
+                        log.error( "Wagon for remote index download of {} could not be created: {}", remoteRepository.getId( ), e.getMessage( ), e );
+                        throw new IndexUpdateFailedException( "Error while updating the remote index of " + remoteRepository.getId( ), e );
+                    }
+                } );
 
     }
 
@@ -403,7 +373,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
             } catch (IOException e) {
                 log.error("IOException while adding artifact {}", e.getMessage(), e);
                 throw new IndexUpdateFailedException("Error occured while adding artifact to index of "+context.getId()
-                + (StringUtils.isNotEmpty(e.getMessage()) ? ": "+e.getMessage() : ""));
+                        + (StringUtils.isNotEmpty(e.getMessage()) ? ": "+e.getMessage() : ""));
             }
         });
     }
@@ -455,9 +425,9 @@ public class MavenIndexManager implements ArchivaIndexManager {
         {
             log.error( "IOException during context creation " + e.getMessage( ), e );
             throw new IndexCreationFailedException( "Could not create index context for repository " + repository.getId( )
-                + ( StringUtils.isNotEmpty( e.getMessage( ) ) ? ": " + e.getMessage( ) : "" ), e );
+                    + ( StringUtils.isNotEmpty( e.getMessage( ) ) ? ": " + e.getMessage( ) : "" ), e );
         }
-        MavenIndexContext context = new MavenIndexContext( repository, mvnCtx );
+        MavenIndexContextMock context = new MavenIndexContextMock( repository, mvnCtx );
 
         return context;
     }
@@ -530,7 +500,6 @@ public class MavenIndexManager implements ArchivaIndexManager {
             IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
             try {
                 icf.setLocalIndexPath(getIndexPath(repo));
-                icf.setLocalPackedIndexPath(getPackedIndexPath(repo));
             } catch (IOException e) {
                 log.error("Could not set local index path for {}. New URI: {}", repo.getId(), icf.getIndexPath());
             }
@@ -538,63 +507,14 @@ public class MavenIndexManager implements ArchivaIndexManager {
     }
 
     @Override
-    public ArchivaIndexingContext mergeContexts(Repository destinationRepo, List<ArchivaIndexingContext> contexts,
-                                                boolean packIndex) throws UnsupportedOperationException,
-            IndexCreationFailedException, IllegalArgumentException {
-        if (!destinationRepo.supportsFeature(IndexCreationFeature.class)) {
-            throw new IllegalArgumentException("The given repository does not support the indexcreation feature");
-        }
-        Path mergedIndexDirectory = null;
-        try {
-            mergedIndexDirectory = Files.createTempDirectory("archivaMergedIndex");
-        } catch (IOException e) {
-            log.error("Could not create temporary directory for merged index: {}", e.getMessage(), e);
-            throw new IndexCreationFailedException("IO error while creating temporary directory for merged index: "+e.getMessage(), e);
-        }
-        IndexCreationFeature indexCreationFeature = destinationRepo.getFeature(IndexCreationFeature.class).get();
-        if (indexCreationFeature.getLocalIndexPath()== null) {
-            throw new IllegalArgumentException("The given repository does not have a local index path");
-        }
-        StorageAsset destinationPath = indexCreationFeature.getLocalIndexPath();
-
-        String tempRepoId = mergedIndexDirectory.getFileName().toString();
-
-        try
-        {
-            Path indexLocation = destinationPath.getFilePath();
-
-            List<IndexingContext> members = contexts.stream( ).filter(ctx -> ctx.supports(IndexingContext.class)).map( ctx ->
-            {
-                try {
-                    return ctx.getBaseContext(IndexingContext.class);
-                } catch (UnsupportedBaseContextException e) {
-                    // does not happen here
-                    return null;
-                }
-            }).filter( Objects::nonNull ).collect( Collectors.toList() );
-            ContextMemberProvider memberProvider = new StaticContextMemberProvider(members);
-            IndexingContext mergedCtx = indexer.createMergedIndexingContext( tempRepoId, tempRepoId, mergedIndexDirectory.toFile(),
-                    indexLocation.toFile(), true, memberProvider);
-            mergedCtx.optimize();
-
-            if ( packIndex )
-            {
-                IndexPackingRequest request = new IndexPackingRequest( mergedCtx, //
-                        mergedCtx.acquireIndexSearcher().getIndexReader(), //
-                        indexLocation.toFile() );
-                indexPacker.packIndex( request );
-            }
-
-            return new MavenIndexContext(destinationRepo, mergedCtx);
-        }
-        catch ( IOException e)
-        {
-            throw new IndexCreationFailedException( "IO Error during index merge: "+ e.getMessage(), e );
-        }
+    public ArchivaIndexingContext mergeContexts(Repository destinationRepo, List<ArchivaIndexingContext> contexts, boolean packIndex) throws UnsupportedOperationException, IndexCreationFailedException {
+        return null;
     }
 
-    private StorageAsset getIndexPath(URI indexDir, Path repoDir, String defaultDir) throws IOException
-    {
+    private StorageAsset getIndexPath( Repository repo) throws IOException {
+        IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
+        Path repoDir = repo.getLocalPath();
+        URI indexDir = icf.getIndexPath();
         String indexPath = indexDir.getPath();
         Path indexDirectory = null;
         if ( ! StringUtils.isEmpty(indexDir.toString( ) ) )
@@ -613,8 +533,8 @@ public class MavenIndexManager implements ArchivaIndexManager {
         }
         else
         {
-            indexDirectory = repoDir.resolve( defaultDir );
-            indexPath = defaultDir;
+            indexDirectory = repoDir.resolve( ".index" );
+            indexPath = ".index";
         }
 
         if ( !Files.exists( indexDirectory ) )
@@ -622,16 +542,6 @@ public class MavenIndexManager implements ArchivaIndexManager {
             Files.createDirectories( indexDirectory );
         }
         return new FilesystemAsset( indexPath, indexDirectory);
-    }
-
-    private StorageAsset getIndexPath( Repository repo) throws IOException {
-        IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
-        return getIndexPath( icf.getIndexPath(), repo.getLocalPath(), DEFAULT_INDEX_PATH);
-    }
-
-    private StorageAsset getPackedIndexPath(Repository repo) throws IOException {
-        IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
-        return getIndexPath(icf.getPackedIndexPath(), repo.getLocalPath(), DEFAULT_PACKED_INDEX_PATH);
     }
 
     private IndexingContext createRemoteContext(RemoteRepository remoteRepository ) throws IOException
@@ -666,8 +576,8 @@ public class MavenIndexManager implements ArchivaIndexManager {
                 // existing index with an old lucene format so we need to delete it!!!
                 // delete it first then recreate it.
                 log.warn( "the index of repository {} is too old we have to delete and recreate it", //
-                    remoteRepository.getId( ) );
-                org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDirectory.getFilePath() );
+                        remoteRepository.getId( ) );
+                FileUtils.deleteDirectory( indexDirectory.getFilePath() );
                 return getIndexingContext( remoteRepository, contextKey, repoDir, indexDirectory, remoteIndexUrl );
 
             }
@@ -680,17 +590,11 @@ public class MavenIndexManager implements ArchivaIndexManager {
 
     private IndexingContext getIndexingContext( Repository repository, String contextKey, Path repoDir, StorageAsset indexDirectory, String indexUrl ) throws IOException
     {
-        try
-        {
-            return indexer.createIndexingContext( contextKey, repository.getId( ), repoDir.toFile( ), indexDirectory.getFilePath( ).toFile( ),
+        return indexer.createIndexingContext( contextKey, repository.getId( ), repoDir.toFile( ), indexDirectory.getFilePath().toFile( ),
                 repository.getLocation( ) == null ? null : repository.getLocation( ).toString( ),
                 indexUrl,
                 true, false,
                 indexCreators );
-        } catch (Exception e) {
-            log.error("Could not create index for asset {}", indexDirectory);
-            throw new IOException(e);
-        }
     }
 
     private IndexingContext createManagedContext( ManagedRepository repository ) throws IOException
@@ -717,7 +621,6 @@ public class MavenIndexManager implements ArchivaIndexManager {
         if ( repository.supportsFeature( IndexCreationFeature.class ) )
         {
             indexDirectory = getIndexPath(repository);
-            log.debug( "Preparing index at {}", indexDirectory );
 
             String indexUrl = repositoryDirectory.toUri( ).toURL( ).toExternalForm( );
             try
@@ -730,8 +633,8 @@ public class MavenIndexManager implements ArchivaIndexManager {
                 // existing index with an old lucene format so we need to delete it!!!
                 // delete it first then recreate it.
                 log.warn( "the index of repository {} is too old we have to delete and recreate it", //
-                    repository.getId( ) );
-                org.apache.archiva.common.utils.FileUtils.deleteDirectory( indexDirectory.getFilePath() );
+                        repository.getId( ) );
+                FileUtils.deleteDirectory( indexDirectory.getFilePath() );
                 context = getIndexingContext( repository, repository.getId( ), repositoryDirectory, indexDirectory, indexUrl );
                 context.setSearchable( repository.isScanned( ) );
             }
@@ -747,7 +650,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
     {
         if ( rif.getIndexUri( ) == null )
         {
-            return baseUri.resolve( DEFAULT_INDEX_PATH ).toString( );
+            return baseUri.resolve( ".index" ).toString( );
         }
         else
         {
@@ -756,7 +659,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
     }
 
     private static final class DownloadListener
-        implements TransferListener
+            implements TransferListener
     {
         private Logger log = LoggerFactory.getLogger( getClass( ) );
 
@@ -795,14 +698,14 @@ public class MavenIndexManager implements ArchivaIndexManager {
             resourceName = transferEvent.getResource( ).getName( );
             long endTime = System.currentTimeMillis( );
             log.info( "end of transfer file {} {} kb: {}s", transferEvent.getResource( ).getName( ),
-                this.totalLength / 1024, ( endTime - startTime ) / 1000 );
+                    this.totalLength / 1024, ( endTime - startTime ) / 1000 );
         }
 
         @Override
         public void transferError( TransferEvent transferEvent )
         {
             log.info( "error of transfer file {}: {}", transferEvent.getResource( ).getName( ),
-                transferEvent.getException( ).getMessage( ), transferEvent.getException( ) );
+                    transferEvent.getException( ).getMessage( ), transferEvent.getException( ) );
         }
 
         @Override
@@ -813,7 +716,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
     }
 
     private static class WagonResourceFetcher
-        implements ResourceFetcher
+            implements ResourceFetcher
     {
 
         Logger log;
@@ -835,21 +738,21 @@ public class MavenIndexManager implements ArchivaIndexManager {
 
         @Override
         public void connect( String id, String url )
-            throws IOException
+                throws IOException
         {
             //no op
         }
 
         @Override
         public void disconnect( )
-            throws IOException
+                throws IOException
         {
             // no op
         }
 
         @Override
-        public InputStream retrieve( String name )
-            throws IOException, FileNotFoundException
+        public InputStream retrieve(String name )
+                throws IOException, FileNotFoundException
         {
             try
             {

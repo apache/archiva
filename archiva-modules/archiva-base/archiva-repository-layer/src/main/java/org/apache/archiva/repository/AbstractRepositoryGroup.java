@@ -83,7 +83,8 @@ public class AbstractRepositoryGroup extends AbstractRepository implements Edita
         try {
             repositories.clear();
             for(ManagedRepository repo : newRepositories) {
-                repositories.put(repo.getId(), repo);
+                if (repo!=null)
+                    repositories.put(repo.getId(), repo);
             }
         } finally {
             rwl.writeLock().unlock();
@@ -94,7 +95,8 @@ public class AbstractRepositoryGroup extends AbstractRepository implements Edita
     public void addRepository(ManagedRepository repository) {
         rwl.writeLock().lock();
         try {
-            repositories.put(repository.getId(), repository);
+            if (repository!=null)
+                repositories.put(repository.getId(), repository);
         } finally {
             rwl.writeLock().unlock();
         }
@@ -104,7 +106,8 @@ public class AbstractRepositoryGroup extends AbstractRepository implements Edita
     public void addRepository(int index, ManagedRepository repository) {
         rwl.writeLock().lock();
         try {
-            repositories.put(index, repository.getId(), repository);
+            if (repository!=null)
+                repositories.put(index, repository.getId(), repository);
         } finally {
             rwl.writeLock().unlock();
         }

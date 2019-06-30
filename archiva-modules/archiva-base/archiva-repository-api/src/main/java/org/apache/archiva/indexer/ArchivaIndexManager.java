@@ -30,6 +30,9 @@ import java.util.List;
 
 public interface ArchivaIndexManager {
 
+    String DEFAULT_INDEX_PATH=".indexer";
+    String DEFAULT_PACKED_INDEX_PATH=".index";
+
     /**
      * Compresses the index to a more dense packed format.
      * @param context

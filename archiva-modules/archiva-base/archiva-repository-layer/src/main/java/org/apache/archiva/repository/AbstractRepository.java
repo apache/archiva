@@ -261,8 +261,11 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
 
     @Override
     public void setSchedulingDefinition(String cronExpression) {
-        CronParser parser = new CronParser(CRON_DEFINITION);
-        parser.parse(cronExpression).validate();
+        if (StringUtils.isNotEmpty( cronExpression ))
+        {
+            CronParser parser = new CronParser( CRON_DEFINITION );
+            parser.parse( cronExpression ).validate( );
+        }
         this.schedulingDefinition = cronExpression;
     }
 

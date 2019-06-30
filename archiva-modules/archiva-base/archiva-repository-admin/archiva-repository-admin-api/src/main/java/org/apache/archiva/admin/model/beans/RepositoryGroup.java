@@ -23,6 +23,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
+
 /**
  * @author Olivier Lamy
  * @since 1.4-M1
@@ -44,7 +46,7 @@ public class RepositoryGroup
     /**
      * The path of the merged index.
      */
-    private String mergedIndexPath = ".indexer";
+    private String mergedIndexPath = DEFAULT_INDEX_PATH;
 
     /**
      * The TTL (time to live) of the repo group's merged index.

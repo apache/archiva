@@ -68,6 +68,7 @@ import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryRequestInfo;
 import org.apache.archiva.repository.content.FilesystemAsset;
+import org.apache.archiva.repository.content.FilesystemStorage;
 import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.repository.features.IndexCreationFeature;
@@ -186,6 +187,7 @@ public class ArchivaDavResourceFactory
 
     private ApplicationContext applicationContext;
 
+
     @Inject
     public ArchivaDavResourceFactory( ApplicationContext applicationContext, ArchivaConfiguration archivaConfiguration )
         throws PlexusSisuBridgeException
@@ -196,10 +198,11 @@ public class ArchivaDavResourceFactory
     }
 
     @PostConstruct
-    public void initialize()
+    public void initialize() throws IOException
     {
-        // no op
+
     }
+
 
     @Override
     public DavResource createResource( final DavResourceLocator locator, final DavServletRequest request,
@@ -299,7 +302,13 @@ public class ArchivaDavResourceFactory
             {
 
                 ArchivaDavResource res = (ArchivaDavResource) resource;
-                String newPath = res.getAsset().getPath()+"/maven-metadata-" + sRepoId + ".xml";
+                String newPath;
+                if (res.getAsset().hasParent())
+                {
+                    newPath = res.getAsset( ).getParent( ).getPath( ) + "/maven-metadata-" + sRepoId + ".xml";
+                } else {
+                    newPath = StringUtils.substringBeforeLast( res.getAsset().getPath(), "/" ) + "/maven-metadata-" + sRepoId + ".xml";;
+                }
                 // for MRM-872 handle checksums of the merged metadata files
                 if ( repositoryRequestInfo.isSupportFile( requestedResource ) )
                 {
@@ -313,7 +322,7 @@ public class ArchivaDavResourceFactory
                         try
                         {
                             resource =
-                                new ArchivaDavResource( metadataChecksum, logicalResource.getPath(), null,
+                                new ArchivaDavResource( metadataChecksum, logicalResource.getPath(), repoGroup,
                                                         request.getRemoteAddr(), activePrincipal, request.getDavSession(),
                                                         archivaLocator, this, mimeTypes, auditListeners, scheduler);
                         }
@@ -358,7 +367,7 @@ public class ArchivaDavResourceFactory
                                 new LogicalResource( getLogicalResource( archivaLocator, null, false ) );
 
                             resource =
-                                new ArchivaDavResource( resourceFile, logicalResource.getPath(), null,
+                                new ArchivaDavResource( resourceFile, logicalResource.getPath(), repoGroup,
                                                         request.getRemoteAddr(), activePrincipal,
                                                         request.getDavSession(), archivaLocator, this, mimeTypes,
                                                         auditListeners, scheduler);
@@ -570,7 +579,7 @@ public class ArchivaDavResourceFactory
             try
             {
                 resource =
-                    new ArchivaDavResource( repoAsset, path, managedRepositoryContent.getRepository(),
+                    new ArchivaDavResource( repoAsset, path, managedRepositoryContent,
                                             request.getRemoteAddr(), activePrincipal, request.getDavSession(),
                                             archivaLocator, this, mimeTypes, auditListeners, scheduler );
             }
@@ -606,14 +615,14 @@ public class ArchivaDavResourceFactory
                             resourceAsset = managedRepositoryContent.getAsset( localResourcePath );
                             resource =
                                 new ArchivaDavResource( resourceAsset, logicalResource.getPath(),
-                                                        managedRepositoryContent.getRepository(),
+                                                        managedRepositoryContent,
                                                         request.getRemoteAddr(), activePrincipal,
                                                         request.getDavSession(), archivaLocator, this, mimeTypes,
                                                         auditListeners, scheduler );
                         }
                         catch ( LayoutException e )
                         {
-                            if ( resourceAsset!=null && !resourceAsset.exists() )
+                            if ( resourceAsset==null || !resourceAsset.exists() )
                             {
                                 throw new DavException( HttpServletResponse.SC_NOT_FOUND, e );
                             }
@@ -735,7 +744,7 @@ public class ArchivaDavResourceFactory
         try
         {
             resource = new ArchivaDavResource( resourceAsset, logicalResource,
-                                               repo, davSession, archivaLocator,
+                                               repo.getContent(), davSession, archivaLocator,
                                                this, mimeTypes, auditListeners, scheduler);
         }
         catch ( LayoutException e )
@@ -1100,7 +1109,7 @@ public class ArchivaDavResourceFactory
                     }
                     // Path resourceFile = Paths.get( managedRepository.getRepoRoot(), logicalResource.getPath() );
                     StorageAsset resourceFile = managedRepository.getAsset(logicalResource.getPath());
-                    if ( resourceFile.exists() )
+                    if ( resourceFile.exists() && managedRepository.getRepository().supportsFeature( IndexCreationFeature.class ))
                     {
                         // in case of group displaying index directory doesn't have sense !!
                         IndexCreationFeature idf = managedRepository.getRepository().getFeature(IndexCreationFeature.class).get();

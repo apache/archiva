@@ -67,7 +67,7 @@ public class RepositoryServletBrowseTest
 
         // dumpResponse( response );
 
-        List<String> expectedLinks = Arrays.asList( "commons-lang/", "net/", "org/" );
+        List<String> expectedLinks = Arrays.asList( ".index/", ".indexer/", "commons-lang/", "net/", "org/" );
 
         Document document = Jsoup.parse( response.getContentAsString() );
         Elements elements = document.getElementsByTag( "a" );

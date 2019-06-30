@@ -46,6 +46,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
+import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_PACKED_INDEX_PATH;
+
 /**
  * Provider for the maven2 repository implementations
  */
@@ -156,8 +159,10 @@ public class MavenRepositoryProvider implements RepositoryProvider {
 
         IndexCreationFeature indexCreationFeature = repo.getFeature(IndexCreationFeature.class).get();
         indexCreationFeature.setSkipPackedIndexCreation(cfg.isSkipPackedIndexCreation());
-        indexCreationFeature.setIndexPath(getURIFromString(cfg.getIndexDir()));
-        indexCreationFeature.setPackedIndexPath(getURIFromString(cfg.getPackedIndexDir()));
+        String indexDir = StringUtils.isEmpty( cfg.getIndexDir() ) ? DEFAULT_INDEX_PATH : cfg.getIndexDir();
+        String packedIndexDir = StringUtils.isEmpty( cfg.getPackedIndexDir() ) ? DEFAULT_PACKED_INDEX_PATH : cfg.getPackedIndexDir();
+        indexCreationFeature.setIndexPath(getURIFromString(indexDir));
+        indexCreationFeature.setPackedIndexPath(getURIFromString(packedIndexDir));
 
         ArtifactCleanupFeature artifactCleanupFeature = repo.getFeature(ArtifactCleanupFeature.class).get();
 
@@ -408,19 +413,14 @@ public class MavenRepositoryProvider implements RepositoryProvider {
         }
         if (StringUtils.isNotBlank(repository.getPackedIndexDir())) {
             Path packedIndexDir = null;
-            try {
-                packedIndexDir = Paths.get(new URI(repository.getPackedIndexDir().startsWith("file://") ? repository.getPackedIndexDir() : "file://" + repository.getPackedIndexDir()));
-                if (packedIndexDir.isAbsolute()) {
-                    Path newDir = packedIndexDir.getParent().resolve(packedIndexDir.getFileName() + StagingRepositoryFeature.STAGING_REPO_POSTFIX);
-                    log.debug("Changing index directory {} -> {}", packedIndexDir, newDir);
-                    stagingRepository.setPackedIndexDir(newDir.toString());
-                } else {
-                    log.debug("Keeping index directory {}", repository.getPackedIndexDir());
-                    stagingRepository.setPackedIndexDir(repository.getPackedIndexDir());
-                }
-            } catch (URISyntaxException e) {
-                log.error("Could not parse index path as uri {}", repository.getPackedIndexDir());
-                stagingRepository.setPackedIndexDir("");
+            packedIndexDir = Paths.get(repository.getPackedIndexDir());
+            if (packedIndexDir.isAbsolute()) {
+                Path newDir = packedIndexDir.getParent().resolve(packedIndexDir.getFileName() + StagingRepositoryFeature.STAGING_REPO_POSTFIX);
+                log.debug("Changing index directory {} -> {}", packedIndexDir, newDir);
+                stagingRepository.setPackedIndexDir(newDir.toString());
+            } else {
+                log.debug("Keeping index directory {}", repository.getPackedIndexDir());
+                stagingRepository.setPackedIndexDir(repository.getPackedIndexDir());
             }
             // in case of absolute dir do not use the same
         }

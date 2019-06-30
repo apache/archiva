@@ -67,7 +67,7 @@ public class ManagedDefaultRepositoryContent
     implements ManagedRepositoryContent
 {
 
-    private final FilesystemStorage storage;
+    private FilesystemStorage storage;
 
     private FileTypes filetypes;
 
@@ -79,30 +79,22 @@ public class ManagedDefaultRepositoryContent
 
     private Path repoDir;
 
+    FileLockManager lockManager;
+
     public ManagedDefaultRepositoryContent(ManagedRepository repository, FileTypes fileTypes, FileLockManager lockManager) {
         super(Collections.singletonList( new DefaultArtifactMappingProvider() ));
         setFileTypes( fileTypes );
+        this.lockManager = lockManager;
         setRepository( repository );
-        try {
-            storage = new FilesystemStorage(getRepoDir(), lockManager);
-        } catch (IOException e) {
-            log.error("Could not initialize the filesystem storage to repository: {}", getRepoDir());
-            throw new RuntimeException("Fatal error. Could not initialize the filesystem storage for "+getRepoDir());
-        }
     }
 
     public ManagedDefaultRepositoryContent( ManagedRepository repository, List<? extends ArtifactMappingProvider> artifactMappingProviders, FileTypes fileTypes, FileLockManager lockManager )
     {
         super(artifactMappingProviders==null ? Collections.singletonList( new DefaultArtifactMappingProvider() ) : artifactMappingProviders);
         setFileTypes( fileTypes );
+        this.lockManager = lockManager;
         setRepository( repository );
-        final Path repositoryDir = getRepoDir();
-        try {
-            storage = new FilesystemStorage(repositoryDir, lockManager);
-        } catch (IOException e) {
-            log.error("Could not initialize the filesystem storage to repository {}: {}", repositoryDir, e.getMessage(), e);
-            throw new RuntimeException("Fatal error. Could not initialize the filesystem storage for "+repositoryDir+": "+e.getMessage());
-        }
+
     }
 
     private Path getRepoDir() {
@@ -428,6 +420,13 @@ public class ManagedDefaultRepositoryContent
             this.repoDir = PathUtil.getPathFromUri(repository.getLocation());
             if (repository instanceof EditableManagedRepository) {
                 ((EditableManagedRepository) repository).setContent(this);
+            }
+            final Path repositoryDir = getRepoDir();
+            try {
+                storage = new FilesystemStorage(repositoryDir, this.lockManager);
+            } catch (IOException e) {
+                log.error("Could not initialize the filesystem storage to repository {}: {}", repositoryDir, e.getMessage(), e);
+                throw new RuntimeException("Fatal error. Could not initialize the filesystem storage for "+repositoryDir+": "+e.getMessage());
             }
         }
 

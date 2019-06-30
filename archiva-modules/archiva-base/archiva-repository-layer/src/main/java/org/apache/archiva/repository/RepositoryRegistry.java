@@ -42,12 +42,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
 
 /**
  * Registry for repositories. This is the central entry point for repositories. It provides methods for
@@ -177,6 +181,10 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             Map<RepositoryType, RepositoryProvider> providerMap = createProviderMap( );
             for ( ManagedRepositoryConfiguration repoConfig : managedRepoConfigs )
             {
+                if (managedRepos.containsKey(repoConfig.getId())) {
+                    log.warn( "Duplicate repository definitions for {} in config found.", repoConfig.getId( ) );
+                    continue;
+                }
                 RepositoryType repositoryType = RepositoryType.valueOf( repoConfig.getType( ) );
                 if ( providerMap.containsKey( repositoryType ) )
                 {
@@ -817,7 +825,7 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
 
     private void setRepositoryGroupDefaults(RepositoryGroupConfiguration repositoryGroupConfiguration) {
         if (StringUtils.isEmpty(repositoryGroupConfiguration.getMergedIndexPath())) {
-            repositoryGroupConfiguration.setMergedIndexPath(".indexer");
+            repositoryGroupConfiguration.setMergedIndexPath(DEFAULT_INDEX_PATH);
         }
         if (repositoryGroupConfiguration.getMergedIndexTtl()<=0) {
             repositoryGroupConfiguration.setMergedIndexTtl(300);

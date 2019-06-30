@@ -29,6 +29,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
+import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_INDEX_PATH;
+import static org.apache.archiva.indexer.ArchivaIndexManager.DEFAULT_PACKED_INDEX_PATH;
+
 /**
  *
  * This feature provides some information about index creation.
@@ -36,8 +39,6 @@ import java.nio.file.Path;
  */
 public class IndexCreationFeature extends AbstractFeature implements RepositoryFeature<IndexCreationFeature>{
 
-    public static final String DEFAULT_INDEX_PATH = ".indexer";
-    public static final String DEFAULT_PACKED_INDEX_PATH = ".index";
 
     private boolean skipPackedIndexCreation = false;
 

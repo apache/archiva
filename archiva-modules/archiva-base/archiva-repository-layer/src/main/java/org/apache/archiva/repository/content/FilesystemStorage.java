@@ -142,7 +142,7 @@ public class FilesystemStorage implements RepositoryStorage {
     public StorageAsset addAsset( String path, boolean container )
     {
         try {
-            return new FilesystemAsset( path, getAssetPath(path), container);
+            return new FilesystemAsset( path, getAssetPath(path), basePath, container);
         } catch (IOException e) {
             throw new IllegalArgumentException("Path navigates outside of base directory "+path);
         }
@@ -158,7 +158,7 @@ public class FilesystemStorage implements RepositoryStorage {
     public StorageAsset moveAsset( StorageAsset origin, String destination ) throws IOException
     {
         boolean container = origin.isContainer();
-        FilesystemAsset newAsset = new FilesystemAsset( destination, getAssetPath(destination), container );
+        FilesystemAsset newAsset = new FilesystemAsset( destination, getAssetPath(destination), basePath, container );
         Files.move(origin.getFilePath(), newAsset.getFilePath());
         return newAsset;
     }
@@ -167,7 +167,7 @@ public class FilesystemStorage implements RepositoryStorage {
     public StorageAsset copyAsset( StorageAsset origin, String destination ) throws IOException
     {
         boolean container = origin.isContainer();
-        FilesystemAsset newAsset = new FilesystemAsset( destination, getAssetPath(destination), container );
+        FilesystemAsset newAsset = new FilesystemAsset( destination, getAssetPath(destination), basePath, container );
         if (Files.exists(newAsset.getFilePath())) {
             throw new IOException("Destination file exists already "+ newAsset.getFilePath());
         }

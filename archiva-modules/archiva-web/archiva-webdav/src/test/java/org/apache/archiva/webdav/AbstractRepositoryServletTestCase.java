@@ -27,7 +27,9 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.archiva.webdav.httpunit.MkColMethodWebRequest;
 import org.apache.commons.io.FileUtils;
@@ -175,13 +177,20 @@ public abstract class AbstractRepositoryServletTestCase
 
         config.addManagedRepository(
             createManagedRepository( REPOID_INTERNAL, "Internal Test Repo", repoRootInternal, true ) );
-        repositoryRegistry.reload();
-
         config.getProxyConnectors().clear();
 
         config.getRemoteRepositories().clear();
 
         saveConfiguration( archivaConfiguration );
+
+        ArchivaIndexingContext ctx = repositoryRegistry.getManagedRepository( REPOID_INTERNAL ).getIndexingContext( );
+        try
+        {
+            repositoryRegistry.getIndexManager( RepositoryType.MAVEN ).pack( ctx );
+        } finally
+        {
+            ctx.close(  );
+        }
 
         CacheManager.getInstance().clearAll();
 
@@ -795,6 +804,7 @@ public abstract class AbstractRepositoryServletTestCase
         repo.setName( name );
         repo.setLocation( location.toAbsolutePath().toString() );
         repo.setBlockRedeployments( blockRedeployments );
+        repo.setType( "MAVEN" );
 
         return repo;
     }

@@ -223,7 +223,8 @@ public class RepositoryScannerInstance
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-        if (excludeMatcher.stream().noneMatch(m -> m.matches(file)) && includeMatcher.stream().allMatch(m -> m.matches(file))) {
+        final Path relativeFile = basePath.relativize( file );
+        if (excludeMatcher.stream().noneMatch(m -> m.matches(relativeFile)) && includeMatcher.stream().allMatch(m -> m.matches(relativeFile))) {
             log.debug( "Walk Step: {}, {}", file );
 
             stats.increaseFileCount();

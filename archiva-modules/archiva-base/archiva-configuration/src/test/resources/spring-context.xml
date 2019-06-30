@@ -283,8 +283,8 @@
 
   <bean name="archivaConfiguration#test-not-allowed-to-write-to-both"  class="org.apache.archiva.configuration.DefaultArchivaConfiguration">
     <property name="registry" ref="registry#test-not-allowed-to-write-to-both"/>
-    <property name="userConfigFilename" value="${basedir}/target/*intentionally:invalid*/.m2/archiva-user.xml"/>
-    <property name="altConfigFilename" value="${basedir}/target/*intentionally:invalid*/conf/archiva.xml"/>
+    <property name="userConfigFilename" value="/../../..//target/*intentionally:invalid*/.m2/archiva-user.xml"/>
+    <property name="altConfigFilename" value="/../../..//target/*intentionally:invalid*/conf/archiva.xml"/>
   </bean>
 
   <bean name="registry#test-not-allowed-to-write-to-both" class="org.apache.archiva.redback.components.registry.commons.CommonsConfigurationRegistry">
@@ -292,9 +292,9 @@
       <value>
         <![CDATA[
       <configuration>
-          <xml fileName="${basedir}/target/*intentionally:invalid*/.m2/archiva-user.xml" config-optional="true"
+          <xml fileName="/../../..//*intentionally:invalid*/.m2/archiva-user.xml" config-optional="true"
                config-name="org.apache.archiva.user" config-at="org.apache.archiva"/>
-          <xml fileName="${basedir}/target/*intentionally:invalid*/conf/archiva.xml" config-optional="true"
+          <xml fileName="/../../..//*intentionally:invalid*/conf/archiva.xml" config-optional="true"
                config-name="org.apache.archiva.user" config-at="org.apache.archiva"/>
       </configuration>
         ]]>
