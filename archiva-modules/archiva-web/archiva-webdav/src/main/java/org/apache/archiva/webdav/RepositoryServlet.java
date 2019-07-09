@@ -20,12 +20,12 @@ package org.apache.archiva.webdav;
  */
 
 import org.apache.archiva.admin.model.RepositoryAdminException;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.admin.model.managed.ManagedRepositoryAdmin;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.ConfigurationEvent;
 import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
+import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavLocatorFactory;
@@ -53,7 +53,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 /**
  * RepositoryServlet
@@ -66,7 +69,7 @@ public class RepositoryServlet
 
     private ArchivaConfiguration configuration;
 
-    private ManagedRepositoryAdmin managedRepositoryAdmin;
+    RepositoryRegistry repositoryRegistry;
 
     private Map<String, ManagedRepository> repositoryMap;
 
@@ -76,22 +79,14 @@ public class RepositoryServlet
 
     private DavSessionProvider sessionProvider;
 
-    private final Object reloadLock = new Object();
+    protected final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
 
     @Override
     public void init( ServletConfig servletConfig )
         throws ServletException
     {
         super.init( servletConfig );
-        try
-        {
-            initServers( servletConfig );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            log.error( e.getMessage(), e );
-            throw new ServletException( e.getMessage(), e );
-        }
+        initServers( servletConfig );
     }
 
     /**
@@ -170,51 +165,60 @@ public class RepositoryServlet
         }
     }
 
-    public synchronized void initServers( ServletConfig servletConfig )
-        throws RepositoryAdminException
-    {
+    public void initServers( ServletConfig servletConfig ) {
 
         long start = System.currentTimeMillis();
 
         WebApplicationContext wac =
             WebApplicationContextUtils.getRequiredWebApplicationContext( servletConfig.getServletContext() );
 
-        configuration = wac.getBean( "archivaConfiguration#default", ArchivaConfiguration.class );
-        configuration.addListener( this );
+        rwLock.writeLock().lock();
+        try {
+            configuration = wac.getBean("archivaConfiguration#default", ArchivaConfiguration.class);
+            configuration.addListener(this);
 
-        managedRepositoryAdmin = wac.getBean( ManagedRepositoryAdmin.class );
+            repositoryRegistry = wac.getBean(RepositoryRegistry.class);
+            repositoryMap = new LinkedHashMap<>();
 
-        repositoryMap = managedRepositoryAdmin.getManagedRepositoriesAsMap();
+            fillRepositoryMap();
 
-        for ( ManagedRepository repo : repositoryMap.values() )
-        {
-            Path repoDir = Paths.get( repo.getLocation() );
+            for (ManagedRepository repo : repositoryMap.values()) {
+                Path repoDir = Paths.get(repo.getLocation());
 
-            if ( !Files.exists(repoDir) )
-            {
-                try
-                {
-                    Files.createDirectories( repoDir );
-                }
-                catch ( IOException e )
-                {
-                    log.info( "Unable to create missing directory for {}", repo.getLocation() );
-                    continue;
+                if (!Files.exists(repoDir)) {
+                    try {
+                        Files.createDirectories(repoDir);
+                    } catch (IOException e) {
+                        log.info("Unable to create missing directory for {}", repo.getLocation());
+                        continue;
+                    }
                 }
             }
+
+            resourceFactory = wac.getBean("davResourceFactory#archiva", DavResourceFactory.class);
+            locatorFactory = new ArchivaDavLocatorFactory();
+
+            ServletAuthenticator servletAuth = wac.getBean(ServletAuthenticator.class);
+            HttpAuthenticator httpAuth = wac.getBean("httpAuthenticator#basic", HttpAuthenticator.class);
+
+            sessionProvider = new ArchivaDavSessionProvider(servletAuth, httpAuth);
+        } finally {
+            rwLock.writeLock().unlock();
         }
-
-        resourceFactory = wac.getBean( "davResourceFactory#archiva", DavResourceFactory.class );
-        locatorFactory = new ArchivaDavLocatorFactory();
-
-        ServletAuthenticator servletAuth = wac.getBean( ServletAuthenticator.class );
-        HttpAuthenticator httpAuth = wac.getBean( "httpAuthenticator#basic", HttpAuthenticator.class );
-
-        sessionProvider = new ArchivaDavSessionProvider( servletAuth, httpAuth );
-
         long end = System.currentTimeMillis();
 
         log.debug( "initServers done in {} ms", (end - start) );
+    }
+
+    private void fillRepositoryMap() {
+        final Map<String, ManagedRepository> repos = repositoryRegistry.getManagedRepositories().stream().collect(Collectors.toMap(r -> r.getId(), r -> r));
+        rwLock.writeLock().lock();
+        try {
+            repositoryMap.clear();
+            repositoryMap.putAll(repos);
+        } finally {
+            rwLock.writeLock().unlock();
+        }
     }
 
     @Override
@@ -237,26 +241,23 @@ public class RepositoryServlet
     private void initRepositories()
         throws RepositoryAdminException
     {
-        synchronized ( repositoryMap )
-        {
-            repositoryMap.clear();
-            repositoryMap.putAll( managedRepositoryAdmin.getManagedRepositoriesAsMap() );
-        }
-
-        synchronized ( reloadLock )
-        {
             initServers( getServletConfig() );
-        }
     }
 
-    public synchronized ManagedRepository getRepository( String prefix )
+    public ManagedRepository getRepository( String prefix )
         throws RepositoryAdminException
     {
-        if ( repositoryMap.isEmpty() )
-        {
-            repositoryMap.putAll( managedRepositoryAdmin.getManagedRepositoriesAsMap() );
+        rwLock.readLock().lock();
+        try {
+            if (repositoryMap.isEmpty()) {
+                rwLock.readLock().unlock();
+                fillRepositoryMap();
+                rwLock.readLock().lock();
+            }
+            return repositoryMap.get(prefix);
+        } finally {
+            rwLock.readLock().unlock();
         }
-        return repositoryMap.get( prefix );
     }
 
     ArchivaConfiguration getConfiguration()
@@ -322,21 +323,25 @@ public class RepositoryServlet
     @Override
     public void destroy()
     {
-        configuration.removeListener( this );
+        rwLock.writeLock().lock();
+        try {
+            configuration.removeListener(this);
 
-        resourceFactory = null;
-        configuration = null;
-        locatorFactory = null;
-        sessionProvider = null;
-        repositoryMap.clear();
-        repositoryMap = null;
+            resourceFactory = null;
+            configuration = null;
+            locatorFactory = null;
+            sessionProvider = null;
+            repositoryMap.clear();
+            repositoryMap = null;
 
-        WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( getServletContext() );
+            WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 
-        if ( wac instanceof ConfigurableApplicationContext )
-        {
-            ( (ConfigurableApplicationContext) wac ).close();
+            if (wac instanceof ConfigurableApplicationContext) {
+                ((ConfigurableApplicationContext) wac).close();
+            }
+            super.destroy();
+        } finally {
+            rwLock.writeLock().unlock();
         }
-        super.destroy();
     }
 }

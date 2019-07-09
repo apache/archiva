@@ -189,6 +189,7 @@ public class RepositoryServletProxiedSnapshotPolicyTest
         // --- Setup
         setupSnapshotsRemoteRepo();
         setupCleanInternalRepo();
+        saveConfiguration();
 
         String resourcePath = "org/apache/archiva/test/2.0-SNAPSHOT/test-2.0-SNAPSHOT.jar";
         String expectedRemoteContents = "archiva-test-2.0-SNAPSHOT|jar-remote-contents";

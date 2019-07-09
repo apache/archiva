@@ -611,8 +611,8 @@ public class ArchivaDavResourceFactory
                         {
                             // Perform an adjustment of the resource to the managed
                             // repository expected path.
-                            String localResourcePath = managedRepository.getRequestInfo().toNativePath( logicalResource.getPath() );
-                            resourceAsset = managedRepositoryContent.getAsset( localResourcePath );
+                            // String localResourcePath = managedRepository.getRequestInfo().toNativePath( logicalResource.getPath() );
+                            resourceAsset = managedRepositoryContent.getAsset( logicalResource.getPath() );
                             resource =
                                 new ArchivaDavResource( resourceAsset, logicalResource.getPath(),
                                                         managedRepositoryContent,

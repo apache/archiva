@@ -22,12 +22,12 @@ package org.apache.archiva.webdav;
 import com.gargoylesoftware.htmlunit.*;
 import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -144,8 +144,10 @@ public abstract class AbstractRepositoryServletTestCase
     protected void saveConfiguration()
         throws Exception
     {
-        saveConfiguration( archivaConfiguration );
+        repositoryRegistry.setArchivaConfiguration(archivaConfiguration);
         repositoryRegistry.reload();
+        saveConfiguration( archivaConfiguration );
+
     }
 
     @Before
@@ -158,6 +160,8 @@ public abstract class AbstractRepositoryServletTestCase
 
         System.setProperty( "appserver.base", getAppserverBase().toAbsolutePath().toString());
         log.info("setUp appserverBase={}, projectBase={}, workingDir={}", getAppserverBase(), getProjectBase(), Paths.get("").toString());
+
+        repositoryRegistry.getRepositories().stream().forEach(r -> r.close());
 
         org.apache.archiva.common.utils.FileUtils.deleteDirectory( getAppserverBase() );
 
@@ -717,6 +721,7 @@ public abstract class AbstractRepositoryServletTestCase
     public void tearDown()
         throws Exception
     {
+        repositoryRegistry.getRepositories().stream().forEach(r -> r.close());
 
         if ( Files.exists(repoRootInternal) )
         {
@@ -829,8 +834,10 @@ public abstract class AbstractRepositoryServletTestCase
     protected void saveConfiguration( ArchivaConfiguration archivaConfiguration )
         throws Exception
     {
+        repositoryRegistry.setArchivaConfiguration(archivaConfiguration);
         repositoryRegistry.reload();
         archivaConfiguration.save( archivaConfiguration.getConfiguration() );
+
     }
 
 

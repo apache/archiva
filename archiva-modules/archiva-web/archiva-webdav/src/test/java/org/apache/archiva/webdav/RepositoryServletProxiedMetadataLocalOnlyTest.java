@@ -55,6 +55,7 @@ public class RepositoryServletProxiedMetadataLocalOnlyTest
         setupSnapshotsRemoteRepo();
         setupPrivateSnapshotsRemoteRepo();
         setupCleanInternalRepo();
+        saveConfiguration();
 
         String path = "org/apache/archiva/archivatest-maven-plugin/4.0-alpha-1-SNAPSHOT/maven-metadata.xml";
         String expectedMetadata = createVersionMetadata( "org.apache.archiva", "archivatest-maven-plugin",
@@ -80,6 +81,7 @@ public class RepositoryServletProxiedMetadataLocalOnlyTest
         setupSnapshotsRemoteRepo();
         setupPrivateSnapshotsRemoteRepo();
         setupCleanInternalRepo();
+        saveConfiguration();
 
         String path = "org/apache/archiva/archivatest-maven-plugin/4.0-alpha-2/maven-metadata.xml";
         String expectedMetadata = createVersionMetadata( "org.apache.archiva", "archivatest-maven-plugin",
@@ -102,6 +104,7 @@ public class RepositoryServletProxiedMetadataLocalOnlyTest
         setupSnapshotsRemoteRepo();
         setupPrivateSnapshotsRemoteRepo();
         setupCleanInternalRepo();
+        saveConfiguration();
 
         String path = "org/apache/archiva/archivatest-maven-plugin/maven-metadata.xml";
         String version = "1.0-alpha-4";
@@ -126,6 +129,7 @@ public class RepositoryServletProxiedMetadataLocalOnlyTest
         setupSnapshotsRemoteRepo();
         setupPrivateSnapshotsRemoteRepo();
         setupCleanInternalRepo();
+        saveConfiguration();
 
         String path = "org/apache/archiva/maven-metadata.xml";
         String expectedMetadata = createGroupMetadata( "org.apache.archiva", new String[] { "archivatest-maven-plugin" } );

@@ -682,6 +682,9 @@ public class MavenIndexManager implements ArchivaIndexManager {
     {
         try
         {
+            if (!Files.exists(indexDirectory.getFilePath())) {
+                Files.createDirectories(indexDirectory.getFilePath());
+            }
             return indexer.createIndexingContext( contextKey, repository.getId( ), repoDir.toFile( ), indexDirectory.getFilePath( ).toFile( ),
                 repository.getLocation( ) == null ? null : repository.getLocation( ).toString( ),
                 indexUrl,

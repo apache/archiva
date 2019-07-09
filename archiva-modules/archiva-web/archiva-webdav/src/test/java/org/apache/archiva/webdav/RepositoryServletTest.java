@@ -21,10 +21,10 @@ package org.apache.archiva.webdav;
 
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
-import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
+import org.apache.archiva.repository.ManagedRepository;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -80,7 +80,7 @@ public class RepositoryServletTest
         c.removeManagedRepository( c.findManagedRepositoryById( REPOID_INTERNAL ) );
         saveConfiguration( archivaConfiguration );
 
-        ManagedRepository repository = servlet.getRepository( REPOID_INTERNAL );
+        org.apache.archiva.repository.ManagedRepository repository = servlet.getRepository( REPOID_INTERNAL );
         assertNull( repository );
     }
 
@@ -137,6 +137,6 @@ public class RepositoryServletTest
         WebResponse response = getServletUnitClient().getResponse( request );
         assertResponseNotFound( response );
         assertThat( response.getContentAsString() ) //
-            .contains( "Legacy Maven1 repository not supported anymore." );
+            .contains( "Resource does not exist" );
     }
 }

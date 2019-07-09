@@ -136,6 +136,7 @@ public class RepositoryServletProxiedPassthroughTest
         // --- Setup
         setupCentralRemoteRepo();
         setupCleanInternalRepo();
+        saveConfiguration();
 
         String expectedRemoteContents = contents;
         String expectedManagedContents = null;

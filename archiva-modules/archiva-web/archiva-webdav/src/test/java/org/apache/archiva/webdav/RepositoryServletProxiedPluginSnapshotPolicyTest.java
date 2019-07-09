@@ -167,6 +167,7 @@ public class RepositoryServletProxiedPluginSnapshotPolicyTest
         // --- Setup
         setupSnapshotsRemoteRepo();
         setupCleanInternalRepo();
+        saveConfiguration();
 
         String resourcePath = "org/apache/archiva/archivatest-maven-plugin/4.0-alpha-1-SNAPSHOT/archivatest-maven-plugin-4.0-alpha-1-20070822.033400-42.jar";
         String expectedRemoteContents = "archivatest-maven-plugin-4.0-alpha-1-20070822.033400-42|jar-remote-contents";

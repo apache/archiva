@@ -37,19 +37,17 @@ public class UnauthenticatedRepositoryServlet
     extends RepositoryServlet
 {
     @Override
-    public synchronized void initServers( ServletConfig servletConfig )
+    public void initServers( ServletConfig servletConfig )
     {
-        try
-        {
-            super.initServers( servletConfig );
-        }
-        catch ( RepositoryAdminException e )
-        {
-            throw new RuntimeException( e.getMessage(), e );
-        }
+        rwLock.writeLock().lock();
+        try {
+            super.initServers(servletConfig);
 
-        UnauthenticatedDavSessionProvider sessionProvider = new UnauthenticatedDavSessionProvider();
-        setDavSessionProvider( sessionProvider );
+            UnauthenticatedDavSessionProvider sessionProvider = new UnauthenticatedDavSessionProvider();
+            setDavSessionProvider(sessionProvider);
+        } finally {
+            rwLock.writeLock().unlock();
+        }
     }
 
     @Override

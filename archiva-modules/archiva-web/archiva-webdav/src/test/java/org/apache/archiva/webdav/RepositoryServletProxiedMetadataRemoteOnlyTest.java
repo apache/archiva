@@ -57,6 +57,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         setupSnapshotsRemoteRepo();
         setupPrivateSnapshotsRemoteRepo();
         setupCleanInternalRepo();
+        saveConfiguration();
 
         String path = "org/apache/archiva/archivatest-maven-plugin/4.0-alpha-1-SNAPSHOT/maven-metadata.xml";
         String version = "4.0-alpha-1-SNAPSHOT";
@@ -88,6 +89,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         setupSnapshotsRemoteRepo();
         setupPrivateSnapshotsRemoteRepo();
         setupCleanInternalRepo();
+        saveConfiguration();
 
         String path = "org/apache/maven/plugins/maven-assembly-plugin/2.2-beta-2-SNAPSHOT/maven-metadata.xml";
         String version = "2.2-beta-2-SNAPSHOT";
@@ -119,6 +121,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         setupSnapshotsRemoteRepo();
         setupPrivateSnapshotsRemoteRepo();
         setupCleanInternalRepo();
+        saveConfiguration();
 
         String path = "org/apache/archiva/archivatest-maven-plugin/4.0-alpha-2/maven-metadata.xml";
         String expectedMetadata =
@@ -145,6 +148,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         setupSnapshotsRemoteRepo();
         setupPrivateSnapshotsRemoteRepo();
         setupCleanInternalRepo();
+        saveConfiguration();
 
         String path = "org/apache/archiva/archivatest-maven-plugin/maven-metadata.xml";
         String latest = "1.0-alpha-4";
@@ -174,6 +178,7 @@ public class RepositoryServletProxiedMetadataRemoteOnlyTest
         setupSnapshotsRemoteRepo();
         setupPrivateSnapshotsRemoteRepo();
         setupCleanInternalRepo();
+        saveConfiguration();
 
         String path = "org/apache/archiva/maven-metadata.xml";
         String expectedMetadata =

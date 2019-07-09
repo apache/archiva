@@ -163,6 +163,7 @@ public class RepositoryServletProxiedReleasePolicyTest
         // --- Setup
         setupCentralRemoteRepo();
         setupCleanInternalRepo();
+        saveConfiguration();
 
         String resourcePath = "org/apache/archiva/test/1.0/test-1.0.jar";
         String expectedRemoteContents = "archiva-test-1.0|jar-remote-contents";
