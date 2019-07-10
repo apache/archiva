@@ -20,6 +20,8 @@ package org.apache.archiva.repository.scanner;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
+import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.repository.BasicManagedRepository;
@@ -27,6 +29,8 @@ import org.apache.archiva.repository.BasicRemoteRepository;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.EditableRemoteRepository;
 import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.content.FilesystemStorage;
+import org.apache.archiva.repository.scanner.mock.ManagedRepositoryContentMock;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -62,10 +66,12 @@ public class RepositoryScannerTest
     @Inject
     ApplicationContext applicationContext;
 
-    protected EditableManagedRepository createRepository( String id, String name, Path location )
-    {
+    protected EditableManagedRepository createRepository( String id, String name, Path location ) throws IOException {
         BasicManagedRepository repo = new BasicManagedRepository(id, name, location.getParent());
         repo.setLocation( location.toAbsolutePath().toUri());
+        FileLockManager lockManager = new DefaultFileLockManager();
+        FilesystemStorage storage = new FilesystemStorage(location.toAbsolutePath(), lockManager);
+        repo.setContent(new ManagedRepositoryContentMock(repo, storage));
         return repo;
     }
 
@@ -79,8 +85,7 @@ public class RepositoryScannerTest
     private static final String[] ARTIFACT_PATTERNS =
         new String[]{ "**/*.jar", "**/*.pom", "**/*.rar", "**/*.zip", "**/*.war", "**/*.tar.gz" };
 
-    private ManagedRepository createDefaultRepository()
-    {
+    private ManagedRepository createDefaultRepository() throws IOException {
         Path repoDir =
             Paths.get( System.getProperty( "basedir" ), "src/test/repositories/default-repository" );
 
@@ -117,8 +122,7 @@ public class RepositoryScannerTest
         return fmt.parse( timestamp ).getTime();
     }
 
-    private ManagedRepository createLegacyRepository()
-    {
+    private ManagedRepository createLegacyRepository() throws IOException {
         Path repoDir = Paths.get( System.getProperty( "basedir" ),  "src/test/repositories/legacy-repository" );
 
         assertTrue( "Legacy Test Repository should exist.", Files.exists(repoDir) && Files.isDirectory(repoDir) );

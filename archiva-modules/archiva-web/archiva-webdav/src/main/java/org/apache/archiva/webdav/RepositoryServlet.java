@@ -26,6 +26,7 @@ import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.redback.integration.filter.authentication.HttpAuthenticator;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.archiva.security.ServletAuthenticator;
 import org.apache.jackrabbit.webdav.DavException;
 import org.apache.jackrabbit.webdav.DavLocatorFactory;
@@ -183,11 +184,11 @@ public class RepositoryServlet
             fillRepositoryMap();
 
             for (ManagedRepository repo : repositoryMap.values()) {
-                Path repoDir = Paths.get(repo.getLocation());
+                StorageAsset repoDir = repo.getContent().getAsset("");
 
-                if (!Files.exists(repoDir)) {
+                if (!repoDir.exists()) {
                     try {
-                        Files.createDirectories(repoDir);
+                        repoDir.create();
                     } catch (IOException e) {
                         log.info("Unable to create missing directory for {}", repo.getLocation());
                         continue;

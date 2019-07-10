@@ -437,7 +437,7 @@ public class ArchivaDavResourceFactory
 
             Path resourceFile = temporaryIndexDirectory.resolve( requestedFileName );
             try {
-                resource = new ArchivaDavResource( asset, requestedFileName, null,
+                resource = new ArchivaDavResource( asset, requestedFileName, repoGroup,
                                                    request.getRemoteAddr(), activePrincipal, request.getDavSession(),
                                                    archivaLocator, this, mimeTypes, auditListeners, scheduler );
             } catch (LayoutException e) {

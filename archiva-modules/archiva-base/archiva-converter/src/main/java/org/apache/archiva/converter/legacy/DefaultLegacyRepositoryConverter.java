@@ -19,13 +19,17 @@ package org.apache.archiva.converter.legacy;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.common.utils.PathUtil;
+import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.converter.RepositoryConversionException;
 import org.apache.archiva.repository.BasicManagedRepository;
+import org.apache.archiva.repository.content.FilesystemStorage;
+import org.apache.archiva.repository.content.maven2.ManagedDefaultRepositoryContent;
 import org.apache.archiva.repository.scanner.RepositoryScanner;
 import org.apache.archiva.repository.scanner.RepositoryScannerException;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -36,6 +40,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +65,9 @@ public class DefaultLegacyRepositoryConverter
      *
      */
     private ArtifactRepositoryLayout defaultLayout;
+
+    @Inject
+    FileTypes fileTypes;
 
     /**
      *
@@ -94,6 +102,9 @@ public class DefaultLegacyRepositoryConverter
             BasicManagedRepository legacyRepository = new BasicManagedRepository( "legacy", "Legacy Repository", repositoryDirectory.getParent());
             legacyRepository.setLocation( legacyRepositoryDirectory.toAbsolutePath().toUri() );
             legacyRepository.setLayout( "legacy" );
+            DefaultFileLockManager lockManager = new DefaultFileLockManager();
+            FilesystemStorage storage = new FilesystemStorage(legacyRepositoryDirectory, lockManager);
+            legacyRepository.setContent(new ManagedDefaultRepositoryContent(legacyRepository, fileTypes, lockManager));
 
             ArtifactRepository repository =
                 new MavenArtifactRepository("default", defaultRepositoryUrl, defaultLayout, null, null);
@@ -110,7 +121,7 @@ public class DefaultLegacyRepositoryConverter
             repoScanner.scan( legacyRepository, knownConsumers, invalidConsumers, ignoredContent,
                               RepositoryScanner.FRESH_SCAN );
         }
-        catch ( RepositoryScannerException e )
+        catch (RepositoryScannerException | IOException e )
         {
             throw new RepositoryConversionException( "Error convering legacy repository.", e );
         }

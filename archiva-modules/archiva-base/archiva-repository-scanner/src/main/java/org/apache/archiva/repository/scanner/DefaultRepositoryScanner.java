@@ -25,6 +25,7 @@ import org.apache.archiva.consumers.InvalidRepositoryContentConsumer;
 import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.consumers.RepositoryContentConsumer;
 import org.apache.archiva.repository.ManagedRepository;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,20 +97,20 @@ public class DefaultRepositoryScanner
             throw new IllegalArgumentException( "Unable to operate on a null repository." );
         }
 
-        Path repositoryBase = Paths.get( repository.getLocation() );
+        StorageAsset repositoryBase = repository.getContent().getAsset("");
 
         //MRM-1342 Repository statistics report doesn't appear to be working correctly
         //create the repo if not existing to have an empty stats
-        if ( !Files.exists(repositoryBase))
+        if ( !repositoryBase.exists())
         {
             try {
-                Files.createDirectories(repositoryBase);
+                repositoryBase.create();
             } catch (IOException e) {
                 throw new UnsupportedOperationException("Unable to scan a repository, directory " + repositoryBase + " does not exist." );
             }
         }
 
-        if ( !Files.isDirectory(repositoryBase) )
+        if ( !repositoryBase.isContainer())
         {
             throw new UnsupportedOperationException(
                 "Unable to scan a repository, path " + repositoryBase+ " is not a directory." );
@@ -139,7 +140,7 @@ public class DefaultRepositoryScanner
         RepositoryScanStatistics stats = null;
         try
         {
-            Files.walkFileTree(repositoryBase, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, scannerInstance);
+            Files.walkFileTree(repositoryBase.getFilePath(), EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, scannerInstance);
 
             stats = scannerInstance.getStatistics();
 
