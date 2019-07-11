@@ -19,6 +19,7 @@ package org.apache.archiva.repository.maven2;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.FilesystemStorage;
@@ -47,41 +48,32 @@ public class MavenRepositoryGroup extends AbstractRepositoryGroup implements Edi
 
     private final Logger log = LoggerFactory.getLogger(MavenRepositoryGroup.class);
 
-    private FileLockManager lockManager;
-    private FilesystemStorage fsStorage;
     private IndexCreationFeature indexCreationFeature;
 
 
-    public MavenRepositoryGroup(String id, String name, Path repositoryBase, FileLockManager lockManager) {
-        super(RepositoryType.MAVEN, id, name, repositoryBase);
-        this.lockManager = lockManager;
+    public MavenRepositoryGroup(String id, String name, FilesystemStorage storage) {
+        super(RepositoryType.MAVEN, id, name, storage);
         init();
     }
 
-    public MavenRepositoryGroup(Locale primaryLocale, String id, String name, Path repositoryBase, FileLockManager lockManager) {
-        super(primaryLocale, RepositoryType.MAVEN, id, name, repositoryBase);
-        this.lockManager = lockManager;
+    public MavenRepositoryGroup(Locale primaryLocale, String id, String name, FilesystemStorage storage) {
+        super(primaryLocale, RepositoryType.MAVEN, id, name, storage);
         init();
     }
 
     private Path getRepositoryPath() {
-        return getRepositoryBase().resolve(getId());
+        return getStorage().getAsset("").getFilePath();
     }
 
     private void init() {
         setCapabilities(CAPABILITIES);
-        try {
-            Path repoPath = getRepositoryPath();
-            if (!Files.exists(repoPath)) {
-                Files.createDirectories(repoPath);
-            }
-            fsStorage = new FilesystemStorage(getRepositoryPath(), lockManager);
-        } catch (IOException e) {
-            log.error("IOException while initializing repository group with path {}",getRepositoryBase());
-            throw new RuntimeException("Fatal error while accessing repository path "+ getRepositoryBase(), e);
-        }
-        setStorage(fsStorage);
         this.indexCreationFeature = new IndexCreationFeature(this, this);
         addFeature( this.indexCreationFeature );
+    }
+
+    public static MavenRepositoryGroup newLocalInstance(String id, String name, Path basePath) throws IOException {
+        FileLockManager lockManager = new DefaultFileLockManager();
+        FilesystemStorage storage = new FilesystemStorage(basePath.resolve(id), lockManager);
+        return new MavenRepositoryGroup(id, name, storage);
     }
 }

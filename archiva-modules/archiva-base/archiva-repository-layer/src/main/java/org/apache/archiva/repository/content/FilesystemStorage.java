@@ -180,4 +180,8 @@ public class FilesystemStorage implements RepositoryStorage {
         return newAsset;
     }
 
+    public FileLockManager getFileLockManager() {
+        return fileLockManager;
+    }
+
 }

@@ -42,7 +42,7 @@ import java.util.function.Function;
  *
  * This interface
  */
-public interface ManagedRepositoryContent extends RepositoryContent, RepositoryStorage
+public interface ManagedRepositoryContent extends RepositoryContent
 {
 
 

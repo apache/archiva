@@ -44,16 +44,14 @@ public class AbstractRepositoryGroup extends AbstractRepository implements Edita
 
     private final ReadWriteLock rwl = new ReentrantReadWriteLock();
 
-    private RepositoryStorage storage;
-
     private RepositoryCapabilities capabilities;
 
-    public AbstractRepositoryGroup(RepositoryType type, String id, String name, Path repositoryBase) {
-        super(type, id, name, repositoryBase);
+    public AbstractRepositoryGroup(RepositoryType type, String id, String name, RepositoryStorage storage) {
+        super(type, id, name, storage);
     }
 
-    public AbstractRepositoryGroup(Locale primaryLocale, RepositoryType type, String id, String name, Path repositoryBase) {
-        super(primaryLocale, type, id, name, repositoryBase);
+    public AbstractRepositoryGroup(Locale primaryLocale, RepositoryType type, String id, String name, RepositoryStorage storage) {
+        super(primaryLocale, type, id, name, storage);
     }
 
     @Override
@@ -171,40 +169,6 @@ public class AbstractRepositoryGroup extends AbstractRepository implements Edita
     @Override
     public int getMergedIndexTTL() {
         return mergedIndexTTL;
-    }
-
-    @Override
-    public StorageAsset getAsset(String path) {
-        return storage.getAsset(path);
-    }
-
-    @Override
-    public void consumeData(StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock) throws IOException {
-        storage.consumeData(asset, consumerFunction, readLock);
-    }
-
-    @Override
-    public StorageAsset addAsset(String path, boolean container) {
-        return storage.addAsset(path, container);
-    }
-
-    @Override
-    public void removeAsset(StorageAsset asset) throws IOException {
-        storage.removeAsset(asset);
-    }
-
-    @Override
-    public StorageAsset moveAsset(StorageAsset origin, String destination) throws IOException {
-        return storage.moveAsset(origin, destination);
-    }
-
-    @Override
-    public StorageAsset copyAsset(StorageAsset origin, String destination) throws IOException {
-        return storage.copyAsset(origin, destination);
-    }
-
-    protected void setStorage(RepositoryStorage storage) {
-        this.storage = storage;
     }
 
     protected void setCapabilities(RepositoryCapabilities capabilities) {

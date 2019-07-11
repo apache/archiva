@@ -67,8 +67,6 @@ public class ManagedDefaultRepositoryContent
     implements ManagedRepositoryContent
 {
 
-    private FilesystemStorage storage;
-
     private FileTypes filetypes;
 
     public void setFileTypes(FileTypes fileTypes) {
@@ -421,13 +419,6 @@ public class ManagedDefaultRepositoryContent
             if (repository instanceof EditableManagedRepository) {
                 ((EditableManagedRepository) repository).setContent(this);
             }
-            final Path repositoryDir = getRepoDir();
-            try {
-                storage = new FilesystemStorage(repositoryDir, this.lockManager);
-            } catch (IOException e) {
-                log.error("Could not initialize the filesystem storage to repository {}: {}", repositoryDir, e.getMessage(), e);
-                throw new RuntimeException("Fatal error. Could not initialize the filesystem storage for "+repositoryDir+": "+e.getMessage());
-            }
         }
 
     }
@@ -542,44 +533,6 @@ public class ManagedDefaultRepositoryContent
     public void setFiletypes( FileTypes filetypes )
     {
         this.filetypes = filetypes;
-    }
-
-
-    @Override
-    public void consumeData( StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock ) throws IOException
-    {
-        storage.consumeData(asset, consumerFunction, readLock);
-    }
-
-
-    @Override
-    public StorageAsset getAsset( String path )
-    {
-        return storage.getAsset(path);
-    }
-
-    @Override
-    public StorageAsset addAsset( String path, boolean container )
-    {
-        return storage.addAsset(path, container);
-    }
-
-    @Override
-    public void removeAsset( StorageAsset asset ) throws IOException
-    {
-        storage.removeAsset(asset);
-    }
-
-    @Override
-    public StorageAsset moveAsset( StorageAsset origin, String destination ) throws IOException
-    {
-        return storage.moveAsset(origin, destination);
-    }
-
-    @Override
-    public StorageAsset copyAsset( StorageAsset origin, String destination ) throws IOException
-    {
-        return storage.copyAsset(origin, destination);
     }
 
 

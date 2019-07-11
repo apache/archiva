@@ -40,6 +40,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -74,9 +75,8 @@ public class MavenRepositoryRequestInfoTest
     private MavenRepositoryRequestInfo repoRequest;
 
 
-    protected MavenManagedRepository createRepository( String id, String name, Path location )
-    {
-        MavenManagedRepository repo = new MavenManagedRepository( id, name, location.getParent().toAbsolutePath());
+    protected MavenManagedRepository createRepository( String id, String name, Path location ) throws IOException {
+        MavenManagedRepository repo = MavenManagedRepository.newLocalInstance( id, name, location.getParent().toAbsolutePath());
         repo.setLocation( location.toAbsolutePath().toUri() );
         return repo;
     }
@@ -549,7 +549,7 @@ public class MavenRepositoryRequestInfoTest
                                                                        String layout )
         throws Exception
     {
-        MavenManagedRepository repo = new MavenManagedRepository( id, name, archivaConfiguration.getRepositoryBaseDir());
+        MavenManagedRepository repo = MavenManagedRepository.newLocalInstance( id, name, archivaConfiguration.getRepositoryBaseDir());
         repo.setLocation( location.toAbsolutePath().toUri() );
         repo.setLayout( layout );
 

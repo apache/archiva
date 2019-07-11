@@ -19,14 +19,22 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
+import org.apache.archiva.common.filelock.FileLockManager;
+import org.apache.archiva.repository.content.FilesystemStorage;
+import org.apache.archiva.repository.content.RepositoryStorage;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 /**
  *
@@ -41,7 +49,6 @@ public class BasicManagedRepository extends AbstractManagedRepository
     ArtifactCleanupFeature artifactCleanupFeature = new ArtifactCleanupFeature(  );
     StagingRepositoryFeature stagingRepositoryFeature = new StagingRepositoryFeature( );
 
-
     static final StandardCapabilities CAPABILITIES = new StandardCapabilities( new ReleaseScheme[] {
         ReleaseScheme.RELEASE, ReleaseScheme.SNAPSHOT
     }, new String[] {"default"}, new String[0], new String[] {
@@ -49,15 +56,15 @@ public class BasicManagedRepository extends AbstractManagedRepository
         StagingRepositoryFeature.class.toString()
     }, true, true, true, true, true  );
 
-    public BasicManagedRepository( String id, String name, Path basePath )
+    public BasicManagedRepository( String id, String name, RepositoryStorage repositoryStorage )
     {
-        super( RepositoryType.MAVEN, id, name, basePath );
+        super( RepositoryType.MAVEN, id, name, repositoryStorage );
         initFeatures();
     }
 
-    public BasicManagedRepository( Locale primaryLocale, RepositoryType type, String id, String name, Path basePath )
+    public BasicManagedRepository( Locale primaryLocale, RepositoryType type, String id, String name, RepositoryStorage repositoryStorage )
     {
-        super( primaryLocale, type, id, name, basePath );
+        super( primaryLocale, type, id, name, repositoryStorage);
         initFeatures();
     }
 
@@ -85,4 +92,11 @@ public class BasicManagedRepository extends AbstractManagedRepository
     public RepositoryRequestInfo getRequestInfo() {
         return null;
     }
+
+    public static BasicManagedRepository newFilesystemInstance(String id, String name, Path basePath) throws IOException {
+        FileLockManager lockManager = new DefaultFileLockManager();
+        FilesystemStorage storage = new FilesystemStorage(basePath.resolve(id), lockManager);
+        return new BasicManagedRepository(id, name, storage);
+    }
+
 }

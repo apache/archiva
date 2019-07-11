@@ -19,8 +19,12 @@ package org.apache.archiva.repository.maven2;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
+import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.content.FilesystemStorage;
+import org.apache.archiva.repository.content.RepositoryStorage;
 import org.apache.archiva.repository.content.maven2.MavenRepositoryRequestInfo;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
@@ -65,17 +69,18 @@ public class MavenManagedRepository extends AbstractManagedRepository
         false
     );
 
-    public MavenManagedRepository( String id, String name, Path basePath )
+    public MavenManagedRepository(String id, String name, FilesystemStorage storage)
     {
-        super( RepositoryType.MAVEN, id, name, basePath);
+
+        super( RepositoryType.MAVEN, id, name, storage);
         this.indexCreationFeature = new IndexCreationFeature(this, this);
-        setLocation(basePath.resolve(id).toUri());
+        setLocation(storage.getAsset("").getFilePath().toUri());
     }
 
-    public MavenManagedRepository( Locale primaryLocale, String id, String name, Path basePath )
+    public MavenManagedRepository( Locale primaryLocale, String id, String name, FilesystemStorage storage )
     {
-        super( primaryLocale, RepositoryType.MAVEN, id, name, basePath );
-        setLocation(basePath.resolve(id).toUri());
+        super( primaryLocale, RepositoryType.MAVEN, id, name, storage );
+        setLocation(storage.getAsset("").getFilePath().toUri());
     }
 
     @Override
@@ -121,22 +126,44 @@ public class MavenManagedRepository extends AbstractManagedRepository
     @Override
     public void setLocation( URI location )
     {
-        super.setLocation( location );
+        URI previousLocation = super.getLocation();
+        Path previousLoc = PathUtil.getPathFromUri(previousLocation);
         Path newLoc = PathUtil.getPathFromUri( location );
-        if (!Files.exists( newLoc )) {
-            try
-            {
-                Files.createDirectories( newLoc );
+        if (!newLoc.toAbsolutePath().equals(previousLoc.toAbsolutePath())) {
+            super.setLocation(location);
+            if (!Files.exists(newLoc)) {
+                try {
+                    Files.createDirectories(newLoc);
+                } catch (IOException e) {
+                    log.error("Could not create directory {}", location, e);
+                }
             }
-            catch ( IOException e )
-            {
-                log.error("Could not create directory {}",location, e);
+            FilesystemStorage previous = (FilesystemStorage) getStorage();
+            try {
+                FilesystemStorage fs = new FilesystemStorage(newLoc, previous.getFileLockManager());
+                setStorage(fs);
+            } catch (IOException e) {
+                log.error("Could not create new filesystem storage at {}", newLoc);
+                try {
+                    Path tmpDir = Files.createTempDirectory("tmp-repo-"+getId());
+                    FilesystemStorage fs = new FilesystemStorage(tmpDir, previous.getFileLockManager());
+                    setStorage(fs);
+                } catch (IOException ex) {
+                    throw new RuntimeException("Could not setup storage for repository "+getId());
+                }
             }
         }
+
     }
 
     @Override
     public RepositoryRequestInfo getRequestInfo() {
         return new MavenRepositoryRequestInfo(this);
+    }
+
+    public static MavenManagedRepository newLocalInstance(String id, String name, Path basePath) throws IOException {
+        FileLockManager lockManager = new DefaultFileLockManager();
+        FilesystemStorage storage = new FilesystemStorage(basePath.resolve(id), lockManager);
+        return new MavenManagedRepository(id, name, storage);
     }
 }

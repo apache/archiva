@@ -184,7 +184,7 @@ public class RepositoryServlet
             fillRepositoryMap();
 
             for (ManagedRepository repo : repositoryMap.values()) {
-                StorageAsset repoDir = repo.getContent().getAsset("");
+                StorageAsset repoDir = repo.getAsset("");
 
                 if (!repoDir.exists()) {
                     try {

@@ -27,20 +27,14 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.*;
-import org.apache.archiva.repository.content.FilesystemAsset;
 import org.apache.archiva.repository.content.FilesystemStorage;
-import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,11 +49,9 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
 
 
     private ManagedRepository repository;
-    private FilesystemStorage storage;
 
-    public ManagedRepositoryContentMock(ManagedRepository repo, FilesystemStorage storage) {
+    public ManagedRepositoryContentMock(ManagedRepository repo) {
         this.repository = repo;
-        this.storage = storage;
     }
 
     @Override
@@ -391,33 +383,4 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
         return null;
     }
 
-    @Override
-    public StorageAsset getAsset(String path) {
-        return storage.getAsset(path);
-    }
-
-    @Override
-    public void consumeData(StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock) throws IOException {
-        storage.consumeData(asset, consumerFunction, readLock);
-    }
-
-    @Override
-    public StorageAsset addAsset(String path, boolean container) {
-        return storage.addAsset(path, container);
-    }
-
-    @Override
-    public void removeAsset(StorageAsset asset) throws IOException {
-        storage.removeAsset(asset);
-    }
-
-    @Override
-    public StorageAsset moveAsset(StorageAsset origin, String destination) throws IOException {
-        return storage.moveAsset(origin, destination);
-    }
-
-    @Override
-    public StorageAsset copyAsset(StorageAsset origin, String destination) throws IOException {
-        return storage.copyAsset(origin, destination);
-    }
 }

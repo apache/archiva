@@ -29,6 +29,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -49,16 +50,14 @@ public abstract class AbstractRepositoryLayerTestCase
     @Inject
     protected ApplicationContext applicationContext;
 
-    protected MavenManagedRepository createRepository( String id, String name, Path location )
-    {
-        MavenManagedRepository repo = new MavenManagedRepository( id, name, location.getParent().toAbsolutePath());
+    protected MavenManagedRepository createRepository( String id, String name, Path location ) throws IOException {
+        MavenManagedRepository repo = MavenManagedRepository.newLocalInstance( id, name, location.getParent().toAbsolutePath());
         repo.setLocation( location.toAbsolutePath().toUri() );
         return repo;
     }
 
-    protected MavenRemoteRepository createRemoteRepository( String id, String name, String url ) throws URISyntaxException
-    {
-        MavenRemoteRepository repo = new MavenRemoteRepository(id, name, Paths.get("target/remotes"));
+    protected MavenRemoteRepository createRemoteRepository( String id, String name, String url ) throws URISyntaxException, IOException {
+        MavenRemoteRepository repo = MavenRemoteRepository.newLocalInstance(id, name, Paths.get("target/remotes"));
         repo.setLocation( new URI( url ) );
         return repo;
     }
@@ -67,7 +66,7 @@ public abstract class AbstractRepositoryLayerTestCase
                                                                        String layout )
         throws Exception
     {
-        MavenManagedRepository repo = new MavenManagedRepository( id, name, location.getParent() );
+        MavenManagedRepository repo = MavenManagedRepository.newLocalInstance( id, name, location.getParent() );
         repo.setLocation( location.toAbsolutePath().toUri() );
         repo.setLayout( layout );
 
@@ -81,7 +80,7 @@ public abstract class AbstractRepositoryLayerTestCase
     protected RemoteRepositoryContent createRemoteRepositoryContent( String id, String name, String url, String layout )
         throws Exception
     {
-        MavenRemoteRepository repo = new MavenRemoteRepository(id, name, Paths.get("target/remotes"));
+        MavenRemoteRepository repo = MavenRemoteRepository.newLocalInstance(id, name, Paths.get("target/remotes"));
         repo.setLocation( new URI( url ) );
         repo.setLayout( layout );
 

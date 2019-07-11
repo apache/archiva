@@ -183,8 +183,8 @@ public class MavenIndexManagerTest {
     private ArchivaIndexingContext createTestContext() throws URISyntaxException, IndexCreationFailedException, IOException {
         indexPath = Paths.get("target/repositories/test-repo/.index-test");
         FileUtils.deleteDirectory(indexPath);
-        repository = new MavenManagedRepository("test-repo", "Test Repo", Paths.get("target/repositories"));
-        repository.setLocation(new URI("test-repo"));
+        repository = MavenManagedRepository.newLocalInstance("test-repo", "Test Repo", Paths.get("target/repositories"));
+        // repository.setLocation(new URI("test-repo"));
         IndexCreationFeature icf = repository.getFeature(IndexCreationFeature.class).get();
         icf.setIndexPath(new URI(".index-test"));
         ctx = mavenIndexManager.createContext(repository);
@@ -194,7 +194,7 @@ public class MavenIndexManagerTest {
     private ArchivaIndexingContext createTestContextForRemote() throws URISyntaxException, IndexCreationFailedException, IOException {
         indexPath = Paths.get("target/repositories/test-repo/.index-test");
         Path repoPath = Paths.get("target/repositories").toAbsolutePath();
-        repositoryRemote = new MavenRemoteRepository("test-repo", "Test Repo", repoPath);
+        repositoryRemote = MavenRemoteRepository.newLocalInstance("test-repo", "Test Repo", repoPath);
         repositoryRemote.setLocation(repoPath.resolve("test-repo").toUri());
         RemoteIndexFeature icf = repositoryRemote.getFeature(RemoteIndexFeature.class).get();
         icf.setIndexUri(new URI(".index-test"));

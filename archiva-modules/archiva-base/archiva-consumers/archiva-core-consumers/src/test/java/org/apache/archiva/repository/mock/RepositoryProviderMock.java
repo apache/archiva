@@ -43,6 +43,7 @@ import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -74,13 +75,21 @@ public class RepositoryProviderMock implements RepositoryProvider
     @Override
     public EditableManagedRepository createManagedInstance( String id, String name )
     {
-        return new BasicManagedRepository( id, name, Paths.get("target/repositories") );
+        try {
+            return BasicManagedRepository.newFilesystemInstance( id, name, Paths.get("target/repositories") );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public EditableRemoteRepository createRemoteInstance( String id, String name )
     {
-        return new BasicRemoteRepository( id, name, Paths.get("target/remotes") );
+        try {
+            return BasicRemoteRepository.newFilesystemInstance( id, name, Paths.get("target/remotes") );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -93,7 +102,12 @@ public class RepositoryProviderMock implements RepositoryProvider
     @Override
     public ManagedRepository createManagedInstance( ManagedRepositoryConfiguration configuration ) throws RepositoryException
     {
-        BasicManagedRepository managedRepository = new BasicManagedRepository( configuration.getId( ), configuration.getName( ), Paths.get("target/repositories") );
+        BasicManagedRepository managedRepository = null;
+        try {
+            managedRepository = BasicManagedRepository.newFilesystemInstance( configuration.getId( ), configuration.getName( ), Paths.get("target/repositories") );
+        } catch (IOException e) {
+            throw new RepositoryException(e);
+        }
         updateManagedInstance( managedRepository, configuration );
         return managedRepository;
     }
@@ -140,7 +154,12 @@ public class RepositoryProviderMock implements RepositoryProvider
     public ManagedRepository createStagingInstance( ManagedRepositoryConfiguration configuration ) throws RepositoryException
     {
         String id = configuration.getId( ) + StagingRepositoryFeature.STAGING_REPO_POSTFIX;
-        BasicManagedRepository managedRepository = new BasicManagedRepository( id, configuration.getName( ), Paths.get("target/repositories") );
+        BasicManagedRepository managedRepository = null;
+        try {
+            managedRepository = BasicManagedRepository.newFilesystemInstance( id, configuration.getName( ), Paths.get("target/repositories") );
+        } catch (IOException e) {
+            throw new RepositoryException(e);
+        }
         updateManagedInstance( managedRepository, configuration );
         return managedRepository;
     }
@@ -148,7 +167,12 @@ public class RepositoryProviderMock implements RepositoryProvider
     @Override
     public RemoteRepository createRemoteInstance( RemoteRepositoryConfiguration configuration ) throws RepositoryException
     {
-        BasicRemoteRepository remoteRepository = new BasicRemoteRepository( configuration.getId( ), configuration.getName( ), Paths.get("target/remotes") );
+        BasicRemoteRepository remoteRepository = null;
+        try {
+            remoteRepository = BasicRemoteRepository.newFilesystemInstance( configuration.getId( ), configuration.getName( ), Paths.get("target/remotes") );
+        } catch (IOException e) {
+            throw new RepositoryException(e);
+        }
         updateRemoteInstance( remoteRepository, configuration );
         return remoteRepository;
     }

@@ -36,6 +36,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -217,7 +218,7 @@ public class MavenRepositoryProviderTest
 
     @Test
     public void getManagedConfiguration() throws Exception {
-        MavenManagedRepository repo = new MavenManagedRepository( "test01", "My Test repo", Paths.get("target/repositories") );
+        MavenManagedRepository repo = MavenManagedRepository.newLocalInstance( "test01", "My Test repo", Paths.get("target/repositories") );
 
         repo.setLocation( new URI("file:///this.is/a/test") );
         repo.setScanned( true );
@@ -262,7 +263,7 @@ public class MavenRepositoryProviderTest
 
     @Test
     public void getRemoteConfiguration() throws Exception {
-        MavenRemoteRepository repo = new MavenRemoteRepository( "test01", "My Test repo", Paths.get("target/remotes") );
+        MavenRemoteRepository repo = MavenRemoteRepository.newLocalInstance( "test01", "My Test repo", Paths.get("target/remotes") );
 
         repo.setLocation( new URI("https://this.is/a/test") );
         repo.setScanned( true );
@@ -296,12 +297,10 @@ public class MavenRepositoryProviderTest
     }
 
     @Test
-    public void getRepositoryGroupConfiguration() throws RepositoryException, URISyntaxException
-    {
-        MavenRepositoryGroup repositoryGroup = new MavenRepositoryGroup("group1","group1",Paths.get("target/groups"),
-                new DefaultFileLockManager());
-        MavenManagedRepository repo1 = new MavenManagedRepository( "test01", "My Test repo", Paths.get("target/repositories") );
-        MavenManagedRepository repo2 = new MavenManagedRepository( "test02", "My Test repo", Paths.get("target/repositories") );
+    public void getRepositoryGroupConfiguration() throws RepositoryException, URISyntaxException, IOException {
+        MavenRepositoryGroup repositoryGroup = MavenRepositoryGroup.newLocalInstance("group1","group1",Paths.get("target/groups"));
+        MavenManagedRepository repo1 = MavenManagedRepository.newLocalInstance( "test01", "My Test repo", Paths.get("target/repositories") );
+        MavenManagedRepository repo2 = MavenManagedRepository.newLocalInstance( "test02", "My Test repo", Paths.get("target/repositories") );
 
 
         repositoryGroup.setDescription(repositoryGroup.getPrimaryLocale(), "Repository group");

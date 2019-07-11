@@ -146,10 +146,9 @@ public abstract class AbstractRepositoryPurgeTest
         return path;
     }
 
-    public org.apache.archiva.repository.ManagedRepository getRepoConfiguration( String repoId, String repoName ) throws URISyntaxException
-    {
+    public org.apache.archiva.repository.ManagedRepository getRepoConfiguration( String repoId, String repoName ) throws URISyntaxException, IOException {
         Path basePath = Paths.get("target/test-" + getName()).toAbsolutePath();
-        config = new BasicManagedRepository( repoId, repoName, basePath);
+        config = BasicManagedRepository.newFilesystemInstance( repoId, repoName, basePath);
         config.addActiveReleaseScheme( ReleaseScheme.RELEASE );
         config.addActiveReleaseScheme( ReleaseScheme.SNAPSHOT );
         ArtifactCleanupFeature atf = config.getFeature( ArtifactCleanupFeature.class ).get();

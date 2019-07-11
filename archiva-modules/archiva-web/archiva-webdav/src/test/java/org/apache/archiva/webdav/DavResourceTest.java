@@ -97,7 +97,7 @@ public class DavResourceTest
         baseDir = Paths.get( "target/DavResourceTest" );
         Files.createDirectories( baseDir );
         Files.createDirectories( baseDir.resolve( "conf" ) );
-        repository = new MavenManagedRepository( "repo001", "repo001", baseDir);
+        repository = MavenManagedRepository.newLocalInstance( "repo001", "repo001", baseDir);
         repositoryRegistry.putRepository( repository );
 
         myResource = baseDir.resolve( "myresource.jar" );
@@ -127,7 +127,7 @@ public class DavResourceTest
 
     private DavResource getDavResource( String logicalPath, Path file ) throws LayoutException
     {
-        return new ArchivaDavResource( new FilesystemAsset( logicalPath, file.toAbsolutePath()) , logicalPath, repository.getContent(), session, resourceLocator,
+        return new ArchivaDavResource( new FilesystemAsset( logicalPath, file.toAbsolutePath()) , logicalPath, repository, session, resourceLocator,
                                        resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(), null);
     }
 
@@ -349,7 +349,7 @@ public class DavResourceTest
         {
             try
             {
-                return new ArchivaDavResource( new FilesystemAsset( "/" , baseDir.toAbsolutePath()), "/", repository.getContent(), session, resourceLocator,
+                return new ArchivaDavResource( new FilesystemAsset( "/" , baseDir.toAbsolutePath()), "/", repository, session, resourceLocator,
                                                resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(),
                                                null );
             }

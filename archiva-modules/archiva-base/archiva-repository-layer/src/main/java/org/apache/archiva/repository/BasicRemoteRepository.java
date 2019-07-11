@@ -19,11 +19,16 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
+import org.apache.archiva.common.filelock.FileLockManager;
+import org.apache.archiva.repository.content.FilesystemStorage;
+import org.apache.archiva.repository.content.RepositoryStorage;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Locale;
 
@@ -49,15 +54,15 @@ public class BasicRemoteRepository extends AbstractRemoteRepository
             IndexCreationFeature.class.toString()
     }, true, true, true, true, true  );
 
-    public BasicRemoteRepository( String id, String name, Path basePath )
+    public BasicRemoteRepository( String id, String name, RepositoryStorage storage)
     {
-        super( RepositoryType.MAVEN, id, name, basePath);
+        super( RepositoryType.MAVEN, id, name, storage);
         initFeatures();
     }
 
-    public BasicRemoteRepository( Locale primaryLocale, RepositoryType type, String id, String name, Path basePath )
+    public BasicRemoteRepository( Locale primaryLocale, RepositoryType type, String id, String name, RepositoryStorage storage )
     {
-        super( primaryLocale, type, id, name, basePath );
+        super( primaryLocale, type, id, name, storage );
         initFeatures();
     }
 
@@ -79,4 +84,9 @@ public class BasicRemoteRepository extends AbstractRemoteRepository
     }
 
 
+    public static BasicRemoteRepository newFilesystemInstance(String id, String name, Path basePath) throws IOException {
+        FileLockManager lockManager = new DefaultFileLockManager();
+        FilesystemStorage storage = new FilesystemStorage(basePath.resolve(id), lockManager);
+        return new BasicRemoteRepository(id, name, storage);
+    }
 }

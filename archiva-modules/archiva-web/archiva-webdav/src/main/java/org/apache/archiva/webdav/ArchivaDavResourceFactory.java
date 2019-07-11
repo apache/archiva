@@ -574,12 +574,12 @@ public class ArchivaDavResourceFactory
                 path = path.substring( 1 );
             }
             LogicalResource logicalResource = new LogicalResource( path );
-            StorageAsset repoAsset = managedRepositoryContent.getAsset( path );
+            StorageAsset repoAsset = managedRepository.getAsset( path );
             // Path resourceFile = Paths.get( managedRepositoryContent.getRepoRoot(), path );
             try
             {
                 resource =
-                    new ArchivaDavResource( repoAsset, path, managedRepositoryContent,
+                    new ArchivaDavResource( repoAsset, path, managedRepository,
                                             request.getRemoteAddr(), activePrincipal, request.getDavSession(),
                                             archivaLocator, this, mimeTypes, auditListeners, scheduler );
             }
@@ -612,10 +612,10 @@ public class ArchivaDavResourceFactory
                             // Perform an adjustment of the resource to the managed
                             // repository expected path.
                             // String localResourcePath = managedRepository.getRequestInfo().toNativePath( logicalResource.getPath() );
-                            resourceAsset = managedRepositoryContent.getAsset( logicalResource.getPath() );
+                            resourceAsset = managedRepository.getAsset( logicalResource.getPath() );
                             resource =
                                 new ArchivaDavResource( resourceAsset, logicalResource.getPath(),
-                                                        managedRepositoryContent,
+                                                        managedRepository,
                                                         request.getRemoteAddr(), activePrincipal,
                                                         request.getDavSession(), archivaLocator, this, mimeTypes,
                                                         auditListeners, scheduler );
@@ -740,11 +740,11 @@ public class ArchivaDavResourceFactory
         {
             logicalResource = logicalResource.substring( 1 );
         }
-        StorageAsset resourceAsset = managedRepositoryContent.getAsset( logicalResource );
+        StorageAsset resourceAsset = repo.getAsset( logicalResource );
         try
         {
             resource = new ArchivaDavResource( resourceAsset, logicalResource,
-                                               repo.getContent(), davSession, archivaLocator,
+                                               repo, davSession, archivaLocator,
                                                this, mimeTypes, auditListeners, scheduler);
         }
         catch ( LayoutException e )
@@ -1108,7 +1108,7 @@ public class ArchivaDavResourceFactory
                             "Invalid managed repository <" + repo.getId() + ">");
                     }
                     // Path resourceFile = Paths.get( managedRepository.getRepoRoot(), logicalResource.getPath() );
-                    StorageAsset resourceFile = managedRepository.getAsset(logicalResource.getPath());
+                    StorageAsset resourceFile = repo.getAsset(logicalResource.getPath());
                     if ( resourceFile.exists() && managedRepository.getRepository().supportsFeature( IndexCreationFeature.class ))
                     {
                         // in case of group displaying index directory doesn't have sense !!

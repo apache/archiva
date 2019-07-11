@@ -76,16 +76,14 @@ public class RepositoryContentConsumersTest
     @Inject
     ApplicationContext applicationContext;
 
-    protected ManagedRepository createRepository( String id, String name, Path location )
-    {
-        BasicManagedRepository repo = new BasicManagedRepository( id, name , location.getParent() );
+    protected ManagedRepository createRepository( String id, String name, Path location ) throws IOException {
+        BasicManagedRepository repo = BasicManagedRepository.newFilesystemInstance( id, name , location.getParent() );
         repo.setLocation( location.toAbsolutePath().toUri() );
         return repo;
     }
 
-    protected RemoteRepository createRemoteRepository( String id, String name, String url ) throws URISyntaxException
-    {
-        BasicRemoteRepository repo = new BasicRemoteRepository(id, name, Paths.get("remotes"));
+    protected RemoteRepository createRemoteRepository( String id, String name, String url ) throws URISyntaxException, IOException {
+        BasicRemoteRepository repo = BasicRemoteRepository.newFilesystemInstance(id, name, Paths.get("remotes"));
         repo.setLocation( new URI( url ) );
         return repo;
     }

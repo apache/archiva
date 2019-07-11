@@ -164,9 +164,9 @@ public class ArchivaCli
     }
 
     private void doScan( String path, String[] consumers )
-        throws ConsumerException, MalformedURLException
+            throws ConsumerException, IOException
     {
-        BasicManagedRepository repo = new BasicManagedRepository( Paths.get(path).getFileName().toString(), "Archiva CLI Provided Repo", Paths.get(path).getParent());
+        BasicManagedRepository repo = BasicManagedRepository.newFilesystemInstance( Paths.get(path).getFileName().toString(), "Archiva CLI Provided Repo", Paths.get(path).getParent());
         repo.setLocation( Paths.get(path).toUri() );
 
         List<KnownRepositoryContentConsumer> knownConsumerList = new ArrayList<>();

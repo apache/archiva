@@ -20,11 +20,17 @@ package org.apache.archiva.repository;
  */
 
 
+import org.apache.archiva.repository.content.RepositoryStorage;
+import org.apache.archiva.repository.content.StorageAsset;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Simple implementation of a managed repository.
@@ -36,14 +42,18 @@ public abstract class AbstractManagedRepository extends AbstractRepository imple
     private Set<ReleaseScheme> activeReleaseSchemes = new HashSet<>(  );
     private Set<ReleaseScheme> uActiveReleaseSchemes = Collections.unmodifiableSet( activeReleaseSchemes );
 
-    public AbstractManagedRepository( RepositoryType type, String id, String name, Path basePath )
+    private RepositoryStorage storage;
+
+    public AbstractManagedRepository(RepositoryType type, String id, String name, RepositoryStorage storage)
     {
-        super( type, id, name, basePath );
+        super( type, id, name, storage );
+        this.storage = storage;
     }
 
-    public AbstractManagedRepository( Locale primaryLocale, RepositoryType type, String id, String name, Path basePath )
+    public AbstractManagedRepository( Locale primaryLocale, RepositoryType type, String id, String name, RepositoryStorage storage )
     {
-        super( primaryLocale, type, id, name, basePath );
+        super( primaryLocale, type, id, name, storage );
+        this.storage = storage;
     }
 
     @Override
@@ -92,4 +102,6 @@ public abstract class AbstractManagedRepository extends AbstractRepository imple
     {
         this.activeReleaseSchemes.clear();
     }
+
+
 }

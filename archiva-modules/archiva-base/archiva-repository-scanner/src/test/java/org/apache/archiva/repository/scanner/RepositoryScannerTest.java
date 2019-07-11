@@ -67,17 +67,16 @@ public class RepositoryScannerTest
     ApplicationContext applicationContext;
 
     protected EditableManagedRepository createRepository( String id, String name, Path location ) throws IOException {
-        BasicManagedRepository repo = new BasicManagedRepository(id, name, location.getParent());
-        repo.setLocation( location.toAbsolutePath().toUri());
         FileLockManager lockManager = new DefaultFileLockManager();
         FilesystemStorage storage = new FilesystemStorage(location.toAbsolutePath(), lockManager);
-        repo.setContent(new ManagedRepositoryContentMock(repo, storage));
+        BasicManagedRepository repo = new BasicManagedRepository(id, name, storage);
+        repo.setLocation( location.toAbsolutePath().toUri());
+        repo.setContent(new ManagedRepositoryContentMock(repo));
         return repo;
     }
 
-    protected EditableRemoteRepository createRemoteRepository( String id, String name, String url ) throws URISyntaxException
-    {
-        BasicRemoteRepository repo = new BasicRemoteRepository(id, name, Paths.get("remotes"));
+    protected EditableRemoteRepository createRemoteRepository( String id, String name, String url ) throws URISyntaxException, IOException {
+        BasicRemoteRepository repo = BasicRemoteRepository.newFilesystemInstance(id, name, Paths.get("remotes"));
         repo.setLocation( new URI( url ) );
         return repo;
     }

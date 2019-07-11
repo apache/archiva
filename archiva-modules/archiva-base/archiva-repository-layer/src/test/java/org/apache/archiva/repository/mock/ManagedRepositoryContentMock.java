@@ -171,33 +171,4 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
         return null;
     }
 
-    @Override
-    public StorageAsset getAsset(String path) {
-        return null;
-    }
-
-    @Override
-    public void consumeData(StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock) throws IOException {
-
-    }
-
-    @Override
-    public StorageAsset addAsset(String path, boolean container) {
-        return null;
-    }
-
-    @Override
-    public void removeAsset(StorageAsset asset) throws IOException {
-
-    }
-
-    @Override
-    public StorageAsset moveAsset(StorageAsset origin, String destination) throws IOException {
-        return null;
-    }
-
-    @Override
-    public StorageAsset copyAsset(StorageAsset origin, String destination) throws IOException {
-        return null;
-    }
 }

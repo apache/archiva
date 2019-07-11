@@ -94,7 +94,7 @@ public class HttpProxyTransferTest
     protected ManagedRepositoryContent createRepository( String id, String name, String path, String layout )
             throws Exception
     {
-        ManagedRepository repo = new BasicManagedRepository(id, name, Paths.get(path));
+        ManagedRepository repo = BasicManagedRepository.newFilesystemInstance(id, name, Paths.get(path));
         repositoryRegistry.putRepository(repo);
         return repositoryRegistry.getManagedRepository(id).getContent();
     }

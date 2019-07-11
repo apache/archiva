@@ -23,6 +23,7 @@ import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 
+import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -57,7 +58,7 @@ public interface RepositoryProvider extends RepositoryEventListener
      * @param name the repository name
      * @return a new created managed repository instance
      */
-    EditableManagedRepository createManagedInstance(String id, String name);
+    EditableManagedRepository createManagedInstance(String id, String name) throws IOException;
 
     /**
      * Creates a editable remote repository instance. The provider must not check the uniqueness of the

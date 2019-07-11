@@ -1,5 +1,7 @@
 package org.apache.archiva.repository.maven2;
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
+import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.repository.AbstractRemoteRepository;
 import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RemoteRepository;
@@ -7,12 +9,14 @@ import org.apache.archiva.repository.RepositoryCapabilities;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.StandardCapabilities;
 import org.apache.archiva.repository.UnsupportedFeatureException;
+import org.apache.archiva.repository.content.FilesystemStorage;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
 import org.apache.archiva.repository.features.RepositoryFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Locale;
 
@@ -59,16 +63,16 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
         false
     );
 
-    public MavenRemoteRepository( String id, String name, Path basePath )
+    public MavenRemoteRepository(String id, String name, FilesystemStorage storage)
     {
-        super( RepositoryType.MAVEN, id, name, basePath );
+        super( RepositoryType.MAVEN, id, name, storage );
         this.indexCreationFeature = new IndexCreationFeature(this, this);
 
     }
 
-    public MavenRemoteRepository( Locale primaryLocale, String id, String name, Path basePath )
+    public MavenRemoteRepository( Locale primaryLocale, String id, String name, FilesystemStorage storage )
     {
-        super( primaryLocale, RepositoryType.MAVEN, id, name, basePath );
+        super( primaryLocale, RepositoryType.MAVEN, id, name, storage );
         this.indexCreationFeature = new IndexCreationFeature(this, this);
     }
 
@@ -110,5 +114,11 @@ public class MavenRemoteRepository extends AbstractRemoteRepository
     @Override
     public String toString() {
         return super.toString()+", remoteIndexFeature="+remoteIndexFeature.toString()+", indexCreationFeature="+indexCreationFeature.toString();
+    }
+
+    public static MavenRemoteRepository newLocalInstance(String id, String name, Path basePath) throws IOException {
+        FileLockManager lockManager = new DefaultFileLockManager();
+        FilesystemStorage storage = new FilesystemStorage(basePath.resolve(id), lockManager);
+        return new MavenRemoteRepository(id, name, storage);
     }
 }

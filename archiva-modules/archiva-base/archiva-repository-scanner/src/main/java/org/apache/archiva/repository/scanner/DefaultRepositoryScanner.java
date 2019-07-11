@@ -35,13 +35,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * DefaultRepositoryScanner
@@ -97,7 +91,7 @@ public class DefaultRepositoryScanner
             throw new IllegalArgumentException( "Unable to operate on a null repository." );
         }
 
-        StorageAsset repositoryBase = repository.getContent().getAsset("");
+        StorageAsset repositoryBase = repository.getAsset("");
 
         //MRM-1342 Repository statistics report doesn't appear to be working correctly
         //create the repo if not existing to have an empty stats

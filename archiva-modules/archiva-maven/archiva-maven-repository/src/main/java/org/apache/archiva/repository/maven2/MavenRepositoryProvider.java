@@ -23,6 +23,7 @@ import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.configuration.*;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.content.FilesystemAsset;
+import org.apache.archiva.repository.content.FilesystemStorage;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
@@ -76,18 +77,51 @@ public class MavenRepositoryProvider implements RepositoryProvider {
     }
 
     @Override
-    public EditableManagedRepository createManagedInstance(String id, String name) {
-        return new MavenManagedRepository(id, name, archivaConfiguration.getRepositoryBaseDir());
+    public MavenManagedRepository createManagedInstance(String id, String name) {
+        return createManagedInstance(id, name, archivaConfiguration.getRemoteRepositoryBaseDir());
+    }
+
+    public MavenManagedRepository createManagedInstance(String id, String name, Path baseDir) {
+        FilesystemStorage storage = null;
+        try {
+            storage = new FilesystemStorage(baseDir.resolve(id), fileLockManager);
+        } catch (IOException e) {
+            log.error("Could not initialize fileystem for repository {}", id);
+            throw new RuntimeException(e);
+        }
+        return new MavenManagedRepository(id, name, storage);
     }
 
     @Override
-    public EditableRemoteRepository createRemoteInstance(String id, String name) {
-        return new MavenRemoteRepository(id, name, archivaConfiguration.getRemoteRepositoryBaseDir());
+    public MavenRemoteRepository createRemoteInstance(String id, String name) {
+        return createRemoteInstance(id, name, archivaConfiguration.getRemoteRepositoryBaseDir());
+    }
+
+    public MavenRemoteRepository createRemoteInstance(String id, String name, Path baseDir) {
+        FilesystemStorage storage = null;
+        try {
+            storage = new FilesystemStorage(baseDir.resolve(id), fileLockManager);
+        } catch (IOException e) {
+            log.error("Could not initialize fileystem for repository {}", id);
+            throw new RuntimeException(e);
+        }
+        return new MavenRemoteRepository(id, name, storage);
     }
 
     @Override
     public EditableRepositoryGroup createRepositoryGroup(String id, String name) {
-        return new MavenRepositoryGroup(id, name, archivaConfiguration.getRepositoryBaseDir(), fileLockManager);
+        return createRepositoryGroup(id, name, archivaConfiguration.getRepositoryBaseDir());
+    }
+
+    public MavenRepositoryGroup createRepositoryGroup(String id, String name, Path baseDir) {
+        FilesystemStorage storage = null;
+        try {
+            storage = new FilesystemStorage(baseDir.resolve(id), fileLockManager);
+        } catch (IOException e) {
+            log.error("Could not initialize fileystem for repository {}", id);
+            throw new RuntimeException(e);
+        }
+        return new MavenRepositoryGroup(id, name, storage);
     }
 
     private URI getURIFromString(String uriStr) throws RepositoryException {
@@ -121,7 +155,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
 
     @Override
     public ManagedRepository createManagedInstance(ManagedRepositoryConfiguration cfg) throws RepositoryException {
-        MavenManagedRepository repo = new MavenManagedRepository(cfg.getId(), cfg.getName(), archivaConfiguration.getRepositoryBaseDir());
+        MavenManagedRepository repo = createManagedInstance(cfg.getId(), cfg.getName(), Paths.get(cfg.getLocation()).getParent());
         updateManagedInstance(repo, cfg);
         return repo;
     }
@@ -181,7 +215,7 @@ public class MavenRepositoryProvider implements RepositoryProvider {
 
     @Override
     public RemoteRepository createRemoteInstance(RemoteRepositoryConfiguration cfg) throws RepositoryException {
-        MavenRemoteRepository repo = new MavenRemoteRepository(cfg.getId(), cfg.getName(), archivaConfiguration.getRemoteRepositoryBaseDir());
+        MavenRemoteRepository repo = createRemoteInstance(cfg.getId(), cfg.getName(), archivaConfiguration.getRemoteRepositoryBaseDir());
         updateRemoteInstance(repo, cfg);
         return repo;
     }
@@ -249,8 +283,8 @@ public class MavenRepositoryProvider implements RepositoryProvider {
     @Override
     public RepositoryGroup createRepositoryGroup(RepositoryGroupConfiguration configuration) throws RepositoryException {
         Path repositoryGroupBase = getArchivaConfiguration().getRepositoryGroupBaseDir();
-        MavenRepositoryGroup newGrp = new MavenRepositoryGroup(configuration.getId(), configuration.getName(),
-                repositoryGroupBase, fileLockManager);
+        MavenRepositoryGroup newGrp = createRepositoryGroup(configuration.getId(), configuration.getName(),
+                repositoryGroupBase);
         updateRepositoryGroupInstance(newGrp, configuration);
         return newGrp;
     }

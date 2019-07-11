@@ -20,6 +20,7 @@ package org.apache.archiva.repository;
  */
 
 import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.repository.content.RepositoryStorage;
 import org.apache.archiva.repository.features.RepositoryFeature;
 
 import java.net.URI;
@@ -33,7 +34,7 @@ import java.util.Set;
  *
  * Created by Martin Stockhammer on 21.09.17.
  */
-public interface Repository extends RepositoryEventHandler {
+public interface Repository extends RepositoryEventHandler, RepositoryStorage {
 
     /**
      * Return the identifier of the repository. Repository identifier should be unique at least

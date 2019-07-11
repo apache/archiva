@@ -29,6 +29,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.IOException;
 import java.nio.file.Paths;
 
 /**
@@ -43,21 +44,20 @@ public class Maven2RepositoryStorageTest
     RepositoryStorage repositoryStorage;
 
     @Test
-    public void testGetLogicalPath()
-    {
+    public void testGetLogicalPath() throws IOException {
         String href = "/repository/internal/org/apache/maven/someartifact.jar";
         Assert.assertEquals( "/org/apache/maven/someartifact.jar",
-                             repositoryStorage.getFilePath( href, new MavenManagedRepository( "repo01", "repo01", Paths.get("target/repositories")) ) );
+                             repositoryStorage.getFilePath( href, MavenManagedRepository.newLocalInstance( "repo01", "repo01", Paths.get("target/repositories")) ) );
 
         href = "repository/internal/org/apache/maven/someartifact.jar";
         Assert.assertEquals( "/org/apache/maven/someartifact.jar",
-                             repositoryStorage.getFilePath( href, new MavenManagedRepository( "repo01", "repo01", Paths.get("target/repositories") ) ) );
+                             repositoryStorage.getFilePath( href, MavenManagedRepository.newLocalInstance( "repo01", "repo01", Paths.get("target/repositories") ) ) );
 
         href = "repository/internal/org/apache/maven/";
-        Assert.assertEquals( "/org/apache/maven/", repositoryStorage.getFilePath( href, new MavenManagedRepository("repo01", "repo01", Paths.get("target/repositories")) ) );
+        Assert.assertEquals( "/org/apache/maven/", repositoryStorage.getFilePath( href, MavenManagedRepository.newLocalInstance("repo01", "repo01", Paths.get("target/repositories")) ) );
 
         href = "mypath";
-        Assert.assertEquals( "/", repositoryStorage.getFilePath( href, new MavenManagedRepository("repo01", "repo01", Paths.get("target/repositories")) ) );
+        Assert.assertEquals( "/", repositoryStorage.getFilePath( href, MavenManagedRepository.newLocalInstance("repo01", "repo01", Paths.get("target/repositories")) ) );
     }
 
 

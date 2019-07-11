@@ -20,6 +20,8 @@ package org.apache.archiva.repository;
  */
 
 
+import org.apache.archiva.repository.content.RepositoryStorage;
+
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
@@ -44,14 +46,14 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
     private String proxyId;
     private RemoteRepositoryContent content;
 
-    public AbstractRemoteRepository( RepositoryType type, String id, String name , Path repositoryBase)
+    public AbstractRemoteRepository(RepositoryType type, String id, String name , RepositoryStorage storage)
     {
-        super( type, id, name, repositoryBase );
+        super( type, id, name, storage );
     }
 
-    public AbstractRemoteRepository( Locale primaryLocale, RepositoryType type, String id, String name, Path repositoryBase )
+    public AbstractRemoteRepository( Locale primaryLocale, RepositoryType type, String id, String name, RepositoryStorage storage )
     {
-        super( primaryLocale, type, id, name, repositoryBase );
+        super( primaryLocale, type, id, name, storage );
     }
 
     @Override
@@ -145,7 +147,7 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
      */
     @Override
     public Path getLocalPath() {
-        return repositoryBase.resolve(getId());
+        return getStorage().getAsset("").getFilePath();
     }
 
     @Override

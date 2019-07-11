@@ -25,6 +25,8 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
+import org.apache.archiva.repository.content.RepositoryStorage;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.archiva.repository.features.RepositoryFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -42,6 +45,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Implementation of a repository with the necessary fields for a bare repository.
@@ -73,22 +77,22 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
 
     Map<Class<? extends RepositoryFeature<?>>, RepositoryFeature<?>> featureMap = new HashMap<>(  );
 
-    protected Path repositoryBase;
     private ArchivaIndexingContext indexingContext;
+    private RepositoryStorage storage;
 
-    public AbstractRepository(RepositoryType type, String id, String name, Path repositoryBase) {
+    public AbstractRepository(RepositoryType type, String id, String name, RepositoryStorage repositoryStorage) {
         this.id = id;
         this.names.put( primaryLocale, name);
         this.type = type;
-        this.repositoryBase=repositoryBase;
+        this.storage = repositoryStorage;
     }
 
-    public AbstractRepository(Locale primaryLocale, RepositoryType type, String id, String name, Path repositoryBase) {
+    public AbstractRepository(Locale primaryLocale, RepositoryType type, String id, String name, RepositoryStorage repositoryStorage) {
         setPrimaryLocale( primaryLocale );
         this.id = id;
         this.names.put( primaryLocale, name);
         this.type = type;
-        this.repositoryBase=repositoryBase;
+        this.storage = repositoryStorage;
     }
 
     protected void setPrimaryLocale(Locale locale) {
@@ -139,17 +143,18 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
 
     @Override
     public Path getLocalPath() {
-        Path localPath;
-        if (StringUtils.isEmpty(getLocation().getScheme()) || "file".equals(getLocation().getScheme()) ) {
-            localPath = PathUtil.getPathFromUri(getLocation());
-            if (localPath.isAbsolute()) {
-                return localPath;
-            } else {
-                return repositoryBase.resolve(localPath);
-            }
-        } else {
-            return repositoryBase.resolve(getId());
-        }
+        return storage.getAsset("").getFilePath();
+//        Path localPath;
+//        if (StringUtils.isEmpty(getLocation().getScheme()) || "file".equals(getLocation().getScheme()) ) {
+//            localPath = PathUtil.getPathFromUri(getLocation());
+//            if (localPath.isAbsolute()) {
+//                return localPath;
+//            } else {
+//                return repositoryBase.resolve(localPath);
+//            }
+//        } else {
+//            return repositoryBase.resolve(getId());
+//        }
     }
 
     @Override
@@ -324,8 +329,47 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
         this.listeners.clear();
     }
 
-    protected Path getRepositoryBase() {
-        return repositoryBase;
+    @Override
+    public StorageAsset getAsset(String path )
+    {
+        return storage.getAsset(path);
     }
 
+    @Override
+    public StorageAsset addAsset( String path, boolean container )
+    {
+        return storage.addAsset(path, container);
+    }
+
+    @Override
+    public void removeAsset( StorageAsset asset ) throws IOException
+    {
+        storage.removeAsset(asset);
+    }
+
+    @Override
+    public StorageAsset moveAsset( StorageAsset origin, String destination ) throws IOException
+    {
+        return storage.moveAsset(origin, destination);
+    }
+
+    @Override
+    public StorageAsset copyAsset( StorageAsset origin, String destination ) throws IOException
+    {
+        return storage.copyAsset(origin, destination);
+    }
+
+    @Override
+    public void consumeData(StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock ) throws IOException
+    {
+        storage.consumeData(asset, consumerFunction, readLock);
+    }
+
+    protected void setStorage(RepositoryStorage storage) {
+        this.storage = storage;
+    }
+
+    protected RepositoryStorage getStorage() {
+        return storage;
+    }
 }
