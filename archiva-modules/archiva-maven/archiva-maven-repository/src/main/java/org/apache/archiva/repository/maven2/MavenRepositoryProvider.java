@@ -168,14 +168,14 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             throw new RepositoryException("The location entry is not a valid uri: " + cfg.getLocation());
         }
         setBaseConfig(repo, cfg);
-        Path repoDir = repo.getLocalPath();
+        Path repoDir = repo.getAsset("").getFilePath();
         if (!Files.exists(repoDir)) {
             log.debug("Creating repo directory {}", repoDir);
             try {
                 Files.createDirectories(repoDir);
             } catch (IOException e) {
-                log.error("Could not create directory {} for repository {}", repo.getLocalPath(), repo.getId(), e);
-                throw new RepositoryException("Could not create directory for repository " + repo.getLocalPath());
+                log.error("Could not create directory {} for repository {}", repoDir, repo.getId(), e);
+                throw new RepositoryException("Could not create directory for repository " + repoDir);
             }
         }
         repo.setSchedulingDefinition(cfg.getRefreshCronExpression());

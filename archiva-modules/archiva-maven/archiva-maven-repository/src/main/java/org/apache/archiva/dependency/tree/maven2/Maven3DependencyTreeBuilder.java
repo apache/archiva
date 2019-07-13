@@ -233,7 +233,7 @@ public class Maven3DependencyTreeBuilder
         for ( String repoId : repositoryIds )
         {
             ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(repoId);
-            Path repoDir = managedRepo.getLocalPath();
+            Path repoDir = managedRepo.getAsset("").getFilePath();
 
             Path file = pathTranslator.toFile( repoDir, projectArtifact.getGroupId(), projectArtifact.getArtifactId(),
                                                projectArtifact.getBaseVersion(),

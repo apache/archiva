@@ -626,12 +626,12 @@ public class MavenIndexManager implements ArchivaIndexManager {
 
     private StorageAsset getIndexPath( Repository repo) throws IOException {
         IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
-        return getIndexPath( icf.getIndexPath(), repo.getLocalPath(), DEFAULT_INDEX_PATH);
+        return getIndexPath( icf.getIndexPath(), repo.getAsset( "" ).getFilePath(), DEFAULT_INDEX_PATH);
     }
 
     private StorageAsset getPackedIndexPath(Repository repo) throws IOException {
         IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
-        return getIndexPath(icf.getPackedIndexPath(), repo.getLocalPath(), DEFAULT_PACKED_INDEX_PATH);
+        return getIndexPath(icf.getPackedIndexPath(), repo.getAsset( "" ).getFilePath(), DEFAULT_PACKED_INDEX_PATH);
     }
 
     private IndexingContext createRemoteContext(RemoteRepository remoteRepository ) throws IOException
@@ -642,7 +642,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
 
 
         // create remote repository path
-        Path repoDir = remoteRepository.getLocalPath();
+        Path repoDir = remoteRepository.getAsset( "" ).getFilePath();
         if ( !Files.exists( repoDir ) )
         {
             Files.createDirectories( repoDir );
@@ -701,7 +701,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
 
         IndexingContext context;
         // take care first about repository location as can be relative
-        Path repositoryDirectory = repository.getLocalPath();
+        Path repositoryDirectory = repository.getAsset( "" ).getFilePath();
 
         if ( !Files.exists( repositoryDirectory ) )
         {

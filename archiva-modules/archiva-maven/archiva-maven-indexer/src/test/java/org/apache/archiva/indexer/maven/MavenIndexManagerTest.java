@@ -93,7 +93,7 @@ public class MavenIndexManagerTest {
     @Test
     public void pack() throws Exception {
         createTestContext();
-        Path destDir = repository.getLocalPath().resolve("org/apache/archiva/archiva-webapp/1.0");
+        Path destDir = repository.getAsset( "" ).getFilePath().resolve("org/apache/archiva/archiva-webapp/1.0");
         Path srcDir = Paths.get("src/test/maven-search-test-repo/org/apache/archiva/archiva-webapp/1.0");
         org.apache.commons.io.FileUtils.copyDirectory(srcDir.toFile(),destDir.toFile());
         mavenIndexManager.scan(ctx);
@@ -110,7 +110,7 @@ public class MavenIndexManagerTest {
     @Test
     public void scan() throws Exception {
         createTestContext();
-        Path destDir = repository.getLocalPath().resolve("org/apache/archiva/archiva-webapp/1.0");
+        Path destDir = repository.getAsset("").getFilePath().resolve("org/apache/archiva/archiva-webapp/1.0");
         Path srcDir = Paths.get("src/test/maven-search-test-repo/org/apache/archiva/archiva-webapp/1.0");
         org.apache.commons.io.FileUtils.copyDirectory(srcDir.toFile(),destDir.toFile());
         mavenIndexManager.scan(ctx);
@@ -138,7 +138,7 @@ public class MavenIndexManagerTest {
     public void addArtifactsToIndex() throws Exception {
 
         ArchivaIndexingContext ctx = createTestContext();
-        Path destDir = repository.getLocalPath().resolve("org/apache/archiva/archiva-search/1.0");
+        Path destDir = repository.getAsset( "" ).getFilePath().resolve("org/apache/archiva/archiva-search/1.0");
         Path srcDir = Paths.get("src/test/maven-search-test-repo/org/apache/archiva/archiva-search/1.0");
         org.apache.commons.io.FileUtils.copyDirectory(srcDir.toFile(), destDir.toFile());
         List<URI> uriList = new ArrayList<>();
@@ -156,7 +156,7 @@ public class MavenIndexManagerTest {
     @Test
     public void removeArtifactsFromIndex() throws Exception {
         ArchivaIndexingContext ctx = createTestContext();
-        Path destDir = repository.getLocalPath().resolve("org/apache/archiva/archiva-search/1.0");
+        Path destDir = repository.getAsset( "" ).getFilePath().resolve("org/apache/archiva/archiva-search/1.0");
         Path srcDir = Paths.get("src/test/maven-search-test-repo/org/apache/archiva/archiva-search/1.0");
         org.apache.commons.io.FileUtils.copyDirectory(srcDir.toFile(), destDir.toFile());
         List<URI> uriList = new ArrayList<>();

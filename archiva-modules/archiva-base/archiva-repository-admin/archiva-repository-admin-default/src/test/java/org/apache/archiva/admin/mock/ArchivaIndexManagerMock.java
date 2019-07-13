@@ -526,7 +526,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
 
     private StorageAsset getIndexPath( Repository repo) throws IOException {
         IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
-        Path repoDir = repo.getLocalPath();
+        Path repoDir = repo.getAsset("").getFilePath();
         URI indexDir = icf.getIndexPath();
         String indexPath = indexDir.getPath();
         Path indexDirectory = null;
@@ -565,7 +565,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
 
 
         // create remote repository path
-        Path repoDir = remoteRepository.getLocalPath();
+        Path repoDir = remoteRepository.getAsset("").getFilePath();
         if ( !Files.exists( repoDir ) )
         {
             Files.createDirectories( repoDir );
@@ -615,7 +615,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
 
         IndexingContext context;
         // take care first about repository location as can be relative
-        Path repositoryDirectory = repository.getLocalPath();
+        Path repositoryDirectory = repository.getAsset("").getFilePath();
 
         if ( !Files.exists( repositoryDirectory ) )
         {
