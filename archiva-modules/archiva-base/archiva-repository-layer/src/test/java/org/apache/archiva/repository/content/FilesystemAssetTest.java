@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -124,7 +123,7 @@ public class FilesystemAssetTest {
     public void getData() throws IOException {
         FilesystemAsset asset = new FilesystemAsset("/test1234", assetPathFile);
         Files.write(assetPathFile, "abcdef".getBytes("ASCII"));
-        try(InputStream is = asset.getData()) {
+        try(InputStream is = asset.getReadStream()) {
             assertEquals("abcdef", IOUtils.toString(is, "ASCII"));
         }
 
@@ -135,7 +134,7 @@ public class FilesystemAssetTest {
         FilesystemAsset asset = new FilesystemAsset("/test1234", assetPathDir);
         Files.write(assetPathFile, "abcdef".getBytes("ASCII"));
         try {
-            InputStream is = asset.getData();
+            InputStream is = asset.getReadStream();
             assertFalse("Exception expected for data on dir", true);
         } catch (IOException e) {
             // fine
@@ -147,7 +146,7 @@ public class FilesystemAssetTest {
     public void writeData() throws IOException {
         FilesystemAsset asset = new FilesystemAsset("/test1234", assetPathFile);
         Files.write(assetPathFile, "abcdef".getBytes("ASCII"));
-        try(OutputStream os  = asset.writeData(true)) {
+        try(OutputStream os  = asset.getWriteStream(true)) {
             IOUtils.write("test12345", os, "ASCII");
         }
         assertEquals("test12345", IOUtils.toString(assetPathFile.toUri().toURL(), "ASCII"));
@@ -157,7 +156,7 @@ public class FilesystemAssetTest {
     public void writeDataAppend() throws IOException {
         FilesystemAsset asset = new FilesystemAsset("/test1234", assetPathFile);
         Files.write(assetPathFile, "abcdef".getBytes("ASCII"));
-        try(OutputStream os  = asset.writeData(false)) {
+        try(OutputStream os  = asset.getWriteStream(false)) {
             IOUtils.write("test12345", os, "ASCII");
         }
         assertEquals("abcdeftest12345", IOUtils.toString(assetPathFile.toUri().toURL(), "ASCII"));
@@ -168,7 +167,7 @@ public class FilesystemAssetTest {
         FilesystemAsset asset = new FilesystemAsset("/test1234", assetPathDir);
         try {
 
-            OutputStream os = asset.writeData(true);
+            OutputStream os = asset.getWriteStream(true);
             assertTrue("Writing to a directory should throw a IOException", false);
         } catch (IOException e) {
             // Fine
@@ -182,7 +181,7 @@ public class FilesystemAssetTest {
         try(OutputStream os = Files.newOutputStream(dataFile)) {
             IOUtils.write("testkdkdkd", os, "ASCII");
         }
-        asset.storeDataFile(dataFile);
+        asset.replaceDataFromFile(dataFile);
         assertEquals("testkdkdkd", IOUtils.toString(assetPathFile.toUri().toURL(), "ASCII"));
     }
 

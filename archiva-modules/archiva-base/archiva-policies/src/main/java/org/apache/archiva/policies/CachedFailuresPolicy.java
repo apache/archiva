@@ -20,13 +20,13 @@ package org.apache.archiva.policies;
  */
 
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -64,7 +64,7 @@ public class CachedFailuresPolicy
     }
 
     @Override
-    public void applyPolicy( String policySetting, Properties request, Path localFile )
+    public void applyPolicy( String policySetting, Properties request, StorageAsset localFile )
         throws PolicyViolationException, PolicyConfigurationException
     {
         if ( !options.contains( policySetting ) )

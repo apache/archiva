@@ -23,18 +23,9 @@ import org.apache.archiva.model.ArchivaArtifact;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
-import org.apache.archiva.repository.content.RepositoryStorage;
 import org.apache.archiva.repository.content.StorageAsset;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Path;
-import java.time.Instant;
-import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * ManagedRepositoryContent interface for interacting with a managed repository in an abstract way,
@@ -198,7 +189,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param reference the artifact reference to use.
      * @return the relative path to the artifact.
      */
-    Path toFile( ArtifactReference reference );
+    StorageAsset toFile( ArtifactReference reference );
 
     /**
      * Given an {@link ArchivaArtifact}, return the file reference to the artifact.
@@ -206,7 +197,7 @@ public interface ManagedRepositoryContent extends RepositoryContent
      * @param reference the archiva artifact to use.
      * @return the relative path to the artifact.
      */
-    Path toFile( ArchivaArtifact reference );
+    StorageAsset toFile( ArchivaArtifact reference );
 
     /**
      * Given a {@link ProjectReference}, return the path to the metadata for

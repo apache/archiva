@@ -22,6 +22,7 @@ package org.apache.archiva.policies;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.checksum.UpdateStatus;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ public class ChecksumPolicy
     }
 
     @Override
-    public void applyPolicy( String policySetting, Properties request, Path localFile )
+    public void applyPolicy( String policySetting, Properties request, StorageAsset localFile )
         throws PolicyViolationException, PolicyConfigurationException
     {
         if ( "resource".equals( request.getProperty( "filetype" ) ) )
@@ -103,16 +104,16 @@ public class ChecksumPolicy
             return;
         }
 
-        if ( !Files.exists(localFile) )
+        if ( !localFile.exists() )
         {
             // Local File does not exist.
             throw new PolicyViolationException(
-                "Checksum policy failure, local file " + localFile.toAbsolutePath() + " does not exist to check." );
+                "Checksum policy failure, local file " + localFile.getPath() + " does not exist to check." );
         }
 
-        if ( FAIL.equals( policySetting ) )
+        if ( FAIL.equals( policySetting ) && localFile.isFileBased() )
         {
-            ChecksummedFile checksum = new ChecksummedFile( localFile );
+            ChecksummedFile checksum = new ChecksummedFile( localFile.getFilePath() );
             if ( checksum.isValidChecksums( algorithms ) )
             {
                 return;
@@ -133,7 +134,7 @@ public class ChecksumPolicy
 
             try
             {
-                Files.deleteIfExists( localFile );
+                localFile.getStorage().removeAsset( localFile );
             }
             catch ( IOException e )
             {
@@ -141,12 +142,12 @@ public class ChecksumPolicy
             }
             throw new PolicyViolationException(
                 "Checksums do not match, policy set to FAIL, " + "deleting checksum files and local file "
-                    + localFile.toAbsolutePath() + "." );
+                    + localFile.getPath() + "." );
         }
 
-        if ( FIX.equals( policySetting ) )
+        if ( FIX.equals( policySetting ) && localFile.isFileBased())
         {
-            ChecksummedFile checksum = new ChecksummedFile( localFile );
+            ChecksummedFile checksum = new ChecksummedFile( localFile.getFilePath() );
             if ( checksum.fixChecksums( algorithms ).getTotalStatus() != UpdateStatus.ERROR )
             {
                 log.debug( "Checksum policy set to FIX, checksum files have been updated." );
@@ -156,7 +157,7 @@ public class ChecksumPolicy
             {
                 throw new PolicyViolationException(
                     "Checksum policy set to FIX, " + "yet unable to update checksums for local file "
-                        + localFile.toAbsolutePath() + "." );
+                        + localFile.getPath() + "." );
             }
         }
 

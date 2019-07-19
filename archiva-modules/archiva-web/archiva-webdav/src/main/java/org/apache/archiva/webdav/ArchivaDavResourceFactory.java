@@ -24,10 +24,8 @@ import org.apache.archiva.admin.model.remote.RemoteRepositoryAdmin;
 import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksumUtil;
-import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.checksum.StreamingChecksum;
 import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.archiva.common.plexusbridge.PlexusSisuBridge;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.common.utils.VersionUtil;
@@ -68,7 +66,6 @@ import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryRequestInfo;
 import org.apache.archiva.repository.content.FilesystemAsset;
-import org.apache.archiva.repository.content.FilesystemStorage;
 import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.repository.features.IndexCreationFeature;
@@ -94,7 +91,6 @@ import org.apache.jackrabbit.webdav.DavServletResponse;
 import org.apache.jackrabbit.webdav.DavSession;
 import org.apache.jackrabbit.webdav.lock.LockManager;
 import org.apache.jackrabbit.webdav.lock.SimpleLockManager;
-import org.codehaus.plexus.digest.Digester;
 import org.codehaus.plexus.digest.DigesterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1254,7 +1250,7 @@ public class ArchivaDavResourceFactory
         throws RepositoryMetadataException, DigesterException, IOException
     {
         StorageAsset asset = repoGroup.addAsset( outputFilename, false );
-        OutputStream stream = asset.writeData( true );
+        OutputStream stream = asset.getWriteStream( true );
         OutputStreamWriter sw = new OutputStreamWriter( stream, "UTF-8" );
         RepositoryMetadataWriter.write( mergedMetadata, sw );
 
@@ -1269,7 +1265,7 @@ public class ArchivaDavResourceFactory
             String ext = algo.getDefaultExtension( );
             try
             {
-                return repo.getAsset( path + "." + ext ).writeData( true );
+                return repo.getAsset( path + "." + ext ).getWriteStream( true );
             }
             catch ( IOException e )
             {
@@ -1279,7 +1275,7 @@ public class ArchivaDavResourceFactory
         } ).filter( Objects::nonNull ).collect( Collectors.toList( ) );
         try
         {
-            StreamingChecksum.updateChecksums( repo.getAsset(path).getData(), algorithms, outStreams );
+            StreamingChecksum.updateChecksums( repo.getAsset(path).getReadStream(), algorithms, outStreams );
         }
         catch ( IOException e )
         {

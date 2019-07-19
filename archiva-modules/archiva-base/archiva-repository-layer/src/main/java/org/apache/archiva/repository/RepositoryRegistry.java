@@ -26,6 +26,8 @@ import org.apache.archiva.indexer.IndexCreationFailedException;
 import org.apache.archiva.indexer.IndexManagerFactory;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.redback.components.registry.RegistryException;
+import org.apache.archiva.repository.content.RepositoryStorage;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.archiva.repository.features.IndexCreationEvent;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
@@ -1378,4 +1380,5 @@ public class RepositoryRegistry implements ConfigurationListener, RepositoryEven
             listener.raise(event);
         }
     }
+
 }

@@ -336,7 +336,7 @@ public class ArchivaDavResource
                 }
                 StorageAsset member = repositoryStorage.addAsset( newPath, false );
                 member.create();
-                member.storeDataFile( tempFile );
+                member.replaceDataFromFile( tempFile );
             }
             catch ( IOException e )
             {

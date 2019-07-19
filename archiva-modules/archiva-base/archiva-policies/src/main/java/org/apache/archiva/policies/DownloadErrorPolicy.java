@@ -19,7 +19,8 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
-import java.nio.file.Path;
+import org.apache.archiva.repository.content.StorageAsset;
+
 import java.util.Map;
 import java.util.Properties;
 
@@ -43,7 +44,7 @@ public interface DownloadErrorPolicy
      * @return whether to process the exception or not
      * @throws PolicyConfigurationException if the policy is improperly configured
      */
-    boolean applyPolicy( String policySetting, Properties request, Path localFile, Exception exception,
+    boolean applyPolicy( String policySetting, Properties request, StorageAsset localFile, Exception exception,
                          Map<String, Exception> previousExceptions )
         throws PolicyConfigurationException;
 }

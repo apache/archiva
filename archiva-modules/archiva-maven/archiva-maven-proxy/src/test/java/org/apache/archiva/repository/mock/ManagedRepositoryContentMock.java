@@ -27,19 +27,14 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.*;
-import org.apache.archiva.repository.content.PathParser;
 import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -334,13 +329,13 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
 
 
     @Override
-    public Path toFile( ArtifactReference reference )
+    public StorageAsset toFile( ArtifactReference reference )
     {
         return Paths.get(getRepoRoot(), refs.get(reference));
     }
 
     @Override
-    public Path toFile( ArchivaArtifact reference )
+    public StorageAsset toFile( ArchivaArtifact reference )
     {
         return null;
     }

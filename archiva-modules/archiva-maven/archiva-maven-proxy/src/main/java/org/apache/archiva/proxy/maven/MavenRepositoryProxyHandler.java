@@ -28,6 +28,7 @@ import org.apache.archiva.proxy.ProxyException;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
@@ -101,9 +102,8 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
     /**
      * @param connector
      * @param remoteRepository
-     * @param tmpMd5
-     * @param tmpSha1
      * @param tmpResource
+     * @param checksumFiles
      * @param url
      * @param remotePath
      * @param resource
@@ -112,9 +112,9 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
      * @throws ProxyException
      * @throws NotModifiedException
      */
-    protected void transferResources(ProxyConnector connector, RemoteRepositoryContent remoteRepository, Path tmpMd5,
-                                     Path tmpSha1, Path tmpResource, String url, String remotePath, Path resource,
-                                     Path workingDirectory, ManagedRepositoryContent repository)
+    protected void transferResources( ProxyConnector connector, RemoteRepositoryContent remoteRepository,
+                                      Path tmpResource, Path[] checksumFiles, String url, String remotePath, StorageAsset resource,
+                                      Path workingDirectory, ManagedRepositoryContent repository )
             throws ProxyException, NotModifiedException {
         Wagon wagon = null;
         try {
@@ -146,16 +146,17 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
 
             boolean connected = connectToRepository(connector, wagon, remoteRepository);
             if (connected) {
-                transferArtifact(wagon, remoteRepository, remotePath, repository, resource, workingDirectory,
+                transferArtifact(wagon, remoteRepository, remotePath, repository, resource.getFilePath(), workingDirectory,
                         tmpResource);
 
                 // TODO: these should be used to validate the download based on the policies, not always downloaded
                 // to
                 // save on connections since md5 is rarely used
-                transferChecksum(wagon, remoteRepository, remotePath, repository, resource, workingDirectory, ".sha1",
-                        tmpSha1);
-                transferChecksum(wagon, remoteRepository, remotePath, repository, resource, workingDirectory, ".md5",
-                        tmpMd5);
+                for (int i=0; i<checksumFiles.length; i++) {
+                    String ext = "."+StringUtils.substringAfterLast( checksumFiles[i].getFileName( ).toString( ), "." );
+                    transferChecksum(wagon, remoteRepository, remotePath, repository, resource.getFilePath(), ext,
+                        checksumFiles[i]);
+                }
             }
         } catch (NotFoundException e) {
             urlFailureCache.cacheFailure(url);
@@ -196,13 +197,12 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
      * @param remotePath       the remote path to the resource to get.
      * @param repository       the managed repository that will hold the file
      * @param resource         the local file that should contain the downloaded contents
-     * @param tmpDirectory     the temporary directory to download to
      * @param ext              the type of checksum to transfer (example: ".md5" or ".sha1")
      * @throws ProxyException if copying the downloaded file into place did not succeed.
      */
-    protected void transferChecksum(Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
-                                    ManagedRepositoryContent repository, Path resource, Path tmpDirectory, String ext,
-                                    Path destFile)
+    protected void transferChecksum( Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
+                                     ManagedRepositoryContent repository, Path resource, String ext,
+                                     Path destFile )
             throws ProxyException {
         String url = remoteRepository.getURL().getUrl() + remotePath + ext;
 

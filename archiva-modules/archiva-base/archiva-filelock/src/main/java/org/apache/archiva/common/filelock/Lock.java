@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Olivier Lamy
  * @since 2.0.0
  */
-public class Lock
+public class Lock implements Closeable
 {
     private Path file;
 
@@ -104,7 +104,7 @@ public class Lock
         return this.fileClients.remove( thread ) != null;
     }
 
-    protected void close()
+    public void close()
         throws IOException
     {
         IOException ioException = null;

@@ -20,6 +20,8 @@ package org.apache.archiva.proxy.model;
  */
 
 
+import org.apache.archiva.repository.content.StorageAsset;
+
 import java.nio.file.Path;
 
 /**
@@ -31,18 +33,18 @@ public class ProxyFetchResult
 {
 
     //The file returned
-    private Path file;
+    private StorageAsset file;
 
     //Was the local file modified by the fetch?
     private boolean modified;
 
-    public ProxyFetchResult( Path file, boolean modified )
+    public ProxyFetchResult( StorageAsset file, boolean modified )
     {
         this.file = file;
         this.modified = modified;
     }
 
-    public Path getFile()
+    public StorageAsset getFile()
     {
         return file;
     }

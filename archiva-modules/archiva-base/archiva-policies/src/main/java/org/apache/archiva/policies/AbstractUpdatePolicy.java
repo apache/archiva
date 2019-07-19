@@ -20,13 +20,13 @@ package org.apache.archiva.policies;
  */
 
 import org.apache.archiva.common.utils.VersionUtil;
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -106,7 +106,7 @@ public abstract class AbstractUpdatePolicy
     }
 
     @Override
-    public void applyPolicy( String policySetting, Properties request, Path localFile )
+    public void applyPolicy( String policySetting, Properties request, StorageAsset localFile )
         throws PolicyViolationException, PolicyConfigurationException
     {
         if ( !StringUtils.equals( request.getProperty( "filetype" ), "artifact" ) )
@@ -157,7 +157,7 @@ public abstract class AbstractUpdatePolicy
             throw new PolicyViolationException( "NO to update, " + getUpdateMode() + " policy set to NEVER." );
         }
 
-        if ( !Files.exists(localFile) )
+        if ( !localFile.exists() )
         {
             // No file means it's ok.
             log.debug( "OK to update {}, local file does not exist.", getUpdateMode() );
@@ -176,15 +176,7 @@ public abstract class AbstractUpdatePolicy
             Calendar cal = Calendar.getInstance();
             cal.add( Calendar.DAY_OF_MONTH, -1 );
             Calendar fileCal = Calendar.getInstance();
-            try
-            {
-                fileCal.setTimeInMillis( Files.getLastModifiedTime(localFile).toMillis() );
-            }
-            catch ( IOException e )
-            {
-                fileCal.setTimeInMillis( new Date().getTime() );
-                log.error("Could not read modification time of {}", localFile);
-            }
+            fileCal.setTimeInMillis( localFile.getModificationTime().toEpochMilli() );
 
             if ( cal.after( fileCal ) )
             {
@@ -203,15 +195,7 @@ public abstract class AbstractUpdatePolicy
             Calendar cal = Calendar.getInstance();
             cal.add( Calendar.HOUR, -1 );
             Calendar fileCal = Calendar.getInstance();
-            try
-            {
-                fileCal.setTimeInMillis( Files.getLastModifiedTime(localFile).toMillis() );
-            }
-            catch ( IOException e )
-            {
-                fileCal.setTimeInMillis( new Date().getTime() );
-                log.error("Could not read modification time of {}", localFile);
-            }
+            fileCal.setTimeInMillis( localFile.getModificationTime().toEpochMilli());
 
             if ( cal.after( fileCal ) )
             {

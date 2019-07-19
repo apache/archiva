@@ -35,7 +35,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
+import java.nio.file.CopyOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -348,15 +352,27 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
     }
 
     @Override
-    public StorageAsset moveAsset( StorageAsset origin, String destination ) throws IOException
+    public StorageAsset moveAsset( StorageAsset origin, String destination, CopyOption... copyOptions ) throws IOException
     {
         return storage.moveAsset(origin, destination);
     }
 
     @Override
-    public StorageAsset copyAsset( StorageAsset origin, String destination ) throws IOException
+    public void moveAsset( StorageAsset origin, StorageAsset destination, CopyOption... copyOptions ) throws IOException
+    {
+        storage.moveAsset( origin, destination, copyOptions );
+    }
+
+    @Override
+    public StorageAsset copyAsset( StorageAsset origin, String destination, CopyOption... copyOptions ) throws IOException
     {
         return storage.copyAsset(origin, destination);
+    }
+
+    @Override
+    public void copyAsset( StorageAsset origin, StorageAsset destination, CopyOption... copyOptions ) throws IOException
+    {
+        storage.copyAsset( origin, destination, copyOptions);
     }
 
     @Override
@@ -365,7 +381,25 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
         storage.consumeData(asset, consumerFunction, readLock);
     }
 
-    protected void setStorage(RepositoryStorage storage) {
+    @Override
+    public void consumeDataFromChannel( StorageAsset asset, Consumer<ReadableByteChannel> consumerFunction, boolean readLock ) throws IOException
+    {
+        storage.consumeDataFromChannel( asset, consumerFunction, readLock );
+    }
+
+    @Override
+    public void writeData( StorageAsset asset, Consumer<OutputStream> consumerFunction, boolean writeLock ) throws IOException
+    {
+        storage.writeData( asset, consumerFunction, writeLock );
+    }
+
+    @Override
+    public void writeDataToChannel( StorageAsset asset, Consumer<WritableByteChannel> consumerFunction, boolean writeLock ) throws IOException
+    {
+        storage.writeDataToChannel( asset, consumerFunction, writeLock );
+    }
+
+    protected void setStorage( RepositoryStorage storage) {
         this.storage = storage;
     }
 

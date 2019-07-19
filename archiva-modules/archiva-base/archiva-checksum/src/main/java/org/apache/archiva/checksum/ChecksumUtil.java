@@ -97,4 +97,5 @@ public class ChecksumUtil {
     public static List<Checksum> newChecksums(List<ChecksumAlgorithm> checksumAlgorithms) {
         return checksumAlgorithms.stream().map( a -> new Checksum(a)).collect(Collectors.toList());
     }
+
 }

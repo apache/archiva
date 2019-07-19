@@ -31,11 +31,7 @@ import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.content.StorageAsset;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * @author Martin Stockhammer <martin_s@apache.org>
@@ -136,13 +132,13 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     }
 
     @Override
-    public Path toFile( ArtifactReference reference )
+    public StorageAsset toFile( ArtifactReference reference )
     {
         return null;
     }
 
     @Override
-    public Path toFile( ArchivaArtifact reference )
+    public StorageAsset toFile( ArchivaArtifact reference )
     {
         return null;
     }

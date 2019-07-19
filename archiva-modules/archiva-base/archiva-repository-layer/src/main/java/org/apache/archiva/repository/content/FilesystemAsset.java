@@ -26,6 +26,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.time.Instant;
@@ -85,15 +88,20 @@ public class FilesystemAsset implements StorageAsset {
     boolean supportsAcl = false;
     boolean supportsPosix = false;
     final boolean setPermissionsForNew;
+    final RepositoryStorage storage;
 
     boolean directoryHint = false;
 
+    private static final OpenOption[] REPLACE_OPTIONS = new OpenOption[]{StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE};
+    private static final OpenOption[] APPEND_OPTIONS = new OpenOption[]{StandardOpenOption.APPEND};
 
-    FilesystemAsset(String path, Path assetPath, Path basePath) {
+
+    FilesystemAsset(RepositoryStorage storage, String path, Path assetPath, Path basePath) {
         this.assetPath = assetPath;
         this.relativePath = path;
         this.setPermissionsForNew=false;
         this.basePath = basePath;
+        this.storage = storage;
         init();
     }
 
@@ -104,11 +112,12 @@ public class FilesystemAsset implements StorageAsset {
      * @param path The logical path for the asset relative to the repository.
      * @param assetPath The asset path.
      */
-    public FilesystemAsset(String path, Path assetPath) {
+    public FilesystemAsset(RepositoryStorage storage, String path, Path assetPath) {
         this.assetPath = assetPath;
         this.relativePath = path;
         this.setPermissionsForNew = false;
         this.basePath = null;
+        this.storage = storage;
         init();
     }
 
@@ -121,12 +130,13 @@ public class FilesystemAsset implements StorageAsset {
      * @param directory This is only relevant, if the represented file or directory does not exist yet and
      *                  is a hint.
      */
-    public FilesystemAsset(String path, Path assetPath, Path basePath, boolean directory) {
+    public FilesystemAsset(RepositoryStorage storage, String path, Path assetPath, Path basePath, boolean directory) {
         this.assetPath = assetPath;
         this.relativePath = path;
         this.directoryHint = directory;
         this.setPermissionsForNew = false;
         this.basePath = basePath;
+        this.storage = storage;
         init();
     }
 
@@ -139,12 +149,13 @@ public class FilesystemAsset implements StorageAsset {
      * @param directory This is only relevant, if the represented file or directory does not exist yet and
      *                  is a hint.
      */
-    public FilesystemAsset(String path, Path assetPath, Path basePath, boolean directory, boolean setPermissionsForNew) {
+    public FilesystemAsset(RepositoryStorage storage, String path, Path assetPath, Path basePath, boolean directory, boolean setPermissionsForNew) {
         this.assetPath = assetPath;
         this.relativePath = path;
         this.directoryHint = directory;
         this.setPermissionsForNew = setPermissionsForNew;
         this.basePath = basePath;
+        this.storage = storage;
         init();
     }
 
@@ -191,6 +202,12 @@ public class FilesystemAsset implements StorageAsset {
 
 
     @Override
+    public RepositoryStorage getStorage( )
+    {
+        return storage;
+    }
+
+    @Override
     public String getPath() {
         return relativePath;
     }
@@ -233,7 +250,7 @@ public class FilesystemAsset implements StorageAsset {
     @Override
     public List<StorageAsset> list() {
         try {
-            return Files.list(assetPath).map(p -> new FilesystemAsset(relativePath + "/" + p.getFileName().toString(), assetPath.resolve(p)))
+            return Files.list(assetPath).map(p -> new FilesystemAsset(storage, relativePath + "/" + p.getFileName().toString(), assetPath.resolve(p)))
                     .collect(Collectors.toList());
         } catch (IOException e) {
             return Collections.EMPTY_LIST;
@@ -262,7 +279,7 @@ public class FilesystemAsset implements StorageAsset {
      * @throws IOException
      */
     @Override
-    public InputStream getData() throws IOException {
+    public InputStream getReadStream() throws IOException {
         if (isContainer()) {
             throw new IOException("Can not create input stream for container");
         }
@@ -270,13 +287,18 @@ public class FilesystemAsset implements StorageAsset {
     }
 
     @Override
-    public OutputStream writeData(boolean replace) throws IOException {
-        OpenOption[] options;
-        if (replace) {
-            options = new OpenOption[]{StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE};
-        } else {
-            options = new OpenOption[]{StandardOpenOption.APPEND};
-        }
+    public ReadableByteChannel getReadChannel( ) throws IOException
+    {
+        return FileChannel.open( assetPath, StandardOpenOption.READ );
+    }
+
+    private OpenOption[] getOpenOptions(boolean replace) {
+        return replace ? REPLACE_OPTIONS : APPEND_OPTIONS;
+    }
+
+    @Override
+    public OutputStream getWriteStream( boolean replace) throws IOException {
+        OpenOption[] options = getOpenOptions( replace );
         if (!Files.exists( assetPath )) {
             create();
         }
@@ -284,7 +306,14 @@ public class FilesystemAsset implements StorageAsset {
     }
 
     @Override
-    public boolean storeDataFile(Path newData) throws IOException {
+    public WritableByteChannel getWriteChannel( boolean replace ) throws IOException
+    {
+        OpenOption[] options = getOpenOptions( replace );
+        return FileChannel.open( assetPath, options );
+    }
+
+    @Override
+    public boolean replaceDataFromFile( Path newData) throws IOException {
         final boolean createNew = !Files.exists(assetPath);
         Path backup = null;
         if (!createNew) {
@@ -362,6 +391,12 @@ public class FilesystemAsset implements StorageAsset {
     }
 
     @Override
+    public boolean isFileBased( )
+    {
+        return true;
+    }
+
+    @Override
     public boolean hasParent( )
     {
         if (basePath!=null && assetPath.equals(basePath)) {
@@ -382,7 +417,7 @@ public class FilesystemAsset implements StorageAsset {
         }
         String relativeParent = StringUtils.substringBeforeLast( relativePath,"/");
         if (parentPath!=null) {
-            return new FilesystemAsset( relativeParent, parentPath, basePath, true, setPermissionsForNew );
+            return new FilesystemAsset(storage, relativeParent, parentPath, basePath, true, setPermissionsForNew );
         } else {
             return null;
         }

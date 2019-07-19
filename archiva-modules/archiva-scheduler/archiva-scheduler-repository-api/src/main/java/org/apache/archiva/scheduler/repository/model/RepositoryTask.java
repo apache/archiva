@@ -1,6 +1,7 @@
 package org.apache.archiva.scheduler.repository.model;
 
 import org.apache.archiva.redback.components.taskqueue.Task;
+import org.apache.archiva.repository.content.StorageAsset;
 
 import java.nio.file.Path;
 
@@ -33,7 +34,7 @@ public class RepositoryTask
 {
     private String repositoryId;
 
-    private Path resourceFile;
+    private StorageAsset resourceFile;
 
     private boolean updateRelatedArtifacts;
 
@@ -81,12 +82,12 @@ public class RepositoryTask
         return 0;
     }
 
-    public Path getResourceFile()
+    public StorageAsset getResourceFile()
     {
         return resourceFile;
     }
 
-    public void setResourceFile( Path resourceFile )
+    public void setResourceFile( StorageAsset resourceFile )
     {
         this.resourceFile = resourceFile;
     }

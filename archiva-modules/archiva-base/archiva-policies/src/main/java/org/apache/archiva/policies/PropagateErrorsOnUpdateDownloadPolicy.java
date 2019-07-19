@@ -19,11 +19,11 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
+import org.apache.archiva.repository.content.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +55,7 @@ public class PropagateErrorsOnUpdateDownloadPolicy
     }
 
     @Override
-    public boolean applyPolicy( String policySetting, Properties request, Path localFile, Exception exception,
+    public boolean applyPolicy( String policySetting, Properties request, StorageAsset localFile, Exception exception,
                                 Map<String, Exception> previousExceptions )
         throws PolicyConfigurationException
     {
@@ -76,7 +76,7 @@ public class PropagateErrorsOnUpdateDownloadPolicy
         if ( NOT_PRESENT.equals( policySetting ) )
         {
             // cancel the exception if the file exists
-            return !Files.exists(localFile);
+            return !localFile.exists();
         }
 
         throw new PolicyConfigurationException(

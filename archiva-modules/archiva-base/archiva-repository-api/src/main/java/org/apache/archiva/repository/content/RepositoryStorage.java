@@ -21,6 +21,10 @@ package org.apache.archiva.repository.content;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
+import java.nio.file.CopyOption;
 import java.util.function.Consumer;
 
 /**
@@ -47,12 +51,41 @@ public interface RepositoryStorage {
     /**
      * Consumes the data and sets a lock for the file during the operation.
      *
-     * @param asset
-     * @param consumerFunction
-     * @param readLock
+     * @param asset The asset from which the data is consumed.
+     * @param consumerFunction The consumer that reads the data
+     * @param readLock If true, a read lock is acquired on the asset.
      * @throws IOException
      */
     void consumeData(StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock) throws IOException;
+
+    /**
+     * Consumes the data and sets a lock for the file during the operation.
+     *
+     * @param asset The asset from which the data is consumed.
+     * @param consumerFunction The consumer that reads the data
+     * @param readLock If true, a read lock is acquired on the asset.
+     * @throws IOException
+     */
+    void consumeDataFromChannel( StorageAsset asset, Consumer<ReadableByteChannel> consumerFunction, boolean readLock) throws IOException;
+
+    /**
+     * Writes data to the asset using a write lock.
+     *
+     * @param asset The asset to which the data is written.
+     * @param consumerFunction The function that provides the data.
+     * @param writeLock If true, a write lock is acquired on the destination.
+     */
+    void writeData( StorageAsset asset, Consumer<OutputStream> consumerFunction, boolean writeLock) throws IOException;;
+
+    /**
+     * Writes data and sets a lock during the operation.
+     *
+     * @param asset The asset to which the data is written.
+     * @param consumerFunction The function that provides the data.
+     * @param writeLock If true, a write lock is acquired on the destination.
+     * @throws IOException
+     */
+    void writeDataToChannel( StorageAsset asset, Consumer<WritableByteChannel> consumerFunction, boolean writeLock) throws IOException;
 
     /**
      * Adds a new asset to the underlying storage.
@@ -73,19 +106,43 @@ public interface RepositoryStorage {
     /**
      * Moves the asset to the given location and returns the asset object for the destination.
      *
-     * @param origin
-     * @param destination
-     * @return
+     * @param origin The original asset
+     * @param destination The destination path pointing to the new asset.
+     * @param copyOptions The copy options.
+     * @return The asset representation of the moved object.
      */
-    StorageAsset moveAsset(StorageAsset origin, String destination) throws IOException;
+    StorageAsset moveAsset(StorageAsset origin, String destination, CopyOption... copyOptions) throws IOException;
+
+    /**
+     * Moves the asset to the new path.
+     *
+     * @param origin The original asset
+     * @param destination The destination asset.
+     * @param copyOptions The copy options (e.g. {@link java.nio.file.StandardCopyOption#REPLACE_EXISTING}
+     * @throws IOException If it was not possible to copy the asset.
+     */
+    void moveAsset(StorageAsset origin, StorageAsset destination, CopyOption... copyOptions) throws IOException;
 
     /**
      * Copies the given asset to the new destination.
      *
-     * @param origin
-     * @param destination
-     * @return
-     * @throws IOException
+     * @param origin The original asset
+     * @param destination The path to the new asset
+     * @param copyOptions The copy options, e.g. (e.g. {@link java.nio.file.StandardCopyOption#REPLACE_EXISTING}
+     * @return The asset representation of the copied object
+     * @throws IOException If it was not possible to copy the asset
      */
-    StorageAsset copyAsset(StorageAsset origin, String destination) throws IOException;
+    StorageAsset copyAsset(StorageAsset origin, String destination, CopyOption... copyOptions) throws IOException;
+
+    /**
+     * Copies the given asset to the new destination.
+     *
+     * @param origin The original asset
+     * @param destination The path to the new asset
+     * @param copyOptions The copy options, e.g. (e.g. {@link java.nio.file.StandardCopyOption#REPLACE_EXISTING}
+     * @throws IOException If it was not possible to copy the asset
+     */
+    void copyAsset( StorageAsset origin, StorageAsset destination, CopyOption... copyOptions) throws IOException;
+
+
 }

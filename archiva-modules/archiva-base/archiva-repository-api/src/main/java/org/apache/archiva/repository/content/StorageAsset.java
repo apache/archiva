@@ -22,6 +22,8 @@ package org.apache.archiva.repository.content;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
@@ -39,6 +41,13 @@ import java.util.function.Consumer;
  */
 public interface StorageAsset
 {
+
+    /**
+     * Returns the storage this asset belongs to.
+     * @return
+     */
+    RepositoryStorage getStorage();
+
     /**
      * Returns the complete path relative to the repository to the given asset.
      *
@@ -68,7 +77,7 @@ public interface StorageAsset
     /**
      * List the child assets.
      *
-     * @return The list of children. If there are no children, a empty list will be returned.
+     * @return The list of children. If there are no children and if the asset is not a container, a empty list will be returned.
      */
     List<StorageAsset> list();
 
@@ -82,22 +91,41 @@ public interface StorageAsset
     /**
      * Returns the input stream of the artifact content.
      * It will throw a IOException, if the stream could not be created.
-     * Implementations should create a new stream instance for each invocation.
+     * Implementations should create a new stream instance for each invocation and make sure that the
+     * stream is proper closed after usage.
      *
      * @return The InputStream representing the content of the artifact.
      * @throws IOException
      */
-    InputStream getData() throws IOException;
+    InputStream getReadStream() throws IOException;
+
+    /**
+     * Returns a NIO representation of the data.
+     *
+     * @return A channel to the asset data.
+     * @throws IOException
+     */
+    ReadableByteChannel getReadChannel() throws IOException;
 
     /**
      *
-     * Returns an output stream where you can write data to the asset.
+     * Returns an output stream where you can write data to the asset. The operation is not locked or synchronized.
+     * User of this method have to make sure, that the stream is proper closed after usage.
      *
      * @param replace If true, the original data will be replaced, otherwise the data will be appended.
      * @return The OutputStream where the data can be written.
      * @throws IOException
      */
-    OutputStream writeData( boolean replace) throws IOException;
+    OutputStream getWriteStream( boolean replace) throws IOException;
+
+    /**
+     * Returns a NIO representation of the asset where you can write the data.
+     *
+     * @param replace True, if the content should be replaced by the data written to the stream.
+     * @return The Channel for writing the data.
+     * @throws IOException
+     */
+    WritableByteChannel getWriteChannel( boolean replace) throws IOException;
 
     /**
      * Replaces the content. The implementation may do an atomic move operation, or keep a backup. If
@@ -107,7 +135,7 @@ public interface StorageAsset
      *
      * @param newData Replaces the data by the content of the given file.
      */
-    boolean storeDataFile( Path newData) throws IOException;
+    boolean replaceDataFromFile( Path newData) throws IOException;
 
     /**
      * Returns true, if the asset exists.
@@ -123,11 +151,20 @@ public interface StorageAsset
 
     /**
      * Returns the real path to the asset, if it exist. Not all implementations may implement this method.
+     * The method throws {@link UnsupportedOperationException}, if and only if {@link #isFileBased()} returns false.
      *
      * @return The filesystem path to the asset.
-     * @throws UnsupportedOperationException
+     * @throws UnsupportedOperationException If the underlying storage is not file based.
      */
     Path getFilePath() throws UnsupportedOperationException;
+
+    /**
+     * Returns true, if the asset can return a file path for the given asset. If this is true, the  {@link #getFilePath()}
+     * will not throw a {@link UnsupportedOperationException}
+     *
+     * @return
+     */
+    boolean isFileBased();
 
     /**
      * Returns true, if there is a parent to this asset.

@@ -19,7 +19,8 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
-import java.nio.file.Path;
+import org.apache.archiva.repository.content.StorageAsset;
+
 import java.util.Properties;
 
 /**
@@ -37,9 +38,9 @@ public interface DownloadPolicy
      * @param policySetting the policy setting.
      * @param request the list of request properties that the policy might use.
      * @param localFile
-     * 
+     *
      * @throws PolicyViolationException if the policy has been violated.
      */
-    void applyPolicy( String policySetting, Properties request, Path localFile )
+    void applyPolicy( String policySetting, Properties request, StorageAsset localFile )
         throws PolicyViolationException, PolicyConfigurationException;
 }

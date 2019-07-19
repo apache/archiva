@@ -30,9 +30,16 @@ import org.slf4j.LoggerFactory;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.function.Consumer;
 
 /**
@@ -100,6 +107,85 @@ public class FilesystemStorage implements RepositoryStorage {
 
     }
 
+    @Override
+    public void consumeDataFromChannel( StorageAsset asset, Consumer<ReadableByteChannel> consumerFunction, boolean readLock ) throws IOException
+    {
+        final Path path = asset.getFilePath();
+        try {
+            if (readLock) {
+                consumeDataFromChannelLocked( path, consumerFunction );
+            } else
+            {
+                try ( FileChannel is = FileChannel.open( path, StandardOpenOption.READ ) )
+                {
+                    consumerFunction.accept( is );
+                }
+                catch ( IOException e )
+                {
+                    log.error("Could not read the input stream from file {}", path);
+                    throw e;
+                }
+            }
+        } catch (RuntimeException e)
+        {
+            log.error( "Runtime exception during data consume from artifact {}. Error: {}", path, e.getMessage() );
+            throw new IOException( e );
+        }
+    }
+
+    @Override
+    public void writeData( StorageAsset asset, Consumer<OutputStream> consumerFunction, boolean writeLock ) throws IOException
+    {
+        final Path path = asset.getFilePath();
+        try {
+            if (writeLock) {
+                writeDataLocked( path, consumerFunction );
+            } else
+            {
+                try ( OutputStream is = Files.newOutputStream( path ) )
+                {
+                    consumerFunction.accept( is );
+                }
+                catch ( IOException e )
+                {
+                    log.error("Could not write the output stream to file {}", path);
+                    throw e;
+                }
+            }
+        } catch (RuntimeException e)
+        {
+            log.error( "Runtime exception during data consume from artifact {}. Error: {}", path, e.getMessage() );
+            throw new IOException( e );
+        }
+
+    }
+
+    @Override
+    public void writeDataToChannel( StorageAsset asset, Consumer<WritableByteChannel> consumerFunction, boolean writeLock ) throws IOException
+    {
+        final Path path = asset.getFilePath();
+        try {
+            if (writeLock) {
+                writeDataToChannelLocked( path, consumerFunction );
+            } else
+            {
+                try ( FileChannel os = FileChannel.open( path, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE ))
+                {
+                    consumerFunction.accept( os );
+                }
+                catch ( IOException e )
+                {
+                    log.error("Could not write the data to file {}", path);
+                    throw e;
+                }
+            }
+        } catch (RuntimeException e)
+        {
+            log.error( "Runtime exception during data consume from artifact {}. Error: {}", path, e.getMessage() );
+            throw new IOException( e );
+        }
+    }
+
     private void consumeDataLocked( Path file, Consumer<InputStream> consumerFunction) throws IOException
     {
 
@@ -127,12 +213,93 @@ public class FilesystemStorage implements RepositoryStorage {
         }
     }
 
+    private void consumeDataFromChannelLocked( Path file, Consumer<ReadableByteChannel> consumerFunction) throws IOException
+    {
+
+        final Lock lock;
+        try
+        {
+            lock = fileLockManager.readFileLock( file );
+            try ( FileChannel is = FileChannel.open( lock.getFile( ), StandardOpenOption.READ ))
+            {
+                consumerFunction.accept( is );
+            }
+            catch ( IOException e )
+            {
+                log.error("Could not read the input stream from file {}", file);
+                throw e;
+            } finally
+            {
+                fileLockManager.release( lock );
+            }
+        }
+        catch ( FileLockException | FileNotFoundException | FileLockTimeoutException e)
+        {
+            log.error("Locking error on file {}", file);
+            throw new IOException(e);
+        }
+    }
+
+
+    private void writeDataLocked( Path file, Consumer<OutputStream> consumerFunction) throws IOException
+    {
+
+        final Lock lock;
+        try
+        {
+            lock = fileLockManager.writeFileLock( file );
+            try ( OutputStream is = Files.newOutputStream( lock.getFile()))
+            {
+                consumerFunction.accept( is );
+            }
+            catch ( IOException e )
+            {
+                log.error("Could not write the output stream to file {}", file);
+                throw e;
+            } finally
+            {
+                fileLockManager.release( lock );
+            }
+        }
+        catch ( FileLockException | FileNotFoundException | FileLockTimeoutException e)
+        {
+            log.error("Locking error on file {}", file);
+            throw new IOException(e);
+        }
+    }
+
+    private void writeDataToChannelLocked( Path file, Consumer<WritableByteChannel> consumerFunction) throws IOException
+    {
+
+        final Lock lock;
+        try
+        {
+            lock = fileLockManager.writeFileLock( file );
+            try ( FileChannel is = FileChannel.open( lock.getFile( ), StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE ))
+            {
+                consumerFunction.accept( is );
+            }
+            catch ( IOException e )
+            {
+                log.error("Could not write to file {}", file);
+                throw e;
+            } finally
+            {
+                fileLockManager.release( lock );
+            }
+        }
+        catch ( FileLockException | FileNotFoundException | FileLockTimeoutException e)
+        {
+            log.error("Locking error on file {}", file);
+            throw new IOException(e);
+        }
+    }
 
     @Override
     public StorageAsset getAsset( String path )
     {
         try {
-            return new FilesystemAsset( path, getAssetPath(path));
+            return new FilesystemAsset(this, path, getAssetPath(path));
         } catch (IOException e) {
             throw new IllegalArgumentException("Path navigates outside of base directory "+path);
         }
@@ -142,7 +309,7 @@ public class FilesystemStorage implements RepositoryStorage {
     public StorageAsset addAsset( String path, boolean container )
     {
         try {
-            return new FilesystemAsset( path, getAssetPath(path), basePath, container);
+            return new FilesystemAsset(this, path, getAssetPath(path), basePath, container);
         } catch (IOException e) {
             throw new IllegalArgumentException("Path navigates outside of base directory "+path);
         }
@@ -155,29 +322,51 @@ public class FilesystemStorage implements RepositoryStorage {
     }
 
     @Override
-    public StorageAsset moveAsset( StorageAsset origin, String destination ) throws IOException
+    public StorageAsset moveAsset( StorageAsset origin, String destination, CopyOption... copyOptions ) throws IOException
     {
         boolean container = origin.isContainer();
-        FilesystemAsset newAsset = new FilesystemAsset( destination, getAssetPath(destination), basePath, container );
-        Files.move(origin.getFilePath(), newAsset.getFilePath());
+        FilesystemAsset newAsset = new FilesystemAsset(this, destination, getAssetPath(destination), basePath, container );
+        moveAsset( origin, newAsset, copyOptions );
         return newAsset;
     }
 
     @Override
-    public StorageAsset copyAsset( StorageAsset origin, String destination ) throws IOException
+    public void moveAsset( StorageAsset origin, StorageAsset destination, CopyOption... copyOptions ) throws IOException
+    {
+        Files.move(origin.getFilePath(), destination.getFilePath(), copyOptions);
+    }
+
+    @Override
+    public StorageAsset copyAsset( StorageAsset origin, String destination, CopyOption... copyOptions ) throws IOException
     {
         boolean container = origin.isContainer();
-        FilesystemAsset newAsset = new FilesystemAsset( destination, getAssetPath(destination), basePath, container );
-        if (Files.exists(newAsset.getFilePath())) {
-            throw new IOException("Destination file exists already "+ newAsset.getFilePath());
+        FilesystemAsset newAsset = new FilesystemAsset(this, destination, getAssetPath(destination), basePath, container );
+        copyAsset( origin, newAsset, copyOptions );
+        return newAsset;
+    }
+
+    @Override
+    public void copyAsset( StorageAsset origin, StorageAsset destination, CopyOption... copyOptions ) throws IOException
+    {
+        Path destinationPath = destination.getFilePath();
+        boolean overwrite = false;
+        for (int i=0; i<copyOptions.length; i++) {
+            if (copyOptions[i].equals( StandardCopyOption.REPLACE_EXISTING )) {
+                overwrite=true;
+            }
+        }
+        if (Files.exists(destinationPath) && !overwrite) {
+            throw new IOException("Destination file exists already "+ destinationPath);
         }
         if (Files.isDirectory( origin.getFilePath() ))
         {
-            FileUtils.copyDirectory(origin.getFilePath( ).toFile(), newAsset.getFilePath( ).toFile() );
+            FileUtils.copyDirectory(origin.getFilePath( ).toFile(), destinationPath.toFile() );
         } else if (Files.isRegularFile( origin.getFilePath() )) {
-            FileUtils.copyFile(origin.getFilePath( ).toFile(), newAsset.getFilePath( ).toFile() );
+            if (!Files.exists( destinationPath )) {
+                Files.createDirectories( destinationPath );
+            }
+            Files.copy( origin.getFilePath( ), destinationPath, copyOptions );
         }
-        return newAsset;
     }
 
     public FileLockManager getFileLockManager() {

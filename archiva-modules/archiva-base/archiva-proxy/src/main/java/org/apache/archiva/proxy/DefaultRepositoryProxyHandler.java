@@ -19,6 +19,8 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
+import org.apache.archiva.checksum.ChecksumAlgorithm;
+import org.apache.archiva.checksum.ChecksumUtil;
 import org.apache.archiva.proxy.model.ProxyConnectorRuleType;
 import org.apache.archiva.common.filelock.FileLockException;
 import org.apache.archiva.common.filelock.FileLockManager;
@@ -37,6 +39,9 @@ import org.apache.archiva.redback.components.registry.Registry;
 import org.apache.archiva.redback.components.registry.RegistryListener;
 import org.apache.archiva.redback.components.taskqueue.TaskQueueException;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.content.FilesystemStorage;
+import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.content.StorageUtil;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
@@ -94,12 +99,14 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     private FileLockManager fileLockManager;
 
     private Map<String, NetworkProxy> networkProxyMap = new ConcurrentHashMap<>();
+    private List<ChecksumAlgorithm> checksumAlgorithms;
 
     @PostConstruct
     public void initialize()
     {
         initConnectors();
         archivaConfiguration.addChangeListener( this );
+        checksumAlgorithms = ChecksumUtil.getAlgorithms(archivaConfiguration.getConfiguration().getArchivaRuntimeConfiguration().getChecksumTypes());
 
     }
 
@@ -243,10 +250,10 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     }
 
     @Override
-    public Path fetchFromProxies(ManagedRepositoryContent repository, ArtifactReference artifact )
+    public StorageAsset fetchFromProxies( ManagedRepositoryContent repository, ArtifactReference artifact )
         throws ProxyDownloadException
     {
-        Path localFile = toLocalFile( repository, artifact );
+        StorageAsset localFile = toLocalFile( repository, artifact );
 
         Properties requestProperties = new Properties();
         requestProperties.setProperty( "filetype", "artifact" );
@@ -275,13 +282,13 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
 
             try
             {
-                Path downloadedFile =
+                StorageAsset downloadedFile =
                     transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties,
                                   true );
 
-                if ( fileExists( downloadedFile ) )
+                if ( downloadedFile.exists() )
                 {
-                    log.debug( "Successfully transferred: {}", downloadedFile.toAbsolutePath() );
+                    log.debug( "Successfully transferred: {}", downloadedFile.getPath() );
                     return downloadedFile;
                 }
             }
@@ -314,12 +321,12 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     }
 
     @Override
-    public Path fetchFromProxies( ManagedRepositoryContent repository, String path )
+    public StorageAsset fetchFromProxies( ManagedRepositoryContent repository, String path )
     {
-        Path localFile = Paths.get( repository.getRepoRoot(), path );
+        StorageAsset localFile = repository.getRepository().getAsset( path );
 
         // no update policies for these paths
-        if ( Files.exists(localFile) )
+        if ( localFile.exists() )
         {
             return null;
         }
@@ -343,13 +350,13 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
 
             try
             {
-                Path downloadedFile =
+                StorageAsset downloadedFile =
                     transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties,
                                   false );
 
                 if ( fileExists( downloadedFile ) )
                 {
-                    log.debug( "Successfully transferred: {}", downloadedFile.toAbsolutePath() );
+                    log.debug( "Successfully transferred: {}", downloadedFile.getPath() );
                     return downloadedFile;
                 }
             }
@@ -384,7 +391,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
     @Override
     public ProxyFetchResult fetchMetadataFromProxies(ManagedRepositoryContent repository, String logicalPath )
     {
-        Path localFile = Paths.get( repository.getRepoRoot(), logicalPath );
+        StorageAsset localFile = repository.getRepository().getAsset( logicalPath );
 
         Properties requestProperties = new Properties();
         requestProperties.setProperty( "filetype", "metadata" );
@@ -401,7 +408,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
 
             RemoteRepositoryContent targetRepository = connector.getTargetRepository();
 
-            Path localRepoFile = toLocalRepoFile( repository, targetRepository, logicalPath );
+            StorageAsset localRepoFile = toLocalRepoFile( repository, targetRepository, logicalPath );
             long originalMetadataTimestamp = getLastModified( localRepoFile );
 
             try
@@ -442,7 +449,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             metadataNeedsUpdating = true;
         }
 
-        if ( metadataNeedsUpdating || !Files.exists(localFile))
+        if ( metadataNeedsUpdating || !localFile.exists())
         {
             try
             {
@@ -450,7 +457,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             }
             catch ( RepositoryMetadataException e )
             {
-                log.warn( "Unable to update metadata {}:{}", localFile.toAbsolutePath(), e.getMessage(), e );
+                log.warn( "Unable to update metadata {}:{}", localFile.getPath(), e.getMessage(), e );
             }
 
         }
@@ -463,27 +470,19 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         return new ProxyFetchResult( null, false );
     }
 
-    private long getLastModified(Path file )
+    private long getLastModified(StorageAsset file )
     {
-        if ( !Files.exists(file) || !Files.isRegularFile(file) )
+        if ( !file.exists() || file.isContainer() )
         {
             return 0;
         }
 
-        try
-        {
-            return Files.getLastModifiedTime(file).toMillis();
-        }
-        catch ( IOException e )
-        {
-            log.error("Could get the modified time of file {}", file.toAbsolutePath());
-            return 0;
-        }
+        return file.getModificationTime().toEpochMilli();
     }
 
-    private boolean hasBeenUpdated(Path file, long originalLastModified )
+    private boolean hasBeenUpdated(StorageAsset file, long originalLastModified )
     {
-        if ( !Files.exists(file) || !Files.isRegularFile(file) )
+        if ( !file.exists() || file.isContainer() )
         {
             return false;
         }
@@ -492,11 +491,11 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         return ( currentLastModified > originalLastModified );
     }
 
-    private Path toLocalRepoFile(ManagedRepositoryContent repository, RemoteRepositoryContent targetRepository,
-                                 String targetPath )
+    private StorageAsset toLocalRepoFile( ManagedRepositoryContent repository, RemoteRepositoryContent targetRepository,
+                                          String targetPath )
     {
         String repoPath = metadataTools.getRepositorySpecificName( targetRepository, targetPath );
-        return Paths.get( repository.getRepoRoot(), repoPath );
+        return repository.getRepository().getAsset( repoPath );
     }
 
     /**
@@ -511,7 +510,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         }
     }
 
-    private Path toLocalFile(ManagedRepositoryContent repository, ArtifactReference artifact )
+    private StorageAsset toLocalFile(ManagedRepositoryContent repository, ArtifactReference artifact )
     {
         return repository.toFile( artifact );
     }
@@ -522,19 +521,19 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
      * @param file the file to test. (may be null)
      * @return true if file exists. false if the file param is null, doesn't exist, or is not of type File.
      */
-    private boolean fileExists( Path file )
+    private boolean fileExists( StorageAsset file )
     {
         if ( file == null )
         {
             return false;
         }
 
-        if ( !Files.exists(file))
+        if ( !file.exists())
         {
             return false;
         }
 
-        return Files.isRegularFile(file);
+        return !file.isContainer();
     }
 
     /**
@@ -544,7 +543,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
      * @param remoteRepository  the remote repository get the resource from.
      * @param remotePath        the path in the remote repository to the resource to get.
      * @param repository        the managed repository that will hold the file
-     * @param resource          the local file to place the downloaded resource into
+     * @param resource          the path relative to the repository storage where the file should be downloaded to
      * @param requestProperties the request properties to utilize for policy handling.
      * @param executeConsumers  whether to execute the consumers after proxying
      * @return the local file that was downloaded, or null if not downloaded.
@@ -553,9 +552,9 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
      *                              the remote resource is not newer than the local File.
      * @throws ProxyException       if transfer was unsuccessful.
      */
-    protected Path transferFile( ProxyConnector connector, RemoteRepositoryContent remoteRepository, String remotePath,
-                               ManagedRepositoryContent repository, Path resource, Properties requestProperties,
-                               boolean executeConsumers )
+    protected StorageAsset transferFile( ProxyConnector connector, RemoteRepositoryContent remoteRepository, String remotePath,
+                                         ManagedRepositoryContent repository, StorageAsset resource, Properties requestProperties,
+                                         boolean executeConsumers )
         throws ProxyException, NotModifiedException
     {
         String url = remoteRepository.getURL().getUrl();
@@ -594,7 +593,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         catch ( PolicyViolationException e )
         {
             String emsg = "Transfer not attempted on " + url + " : " + e.getMessage();
-            if ( fileExists( resource ) )
+            if ( resource.exists() )
             {
                 log.debug( "{} : using already present local file.", emsg );
                 return resource;
@@ -605,15 +604,27 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         }
 
         Path workingDirectory = createWorkingDirectory( repository );
-        Path tmpResource = workingDirectory.resolve(resource.getFileName());
-        Path tmpMd5 = workingDirectory.resolve(resource.getFileName().toString() + ".md5" );
-        Path tmpSha1 = workingDirectory.resolve( resource.getFileName().toString() + ".sha1" );
+        FilesystemStorage tmpStorage = null;
+        try
+        {
+            tmpStorage = new FilesystemStorage( workingDirectory, fileLockManager );
+        }
+        catch ( IOException e )
+        {
+            throw new ProxyException( "Could not create tmp storage" );
+        }
+        StorageAsset tmpResource = tmpStorage.getAsset( resource.getName( ) );
+        StorageAsset[] tmpChecksumFiles = new StorageAsset[checksumAlgorithms.size()];
+        for(int i=0; i<checksumAlgorithms.size(); i++) {
+            ChecksumAlgorithm alg = checksumAlgorithms.get( i );
+            tmpChecksumFiles[i] = tmpStorage.getAsset( resource.getName() + "." + alg.getDefaultExtension() );
+        }
 
         try
         {
 
-            transferResources( connector, remoteRepository, tmpMd5, tmpSha1, tmpResource, url, remotePath, resource,
-                               workingDirectory, repository );
+            transferResources( connector, remoteRepository, tmpResource,tmpChecksumFiles , url, remotePath,
+                resource, workingDirectory, repository );
 
             // Handle post-download policies.
             try
@@ -632,11 +643,12 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
 
             if ( resource != null )
             {
-                synchronized ( resource.toAbsolutePath().toString().intern() )
+                synchronized ( resource.getPath().intern() )
                 {
-                    Path directory = resource.getParent();
-                    moveFileIfExists( tmpMd5, directory );
-                    moveFileIfExists( tmpSha1, directory );
+                    StorageAsset directory = resource.getParent();
+                    for (int i=0; i<tmpChecksumFiles.length; i++) {
+                        moveFileIfExists( tmpChecksumFiles[i], directory );
+                    }
                     moveFileIfExists( tmpResource, directory );
                 }
             }
@@ -656,11 +668,11 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         return resource;
     }
 
-    protected abstract void transferResources(ProxyConnector connector, RemoteRepositoryContent remoteRepository, Path tmpMd5, Path tmpSha1,
-                                              Path tmpResource, String url, String remotePath, Path resource, Path workingDirectory,
-                                              ManagedRepositoryContent repository) throws ProxyException, NotModifiedException;
+    protected abstract void transferResources( ProxyConnector connector, RemoteRepositoryContent remoteRepository,
+                                               StorageAsset tmpResource, StorageAsset[] checksumFiles, String url, String remotePath, StorageAsset resource, Path workingDirectory,
+                                               ManagedRepositoryContent repository ) throws ProxyException, NotModifiedException;
 
-    private void queueRepositoryTask(String repositoryId, Path localFile )
+    private void queueRepositoryTask(String repositoryId, StorageAsset localFile )
     {
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId( repositoryId );
@@ -675,7 +687,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         catch ( TaskQueueException e )
         {
             log.error( "Unable to queue repository task to execute consumers on resource file ['{}"
-                           + "'].", localFile.getFileName() );
+                           + "'].", localFile.getName() );
         }
     }
 
@@ -685,12 +697,12 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
      * @param fileToMove this could be either the main artifact, sha1 or md5 checksum file.
      * @param directory  directory to write files to
      */
-    private void moveFileIfExists( Path fileToMove, Path directory )
+    private void moveFileIfExists( StorageAsset fileToMove, StorageAsset directory )
         throws ProxyException
     {
-        if ( fileToMove != null && Files.exists(fileToMove) )
+        if ( fileToMove != null && fileToMove.exists() )
         {
-            Path newLocation = directory.resolve(fileToMove.getFileName());
+            StorageAsset newLocation = directory.getStorage().getAsset( directory.getPath()+ "/" + fileToMove.getName());
             moveTempToTarget( fileToMove, newLocation );
         }
     }
@@ -701,13 +713,13 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
      * @param policies  the map of policies to execute. (Map of String policy keys, to {@link DownloadPolicy} objects)
      * @param settings  the map of settings for the policies to execute. (Map of String policy keys, to String policy
      *                  setting)
-     * @param request   the request properties (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, Path)}
+     * @param request   the request properties (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, StorageAsset)}
      *                  )
-     * @param localFile the local file (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, Path)})
+     * @param localFile the local file (utilized by the {@link DownloadPolicy#applyPolicy(String, Properties, StorageAsset)})
      * @throws PolicyViolationException
      */
     private void validatePolicies( Map<String, ? extends DownloadPolicy> policies, Map<String, String> settings,
-                                   Properties request, Path localFile )
+                                   Properties request, StorageAsset localFile )
         throws PolicyViolationException
     {
         for ( Map.Entry<String, ? extends DownloadPolicy> entry : policies.entrySet() )
@@ -732,9 +744,9 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
         }
     }
 
-    private void validatePolicies(Map<String, DownloadErrorPolicy> policies, Map<String, String> settings,
-                                  Properties request, ArtifactReference artifact, RemoteRepositoryContent content,
-                                  Path localFile, Exception exception, Map<String, Exception> previousExceptions )
+    private void validatePolicies( Map<String, DownloadErrorPolicy> policies, Map<String, String> settings,
+                                   Properties request, ArtifactReference artifact, RemoteRepositoryContent content,
+                                   StorageAsset localFile, Exception exception, Map<String, Exception> previousExceptions )
         throws ProxyDownloadException
     {
         boolean process = true;
@@ -813,61 +825,28 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
      * @param target The final location of the downloaded file
      * @throws ProxyException when the temp file cannot replace the target file
      */
-    private void moveTempToTarget( Path temp, Path target )
+    private void moveTempToTarget( StorageAsset temp, StorageAsset target )
         throws ProxyException
     {
 
-        Lock lock;
         try
         {
-            lock = fileLockManager.writeFileLock( target );
-            try {
-                Files.deleteIfExists(lock.getFile());
-            } catch (IOException e) {
-                throw new ProxyException( "Unable to overwrite existing target file: " + target.toAbsolutePath() );
-            }
-
-            try {
-                Files.createDirectories(lock.getFile().getParent());
-            } catch (IOException e) {
-                throw new ProxyException("Unable to create parent directory "+lock.getFile().getParent());
-            }
-
+            StorageUtil.moveAsset( temp, target, true );
+        }
+        catch ( IOException e )
+        {
+            log.error( "Move failed from {} to {}, trying copy.", temp, target );
             try
             {
-                Files.move(temp, lock.getFile() );
+                StorageUtil.copyAsset( temp, target, true );
+                if (temp.exists()) {
+                    temp.getStorage( ).removeAsset( temp );
+                }
             }
-            catch ( IOException e )
+            catch ( IOException ex )
             {
-                log.warn( "Unable to rename tmp file to its final name... resorting to copy command." );
-
-                try
-                {
-                    Files.copy( temp, lock.getFile());
-                }
-                catch ( IOException e2 )
-                {
-                    if ( Files.exists(lock.getFile()) )
-                    {
-                        log.debug( "Tried to copy file {} to {} but file with this name already exists.",
-                            temp.getFileName(), lock.getFile().toAbsolutePath() );
-                    }
-                    else
-                    {
-                        throw new ProxyException(
-                            "Cannot copy tmp file " + temp.toAbsolutePath() + " to its final location", e2 );
-                    }
-                }
-                finally
-                {
-                    org.apache.archiva.common.utils.FileUtils.deleteQuietly( temp );
-                }
+                throw new ProxyException("Could not move temp file "+temp.getPath()+" to target "+target.getPath(), e);
             }
-
-        }
-        catch ( FileLockException | FileLockTimeoutException e )
-        {
-            throw new ProxyException( e.getMessage(), e );
         }
     }
 

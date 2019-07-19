@@ -19,10 +19,7 @@ package org.apache.archiva.repository.content.maven2;
  * under the License.
  */
 
-import org.apache.archiva.common.filelock.FileLockException;
 import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.archiva.common.filelock.FileLockTimeoutException;
-import org.apache.archiva.common.filelock.Lock;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.FileTypes;
 import org.apache.archiva.metadata.repository.storage.maven2.ArtifactMappingProvider;
@@ -37,15 +34,10 @@ import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
-import org.apache.archiva.repository.content.FilesystemAsset;
-import org.apache.archiva.repository.content.FilesystemStorage;
 import org.apache.archiva.repository.content.StorageAsset;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,7 +47,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -202,30 +193,30 @@ public class ManagedDefaultRepositoryContent
     public Set<ArtifactReference> getRelatedArtifacts( ArtifactReference reference )
         throws ContentNotFoundException
     {
-        Path artifactFile = toFile( reference );
-        Path repoBase = PathUtil.getPathFromUri(repository.getLocation()).toAbsolutePath();
-        Path repoDir = artifactFile.getParent().toAbsolutePath();
+        StorageAsset artifactFile = toFile( reference );
+        StorageAsset repoBase = repository.getAsset( "" );
+        StorageAsset repoDir = artifactFile.getParent();
 
-        if ( !Files.exists(repoDir))
+        if ( !repoDir.exists())
         {
             throw new ContentNotFoundException(
-                "Unable to get related artifacts using a non-existant directory: " + repoDir.toAbsolutePath() );
+                "Unable to get related artifacts using a non-existant directory: " + repoDir.getPath() );
         }
 
-        if ( !Files.isDirectory( repoDir ) )
+        if ( !repoDir.isContainer() )
         {
             throw new ContentNotFoundException(
-                "Unable to get related artifacts using a non-directory: " + repoDir.toAbsolutePath() );
+                "Unable to get related artifacts using a non-directory: " + repoDir.getPath() );
         }
 
         Set<ArtifactReference> foundArtifacts;
 
         // First gather up the versions found as artifacts in the managed repository.
 
-        try (Stream<Path> stream = Files.list(repoDir)) {
-            foundArtifacts = stream.filter(Files::isRegularFile).map(path -> {
+        try (Stream<StorageAsset> stream = repoDir.list().stream() ) {
+            foundArtifacts = stream.filter(asset -> !asset.isContainer()).map(path -> {
                 try {
-                    ArtifactReference artifact = toArtifactReference(repoBase.relativize(path).toString());
+                    ArtifactReference artifact = toArtifactReference(path.getPath());
                     if( artifact.getGroupId().equals( reference.getGroupId() ) && artifact.getArtifactId().equals(
                             reference.getArtifactId() ) && artifact.getVersion().equals( reference.getVersion() )) {
                         return artifact;
@@ -237,9 +228,6 @@ public class ManagedDefaultRepositoryContent
                     return null;
                 }
             }).filter(Objects::nonNull).collect(Collectors.toSet());
-        } catch (IOException e) {
-            log.error("Could not read directory {}: {}", repoDir, e.getMessage(), e);
-            return Collections.emptySet();
         }
         return foundArtifacts;
     }
@@ -379,8 +367,8 @@ public class ManagedDefaultRepositoryContent
     @Override
     public boolean hasContent( ArtifactReference reference )
     {
-        Path artifactFile = toFile( reference );
-        return Files.exists(artifactFile) && Files.isRegularFile( artifactFile );
+        StorageAsset artifactFile = toFile( reference );
+        return artifactFile.exists() && !artifactFile.isContainer();
     }
 
     @Override
@@ -454,15 +442,15 @@ public class ManagedDefaultRepositoryContent
 
 
     @Override
-    public Path toFile( ArtifactReference reference )
+    public StorageAsset toFile( ArtifactReference reference )
     {
-        return PathUtil.getPathFromUri( repository.getLocation()).resolve( toPath( reference ) );
+        return repository.getAsset(toPath(reference));
     }
 
     @Override
-    public Path toFile( ArchivaArtifact reference )
+    public StorageAsset toFile( ArchivaArtifact reference )
     {
-        return PathUtil.getPathFromUri( repository.getLocation()).resolve( toPath( reference ) );
+        return repository.getAsset( toPath( reference ) );
     }
 
     /**
