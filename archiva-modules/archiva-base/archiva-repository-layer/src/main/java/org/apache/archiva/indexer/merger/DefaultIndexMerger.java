@@ -28,6 +28,8 @@ import org.apache.archiva.indexer.merger.IndexMergerRequest;
 import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryRegistry;
+import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,7 +89,7 @@ public class DefaultIndexMerger
             stopWatch.reset();
             stopWatch.start();
 
-            Path mergedIndexDirectory = indexMergerRequest.getMergedIndexDirectory();
+            StorageAsset mergedIndexDirectory = indexMergerRequest.getMergedIndexDirectory();
             Repository destinationRepository = repositoryRegistry.getRepository(indexMergerRequest.getGroupId());
 
             ArchivaIndexManager idxManager = repositoryRegistry.getIndexManager(destinationRepository.getType());
@@ -131,10 +133,10 @@ public class DefaultIndexMerger
                 ctx.close(true);
                 temporaryGroupIndexes.remove( temporaryGroupIndex );
                 temporaryContextes.remove( ctx );
-                Path directory = temporaryGroupIndex.getDirectory();
-                if ( directory != null && Files.exists(directory) )
+                StorageAsset directory = temporaryGroupIndex.getDirectory();
+                if ( directory != null && directory.exists() )
                 {
-                    FileUtils.deleteDirectory( directory );
+                    StorageUtil.deleteRecursively( directory );
                 }
             }
         }

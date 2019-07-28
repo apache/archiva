@@ -34,7 +34,7 @@ import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;

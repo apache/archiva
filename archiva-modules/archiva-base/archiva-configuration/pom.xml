@@ -34,6 +34,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-policies</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.archiva.redback.components.registry</groupId>
       <artifactId>spring-registry-api</artifactId>
       <exclusions>

@@ -31,6 +31,8 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -211,22 +213,22 @@ public abstract class AbstractRepositoryPurge
                         log.error( "Error during metadata retrieval {}: {}", metaBaseId, e.getMessage( ) );
                     }
                 }
-                Path artifactFile = repository.toFile( reference );
+                StorageAsset artifactFile = repository.toFile( reference );
 
                 for ( RepositoryListener listener : listeners )
                 {
                     listener.deleteArtifact( metadataRepository, repository.getId( ), reference.getGroupId( ),
                         reference.getArtifactId( ), reference.getVersion( ),
-                        artifactFile.getFileName( ).toString( ) );
+                            artifactFile.getName( ));
                 }
                 try
                 {
-                    Files.delete( artifactFile );
-                    log.debug( "File deleted: {}", artifactFile.toAbsolutePath( ) );
+                    artifactFile.getStorage().removeAsset(artifactFile);
+                    log.debug( "File deleted: {}", artifactFile );
                 }
                 catch ( IOException e )
                 {
-                    log.error( "Could not delete file {}: {}", artifactFile.toAbsolutePath( ), e.getMessage( ), e );
+                    log.error( "Could not delete file {}: {}", artifactFile.toString(), e.getMessage( ), e );
                     continue;
                 }
                 try
@@ -364,11 +366,11 @@ public abstract class AbstractRepositoryPurge
         }
     }
 
-    private void deleteSilently( Path path )
+    private void deleteSilently( StorageAsset path )
     {
         try
         {
-            Files.deleteIfExists( path );
+            path.getStorage().removeAsset(path);
             triggerAuditEvent( repository.getRepository( ).getId( ), path.toString( ), AuditEvent.PURGE_FILE );
         }
         catch ( IOException e )
@@ -387,22 +389,23 @@ public abstract class AbstractRepositoryPurge
      *
      * @param artifactFile the file to base off of.
      */
-    private void purgeSupportFiles( Path artifactFile )
+    private void purgeSupportFiles( StorageAsset artifactFile )
     {
-        Path parentDir = artifactFile.getParent( );
+        StorageAsset parentDir = artifactFile.getParent( );
 
-        if ( !Files.exists( parentDir ) )
+        if ( !parentDir.exists() )
         {
             return;
         }
 
-        final String artifactName = artifactFile.getFileName( ).toString( );
+        final String artifactName = artifactFile.getName( );
 
         try
         {
-            Files.find( parentDir, 3,
-                ( path, basicFileAttributes ) -> path.getFileName( ).toString( ).startsWith( artifactName )
-                    && Files.isRegularFile( path ) ).forEach( this::deleteSilently );
+
+            StorageUtil.recurse(parentDir, a -> {
+                if (!artifactFile.isContainer() && artifactFile.getName().startsWith(artifactName)) deleteSilently(a);
+            }, true, 3 );
         }
         catch ( IOException e )
         {

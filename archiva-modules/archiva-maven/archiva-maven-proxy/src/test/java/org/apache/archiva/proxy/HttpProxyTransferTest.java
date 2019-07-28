@@ -32,6 +32,7 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.api.Assertions;
@@ -208,18 +209,18 @@ public class HttpProxyTransferTest
         ArtifactReference artifact = managedDefaultRepository.toArtifactReference( path );
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path sourceFile = Paths.get( PROXIED_BASEDIR, path );
         assertNotNull( "Expected File should not be null.", expectedFile );
         assertNotNull( "Actual File should not be null.", downloadedFile );
 
-        assertTrue( "Check actual file exists.", Files.exists(downloadedFile));
-        assertTrue( "Check filename path is appropriate.", Files.isSameFile( expectedFile, downloadedFile));
-        assertTrue( "Check file path matches.", Files.isSameFile( expectedFile, downloadedFile));
+        assertTrue( "Check actual file exists.", Files.exists(downloadedFile.getFilePath()));
+        assertTrue( "Check filename path is appropriate.", Files.isSameFile( expectedFile, downloadedFile.getFilePath()));
+        assertTrue( "Check file path matches.", Files.isSameFile( expectedFile, downloadedFile.getFilePath()));
 
         String expectedContents = FileUtils.readFileToString( sourceFile.toFile(), Charset.defaultCharset() );
-        String actualContents = FileUtils.readFileToString( downloadedFile.toFile(), Charset.defaultCharset() );
+        String actualContents = FileUtils.readFileToString( downloadedFile.getFilePath().toFile(), Charset.defaultCharset() );
         assertEquals( "Check file contents.", expectedContents, actualContents );
 
         Assertions.assertThat( System.getProperty( "http.proxyHost" , "") ).isEmpty();

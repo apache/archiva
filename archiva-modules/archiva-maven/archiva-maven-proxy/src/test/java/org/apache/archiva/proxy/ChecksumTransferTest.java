@@ -25,6 +25,7 @@ import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.easymock.EasyMock;
 import org.junit.Test;
@@ -63,7 +64,7 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, true );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         assertNull( downloadedFile );
     }
@@ -85,10 +86,10 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "066d76e459f7782c312c31e8a11b3c0f1e3e43a7 *get-checksum-both-right-1.0.jar",
                          "e58f30c6a150a2e843552438d18e15cb *get-checksum-both-right-1.0.jar" );
@@ -111,10 +112,10 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar",
                          null );
@@ -137,10 +138,10 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, null, "f3af5201bf8da801da37db8842846e1c *get-checksum-md5-only-1.0.jar" );
     }
@@ -162,10 +163,10 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, null, null );
     }
@@ -187,10 +188,10 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "invalid checksum file", "invalid checksum file" );
     }
@@ -212,9 +213,9 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile );
+        assertNotDownloaded( downloadedFile.getFilePath() );
         assertChecksums( expectedFile, null, null );
     }
 
@@ -235,10 +236,10 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "4ec20a12dc91557330bd0b39d1805be5e329ae56  get-checksum-both-bad-1.0.jar",
                          "a292491a35925465e693a44809a078b5  get-checksum-both-bad-1.0.jar" );
@@ -261,9 +262,9 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile );
+        assertNotDownloaded( downloadedFile.getFilePath() );
         assertChecksums( expectedFile, null, null );
     }
 
@@ -284,11 +285,11 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         // This is a success situation. No SHA1 with a Good MD5.
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, null, "f3af5201bf8da801da37db8842846e1c *get-checksum-md5-only-1.0.jar" );
     }
@@ -310,9 +311,9 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile );
+        assertNotDownloaded( downloadedFile.getFilePath() );
         assertChecksums( expectedFile, null, null );
     }
 
@@ -333,10 +334,10 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "3dd1a3a57b807d3ef3fbc6013d926c891cbb8670 *get-checksum-sha1-bad-md5-1.0.jar",
                          "invalid checksum file" );
@@ -360,10 +361,10 @@ public class ChecksumTransferTest
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "3dd1a3a57b807d3ef3fbc6013d926c891cbb8670 *get-checksum-sha1-bad-md5-1.0.jar",
                          "c35f3b76268b73a4ba617f6f275c49ab  get-checksum-sha1-bad-md5-1.0.jar" );
@@ -386,10 +387,10 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "71f7dc3f72053a3f2d9fdd6fef9db055ef957ffb  get-checksum-md5-only-1.0.jar",
                          "f3af5201bf8da801da37db8842846e1c *get-checksum-md5-only-1.0.jar" );
@@ -412,10 +413,10 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "1f12821c5e43e1a0b76b9564a6ddb0548ccb9486  get-default-layout-1.0.jar",
                          "3f7341545f21226b6f49a3c2704cb9be  get-default-layout-1.0.jar" );
@@ -452,7 +453,7 @@ public class ChecksumTransferTest
 
         wagonMockControl.replay();
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         wagonMockControl.verify();
 
@@ -465,7 +466,7 @@ public class ChecksumTransferTest
 
         // Test results.
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "748a3a013bf5eacf2bbb40a2ac7d37889b728837 *get-checksum-sha1-only-1.0.jar",
                          null );
@@ -489,10 +490,10 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied1File = Paths.get( REPOPATH_PROXIED1, path );
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         // There are no hashcodes on the proxy side to download, hence the local ones should remain invalid.
         assertChecksums( expectedFile, "invalid checksum file", "invalid checksum file" );
@@ -516,9 +517,9 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, ChecksumPolicy.FAIL, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile );
+        assertNotDownloaded( downloadedFile.getFilePath() );
         assertNoTempFiles( expectedFile );
         // There are no hashcodes on the proxy side to download.
         // The FAIL policy will delete the checksums as bad.
@@ -544,10 +545,10 @@ public class ChecksumTransferTest
         saveConnector( ID_DEFAULT_MANAGED, "proxied1", ChecksumPolicy.FIX, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
         assertChecksums( expectedFile, "96a08dc80a108cba8efd3b20aec91b32a0b2cbd4  get-bad-local-checksum-1.0.jar",
                          "46fdd6ca55bf1d7a7eb0c858f41e0ccd  get-bad-local-checksum-1.0.jar" );

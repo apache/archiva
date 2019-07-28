@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -46,8 +47,7 @@ public class MavenRepositoryMetadataReaderTest
 
     @Test
     public void testGroupMetadata()
-        throws XMLException
-    {
+            throws XMLException, IOException {
         Path metadataFile = defaultRepoDir.resolve( "org/apache/maven/plugins/maven-metadata.xml" );
 
         ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );
@@ -81,8 +81,7 @@ public class MavenRepositoryMetadataReaderTest
 
     @Test
     public void testProjectMetadata()
-        throws XMLException
-    {
+            throws XMLException, IOException {
         Path metadataFile = defaultRepoDir.resolve( "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
 
         ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile);
@@ -99,8 +98,7 @@ public class MavenRepositoryMetadataReaderTest
 
     @Test
     public void testProjectVersionMetadata()
-        throws XMLException
-    {
+            throws XMLException, IOException {
         Path metadataFile = defaultRepoDir.resolve( "org/apache/apache/5-SNAPSHOT/maven-metadata.xml" );
 
         ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( metadataFile );

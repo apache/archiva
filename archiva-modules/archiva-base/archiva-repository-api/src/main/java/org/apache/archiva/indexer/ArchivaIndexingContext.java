@@ -20,6 +20,7 @@ package org.apache.archiva.indexer;
  */
 
 import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.io.IOException;
 import java.net.URI;
@@ -48,7 +49,7 @@ public interface ArchivaIndexingContext {
      * The path where the index is stored.
      * @return
      */
-    URI getPath();
+    StorageAsset getPath();
 
     /**
      * Returns true, if the index has no entries or is not initialized.

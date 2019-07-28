@@ -22,6 +22,7 @@ package org.apache.archiva.indexer.merger;
 import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.features.IndexCreationFeature;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +60,7 @@ public class DefaultMergedRemoteIndexesScheduler
     private Map<String, ScheduledFuture> scheduledFutureMap = new ConcurrentHashMap<>();
 
     @Override
-    public void schedule(RepositoryGroup repositoryGroup, Path directory )
+    public void schedule(RepositoryGroup repositoryGroup, StorageAsset directory )
     {
         if ( StringUtils.isEmpty( repositoryGroup.getSchedulingDefinition() ) )
         {

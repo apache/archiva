@@ -20,16 +20,13 @@ package org.apache.archiva.policies;
  */
 
 import org.apache.archiva.common.utils.VersionUtil;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 

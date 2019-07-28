@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.content;
+package org.apache.archiva.repository.storage;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -98,7 +98,7 @@ public class FilesystemAsset implements StorageAsset {
 
     FilesystemAsset(RepositoryStorage storage, String path, Path assetPath, Path basePath) {
         this.assetPath = assetPath;
-        this.relativePath = path;
+        this.relativePath = normalizePath(path);
         this.setPermissionsForNew=false;
         this.basePath = basePath;
         this.storage = storage;
@@ -114,7 +114,7 @@ public class FilesystemAsset implements StorageAsset {
      */
     public FilesystemAsset(RepositoryStorage storage, String path, Path assetPath) {
         this.assetPath = assetPath;
-        this.relativePath = path;
+        this.relativePath = normalizePath(path);
         this.setPermissionsForNew = false;
         this.basePath = null;
         this.storage = storage;
@@ -132,7 +132,7 @@ public class FilesystemAsset implements StorageAsset {
      */
     public FilesystemAsset(RepositoryStorage storage, String path, Path assetPath, Path basePath, boolean directory) {
         this.assetPath = assetPath;
-        this.relativePath = path;
+        this.relativePath = normalizePath(path);
         this.directoryHint = directory;
         this.setPermissionsForNew = false;
         this.basePath = basePath;
@@ -151,12 +151,20 @@ public class FilesystemAsset implements StorageAsset {
      */
     public FilesystemAsset(RepositoryStorage storage, String path, Path assetPath, Path basePath, boolean directory, boolean setPermissionsForNew) {
         this.assetPath = assetPath;
-        this.relativePath = path;
+        this.relativePath = normalizePath(path);
         this.directoryHint = directory;
         this.setPermissionsForNew = setPermissionsForNew;
         this.basePath = basePath;
         this.storage = storage;
         init();
+    }
+
+    private String normalizePath(String path) {
+        if (!path.startsWith("/")) {
+            return "/"+path;
+        } else {
+            return path;
+        }
     }
 
     private void init() {
@@ -421,6 +429,11 @@ public class FilesystemAsset implements StorageAsset {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public StorageAsset resolve(String toPath) {
+        return storage.getAsset(this.getPath()+"/"+toPath);
     }
 
 

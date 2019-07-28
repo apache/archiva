@@ -20,7 +20,7 @@ package org.apache.archiva.repository;
  */
 
 
-import org.apache.archiva.repository.content.RepositoryStorage;
+import org.apache.archiva.repository.storage.RepositoryStorage;
 
 import java.nio.file.Path;
 import java.time.Duration;

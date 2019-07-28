@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.content;
+package org.apache.archiva.repository.storage;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,8 +20,13 @@ package org.apache.archiva.repository.content;
  */
 
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
+import org.apache.archiva.repository.storage.FilesystemAsset;
+import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,6 +35,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 import static org.junit.Assert.*;
 
@@ -51,8 +57,8 @@ public class FilesystemStorageTest {
         Files.createDirectories(baseDir.resolve("dir2"));
         file1 = Files.createFile(baseDir.resolve("dir1/testfile1.dat"));
         dir1 = Files.createDirectories(baseDir.resolve("dir1/testdir"));
-        file1Asset = new FilesystemAsset("/dir1/testfile1.dat", file1);
-        dir1Asset = new FilesystemAsset("/dir1/testdir", dir1);
+        file1Asset = new FilesystemAsset(fsStorage, "/dir1/testfile1.dat", file1);
+        dir1Asset = new FilesystemAsset(fsStorage, "/dir1/testdir", dir1);
     }
 
     private class StringResult {
@@ -70,31 +76,11 @@ public class FilesystemStorageTest {
 
     @After
     public void cleanup() {
-        try {
-            Files.deleteIfExists(file1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            Files.deleteIfExists(dir1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            Files.deleteIfExists(baseDir.resolve("dir1"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            Files.deleteIfExists(baseDir.resolve("dir2"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            Files.deleteIfExists(baseDir);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        FileUtils.deleteQuietly(file1.toFile());
+        FileUtils.deleteQuietly(dir1.toFile());
+        FileUtils.deleteQuietly(baseDir.resolve("dir1").toFile());
+        FileUtils.deleteQuietly(baseDir.resolve("dir2").toFile());
+        FileUtils.deleteQuietly(baseDir.toFile());
     }
 
 
@@ -107,7 +93,7 @@ public class FilesystemStorageTest {
         }
         StringResult result = new StringResult();
         fsStorage.consumeData(file1Asset, is -> consume(is, result), false );
-        assertEquals("abcdefghijkl" ,result.getData());
+        Assert.assertEquals("abcdefghijkl" ,result.getData());
     }
 
     private void consume(InputStream is, StringResult result) {
@@ -122,31 +108,31 @@ public class FilesystemStorageTest {
     @Test
     public void getAsset() {
         StorageAsset asset = fsStorage.getAsset("/dir1/testfile1.dat");
-        assertEquals(file1, asset.getFilePath());
+        Assert.assertEquals(file1, asset.getFilePath());
     }
 
     @Test
     public void addAsset() {
         StorageAsset newAsset = fsStorage.addAsset("dir2/test", false);
-        assertNotNull(newAsset);
-        assertFalse(newAsset.isContainer());
-        assertFalse(newAsset.exists());
+        Assert.assertNotNull(newAsset);
+        Assert.assertFalse(newAsset.isContainer());
+        Assert.assertFalse(newAsset.exists());
 
         StorageAsset newDirAsset = fsStorage.addAsset("/dir2/testdir2", true);
-        assertNotNull(newDirAsset);
-        assertTrue(newDirAsset.isContainer());
-        assertFalse(newDirAsset.exists());
+        Assert.assertNotNull(newDirAsset);
+        Assert.assertTrue(newDirAsset.isContainer());
+        Assert.assertFalse(newDirAsset.exists());
     }
 
     @Test
     public void removeAsset() throws IOException {
-        assertTrue(Files.exists(file1));
+        Assert.assertTrue(Files.exists(file1));
         fsStorage.removeAsset(file1Asset);
-        assertFalse(Files.exists(file1));
+        Assert.assertFalse(Files.exists(file1));
 
-        assertTrue(Files.exists(dir1));
+        Assert.assertTrue(Files.exists(dir1));
         fsStorage.removeAsset(dir1Asset);
-        assertFalse(Files.exists(dir1));
+        Assert.assertFalse(Files.exists(dir1));
     }
 
     @Test
@@ -154,23 +140,23 @@ public class FilesystemStorageTest {
         Path newFile=null;
         Path newDir=null;
         try {
-            assertTrue(Files.exists(file1));
+            Assert.assertTrue(Files.exists(file1));
             try (OutputStream os = Files.newOutputStream(file1)) {
                 IOUtils.write("testakdkkdkdkdk", os, "ASCII");
             }
             long fileSize = Files.size(file1);
             fsStorage.moveAsset(file1Asset, "/dir2/testfile2.dat");
-            assertFalse(Files.exists(file1));
+            Assert.assertFalse(Files.exists(file1));
             newFile = baseDir.resolve("dir2/testfile2.dat");
-            assertTrue(Files.exists(newFile));
-            assertEquals(fileSize, Files.size(newFile));
+            Assert.assertTrue(Files.exists(newFile));
+            Assert.assertEquals(fileSize, Files.size(newFile));
 
 
-            assertTrue(Files.exists(dir1));
+            Assert.assertTrue(Files.exists(dir1));
             newDir = baseDir.resolve("dir2/testdir2");
             fsStorage.moveAsset(dir1Asset, "dir2/testdir2");
-            assertFalse(Files.exists(dir1));
-            assertTrue(Files.exists(newDir));
+            Assert.assertFalse(Files.exists(dir1));
+            Assert.assertTrue(Files.exists(newDir));
         } finally {
             if (newFile!=null) Files.deleteIfExists(newFile);
             if (newDir!=null) Files.deleteIfExists(newDir);
@@ -182,27 +168,33 @@ public class FilesystemStorageTest {
         Path newFile=null;
         Path newDir=null;
         try {
-            assertTrue(Files.exists(file1));
+            Assert.assertTrue(Files.exists(file1));
             try (OutputStream os = Files.newOutputStream(file1)) {
                 IOUtils.write("testakdkkdkdkdk", os, "ASCII");
             }
             long fileSize = Files.size(file1);
-            fsStorage.copyAsset(file1Asset, "/dir2/testfile2.dat");
-            assertTrue(Files.exists(file1));
-            assertEquals(fileSize, Files.size(file1));
+            fsStorage.copyAsset(file1Asset, "/dir2/testfile2.dat", StandardCopyOption.REPLACE_EXISTING);
+            Assert.assertTrue(Files.exists(file1));
+            Assert.assertEquals(fileSize, Files.size(file1));
             newFile = baseDir.resolve("dir2/testfile2.dat");
-            assertTrue(Files.exists(newFile));
-            assertEquals(fileSize, Files.size(newFile));
+            Assert.assertTrue(Files.exists(newFile));
+            Assert.assertEquals(fileSize, Files.size(newFile));
 
+            try {
+                fsStorage.copyAsset(file1Asset, "/dir2/testfile2.dat");
+                Assert.assertTrue("IOException should be thrown (File exists)", false);
+            } catch (IOException ex) {
+                Assert.assertTrue("Exception must contain 'file exists'", ex.getMessage().contains("file exists"));
+            }
 
-            assertTrue(Files.exists(dir1));
+            Assert.assertTrue(Files.exists(dir1));
             newDir = baseDir.resolve("dir2/testdir2");
             fsStorage.copyAsset(dir1Asset, "dir2/testdir2");
-            assertTrue(Files.exists(dir1));
-            assertTrue(Files.exists(newDir));
+            Assert.assertTrue(Files.exists(dir1));
+            Assert.assertTrue(Files.exists(newDir));
         } finally {
             if (newFile!=null) Files.deleteIfExists(newFile);
-            if (newDir!=null) Files.deleteIfExists(newDir);
+            if (newDir!=null) FileUtils.deleteQuietly(newDir.toFile());
         }
     }
 }

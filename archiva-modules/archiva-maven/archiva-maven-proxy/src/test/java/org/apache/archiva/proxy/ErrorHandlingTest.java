@@ -27,6 +27,7 @@ import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.LayoutException;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.TransferFailedException;
 import org.apache.maven.wagon.authorization.AuthorizationException;
@@ -598,7 +599,7 @@ public class ErrorHandlingTest
         wagonMockControl.replay();
 
         // Attempt the proxy fetch.
-        Path downloadedFile = null;
+        StorageAsset downloadedFile = null;
         try
         {
             downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository,
@@ -616,33 +617,33 @@ public class ErrorHandlingTest
 
         wagonMockControl.verify();
 
-        assertNotDownloaded( downloadedFile );
+        assertNotDownloaded( downloadedFile.getFilePath() );
     }
 
     private void confirmSuccess( String path, Path expectedFile, String basedir )
         throws Exception
     {
-        Path downloadedFile = performDownload( path );
+        StorageAsset downloadedFile = performDownload( path );
 
         Path proxied1File = Paths.get( basedir, path );
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
     }
 
     private void confirmNotDownloadedNoError( String path )
         throws Exception
     {
-        Path downloadedFile = performDownload( path );
+        StorageAsset downloadedFile = performDownload( path );
 
-        assertNotDownloaded( downloadedFile );
+        assertNotDownloaded( downloadedFile.getFilePath() );
     }
 
-    private Path performDownload( String path )
+    private StorageAsset performDownload( String path )
         throws ProxyDownloadException, LayoutException
     {
         wagonMockControl.replay();
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository,
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository,
                                                              managedDefaultRepository.toArtifactReference( path ) );
 
         wagonMockControl.verify();

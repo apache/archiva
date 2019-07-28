@@ -18,6 +18,8 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
+import org.apache.archiva.repository.storage.StorageAsset;
+
 import java.nio.file.Path;
 import java.util.Collection;
 
@@ -47,7 +49,7 @@ public class IndexMergerRequest
 
     private int mergedIndexTtl;
 
-    private Path mergedIndexDirectory;
+    private StorageAsset mergedIndexDirectory;
 
     private boolean temporary;
 
@@ -121,17 +123,17 @@ public class IndexMergerRequest
         this.mergedIndexTtl = mergedIndexTtl;
     }
 
-    public Path getMergedIndexDirectory()
+    public StorageAsset getMergedIndexDirectory()
     {
         return mergedIndexDirectory;
     }
 
-    public void setMergedIndexDirectory( Path mergedIndexDirectory )
+    public void setMergedIndexDirectory( StorageAsset mergedIndexDirectory )
     {
         this.mergedIndexDirectory = mergedIndexDirectory;
     }
 
-    public IndexMergerRequest mergedIndexDirectory( Path mergedIndexDirectory )
+    public IndexMergerRequest mergedIndexDirectory( StorageAsset mergedIndexDirectory )
     {
         this.mergedIndexDirectory = mergedIndexDirectory;
         return this;

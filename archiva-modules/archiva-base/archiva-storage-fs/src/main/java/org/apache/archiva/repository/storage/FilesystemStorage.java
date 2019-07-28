@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.content;
+package org.apache.archiva.repository.storage;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -81,7 +81,7 @@ public class FilesystemStorage implements RepositoryStorage {
     }
 
     @Override
-    public void consumeData( StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock ) throws IOException
+    public void consumeData(StorageAsset asset, Consumer<InputStream> consumerFunction, boolean readLock ) throws IOException
     {
         final Path path = asset.getFilePath();
         try {
@@ -333,6 +333,12 @@ public class FilesystemStorage implements RepositoryStorage {
     @Override
     public void moveAsset( StorageAsset origin, StorageAsset destination, CopyOption... copyOptions ) throws IOException
     {
+        if (origin.getStorage()!=this) {
+            throw new IOException("The origin asset does not belong to this storage instance. Cannot copy between different storage instances.");
+        }
+        if (destination.getStorage()!=this) {
+            throw new IOException("The destination asset does not belong to this storage instance. Cannot copy between different storage instances.");
+        }
         Files.move(origin.getFilePath(), destination.getFilePath(), copyOptions);
     }
 
@@ -348,6 +354,12 @@ public class FilesystemStorage implements RepositoryStorage {
     @Override
     public void copyAsset( StorageAsset origin, StorageAsset destination, CopyOption... copyOptions ) throws IOException
     {
+        if (origin.getStorage()!=this) {
+            throw new IOException("The origin asset does not belong to this storage instance. Cannot copy between different storage instances.");
+        }
+        if (destination.getStorage()!=this) {
+            throw new IOException("The destination asset does not belong to this storage instance. Cannot copy between different storage instances.");
+        }
         Path destinationPath = destination.getFilePath();
         boolean overwrite = false;
         for (int i=0; i<copyOptions.length; i++) {

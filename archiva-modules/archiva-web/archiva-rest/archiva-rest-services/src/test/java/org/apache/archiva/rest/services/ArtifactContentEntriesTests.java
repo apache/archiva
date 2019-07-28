@@ -19,6 +19,9 @@ package org.apache.archiva.rest.services;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
+import org.apache.archiva.repository.storage.FilesystemAsset;
+import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.rest.api.model.ArtifactContentEntry;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.junit.Test;
@@ -56,10 +59,11 @@ public class ArtifactContentEntriesTests
         throws Exception
     {
 
+        FilesystemStorage filesystemStorage = new FilesystemStorage(Paths.get(getBasedir()), new DefaultFileLockManager());
         Path file = Paths.get( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
-        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, null, "foo" );
+        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( new FilesystemAsset(filesystemStorage, file.toString(), file), null, "foo" );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
@@ -74,10 +78,12 @@ public class ArtifactContentEntriesTests
         throws Exception
     {
 
+        FilesystemStorage filesystemStorage = new FilesystemStorage(Paths.get(getBasedir()), new DefaultFileLockManager());
         Path file = Paths.get( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
-        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "", "foo" );
+        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries(
+                new FilesystemAsset(filesystemStorage, file.toString(), file), "", "foo" );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
@@ -92,10 +98,12 @@ public class ArtifactContentEntriesTests
         throws Exception
     {
 
+        FilesystemStorage filesystemStorage = new FilesystemStorage(Paths.get(getBasedir()), new DefaultFileLockManager());
+
         Path file = Paths.get( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
-        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "/", "foo" );
+        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( new FilesystemAsset(filesystemStorage, file.toString(),file), "/", "foo" );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
@@ -110,10 +118,12 @@ public class ArtifactContentEntriesTests
         throws Exception
     {
 
+        FilesystemStorage filesystemStorage = new FilesystemStorage(Paths.get(getBasedir()), new DefaultFileLockManager());
+
         Path file = Paths.get( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
-        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( file, "org", "foo" );
+        List<ArtifactContentEntry> artifactContentEntries = browseService.readFileEntries( new FilesystemAsset(filesystemStorage, file.toString(), file), "org", "foo" );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
@@ -127,11 +137,13 @@ public class ArtifactContentEntriesTests
         throws Exception
     {
 
+        FilesystemStorage filesystemStorage = new FilesystemStorage(Paths.get(getBasedir()), new DefaultFileLockManager());
+
         Path file = Paths.get( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
         List<ArtifactContentEntry> artifactContentEntries =
-            browseService.readFileEntries( file, "org/apache/commons/logging/impl/", "foo" );
+            browseService.readFileEntries( new FilesystemAsset(filesystemStorage, file.toString(), file), "org/apache/commons/logging/impl/", "foo" );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 
@@ -145,11 +157,13 @@ public class ArtifactContentEntriesTests
         throws Exception
     {
 
+        FilesystemStorage filesystemStorage = new FilesystemStorage(Paths.get(getBasedir()), new DefaultFileLockManager());
+
         Path file = Paths.get( getBasedir(),
                               "src/test/repo-with-osgi/commons-logging/commons-logging/1.1/commons-logging-1.1.jar" );
 
         List<ArtifactContentEntry> artifactContentEntries =
-            browseService.readFileEntries( file, "org/apache/commons/logging/", "foo" );
+            browseService.readFileEntries( new FilesystemAsset(filesystemStorage, file.toString(), file), "org/apache/commons/logging/", "foo" );
 
         log.info( "artifactContentEntries: {}", artifactContentEntries );
 

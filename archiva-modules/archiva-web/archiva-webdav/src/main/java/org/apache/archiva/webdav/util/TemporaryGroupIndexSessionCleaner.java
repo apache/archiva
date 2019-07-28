@@ -75,7 +75,7 @@ public class TemporaryGroupIndexSessionCleaner
         for ( TemporaryGroupIndex temporaryGroupIndex : tempFilesPerKey.values() )
         {
             log.info( "cleanup temporaryGroupIndex {} directory {}", temporaryGroupIndex.getIndexId(),
-                      temporaryGroupIndex.getDirectory().toAbsolutePath() );
+                      temporaryGroupIndex.getDirectory().getPath() );
             getIndexMerger( httpSessionEvent ).cleanTemporaryGroupIndex( temporaryGroupIndex );
         }
     }

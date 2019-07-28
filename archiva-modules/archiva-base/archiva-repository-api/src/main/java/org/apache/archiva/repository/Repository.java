@@ -20,7 +20,7 @@ package org.apache.archiva.repository;
  */
 
 import org.apache.archiva.indexer.ArchivaIndexingContext;
-import org.apache.archiva.repository.content.RepositoryStorage;
+import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.features.RepositoryFeature;
 
 import java.net.URI;

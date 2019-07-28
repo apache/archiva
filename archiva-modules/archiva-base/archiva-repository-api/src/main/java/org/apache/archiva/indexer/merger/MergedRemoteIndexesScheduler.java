@@ -21,8 +21,7 @@ package org.apache.archiva.indexer.merger;
 
 
 import org.apache.archiva.repository.RepositoryGroup;
-
-import java.nio.file.Path;
+import org.apache.archiva.repository.storage.StorageAsset;
 
 /**
  * @author Olivier Lamy
@@ -35,8 +34,9 @@ public interface MergedRemoteIndexesScheduler
      * will check if this repository group need to a schedule a cron to download/merge
      * remote indexes
      * @param repositoryGroup
+     * @param directory
      */
-    void schedule(RepositoryGroup repositoryGroup, Path directory );
+    void schedule(RepositoryGroup repositoryGroup, StorageAsset directory );
 
     void unschedule( RepositoryGroup repositoryGroup );
 

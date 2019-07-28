@@ -32,6 +32,7 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryCredentials;
 import org.apache.archiva.repository.maven2.MavenSystemManager;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -78,7 +79,7 @@ public class RepositoryModelResolver
     private RepositorySystemSession session;
     private VersionRangeResolver versionRangeResolver;
 
-    private Path basedir;
+    private StorageAsset basedir;
 
     private RepositoryPathTranslator pathTranslator;
 
@@ -98,7 +99,7 @@ public class RepositoryModelResolver
 
     private ManagedRepository managedRepository;
 
-    public RepositoryModelResolver( Path basedir, RepositoryPathTranslator pathTranslator )
+    public RepositoryModelResolver(StorageAsset basedir, RepositoryPathTranslator pathTranslator )
     {
         this.basedir = basedir;
 
@@ -110,7 +111,7 @@ public class RepositoryModelResolver
                                    Map<String, NetworkProxy> networkProxiesMap, ManagedRepository targetRepository,
                                    MavenSystemManager mavenSystemManager)
     {
-        this( Paths.get( managedRepository.getLocation() ), pathTranslator );
+        this( managedRepository.getAsset(""), pathTranslator );
 
         this.managedRepository = managedRepository;
 
@@ -138,9 +139,9 @@ public class RepositoryModelResolver
         String filename = artifactId + "-" + version + ".pom";
         // TODO: we need to convert 1.0-20091120.112233-1 type paths to baseVersion for the below call - add a test
 
-        Path model = pathTranslator.toFile( basedir, groupId, artifactId, version, filename );
+        StorageAsset model = pathTranslator.toFile( basedir, groupId, artifactId, version, filename );
 
-        if ( !Files.exists(model) )
+        if ( !model.exists() )
         {
             /**
              *
@@ -161,10 +162,10 @@ public class RepositoryModelResolver
                 try
                 {
                     boolean success = getModelFromProxy( remoteRepository, groupId, artifactId, version, filename );
-                    if ( success && Files.exists(model) )
+                    if ( success && model.exists() )
                     {
                         log.info( "Model '{}' successfully retrieved from remote repository '{}'",
-                                  model.toAbsolutePath(), remoteRepository.getId() );
+                                  model.getPath(), remoteRepository.getId() );
                         break;
                     }
                 }
@@ -172,20 +173,20 @@ public class RepositoryModelResolver
                 {
                     log.info(
                         "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
-                        model.toAbsolutePath(), remoteRepository.getId(), e.getMessage() );
+                        model.getPath(), remoteRepository.getId(), e.getMessage() );
                 }
                 catch ( Exception e )
                 {
                     log.warn(
                         "An exception was caught while attempting to retrieve model '{}' from remote repository '{}'.Reason:{}",
-                        model.toAbsolutePath(), remoteRepository.getId(), e.getMessage() );
+                        model.getPath(), remoteRepository.getId(), e.getMessage() );
 
                     continue;
                 }
             }
         }
 
-        return new FileModelSource( model.toFile() );
+        return new FileModelSource( model.getFilePath().toFile() );
     }
 
     public ModelSource resolveModel(Parent parent) throws UnresolvableModelException {
@@ -249,15 +250,15 @@ public class RepositoryModelResolver
                     log.debug( "use snapshot path {} for maven coordinate {}:{}:{}", snapshotPath, groupId, artifactId,
                                version );
 
-                    Path model = basedir.resolve( snapshotPath );
+                    StorageAsset model = basedir.resolve( snapshotPath );
                     //model = pathTranslator.toFile( basedir, groupId, artifactId, lastVersion, filename );
-                    if ( Files.exists(model) )
+                    if ( model.exists() )
                     {
-                        return model;
+                        return model.getFilePath();
                     }
                 }
             }
-            catch ( XMLException e )
+            catch (XMLException | IOException e )
             {
                 log.warn( "fail to read {}, {}", mavenMetadata.toAbsolutePath(), e.getCause() );
             }

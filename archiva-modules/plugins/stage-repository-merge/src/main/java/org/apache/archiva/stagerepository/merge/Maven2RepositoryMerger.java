@@ -19,6 +19,7 @@ package org.apache.archiva.stagerepository.merge;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.utils.VersionComparator;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -34,6 +35,9 @@ import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.archiva.repository.storage.FilesystemAsset;
+import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -42,7 +46,10 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -227,20 +234,22 @@ public class Maven2RepositoryMerger
         {
 
             // updating version metadata files
-            Path versionMetaDataFileInSourceRepo =
-                pathTranslator.toFile( Paths.get( sourceRepoPath ), artifactMetadata.getNamespace(),
+            FilesystemStorage fsStorage = new FilesystemStorage(Paths.get(sourceRepoPath), new DefaultFileLockManager());
+
+            StorageAsset versionMetaDataFileInSourceRepo =
+                pathTranslator.toFile( new FilesystemAsset(fsStorage, "", Paths.get(sourceRepoPath)), artifactMetadata.getNamespace(),
                                        artifactMetadata.getProject(), artifactMetadata.getVersion(),
                                        METADATA_FILENAME );
 
-            if ( Files.exists(versionMetaDataFileInSourceRepo) )
+            if ( versionMetaDataFileInSourceRepo.exists() )
             {//Pattern quote for windows path
                 String relativePathToVersionMetadataFile =
-                    versionMetaDataFileInSourceRepo.toAbsolutePath().toString().split( Pattern.quote( sourceRepoPath ) )[1];
+                    versionMetaDataFileInSourceRepo.getPath().toString().split( Pattern.quote( sourceRepoPath ) )[1];
                 Path versionMetaDataFileInTargetRepo = Paths.get( targetRepoPath, relativePathToVersionMetadataFile );
 
                 if ( !Files.exists(versionMetaDataFileInTargetRepo) )
                 {
-                    copyFile( versionMetaDataFileInSourceRepo, versionMetaDataFileInTargetRepo );
+                    copyFile( versionMetaDataFileInSourceRepo.getFilePath(), versionMetaDataFileInTargetRepo );
                 }
                 else
                 {
@@ -250,19 +259,19 @@ public class Maven2RepositoryMerger
             }
 
             // updating project meta data file
-            Path projectDirectoryInSourceRepo = versionMetaDataFileInSourceRepo.getParent().getParent();
-            Path projectMetadataFileInSourceRepo = projectDirectoryInSourceRepo.resolve(METADATA_FILENAME );
+            StorageAsset projectDirectoryInSourceRepo = versionMetaDataFileInSourceRepo.getParent().getParent();
+            StorageAsset projectMetadataFileInSourceRepo = projectDirectoryInSourceRepo.resolve(METADATA_FILENAME );
 
-            if ( Files.exists(projectMetadataFileInSourceRepo) )
+            if ( projectMetadataFileInSourceRepo.exists() )
             {
                 String relativePathToProjectMetadataFile =
-                    projectMetadataFileInSourceRepo.toAbsolutePath().toString().split( Pattern.quote( sourceRepoPath ) )[1];
+                    projectMetadataFileInSourceRepo.getPath().split( Pattern.quote( sourceRepoPath ) )[1];
                 Path projectMetadataFileInTargetRepo = Paths.get( targetRepoPath, relativePathToProjectMetadataFile );
 
                 if ( !Files.exists(projectMetadataFileInTargetRepo) )
                 {
 
-                    copyFile( projectMetadataFileInSourceRepo, projectMetadataFileInTargetRepo );
+                    copyFile( projectMetadataFileInSourceRepo.getFilePath(), projectMetadataFileInTargetRepo );
                 }
                 else
                 {
@@ -331,7 +340,11 @@ public class Maven2RepositoryMerger
             projectMetadata.setReleasedVersion( latestVersion );
         }
 
-        RepositoryMetadataWriter.write( projectMetadata, projectMetaDataFileIntargetRepo );
+        try(BufferedWriter writer = Files.newBufferedWriter(projectMetaDataFileIntargetRepo)) {
+            RepositoryMetadataWriter.write( projectMetadata, writer );
+        } catch (IOException e) {
+            throw new RepositoryMetadataException(e);
+        }
 
     }
 
@@ -348,7 +361,11 @@ public class Maven2RepositoryMerger
         }
 
         versionMetadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
-        RepositoryMetadataWriter.write( versionMetadata, versionMetaDataFileInTargetRepo );
+        try(BufferedWriter writer = Files.newBufferedWriter(versionMetaDataFileInTargetRepo) ) {
+            RepositoryMetadataWriter.write( versionMetadata, writer);
+        } catch (IOException e) {
+            throw new RepositoryMetadataException(e);
+        }
     }
 
     private ArchivaRepositoryMetadata getMetadata( Path metadataFile )
@@ -361,7 +378,7 @@ public class Maven2RepositoryMerger
             {
                 metadata = MavenMetadataReader.read( metadataFile );
             }
-            catch ( XMLException e )
+            catch (XMLException | IOException e )
             {
                 throw new RepositoryMetadataException( e.getMessage(), e );
             }

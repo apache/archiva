@@ -38,6 +38,7 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.xml.XMLException;
 
+import java.io.IOException;
 import java.util.Collection;
 
 /**
@@ -118,7 +119,7 @@ public class MockRepositoryStorage
 
     @Override
     public String getFilePathWithVersion( String requestPath, ManagedRepositoryContent managedRepositoryContent )
-        throws RelocationException, XMLException
+            throws RelocationException, XMLException, IOException
     {
         return null;
     }

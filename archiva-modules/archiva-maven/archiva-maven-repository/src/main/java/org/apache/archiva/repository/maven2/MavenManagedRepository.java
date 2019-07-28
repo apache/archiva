@@ -23,8 +23,7 @@ import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.repository.*;
-import org.apache.archiva.repository.content.FilesystemStorage;
-import org.apache.archiva.repository.content.RepositoryStorage;
+import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.content.maven2.MavenRepositoryRequestInfo;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
@@ -38,7 +37,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
-import java.util.function.Function;
 
 /**
  * Maven2 managed repository implementation.

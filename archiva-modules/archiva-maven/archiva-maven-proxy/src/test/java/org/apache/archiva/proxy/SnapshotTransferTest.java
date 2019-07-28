@@ -24,6 +24,7 @@ import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.junit.Test;
 
 import java.nio.file.Files;
@@ -59,8 +60,8 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
-        assertNotDownloaded( downloadedFile );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        assertNotDownloaded( downloadedFile.getFilePath() );
         assertNoTempFiles( expectedFile );
     }
 
@@ -80,10 +81,10 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -103,10 +104,10 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -128,10 +129,10 @@ public class SnapshotTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false );
 
         // Attempt to download.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         // Should not have downloaded as managed is newer than remote.
-        assertNotDownloaded( downloadedFile );
+        assertNotDownloaded( downloadedFile.getFilePath() );
         assertNoTempFiles( expectedFile );
     }
 
@@ -220,9 +221,9 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -244,9 +245,9 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile );
+        assertNotDownloaded( downloadedFile.getFilePath() );
         assertNotModified( expectedFile, expectedTimestamp );
         assertNoTempFiles( expectedFile );
     }
@@ -270,10 +271,10 @@ public class SnapshotTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, ChecksumPolicy.IGNORE, ReleasesPolicy.ALWAYS,
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.YES , false);
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -293,10 +294,10 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -320,10 +321,10 @@ public class SnapshotTransferTest
         // Configure Connector (usually done within archiva.xml configuration)
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
         assertNoTempFiles( expectedFile );
     }
 }

@@ -42,6 +42,7 @@ import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RemoteRepositoryContent;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -369,9 +370,9 @@ public class MetadataTools
                                                         ProjectReference reference, String proxyId )
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
-        Path metadataFile = Paths.get( managedRepository.getRepoRoot(), metadataPath );
+        StorageAsset metadataFile = managedRepository.getRepository().getAsset( metadataPath );
 
-        if ( !Files.exists(metadataFile) || !Files.isRegularFile( metadataFile ))
+        if ( !metadataFile.exists() || metadataFile.isContainer())
         {
             // Nothing to do. return null.
             return null;
@@ -381,11 +382,11 @@ public class MetadataTools
         {
             return MavenMetadataReader.read( metadataFile );
         }
-        catch ( XMLException e )
+        catch (XMLException | IOException e )
         {
             // TODO: [monitor] consider a monitor for this event.
             // TODO: consider a read-redo on monitor return code?
-            log.warn( "Unable to read metadata: {}", metadataFile.toAbsolutePath(), e );
+            log.warn( "Unable to read metadata: {}", metadataFile.getPath(), e );
             return null;
         }
     }
@@ -394,9 +395,9 @@ public class MetadataTools
                                                         String logicalResource, String proxyId )
     {
         String metadataPath = getRepositorySpecificName( proxyId, logicalResource );
-        Path metadataFile = Paths.get( managedRepository.getRepoRoot(), metadataPath );
+        StorageAsset metadataFile = managedRepository.getRepository().getAsset( metadataPath );
 
-        if ( !Files.exists(metadataFile) || !Files.isRegularFile( metadataFile))
+        if ( !metadataFile.exists() || metadataFile.isContainer())
         {
             // Nothing to do. return null.
             return null;
@@ -406,11 +407,11 @@ public class MetadataTools
         {
             return MavenMetadataReader.read( metadataFile );
         }
-        catch ( XMLException e )
+        catch (XMLException | IOException e )
         {
             // TODO: [monitor] consider a monitor for this event.
             // TODO: consider a read-redo on monitor return code?
-            log.warn( "Unable to read metadata: {}", metadataFile.toAbsolutePath(), e );
+            log.warn( "Unable to read metadata: {}", metadataFile.getPath(), e );
             return null;
         }
     }
@@ -419,9 +420,9 @@ public class MetadataTools
                                                         VersionedReference reference, String proxyId )
     {
         String metadataPath = getRepositorySpecificName( proxyId, toPath( reference ) );
-        Path metadataFile = Paths.get( managedRepository.getRepoRoot(), metadataPath );
+        StorageAsset metadataFile = managedRepository.getRepository().getAsset( metadataPath );
 
-        if ( !Files.exists(metadataFile) || !Files.isRegularFile(metadataFile))
+        if ( !metadataFile.exists() || metadataFile.isContainer())
         {
             // Nothing to do. return null.
             return null;
@@ -431,11 +432,11 @@ public class MetadataTools
         {
             return MavenMetadataReader.read( metadataFile );
         }
-        catch ( XMLException e )
+        catch (XMLException | IOException e )
         {
             // TODO: [monitor] consider a monitor for this event.
             // TODO: consider a read-redo on monitor return code?
-            log.warn( "Unable to read metadata: {}", metadataFile.toAbsolutePath(), e );
+            log.warn( "Unable to read metadata: {}", metadataFile.getPath(), e );
             return null;
         }
     }
@@ -443,7 +444,7 @@ public class MetadataTools
     public void updateMetadata( ManagedRepositoryContent managedRepository, String logicalResource )
         throws RepositoryMetadataException
     {
-        final Path metadataFile = Paths.get( managedRepository.getRepoRoot(), logicalResource );
+        final StorageAsset metadataFile = managedRepository.getRepository().getAsset( logicalResource );
         ArchivaRepositoryMetadata metadata = null;
 
         //Gather and merge all metadata available
@@ -480,7 +481,7 @@ public class MetadataTools
 
         RepositoryMetadataWriter.write( metadata, metadataFile );
 
-        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile.getFilePath() );
         checksum.fixChecksums( algorithms );
     }
 
@@ -491,30 +492,17 @@ public class MetadataTools
      * @param metadataParentDirectory
      * @return origional set plus newly found versions
      */
-    private Set<String> findPossibleVersions( Set<String> versions, Path metadataParentDirectory )
+    private Set<String> findPossibleVersions( Set<String> versions, StorageAsset metadataParentDirectory )
     {
 
         Set<String> result = new HashSet<String>( versions );
 
-        try (Stream<Path> stream = Files.list( metadataParentDirectory )) {
-            stream.filter( Files::isDirectory ).filter(
-                p ->
-                {
-                    try(Stream<Path> substream = Files.list(p))
-                    {
-                        return substream.anyMatch( f -> Files.isRegularFile( f ) && f.toString().endsWith( ".pom" ));
-                    }
-                    catch ( IOException e )
-                    {
-                        return false;
-                    }
+        metadataParentDirectory.list().stream().filter(asset ->
+                asset.isContainer()).filter(asset -> {
+                    return asset.list().stream().anyMatch(f -> !f.isContainer() && f.getName().endsWith(".pom"));
                 }
-            ).forEach(
-                p -> result.add(p.getFileName().toString())
-            );
-        } catch (IOException e) {
-            //
-        }
+                ).forEach( p -> result.add(p.getName()));
+
         return result;
     }
 
@@ -522,8 +510,9 @@ public class MetadataTools
         ManagedRepositoryContent managedRepository, String logicalResource )
     {
         List<ArchivaRepositoryMetadata> metadatas = new ArrayList<>();
-        Path file = Paths.get( managedRepository.getRepoRoot(), logicalResource );
-        if ( Files.exists(file) )
+        StorageAsset file = managedRepository.getRepository().getAsset( logicalResource );
+
+        if ( file.exists() )
         {
             try
             {
@@ -533,10 +522,14 @@ public class MetadataTools
                     metadatas.add( existingMetadata );
                 }
             }
-            catch ( XMLException e )
+            catch (XMLException | IOException e )
             {
-                log.debug( "Could not read metadata at {}. Metadata will be removed.", file.toAbsolutePath() );
-                FileUtils.deleteQuietly( file );
+                log.debug( "Could not read metadata at {}. Metadata will be removed.", file.getPath() );
+                try {
+                    file.getStorage().removeAsset(file);
+                } catch (IOException ex) {
+                    log.error("Could not remove asset {}", file.getPath());
+                }
             }
         }
 
@@ -578,7 +571,8 @@ public class MetadataTools
     public void updateMetadata( ManagedRepositoryContent managedRepository, ProjectReference reference )
         throws LayoutException, RepositoryMetadataException, IOException, ContentNotFoundException
     {
-        Path metadataFile = Paths.get( managedRepository.getRepoRoot(), toPath( reference ) );
+
+        StorageAsset metadataFile = managedRepository.getRepository().getAsset( toPath( reference ) );
 
         long lastUpdated = getExistingLastUpdated( metadataFile );
 
@@ -593,7 +587,7 @@ public class MetadataTools
         // TODO: do we know this information instead?
 //        Set<Plugin> allPlugins = managedRepository.getPlugins( reference );
         Set<Plugin> allPlugins;
-        if ( Files.exists(metadataFile))
+        if ( metadataFile.exists())
         {
             try
             {
@@ -653,7 +647,7 @@ public class MetadataTools
 
         // Save the metadata model to disk.
         RepositoryMetadataWriter.write( metadata, metadataFile );
-        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile.getFilePath() );
         checksum.fixChecksums( algorithms );
     }
 
@@ -748,9 +742,9 @@ public class MetadataTools
         }
     }
 
-    private long getExistingLastUpdated( Path metadataFile )
+    private long getExistingLastUpdated( StorageAsset metadataFile )
     {
-        if ( !Files.exists(metadataFile) )
+        if ( !metadataFile.exists() )
         {
             // Doesn't exist.
             return 0;
@@ -762,7 +756,7 @@ public class MetadataTools
 
             return getLastUpdated( metadata );
         }
-        catch ( XMLException e )
+        catch (XMLException | IOException e )
         {
             // Error.
             return 0;
@@ -788,7 +782,7 @@ public class MetadataTools
     public void updateMetadata( ManagedRepositoryContent managedRepository, VersionedReference reference )
         throws LayoutException, RepositoryMetadataException, IOException, ContentNotFoundException
     {
-        Path metadataFile = Paths.get( managedRepository.getRepoRoot(), toPath( reference ) );
+        StorageAsset metadataFile = managedRepository.getRepository().getAsset( toPath( reference ) );
 
         long lastUpdated = getExistingLastUpdated( metadataFile );
 
@@ -893,7 +887,7 @@ public class MetadataTools
 
         // Save the metadata model to disk.
         RepositoryMetadataWriter.write( metadata, metadataFile );
-        ChecksummedFile checksum = new ChecksummedFile( metadataFile );
+        ChecksummedFile checksum = new ChecksummedFile( metadataFile.getFilePath() );
         checksum.fixChecksums( algorithms );
     }
 

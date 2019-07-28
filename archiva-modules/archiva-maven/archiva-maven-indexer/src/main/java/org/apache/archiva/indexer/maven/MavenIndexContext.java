@@ -19,14 +19,21 @@ package org.apache.archiva.indexer.maven;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
+import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.index.context.IndexingContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.sql.Date;
 import java.time.ZonedDateTime;
 import java.util.Set;
@@ -36,8 +43,11 @@ import java.util.Set;
  */
 public class MavenIndexContext implements ArchivaIndexingContext {
 
+    private static final Logger log = LoggerFactory.getLogger(ArchivaIndexingContext.class);
+
     private IndexingContext delegate;
     private Repository repository;
+    private StorageAsset dir = null;
 
     protected MavenIndexContext(Repository repository, IndexingContext delegate) {
         this.delegate = delegate;
@@ -56,8 +66,23 @@ public class MavenIndexContext implements ArchivaIndexingContext {
     }
 
     @Override
-    public URI getPath() {
-        return delegate.getIndexDirectoryFile().toURI();
+    public StorageAsset getPath() {
+        if (dir==null) {
+            StorageAsset repositoryDirAsset = repository.getAsset("");
+            Path repositoryDir = repositoryDirAsset.getFilePath().toAbsolutePath();
+            Path indexDir = delegate.getIndexDirectoryFile().toPath();
+            if (indexDir.startsWith(repositoryDir)) {
+                dir = repository.getAsset(repositoryDir.relativize(indexDir).toString());
+            } else {
+                try {
+                    FilesystemStorage storage = new FilesystemStorage(indexDir, new DefaultFileLockManager());
+                    dir = storage.getAsset("");
+                } catch (IOException e) {
+                    log.error("Error occured while creating storage for index dir");
+                }
+            }
+        }
+        return dir;
     }
 
     @Override

@@ -19,6 +19,7 @@ package org.apache.archiva.repository.scanner.mock;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
@@ -27,9 +28,11 @@ import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.*;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +51,7 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
 
 
     private ManagedRepository repository;
+    private FilesystemStorage fsStorage;
 
     public ManagedRepositoryContentMock(ManagedRepository repo) {
         this.repository = repo;
@@ -92,7 +96,18 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     @Override
     public String getRepoRoot( )
     {
-        return Paths.get("", "target", "test-repository", "managed").toString();
+        return getRepoRootAsset().getFilePath().toString();
+    }
+
+    private StorageAsset getRepoRootAsset() {
+        if (fsStorage==null) {
+            try {
+                fsStorage = new FilesystemStorage(Paths.get("", "target", "test-repository", "managed"), new DefaultFileLockManager());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return fsStorage.getAsset("");
     }
 
     @Override
@@ -329,7 +344,7 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
     @Override
     public StorageAsset toFile( ArtifactReference reference )
     {
-        return Paths.get(getRepoRoot(), refs.get(reference));
+        return getRepoRootAsset().resolve(refs.get(reference));
     }
 
     @Override

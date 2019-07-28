@@ -20,6 +20,7 @@ package org.apache.archiva.policies;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -338,17 +339,17 @@ public class ReleasePolicyTest
             request.setProperty( "version", "2.0" );
         }
 
-        Path targetDir = ChecksumPolicyTest.getTestFile( "target/test-policy/" );
-        Path localFile = targetDir.resolve( path );
+        StorageAsset targetDir = ChecksumPolicyTest.getTestFile( "target/test-policy/" );
+        StorageAsset localFile = targetDir.resolve( path );
 
-        Files.deleteIfExists( localFile );
+        Files.deleteIfExists( localFile.getFilePath() );
 
         if ( createLocalFile )
         {
-            Files.createDirectories(  localFile.getParent());
-            org.apache.archiva.common.utils.FileUtils.writeStringToFile( localFile, FILE_ENCODING, "random-junk" );
-            Files.setLastModifiedTime( localFile,
-                FileTime.fromMillis(Files.getLastModifiedTime(localFile).toMillis() - generatedLocalFileUpdateDelta));
+            Files.createDirectories(  localFile.getParent().getFilePath());
+            org.apache.archiva.common.utils.FileUtils.writeStringToFile( localFile.getFilePath(), FILE_ENCODING, "random-junk" );
+            Files.setLastModifiedTime( localFile.getFilePath(),
+                FileTime.fromMillis(Files.getLastModifiedTime(localFile.getFilePath()).toMillis() - generatedLocalFileUpdateDelta));
         }
 
         policy.applyPolicy( setting, request, localFile );

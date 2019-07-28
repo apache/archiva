@@ -19,8 +19,7 @@ package org.apache.archiva.webdav;
  * under the License.
  */
 
-import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.webdav.util.IndexWriter;
 import org.apache.archiva.webdav.util.MimeTypes;
 import org.apache.jackrabbit.util.Text;
@@ -48,9 +47,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 

@@ -20,7 +20,10 @@ package org.apache.archiva.policies;
  */
 
 import junit.framework.TestCase;
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.policies.urlcache.UrlFailureCache;
+import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +31,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -47,6 +51,8 @@ public class CachedFailuresPolicyTest
     @Inject
     private UrlFailureCache urlFailureCache;
 
+    private FilesystemStorage filesystemStorage;
+
     @Inject
     @Named( value = "preDownloadPolicy#cache-failures" )
     DownloadPolicy downloadPolicy;
@@ -57,9 +63,11 @@ public class CachedFailuresPolicyTest
         return downloadPolicy;
     }
 
-    private Path getFile()
-    {
-        return Paths.get( "target/cache-failures/" + getName() + ".txt" );
+    private StorageAsset getFile() throws IOException {
+        if (filesystemStorage==null) {
+            filesystemStorage = new FilesystemStorage(Paths.get("target/cache-failures"), new DefaultFileLockManager());
+        }
+        return filesystemStorage.getAsset( getName() + ".txt" );
     }
 
     private Properties createRequest()
@@ -74,7 +82,7 @@ public class CachedFailuresPolicyTest
         throws Exception
     {
         DownloadPolicy policy = lookupPolicy();
-        Path localFile = getFile();
+        StorageAsset localFile = getFile();
         Properties request = createRequest();
 
         request.setProperty( "url", "http://a.bad.hostname.maven.org/path/to/resource.txt" );
@@ -88,7 +96,7 @@ public class CachedFailuresPolicyTest
     {
 
         DownloadPolicy policy = lookupPolicy();
-        Path localFile = getFile();
+        StorageAsset localFile = getFile();
         Properties request = createRequest();
         // make unique name
         String url = "http://a.bad.hostname.maven.org/path/to/resource"+ System.currentTimeMillis() +".txt";

@@ -18,9 +18,15 @@ package org.apache.archiva.rest.services.utils;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
+import org.apache.archiva.repository.storage.FilesystemAsset;
+import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.easymock.TestSubject;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,39 +36,39 @@ public class ArtifactBuilderTest
     @TestSubject
     private ArtifactBuilder builder = new ArtifactBuilder();
 
-    @Test
-    public void testBuildSnapshot()
-    {
-        assertThat( builder.getExtensionFromFile( Paths.get( "/tmp/foo-2.3-20141119.064321-40.jar" ) ) ).isEqualTo( "jar" );
+    StorageAsset getFile(String path) throws IOException {
+        Path filePath = Paths.get(path);
+        FilesystemStorage filesystemStorage = new FilesystemStorage(filePath.getParent(), new DefaultFileLockManager());
+        return new FilesystemAsset(filesystemStorage, filePath.getFileName().toString(), filePath);
     }
 
     @Test
-    public void testBuildPom()
-    {
-        assertThat( builder.getExtensionFromFile( Paths.get( "/tmp/foo-1.0.pom" ) ) ).isEqualTo( "pom" );
+    public void testBuildSnapshot() throws IOException {
+        assertThat( builder.getExtensionFromFile( getFile( "/tmp/foo-2.3-20141119.064321-40.jar" ) ) ).isEqualTo( "jar" );
     }
 
     @Test
-    public void testBuildJar()
-    {
-        assertThat( builder.getExtensionFromFile( Paths.get( "/tmp/foo-1.0-sources.jar" ) ) ).isEqualTo( "jar" );
+    public void testBuildPom() throws IOException {
+        assertThat( builder.getExtensionFromFile( getFile( "/tmp/foo-1.0.pom" ) ) ).isEqualTo( "pom" );
     }
 
     @Test
-    public void testBuildTarGz()
-    {
-        assertThat( builder.getExtensionFromFile( Paths.get( "/tmp/foo-1.0.tar.gz" ) ) ).isEqualTo( "tar.gz" );
+    public void testBuildJar() throws IOException {
+        assertThat( builder.getExtensionFromFile( getFile( "/tmp/foo-1.0-sources.jar" ) ) ).isEqualTo( "jar" );
     }
 
     @Test
-    public void testBuildPomZip()
-    {
-        assertThat( builder.getExtensionFromFile( Paths.get( "/tmp/foo-1.0.pom.zip" ) ) ).isEqualTo( "pom.zip" );
+    public void testBuildTarGz() throws IOException {
+        assertThat( builder.getExtensionFromFile( getFile( "/tmp/foo-1.0.tar.gz" ) ) ).isEqualTo( "tar.gz" );
     }
 
     @Test
-    public void testBuildR00()
-    {
-        assertThat( builder.getExtensionFromFile( Paths.get( "/tmp/foo-1.0.r00" ) ) ).isEqualTo( "r00" );
+    public void testBuildPomZip() throws IOException {
+        assertThat( builder.getExtensionFromFile( getFile( "/tmp/foo-1.0.pom.zip" ) ) ).isEqualTo( "pom.zip" );
+    }
+
+    @Test
+    public void testBuildR00() throws IOException {
+        assertThat( builder.getExtensionFromFile( getFile( "/tmp/foo-1.0.r00" ) ) ).isEqualTo( "r00" );
     }
 }

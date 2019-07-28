@@ -21,9 +21,8 @@ package org.apache.archiva.repository;
 
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.filelock.FileLockManager;
-import org.apache.archiva.repository.content.FilesystemStorage;
-import org.apache.archiva.repository.content.RepositoryStorage;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.StagingRepositoryFeature;
@@ -31,10 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Locale;
-import java.util.function.Consumer;
 
 /**
  *

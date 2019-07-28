@@ -25,6 +25,7 @@ import org.apache.archiva.audit.Auditable;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksumUtil;
 import org.apache.archiva.checksum.StreamingChecksum;
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.plexusbridge.PlexusSisuBridgeException;
 import org.apache.archiva.common.utils.PathUtil;
@@ -65,8 +66,8 @@ import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryGroup;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.RepositoryRequestInfo;
-import org.apache.archiva.repository.content.FilesystemAsset;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.metadata.MetadataTools;
@@ -343,7 +344,7 @@ public class ArchivaDavResourceFactory
                                 ArchivaRepositoryMetadata repoMetadata = MavenMetadataReader.read( metadataFile );
                                 mergedMetadata = RepositoryMetadataMerge.merge( mergedMetadata, repoMetadata );
                             }
-                            catch ( XMLException e )
+                            catch (XMLException | IOException e )
                             {
                                 throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                                         "Error occurred while reading metadata file." );
@@ -427,11 +428,10 @@ public class ArchivaDavResourceFactory
         {
             // we are in the case of index file request
             String requestedFileName = StringUtils.substringAfterLast( pathInfo, "/" );
-            Path temporaryIndexDirectory =
+            StorageAsset temporaryIndexDirectory =
                 buildMergedIndexDirectory( activePrincipal, request, repoGroup );
-            FilesystemAsset asset = new FilesystemAsset( pathInfo, temporaryIndexDirectory.resolve(requestedFileName) );
+            StorageAsset asset = temporaryIndexDirectory.getStorage().getAsset(requestedFileName);
 
-            Path resourceFile = temporaryIndexDirectory.resolve( requestedFileName );
             try {
                 resource = new ArchivaDavResource( asset, requestedFileName, repoGroup,
                                                    request.getRemoteAddr(), activePrincipal, request.getDavSession(),
@@ -543,7 +543,7 @@ public class ArchivaDavResourceFactory
 
             throw new BrowserRedirectException( addHrefPrefix( contextPath, path ), e.getRelocationType() );
         }
-        catch ( XMLException e )
+        catch (XMLException | IOException e )
         {
             log.error( e.getMessage(), e );
             throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e );
@@ -765,7 +765,7 @@ public class ArchivaDavResourceFactory
         RepositoryProxyHandler proxyHandler = proxyRegistry.getHandler(managedRepository.getRepository().getType()).get(0);
         if ( repositoryRequestInfo.isSupportFile( path ) )
         {
-            Path proxiedFile = proxyHandler.fetchFromProxies( managedRepository, path );
+            StorageAsset proxiedFile = proxyHandler.fetchFromProxies( managedRepository, path );
 
             return ( proxiedFile != null );
         }
@@ -780,7 +780,7 @@ public class ArchivaDavResourceFactory
         if ( repositoryRequestInfo.isArchetypeCatalog( path ) )
         {
             // FIXME we must implement a merge of remote archetype catalog from remote servers.
-            Path proxiedFile = proxyHandler.fetchFromProxies( managedRepository, path );
+            StorageAsset proxiedFile = proxyHandler.fetchFromProxies( managedRepository, path );
 
             return ( proxiedFile != null );
         }
@@ -799,7 +799,7 @@ public class ArchivaDavResourceFactory
                     this.applicationContext.getBean( "repositoryStorage#" + repositoryLayout, RepositoryStorage.class );
                 repositoryStorage.applyServerSideRelocation( managedRepository, artifact );
 
-                Path proxiedFile = proxyHandler.fetchFromProxies( managedRepository, artifact );
+                StorageAsset proxiedFile = proxyHandler.fetchFromProxies( managedRepository, artifact );
 
                 resource.setPath( managedRepository.toPath( artifact ) );
 
@@ -1058,10 +1058,9 @@ public class ArchivaDavResourceFactory
 
             if ( StringUtils.endsWith( pathInfo, mergedIndexPath ) )
             {
-                Path mergedRepoDirPath =
+                StorageAsset mergedRepoDirPath =
                     buildMergedIndexDirectory( activePrincipal, request, repositoryGroup );
-                FilesystemAsset mergedRepoDir = new FilesystemAsset(pathInfo, mergedRepoDirPath);
-                mergedRepositoryContents.add( mergedRepoDir );
+                mergedRepositoryContents.add( mergedRepoDirPath );
             }
             else
             {
@@ -1087,8 +1086,12 @@ public class ArchivaDavResourceFactory
                             }
                         }
                     }
-                    FilesystemAsset parentDir = new FilesystemAsset(pathInfo, tmpDirectory.getParent());
-                    mergedRepositoryContents.add( parentDir );
+                    try {
+                        FilesystemStorage storage = new FilesystemStorage(tmpDirectory.getParent(), new DefaultFileLockManager());
+                        mergedRepositoryContents.add( storage.getAsset("") );
+                    } catch (IOException e) {
+                        throw new DavException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not create storage for " + tmpDirectory);
+                    }
                 }
                 for ( ManagedRepository repo : repositories )
                 {
@@ -1298,7 +1301,7 @@ public class ArchivaDavResourceFactory
         }
     }
 
-    protected Path buildMergedIndexDirectory( String activePrincipal,
+    protected StorageAsset buildMergedIndexDirectory( String activePrincipal,
                                               DavServletRequest request,
                                               RepositoryGroup repositoryGroup )
         throws DavException
@@ -1320,7 +1323,7 @@ public class ArchivaDavResourceFactory
             final String id = repositoryGroup.getId();
             TemporaryGroupIndex tmp = temporaryGroupIndexMap.get(id);
 
-            if ( tmp != null && tmp.getDirectory() != null && Files.exists(tmp.getDirectory()))
+            if ( tmp != null && tmp.getDirectory() != null && tmp.getDirectory().exists())
             {
                 if ( System.currentTimeMillis() - tmp.getCreationTime() > (
                     repositoryGroup.getMergedIndexTTL() * 60 * 1000 ) )
@@ -1370,12 +1373,14 @@ public class ArchivaDavResourceFactory
             {
                 Path tempRepoFile = Files.createTempDirectory( "temp" );
                 tempRepoFile.toFile( ).deleteOnExit( );
+                FilesystemStorage storage = new FilesystemStorage(tempRepoFile, new DefaultFileLockManager());
+                StorageAsset tmpAsset = storage.getAsset("");
 
                 IndexMergerRequest indexMergerRequest =
                     new IndexMergerRequest( authzRepos, true, id,
                         indexPath.toString( ),
                         repositoryGroup.getMergedIndexTTL( ) ).mergedIndexDirectory(
-                        tempRepoFile ).temporary( true );
+                        tmpAsset ).temporary( true );
 
                 MergedRemoteIndexesTaskRequest taskRequest =
                     new MergedRemoteIndexesTaskRequest( indexMergerRequest, indexMerger );
@@ -1384,7 +1389,7 @@ public class ArchivaDavResourceFactory
 
                 ArchivaIndexingContext indexingContext = job.execute( ).getIndexingContext( );
 
-                Path mergedRepoDir = Paths.get( indexingContext.getPath( ) );
+                StorageAsset mergedRepoDir = indexingContext.getPath( );
                 TemporaryGroupIndex temporaryGroupIndex =
                     new TemporaryGroupIndex( mergedRepoDir, indexingContext.getId( ), id,
                         repositoryGroup.getMergedIndexTTL( ) ) //

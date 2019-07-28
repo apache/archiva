@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.content;
+package org.apache.archiva.repository.storage;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -27,10 +27,9 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
- * A instance of this interface represents information about an specific asset in a repository.
+ * A instance of this interface represents information about a specific asset in a repository.
  * The asset may be an real artifact, a directory, or a virtual asset.
  *
  * Each asset has a unique path relative to the repository.
@@ -177,4 +176,11 @@ public interface StorageAsset
      * @return The asset, or <code>null</code>, if it does not exist.
      */
     StorageAsset getParent();
+
+    /**
+     * Returns the asset relative to the given path
+     * @param toPath
+     * @return
+     */
+    StorageAsset resolve(String toPath);
 }

@@ -23,6 +23,8 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.commons.io.FilenameUtils;
 
 import java.nio.file.Path;
@@ -79,7 +81,7 @@ public class ArtifactBuilder
 
         ref.setClassifier( classifier );
         ref.setType( type );
-        Path file = managedRepositoryContent.toFile( ref );
+        StorageAsset file = managedRepositoryContent.toFile( ref );
 
         String extension = getExtensionFromFile(file);
         
@@ -124,10 +126,10 @@ public class ArtifactBuilder
     /**
      * Extract file extension
      */
-    String getExtensionFromFile( Path file )
+    String getExtensionFromFile( StorageAsset file )
     {
         // we are just interested in the section after the last -
-        String[] parts = file.getFileName().toString().split( "-" );
+        String[] parts = file.getName().split( "-" );
         if ( parts.length > 0 )
         {
             // get anything after a dot followed by a letter a-z, including other dots
@@ -139,7 +141,7 @@ public class ArtifactBuilder
             }
         }
         // just in case
-        return FilenameUtils.getExtension( file.toFile().getName() );
+        return StorageUtil.getExtension( file );
     }
 
 }

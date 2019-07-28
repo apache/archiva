@@ -22,8 +22,7 @@ package org.apache.archiva.repository.maven2;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.configuration.*;
 import org.apache.archiva.repository.*;
-import org.apache.archiva.repository.content.FilesystemAsset;
-import org.apache.archiva.repository.content.FilesystemStorage;
+import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.features.ArtifactCleanupFeature;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
@@ -298,11 +297,19 @@ public class MavenRepositoryProvider implements RepositoryProvider {
             IndexCreationFeature indexCreationFeature = repositoryGroup.getFeature( IndexCreationFeature.class ).get();
             indexCreationFeature.setIndexPath( getURIFromString(configuration.getMergedIndexPath()) );
             Path localPath = Paths.get(configuration.getMergedIndexPath());
-            if (localPath.isAbsolute()) {
-                indexCreationFeature.setLocalIndexPath( new FilesystemAsset(localPath.getFileName().toString(), localPath) );
+            Path repoGroupPath = repositoryGroup.getAsset("").getFilePath().toAbsolutePath();
+            if (localPath.isAbsolute() && !localPath.startsWith(repoGroupPath)) {
+                try {
+                    FilesystemStorage storage = new FilesystemStorage(localPath.getParent(), fileLockManager);
+                    indexCreationFeature.setLocalIndexPath(storage.getAsset(localPath.getFileName().toString()));
+                } catch (IOException e) {
+                    throw new RepositoryException("Could not initialize storage for index path "+localPath);
+                }
+            } else if (localPath.isAbsolute()) {
+                indexCreationFeature.setLocalIndexPath(repositoryGroup.getAsset(repoGroupPath.relativize(localPath).toString()));
             } else
             {
-                indexCreationFeature.setLocalIndexPath( new FilesystemAsset(localPath.toString(), archivaConfiguration.getRepositoryGroupBaseDir( ).resolve( localPath )));
+                indexCreationFeature.setLocalIndexPath(repositoryGroup.getAsset(localPath.toString()));
             }
         }
         // References to other repositories are set filled by the registry

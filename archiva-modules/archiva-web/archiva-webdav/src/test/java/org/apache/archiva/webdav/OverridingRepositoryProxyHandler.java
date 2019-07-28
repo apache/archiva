@@ -22,6 +22,7 @@ package org.apache.archiva.webdav;
 import org.apache.archiva.proxy.maven.MavenRepositoryProxyHandler;
 import org.apache.archiva.proxy.model.ProxyFetchResult;
 import org.apache.archiva.repository.ManagedRepositoryContent;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
@@ -40,10 +41,10 @@ class OverridingRepositoryProxyHandler
     @Override
     public ProxyFetchResult fetchMetadataFromProxies(ManagedRepositoryContent repository, String logicalPath )
     {
-        Path target = Paths.get(repository.getRepoRoot(), logicalPath );
+        StorageAsset target = repository.getRepository().getAsset( logicalPath );
         try
         {
-            FileUtils.copyFile( archivaDavResourceFactoryTest.getProjectBase().resolve( "target/test-classes/maven-metadata.xml" ).toFile(), target.toFile() );
+            FileUtils.copyFile( archivaDavResourceFactoryTest.getProjectBase().resolve( "target/test-classes/maven-metadata.xml" ).toFile(), target.getFilePath().toFile() );
         }
         catch ( IOException e )
         {

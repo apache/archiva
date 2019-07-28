@@ -40,6 +40,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-storage-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
       <artifactId>archiva-checksum</artifactId>
     </dependency>
     <dependency>
@@ -80,6 +84,11 @@
           <artifactId>commons-logging</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>archiva-storage-fs</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.archiva</groupId>

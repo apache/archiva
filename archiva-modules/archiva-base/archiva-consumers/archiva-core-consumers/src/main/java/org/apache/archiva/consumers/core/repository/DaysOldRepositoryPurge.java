@@ -28,6 +28,7 @@ import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.events.RepositoryListener;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang.time.DateUtils;
 
 import java.io.IOException;
@@ -115,12 +116,12 @@ public class DaysOldRepositoryPurge
                     artifactFile.toAbsolutePath( ).toString() );
                 newArtifactReference.setVersion( version );
 
-                Path newArtifactFile = repository.toFile( newArtifactReference );
+                StorageAsset newArtifactFile = repository.toFile( newArtifactReference );
 
                 // Is this a generic snapshot "1.0-SNAPSHOT" ?
                 if ( VersionUtil.isGenericSnapshot( newArtifactReference.getVersion( ) ) )
                 {
-                    if ( Files.getLastModifiedTime( newArtifactFile ).toMillis() < olderThanThisDate.getTimeInMillis( ) )
+                    if ( newArtifactFile.getModificationTime().toEpochMilli() < olderThanThisDate.getTimeInMillis( ) )
                     {
                         artifactsToDelete.addAll( repository.getRelatedArtifacts( newArtifactReference ) );
                     }
@@ -138,7 +139,7 @@ public class DaysOldRepositoryPurge
             }
             purge( artifactsToDelete );
         }
-        catch ( ContentNotFoundException | IOException e )
+        catch ( ContentNotFoundException e )
         {
             throw new RepositoryPurgeException( e.getMessage( ), e );
         }

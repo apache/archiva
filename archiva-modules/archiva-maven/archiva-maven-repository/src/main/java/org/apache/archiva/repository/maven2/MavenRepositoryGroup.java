@@ -22,13 +22,12 @@ package org.apache.archiva.repository.maven2;
 import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.repository.*;
-import org.apache.archiva.repository.content.FilesystemStorage;
+import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
 

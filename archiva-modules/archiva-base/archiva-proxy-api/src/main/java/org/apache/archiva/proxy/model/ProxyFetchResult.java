@@ -20,9 +20,7 @@ package org.apache.archiva.proxy.model;
  */
 
 
-import org.apache.archiva.repository.content.StorageAsset;
-
-import java.nio.file.Path;
+import org.apache.archiva.repository.storage.StorageAsset;
 
 /**
  * A result from a proxy fetch operation.

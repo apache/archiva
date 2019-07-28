@@ -43,6 +43,8 @@ import org.apache.archiva.repository.ReleaseScheme;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.metadata.MetadataTools;
+import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.archiva.rest.api.model.*;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.api.services.BrowseService;
@@ -62,6 +64,8 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -696,8 +700,8 @@ public class DefaultBrowseService
                 ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version, classifier,
                                                                        StringUtils.isEmpty( type ) ? "jar" : type,
                                                                        repoId );
-                Path file = managedRepositoryContent.toFile( archivaArtifact );
-                if ( Files.exists(file) )
+                StorageAsset file = managedRepositoryContent.toFile( archivaArtifact );
+                if ( file.exists() )
                 {
                     return readFileEntries( file, path, repoId );
                 }
@@ -781,8 +785,8 @@ public class DefaultBrowseService
                 ArchivaArtifact archivaArtifact = new ArchivaArtifact( groupId, artifactId, version, classifier,
                                                                        StringUtils.isEmpty( type ) ? "jar" : type,
                                                                        repoId );
-                Path file = managedRepositoryContent.toFile( archivaArtifact );
-                if ( !Files.exists(file) )
+                StorageAsset file = managedRepositoryContent.toFile( archivaArtifact );
+                if ( !file.exists() )
                 {
                     log.debug( "file: {} not exists for repository: {} try next repository", file, repoId );
                     continue;
@@ -790,7 +794,8 @@ public class DefaultBrowseService
                 if ( StringUtils.isNotBlank( path ) )
                 {
                     // zip entry of the path -> path must a real file entry of the archive
-                    JarFile jarFile = new JarFile( file.toFile() );
+                    StorageUtil.PathInformation pathInfo = StorageUtil.getAssetDataAsPath(file);
+                    JarFile jarFile = new JarFile( pathInfo.getPath().toFile());
                     ZipEntry zipEntry = jarFile.getEntry( path );
                     try (InputStream inputStream = jarFile.getInputStream( zipEntry ))
                     {
@@ -799,9 +804,14 @@ public class DefaultBrowseService
                     finally
                     {
                         closeQuietly( jarFile );
+                        if (pathInfo.isTmpFile()) {
+                            Files.deleteIfExists(pathInfo.getPath());
+                        }
                     }
                 }
-                return new ArtifactContent( new String(Files.readAllBytes( file ), ARTIFACT_CONTENT_ENCODING), repoId );
+                try(InputStream readStream = file.getReadStream()) {
+                    return new ArtifactContent(IOUtils.toString(readStream, ARTIFACT_CONTENT_ENCODING), repoId);
+                }
             }
         }
         catch ( IOException e )
@@ -846,9 +856,9 @@ public class DefaultBrowseService
                                                                        StringUtils.isEmpty( classifier )
                                                                            ? ""
                                                                            : classifier, "jar", repoId );
-                Path file = managedRepositoryContent.toFile( archivaArtifact );
+                StorageAsset file = managedRepositoryContent.toFile( archivaArtifact );
 
-                if ( file != null && Files.exists(file) )
+                if ( file != null && file.exists() )
                 {
                     return true;
                 }
@@ -856,8 +866,8 @@ public class DefaultBrowseService
                 // in case of SNAPSHOT we can have timestamped version locally !
                 if ( StringUtils.endsWith( version, VersionUtil.SNAPSHOT ) )
                 {
-                    Path metadataFile = file.getParent().resolve(MetadataTools.MAVEN_METADATA );
-                    if ( Files.exists(metadataFile) )
+                    StorageAsset metadataFile = file.getStorage().getAsset(file.getParent().getPath()+"/"+MetadataTools.MAVEN_METADATA );
+                    if ( metadataFile.exists() )
                     {
                         try
                         {
@@ -873,14 +883,14 @@ public class DefaultBrowseService
                                 .append( ( StringUtils.isEmpty( classifier ) ? "" : "-" + classifier ) ) //
                                 .append( ".jar" ).toString();
 
-                            Path timeStampFile = file.getParent().resolve( timeStampFileName );
-                            log.debug( "try to find timestamped snapshot version file: {}", timeStampFile.toAbsolutePath() );
-                            if ( Files.exists(timeStampFile) )
+                            StorageAsset timeStampFile = file.getStorage().getAsset(file.getParent().getPath() + "/" + timeStampFileName );
+                            log.debug( "try to find timestamped snapshot version file: {}", timeStampFile.getPath() );
+                            if ( timeStampFile.exists() )
                             {
                                 return true;
                             }
                         }
-                        catch ( XMLException e )
+                        catch (XMLException | IOException e )
                         {
                             log.warn( "skip fail to find timestamped snapshot file: {}", e.getMessage() );
                         }
@@ -891,7 +901,7 @@ public class DefaultBrowseService
 
                 file = proxyHandler.fetchFromProxies( managedRepositoryContent, path );
 
-                if ( file != null && Files.exists(file) )
+                if ( file != null && file.exists() )
                 {
                     // download pom now
                     String pomPath = StringUtils.substringBeforeLast( path, ".jar" ) + ".pom";
@@ -1075,7 +1085,7 @@ public class DefaultBrowseService
         }
     }
 
-    protected List<ArtifactContentEntry> readFileEntries(final Path file, final String filterPath, final String repoId )
+    protected List<ArtifactContentEntry> readFileEntries(final StorageAsset file, final String filterPath, final String repoId )
         throws IOException
     {
         String cleanedfilterPath = filterPath==null ? "" : (StringUtils.startsWith(filterPath, "/") ?
@@ -1085,7 +1095,9 @@ public class DefaultBrowseService
         if (!StringUtils.endsWith(cleanedfilterPath,"/") && !StringUtils.isEmpty(cleanedfilterPath)) {
             filterDepth++;
         }
-        JarFile jarFile = new JarFile( file.toFile() );
+
+        StorageUtil.PathInformation pathInfo = StorageUtil.getAssetDataAsPath(file);
+        JarFile jarFile = new JarFile(pathInfo.getPath().toFile());
         try
         {
             Enumeration<JarEntry> jarEntryEnumeration = jarFile.entries();
@@ -1140,6 +1152,9 @@ public class DefaultBrowseService
             if ( jarFile != null )
             {
                 jarFile.close();
+            }
+            if (pathInfo.isTmpFile()) {
+                Files.deleteIfExists(pathInfo.getPath());
             }
         }
         List<ArtifactContentEntry> sorted = new ArrayList<>( artifactContentEntryMap.values() );

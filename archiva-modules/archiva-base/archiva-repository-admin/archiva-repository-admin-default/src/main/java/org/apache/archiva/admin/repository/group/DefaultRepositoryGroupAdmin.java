@@ -29,11 +29,11 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.RepositoryGroupConfiguration;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.indexer.merger.MergedRemoteIndexesScheduler;
-import org.apache.archiva.repository.EditableRepository;
 import org.apache.archiva.repository.EditableRepositoryGroup;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.features.IndexCreationFeature;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +47,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,9 +109,14 @@ public class DefaultRepositoryGroupAdmin
 
 
     @Override
-    public Path getMergedIndexDirectory( String repositoryGroupId )
+    public StorageAsset getMergedIndexDirectory(String repositoryGroupId )
     {
-        return groupsDirectory.resolve( repositoryGroupId );
+        org.apache.archiva.repository.RepositoryGroup group = repositoryRegistry.getRepositoryGroup(repositoryGroupId);
+        if (group!=null) {
+            return group.getFeature(IndexCreationFeature.class).get().getLocalIndexPath();
+        } else {
+            return null;
+        }
     }
 
     @Override

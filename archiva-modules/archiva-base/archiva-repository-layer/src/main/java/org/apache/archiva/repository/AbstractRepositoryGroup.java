@@ -19,18 +19,13 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.repository.content.RepositoryStorage;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.commons.collections4.map.ListOrderedMap;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.Consumer;
 
 /**
  * Abstract repository group implementation.

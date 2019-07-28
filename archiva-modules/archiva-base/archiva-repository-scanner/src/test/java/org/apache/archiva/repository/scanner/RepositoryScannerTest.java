@@ -29,7 +29,7 @@ import org.apache.archiva.repository.BasicRemoteRepository;
 import org.apache.archiva.repository.EditableManagedRepository;
 import org.apache.archiva.repository.EditableRemoteRepository;
 import org.apache.archiva.repository.ManagedRepository;
-import org.apache.archiva.repository.content.FilesystemStorage;
+import org.apache.archiva.repository.storage.FilesystemStorage;
 import org.apache.archiva.repository.scanner.mock.ManagedRepositoryContentMock;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;

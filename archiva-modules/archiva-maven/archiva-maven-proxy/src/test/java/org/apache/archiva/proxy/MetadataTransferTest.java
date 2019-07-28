@@ -19,6 +19,7 @@ package org.apache.archiva.proxy;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.configuration.ProxyConnectorConfiguration;
 import org.apache.archiva.maven2.metadata.MavenMetadataReader;
@@ -34,6 +35,8 @@ import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.TransferFailedException;
 import org.custommonkey.xmlunit.DetailedDiff;
@@ -125,7 +128,7 @@ public class MetadataTransferTest
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        Path downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -988,7 +991,7 @@ public class MetadataTransferTest
 
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        Path downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -1014,7 +1017,7 @@ public class MetadataTransferTest
         Path expectedFile = managedDefaultDir.resolve(requestedResource);
         ProjectReference metadata = createProjectReference( requestedResource );
 
-        Path downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -1035,7 +1038,7 @@ public class MetadataTransferTest
 
         VersionedReference metadata = createVersionedReference( requestedResource );
 
-        Path downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -1061,7 +1064,7 @@ public class MetadataTransferTest
         Path expectedFile = managedDefaultDir.resolve(requestedResource);
         VersionedReference metadata = createVersionedReference( requestedResource );
 
-        Path downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
+        StorageAsset downloadedFile = proxyHandler.fetchMetadataFromProxies( managedDefaultRepository,
                                                                      managedDefaultRepository.toMetadataPath(
                                                                          metadata ) ).getFile();
 
@@ -1090,7 +1093,9 @@ public class MetadataTransferTest
         assertTrue( "Actual file exists.", Files.exists(actualFile) );
 
         StringWriter actualContents = new StringWriter();
-        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( actualFile );
+        FilesystemStorage fsStorage = new FilesystemStorage(actualFile.getParent(), new DefaultFileLockManager());
+        StorageAsset actualFileAsset = fsStorage.getAsset(actualFile.getFileName().toString());
+        ArchivaRepositoryMetadata metadata = MavenMetadataReader.read( actualFileAsset );
         RepositoryMetadataWriter.write( metadata, actualContents );
 
         DetailedDiff detailedDiff = new DetailedDiff( new Diff( expectedMetadataXml, actualContents.toString() ) );

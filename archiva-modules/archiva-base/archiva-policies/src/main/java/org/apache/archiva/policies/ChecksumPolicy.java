@@ -22,7 +22,7 @@ package org.apache.archiva.policies;
 import org.apache.archiva.checksum.ChecksumAlgorithm;
 import org.apache.archiva.checksum.ChecksummedFile;
 import org.apache.archiva.checksum.UpdateStatus;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

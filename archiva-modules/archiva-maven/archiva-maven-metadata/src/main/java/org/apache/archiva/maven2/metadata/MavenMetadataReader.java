@@ -21,6 +21,7 @@ package org.apache.archiva.maven2.metadata;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.Plugin;
 import org.apache.archiva.model.SnapshotVersion;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
 import org.apache.archiva.xml.XMLReader;
 import org.apache.commons.lang.math.NumberUtils;
@@ -64,6 +65,14 @@ public class MavenMetadataReader
 
     private static final Logger log = LoggerFactory.getLogger( MavenMetadataReader.class );
 
+    public static ArchivaRepositoryMetadata read(StorageAsset metadataFile) throws XMLException, IOException {
+        if (metadataFile.isFileBased()) {
+            return read(metadataFile.getFilePath());
+        } else {
+            throw new IOException("StorageAsset is not file based");
+        }
+    }
+
     /**
      * Read and return the {@link org.apache.archiva.model.ArchivaRepositoryMetadata} object from the provided xml file.
      *
@@ -72,8 +81,7 @@ public class MavenMetadataReader
      * @throws XMLException
      */
     public static ArchivaRepositoryMetadata read( Path metadataFile )
-        throws XMLException
-    {
+            throws XMLException, IOException {
 
         XMLReader xml = new XMLReader( "metadata", metadataFile );
         // invoke this to remove namespaces, see MRM-1136
@@ -85,25 +93,9 @@ public class MavenMetadataReader
         metadata.setArtifactId( xml.getElementText( "//metadata/artifactId" ) );
         metadata.setVersion( xml.getElementText( "//metadata/version" ) );
         Date modTime;
-        try
-        {
-            modTime = new Date(Files.getLastModifiedTime( metadataFile ).toMillis( ));
-        }
-        catch ( IOException e )
-        {
-            modTime = new Date();
-            log.error("Could not read modification time of {}", metadataFile);
-        }
+        modTime = new Date(Files.getLastModifiedTime(metadataFile).toMillis());
         metadata.setFileLastModified( modTime );
-        try
-        {
-            metadata.setFileSize( Files.size( metadataFile ) );
-        }
-        catch ( IOException e )
-        {
-            metadata.setFileSize( 0 );
-            log.error("Could not read file size of {}", metadataFile);
-        }
+        metadata.setFileSize( Files.size(metadataFile) );
 
         metadata.setLastUpdated( xml.getElementText( "//metadata/versioning/lastUpdated" ) );
         metadata.setLatestVersion( xml.getElementText( "//metadata/versioning/latest" ) );

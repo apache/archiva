@@ -27,6 +27,7 @@ import org.apache.archiva.xml.XMLException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -41,8 +42,7 @@ public class RepositoryMetadataReaderTest
 {
     @Test
     public void testLoadSimple()
-        throws XMLException
-    {
+            throws XMLException, IOException {
         Path defaultRepoDir = Paths.get( "src/test/repositories/default-repository" );
         Path metadataFile = defaultRepoDir.resolve( "org/apache/maven/shared/maven-downloader/maven-metadata.xml" );
 
@@ -59,8 +59,7 @@ public class RepositoryMetadataReaderTest
 
     @Test
     public void testLoadComplex()
-        throws XMLException
-    {
+            throws XMLException, IOException {
         Path defaultRepoDir = Paths.get( "src/test/repositories/default-repository" );
         Path metadataFile = defaultRepoDir.resolve( "org/apache/maven/samplejar/maven-metadata.xml" );
 

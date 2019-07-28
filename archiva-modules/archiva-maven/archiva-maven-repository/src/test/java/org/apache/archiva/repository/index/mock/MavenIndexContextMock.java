@@ -19,12 +19,14 @@ package org.apache.archiva.repository.index.mock;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.maven.index.context.IndexingContext;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.sql.Date;
@@ -38,10 +40,12 @@ public class MavenIndexContextMock implements ArchivaIndexingContext {
 
     private IndexingContext delegate;
     private Repository repository;
+    private FilesystemStorage indexStorage;
 
-    MavenIndexContextMock(Repository repository, IndexingContext delegate) {
+    MavenIndexContextMock(Repository repository, IndexingContext delegate) throws IOException {
         this.delegate = delegate;
         this.repository = repository;
+        indexStorage = new FilesystemStorage(delegate.getIndexDirectoryFile().toPath(), new DefaultFileLockManager());
 
     }
 
@@ -56,8 +60,8 @@ public class MavenIndexContextMock implements ArchivaIndexingContext {
     }
 
     @Override
-    public URI getPath() {
-        return delegate.getIndexDirectoryFile().toURI();
+    public StorageAsset getPath() {
+        return indexStorage.getAsset("");
     }
 
     @Override

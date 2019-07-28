@@ -18,6 +18,8 @@ package org.apache.archiva.indexer.merger;
  * under the License.
  */
 
+import org.apache.archiva.repository.storage.StorageAsset;
+
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Date;
@@ -30,7 +32,7 @@ public class TemporaryGroupIndex
 {
     private long creationTime = new Date().getTime();
 
-    private Path directory;
+    private StorageAsset directory;
 
     private String indexId;
 
@@ -38,7 +40,7 @@ public class TemporaryGroupIndex
 
     private int mergedIndexTtl;
 
-    public TemporaryGroupIndex(Path directory, String indexId, String groupId, int mergedIndexTtl)
+    public TemporaryGroupIndex(StorageAsset directory, String indexId, String groupId, int mergedIndexTtl)
     {
         this.directory = directory;
         this.indexId = indexId;
@@ -57,12 +59,12 @@ public class TemporaryGroupIndex
         return this;
     }
 
-    public Path getDirectory()
+    public StorageAsset getDirectory()
     {
         return directory;
     }
 
-    public TemporaryGroupIndex setDirectory( Path directory )
+    public TemporaryGroupIndex setDirectory( StorageAsset directory )
     {
         this.directory = directory;
         return this;

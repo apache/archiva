@@ -23,6 +23,7 @@ import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -78,13 +79,13 @@ public class Maven2RepositoryPathTranslator
     }
 
     @Override
-    public Path toFile(Path basedir, String namespace, String projectId, String projectVersion, String filename )
+    public StorageAsset toFile(StorageAsset basedir, String namespace, String projectId, String projectVersion, String filename )
     {
         return basedir.resolve( toPath( namespace, projectId, projectVersion, filename ) );
     }
 
     @Override
-    public Path toFile( Path basedir, String namespace, String projectId, String projectVersion )
+    public StorageAsset toFile( StorageAsset basedir, String namespace, String projectId, String projectVersion )
     {
         return basedir.resolve( toPath( namespace, projectId, projectVersion ) );
     }
@@ -148,13 +149,13 @@ public class Maven2RepositoryPathTranslator
     }
 
     @Override
-    public Path toFile( Path basedir, String namespace, String projectId )
+    public StorageAsset toFile( StorageAsset basedir, String namespace, String projectId )
     {
         return basedir.resolve( toPath( namespace, projectId ) );
     }
 
     @Override
-    public Path toFile( Path basedir, String namespace )
+    public StorageAsset toFile( StorageAsset basedir, String namespace )
     {
         return basedir.resolve( toPath( namespace ) );
     }

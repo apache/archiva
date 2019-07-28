@@ -28,7 +28,7 @@ import org.apache.archiva.proxy.ProxyException;
 import org.apache.archiva.proxy.model.NetworkProxy;
 import org.apache.archiva.proxy.model.ProxyConnector;
 import org.apache.archiva.repository.*;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
@@ -113,7 +113,7 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
      * @throws NotModifiedException
      */
     protected void transferResources( ProxyConnector connector, RemoteRepositoryContent remoteRepository,
-                                      Path tmpResource, Path[] checksumFiles, String url, String remotePath, StorageAsset resource,
+                                      StorageAsset tmpResource, StorageAsset[] checksumFiles, String url, String remotePath, StorageAsset resource,
                                       Path workingDirectory, ManagedRepositoryContent repository )
             throws ProxyException, NotModifiedException {
         Wagon wagon = null;
@@ -153,9 +153,9 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
                 // to
                 // save on connections since md5 is rarely used
                 for (int i=0; i<checksumFiles.length; i++) {
-                    String ext = "."+StringUtils.substringAfterLast( checksumFiles[i].getFileName( ).toString( ), "." );
+                    String ext = "."+StringUtils.substringAfterLast(checksumFiles[i].getName( ), "." );
                     transferChecksum(wagon, remoteRepository, remotePath, repository, resource.getFilePath(), ext,
-                        checksumFiles[i]);
+                        checksumFiles[i].getFilePath());
                 }
             }
         } catch (NotFoundException e) {
@@ -182,9 +182,9 @@ public class MavenRepositoryProxyHandler extends DefaultRepositoryProxyHandler {
 
     protected void transferArtifact(Wagon wagon, RemoteRepositoryContent remoteRepository, String remotePath,
                                     ManagedRepositoryContent repository, Path resource, Path tmpDirectory,
-                                    Path destFile)
+                                    StorageAsset destFile)
             throws ProxyException {
-        transferSimpleFile(wagon, remoteRepository, remotePath, repository, resource, destFile);
+        transferSimpleFile(wagon, remoteRepository, remotePath, repository, resource, destFile.getFilePath());
     }
 
     /**

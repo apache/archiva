@@ -24,7 +24,7 @@ import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.repository.LayoutException;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.content.FilesystemAsset;
+import org.apache.archiva.repository.storage.FilesystemAsset;
 import org.apache.archiva.repository.events.AuditListener;
 import org.apache.archiva.repository.maven2.MavenManagedRepository;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -127,7 +127,7 @@ public class DavResourceTest
 
     private DavResource getDavResource( String logicalPath, Path file ) throws LayoutException
     {
-        return new ArchivaDavResource( new FilesystemAsset( logicalPath, file.toAbsolutePath()) , logicalPath, repository, session, resourceLocator,
+        return new ArchivaDavResource( new FilesystemAsset( repository, logicalPath, file.toAbsolutePath()) , logicalPath, repository, session, resourceLocator,
                                        resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(), null);
     }
 
@@ -349,7 +349,7 @@ public class DavResourceTest
         {
             try
             {
-                return new ArchivaDavResource( new FilesystemAsset( "/" , baseDir.toAbsolutePath()), "/", repository, session, resourceLocator,
+                return new ArchivaDavResource( new FilesystemAsset(repository, "/" , baseDir.toAbsolutePath()), "/", repository, session, resourceLocator,
                                                resourceFactory, mimeTypes, Collections.<AuditListener> emptyList(),
                                                null );
             }

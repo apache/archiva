@@ -21,10 +21,8 @@ package org.apache.archiva.indexer;
 
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryType;
-import org.apache.archiva.repository.content.StorageAsset;
 
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 

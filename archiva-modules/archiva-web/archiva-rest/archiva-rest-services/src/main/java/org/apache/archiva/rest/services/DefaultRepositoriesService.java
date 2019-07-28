@@ -54,9 +54,9 @@ import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryException;
 import org.apache.archiva.repository.RepositoryNotFoundException;
 import org.apache.archiva.repository.RepositoryRegistry;
-import org.apache.archiva.repository.content.RepositoryStorage;
-import org.apache.archiva.repository.content.StorageAsset;
-import org.apache.archiva.repository.content.StorageUtil;
+import org.apache.archiva.repository.storage.RepositoryStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
+import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
@@ -89,11 +89,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.nio.file.FileSystems;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -522,7 +521,7 @@ public class DefaultRepositoriesService
             {
                 metadata = MavenMetadataReader.read( metadataFile.getFilePath() );
             }
-            catch ( XMLException e )
+            catch (XMLException | IOException e )
             {
                 throw new RepositoryMetadataException( e.getMessage(), e );
             }
@@ -543,7 +542,7 @@ public class DefaultRepositoriesService
         throws IOException
     {
 
-        StorageUtil.copyAsset( sourceStorage, sourceFile, targetStorage, targetPath, true );
+        StorageUtil.copyAsset( sourceFile, targetPath, true );
         if ( fixChecksums )
         {
             fixChecksums( targetPath );
@@ -612,7 +611,11 @@ public class DefaultRepositoriesService
             projectMetadata.setReleasedVersion( latestVersion );
         }
 
-        RepositoryMetadataWriter.write( projectMetadata, projectMetadataFile.getFilePath());
+        try(OutputStreamWriter writer = new OutputStreamWriter(projectMetadataFile.getWriteStream(true))) {
+            RepositoryMetadataWriter.write(projectMetadata, writer);
+        } catch (IOException e) {
+            throw new RepositoryMetadataException(e);
+        }
 
         if ( fixChecksums )
         {
@@ -1177,7 +1180,11 @@ public class DefaultRepositoriesService
         metadata.setLastUpdatedTimestamp( lastUpdatedTimestamp );
         metadata.setAvailableVersions( availableVersions );
 
-        RepositoryMetadataWriter.write( metadata, metadataFile.getFilePath());
+        try (OutputStreamWriter writer = new OutputStreamWriter(metadataFile.getWriteStream(true))) {
+            RepositoryMetadataWriter.write(metadata, writer);
+        } catch (IOException e) {
+            throw new RepositoryMetadataException(e);
+        }
         ChecksummedFile checksum = new ChecksummedFile( metadataFile.getFilePath() );
         checksum.fixChecksums( algorithms );
     }

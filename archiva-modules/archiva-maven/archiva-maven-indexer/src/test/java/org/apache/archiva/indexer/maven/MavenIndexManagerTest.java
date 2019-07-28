@@ -208,7 +208,7 @@ public class MavenIndexManagerTest {
         assertNotNull(ctx);
         assertEquals(repository, ctx.getRepository());
         assertEquals("test-repo", ctx.getId());
-        assertEquals(indexPath.toAbsolutePath(), Paths.get(ctx.getPath()).toAbsolutePath());
+        assertEquals(indexPath.toAbsolutePath(), ctx.getPath().getFilePath().toAbsolutePath());
         assertTrue(Files.exists(indexPath));
         List<Path> li = Files.list(indexPath).collect(Collectors.toList());
         assertTrue(li.size()>0);

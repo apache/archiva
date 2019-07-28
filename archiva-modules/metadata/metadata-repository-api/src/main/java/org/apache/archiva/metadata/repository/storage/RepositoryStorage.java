@@ -28,6 +28,7 @@ import org.apache.archiva.policies.ProxyDownloadException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.xml.XMLException;
 
+import java.io.IOException;
 import java.util.Collection;
 
 // FIXME: we should drop the repositoryId parameters and attach this to an instance of a repository storage
@@ -83,7 +84,7 @@ public interface RepositoryStorage
     String getFilePath( String requestPath, org.apache.archiva.repository.ManagedRepository managedRepository );
 
     String getFilePathWithVersion( final String requestPath, ManagedRepositoryContent managedRepositoryContent )
-        throws RelocationException, XMLException;
+            throws RelocationException, XMLException, IOException;
 
 
 }

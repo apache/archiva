@@ -21,8 +21,8 @@ package org.apache.archiva.admin.model.group;
 import org.apache.archiva.admin.model.AuditInformation;
 import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
+import org.apache.archiva.repository.storage.StorageAsset;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -75,5 +75,5 @@ public interface RepositoryGroupAdmin
     Map<String, List<String>> getRepositoryToGroupMap()
         throws RepositoryAdminException;
 
-    Path getMergedIndexDirectory(String repositoryGroupId );
+    StorageAsset getMergedIndexDirectory(String repositoryGroupId );
 }

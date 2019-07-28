@@ -1,4 +1,4 @@
-package org.apache.archiva.repository.content;
+package org.apache.archiva.repository.storage;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -28,15 +28,20 @@ import java.nio.file.CopyOption;
 import java.util.function.Consumer;
 
 /**
- * Repository storage gives access to the files and directories on the storage.
- * The storage may be on a filesystem but can be any other storage system.
  *
- * This API is low level repository access. If you use this API you must
- * either have knowledge about the specific repository layout or use the structure
+ * This is the low level API to access artifacts in a repository. Each artifact is represented
+ * by one storage asset. Each asset can be accessed by a path that is independent on the underlying storage
+ * implementation. Paths always use '/' as path separator. The path is local to the repository and
+ * is unique for each asset.
+ * The storage API knows nothing about the repository layout or repository specific metadata.
+ * If you use this API you must either have knowledge about the specific repository layout or use the structure
  * as it is, e.g. for browsing.
  *
- * It is the decision of the implementation, if this API provides access to all elements, or
- * just a selected view.
+ * The base implementation for the storage uses a directory structure on the local filesystem.
+ *
+ *
+ * It is the decision of the repository type specific implementation, if this API provides access to all elements, that
+ * is really stored or just a selected view.
  *
  * Checking access is not part of this API.
  */
@@ -104,7 +109,9 @@ public interface RepositoryStorage {
     void removeAsset(StorageAsset asset) throws IOException;
 
     /**
-     * Moves the asset to the given location and returns the asset object for the destination.
+     * Moves the asset to the given location and returns the asset object for the destination. Moves only assets that
+     * belong to the same storage instance. It will throw a IOException if the assets are from differents storage
+     * instances.
      *
      * @param origin The original asset
      * @param destination The destination path pointing to the new asset.
@@ -114,17 +121,20 @@ public interface RepositoryStorage {
     StorageAsset moveAsset(StorageAsset origin, String destination, CopyOption... copyOptions) throws IOException;
 
     /**
-     * Moves the asset to the new path.
-     *
+     * Moves the asset to the given location and returns the asset object for the destination. Moves only assets that
+     * belong to the same storage instance. It will throw a IOException if the assets are from differents storage
+     * instances.
+     * *
      * @param origin The original asset
-     * @param destination The destination asset.
+     * @param destination The destination path.
      * @param copyOptions The copy options (e.g. {@link java.nio.file.StandardCopyOption#REPLACE_EXISTING}
      * @throws IOException If it was not possible to copy the asset.
      */
     void moveAsset(StorageAsset origin, StorageAsset destination, CopyOption... copyOptions) throws IOException;
 
     /**
-     * Copies the given asset to the new destination.
+     * Copies the given asset to the new destination. Copies only assets that belong to the same storage instance.
+     * It will throw a IOException if the assets are from differents storage instances.
      *
      * @param origin The original asset
      * @param destination The path to the new asset
@@ -135,7 +145,8 @@ public interface RepositoryStorage {
     StorageAsset copyAsset(StorageAsset origin, String destination, CopyOption... copyOptions) throws IOException;
 
     /**
-     * Copies the given asset to the new destination.
+     * Copies the given asset to the new destination. Copies only assets that belong to the same storage instance.
+     * It will throw a IOException if the assets are from differents storage instances.
      *
      * @param origin The original asset
      * @param destination The path to the new asset

@@ -19,7 +19,7 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.util.Properties;
 

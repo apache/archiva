@@ -19,6 +19,7 @@ package org.apache.archiva.mock;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -27,7 +28,6 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
-import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.proxy.maven.WagonFactoryException;
 import org.apache.archiva.proxy.maven.WagonFactoryRequest;
@@ -39,10 +39,12 @@ import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.UnsupportedRepositoryTypeException;
-import org.apache.archiva.repository.content.FilesystemAsset;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.FilesystemAsset;
+import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
+import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
@@ -140,7 +142,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
 
     private Path getIndexPath( ArchivaIndexingContext ctx )
     {
-        return PathUtil.getPathFromUri( ctx.getPath( ) );
+        return ctx.getPath().getFilePath();
     }
 
     @FunctionalInterface
@@ -365,9 +367,9 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
     @Override
     public void addArtifactsToIndex( final ArchivaIndexingContext context, final Collection<URI> artifactReference ) throws IndexUpdateFailedException
     {
-        final URI ctxUri = context.getPath();
+        StorageAsset ctxUri = context.getPath();
         executeUpdateFunction(context, indexingContext -> {
-            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, Paths.get(ctxUri.resolve(r)).toFile())).collect(Collectors.toList());
+            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, Paths.get(ctxUri.getFilePath().toUri().resolve(r)).toFile())).collect(Collectors.toList());
             try {
                 indexer.addArtifactsToIndex(artifacts, indexingContext);
             } catch (IOException e) {
@@ -381,9 +383,9 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
     @Override
     public void removeArtifactsFromIndex( ArchivaIndexingContext context, Collection<URI> artifactReference ) throws IndexUpdateFailedException
     {
-        final URI ctxUri = context.getPath();
+        final StorageAsset ctxUri = context.getPath();
         executeUpdateFunction(context, indexingContext -> {
-            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, Paths.get(ctxUri.resolve(r)).toFile())).collect(Collectors.toList());
+            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, Paths.get(ctxUri.getFilePath().toUri().resolve(r)).toFile())).collect(Collectors.toList());
             try {
                 indexer.deleteArtifactsFromIndex(artifacts, indexingContext);
             } catch (IOException e) {
@@ -442,7 +444,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
                 log.warn("Index close failed");
             }
             try {
-                FileUtils.deleteDirectory(Paths.get(context.getPath()));
+                StorageUtil.deleteRecursively(context.getPath());
             } catch (IOException e) {
                 throw new IndexUpdateFailedException("Could not delete index files");
             }
@@ -517,6 +519,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
         URI indexDir = icf.getIndexPath();
         String indexPath = indexDir.getPath();
         Path indexDirectory = null;
+        FilesystemStorage filesystemStorage = (FilesystemStorage) repo.getAsset("").getStorage();
         if ( ! StringUtils.isEmpty(indexDir.toString( ) ) )
         {
 
@@ -525,6 +528,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
             if ( indexDirectory.isAbsolute( ) )
             {
                 indexPath = indexDirectory.getFileName().toString();
+                filesystemStorage = new FilesystemStorage(indexDirectory, new DefaultFileLockManager());
             }
             else
             {
@@ -541,7 +545,7 @@ public class ArchivaIndexManagerMock implements ArchivaIndexManager {
         {
             Files.createDirectories( indexDirectory );
         }
-        return new FilesystemAsset( indexPath, indexDirectory);
+        return new FilesystemAsset( filesystemStorage, indexPath, indexDirectory);
     }
 
     private IndexingContext createRemoteContext(RemoteRepository remoteRepository ) throws IOException

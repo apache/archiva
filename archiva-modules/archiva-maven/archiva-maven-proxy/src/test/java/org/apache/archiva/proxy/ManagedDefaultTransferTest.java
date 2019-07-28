@@ -24,6 +24,7 @@ import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
@@ -64,7 +65,7 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, true );
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
         assertNull( "File should not have been downloaded", downloadedFile );
     }
 
@@ -86,10 +87,10 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path sourceFile = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, sourceFile );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), sourceFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -110,13 +111,13 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
 
         Path sourceFile = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, sourceFile );
-        assertFalse( Files.exists( downloadedFile.getParent().resolve(downloadedFile.getFileName() + ".sha1" )) );
-        assertFalse( Files.exists(downloadedFile.getParent().resolve(downloadedFile.getFileName() + ".md5" ) ));
-        assertFalse( Files.exists( downloadedFile.getParent().resolve(downloadedFile.getFileName() + ".asc" ) ));
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), sourceFile );
+        assertFalse( Files.exists( downloadedFile.getParent().getFilePath().resolve(downloadedFile.getName() + ".sha1" )) );
+        assertFalse( Files.exists(downloadedFile.getParent().getFilePath().resolve(downloadedFile.getName() + ".md5" ) ));
+        assertFalse( Files.exists( downloadedFile.getParent().getFilePath().resolve(downloadedFile.getName() + ".asc" ) ));
         assertNoTempFiles( expectedFile );
     }
 
@@ -145,9 +146,9 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertFileEquals( expectedFile, downloadedFile, expectedFile );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), expectedFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -179,9 +180,9 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
 
-        assertNotDownloaded( downloadedFile );
+        assertNotDownloaded( downloadedFile.getFilePath() );
         assertNotModified( expectedFile, originalModificationTime );
         assertNoTempFiles( expectedFile );
     }
@@ -225,9 +226,9 @@ public class ManagedDefaultTransferTest
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile );
+        assertNotDownloaded( downloadedFile.getFilePath() );
         assertNotModified( expectedFile, originalModificationTime );
         assertNoTempFiles( expectedFile );
     }
@@ -270,10 +271,10 @@ public class ManagedDefaultTransferTest
                        SnapshotsPolicy.ALWAYS, CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -302,10 +303,10 @@ public class ManagedDefaultTransferTest
                        CachedFailuresPolicy.NO, false );
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxiedFile = Paths.get(REPOPATH_PROXIED1, path);
-        assertFileEquals( expectedFile, downloadedFile, proxiedFile );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxiedFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -326,15 +327,15 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied1File = Paths.get(REPOPATH_PROXIED1, path);
         Path proxied2File = Paths.get(REPOPATH_PROXIED2, path);
-        assertFileEquals( expectedFile, downloadedFile, proxied1File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied1File );
         assertNoTempFiles( expectedFile );
 
         // TODO: is this check even needed if it passes above? 
-        String actualContents = FileUtils.readFileToString( downloadedFile.toFile(), Charset.defaultCharset() );
+        String actualContents = FileUtils.readFileToString( downloadedFile.getFilePath().toFile(), Charset.defaultCharset() );
         String badContents = FileUtils.readFileToString( proxied2File.toFile(), Charset.defaultCharset() );
         assertFalse( "Downloaded file contents should not be that of proxy 2",
                      StringUtils.equals( actualContents, badContents ) );
@@ -357,10 +358,10 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         Path proxied2File = Paths.get(REPOPATH_PROXIED2, path);
-        assertFileEquals( expectedFile, downloadedFile, proxied2File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied2File );
         assertNoTempFiles( expectedFile );
     }
 
@@ -381,7 +382,7 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         assertNull( "File returned was: " + downloadedFile + "; should have got a not found exception",
                     downloadedFile );
@@ -412,12 +413,12 @@ public class ManagedDefaultTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED2, false );
 
         // Attempt the proxy fetch.
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         wagonMockControl.verify();
 
         Path proxied2File = Paths.get(REPOPATH_PROXIED2, path);
-        assertFileEquals( expectedFile, downloadedFile, proxied2File );
+        assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied2File );
         assertNoTempFiles( expectedFile );
     }
 
@@ -451,9 +452,9 @@ public class ManagedDefaultTransferTest
 
         wagonMockControl.replay();
 
-        Path downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
+        StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile );
+        assertNotDownloaded( downloadedFile.getFilePath() );
 
         wagonMockControl.verify();
         assertNoTempFiles( expectedFile );

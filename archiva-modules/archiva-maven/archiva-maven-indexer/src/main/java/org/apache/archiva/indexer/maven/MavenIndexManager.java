@@ -19,7 +19,6 @@ package org.apache.archiva.indexer.maven;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.RepositoryAdminException;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.configuration.ArchivaConfiguration;
@@ -28,8 +27,6 @@ import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.indexer.IndexCreationFailedException;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.indexer.UnsupportedBaseContextException;
-import org.apache.archiva.indexer.merger.IndexMergerException;
-import org.apache.archiva.indexer.merger.TemporaryGroupIndex;
 import org.apache.archiva.proxy.ProxyRegistry;
 import org.apache.archiva.proxy.maven.WagonFactory;
 import org.apache.archiva.proxy.maven.WagonFactoryException;
@@ -42,10 +39,12 @@ import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.Repository;
 import org.apache.archiva.repository.RepositoryType;
 import org.apache.archiva.repository.UnsupportedRepositoryTypeException;
-import org.apache.archiva.repository.content.FilesystemAsset;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.RepositoryStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.repository.features.IndexCreationFeature;
 import org.apache.archiva.repository.features.RemoteIndexFeature;
+import org.apache.archiva.repository.storage.StorageUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
@@ -142,7 +141,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
     private ProxyRegistry proxyRegistry;
 
 
-    private ConcurrentSkipListSet<Path> activeContexts = new ConcurrentSkipListSet<>( );
+    private ConcurrentSkipListSet<StorageAsset> activeContexts = new ConcurrentSkipListSet<>( );
 
     private static final int WAIT_TIME = 100;
     private static final int MAX_WAIT = 10;
@@ -158,9 +157,9 @@ public class MavenIndexManager implements ArchivaIndexManager {
         return context.getBaseContext( IndexingContext.class );
     }
 
-    private Path getIndexPath( ArchivaIndexingContext ctx )
+    private StorageAsset getIndexPath( ArchivaIndexingContext ctx )
     {
-        return PathUtil.getPathFromUri( ctx.getPath( ) );
+        return ctx.getPath( );
     }
 
     @FunctionalInterface
@@ -185,7 +184,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
         {
             throw new IndexUpdateFailedException( "Maven index is not supported by this context", e );
         }
-        final Path ctxPath = getIndexPath( context );
+        final StorageAsset ctxPath = getIndexPath( context );
         int loop = MAX_WAIT;
         boolean active = false;
         while ( loop-- > 0 && !active )
@@ -395,9 +394,9 @@ public class MavenIndexManager implements ArchivaIndexManager {
     @Override
     public void addArtifactsToIndex( final ArchivaIndexingContext context, final Collection<URI> artifactReference ) throws IndexUpdateFailedException
     {
-        final URI ctxUri = context.getPath();
+        final StorageAsset ctxUri = context.getPath();
         executeUpdateFunction(context, indexingContext -> {
-            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, Paths.get(ctxUri.resolve(r)).toFile())).collect(Collectors.toList());
+            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, Paths.get(ctxUri.getFilePath().toUri().resolve(r)).toFile())).collect(Collectors.toList());
             try {
                 indexer.addArtifactsToIndex(artifacts, indexingContext);
             } catch (IOException e) {
@@ -411,9 +410,9 @@ public class MavenIndexManager implements ArchivaIndexManager {
     @Override
     public void removeArtifactsFromIndex( ArchivaIndexingContext context, Collection<URI> artifactReference ) throws IndexUpdateFailedException
     {
-        final URI ctxUri = context.getPath();
+        final StorageAsset ctxUri = context.getPath();
         executeUpdateFunction(context, indexingContext -> {
-            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, Paths.get(ctxUri.resolve(r)).toFile())).collect(Collectors.toList());
+            Collection<ArtifactContext> artifacts = artifactReference.stream().map(r -> artifactContextProducer.getArtifactContext(indexingContext, Paths.get(ctxUri.getFilePath().toUri().resolve(r)).toFile())).collect(Collectors.toList());
             try {
                 indexer.deleteArtifactsFromIndex(artifacts, indexingContext);
             } catch (IOException e) {
@@ -457,9 +456,8 @@ public class MavenIndexManager implements ArchivaIndexManager {
             throw new IndexCreationFailedException( "Could not create index context for repository " + repository.getId( )
                 + ( StringUtils.isNotEmpty( e.getMessage( ) ) ? ": " + e.getMessage( ) : "" ), e );
         }
-        MavenIndexContext context = new MavenIndexContext( repository, mvnCtx );
 
-        return context;
+        return new MavenIndexContext( repository, mvnCtx );
     }
 
     @Override
@@ -472,7 +470,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
                 log.warn("Index close failed");
             }
             try {
-                FileUtils.deleteDirectory(Paths.get(context.getPath()));
+                StorageUtil.deleteRecursively(context.getPath());
             } catch (IOException e) {
                 throw new IndexUpdateFailedException("Could not delete index files");
             }
@@ -593,51 +591,57 @@ public class MavenIndexManager implements ArchivaIndexManager {
         }
     }
 
-    private StorageAsset getIndexPath(URI indexDir, Path repoDir, String defaultDir) throws IOException
+    private StorageAsset getIndexPath(URI indexDirUri, RepositoryStorage storage, String defaultDir) throws IOException
     {
-        String indexPath = indexDir.getPath();
-        Path indexDirectory = null;
-        if ( ! StringUtils.isEmpty(indexDir.toString( ) ) )
+        Path indexDirectory;
+        Path repositoryPath = storage.getAsset("").getFilePath().toAbsolutePath();
+        StorageAsset indexDir;
+        if ( ! StringUtils.isEmpty(indexDirUri.toString( ) ) )
         {
 
-            indexDirectory = PathUtil.getPathFromUri( indexDir );
+            indexDirectory = PathUtil.getPathFromUri( indexDirUri );
             // not absolute so create it in repository directory
-            if ( indexDirectory.isAbsolute( ) )
+            if ( indexDirectory.isAbsolute( ) && !indexDirectory.startsWith(repositoryPath))
             {
-                indexPath = indexDirectory.getFileName().toString();
+                if (storage instanceof FilesystemStorage) {
+                    FilesystemStorage fsStorage = (FilesystemStorage) storage;
+                    FilesystemStorage indexStorage = new FilesystemStorage(indexDirectory.getParent(), fsStorage.getFileLockManager());
+                    indexDir = indexStorage.getAsset(indexDirectory.getFileName().toString());
+                } else {
+                    throw new IOException("The given storage is not file based.");
+                }
+            } else if (indexDirectory.isAbsolute()) {
+                indexDir = storage.getAsset(repositoryPath.relativize(indexDirectory).toString());
             }
             else
             {
-                indexDirectory = repoDir.resolve( indexDirectory );
+                indexDir = storage.getAsset(indexDirectory.toString());
             }
         }
         else
         {
-            indexDirectory = repoDir.resolve( defaultDir );
-            indexPath = defaultDir;
+            indexDir = storage.getAsset( defaultDir );
         }
 
-        if ( !Files.exists( indexDirectory ) )
+        if ( !indexDir.exists() )
         {
-            Files.createDirectories( indexDirectory );
+            indexDir.create();
         }
-        return new FilesystemAsset( indexPath, indexDirectory);
+        return indexDir;
     }
 
     private StorageAsset getIndexPath( Repository repo) throws IOException {
         IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
-        return getIndexPath( icf.getIndexPath(), repo.getAsset( "" ).getFilePath(), DEFAULT_INDEX_PATH);
+        return getIndexPath( icf.getIndexPath(), repo, DEFAULT_INDEX_PATH);
     }
 
     private StorageAsset getPackedIndexPath(Repository repo) throws IOException {
         IndexCreationFeature icf = repo.getFeature(IndexCreationFeature.class).get();
-        return getIndexPath(icf.getPackedIndexPath(), repo.getAsset( "" ).getFilePath(), DEFAULT_PACKED_INDEX_PATH);
+        return getIndexPath(icf.getPackedIndexPath(), repo, DEFAULT_PACKED_INDEX_PATH);
     }
 
     private IndexingContext createRemoteContext(RemoteRepository remoteRepository ) throws IOException
     {
-        Path appServerBase = archivaConfiguration.getAppServerBaseDir( );
-
         String contextKey = "remote-" + remoteRepository.getId( );
 
 
@@ -648,7 +652,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
             Files.createDirectories( repoDir );
         }
 
-        StorageAsset indexDirectory = null;
+        StorageAsset indexDirectory;
 
         // is there configured indexDirectory ?
         if ( remoteRepository.supportsFeature( RemoteIndexFeature.class ) )
@@ -715,7 +719,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
             }
         }
 
-        StorageAsset indexDirectory = null;
+        StorageAsset indexDirectory;
 
         if ( repository.supportsFeature( IndexCreationFeature.class ) )
         {
@@ -837,23 +841,18 @@ public class MavenIndexManager implements ArchivaIndexManager {
         }
 
         @Override
-        public void connect( String id, String url )
-            throws IOException
-        {
+        public void connect( String id, String url ) {
             //no op
         }
 
         @Override
-        public void disconnect( )
-            throws IOException
-        {
+        public void disconnect( ) {
             // no op
         }
 
         @Override
         public InputStream retrieve( String name )
-            throws IOException, FileNotFoundException
-        {
+            throws IOException {
             try
             {
                 log.info( "index update retrieve file, name:{}", name );

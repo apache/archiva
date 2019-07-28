@@ -23,6 +23,7 @@ import org.apache.archiva.repository.ManagedRepository;
 import org.apache.archiva.repository.ManagedRepositoryContent;
 import org.apache.archiva.repository.RepositoryContentFactory;
 import org.apache.archiva.repository.RepositoryException;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -51,6 +52,21 @@ public class ArtifactUtil {
         final ManagedRepositoryContent content = repositoryContentFactory.getManagedRepositoryContent(repository);
         final String artifactPath = content.toPath( artifactReference );
         return Paths.get(repository.getLocation()).resolve(artifactPath);
+    }
+
+    /**
+     * Returns the physical location of a given artifact in the repository. There is no check for the
+     * existence of the returned file.
+     *
+     * @param repository The repository, where the artifact is stored.
+     * @param artifactReference The artifact reference.
+     * @return The asset representation of the artifact.
+     * @throws RepositoryException
+     */
+    public StorageAsset getArtifactAsset(ManagedRepository repository, ArtifactReference artifactReference) throws RepositoryException {
+        final ManagedRepositoryContent content = repositoryContentFactory.getManagedRepositoryContent(repository);
+        final String artifactPath = content.toPath( artifactReference );
+        return repository.getAsset(artifactPath);
     }
 
 }

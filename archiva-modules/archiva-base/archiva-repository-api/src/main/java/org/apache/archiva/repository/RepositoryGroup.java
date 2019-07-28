@@ -19,8 +19,7 @@ package org.apache.archiva.repository;
  * under the License.
  */
 
-import org.apache.archiva.repository.content.RepositoryStorage;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.RepositoryStorage;
 
 import java.util.List;
 

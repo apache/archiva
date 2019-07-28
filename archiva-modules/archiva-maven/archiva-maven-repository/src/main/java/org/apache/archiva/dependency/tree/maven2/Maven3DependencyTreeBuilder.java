@@ -36,6 +36,7 @@ import org.apache.archiva.repository.RemoteRepository;
 import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.repository.maven2.MavenSystemManager;
 import org.apache.archiva.repository.metadata.MetadataTools;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.artifact.Artifact;
@@ -55,8 +56,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -233,22 +233,22 @@ public class Maven3DependencyTreeBuilder
         for ( String repoId : repositoryIds )
         {
             ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(repoId);
-            Path repoDir = managedRepo.getAsset("").getFilePath();
+            StorageAsset repoDir = managedRepo.getAsset("");
 
-            Path file = pathTranslator.toFile( repoDir, projectArtifact.getGroupId(), projectArtifact.getArtifactId(),
+            StorageAsset file = pathTranslator.toFile( repoDir, projectArtifact.getGroupId(), projectArtifact.getArtifactId(),
                                                projectArtifact.getBaseVersion(),
                                                projectArtifact.getArtifactId() + "-" + projectArtifact.getVersion()
                                                    + ".pom" );
 
-            if ( Files.exists(file) )
+            if ( file.exists() )
             {
                 return managedRepo;
             }
             // try with snapshot version
             if ( StringUtils.endsWith( projectArtifact.getBaseVersion(), VersionUtil.SNAPSHOT ) )
             {
-                Path metadataFile = file.getParent().resolve( MetadataTools.MAVEN_METADATA );
-                if ( Files.exists(metadataFile) )
+                StorageAsset metadataFile = file.getParent().resolve( MetadataTools.MAVEN_METADATA );
+                if ( metadataFile.exists() )
                 {
                     try
                     {
@@ -262,14 +262,14 @@ public class Maven3DependencyTreeBuilder
                                                     "-" + VersionUtil.SNAPSHOT ) ).append( '-' ).append(
                                 timeStamp ).append( '-' ).append( Integer.toString( buildNumber ) ).append(
                                 ".pom" ).toString();
-                        Path timeStampFile = file.getParent().resolve( timeStampFileName );
+                        StorageAsset timeStampFile = file.getParent().resolve( timeStampFileName );
                         log.debug( "try to find timestamped snapshot version file: {}", timeStampFile);
-                        if ( Files.exists(timeStampFile) )
+                        if ( timeStampFile.exists() )
                         {
                             return managedRepo;
                         }
                     }
-                    catch ( XMLException e )
+                    catch (XMLException | IOException e )
                     {
                         log.warn( "skip fail to find timestamped snapshot pom: {}", e.getMessage() );
                     }

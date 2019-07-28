@@ -19,10 +19,8 @@ package org.apache.archiva.webdav.util;
  * under the License.
  */
 
-import org.apache.archiva.repository.ManagedRepositoryContent;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang.StringUtils;
-import org.apache.jackrabbit.webdav.DavResource;
 import org.apache.jackrabbit.webdav.io.OutputContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

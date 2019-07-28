@@ -20,17 +20,12 @@ package org.apache.archiva.repository;
  */
 
 
-import org.apache.archiva.repository.content.RepositoryStorage;
-import org.apache.archiva.repository.content.StorageAsset;
+import org.apache.archiva.repository.storage.RepositoryStorage;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * Simple implementation of a managed repository.

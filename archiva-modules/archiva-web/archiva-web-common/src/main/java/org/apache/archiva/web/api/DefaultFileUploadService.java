@@ -42,6 +42,7 @@ import org.apache.archiva.repository.content.ArtifactUtil;
 import org.apache.archiva.repository.metadata.MetadataTools;
 import org.apache.archiva.repository.metadata.RepositoryMetadataException;
 import org.apache.archiva.repository.metadata.RepositoryMetadataWriter;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.rest.api.services.ArchivaRestServiceException;
 import org.apache.archiva.rest.services.AbstractRestService;
 import org.apache.archiva.scheduler.ArchivaTaskScheduler;
@@ -68,9 +69,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URLDecoder;
 import java.nio.file.*;
 import java.text.DateFormat;
@@ -368,10 +367,10 @@ public class DefaultFileUploadService
             ArtifactReference artifactReference = createArtifactRef(fileMetadata, groupId, artifactId, version);
             artifactReference.setType(packaging);
 
-            Path pomPath = artifactUtil.getArtifactPath(repoConfig, artifactReference);
-            Path targetPath = pomPath.getParent();
+            StorageAsset pomPath = artifactUtil.getArtifactAsset(repoConfig, artifactReference);
+            StorageAsset targetPath = pomPath.getParent();
 
-            String pomFilename = pomPath.getFileName().toString();
+            String pomFilename = pomPath.getName();
             if (StringUtils.isNotEmpty(fileMetadata.getClassifier())) {
                 pomFilename = StringUtils.remove(pomFilename, "-" + fileMetadata.getClassifier());
             }
@@ -408,8 +407,8 @@ public class DefaultFileUploadService
             artifactReference.setType(
                     StringUtils.isEmpty(fileMetadata.getPackaging()) ? packaging : fileMetadata.getPackaging());
 
-            Path artifactPath = artifactUtil.getArtifactPath(repoConfig, artifactReference);
-            Path targetPath = artifactPath.getParent();
+            StorageAsset artifactPath = artifactUtil.getArtifactAsset(repoConfig, artifactReference);
+            StorageAsset targetPath = artifactPath.getParent();
 
             log.debug("artifactPath: {} found targetPath: {}", artifactPath, targetPath);
 
@@ -417,7 +416,7 @@ public class DefaultFileUploadService
             int newBuildNumber = -1;
             String timestamp = null;
 
-            Path versionMetadataFile = targetPath.resolve(MetadataTools.MAVEN_METADATA);
+            StorageAsset versionMetadataFile = targetPath.resolve(MetadataTools.MAVEN_METADATA);
             ArchivaRepositoryMetadata versionMetadata = getMetadata(versionMetadataFile);
 
             if (VersionUtil.isSnapshot(version)) {
@@ -432,11 +431,11 @@ public class DefaultFileUploadService
                 }
             }
 
-            if (!Files.exists(targetPath)) {
-                Files.createDirectories(targetPath);
+            if (!targetPath.exists()) {
+                targetPath.create();
             }
 
-            String filename = artifactPath.getFileName().toString();
+            String filename = artifactPath.getName().toString();
             if (VersionUtil.isSnapshot(version)) {
                 filename = filename.replaceAll(VersionUtil.SNAPSHOT, timestamp + "-" + newBuildNumber);
             }
@@ -446,8 +445,8 @@ public class DefaultFileUploadService
             // !(archivaAdministration.getKnownContentConsumers().contains("create-missing-checksums"));
 
             try {
-                Path targetFile = targetPath.resolve(filename);
-                if (Files.exists(targetFile) && !VersionUtil.isSnapshot(version) && repoConfig.blocksRedeployments()) {
+                StorageAsset targetFile = targetPath.resolve(filename);
+                if (targetFile.exists() && !VersionUtil.isSnapshot(version) && repoConfig.blocksRedeployments()) {
                     throw new ArchivaRestServiceException(
                             "Overwriting released artifacts in repository '" + repoConfig.getId() + "' is not allowed.",
                             Response.Status.BAD_REQUEST.getStatusCode(), null);
@@ -471,7 +470,7 @@ public class DefaultFileUploadService
                 pomFilename = FilenameUtils.removeExtension(pomFilename) + ".pom";
 
                 try {
-                    Path generatedPomFile =
+                    StorageAsset generatedPomFile =
                             createPom(targetPath, pomFilename, fileMetadata, groupId, artifactId, version, packaging);
                     triggerAuditEvent(repoConfig.getId(), targetPath.resolve(pomFilename).toString(), AuditEvent.UPLOAD_FILE);
                     if (fixChecksums) {
@@ -487,7 +486,7 @@ public class DefaultFileUploadService
 
             // explicitly update only if metadata-updater consumer is not enabled!
             if (!archivaAdministration.getKnownContentConsumers().contains("metadata-updater")) {
-                updateProjectMetadata(targetPath.toAbsolutePath().toString(), lastUpdatedTimestamp, timestamp, newBuildNumber,
+                updateProjectMetadata(targetPath, lastUpdatedTimestamp, timestamp, newBuildNumber,
                         fixChecksums, fileMetadata, groupId, artifactId, version, packaging);
 
                 if (VersionUtil.isSnapshot(version)) {
@@ -525,20 +524,20 @@ public class DefaultFileUploadService
         return artifactReference;
     }
 
-    private ArchivaRepositoryMetadata getMetadata(Path metadataFile)
+    private ArchivaRepositoryMetadata getMetadata(StorageAsset metadataFile)
             throws RepositoryMetadataException {
         ArchivaRepositoryMetadata metadata = new ArchivaRepositoryMetadata();
-        if (Files.exists(metadataFile)) {
+        if (metadataFile.exists()) {
             try {
                 metadata = MavenMetadataReader.read(metadataFile);
-            } catch (XMLException e) {
+            } catch (XMLException | IOException e) {
                 throw new RepositoryMetadataException(e.getMessage(), e);
             }
         }
         return metadata;
     }
 
-    private Path createPom(Path targetPath, String filename, FileMetadata fileMetadata, String groupId,
+    private StorageAsset createPom(StorageAsset targetPath, String filename, FileMetadata fileMetadata, String groupId,
                            String artifactId, String version, String packaging)
             throws IOException {
         Model projectModel = new Model();
@@ -548,22 +547,22 @@ public class DefaultFileUploadService
         projectModel.setVersion(version);
         projectModel.setPackaging(packaging);
 
-        Path pomFile = targetPath.resolve(filename);
+        StorageAsset pomFile = targetPath.resolve(filename);
         MavenXpp3Writer writer = new MavenXpp3Writer();
 
-        try (FileWriter w = new FileWriter(pomFile.toFile())) {
+        try (Writer w = new OutputStreamWriter(pomFile.getWriteStream(true))) {
             writer.write(w, projectModel);
         }
 
         return pomFile;
     }
 
-    private void fixChecksums(Path file) {
-        ChecksummedFile checksum = new ChecksummedFile(file);
+    private void fixChecksums(StorageAsset file) {
+        ChecksummedFile checksum = new ChecksummedFile(file.getFilePath());
         checksum.fixChecksums(algorithms);
     }
 
-    private void queueRepositoryTask(String repositoryId, Path localFile) {
+    private void queueRepositoryTask(String repositoryId, StorageAsset localFile) {
         RepositoryTask task = new RepositoryTask();
         task.setRepositoryId(repositoryId);
         task.setResourceFile(localFile);
@@ -574,15 +573,14 @@ public class DefaultFileUploadService
             scheduler.queueTask(task);
         } catch (TaskQueueException e) {
             log.error("Unable to queue repository task to execute consumers on resource file ['{}"
-                    + "'].", localFile.getFileName());
+                    + "'].", localFile.getName());
         }
     }
 
-    private void copyFile(Path sourceFile, Path targetPath, String targetFilename, boolean fixChecksums)
+    private void copyFile(Path sourceFile, StorageAsset targetPath, String targetFilename, boolean fixChecksums)
             throws IOException {
 
-        Files.copy(sourceFile, targetPath.resolve(targetFilename), StandardCopyOption.REPLACE_EXISTING,
-                StandardCopyOption.COPY_ATTRIBUTES);
+        targetPath.resolve(targetFilename).replaceDataFromFile(sourceFile);
 
         if (fixChecksums) {
             fixChecksums(targetPath.resolve(targetFilename));
@@ -592,19 +590,19 @@ public class DefaultFileUploadService
     /**
      * Update artifact level metadata. If it does not exist, create the metadata and fix checksums if necessary.
      */
-    private void updateProjectMetadata(String targetPath, Date lastUpdatedTimestamp, String timestamp, int buildNumber,
+    private void updateProjectMetadata(StorageAsset targetPath, Date lastUpdatedTimestamp, String timestamp, int buildNumber,
                                        boolean fixChecksums, FileMetadata fileMetadata, String groupId,
                                        String artifactId, String version, String packaging)
             throws RepositoryMetadataException {
         List<String> availableVersions = new ArrayList<>();
         String latestVersion = version;
 
-        Path projectDir = Paths.get(targetPath).getParent();
-        Path projectMetadataFile = projectDir.resolve(MetadataTools.MAVEN_METADATA);
+        StorageAsset projectDir = targetPath.getParent();
+        StorageAsset projectMetadataFile = projectDir.resolve(MetadataTools.MAVEN_METADATA);
 
         ArchivaRepositoryMetadata projectMetadata = getMetadata(projectMetadataFile);
 
-        if (Files.exists(projectMetadataFile)) {
+        if (projectMetadataFile.exists()) {
             availableVersions = projectMetadata.getAvailableVersions();
 
             Collections.sort(availableVersions, VersionComparator.getInstance());
@@ -648,12 +646,12 @@ public class DefaultFileUploadService
      * Update version level metadata for snapshot artifacts. If it does not exist, create the metadata and fix checksums
      * if necessary.
      */
-    private void updateVersionMetadata(ArchivaRepositoryMetadata metadata, Path metadataFile,
+    private void updateVersionMetadata(ArchivaRepositoryMetadata metadata, StorageAsset metadataFile,
                                        Date lastUpdatedTimestamp, String timestamp, int buildNumber,
                                        boolean fixChecksums, FileMetadata fileMetadata, String groupId,
                                        String artifactId, String version, String packaging)
             throws RepositoryMetadataException {
-        if (!Files.exists(metadataFile)) {
+        if (!metadataFile.exists()) {
             metadata.setGroupId(groupId);
             metadata.setArtifactId(artifactId);
             metadata.setVersion(version);

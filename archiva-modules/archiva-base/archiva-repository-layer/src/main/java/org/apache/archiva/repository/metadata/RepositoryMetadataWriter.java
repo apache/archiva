@@ -22,6 +22,7 @@ package org.apache.archiva.repository.metadata;
 import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.Plugin;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.xml.XMLException;
 import org.apache.archiva.xml.XMLWriter;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,9 +30,12 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -44,11 +48,13 @@ import java.util.List;
  */
 public class RepositoryMetadataWriter
 {
-    public static void write( ArchivaRepositoryMetadata metadata, Path outputFile )
+    private static final Logger log = LoggerFactory.getLogger(RepositoryMetadataWriter.class);
+
+    public static void write( ArchivaRepositoryMetadata metadata, StorageAsset outputFile )
         throws RepositoryMetadataException
     {
         boolean thrown = false;
-        try (FileWriter writer = new FileWriter( outputFile.toFile() ))
+        try (OutputStreamWriter writer = new OutputStreamWriter( outputFile.getWriteStream(true)))
         {
             write( metadata, writer );
             writer.flush();
@@ -57,13 +63,17 @@ public class RepositoryMetadataWriter
         {
             thrown = true;
             throw new RepositoryMetadataException(
-                "Unable to write metadata file: " + outputFile.toAbsolutePath() + " - " + e.getMessage(), e );
+                "Unable to write metadata file: " + outputFile.getPath() + " - " + e.getMessage(), e );
         }
         finally
         {
             if ( thrown )
             {
-                FileUtils.deleteQuietly( outputFile );
+                try {
+                    outputFile.getStorage().removeAsset(outputFile);
+                } catch (IOException e) {
+                    log.error("Could not remove asset {}", outputFile);
+                }
             }
         }
     }

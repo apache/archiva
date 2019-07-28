@@ -19,6 +19,9 @@ package org.apache.archiva.policies;
  * under the License.
  */
 
+import org.apache.archiva.common.filelock.DefaultFileLockManager;
+import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
@@ -31,6 +34,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,6 +54,8 @@ public class ChecksumPolicyTest
     private static final String GOOD = "good";
 
     private static final String BAD = "bad";
+
+    private static FilesystemStorage filesystemStorage;
 
     @Inject
     @Named( value = "postDownloadPolicy#checksum" )
@@ -195,7 +201,7 @@ public class ChecksumPolicyTest
         throws Exception
     {
         PostDownloadPolicy policy = lookupPolicy();
-        Path localFile = createTestableFiles( null, null );
+        StorageAsset localFile = createTestableFiles( null, null );
         Properties request = createRequest();
 
         policy.applyPolicy( ChecksumPolicy.IGNORE, request, localFile );
@@ -205,7 +211,7 @@ public class ChecksumPolicyTest
         throws Exception
     {
         PostDownloadPolicy policy = lookupPolicy();
-        Path localFile = createTestableFiles( md5State, sha1State );
+        StorageAsset localFile = createTestableFiles( md5State, sha1State );
         Properties request = createRequest();
 
         boolean actualResult;
@@ -220,9 +226,9 @@ public class ChecksumPolicyTest
             actualResult = false;
             String msg = createMessage( ChecksumPolicy.FAIL, md5State, sha1State );
 
-            assertFalse( msg + " local file should not exist:", Files.exists(localFile) );
-            Path md5File = localFile.toAbsolutePath().resolveSibling( localFile.getFileName() + ".sha1" );
-            Path sha1File = localFile.toAbsolutePath().resolveSibling( localFile.getFileName() + ".md5" );
+            assertFalse( msg + " local file should not exist:", localFile.exists() );
+            Path md5File = localFile.getFilePath().toAbsolutePath().resolveSibling( localFile.getName() + ".sha1" );
+            Path sha1File = localFile.getFilePath().toAbsolutePath().resolveSibling( localFile.getName() + ".md5" );
             assertFalse( msg + " local md5 file should not exist:", Files.exists(md5File) );
             assertFalse( msg + " local sha1 file should not exist:", Files.exists(sha1File) );
         }
@@ -234,7 +240,7 @@ public class ChecksumPolicyTest
         throws Exception
     {
         PostDownloadPolicy policy = lookupPolicy();
-        Path localFile = createTestableFiles( md5State, sha1State );
+        StorageAsset localFile = createTestableFiles( md5State, sha1State );
         Properties request = createRequest();
 
         boolean actualResult;
@@ -252,8 +258,8 @@ public class ChecksumPolicyTest
         assertEquals( createMessage( ChecksumPolicy.FIX, md5State, sha1State ), expectedResult, actualResult );
 
         // End result should be legitimate SHA1 and MD5 files.
-        Path md5File = localFile.toAbsolutePath().resolveSibling( localFile.getFileName() + ".md5" );
-        Path sha1File = localFile.toAbsolutePath().resolveSibling( localFile.getFileName() + ".sha1" );
+        Path md5File = localFile.getFilePath().toAbsolutePath().resolveSibling( localFile.getName() + ".md5" );
+        Path sha1File = localFile.getFilePath().toAbsolutePath().resolveSibling( localFile.getName() + ".sha1" );
 
         assertTrue( "ChecksumPolicy.apply(FIX) md5 should exist.", Files.exists(md5File) && Files.isRegularFile(md5File) );
         assertTrue( "ChecksumPolicy.apply(FIX) sha1 should exist.", Files.exists(sha1File) && Files.isRegularFile(sha1File) );
@@ -336,37 +342,41 @@ public class ChecksumPolicyTest
         return request;
     }
 
-    private Path createTestableFiles( String md5State, String sha1State )
+    private StorageAsset createTestableFiles(String md5State, String sha1State )
         throws Exception
     {
-        Path sourceDir = getTestFile( "src/test/resources/checksums/" );
-        Path destDir = getTestFile( "target/checksum-tests/" + name.getMethodName() + "/" );
+        FilesystemStorage fs = new FilesystemStorage(Paths.get("target/checksum-tests"), new DefaultFileLockManager());
+        StorageAsset sourceDir = getTestFile( "src/test/resources/checksums/" );
+        StorageAsset destDir = getTestFile( "target/checksum-tests/" + name.getMethodName() + "/" );
 
-        FileUtils.copyFileToDirectory( sourceDir.resolve("artifact.jar" ).toFile(), destDir.toFile() );
+        FileUtils.copyFileToDirectory( sourceDir.getFilePath().resolve("artifact.jar" ).toFile(), destDir.getFilePath().toFile() );
 
         if ( md5State != null )
         {
-            Path md5File = sourceDir.resolve("artifact.jar.md5-" + md5State );
+            Path md5File = sourceDir.getFilePath().resolve("artifact.jar.md5-" + md5State );
             assertTrue( "Testable file exists: " + md5File.getFileName() + ":", Files.exists(md5File) && Files.isRegularFile(md5File) );
-            Path destFile = destDir.resolve("artifact.jar.md5" );
+            Path destFile = destDir.getFilePath().resolve("artifact.jar.md5" );
             FileUtils.copyFile( md5File.toFile(), destFile.toFile() );
         }
 
         if ( sha1State != null )
         {
-            Path sha1File = sourceDir.resolve("artifact.jar.sha1-" + sha1State );
+            Path sha1File = sourceDir.getFilePath().resolve("artifact.jar.sha1-" + sha1State );
             assertTrue( "Testable file exists: " + sha1File.getFileName() + ":", Files.exists(sha1File) && Files.isRegularFile(sha1File) );
-            Path destFile = destDir.resolve("artifact.jar.sha1" );
+            Path destFile = destDir.getFilePath().resolve("artifact.jar.sha1" );
             FileUtils.copyFile( sha1File.toFile(), destFile.toFile() );
         }
 
-        Path localFile = destDir.resolve("artifact.jar" );
-        return localFile;
+
+        StorageAsset localAsset = fs.getAsset("artifact.jar");
+        return localAsset;
     }
 
-    public static Path getTestFile( String path )
-    {
-        return Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), path );
+    public static StorageAsset getTestFile( String path ) throws IOException {
+        if (filesystemStorage==null) {
+            filesystemStorage = new FilesystemStorage(Paths.get(org.apache.archiva.common.utils.FileUtils.getBasedir()), new DefaultFileLockManager());
+        }
+        return filesystemStorage.getAsset( path );
     }
 
 }
