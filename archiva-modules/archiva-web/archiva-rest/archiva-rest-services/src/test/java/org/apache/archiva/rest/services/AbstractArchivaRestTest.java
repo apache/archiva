@@ -21,6 +21,7 @@ package org.apache.archiva.rest.services;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
@@ -53,6 +54,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -368,7 +370,7 @@ public abstract class AbstractArchivaRestTest
 
     protected ManagedRepository getTestManagedRepository()
     {
-        String location = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/test-repo" ).toAbsolutePath().toString();
+        String location = getBasedir().resolve( "target/repositories/test-repo" ).toAbsolutePath().toString();
         return new ManagedRepository( Locale.getDefault(),  "TEST", "test", location, "default", true, true, false, "2 * * * * ?", null,
                                       false, 2, 3, true, false, "my nice repo", false );
 
@@ -405,7 +407,7 @@ public abstract class AbstractArchivaRestTest
     protected void initSourceTargetRepo()
         throws Exception
     {
-        Path targetRepo = Paths.get( "target/test-repo-copy" );
+        Path targetRepo = Paths.get( "target/repositories/test-repo-copy" );
         if ( Files.exists(targetRepo) )
         {
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( targetRepo );
@@ -425,7 +427,7 @@ public abstract class AbstractArchivaRestTest
         getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
         assertNotNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) );
 
-        Path originRepo = Paths.get( "target/test-origin-repo" );
+        Path originRepo = Paths.get( "target/repositories/test-origin-repo" );
         if ( Files.exists(originRepo) )
         {
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( originRepo );
@@ -484,7 +486,7 @@ public abstract class AbstractArchivaRestTest
 
     }
 
-    protected void createAndIndexRepo( String testRepoId, String repoPath, boolean stageNeeded )
+    protected void createAndIndexRepo( String testRepoId, String srcRepoPath, boolean stageNeeded )
         throws ArchivaRestServiceException, IOException, RedbackServiceException
     {
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( testRepoId ) != null )
@@ -496,19 +498,18 @@ public abstract class AbstractArchivaRestTest
         managedRepository.setId( testRepoId );
         managedRepository.setName( "test repo" );
 
-        Path badContent = Paths.get( repoPath, "target" );
+        Path badContent = Paths.get( srcRepoPath, "target" );
         if ( Files.exists(badContent) )
         {
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( badContent );
         }
 
-        Path file = Paths.get( repoPath );
-        if ( !file.isAbsolute() )
-        {
-            repoPath = getBasedir() + "/" + repoPath;
-        }
+        Path repoPath = getBasedir().resolve( "target" ).resolve( "repositories" ).resolve( testRepoId);
 
-        managedRepository.setLocation( Paths.get( repoPath ).toString() );
+        FileUtils.deleteQuietly(repoPath.toFile());
+        FileUtils.copyDirectory(Paths.get(srcRepoPath).toFile(), repoPath.toFile());
+
+        managedRepository.setLocation( repoPath.toAbsolutePath().toString() );
         String suffix = Long.toString( new Date().getTime() );
         String baseDir = System.getProperty("java.io.tmpdir");
         managedRepository.setIndexDirectory(

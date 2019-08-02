@@ -67,7 +67,7 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
     private Map<Locale, String> descriptions = new HashMap<>(  );
 
     private Locale primaryLocale = new Locale("en_US");
-    private URI location;
+    protected URI location;
     private URI baseUri;
     private Set<URI> failoverLocations = new HashSet<>(  );
     private Set<URI> uFailoverLocations = Collections.unmodifiableSet( failoverLocations );
@@ -88,6 +88,7 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
         this.names.put( primaryLocale, name);
         this.type = type;
         this.storage = repositoryStorage;
+        this.location = repositoryStorage.getLocation();
     }
 
     public AbstractRepository(Locale primaryLocale, RepositoryType type, String id, String name, RepositoryStorage repositoryStorage) {
@@ -96,6 +97,7 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
         this.names.put( primaryLocale, name);
         this.type = type;
         this.storage = repositoryStorage;
+        this.location = repositoryStorage.getLocation();
     }
 
     protected void setPrimaryLocale(Locale locale) {
@@ -227,9 +229,21 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
     }
 
     @Override
-    public void setLocation( URI location )
+    public void setLocation( final URI location )
     {
-        this.location = location;
+        if (location!=null && ( this.location == null || !this.location.equals(location))) {
+            try {
+                updateLocation(location);
+            } catch (IOException e) {
+                log.error("Could not update location of repository {} to {}", getId(), location, e);
+            }
+        }
+    }
+
+    @Override
+    public void updateLocation(URI newLocation) throws IOException {
+        storage.updateLocation(newLocation);
+        this.location = newLocation;
     }
 
     @Override

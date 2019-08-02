@@ -23,6 +23,7 @@ import org.apache.archiva.common.filelock.FileLockException;
 import org.apache.archiva.common.filelock.FileLockManager;
 import org.apache.archiva.common.filelock.FileLockTimeoutException;
 import org.apache.archiva.common.filelock.Lock;
+import org.apache.archiva.common.utils.PathUtil;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,15 +32,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.function.Consumer;
 
 /**
@@ -52,7 +49,7 @@ public class FilesystemStorage implements RepositoryStorage {
 
     private static final Logger log = LoggerFactory.getLogger(FilesystemStorage.class);
 
-    private final Path basePath;
+    private Path basePath;
     private final FileLockManager fileLockManager;
 
     public FilesystemStorage(Path basePath, FileLockManager fileLockManager) throws IOException {
@@ -292,6 +289,30 @@ public class FilesystemStorage implements RepositoryStorage {
         {
             log.error("Locking error on file {}", file);
             throw new IOException(e);
+        }
+    }
+
+    @Override
+    public URI getLocation() {
+        return basePath.toUri();
+    }
+
+    /**
+     * Updates the location and releases all locks.
+     *
+     * @param newLocation The URI to the new location
+     *
+     * @throws IOException If the directory cannot be created.
+     */
+    @Override
+    public void updateLocation(URI newLocation) throws IOException {
+        Path newPath = PathUtil.getPathFromUri(newLocation).toAbsolutePath();
+        if (!Files.exists(newPath)) {
+            Files.createDirectories(newPath);
+        }
+        basePath = newPath;
+        if (fileLockManager!=null) {
+            fileLockManager.clearLockFiles();
         }
     }
 

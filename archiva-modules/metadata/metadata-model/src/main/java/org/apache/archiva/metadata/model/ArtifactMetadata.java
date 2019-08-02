@@ -253,10 +253,13 @@ public class ArtifactMetadata
         {
             return false;
         }
+        /**
+         * We cannot compare in different repositories, if this is in here
         if ( !repositoryId.equals( that.repositoryId ) )
         {
             return false;
         }
+         **/
         if ( sha1 != null ? !sha1.equals( that.sha1 ) : that.sha1 != null )
         {
             return false;

@@ -22,6 +22,7 @@ package org.apache.archiva.repository.storage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.CopyOption;
@@ -46,6 +47,26 @@ import java.util.function.Consumer;
  * Checking access is not part of this API.
  */
 public interface RepositoryStorage {
+
+    /**
+     * Returns a URI representation of the storage location.
+     *
+     * @return The URI that is pointing to the storage.
+     */
+    URI getLocation();
+
+    /**
+     * Updates the base location of the repository storage. The method does not move any data.
+     * It just points to the new location. Artifacts may not be accessible anymore if the data has
+     * not been moved or copied. Assets retrieved before the relocation may still be pointing to the
+     * old location.
+     *
+     * @param newLocation The URI to the new location
+     *
+     * @throws IOException If the repository cannot be relocated
+     */
+    void updateLocation(URI newLocation) throws IOException;
+
     /**
      * Returns information about a specific storage asset.
      * @param path

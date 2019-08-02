@@ -46,7 +46,8 @@ public enum ChecksumAlgorithm {
     SHA1("SHA-1", "SHA1", "sha1", "sha128", "sha-128"),
     SHA256("SHA-256", "SHA256", "sha256", "sha2", "sha-256"),
     SHA384("SHA-384", "SHA384", "sha384", "sha3", "sha-384"),
-    SHA512("SHA-512", "SHA512", "sha512", "sha5", "sha-512");
+    SHA512("SHA-512", "SHA512", "sha512", "sha5", "sha-512"),
+    ASC("ASC", "ASC", "asc");
 
     public static ChecksumAlgorithm getByExtension( Path file )
     {

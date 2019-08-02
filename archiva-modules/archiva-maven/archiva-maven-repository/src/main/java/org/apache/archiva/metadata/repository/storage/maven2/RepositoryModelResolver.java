@@ -149,7 +149,7 @@ public class RepositoryModelResolver
             // is a SNAPSHOT ? so we can try to find locally before asking remote repositories.
             if ( StringUtils.contains( version, VersionUtil.SNAPSHOT ) )
             {
-                Path localSnapshotModel = findTimeStampedSnapshotPom( groupId, artifactId, version, model.getParent().toString() );
+                Path localSnapshotModel = findTimeStampedSnapshotPom( groupId, artifactId, version, model.getParent().getFilePath() );
                 if ( localSnapshotModel != null )
                 {
                     return new FileModelSource( localSnapshotModel.toFile() );
@@ -227,11 +227,11 @@ public class RepositoryModelResolver
     }
 
     protected Path findTimeStampedSnapshotPom( String groupId, String artifactId, String version,
-                                               String parentDirectory )
+                                               Path parentDirectory )
     {
 
         // reading metadata if there
-        Path mavenMetadata = Paths.get( parentDirectory, METADATA_FILENAME );
+        Path mavenMetadata = parentDirectory.resolve( METADATA_FILENAME );
         if ( Files.exists(mavenMetadata) )
         {
             try
@@ -258,7 +258,7 @@ public class RepositoryModelResolver
                     }
                 }
             }
-            catch (XMLException | IOException e )
+            catch (XMLException e )
             {
                 log.warn( "fail to read {}, {}", mavenMetadata.toAbsolutePath(), e.getCause() );
             }

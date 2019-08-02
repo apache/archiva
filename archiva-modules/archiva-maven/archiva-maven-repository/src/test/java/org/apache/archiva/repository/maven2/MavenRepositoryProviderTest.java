@@ -220,7 +220,7 @@ public class MavenRepositoryProviderTest
     public void getManagedConfiguration() throws Exception {
         MavenManagedRepository repo = MavenManagedRepository.newLocalInstance( "test01", "My Test repo", Paths.get("target/repositories") );
 
-        repo.setLocation( new URI("file:///this.is/a/test") );
+        repo.setLocation( new URI("target/this.is/a/test") );
         repo.setScanned( true );
         repo.setDescription( repo.getPrimaryLocale(), "This is a description" );
         repo.setLayout( "maven2" );
@@ -240,7 +240,7 @@ public class MavenRepositoryProviderTest
         artifactCleanupFeature.setDeleteReleasedSnapshots( true );
 
         ManagedRepositoryConfiguration cfg = provider.getManagedConfiguration( repo );
-        assertEquals("/this.is/a/test", cfg.getLocation());
+        assertEquals("target/this.is/a/test", cfg.getLocation());
         assertTrue(cfg.isScanned());
         assertEquals( "This is a description", cfg.getDescription() );
         assertEquals("maven2", cfg.getLayout());

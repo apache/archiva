@@ -215,7 +215,7 @@ public class ChecksumTransferTest
 
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile.getFilePath() );
+        assertNotDownloaded( downloadedFile );
         assertChecksums( expectedFile, null, null );
     }
 
@@ -264,7 +264,7 @@ public class ChecksumTransferTest
 
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile.getFilePath() );
+        assertNotDownloaded( downloadedFile );
         assertChecksums( expectedFile, null, null );
     }
 
@@ -313,7 +313,7 @@ public class ChecksumTransferTest
 
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile.getFilePath() );
+        assertNotDownloaded( downloadedFile );
         assertChecksums( expectedFile, null, null );
     }
 
@@ -519,7 +519,7 @@ public class ChecksumTransferTest
 
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile.getFilePath() );
+        assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
         // There are no hashcodes on the proxy side to download.
         // The FAIL policy will delete the checksums as bad.

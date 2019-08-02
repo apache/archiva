@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  *
  * @author Martin Stockhammer <martin_s@apache.org>
  */
-public class FilesystemAsset implements StorageAsset {
+public class FilesystemAsset implements StorageAsset, Comparable {
 
     private final static Logger log = LoggerFactory.getLogger(FilesystemAsset.class);
 
@@ -159,11 +159,15 @@ public class FilesystemAsset implements StorageAsset {
         init();
     }
 
-    private String normalizePath(String path) {
+    private String normalizePath(final String path) {
         if (!path.startsWith("/")) {
             return "/"+path;
         } else {
-            return path;
+            String tmpPath = path;
+            while (tmpPath.startsWith("//")) {
+                tmpPath = tmpPath.substring(1);
+            }
+            return tmpPath;
         }
     }
 
@@ -491,4 +495,15 @@ public class FilesystemAsset implements StorageAsset {
         return relativePath+":"+assetPath;
     }
 
+    @Override
+    public int compareTo(Object o) {
+        if (o instanceof FilesystemAsset) {
+            if (this.getPath()!=null) {
+                return this.getPath().compareTo(((FilesystemAsset) o).getPath());
+            } else {
+                return 0;
+            }
+        }
+        return 0;
+    }
 }

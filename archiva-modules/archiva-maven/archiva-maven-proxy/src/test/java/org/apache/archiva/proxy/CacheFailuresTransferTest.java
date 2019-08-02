@@ -83,6 +83,7 @@ public class CacheFailuresTransferTest
 
         wagonMockControl.replay();
 
+        //noinspection UnusedAssignment
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         wagonMockControl.verify();
@@ -93,7 +94,7 @@ public class CacheFailuresTransferTest
         downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
         wagonMockControl.verify();
 
-        assertNotDownloaded( downloadedFile.getFilePath());
+        assertNotDownloaded( downloadedFile);
         assertNoTempFiles( expectedFile );
     }
 
@@ -141,7 +142,7 @@ public class CacheFailuresTransferTest
 
         wagonMockControl.verify();
 
-        assertNotDownloaded( downloadedFile.getFilePath() );
+        assertNotDownloaded( downloadedFile);
         assertNoTempFiles( expectedFile );
     }
 
@@ -173,6 +174,7 @@ public class CacheFailuresTransferTest
 
         // Validate that file actually came from proxied2 (as intended).
         Path proxied2File = Paths.get( REPOPATH_PROXIED2, path );
+        assertNotNull(downloadedFile);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), proxied2File );
         assertNoTempFiles( expectedFile );
     }

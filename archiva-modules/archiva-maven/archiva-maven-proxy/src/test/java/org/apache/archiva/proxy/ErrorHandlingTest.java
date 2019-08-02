@@ -617,7 +617,7 @@ public class ErrorHandlingTest
 
         wagonMockControl.verify();
 
-        assertNotDownloaded( downloadedFile.getFilePath() );
+        assertNotDownloaded( downloadedFile );
     }
 
     private void confirmSuccess( String path, Path expectedFile, String basedir )
@@ -634,7 +634,7 @@ public class ErrorHandlingTest
     {
         StorageAsset downloadedFile = performDownload( path );
 
-        assertNotDownloaded( downloadedFile.getFilePath() );
+        assertNotDownloaded( downloadedFile );
     }
 
     private StorageAsset performDownload( String path )

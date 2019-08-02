@@ -61,7 +61,7 @@ public class SnapshotTransferTest
         saveConnector( ID_DEFAULT_MANAGED, ID_PROXIED1, false);
 
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
-        assertNotDownloaded( downloadedFile.getFilePath() );
+        assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -132,7 +132,7 @@ public class SnapshotTransferTest
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
         // Should not have downloaded as managed is newer than remote.
-        assertNotDownloaded( downloadedFile.getFilePath() );
+        assertNotDownloaded( downloadedFile );
         assertNoTempFiles( expectedFile );
     }
 
@@ -247,7 +247,7 @@ public class SnapshotTransferTest
 
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile.getFilePath() );
+        assertNotDownloaded( downloadedFile );
         assertNotModified( expectedFile, expectedTimestamp );
         assertNoTempFiles( expectedFile );
     }

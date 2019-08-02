@@ -122,39 +122,6 @@ public class MavenManagedRepository extends AbstractManagedRepository
     }
 
     @Override
-    public void setLocation( URI location )
-    {
-        URI previousLocation = super.getLocation();
-        Path previousLoc = PathUtil.getPathFromUri(previousLocation);
-        Path newLoc = PathUtil.getPathFromUri( location );
-        if (!newLoc.toAbsolutePath().equals(previousLoc.toAbsolutePath())) {
-            super.setLocation(location);
-            if (!Files.exists(newLoc)) {
-                try {
-                    Files.createDirectories(newLoc);
-                } catch (IOException e) {
-                    log.error("Could not create directory {}", location, e);
-                }
-            }
-            FilesystemStorage previous = (FilesystemStorage) getStorage();
-            try {
-                FilesystemStorage fs = new FilesystemStorage(newLoc, previous.getFileLockManager());
-                setStorage(fs);
-            } catch (IOException e) {
-                log.error("Could not create new filesystem storage at {}", newLoc);
-                try {
-                    Path tmpDir = Files.createTempDirectory("tmp-repo-"+getId());
-                    FilesystemStorage fs = new FilesystemStorage(tmpDir, previous.getFileLockManager());
-                    setStorage(fs);
-                } catch (IOException ex) {
-                    throw new RuntimeException("Could not setup storage for repository "+getId());
-                }
-            }
-        }
-
-    }
-
-    @Override
     public RepositoryRequestInfo getRequestInfo() {
         return new MavenRepositoryRequestInfo(this);
     }

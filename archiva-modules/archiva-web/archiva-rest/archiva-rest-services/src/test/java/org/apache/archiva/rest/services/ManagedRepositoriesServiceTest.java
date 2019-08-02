@@ -19,6 +19,7 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
+import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.rest.api.model.ArchivaRepositoryStatistics;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
@@ -134,6 +135,8 @@ public class ManagedRepositoriesServiceTest
         throws Exception
     {
 
+        getArchivaAdministrationService().addFileTypePattern("ignored", ".index-*/**");
+        getArchivaAdministrationService().addFileTypePattern("ignored", ".indexer-*/**");
         String testRepoId = "test-repo";
         // force guest user creation if not exists
         if ( getUserService( authorizationHeader ).getGuestUser() == null )

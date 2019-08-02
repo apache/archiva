@@ -41,9 +41,9 @@ public class MergeRepositoriesServiceTest
 
     private static final String TEST_REPOSITORY = "test-repository";
 
-    private Path repo = Paths.get( System.getProperty( "builddir" ), "test-repository" );
+    private Path repo = Paths.get( System.getProperty( "basedir" ),"target","repositories-merge", "test-repository" );
 
-    private Path repoStage = Paths.get( System.getProperty( "builddir" ), "test-repository-stage" );
+    private Path repoStage = Paths.get( System.getProperty( "basedir" ),"target","repositories-merge", "test-repository-stage" );
 
     @Test
     public void getMergeConflictedArtifacts()
@@ -95,10 +95,11 @@ public class MergeRepositoriesServiceTest
     public void createStageRepo()
         throws Exception
     {
-        FileUtils.copyDirectory( Paths.get( System.getProperty( "basedir" ), "src/test/repo-with-osgi" ).toFile(), repo.toFile() );
-        FileUtils.copyDirectory( Paths.get( System.getProperty( "basedir" ), "src/test/repo-with-osgi-stage" ).toFile(),
-                                 repoStage.toFile() );
+        // FileUtils.copyDirectory( Paths.get( System.getProperty( "basedir" ), "src/test/repo-with-osgi" ).toFile(), repo.toFile() );
 
-        createStagedNeededRepo( TEST_REPOSITORY, repo.toAbsolutePath().toString(), true );
+        Path srcRepo = Paths.get( System.getProperty( "basedir" ), "src/test/repo-with-osgi" );
+        createStagedNeededRepo( TEST_REPOSITORY, srcRepo.toAbsolutePath().toString(), true );
+        FileUtils.copyDirectory( getBasedir().resolve("src/test/repo-with-osgi-stage" ).toFile(),
+                                 repoStage.toFile() );
     }
 }

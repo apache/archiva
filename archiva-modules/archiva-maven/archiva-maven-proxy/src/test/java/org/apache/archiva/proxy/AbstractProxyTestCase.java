@@ -20,10 +20,7 @@ package org.apache.archiva.proxy;
  */
 
 import net.sf.ehcache.CacheManager;
-import org.apache.archiva.configuration.ArchivaConfiguration;
-import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
-import org.apache.archiva.configuration.ProxyConnectorConfiguration;
-import org.apache.archiva.configuration.RemoteRepositoryConfiguration;
+import org.apache.archiva.configuration.*;
 import org.apache.archiva.policies.CachedFailuresPolicy;
 import org.apache.archiva.policies.ChecksumPolicy;
 import org.apache.archiva.policies.PropagateErrorsDownloadPolicy;
@@ -32,6 +29,7 @@ import org.apache.archiva.policies.ReleasesPolicy;
 import org.apache.archiva.policies.SnapshotsPolicy;
 import org.apache.archiva.proxy.model.RepositoryProxyHandler;
 import org.apache.archiva.repository.*;
+import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.apache.maven.wagon.Wagon;
 import org.easymock.EasyMock;
@@ -54,11 +52,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -126,21 +120,26 @@ public abstract class AbstractProxyTestCase
         config.getConfiguration().setManagedRepositories( new ArrayList<ManagedRepositoryConfiguration>() );
         config.getConfiguration().setRemoteRepositories( new ArrayList<RemoteRepositoryConfiguration>() );
         config.getConfiguration().setProxyConnectors( new ArrayList<ProxyConnectorConfiguration>() );
+        ArchivaRuntimeConfiguration runtimeConfiguration = new ArchivaRuntimeConfiguration();
+        List<String> checksumTypes = new ArrayList<>();
+        checksumTypes.add("md5");
+        checksumTypes.add("sha256");
+        checksumTypes.add("sha1");
+        checksumTypes.add("asc");
+        runtimeConfiguration.setChecksumTypes(checksumTypes);
+        config.getConfiguration().setArchivaRuntimeConfiguration(runtimeConfiguration);
+        repositoryRegistry.setArchivaConfiguration( config );
 
         // Setup source repository (using default layout)
         String name = getClass().getSimpleName();
-        String repoPath = "target/test-repository/managed/" + name;
+        Path repoPath = Paths.get("target/test-repository/managed/" + name);
 
         managedDefaultRepository =
-            createRepository( ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath, "default" );
+            createRepository( ID_DEFAULT_MANAGED, "Default Managed Repository", repoPath.toString(), "default" );
 
-        managedDefaultDir = Paths.get( managedDefaultRepository.getRepoRoot() );
+        managedDefaultDir = repoPath.resolve(ID_DEFAULT_MANAGED) ;
 
         org.apache.archiva.repository.ManagedRepository repoConfig = repositoryRegistry.getManagedRepository(ID_DEFAULT_MANAGED);
-
-        applicationContext.getBean( RepositoryRegistry.class ).putRepository( repoConfig );
-
-        repositoryRegistry.setArchivaConfiguration( config );
 
         // Setup target (proxied to) repository.
         saveRemoteRepositoryConfig( ID_PROXIED1, "Proxied Repository 1",
@@ -152,14 +151,7 @@ public abstract class AbstractProxyTestCase
 
 
         repositoryRegistry.reload();
-
-        if ( repositoryRegistry.getManagedRepository( repoConfig.getId() ) != null )
-        {
-            org.apache.archiva.repository.ManagedRepository managedRepository = repositoryRegistry.getManagedRepository( repoConfig.getId() );
-            repositoryRegistry.removeRepository( managedRepository );
-        }
-
-        repositoryRegistry.putRepository( repoConfig );
+        repositoryRegistry.putRepository(repoConfig);
 
 
         // Setup the proxy handler.
@@ -217,6 +209,7 @@ public abstract class AbstractProxyTestCase
         assertNotNull( "Actual File should not be null.", actualFile );
 
         assertTrue( "Check actual file exists.", Files.exists(actualFile) );
+        assertTrue("Check expected file exists", Files.exists(expectedFile));
         assertTrue( "Check file is the same.", Files.isSameFile( expectedFile,
             actualFile));
         String expectedContents =
@@ -226,7 +219,7 @@ public abstract class AbstractProxyTestCase
         assertEquals( "Check file contents.", expectedContents, actualContents );
     }
 
-    protected void assertNotDownloaded(  Path downloadedFile )
+    protected void assertNotDownloaded(  StorageAsset downloadedFile )
     {
         assertNull( "Found file: " + downloadedFile + "; but was expecting a failure", downloadedFile );
     }
@@ -319,7 +312,7 @@ public abstract class AbstractProxyTestCase
     protected ManagedRepositoryContent createRepository( String id, String name, String path, String layout )
         throws Exception
     {
-        ManagedRepository repo = BasicManagedRepository.newFilesystemInstance(id, name, Paths.get(path));
+        ManagedRepository repo = BasicManagedRepository.newFilesystemInstance(id, name, Paths.get(path).resolve(id));
         repositoryRegistry.putRepository(repo);
         return repositoryRegistry.getManagedRepository(id).getContent();
     }

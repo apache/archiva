@@ -192,14 +192,14 @@ public class RepositoryRegistryTest
     @Test
     public void putManagedRepository( ) throws Exception
     {
-        BasicManagedRepository managedRepository = BasicManagedRepository.newFilesystemInstance( "test001", "Test repo", archivaConfiguration.getRepositoryBaseDir() );
+        BasicManagedRepository managedRepository = BasicManagedRepository.newFilesystemInstance("test001", "Test repo", archivaConfiguration.getRepositoryBaseDir().resolve("test001"));
         managedRepository.setDescription( managedRepository.getPrimaryLocale(), "This is just a test" );
         repositoryRegistry.putRepository(managedRepository);
 
         assertNotNull(managedRepository.getContent());
         assertEquals(6, repositoryRegistry.getRepositories().size());
 
-        managedRepository = BasicManagedRepository.newFilesystemInstance( "central", "Test repo", archivaConfiguration.getRepositoryBaseDir() );
+        managedRepository = BasicManagedRepository.newFilesystemInstance("central", "Test repo", archivaConfiguration.getRepositoryBaseDir().resolve("central"));
         managedRepository.setDescription( managedRepository.getPrimaryLocale(), "This is just a test" );
         ManagedRepository updatedRepo = null;
         try {
@@ -208,7 +208,7 @@ public class RepositoryRegistryTest
         } catch (RepositoryException e) {
             // OK
         }
-        managedRepository = BasicManagedRepository.newFilesystemInstance( "internal", "Test repo", archivaConfiguration.getRepositoryBaseDir() );
+        managedRepository = BasicManagedRepository.newFilesystemInstance("internal", "Test repo", archivaConfiguration.getRepositoryBaseDir().resolve("internal"));
         managedRepository.setDescription( managedRepository.getPrimaryLocale(), "This is just a test" );
         updatedRepo = repositoryRegistry.putRepository( managedRepository );
 

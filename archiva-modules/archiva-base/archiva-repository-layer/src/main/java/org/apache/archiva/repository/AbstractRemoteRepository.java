@@ -22,6 +22,7 @@ package org.apache.archiva.repository;
 
 import org.apache.archiva.repository.storage.RepositoryStorage;
 
+import java.net.URI;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
@@ -155,5 +156,11 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
         StringBuilder str = new StringBuilder();
         return str.append("checkPath=").append(checkPath)
                 .append(",creds:").append(credentials).toString();
+    }
+
+    @Override
+    public void setLocation(URI location) {
+        // Location of remote repositories is not for the local filestore
+        super.location = location;
     }
 }

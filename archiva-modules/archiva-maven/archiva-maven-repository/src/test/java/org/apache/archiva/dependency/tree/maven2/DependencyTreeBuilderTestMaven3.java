@@ -26,6 +26,7 @@ import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ManagedRepositoryConfiguration;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.maven2.model.TreeEntry;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,6 +66,9 @@ public class DependencyTreeBuilderTestMaven3
     @Named( "archivaConfiguration#test" )
     ArchivaConfiguration config;
 
+    @Inject
+    RepositoryRegistry repositoryRegistry;
+
     @Before
     @Override
     public void setUp()
@@ -78,6 +82,8 @@ public class DependencyTreeBuilderTestMaven3
         repoConfig.setLocation(Paths.get("target/test-repository").toAbsolutePath().toString() );
         configuration.addManagedRepository( repoConfig );
         config.save( configuration );
+
+        repositoryRegistry.reload();
 
         //artifactFactory = ((DefaultDependencyTreeBuilder)this.builder).getFactory();
     }

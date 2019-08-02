@@ -71,17 +71,37 @@ public class StorageUtil
             if (locked) {
                 final FileLockManager lmSource = ((FilesystemStorage)source.getStorage()).getFileLockManager();
                 final FileLockManager lmTarget = ((FilesystemStorage)target.getStorage()).getFileLockManager();
-                try (Lock lockRead = lmSource.readFileLock( sourcePath ); Lock lockWrite = lmTarget.writeFileLock( targetPath ) )
-                {
-                    Files.copy( sourcePath, targetPath, copyOptions );
+                Lock lockRead = null;
+                Lock lockWrite = null;
+                try {
+                    lockRead = lmSource.readFileLock(sourcePath);
+                } catch (Exception e) {
+                    log.error("Could not create read lock on {}", sourcePath);
+                    throw new IOException(e);
                 }
-                catch ( FileLockException e )
-                {
-                    throw new IOException( e );
+                try {
+                    lockWrite = lmTarget.writeFileLock(targetPath);
+                } catch (Exception e) {
+                    log.error("Could not create write lock on {}", targetPath);
+                    throw new IOException(e);
                 }
-                catch ( FileLockTimeoutException e )
-                {
-                    throw new IOException( e );
+                try {
+                    Files.copy(sourcePath, targetPath, copyOptions);
+                } finally {
+                    if (lockRead!=null) {
+                        try {
+                            lmSource.release(lockRead);
+                        } catch (FileLockException e) {
+                            log.error("Error during lock release of read lock {}", lockRead.getFile());
+                        }
+                    }
+                    if (lockWrite!=null) {
+                        try {
+                            lmTarget.release(lockWrite);
+                        } catch (FileLockException e) {
+                            log.error("Error during lock release of write lock {}", lockWrite.getFile());
+                        }
+                    }
                 }
             } else
             {
@@ -122,6 +142,9 @@ public class StorageUtil
         if (source.isFileBased() && target.isFileBased()) {
             // Short cut for FS operations
             // Move is atomic operation
+            if (!Files.exists(target.getFilePath().getParent())) {
+                Files.createDirectories(target.getFilePath().getParent());
+            }
             Files.move( source.getFilePath(), target.getFilePath(), copyOptions );
         } else {
             try {

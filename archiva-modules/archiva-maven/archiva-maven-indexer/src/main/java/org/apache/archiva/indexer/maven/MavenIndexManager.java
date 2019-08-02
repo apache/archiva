@@ -591,10 +591,12 @@ public class MavenIndexManager implements ArchivaIndexManager {
         }
     }
 
-    private StorageAsset getIndexPath(URI indexDirUri, RepositoryStorage storage, String defaultDir) throws IOException
+    private StorageAsset getIndexPath(URI indexDirUri, RepositoryStorage repoStorage, String defaultDir) throws IOException
     {
+        StorageAsset rootAsset = repoStorage.getAsset("");
+        RepositoryStorage storage = rootAsset.getStorage();
         Path indexDirectory;
-        Path repositoryPath = storage.getAsset("").getFilePath().toAbsolutePath();
+        Path repositoryPath = rootAsset.getFilePath().toAbsolutePath();
         StorageAsset indexDir;
         if ( ! StringUtils.isEmpty(indexDirUri.toString( ) ) )
         {
@@ -625,7 +627,7 @@ public class MavenIndexManager implements ArchivaIndexManager {
 
         if ( !indexDir.exists() )
         {
-            indexDir.create();
+            indexDir = storage.addAsset(indexDir.getPath(), true);
         }
         return indexDir;
     }

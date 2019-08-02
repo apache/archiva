@@ -77,7 +77,7 @@ public class RepositoryContentConsumersTest
     ApplicationContext applicationContext;
 
     protected ManagedRepository createRepository( String id, String name, Path location ) throws IOException {
-        BasicManagedRepository repo = BasicManagedRepository.newFilesystemInstance( id, name , location.getParent() );
+        BasicManagedRepository repo = BasicManagedRepository.newFilesystemInstance(id, name, location.getParent().resolve(id));
         repo.setLocation( location.toAbsolutePath().toUri() );
         return repo;
     }

@@ -344,7 +344,7 @@ public class ArchivaDavResourceFactory
                                 ArchivaRepositoryMetadata repoMetadata = MavenMetadataReader.read( metadataFile );
                                 mergedMetadata = RepositoryMetadataMerge.merge( mergedMetadata, repoMetadata );
                             }
-                            catch (XMLException | IOException e )
+                            catch (XMLException e )
                             {
                                 throw new DavException( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                                                         "Error occurred while reading metadata file." );

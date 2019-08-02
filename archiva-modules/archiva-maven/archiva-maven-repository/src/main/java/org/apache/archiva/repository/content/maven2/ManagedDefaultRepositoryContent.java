@@ -425,9 +425,15 @@ public class ManagedDefaultRepositoryContent
         if ( ( path != null ) && path.startsWith( repoPath ) && repoPath.length() > 0 )
         {
             return super.toArtifactReference( path.substring( repoPath.length() + 1 ) );
+        } else {
+            repoPath = path;
+            if (repoPath!=null) {
+                while (repoPath.startsWith("/")) {
+                    repoPath = repoPath.substring(1);
+                }
+            }
+            return super.toArtifactReference( repoPath );
         }
-
-        return super.toArtifactReference( path );
     }
 
     // The variant with runtime exception for stream usage

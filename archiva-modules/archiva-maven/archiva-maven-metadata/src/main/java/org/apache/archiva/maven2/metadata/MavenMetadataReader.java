@@ -81,7 +81,7 @@ public class MavenMetadataReader
      * @throws XMLException
      */
     public static ArchivaRepositoryMetadata read( Path metadataFile )
-            throws XMLException, IOException {
+            throws XMLException {
 
         XMLReader xml = new XMLReader( "metadata", metadataFile );
         // invoke this to remove namespaces, see MRM-1136
@@ -93,10 +93,19 @@ public class MavenMetadataReader
         metadata.setArtifactId( xml.getElementText( "//metadata/artifactId" ) );
         metadata.setVersion( xml.getElementText( "//metadata/version" ) );
         Date modTime;
-        modTime = new Date(Files.getLastModifiedTime(metadataFile).toMillis());
+        try {
+            modTime = new Date(Files.getLastModifiedTime(metadataFile).toMillis());
+        } catch (IOException e) {
+            modTime = new Date();
+            log.error("Could not read modification time of {}", metadataFile);
+        }
         metadata.setFileLastModified( modTime );
-        metadata.setFileSize( Files.size(metadataFile) );
-
+        try {
+            metadata.setFileSize(Files.size(metadataFile));
+        } catch (IOException e) {
+            metadata.setFileSize( 0 );
+            log.error("Could not read file size of {}", metadataFile);
+        }
         metadata.setLastUpdated( xml.getElementText( "//metadata/versioning/lastUpdated" ) );
         metadata.setLatestVersion( xml.getElementText( "//metadata/versioning/latest" ) );
         metadata.setReleasedVersion( xml.getElementText( "//metadata/versioning/release" ) );

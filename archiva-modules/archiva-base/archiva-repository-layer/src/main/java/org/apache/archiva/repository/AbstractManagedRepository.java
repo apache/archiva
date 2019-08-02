@@ -37,18 +37,14 @@ public abstract class AbstractManagedRepository extends AbstractRepository imple
     private Set<ReleaseScheme> activeReleaseSchemes = new HashSet<>(  );
     private Set<ReleaseScheme> uActiveReleaseSchemes = Collections.unmodifiableSet( activeReleaseSchemes );
 
-    private RepositoryStorage storage;
-
     public AbstractManagedRepository(RepositoryType type, String id, String name, RepositoryStorage storage)
     {
         super( type, id, name, storage );
-        this.storage = storage;
     }
 
     public AbstractManagedRepository( Locale primaryLocale, RepositoryType type, String id, String name, RepositoryStorage storage )
     {
         super( primaryLocale, type, id, name, storage );
-        this.storage = storage;
     }
 
     @Override

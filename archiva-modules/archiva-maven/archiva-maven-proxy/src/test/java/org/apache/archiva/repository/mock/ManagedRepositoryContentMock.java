@@ -29,6 +29,7 @@ import org.apache.archiva.model.ProjectReference;
 import org.apache.archiva.model.VersionedReference;
 import org.apache.archiva.repository.*;
 import org.apache.archiva.repository.storage.FilesystemStorage;
+import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.storage.StorageAsset;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
@@ -53,10 +54,11 @@ public class ManagedRepositoryContentMock implements ManagedRepositoryContent
 
 
     private ManagedRepository repository;
-    private FilesystemStorage fsStorage;
+    private RepositoryStorage fsStorage;
 
     ManagedRepositoryContentMock(ManagedRepository repo) {
         this.repository = repo;
+        this.fsStorage = repo;
     }
 
     @Override

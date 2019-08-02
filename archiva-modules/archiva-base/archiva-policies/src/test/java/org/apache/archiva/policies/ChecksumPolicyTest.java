@@ -368,7 +368,7 @@ public class ChecksumPolicyTest
         }
 
 
-        StorageAsset localAsset = fs.getAsset("artifact.jar");
+        StorageAsset localAsset = destDir.resolve("artifact.jar");
         return localAsset;
     }
 

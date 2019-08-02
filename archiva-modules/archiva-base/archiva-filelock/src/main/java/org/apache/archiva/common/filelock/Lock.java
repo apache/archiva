@@ -110,16 +110,17 @@ public class Lock implements Closeable
         IOException ioException = null;
         try
         {
-            this.fileLock.release();
+            if (this.fileLock!=null) {
+                this.fileLock.release();
+            }
         }
         catch ( IOException e )
         {
             ioException = e;
+        } finally {
+            closeQuietly( fileChannel );
+            fileClients.remove( Thread.currentThread() );
         }
-
-        closeQuietly( fileChannel );
-
-        fileClients.remove( Thread.currentThread() );
 
         if ( ioException != null )
         {

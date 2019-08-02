@@ -114,10 +114,11 @@ public class ManagedDefaultTransferTest
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
 
         Path sourceFile = Paths.get(REPOPATH_PROXIED1, path);
+        assertNotNull(downloadedFile);
         assertFileEquals( expectedFile, downloadedFile.getFilePath(), sourceFile );
         assertFalse( Files.exists( downloadedFile.getParent().getFilePath().resolve(downloadedFile.getName() + ".sha1" )) );
         assertFalse( Files.exists(downloadedFile.getParent().getFilePath().resolve(downloadedFile.getName() + ".md5" ) ));
-        assertFalse( Files.exists( downloadedFile.getParent().getFilePath().resolve(downloadedFile.getName() + ".asc" ) ));
+        assertFalse( Files.exists( downloadedFile.getParent().getFilePath().resolve(downloadedFile.getName() + ".sha256" ) ));
         assertNoTempFiles( expectedFile );
     }
 
@@ -182,7 +183,7 @@ public class ManagedDefaultTransferTest
         // Attempt the proxy fetch.
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, path );
 
-        assertNotDownloaded( downloadedFile.getFilePath() );
+        assertNotDownloaded( downloadedFile );
         assertNotModified( expectedFile, originalModificationTime );
         assertNoTempFiles( expectedFile );
     }
@@ -228,7 +229,7 @@ public class ManagedDefaultTransferTest
         // Attempt the proxy fetch.
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile.getFilePath() );
+        assertNotDownloaded( downloadedFile );
         assertNotModified( expectedFile, originalModificationTime );
         assertNoTempFiles( expectedFile );
     }
@@ -454,7 +455,7 @@ public class ManagedDefaultTransferTest
 
         StorageAsset downloadedFile = proxyHandler.fetchFromProxies( managedDefaultRepository, artifact );
 
-        assertNotDownloaded( downloadedFile.getFilePath() );
+        assertNotDownloaded( downloadedFile );
 
         wagonMockControl.verify();
         assertNoTempFiles( expectedFile );

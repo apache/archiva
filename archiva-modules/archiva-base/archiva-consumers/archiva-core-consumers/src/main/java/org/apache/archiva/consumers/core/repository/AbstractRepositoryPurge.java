@@ -404,7 +404,7 @@ public abstract class AbstractRepositoryPurge
         {
 
             StorageUtil.recurse(parentDir, a -> {
-                if (!artifactFile.isContainer() && artifactFile.getName().startsWith(artifactName)) deleteSilently(a);
+                if (!a.isContainer() && a.getName().startsWith(artifactName)) deleteSilently(a);
             }, true, 3 );
         }
         catch ( IOException e )

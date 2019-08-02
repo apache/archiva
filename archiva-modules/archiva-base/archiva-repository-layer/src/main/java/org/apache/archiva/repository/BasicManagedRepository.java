@@ -90,9 +90,18 @@ public class BasicManagedRepository extends AbstractManagedRepository
         return null;
     }
 
-    public static BasicManagedRepository newFilesystemInstance(String id, String name, Path basePath) throws IOException {
+    /**
+     * Creates a filesystem based repository instance. The path is built by basePath/repository-id
+     *
+     * @param id The repository id
+     * @param name The name of the repository
+     * @param repositoryPath The path to the repository
+     * @return The repository instance
+     * @throws IOException
+     */
+    public static BasicManagedRepository newFilesystemInstance(String id, String name, Path repositoryPath) throws IOException {
         FileLockManager lockManager = new DefaultFileLockManager();
-        FilesystemStorage storage = new FilesystemStorage(basePath.resolve(id), lockManager);
+        FilesystemStorage storage = new FilesystemStorage(repositoryPath, lockManager);
         return new BasicManagedRepository(id, name, storage);
     }
 

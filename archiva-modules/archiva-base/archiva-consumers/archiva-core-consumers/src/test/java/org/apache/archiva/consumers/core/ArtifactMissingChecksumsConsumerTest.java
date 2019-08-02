@@ -49,7 +49,7 @@ public class ArtifactMissingChecksumsConsumerTest
         super.setUp();
 
         Path basePath = Paths.get("target/test-classes");
-        repoConfig = BasicManagedRepository.newFilesystemInstance( "test-repo", "Test Repository", basePath);
+        repoConfig = BasicManagedRepository.newFilesystemInstance( "test-repo", "Test Repository", basePath.resolve("test-repo"));
         repoConfig.setLayout( "default" );
         repoConfig.setLocation(basePath.resolve("test-repo/" ).toUri() );
 

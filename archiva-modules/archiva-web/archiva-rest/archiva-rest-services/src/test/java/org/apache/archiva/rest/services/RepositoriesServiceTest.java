@@ -165,8 +165,8 @@ public class RepositoriesServiceTest
 
         try
         {
-            Path artifactFile = Paths.get(
-                "target/test-origin-repo/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.jar" );
+            Path artifactFile = getBasedir().resolve(
+                "target/repositories/test-origin-repo/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.jar" );
 
             assertTrue( "artifact not exists:" + artifactFile, Files.exists(artifactFile) );
 
@@ -226,8 +226,8 @@ public class RepositoriesServiceTest
 
         try
         {
-            Path artifactFile = Paths.get(
-                "target/test-origin-repo/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.jar" );
+            Path artifactFile = getBasedir().resolve(
+                "target/repositories/test-origin-repo/org/apache/karaf/features/org.apache.karaf.features.core/2.2.2/org.apache.karaf.features.core-2.2.2.jar" );
 
             assertTrue( "artifact not exists:" + artifactFile.toString(), Files.exists(artifactFile) );
 
@@ -283,14 +283,14 @@ public class RepositoriesServiceTest
 
         try
         {
-            Path artifactFile = Paths.get(
-                "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1-javadoc.jar" );
+            Path artifactFile = getBasedir().resolve(
+                "target/repositories/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1-javadoc.jar" );
 
-            Path artifactFilemd5 = Paths.get(
-                "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1-javadoc.jar.md5" );
+            Path artifactFilemd5 = getBasedir().resolve(
+                    "target/repositories/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1-javadoc.jar.md5" );
 
-            Path artifactFilesha1 = Paths.get(
-                "target/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1-javadoc.jar.sha1" );
+            Path artifactFilesha1 = getBasedir().resolve(
+                    "target/repositories/test-origin-repo/commons-logging/commons-logging/1.0.1/commons-logging-1.0.1-javadoc.jar.sha1" );
 
             assertTrue( "artifact not exists:" + artifactFile, Files.exists(artifactFile) );
 
@@ -354,7 +354,7 @@ public class RepositoriesServiceTest
                 new BrowseResultEntry( "org.apache.karaf.features.org.apache.karaf.features.core", true ) );
 
             Path directory =
-                Paths.get( "target/test-origin-repo/org/apache/karaf/features/org.apache.karaf.features.command" );
+                getBasedir().resolve( "target/repositories/test-origin-repo/org/apache/karaf/features/org.apache.karaf.features.command" );
 
             assertTrue( "directory not exists", Files.exists(directory) );
 
@@ -497,7 +497,7 @@ public class RepositoriesServiceTest
     protected Path initSnapshotRepo()
         throws Exception
     {
-        Path targetRepo = getBasedir().resolve( "target/repo-with-snapshots" );
+        Path targetRepo = getBasedir().resolve( "target/repositories/repo-with-snapshots" );
         if ( Files.exists(targetRepo) )
         {
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( targetRepo );
@@ -544,7 +544,7 @@ public class RepositoriesServiceTest
 
     protected ManagedRepository getTestManagedRepository( String id, String path )
     {
-        String location = Paths.get( org.apache.archiva.common.utils.FileUtils.getBasedir(), "target/" + path ).toAbsolutePath().toString();
+        String location = getBasedir().resolve("target/repositories/" + path ).toAbsolutePath().toString();
         return new ManagedRepository( Locale.getDefault(), id, id, location, "default", true, true, true, "2 * * * * ?", null, false, 80, 80,
                                       true, false );
     }

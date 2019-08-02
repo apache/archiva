@@ -48,20 +48,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.regex.Pattern;
+import java.util.*;
 
 /**
  *
@@ -72,6 +64,11 @@ public class Maven2RepositoryMerger
 {
 
     private Logger log = LoggerFactory.getLogger( getClass() );
+
+    private static final Comparator<ArtifactMetadata> META_COMPARATOR = Comparator.comparing(ArtifactMetadata::getNamespace)
+            .thenComparing(ArtifactMetadata::getProject)
+            .thenComparing(ArtifactMetadata::getId)
+            .thenComparing(ArtifactMetadata::getVersion);
 
     /**
      *
@@ -244,7 +241,7 @@ public class Maven2RepositoryMerger
             if ( versionMetaDataFileInSourceRepo.exists() )
             {//Pattern quote for windows path
                 String relativePathToVersionMetadataFile =
-                    versionMetaDataFileInSourceRepo.getPath().toString().split( Pattern.quote( sourceRepoPath ) )[1];
+                        getRelativeAssetPath(versionMetaDataFileInSourceRepo);
                 Path versionMetaDataFileInTargetRepo = Paths.get( targetRepoPath, relativePathToVersionMetadataFile );
 
                 if ( !Files.exists(versionMetaDataFileInTargetRepo) )
@@ -265,7 +262,7 @@ public class Maven2RepositoryMerger
             if ( projectMetadataFileInSourceRepo.exists() )
             {
                 String relativePathToProjectMetadataFile =
-                    projectMetadataFileInSourceRepo.getPath().split( Pattern.quote( sourceRepoPath ) )[1];
+                        getRelativeAssetPath(projectMetadataFileInSourceRepo);
                 Path projectMetadataFileInTargetRepo = Paths.get( targetRepoPath, relativePathToProjectMetadataFile );
 
                 if ( !Files.exists(projectMetadataFileInTargetRepo) )
@@ -281,6 +278,14 @@ public class Maven2RepositoryMerger
             }
         }
 
+    }
+
+    private String getRelativeAssetPath(final StorageAsset asset) {
+        String relPath = asset.getPath();
+        while(relPath.startsWith("/")) {
+            relPath = relPath.substring(1);
+        }
+        return relPath;
     }
 
     private void copyFile( Path sourceFile, Path targetFile )
@@ -378,7 +383,7 @@ public class Maven2RepositoryMerger
             {
                 metadata = MavenMetadataReader.read( metadataFile );
             }
-            catch (XMLException | IOException e )
+            catch (XMLException e )
             {
                 throw new RepositoryMetadataException( e.getMessage(), e );
             }
@@ -393,27 +398,13 @@ public class Maven2RepositoryMerger
     {
         try
         {
-            List<ArtifactMetadata> targetArtifacts = metadataRepository.getArtifacts( targetRepo );
-            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepo );
-            List<ArtifactMetadata> conflictsArtifacts = new ArrayList<>();
+            TreeSet<ArtifactMetadata> targetArtifacts = new TreeSet<>(META_COMPARATOR);
+            targetArtifacts.addAll(metadataRepository.getArtifacts(targetRepo));
+            TreeSet<ArtifactMetadata> sourceArtifacts = new TreeSet<>(META_COMPARATOR);
+            sourceArtifacts.addAll(metadataRepository.getArtifacts(sourceRepo));
+            sourceArtifacts.retainAll(targetArtifacts);
 
-            for ( ArtifactMetadata targetArtifact : targetArtifacts )
-            {
-                for ( ArtifactMetadata sourceArtifact : sourceArtifacts )
-                {
-                    if ( isEquals( targetArtifact, sourceArtifact ) )
-                    {
-                        if ( !conflictsArtifacts.contains( sourceArtifact ) )
-                        {
-                            conflictsArtifacts.add( sourceArtifact );
-                        }
-                    }
-                }
-            }
-
-            sourceArtifacts.removeAll( conflictsArtifacts );
-
-            return conflictsArtifacts;
+            return new ArrayList<>(sourceArtifacts);
         }
         catch ( MetadataRepositoryException e )
         {
@@ -421,20 +412,5 @@ public class Maven2RepositoryMerger
         }
     }
 
-    private boolean isEquals( ArtifactMetadata sourceArtifact, ArtifactMetadata targetArtifact )
-    {
-        boolean isSame = false;
 
-        if ( ( sourceArtifact.getNamespace().equals( targetArtifact.getNamespace() ) )
-            && ( sourceArtifact.getProject().equals( targetArtifact.getProject() ) ) && ( sourceArtifact.getId().equals(
-            targetArtifact.getId() ) ) && ( sourceArtifact.getProjectVersion().equals(
-            targetArtifact.getProjectVersion() ) ) )
-
-        {
-            isSame = true;
-
-        }
-
-        return isSame;
-    }
 }

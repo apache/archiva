@@ -58,6 +58,7 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -282,7 +283,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
                     transferFile( connector, targetRepository, targetPath, repository, localFile, requestProperties,
                                   true );
 
-                if ( downloadedFile.exists() )
+                if ( fileExists(downloadedFile) )
                 {
                     log.debug( "Successfully transferred: {}", downloadedFile.getPath() );
                     return downloadedFile;
@@ -827,7 +828,7 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
 
         try
         {
-            StorageUtil.moveAsset( temp, target, true );
+            StorageUtil.moveAsset( temp, target, true , StandardCopyOption.REPLACE_EXISTING);
         }
         catch ( IOException e )
         {
@@ -841,7 +842,8 @@ public abstract class DefaultRepositoryProxyHandler implements RepositoryProxyHa
             }
             catch ( IOException ex )
             {
-                throw new ProxyException("Could not move temp file "+temp.getPath()+" to target "+target.getPath(), e);
+                log.error("Copy failed from {} to {}: ({}) {}", temp, target, e.getClass(), e.getMessage());
+                throw new ProxyException("Could not move temp file "+temp.getPath()+" to target "+target.getPath()+": ("+e.getClass()+") "+e.getMessage(), e);
             }
         }
     }

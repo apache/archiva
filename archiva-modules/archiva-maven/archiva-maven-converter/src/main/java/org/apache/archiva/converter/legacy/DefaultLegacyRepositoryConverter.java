@@ -98,7 +98,7 @@ public class DefaultLegacyRepositoryConverter
         {
             String defaultRepositoryUrl = PathUtil.toUrl( repositoryDirectory );
 
-            BasicManagedRepository legacyRepository = BasicManagedRepository.newFilesystemInstance( "legacy", "Legacy Repository", repositoryDirectory.getParent());
+            BasicManagedRepository legacyRepository = BasicManagedRepository.newFilesystemInstance( "legacy", "Legacy Repository", repositoryDirectory);
             legacyRepository.setLocation( legacyRepositoryDirectory.toAbsolutePath().toUri() );
             legacyRepository.setLayout( "legacy" );
             DefaultFileLockManager lockManager = new DefaultFileLockManager();

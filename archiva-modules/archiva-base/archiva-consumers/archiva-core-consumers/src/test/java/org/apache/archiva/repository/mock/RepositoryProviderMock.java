@@ -76,7 +76,7 @@ public class RepositoryProviderMock implements RepositoryProvider
     public EditableManagedRepository createManagedInstance( String id, String name )
     {
         try {
-            return BasicManagedRepository.newFilesystemInstance( id, name, Paths.get("target/repositories") );
+            return BasicManagedRepository.newFilesystemInstance( id, name, Paths.get("target/repositories").resolve(id) );
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -104,7 +104,7 @@ public class RepositoryProviderMock implements RepositoryProvider
     {
         BasicManagedRepository managedRepository = null;
         try {
-            managedRepository = BasicManagedRepository.newFilesystemInstance( configuration.getId( ), configuration.getName( ), Paths.get("target/repositories") );
+            managedRepository = BasicManagedRepository.newFilesystemInstance( configuration.getId( ), configuration.getName( ), Paths.get("target/repositories").resolve(configuration.getId()) );
         } catch (IOException e) {
             throw new RepositoryException(e);
         }
@@ -156,7 +156,7 @@ public class RepositoryProviderMock implements RepositoryProvider
         String id = configuration.getId( ) + StagingRepositoryFeature.STAGING_REPO_POSTFIX;
         BasicManagedRepository managedRepository = null;
         try {
-            managedRepository = BasicManagedRepository.newFilesystemInstance( id, configuration.getName( ), Paths.get("target/repositories") );
+            managedRepository = BasicManagedRepository.newFilesystemInstance(id, configuration.getName(), Paths.get("target/repositories").resolve(id));
         } catch (IOException e) {
             throw new RepositoryException(e);
         }

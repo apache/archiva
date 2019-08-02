@@ -166,7 +166,7 @@ public class ArchivaCli
     private void doScan( String path, String[] consumers )
             throws ConsumerException, IOException
     {
-        BasicManagedRepository repo = BasicManagedRepository.newFilesystemInstance( Paths.get(path).getFileName().toString(), "Archiva CLI Provided Repo", Paths.get(path).getParent());
+        BasicManagedRepository repo = BasicManagedRepository.newFilesystemInstance( Paths.get(path).getFileName().toString(), "Archiva CLI Provided Repo", Paths.get(path));
         repo.setLocation( Paths.get(path).toUri() );
 
         List<KnownRepositoryContentConsumer> knownConsumerList = new ArrayList<>();

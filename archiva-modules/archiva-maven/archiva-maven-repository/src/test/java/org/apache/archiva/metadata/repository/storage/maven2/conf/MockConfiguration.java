@@ -20,6 +20,7 @@ package org.apache.archiva.metadata.repository.storage.maven2.conf;
  */
 
 import org.apache.archiva.configuration.ArchivaConfiguration;
+import org.apache.archiva.configuration.ArchivaRuntimeConfiguration;
 import org.apache.archiva.configuration.Configuration;
 import org.apache.archiva.configuration.ConfigurationListener;
 import org.apache.archiva.redback.components.registry.Registry;
@@ -61,6 +62,10 @@ public class MockConfiguration
     {
         registryControl = createNiceControl();
         registryMock = registryControl.createMock( Registry.class );
+        configuration.setArchivaRuntimeConfiguration(new ArchivaRuntimeConfiguration());
+        configuration.getArchivaRuntimeConfiguration().addChecksumType("sha1");
+        configuration.getArchivaRuntimeConfiguration().addChecksumType("sha256");
+        configuration.getArchivaRuntimeConfiguration().addChecksumType("md5");
     }
 
     @Override
@@ -172,6 +177,8 @@ public class MockConfiguration
             return getAppServerBaseDir().resolve("data");
         }
     }
+
+
 
 
 }

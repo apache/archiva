@@ -89,9 +89,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -403,7 +401,7 @@ public class DefaultRepositoriesService
             int lastIndex = artifactPath.lastIndexOf( '/' );
 
             String path = artifactPath.substring( 0, lastIndex );
-            StorageAsset targetPath = target.getAsset( path );
+            StorageAsset targetDir = target.getAsset( path );
 
             Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
             int newBuildNumber = 1;
@@ -412,10 +410,10 @@ public class DefaultRepositoriesService
             StorageAsset versionMetadataFile = target.getAsset(path + "/" + MetadataTools.MAVEN_METADATA );
             /* unused */ getMetadata( versionMetadataFile );
 
-            if ( !targetPath.exists() )
+            if ( !targetDir.exists() )
             {
-                targetPath = target.addAsset(targetPath.getPath(), true);
-                targetPath.create();
+                targetDir = target.addAsset(targetDir.getPath(), true);
+                targetDir.create();
             }
 
             String filename = artifactPath.substring( lastIndex + 1 );
@@ -423,7 +421,7 @@ public class DefaultRepositoriesService
             boolean fixChecksums =
                 !( archivaAdministration.getKnownContentConsumers().contains( "create-missing-checksums" ) );
 
-            StorageAsset targetFile = target.getAsset(targetPath + "/" + filename );
+            StorageAsset targetFile = target.getAsset(targetDir.getPath() + "/" + filename );
             if ( targetFile.exists() && target.blocksRedeployments())
             {
                 throw new ArchivaRestServiceException(
@@ -433,7 +431,7 @@ public class DefaultRepositoriesService
             }
             else
             {
-                copyFile( source, artifactFile, target, targetFile, fixChecksums );
+                copyFile(artifactFile, targetFile, fixChecksums );
                 queueRepositoryTask( target.getId(), targetFile );
             }
 
@@ -450,8 +448,8 @@ public class DefaultRepositoriesService
 
             if ( pomFile != null && pomFile.exists() )
             {
-                StorageAsset targetPomFile = target.getAsset( targetPath.getPath() + "/" + pomFilename );
-                copyFile( source, pomFile, target, targetPomFile, fixChecksums );
+                StorageAsset targetPomFile = target.getAsset( targetDir.getPath() + "/" + pomFilename );
+                copyFile(pomFile, targetPomFile, fixChecksums );
                 queueRepositoryTask( target.getId(), targetPomFile );
 
 
@@ -460,7 +458,7 @@ public class DefaultRepositoriesService
             // explicitly update only if metadata-updater consumer is not enabled!
             if ( !archivaAdministration.getKnownContentConsumers().contains( "metadata-updater" ) )
             {
-                updateProjectMetadata( target, targetPath, lastUpdatedTimestamp, timestamp, newBuildNumber,
+                updateProjectMetadata( target, targetDir, lastUpdatedTimestamp, timestamp, newBuildNumber,
                                        fixChecksums, artifactTransferRequest );
 
 
@@ -521,7 +519,7 @@ public class DefaultRepositoriesService
             {
                 metadata = MavenMetadataReader.read( metadataFile.getFilePath() );
             }
-            catch (XMLException | IOException e )
+            catch (XMLException e )
             {
                 throw new RepositoryMetadataException( e.getMessage(), e );
             }
@@ -538,7 +536,7 @@ public class DefaultRepositoriesService
     /*
      * Copies the asset to the new target.
      */
-    private void copyFile( RepositoryStorage sourceStorage,  StorageAsset sourceFile, RepositoryStorage targetStorage, StorageAsset targetPath, boolean fixChecksums )
+    private void copyFile(StorageAsset sourceFile, StorageAsset targetPath, boolean fixChecksums)
         throws IOException
     {
 
@@ -817,11 +815,12 @@ public class DefaultRepositoriesService
                 path = path.substring( 0, index );
                 StorageAsset targetPath = repo.getAsset( path );
 
-                if ( targetPath.exists() )
+                if ( !targetPath.exists() )
                 {
                     //throw new ContentNotFoundException(
                     //    artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion() );
                     log.warn( "targetPath {} not found skip file deletion", targetPath );
+                    return false;
                 }
 
                 // TODO: this should be in the storage mechanism so that it is all tied together
@@ -838,11 +837,11 @@ public class DefaultRepositoriesService
                     {
                         repository.deleteArtifact( artifactRef );
                     }
-                }
-                StorageAsset metadataFile = getMetadata( repo, targetPath.getPath() );
-                ArchivaRepositoryMetadata metadata = getMetadata( metadataFile );
+                    StorageAsset metadataFile = getMetadata( repo, targetPath.getPath() );
+                    ArchivaRepositoryMetadata metadata = getMetadata( metadataFile );
 
-                updateMetadata( metadata, metadataFile, lastUpdatedTimestamp, artifact );
+                    updateMetadata( metadata, metadataFile, lastUpdatedTimestamp, artifact );
+                }
             }
             Collection<ArtifactMetadata> artifacts = Collections.emptyList();
 
