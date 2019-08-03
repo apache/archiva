@@ -40,10 +40,11 @@ public class MergeRepositoriesServiceTest
 {
 
     private static final String TEST_REPOSITORY = "test-repository";
+    private static final String TEST_REPOSITORY_STAGE = TEST_REPOSITORY + "-stage";
 
-    private Path repo = Paths.get( System.getProperty( "basedir" ),"target","repositories-merge", "test-repository" );
+    private Path repo = getAppserverBase().resolve("data/repositories").resolve( "test-repository" );
 
-    private Path repoStage = Paths.get( System.getProperty( "basedir" ),"target","repositories-merge", "test-repository-stage" );
+    private Path repoStage = getAppserverBase().resolve("data/repositories").resolve( "test-repository-stage" );
 
     @Test
     public void getMergeConflictedArtifacts()
@@ -51,7 +52,11 @@ public class MergeRepositoriesServiceTest
     {
         MergeRepositoriesService service = getMergeRepositoriesService( authorizationHeader );
 
-        List<Artifact> artifactMetadatas = service.getMergeConflictedArtifacts( TEST_REPOSITORY + "-stage",
+        waitForScanToComplete( TEST_REPOSITORY );
+        waitForScanToComplete( TEST_REPOSITORY_STAGE );
+
+
+        List<Artifact> artifactMetadatas = service.getMergeConflictedArtifacts( TEST_REPOSITORY_STAGE,
                                                                                 TEST_REPOSITORY );
 
         log.info( "conflicts: {}", artifactMetadatas );
@@ -71,9 +76,12 @@ public class MergeRepositoriesServiceTest
         assertTrue( Files.exists(repoStage.resolve(mergedArtifactPath)) );
         assertTrue( Files.exists(repoStage.resolve(mergedArtifactPomPath)) );
 
+        waitForScanToComplete( TEST_REPOSITORY );
+        waitForScanToComplete( TEST_REPOSITORY_STAGE );
+
         MergeRepositoriesService service = getMergeRepositoriesService( authorizationHeader );
 
-        service.mergeRepositories( TEST_REPOSITORY + "-stage", TEST_REPOSITORY, true );
+        service.mergeRepositories( TEST_REPOSITORY_STAGE, TEST_REPOSITORY, true );
 
         assertTrue( Files.exists(repo.resolve(mergedArtifactPath)) );
         assertTrue( Files.exists(repo.resolve(mergedArtifactPomPath)) );
@@ -84,6 +92,7 @@ public class MergeRepositoriesServiceTest
         throws Exception
     {
         waitForScanToComplete( TEST_REPOSITORY );
+        waitForScanToComplete( TEST_REPOSITORY_STAGE );
 
         deleteTestRepo( TEST_REPOSITORY );
 
@@ -97,9 +106,9 @@ public class MergeRepositoriesServiceTest
     {
         // FileUtils.copyDirectory( Paths.get( System.getProperty( "basedir" ), "src/test/repo-with-osgi" ).toFile(), repo.toFile() );
 
-        Path srcRepo = Paths.get( System.getProperty( "basedir" ), "src/test/repo-with-osgi" );
-        createStagedNeededRepo( TEST_REPOSITORY, srcRepo.toAbsolutePath().toString(), true );
-        FileUtils.copyDirectory( getBasedir().resolve("src/test/repo-with-osgi-stage" ).toFile(),
+        Path srcRepo = getProjectDirectory().resolve(  "src/test/repo-with-osgi" );
+        createStagedNeededRepo( TEST_REPOSITORY, srcRepo , true );
+        FileUtils.copyDirectory( getProjectDirectory().resolve("src/test/repo-with-osgi-stage" ).toFile(),
                                  repoStage.toFile() );
     }
 }

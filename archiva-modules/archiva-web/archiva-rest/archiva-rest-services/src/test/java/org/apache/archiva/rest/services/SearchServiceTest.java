@@ -262,7 +262,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( TEST_REPO, "src/test/repo-with-classifier-only" );
+        createAndIndexRepo( TEST_REPO, getProjectDirectory().resolve("src/test/repo-with-classifier-only") );
 
         SearchService searchService = getSearchService( authorizationHeader );
 
@@ -317,7 +317,7 @@ public class SearchServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( TEST_REPO, "src/test/repo-with-osgi" );
+        createAndIndexRepo( TEST_REPO, getProjectDirectory( ).resolve( "src/test/repo-with-osgi" ) );
 
         waitForScanToComplete( TEST_REPO );
     }

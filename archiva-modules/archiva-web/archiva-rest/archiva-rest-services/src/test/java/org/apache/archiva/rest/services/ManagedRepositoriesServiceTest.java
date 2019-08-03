@@ -19,7 +19,6 @@ package org.apache.archiva.rest.services;
  * under the License.
  */
 
-import org.apache.archiva.admin.model.beans.FileType;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.rest.api.model.ArchivaRepositoryStatistics;
 import org.apache.archiva.rest.api.services.ManagedRepositoriesService;
@@ -121,7 +120,7 @@ public class ManagedRepositoriesServiceTest
         throws Exception
     {
         ManagedRepositoriesService service = getManagedRepositoriesService( authorizationHeader );
-        Path target = Paths.get( "target" );
+        Path target = getProjectDirectory().resolve( "target" );
 
         assertTrue( service.fileLocationExists( target.toAbsolutePath().toString() ) );
 
@@ -147,7 +146,7 @@ public class ManagedRepositoriesServiceTest
         RepositoriesService repositoriesService = getRepositoriesService( authorizationHeader );
 
         createAndIndexRepo( testRepoId,
-                            Paths.get( System.getProperty( "basedir" ), "src/test/repo-with-osgi" ).toAbsolutePath().toString() );
+                            getProjectDirectory().resolve("src/test/repo-with-osgi" ) );
 
         repositoriesService.scanRepositoryDirectoriesNow( testRepoId );
 

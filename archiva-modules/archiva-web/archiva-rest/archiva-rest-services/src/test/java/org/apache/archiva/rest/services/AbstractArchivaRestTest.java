@@ -21,7 +21,6 @@ package org.apache.archiva.rest.services;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.apache.archiva.admin.model.beans.ManagedRepository;
-import org.apache.archiva.common.utils.PathUtil;
 import org.apache.archiva.redback.rest.api.services.RedbackServiceException;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
 import org.apache.archiva.rest.api.services.ArchivaAdministrationService;
@@ -54,11 +53,11 @@ import org.junit.runner.RunWith;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
@@ -71,7 +70,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public abstract class AbstractArchivaRestTest
     extends AbstractRestServicesTest
 {
-    private AtomicReference<Path> buildDir = new AtomicReference<>();
+    private AtomicReference<Path> projectDir = new AtomicReference<>();
+    private AtomicReference<Path> appServerBase = new AtomicReference<>( );
+    private AtomicReference<Path> basePath = new AtomicReference<>( );
+
     private boolean reuseServer = true;
 
 
@@ -96,13 +98,24 @@ public abstract class AbstractArchivaRestTest
 
     // END SNIPPET: authz-header
 
+    Path getAppserverBase() {
+        if (appServerBase.get()==null) {
+            String basePath = System.getProperty( "appserver.base" );
+            final Path appserverPath;
+            if (StringUtils.isNotEmpty( basePath )) {
+                appserverPath = Paths.get( basePath ).toAbsolutePath( );
+            } else {
+                appserverPath = getBasedir( ).resolve( "target" ).resolve( "appserver-base-" + LocalTime.now( ).toSecondOfDay( ) );
+            }
+            appServerBase.compareAndSet( null, appserverPath );
+        }
+        return appServerBase.get();
+    }
 
     @BeforeClass
     public static void checkRepo()
     {
-        Assume.assumeTrue( !System.getProperty( "appserver.base" ).contains( " " ) );
-        LoggerFactory.getLogger( AbstractArchivaRestTest.class.getName() ).
-            error( "Rest services unit test must be run in a folder with no space" );
+        Assume.assumeFalse("Test is ignored, because path to appserver contains whitespace characters!", System.getProperty( "appserver.base" ).contains( " " ) );
         // skygo: was not possible to fix path in this particular module
         // Skip test if not in proper folder , otherwise test are not fair coz repository
         // cannot have space in their name.
@@ -115,7 +128,7 @@ public abstract class AbstractArchivaRestTest
     {
         if ( (!isReuseServer()) || (isReuseServer() && !isServerRunning())) {
             log.info("Starting new server reuse={}, running={}, instance={}, server={}", isReuseServer(), isServerRunning(), this.hashCode(), getServer()==null ? "" : getServer().hashCode());
-            Path appServerBase = Paths.get(System.getProperty("appserver.base"));
+            Path appServerBase = getAppserverBase( );
 
             removeAppsubFolder(appServerBase, "jcr");
             removeAppsubFolder(appServerBase, "conf");
@@ -370,7 +383,7 @@ public abstract class AbstractArchivaRestTest
 
     protected ManagedRepository getTestManagedRepository()
     {
-        String location = getBasedir().resolve( "target/repositories/test-repo" ).toAbsolutePath().toString();
+        String location = getAppserverBase().resolve( "data/repositories/test-repo" ).toAbsolutePath().toString();
         return new ManagedRepository( Locale.getDefault(),  "TEST", "test", location, "default", true, true, false, "2 * * * * ?", null,
                                       false, 2, 3, true, false, "my nice repo", false );
 
@@ -382,8 +395,8 @@ public abstract class AbstractArchivaRestTest
         return StringUtils.isBlank( baseUrlSysProps ) ? "http://localhost:" + getServerPort() : baseUrlSysProps;
     }
 
-    protected Path getBuildDirectory() {
-        if (buildDir.get()==null) {
+    protected Path getProjectDirectory() {
+        if ( projectDir.get()==null) {
             String propVal = System.getProperty("mvn.project.base.dir");
             Path newVal;
             if (StringUtils.isEmpty(propVal)) {
@@ -391,9 +404,9 @@ public abstract class AbstractArchivaRestTest
             } else {
                 newVal = Paths.get(propVal).toAbsolutePath();
             }
-            buildDir.compareAndSet(null, newVal);
+            projectDir.compareAndSet(null, newVal);
         }
-        return buildDir.get();
+        return projectDir.get();
     }
 
     //-----------------------------------------------------
@@ -407,7 +420,7 @@ public abstract class AbstractArchivaRestTest
     protected void initSourceTargetRepo()
         throws Exception
     {
-        Path targetRepo = Paths.get( "target/repositories/test-repo-copy" );
+        Path targetRepo = getAppserverBase().resolve("data/repositories/test-repo-copy" );
         if ( Files.exists(targetRepo) )
         {
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( targetRepo );
@@ -427,13 +440,13 @@ public abstract class AbstractArchivaRestTest
         getManagedRepositoriesService( authorizationHeader ).addManagedRepository( managedRepository );
         assertNotNull( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( TARGET_REPO_ID ) );
 
-        Path originRepo = Paths.get( "target/repositories/test-origin-repo" );
+        Path originRepo = getAppserverBase().resolve( "data/repositories/test-origin-repo" );
         if ( Files.exists(originRepo) )
         {
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( originRepo );
         }
         assertFalse( Files.exists(originRepo) );
-        FileUtils.copyDirectory( getBuildDirectory().resolve("src/test/repo-with-osgi" ).toAbsolutePath().toFile(), originRepo.toAbsolutePath().toFile() );
+        FileUtils.copyDirectory( getProjectDirectory().resolve("src/test/repo-with-osgi" ).toAbsolutePath().toFile(), originRepo.toAbsolutePath().toFile() );
 
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( SOURCE_REPO_ID ) != null )
         {
@@ -486,7 +499,7 @@ public abstract class AbstractArchivaRestTest
 
     }
 
-    protected void createAndIndexRepo( String testRepoId, String srcRepoPath, boolean stageNeeded )
+    protected void createAndIndexRepo( String testRepoId, Path srcRepoPath, boolean stageNeeded )
         throws ArchivaRestServiceException, IOException, RedbackServiceException
     {
         if ( getManagedRepositoriesService( authorizationHeader ).getManagedRepository( testRepoId ) != null )
@@ -498,23 +511,23 @@ public abstract class AbstractArchivaRestTest
         managedRepository.setId( testRepoId );
         managedRepository.setName( "test repo" );
 
-        Path badContent = Paths.get( srcRepoPath, "target" );
+        Path badContent = srcRepoPath.resolve( "target" );
         if ( Files.exists(badContent) )
         {
             org.apache.archiva.common.utils.FileUtils.deleteDirectory( badContent );
         }
 
-        Path repoPath = getBasedir().resolve( "target" ).resolve( "repositories" ).resolve( testRepoId);
+        Path repoPath = getAppserverBase().resolve( "data" ).resolve( "repositories" ).resolve( testRepoId);
 
         FileUtils.deleteQuietly(repoPath.toFile());
-        FileUtils.copyDirectory(Paths.get(srcRepoPath).toFile(), repoPath.toFile());
+        FileUtils.copyDirectory(srcRepoPath.toFile(), repoPath.toFile());
 
         managedRepository.setLocation( repoPath.toAbsolutePath().toString() );
         String suffix = Long.toString( new Date().getTime() );
-        String baseDir = System.getProperty("java.io.tmpdir");
+        Path baseDir = Files.createTempDirectory( "archiva-test-index" ).toAbsolutePath();
         managedRepository.setIndexDirectory(
-            baseDir + "/.indexer-" + suffix );
-        managedRepository.setPackedIndexDirectory(baseDir + "/.index-" + suffix);
+            baseDir.resolve( ".indexer-" + suffix ).toString());
+        managedRepository.setPackedIndexDirectory(baseDir.resolve(".index-" + suffix).toString());
 
         managedRepository.setStageRepoNeeded( stageNeeded );
         managedRepository.setSnapshots( true );
@@ -537,17 +550,17 @@ public abstract class AbstractArchivaRestTest
         getRepositoriesService( authorizationHeader ).scanRepositoryNow( testRepoId, true );
     }
 
-    protected void createAndIndexRepo( String testRepoId, String repoPath )
+    protected void createAndIndexRepo( String testRepoId, Path srcRepoPath )
         throws Exception
     {
-        createAndIndexRepo( testRepoId, repoPath, false );
+        createAndIndexRepo( testRepoId, srcRepoPath, false );
         scanRepo( testRepoId );
     }
 
-    protected void createStagedNeededRepo( String testRepoId, String repoPath, boolean scan )
+    protected void createStagedNeededRepo( String testRepoId, Path srcRepoPath, boolean scan )
         throws Exception
     {
-        createAndIndexRepo( testRepoId, repoPath, true );
+        createAndIndexRepo( testRepoId, srcRepoPath, true );
         if ( scan )
         {
             scanRepo( testRepoId );
@@ -574,7 +587,17 @@ public abstract class AbstractArchivaRestTest
 
     public Path getBasedir()
     {
-        return Paths.get(System.getProperty( "basedir" ));
+        if (basePath.get()==null) {
+            String baseDir = System.getProperty( "basedir" );
+            final Path baseDirPath;
+            if (StringUtils.isNotEmpty( baseDir ))  {
+                baseDirPath = Paths.get( baseDir );
+            } else {
+                baseDirPath = getProjectDirectory( );
+            }
+            basePath.compareAndSet( null, baseDirPath );
+        }
+        return basePath.get( );
     }
 
     protected void waitForScanToComplete( String repoId )

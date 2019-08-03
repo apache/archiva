@@ -430,7 +430,7 @@ public class ArchivaDavResourceFactory
             String requestedFileName = StringUtils.substringAfterLast( pathInfo, "/" );
             StorageAsset temporaryIndexDirectory =
                 buildMergedIndexDirectory( activePrincipal, request, repoGroup );
-            StorageAsset asset = temporaryIndexDirectory.getStorage().getAsset(requestedFileName);
+            StorageAsset asset = temporaryIndexDirectory.resolve(requestedFileName);
 
             try {
                 resource = new ArchivaDavResource( asset, requestedFileName, repoGroup,

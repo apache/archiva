@@ -494,7 +494,7 @@ public class BrowseServiceTest
             assertNotNull( getUserService( authorizationHeader ).createGuestUser() );
         }
 
-        createAndIndexRepo( TEST_REPO_ID, getBasedir().resolve( "src/test/repo-with-osgi" ).toAbsolutePath().toString(),
+        createAndIndexRepo( TEST_REPO_ID, getProjectDirectory().resolve( "src/test/repo-with-osgi" ),
                             false );
 
         waitForScanToComplete( TEST_REPO_ID );
