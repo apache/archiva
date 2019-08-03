@@ -33,6 +33,7 @@ import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.archiva.webdav.RepositoryServlet;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.cxf.common.util.Base64Utility;
@@ -52,10 +53,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoaderListener;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -66,6 +71,11 @@ import java.util.zip.ZipFile;
 public abstract class AbstractDownloadTest
     extends TestCase
 {
+
+    AtomicReference<Path> projectDir = new AtomicReference<>( );
+    AtomicReference<Path> basePath = new AtomicReference<>( );
+
+    protected List<Path> createdPaths = new ArrayList<>( );
 
     protected final Logger log = LoggerFactory.getLogger( getClass() );
 
@@ -78,6 +88,37 @@ public abstract class AbstractDownloadTest
     ServerConnector serverConnector;
 
     public int port;
+
+    protected Path getProjectDirectory() {
+        if ( projectDir.get()==null) {
+            String propVal = System.getProperty("mvn.project.base.dir");
+            Path newVal;
+            if (StringUtils.isEmpty(propVal)) {
+                newVal = Paths.get("").toAbsolutePath();
+            } else {
+                newVal = Paths.get(propVal).toAbsolutePath();
+            }
+            projectDir.compareAndSet(null, newVal);
+        }
+        return projectDir.get();
+    }
+
+    public Path getBasedir()
+    {
+        if (basePath.get()==null) {
+            String baseDir = System.getProperty( "basedir" );
+            final Path baseDirPath;
+            if (StringUtils.isNotEmpty( baseDir ))  {
+                baseDirPath = Paths.get( baseDir );
+            } else {
+                baseDirPath = getProjectDirectory( );
+            }
+            basePath.compareAndSet( null, baseDirPath );
+        }
+        return basePath.get( );
+    }
+
+
 
     public static String encode( String uid, String password )
     {
@@ -148,6 +189,14 @@ public abstract class AbstractDownloadTest
     public void tearDown()
         throws Exception
     {
+
+        for(Path dir : createdPaths) {
+            if ( Files.exists( dir)) {
+                FileUtils.deleteQuietly( dir.toFile( ) );
+            }
+        }
+        createdPaths.clear();
+
         System.clearProperty( "redback.admin.creation.file" );
         super.tearDown();
         if ( this.server != null )

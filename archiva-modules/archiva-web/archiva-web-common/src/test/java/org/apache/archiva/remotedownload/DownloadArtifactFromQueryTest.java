@@ -27,6 +27,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,26 +49,39 @@ public class DownloadArtifactFromQueryTest
     extends AbstractDownloadTest
 {
 
+    private static Path appServerBase;
+
+    private Path indexDir;
+
     @BeforeClass
     public static void setAppServerBase()
         throws IOException
     {
         previousAppServerBase = System.getProperty( "appserver.base" );
-        System.setProperty( "appserver.base",
-                            Paths.get( System.getProperty( "java.io.tmpdir" ) ).toAbsolutePath().resolve("target")
-                                .resolve(DownloadArtifactFromQueryTest.class.getName() ).toString());
+        appServerBase = Files.createTempDirectory( "archiva-common-web_appsrv1_" ).toAbsolutePath();
+        System.setProperty( "appserver.base", appServerBase.toString( ) );
     }
 
     @AfterClass
     public static void resetAppServerBase()
     {
+        if (Files.exists(appServerBase)) {
+            FileUtils.deleteQuietly( appServerBase.toFile() );
+        }
         System.setProperty( "appserver.base", previousAppServerBase );
     }
 
     @Override
     protected String getSpringConfigLocation()
     {
+        System.out.println( "Appserver base: " + System.getProperty( "appserver.base" ) );
         return "classpath*:META-INF/spring-context.xml classpath*:spring-context-test-common.xml classpath*:spring-context-merge-index-download.xml";
+    }
+
+    @Before
+    public void init() throws IOException
+    {
+        indexDir = Files.createTempDirectory( "archiva-web-common-index" );
     }
 
     @After
@@ -75,10 +89,9 @@ public class DownloadArtifactFromQueryTest
         throws Exception
     {
         super.tearDown();
-        Path tmpIndexDir = Paths.get( System.getProperty( "java.io.tmpdir" ), "tmpIndex" );
-        if ( Files.exists( tmpIndexDir ) )
+        if ( Files.exists( indexDir ) )
         {
-            FileUtils.deleteDirectory( tmpIndexDir.toFile() );
+            FileUtils.deleteDirectory( indexDir.toFile() );
         }
     }
 
@@ -87,17 +100,19 @@ public class DownloadArtifactFromQueryTest
         throws Exception
     {
 
-        Path tmpIndexDir = Paths.get( System.getProperty( "java.io.tmpdir" ), "tmpIndex" );
-        if ( Files.exists( tmpIndexDir ) )
-        {
-            FileUtils.deleteDirectory( tmpIndexDir.toFile() );
-        }
         String id = Long.toString( System.currentTimeMillis() );
+        Path srcRep = getProjectDirectory( ).resolve( "src/test/repositories/test-repo" );
+        Path testRep = getBasedir( ).resolve( "target" ).resolve( "test-repo-" + id ).toAbsolutePath();
+        FileUtils.copyDirectory( srcRep.toFile( ), testRep.toFile( ) );
+        createdPaths.add( testRep );
+
+
         ManagedRepository managedRepository = new ManagedRepository( Locale.getDefault());
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
-        managedRepository.setLocation( System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" );
-        managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex/" + id );
+        managedRepository.setLocation( testRep.toString() );
+        managedRepository.setIndexDirectory( indexDir.resolve( "index-"+id ).toString());
+        managedRepository.setPackedIndexDirectory( indexDir.resolve( "indexpacked-"+id ).toString());
 
         ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService();
 

@@ -21,6 +21,7 @@ package org.apache.archiva.remotedownload;
 
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.rest.api.services.RemoteRepositoriesService;
+import org.apache.commons.io.FileUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -33,6 +34,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,23 +49,30 @@ public class RemoteRepositoryConnectivityCheckTest
     extends AbstractDownloadTest
 {
 
+    private static Path appServerBase;
+
     @BeforeClass
     public static void setAppServerBase()
+        throws IOException
     {
         previousAppServerBase = System.getProperty( "appserver.base" );
-        System.setProperty( "appserver.base", "target/" + RemoteRepositoryConnectivityCheckTest.class.getName() );
+        appServerBase = Files.createTempDirectory( "archiva-common-web_appsrv6_" ).toAbsolutePath( );
+        System.setProperty( "appserver.base", appServerBase.toString( ) );
     }
-
 
     @AfterClass
     public static void resetAppServerBase()
     {
+        if (Files.exists(appServerBase)) {
+            FileUtils.deleteQuietly( appServerBase.toFile() );
+        }
         System.setProperty( "appserver.base", previousAppServerBase );
     }
 
     @Override
     protected String getSpringConfigLocation()
     {
+        System.out.println( "AppserverBase: " + System.getProperty( "appserver.base" ) );
         return "classpath*:META-INF/spring-context.xml classpath*:spring-context-test-common.xml classpath*:spring-context-artifacts-download.xml";
     }
 
@@ -71,9 +80,16 @@ public class RemoteRepositoryConnectivityCheckTest
     public void checkRemoteConnectivity()
         throws Exception
     {
+        String id = Long.toString( System.currentTimeMillis() );
+
+        Path srcRep = getProjectDirectory( ).resolve( "src/test/repositories/test-repo" );
+        Path testRep = getBasedir( ).resolve( "target" ).resolve( "test-repo-" + id ).toAbsolutePath();
+        FileUtils.copyDirectory( srcRep.toFile( ), testRep.toFile( ) );
+        createdPaths.add( testRep );
+
 
         Server repoServer =
-            buildStaticServer( Paths.get( System.getProperty( "basedir" ),  "src/test/repositories/test-repo" ) );
+            buildStaticServer( testRep );
 
         ServerConnector serverConnector = new ServerConnector( repoServer, new HttpConnectionFactory());
         repoServer.addConnector( serverConnector );

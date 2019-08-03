@@ -27,13 +27,16 @@ import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.apache.maven.wagon.repository.Repository;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,24 +55,49 @@ public class DownloadSnapshotTest
 {
     protected Logger log = LoggerFactory.getLogger( getClass() );
 
+    private static Path appServerBase;
+    private Path indexDir;
+
     @BeforeClass
     public static void setAppServerBase()
+        throws IOException
     {
         previousAppServerBase = System.getProperty( "appserver.base" );
-        System.setProperty( "appserver.base", "target/" + DownloadSnapshotTest.class.getName() );
+        appServerBase = Files.createTempDirectory( "archiva-common-web_appsrv5_" ).toAbsolutePath();
+        System.setProperty( "appserver.base", appServerBase.toString( ) );
     }
-
 
     @AfterClass
     public static void resetAppServerBase()
     {
+        if (Files.exists(appServerBase)) {
+            FileUtils.deleteQuietly( appServerBase.toFile() );
+        }
         System.setProperty( "appserver.base", previousAppServerBase );
     }
 
     @Override
     protected String getSpringConfigLocation()
     {
+        System.out.println( "AppserverBase: " + System.getProperty( "appserver.base" ) );
         return "classpath*:META-INF/spring-context.xml classpath*:spring-context-test-common.xml classpath*:spring-context-artifacts-download.xml";
+    }
+
+    @Before
+    public void init() throws IOException
+    {
+        indexDir = Files.createTempDirectory( "archiva-web-common-index" );
+    }
+
+    @After
+    public void cleanup()
+        throws Exception
+    {
+        super.tearDown();
+        if ( Files.exists( indexDir ) )
+        {
+            FileUtils.deleteDirectory( indexDir.toFile() );
+        }
     }
 
 
@@ -78,17 +106,18 @@ public class DownloadSnapshotTest
         throws Exception
     {
 
-        Path tmpIndexDir = Paths.get( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex" );
-        if ( Files.exists(tmpIndexDir) )
-        {
-            org.apache.archiva.common.utils.FileUtils.deleteDirectory( tmpIndexDir );
-        }
         String id = Long.toString( System.currentTimeMillis() );
+        Path srcRep = getProjectDirectory( ).resolve( "src/test/repositories/snapshot-repo" );
+        Path testRep = getBasedir( ).resolve( "target" ).resolve( "snapshot-repo-" + id ).toAbsolutePath();
+        FileUtils.copyDirectory( srcRep.toFile( ), testRep.toFile( ) );
+        createdPaths.add( testRep );
+
         ManagedRepository managedRepository = new ManagedRepository( Locale.getDefault());
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
-        managedRepository.setLocation( System.getProperty( "basedir" ) + "/src/test/repositories/snapshot-repo" );
-        managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex/" + id );
+        managedRepository.setLocation( testRep.toString() );
+        managedRepository.setIndexDirectory( indexDir.resolve( "index-" + id ).toString() );
+        managedRepository.setPackedIndexDirectory( indexDir.resolve( "indexpacked-" + id ).toString() );
 
         ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService();
 

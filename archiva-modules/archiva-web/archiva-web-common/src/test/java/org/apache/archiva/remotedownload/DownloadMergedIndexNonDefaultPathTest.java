@@ -22,7 +22,6 @@ import org.apache.archiva.admin.model.beans.ManagedRepository;
 import org.apache.archiva.admin.model.beans.ProxyConnector;
 import org.apache.archiva.admin.model.beans.RemoteRepository;
 import org.apache.archiva.admin.model.beans.RepositoryGroup;
-import org.apache.archiva.common.utils.FileUtils;
 import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.redback.integration.security.role.RedbackRoleConstants;
 import org.apache.archiva.redback.rest.services.FakeCreateAdminService;
@@ -33,15 +32,21 @@ import org.apache.archiva.rest.api.services.RepositoriesService;
 import org.apache.archiva.rest.api.services.RepositoryGroupService;
 import org.apache.archiva.rest.api.services.SearchService;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -56,23 +61,39 @@ public class DownloadMergedIndexNonDefaultPathTest
     extends AbstractDownloadTest
 {
 
+    private static Path appServerBase;
+    private Path indexDir;
+
+
     @BeforeClass
     public static void setAppServerBase()
+        throws IOException
     {
         previousAppServerBase = System.getProperty( "appserver.base" );
-        System.setProperty( "appserver.base", System.getProperty( "basedir" ) + "/target/" + DownloadMergedIndexNonDefaultPathTest.class.getName() );
+        appServerBase = Files.createTempDirectory( "archiva-common-web_appsrv3_" ).toAbsolutePath();
+        System.setProperty( "appserver.base", appServerBase.toString( ) );
     }
 
     @AfterClass
     public static void resetAppServerBase()
     {
+        if (Files.exists(appServerBase)) {
+            org.apache.commons.io.FileUtils.deleteQuietly( appServerBase.toFile() );
+        }
         System.setProperty( "appserver.base", previousAppServerBase );
     }
 
     @Override
     protected String getSpringConfigLocation()
     {
+        System.out.println( "AppserverBase: " + System.getProperty( "appserver.base" ) );
         return "classpath*:META-INF/spring-context.xml classpath*:spring-context-test-common.xml classpath*:spring-context-merge-index-download.xml";
+    }
+
+    @Before
+    public void init() throws IOException
+    {
+        indexDir = Files.createTempDirectory( "archiva-web-common-index" );
     }
 
     @After
@@ -80,32 +101,34 @@ public class DownloadMergedIndexNonDefaultPathTest
         throws Exception
     {
         super.tearDown();
-        Path tmpIndexDir = Paths.get( System.getProperty( "java.io.tmpdir" ),  "tmpIndex" );
-        if ( Files.exists(tmpIndexDir) )
+        if ( Files.exists( indexDir ) )
         {
-            org.apache.archiva.common.utils.FileUtils.deleteDirectory( tmpIndexDir );
+            org.apache.commons.io.FileUtils.deleteDirectory( indexDir.toFile() );
         }
     }
-
 
     @Test
     public void downloadMergedIndexWithNonDefaultPath()
         throws Exception
     {
 
-        Path indexBaseDir = Paths.get(System.getProperty( "java.io.tmpdir" )).resolve("archiva").resolve("remotedownloadtest");
-        String indexBase = indexBaseDir.toString();
-        FileUtils.deleteQuietly( indexBaseDir);
+        Path indexBaseDir = indexDir.resolve("remotedownloadtest");
         if (!Files.exists(indexBaseDir)) {
             Files.createDirectories( indexBaseDir );
         }
         String id = Long.toString( System.currentTimeMillis() );
+        Path srcRep = getProjectDirectory( ).resolve( "src/test/repositories/test-repo" );
+        Path testRep = getBasedir( ).resolve( "target" ).resolve( "test-repo-" + id ).toAbsolutePath();
+        FileUtils.copyDirectory( srcRep.toFile( ), testRep.toFile( ) );
+        createdPaths.add( testRep );
+
         ManagedRepository managedRepository = new ManagedRepository( Locale.getDefault());
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
-        managedRepository.setLocation( System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" );
-        managedRepository.setIndexDirectory( indexBase + "/index-" + id );
-        managedRepository.setPackedIndexDirectory( indexBase + "/indexPacked-" + id );
+        managedRepository.setLocation( testRep.toString()  );
+        managedRepository.setIndexDirectory( indexBaseDir.resolve( "index-" + id ).toString() );
+        managedRepository.setPackedIndexDirectory( indexBaseDir.resolve( "indexPacked-" + id ).toString() );
+
 
         ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService();
 
@@ -145,14 +168,21 @@ public class DownloadMergedIndexNonDefaultPathTest
 
         repositoryGroupService.addRepositoryGroup( repositoryGroup );
 
+
+
         // create a repo with a remote on the one with index
         id = Long.toString( System.currentTimeMillis() );
+        Path srcRep2 = getProjectDirectory( ).resolve( "src/test/repositories/test-repo" );
+        Path testRep2 = getBasedir( ).resolve( "target" ).resolve( "test-repo-" + id ).toAbsolutePath();
+        FileUtils.copyDirectory( srcRep2.toFile( ), testRep2.toFile( ) );
+        createdPaths.add( testRep2 );
+
         managedRepository = new ManagedRepository(Locale.getDefault());
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
-        managedRepository.setLocation( System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" );
-        managedRepository.setIndexDirectory( indexBaseDir +  "/index-"+ id );
-        managedRepository.setPackedIndexDirectory( indexBase + "/tmpIndexPacked-" + id );
+        managedRepository.setLocation( testRep2.toString() );
+        managedRepository.setIndexDirectory( indexBaseDir.resolve( "index-" + id ).toString() );
+        managedRepository.setPackedIndexDirectory( indexBaseDir.resolve( "indexpacked-" + id ).toString() );
 
         if ( managedRepositoriesService.getManagedRepository( id ) != null )
         {

@@ -47,6 +47,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Olivier Lamy
@@ -56,6 +57,7 @@ public class UploadArtifactsTest
         extends AbstractRestServicesTest {
 
     private static String PREVIOUS_ARCHIVA_PATH;
+    private AtomicReference<Path> projectDir = new AtomicReference<>( );
 
     @BeforeClass
     public static void initConfigurationPath()
@@ -63,7 +65,7 @@ public class UploadArtifactsTest
     {
         PREVIOUS_ARCHIVA_PATH = System.getProperty(ArchivaConfiguration.USER_CONFIG_PROPERTY);
         System.setProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY,
-                System.getProperty( "test.resources.path/" ) + "archiva.xml" );
+                System.getProperty( "test.resources.path" ) + "/archiva.xml" );
     }
 
 
@@ -76,6 +78,20 @@ public class UploadArtifactsTest
     @Override
     protected String getSpringConfigLocation() {
         return "classpath*:META-INF/spring-context.xml,classpath:/spring-context-test-upload.xml";
+    }
+
+    protected Path getProjectDirectory() {
+        if ( projectDir.get()==null) {
+            String propVal = System.getProperty("mvn.project.base.dir");
+            Path newVal;
+            if (StringUtils.isEmpty(propVal)) {
+                newVal = Paths.get("").toAbsolutePath();
+            } else {
+                newVal = Paths.get(propVal).toAbsolutePath();
+            }
+            projectDir.compareAndSet(null, newVal);
+        }
+        return projectDir.get();
     }
 
     @Override
@@ -119,7 +135,7 @@ public class UploadArtifactsTest
     public void uploadFile() throws IOException, ArchivaRestServiceException {
         FileUploadService service = getUploadService();
         try {
-            Path file = Paths.get("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
+            Path file = getProjectDirectory().resolve("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
             final Attachment fileAttachment = new AttachmentBuilder().object(Files.newInputStream(file)).contentDisposition(new ContentDisposition("form-data; filename=\"" + file.getFileName().toString() + "\"; name=\"files[]\"")).build();
             MultipartBody body = new MultipartBody(fileAttachment);
             service.post(body);
@@ -132,7 +148,7 @@ public class UploadArtifactsTest
     public void failUploadFileWithBadFileName() throws IOException, ArchivaRestServiceException {
         FileUploadService service = getUploadService();
         try {
-            Path file = Paths.get("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
+            Path file = getProjectDirectory().resolve("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
             final Attachment fileAttachment = new AttachmentBuilder().object(Files.newInputStream(file)).contentDisposition(new ContentDisposition("form-data; filename=\"/../TestFile.testext\"; name=\"files[]\"")).build();
             MultipartBody body = new MultipartBody(fileAttachment);
             try {
@@ -150,7 +166,7 @@ public class UploadArtifactsTest
     public void uploadAndDeleteFile() throws IOException, ArchivaRestServiceException {
         FileUploadService service = getUploadService();
         try {
-            Path file = Paths.get("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
+            Path file = getProjectDirectory().resolve("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
             final Attachment fileAttachment = new AttachmentBuilder().object(Files.newInputStream(file)).contentDisposition(new ContentDisposition("form-data; filename=\"" + file.getFileName().toString() + "\"; name=\"files[]\"")).build();
             MultipartBody body = new MultipartBody(fileAttachment);
             service.post(body);
@@ -164,7 +180,7 @@ public class UploadArtifactsTest
     public void failUploadAndDeleteWrongFile() throws IOException, ArchivaRestServiceException {
         FileUploadService service = getUploadService();
         try {
-            Path file = Paths.get("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
+            Path file = getProjectDirectory().resolve("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
             final Attachment fileAttachment = new AttachmentBuilder().object(Files.newInputStream(file)).contentDisposition(new ContentDisposition("form-data; filename=\"" + file.getFileName().toString() + "\"; name=\"files[]\"")).build();
             MultipartBody body = new MultipartBody(fileAttachment);
             service.post(body);
@@ -179,7 +195,7 @@ public class UploadArtifactsTest
         Path testFile = null;
         try {
             FileUploadService service = getUploadService();
-            Path file = Paths.get("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
+            Path file = getProjectDirectory().resolve("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
             Path targetDir = Paths.get("target/testDelete").toAbsolutePath();
             if (!Files.exists(targetDir)) Files.createDirectories(targetDir);
             Path tempDir = SystemUtils.getJavaIoTmpDir().toPath();
@@ -208,10 +224,10 @@ public class UploadArtifactsTest
 
     @Test
     public void failSaveFileWithBadParams() throws IOException, ArchivaRestServiceException {
-        Path path = Paths.get("target/appserver-base/repositories/internal/data/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.jar");
+        Path path = Paths.get("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.jar");
         Files.deleteIfExists(path);
         FileUploadService service = getUploadService();
-        Path file = Paths.get("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
+        Path file = getProjectDirectory().resolve("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
 
         Attachment fileAttachment = new AttachmentBuilder().object(Files.newInputStream(file)).contentDisposition(new ContentDisposition("form-data; filename=\"archiva-model.jar\"; name=\"files[]\"")).build();
         MultipartBody body = new MultipartBody(fileAttachment);
@@ -235,14 +251,14 @@ public class UploadArtifactsTest
     public void saveFile() throws IOException, ArchivaRestServiceException {
         log.debug("Starting saveFile()");
 
-        Path path = Paths.get("target/appserver-base/repositories/internal/data/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.jar");
+        Path path = Paths.get("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.jar");
         log.debug("Jar exists: {}",Files.exists(path));
         Files.deleteIfExists(path);
-        path = Paths.get("target/appserver-base/repositories/internal/data/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.pom");
+        path = Paths.get("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.pom");
         Files.deleteIfExists(path);
         FileUploadService service = getUploadService();
         service.clearUploadedFiles();
-        Path file = Paths.get("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
+        Path file = getProjectDirectory().resolve("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
         log.debug("Upload file exists: {}", Files.exists(file));
         final Attachment fileAttachment = new AttachmentBuilder().object(Files.newInputStream(file)).contentDisposition(new ContentDisposition("form-data; filename=\"archiva-model.jar\"; name=\"files[]\"")).build();
         MultipartBody body = new MultipartBody(fileAttachment);
@@ -254,14 +270,14 @@ public class UploadArtifactsTest
     public void saveFileWithOtherExtension() throws IOException, ArchivaRestServiceException {
         log.debug("Starting saveFileWithOtherExtension()");
 
-        Path path = Paths.get("target/appserver-base/repositories/internal/data/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.bin");
+        Path path = Paths.get("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.bin");
         log.debug("Jar exists: {}",Files.exists(path));
         Files.deleteIfExists(path);
-        Path pomPath = Paths.get("target/appserver-base/repositories/internal/data/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.pom");
+        Path pomPath = Paths.get("target/appserver-base/repositories/internal/org/apache/archiva/archiva-model/1.2/archiva-model-1.2.pom");
         Files.deleteIfExists(pomPath);
         FileUploadService service = getUploadService();
         service.clearUploadedFiles();
-        Path file = Paths.get("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
+        Path file = getProjectDirectory().resolve("src/test/repositories/snapshot-repo/org/apache/archiva/archiva-model/1.4-M4-SNAPSHOT/archiva-model-1.4-M4-20130425.081822-1.jar");
         log.debug("Upload file exists: {}", Files.exists(file));
         final Attachment fileAttachment = new AttachmentBuilder().object(Files.newInputStream(file)).contentDisposition(new ContentDisposition("form-data; filename=\"archiva-model.bin\"; name=\"files[]\"")).build();
         MultipartBody body = new MultipartBody(fileAttachment);

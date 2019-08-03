@@ -24,7 +24,7 @@
     <managedRepository>
       <id>testRepo</id>
       <name>Archiva Test Repository</name>
-      <location>${basedir}/src/test/repositories/default-repository</location>
+      <location>${basedir}/target/default-repository</location>
       <layout>default</layout>
       <releases>true</releases>
       <snapshots>false</snapshots>

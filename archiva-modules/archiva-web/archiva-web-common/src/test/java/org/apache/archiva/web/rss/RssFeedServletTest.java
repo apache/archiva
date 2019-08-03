@@ -77,7 +77,7 @@ public class RssFeedServletTest
     {
         PREVIOUS_ARCHIVA_PATH = System.getProperty(ArchivaConfiguration.USER_CONFIG_PROPERTY);
         System.setProperty( ArchivaConfiguration.USER_CONFIG_PROPERTY,
-                            System.getProperty( "test.resources.path/" ) + "empty-archiva.xml" );
+                            System.getProperty( "test.resources.path" ) + "/empty-archiva.xml" );
     }
 
 

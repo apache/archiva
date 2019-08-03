@@ -35,6 +35,7 @@ import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,27 +58,38 @@ public class DownloadMergedIndexTest
     extends AbstractDownloadTest
 {
 
+    private static Path appServerBase;
+    private Path indexDir;
+
     @BeforeClass
     public static void setAppServerBase()
         throws IOException
     {
         previousAppServerBase = System.getProperty( "appserver.base" );
-        System.setProperty( "appserver.base",
-                            Paths.get(System.getProperty( "java.io.tmpdir" ) ).toAbsolutePath().resolve( "target").resolve(
-                                DownloadMergedIndexTest.class.getName()).toString()
-        );
+        appServerBase = Files.createTempDirectory( "archiva-common-web_appsrv4_" ).toAbsolutePath();
+        System.setProperty( "appserver.base", appServerBase.toString( ) );
     }
 
     @AfterClass
     public static void resetAppServerBase()
     {
+        if (Files.exists(appServerBase)) {
+            FileUtils.deleteQuietly( appServerBase.toFile() );
+        }
         System.setProperty( "appserver.base", previousAppServerBase );
     }
 
     @Override
     protected String getSpringConfigLocation()
     {
+        System.out.println( "AppserverBase: " + System.getProperty( "appserver.base" ) );
         return "classpath*:META-INF/spring-context.xml classpath*:spring-context-test-common.xml classpath*:spring-context-merge-index-download.xml";
+    }
+
+    @Before
+    public void init() throws IOException
+    {
+        indexDir = Files.createTempDirectory( "archiva-web-common-index" );
     }
 
     @After
@@ -85,10 +97,9 @@ public class DownloadMergedIndexTest
         throws Exception
     {
         super.tearDown();
-        Path tmpIndexDir = Paths.get( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex" );
-        if ( Files.exists(tmpIndexDir) )
+        if ( Files.exists( indexDir ) )
         {
-            org.apache.archiva.common.utils.FileUtils.deleteDirectory( tmpIndexDir );
+            FileUtils.deleteDirectory( indexDir.toFile() );
         }
     }
 
@@ -97,17 +108,18 @@ public class DownloadMergedIndexTest
     public void downloadMergedIndex()
         throws Exception
     {
-        Path tmpIndexDir = Paths.get( System.getProperty( "java.io.tmpdir" ), "tmpIndex" );
-        if ( Files.exists( tmpIndexDir ) )
-        {
-            FileUtils.deleteDirectory( tmpIndexDir.toFile() );
-        }
         String id = Long.toString( System.currentTimeMillis() );
+        Path srcRep = getProjectDirectory( ).resolve( "src/test/repositories/test-repo" );
+        Path testRep = getBasedir( ).resolve( "target" ).resolve( "test-repo-" + id ).toAbsolutePath();
+        FileUtils.copyDirectory( srcRep.toFile( ), testRep.toFile( ) );
+        createdPaths.add( testRep );
+
+
         ManagedRepository managedRepository = new ManagedRepository( Locale.getDefault());
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
-        managedRepository.setLocation( System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" );
-        managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex/" + id );
+        managedRepository.setLocation( testRep.toString() );
+        managedRepository.setIndexDirectory( indexDir.resolve( "index-" + id ).toString() );
 
         ManagedRepositoriesService managedRepositoriesService = getManagedRepositoriesService();
 
@@ -147,11 +159,17 @@ public class DownloadMergedIndexTest
 
         // create a repo with a remote on the one with index
         id = Long.toString( System.currentTimeMillis() );
+
+        Path srcRep2 = getProjectDirectory( ).resolve( "src/test/repositories/test-repo" );
+        Path testRep2 = getBasedir( ).resolve( "target" ).resolve( "test-repo-" + id ).toAbsolutePath();
+        FileUtils.copyDirectory( srcRep2.toFile( ), testRep2.toFile( ) );
+        createdPaths.add( testRep2 );
+
         managedRepository = new ManagedRepository(Locale.getDefault());
         managedRepository.setId( id );
         managedRepository.setName( "name of " + id );
-        managedRepository.setLocation( System.getProperty( "basedir" ) + "/src/test/repositories/test-repo" );
-        managedRepository.setIndexDirectory( System.getProperty( "java.io.tmpdir" ) + "/tmpIndex/" + id );
+        managedRepository.setLocation( testRep2.toString() );
+        managedRepository.setIndexDirectory( indexDir.resolve( "index-" + id ).toString() );
 
         if ( managedRepositoriesService.getManagedRepository( id ) != null )
         {

@@ -23,6 +23,7 @@ import org.apache.archiva.redback.rest.api.services.RoleManagementService;
 import org.apache.archiva.security.common.ArchivaRoleConstants;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.apache.maven.wagon.repository.Repository;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -49,6 +50,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -70,23 +72,31 @@ public class DownloadArtifactsTest
 
     public int repoServerPort;
 
+    private static Path appServerBase;
+
     @BeforeClass
     public static void setAppServerBase()
+        throws IOException
     {
+        System.out.println( "Setting appserver base" );
         previousAppServerBase = System.getProperty( "appserver.base" );
-        System.setProperty( "appserver.base", "target/" + DownloadArtifactsTest.class.getName() );
+        appServerBase = Files.createTempDirectory( "archiva-common-web_appsrv2_" ).toAbsolutePath( );
+        System.setProperty( "appserver.base", appServerBase.toString( ) );
     }
-
 
     @AfterClass
     public static void resetAppServerBase()
     {
+        if (Files.exists(appServerBase)) {
+            FileUtils.deleteQuietly( appServerBase.toFile() );
+        }
         System.setProperty( "appserver.base", previousAppServerBase );
     }
 
     @Override
     protected String getSpringConfigLocation()
     {
+        System.out.println( "AppserverBase: " + System.getProperty( "appserver.base" ) );
         return "classpath*:META-INF/spring-context.xml classpath*:spring-context-test-common.xml classpath*:spring-context-artifacts-download.xml";
     }
 
@@ -212,11 +222,28 @@ public class DownloadArtifactsTest
     public static class RepoServlet
         extends HttpServlet
     {
+
+        private AtomicReference<Path> projectDir = new AtomicReference<>(  );
+
+        protected Path getProjectDirectory() {
+            if ( projectDir.get()==null) {
+                String propVal = System.getProperty("mvn.project.base.dir");
+                Path newVal;
+                if ( StringUtils.isEmpty(propVal)) {
+                    newVal = Paths.get("").toAbsolutePath();
+                } else {
+                    newVal = Paths.get(propVal).toAbsolutePath();
+                }
+                projectDir.compareAndSet(null, newVal);
+            }
+            return projectDir.get();
+        }
+
         @Override
         protected void doGet( HttpServletRequest req, HttpServletResponse resp )
             throws ServletException, IOException
         {
-            Path jar = Paths.get( System.getProperty( "basedir" ), "src/test/junit-4.9.jar" );
+            Path jar = getProjectDirectory().resolve( "src/test/junit-4.9.jar" );
             Files.copy( jar, resp.getOutputStream() );
 
         }

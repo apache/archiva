@@ -20,16 +20,21 @@ package org.apache.archiva;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.apache.archiva.redback.rest.services.AbstractRestServicesTest;
+import org.apache.archiva.remotedownload.DownloadArtifactsTest;
 import org.apache.archiva.test.utils.ArchivaBlockJUnit4ClassRunner;
 import org.apache.archiva.web.api.RuntimeInfoService;
 import org.apache.archiva.web.model.ApplicationRuntimeInfo;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,13 +47,33 @@ import java.util.Collections;
 public class RuntimeInfoServiceTest
     extends AbstractRestServicesTest
 {
+
+    private static Path appServerBase;
+    private static String previousAppServerBase;
+
+    @BeforeClass
+    public static void setAppServerBase()
+        throws IOException
+    {
+        previousAppServerBase = System.getProperty( "appserver.base" );
+        appServerBase = Files.createTempDirectory( "archiva-common-web_appsrvrt_" );
+        System.setProperty( "appserver.base", appServerBase.toString( ) );
+    }
+
+    @AfterClass
+    public static void resetAppServerBase()
+    {
+        if (Files.exists(appServerBase)) {
+            FileUtils.deleteQuietly( appServerBase.toFile() );
+        }
+        System.setProperty( "appserver.base", previousAppServerBase );
+    }
+
     @Override
     @Before
     public void startServer()
         throws Exception
     {
-        Path appServerBase = Paths.get( System.getProperty( "appserver.base" ) );
-
         Path jcrDirectory =  appServerBase.resolve( "jcr" );
 
         if ( Files.exists(jcrDirectory) )
