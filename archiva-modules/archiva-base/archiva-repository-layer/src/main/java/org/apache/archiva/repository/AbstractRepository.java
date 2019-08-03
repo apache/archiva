@@ -147,19 +147,8 @@ public abstract class AbstractRepository implements EditableRepository, Reposito
     }
 
     @Override
-    public Path getLocalPath() {
-        return storage.getAsset("").getFilePath();
-//        Path localPath;
-//        if (StringUtils.isEmpty(getLocation().getScheme()) || "file".equals(getLocation().getScheme()) ) {
-//            localPath = PathUtil.getPathFromUri(getLocation());
-//            if (localPath.isAbsolute()) {
-//                return localPath;
-//            } else {
-//                return repositoryBase.resolve(localPath);
-//            }
-//        } else {
-//            return repositoryBase.resolve(getId());
-//        }
+    public StorageAsset getLocalPath() {
+        return storage.getAsset("");
     }
 
     @Override

@@ -22,6 +22,7 @@ package org.apache.archiva.repository;
 import org.apache.archiva.indexer.ArchivaIndexingContext;
 import org.apache.archiva.repository.storage.RepositoryStorage;
 import org.apache.archiva.repository.features.RepositoryFeature;
+import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.net.URI;
 import java.nio.file.Path;
@@ -89,19 +90,12 @@ public interface Repository extends RepositoryEventHandler, RepositoryStorage {
 
 
     /**
-     * Returns the local path that this repository uses, if it stores data locally. You should keep in
-     * mind, that repository implementations may not store any data in this directory. E.g. if the
-     * repository data is handled by a database. So the content of this directory is very implementation
-     * specific. Users of this directory must know about the repository file layout if they use this
-     * path.
+     * Returns a storage representation to the local data stored for this repository.
+     * The repository implementation may not store the real artifacts in this path. The directory structure
+     * is completely implementation dependant.
      *
-     * Repository implementations should always return a valid path, even if there is no locally stored data.
-     *
-     * Some extensions may use the path to store their own repository specific data, e.g. statistics, metadata,...
-     *
-     * @return the filesystem path to the repository.
      */
-    Path getLocalPath();
+    StorageAsset getLocalPath();
 
 
     /**

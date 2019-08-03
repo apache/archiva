@@ -21,6 +21,7 @@ package org.apache.archiva.repository;
 
 
 import org.apache.archiva.repository.storage.RepositoryStorage;
+import org.apache.archiva.repository.storage.StorageAsset;
 
 import java.net.URI;
 import java.nio.file.Path;
@@ -147,8 +148,8 @@ public abstract class AbstractRemoteRepository extends AbstractRepository implem
      * @return
      */
     @Override
-    public Path getLocalPath() {
-        return getStorage().getAsset("").getFilePath();
+    public StorageAsset getLocalPath() {
+        return getStorage().getAsset("");
     }
 
     @Override
