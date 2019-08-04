@@ -55,6 +55,7 @@ import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.cassandra.model.ArtifactMetadataModel;
 import org.apache.archiva.metadata.repository.cassandra.model.MetadataFacetModel;
 import org.apache.archiva.metadata.repository.cassandra.model.Namespace;
@@ -66,7 +67,6 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.PersistenceException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -230,7 +230,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public void updateNamespace( String repositoryId, String namespaceId )
+    public void updateNamespace( RepositorySession session, String repositoryId, String namespaceId )
         throws MetadataRepositoryException
     {
         updateOrAddNamespace( repositoryId, namespaceId );
@@ -289,7 +289,7 @@ public class CassandraMetadataRepository
 
 
     @Override
-    public void removeNamespace( String repositoryId, String namespaceId )
+    public void removeNamespace( RepositorySession session, String repositoryId, String namespaceId )
         throws MetadataRepositoryException
     {
 
@@ -367,7 +367,7 @@ public class CassandraMetadataRepository
 
 
     @Override
-    public void removeRepository( final String repositoryId )
+    public void removeRepository( RepositorySession session, final String repositoryId )
         throws MetadataRepositoryException
     {
 
@@ -447,41 +447,9 @@ public class CassandraMetadataRepository
 
     }
 
-    @Override
-    public Collection<String> getRepositories()
-        throws MetadataRepositoryException
-    {
-        try
-        {
-            logger.debug( "getRepositories" );
-
-            final QueryResult<OrderedRows<String, String, String>> cResult = //
-                HFactory.createRangeSlicesQuery( cassandraArchivaManager.getKeyspace(), //
-                                                 ss, ss, ss ) //
-                    .setColumnFamily( cassandraArchivaManager.getRepositoryFamilyName() ) //
-                    .setColumnNames( REPOSITORY_NAME.toString() ) //
-                    .setRange( null, null, false, Integer.MAX_VALUE ) //
-                    .execute();
-
-            List<String> repoIds = new ArrayList<>( cResult.get().getCount() );
-
-            for ( Row<String, String, String> row : cResult.get() )
-            {
-                repoIds.add( getStringValue( row.getColumnSlice(), REPOSITORY_NAME.toString() ) );
-            }
-
-            return repoIds;
-        }
-        catch ( PersistenceException e )
-        {
-            throw new MetadataRepositoryException( e.getMessage(), e );
-        }
-
-    }
-
     // FIXME this one need peformance improvement maybe a cache?
     @Override
-    public Collection<String> getRootNamespaces( final String repoId )
+    public Collection<String> getRootNamespaces( RepositorySession session, final String repoId )
         throws MetadataResolutionException
     {
 
@@ -504,7 +472,7 @@ public class CassandraMetadataRepository
 
     // FIXME this one need peformance improvement maybe a cache?
     @Override
-    public Collection<String> getNamespaces( final String repoId, final String namespaceId )
+    public Collection<String> getNamespaces( RepositorySession session, final String repoId, final String namespaceId )
         throws MetadataResolutionException
     {
 
@@ -563,7 +531,7 @@ public class CassandraMetadataRepository
 
 
     @Override
-    public void updateProject( String repositoryId, ProjectMetadata projectMetadata )
+    public void updateProject( RepositorySession session, String repositoryId, ProjectMetadata projectMetadata )
         throws MetadataRepositoryException
     {
 
@@ -599,7 +567,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public Collection<String> getProjects( final String repoId, final String namespace )
+    public Collection<String> getProjects( RepositorySession session, final String repoId, final String namespace )
         throws MetadataResolutionException
     {
 
@@ -622,7 +590,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public void removeProject( final String repositoryId, final String namespaceId, final String projectId )
+    public void removeProject( RepositorySession session, final String repositoryId, final String namespaceId, final String projectId )
         throws MetadataRepositoryException
     {
 
@@ -664,7 +632,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public Collection<String> getProjectVersions( final String repoId, final String namespace, final String projectId )
+    public Collection<String> getProjectVersions( RepositorySession session, final String repoId, final String namespace, final String projectId )
         throws MetadataResolutionException
     {
 
@@ -696,7 +664,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public ProjectMetadata getProject( final String repoId, final String namespace, final String id )
+    public ProjectMetadata getProject( RepositorySession session, final String repoId, final String namespace, final String id )
         throws MetadataResolutionException
     {
 
@@ -744,7 +712,7 @@ public class CassandraMetadataRepository
 
 
     @Override
-    public void updateProjectVersion( String repositoryId, String namespaceId, String projectId,
+    public void updateProjectVersion( RepositorySession session, String repositoryId, String namespaceId, String projectId,
                                       ProjectVersionMetadata versionMetadata )
         throws MetadataRepositoryException
     {
@@ -757,12 +725,12 @@ public class CassandraMetadataRepository
                 updateOrAddNamespace( repositoryId, namespaceId );
             }
 
-            if ( getProject( repositoryId, namespaceId, projectId ) == null )
+            if ( getProject( session, repositoryId, namespaceId, projectId ) == null )
             {
                 ProjectMetadata projectMetadata = new ProjectMetadata();
                 projectMetadata.setNamespace( namespaceId );
                 projectMetadata.setId( projectId );
-                updateProject( repositoryId, projectMetadata );
+                updateProject( session, repositoryId, projectMetadata );
             }
 
         }
@@ -953,7 +921,7 @@ public class CassandraMetadataRepository
 
 
     @Override
-    public ProjectVersionMetadata getProjectVersion( final String repoId, final String namespace,
+    public ProjectVersionMetadata getProjectVersion( RepositorySession session, final String repoId, final String namespace,
                                                      final String projectId, final String projectVersion )
         throws MetadataResolutionException
     {
@@ -1333,7 +1301,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public void updateArtifact( String repositoryId, String namespaceId, String projectId, String projectVersion,
+    public void updateArtifact( RepositorySession session, String repositoryId, String namespaceId, String projectId, String projectVersion,
                                 ArtifactMetadata artifactMeta )
         throws MetadataRepositoryException
     {
@@ -1347,7 +1315,7 @@ public class CassandraMetadataRepository
         ProjectMetadata projectMetadata = new ProjectMetadata();
         projectMetadata.setId( projectId );
         projectMetadata.setNamespace( namespaceId );
-        updateProject( repositoryId, projectMetadata );
+        updateProject( session, repositoryId, projectMetadata );
 
         String key = new ArtifactMetadataModel.KeyBuilder().withNamespace( namespace ).withProject( projectId ).withId(
             artifactMeta.getId() ).withProjectVersion( projectVersion ).build();
@@ -1439,7 +1407,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public Collection<String> getArtifactVersions( final String repoId, final String namespace, final String projectId,
+    public Collection<String> getArtifactVersions( RepositorySession session, final String repoId, final String namespace, final String projectId,
                                                    final String projectVersion )
         throws MetadataResolutionException
     {
@@ -1529,7 +1497,7 @@ public class CassandraMetadataRepository
 
 
     @Override
-    public List<String> getMetadataFacets( final String repositoryId, final String facetId )
+    public List<String> getMetadataFacets( RepositorySession session, final String repositoryId, final String facetId )
         throws MetadataRepositoryException
     {
 
@@ -1551,14 +1519,14 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public boolean hasMetadataFacet( String repositoryId, String facetId )
+    public boolean hasMetadataFacet( RepositorySession session, String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
-        return !getMetadataFacets( repositoryId, facetId ).isEmpty();
+        return !getMetadataFacets( session, repositoryId, facetId ).isEmpty();
     }
 
     @Override
-    public MetadataFacet getMetadataFacet( final String repositoryId, final String facetId, final String name )
+    public MetadataFacet getMetadataFacet( RepositorySession session, final String repositoryId, final String facetId, final String name )
         throws MetadataRepositoryException
     {
 
@@ -1594,7 +1562,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
+    public void addMetadataFacet( RepositorySession session, String repositoryId, MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
 
@@ -1658,7 +1626,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public void removeMetadataFacets( final String repositoryId, final String facetId )
+    public void removeMetadataFacets( RepositorySession session, final String repositoryId, final String facetId )
         throws MetadataRepositoryException
     {
 
@@ -1678,7 +1646,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public void removeMetadataFacet( final String repositoryId, final String facetId, final String name )
+    public void removeMetadataFacet( RepositorySession session, final String repositoryId, final String facetId, final String name )
         throws MetadataRepositoryException
     {
 
@@ -1698,7 +1666,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByDateRange( final String repositoryId, final Date startTime,
+    public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, final String repositoryId, final Date startTime,
                                                            final Date endTime )
         throws MetadataRepositoryException
     {
@@ -1779,7 +1747,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public Collection<ArtifactMetadata> getArtifactsByChecksum( final String repositoryId, final String checksum )
+    public Collection<ArtifactMetadata> getArtifactsByChecksum( RepositorySession session, final String repositoryId, final String checksum )
         throws MetadataRepositoryException
     {
 
@@ -1826,17 +1794,17 @@ public class CassandraMetadataRepository
 
     /**
      * Project version and artifact level metadata are stored in the same place, no distinctions in Cassandra
-     * implementation, just calls {@link #getArtifactsByMetadata(String, String, String)}
+     * implementation, just calls {@link MetadataRepository#getArtifactsByMetadata(RepositorySession, String, String, String)}
      */
     @Override
-    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
-        return getArtifactsByMetadata( key, value, repositoryId );
+        return getArtifactsByMetadata( session, key, value, repositoryId );
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByMetadata( String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByMetadata( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         RangeSlicesQuery<String, String, String> query =
@@ -1894,7 +1862,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByProperty( String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByProperty( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         QueryResult<OrderedRows<String, String, String>> result =
@@ -1920,10 +1888,10 @@ public class CassandraMetadataRepository
             // projects
             try
             {
-                artifacts.addAll( getArtifacts( getStringValue( row.getColumnSlice(), REPOSITORY_NAME ),
-                                                getStringValue( row.getColumnSlice(), NAMESPACE_ID ),
-                                                getStringValue( row.getColumnSlice(), PROJECT_ID ),
-                                                getStringValue( row.getColumnSlice(), PROJECT_VERSION ) ) );
+                artifacts.addAll( getArtifacts( session,
+                    getStringValue( row.getColumnSlice(), REPOSITORY_NAME ),
+                    getStringValue( row.getColumnSlice(), NAMESPACE_ID ),
+                    getStringValue( row.getColumnSlice(), PROJECT_ID ), getStringValue( row.getColumnSlice(), PROJECT_VERSION ) ) );
             }
             catch ( MetadataResolutionException e )
             {
@@ -1935,7 +1903,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public void removeArtifact( final String repositoryId, final String namespace, final String project,
+    public void removeArtifact( RepositorySession session, final String repositoryId, final String namespace, final String project,
                                 final String version, final String id )
         throws MetadataRepositoryException
     {
@@ -1959,7 +1927,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
+    public void removeArtifact( RepositorySession session, ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
         logger.debug( "removeArtifact repositoryId: '{}', namespace: '{}', project: '{}', version: '{}', id: '{}'",
@@ -1975,7 +1943,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public void removeArtifact( final String repositoryId, final String namespace, final String project,
+    public void removeArtifact( RepositorySession session, final String repositoryId, final String namespace, final String project,
                                 final String version, final MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
@@ -2000,7 +1968,7 @@ public class CassandraMetadataRepository
 
 
     @Override
-    public List<ArtifactMetadata> getArtifacts( final String repositoryId )
+    public List<ArtifactMetadata> getArtifacts( RepositorySession session, final String repositoryId )
         throws MetadataRepositoryException
     {
 
@@ -2028,7 +1996,7 @@ public class CassandraMetadataRepository
 
 
     @Override
-    public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
+    public Collection<ProjectVersionReference> getProjectReferences( RepositorySession session, String repoId, String namespace, String projectId,
                                                                      String projectVersion )
         throws MetadataResolutionException
     {
@@ -2065,7 +2033,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public void removeProjectVersion( final String repoId, final String namespace, final String projectId,
+    public void removeProjectVersion( RepositorySession session, final String repoId, final String namespace, final String projectId,
                                       final String projectVersion )
         throws MetadataRepositoryException
     {
@@ -2108,7 +2076,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public Collection<ArtifactMetadata> getArtifacts( final String repoId, final String namespace,
+    public Collection<ArtifactMetadata> getArtifacts( RepositorySession session, final String repoId, final String namespace,
                                                       final String projectId, final String projectVersion )
         throws MetadataResolutionException
     {
@@ -2230,23 +2198,12 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public void save()
-    {
-        logger.trace( "save" );
-    }
-
-    @Override
     public void close()
         throws MetadataRepositoryException
     {
         logger.trace( "close" );
     }
 
-    @Override
-    public void revert()
-    {
-        logger.warn( "CassandraMetadataRepository cannot revert" );
-    }
 
     @Override
     public boolean canObtainAccess( Class<?> aClass )
@@ -2255,7 +2212,7 @@ public class CassandraMetadataRepository
     }
 
     @Override
-    public <T> T obtainAccess( Class<T> aClass )
+    public <T> T obtainAccess( RepositorySession session, Class<T> aClass )
         throws MetadataRepositoryException
     {
         throw new IllegalArgumentException(
@@ -2278,23 +2235,23 @@ public class CassandraMetadataRepository
      * any property.
      */
     @Override
-    public List<ArtifactMetadata> searchArtifacts( String text, String repositoryId, boolean exact )
+    public List<ArtifactMetadata> searchArtifacts( RepositorySession session, String repositoryId, String text, boolean exact )
         throws MetadataRepositoryException
     {
-        return getArtifactsByMetadata( null, text, repositoryId );
+        return getArtifactsByMetadata( session, null, text, repositoryId );
     }
 
     /**
      * The exact parameter is ignored as we can't do non exact searches in Cassandra
      */
     @Override
-    public List<ArtifactMetadata> searchArtifacts( String key, String text, String repositoryId, boolean exact )
+    public List<ArtifactMetadata> searchArtifacts( RepositorySession session, String repositoryId, String key, String text, boolean exact )
         throws MetadataRepositoryException
     {
         // TODO optimize
         List<ArtifactMetadata> artifacts = new LinkedList<ArtifactMetadata>();
-        artifacts.addAll( getArtifactsByMetadata( key, text, repositoryId ) );
-        artifacts.addAll( getArtifactsByProperty( key, text, repositoryId ) );
+        artifacts.addAll( getArtifactsByMetadata( session, key, text, repositoryId ) );
+        artifacts.addAll( getArtifactsByProperty( session, key, text, repositoryId ) );
         return artifacts;
     }
 }

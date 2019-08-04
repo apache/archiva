@@ -115,7 +115,7 @@ public class JcrRepositoryStatisticsGatheringTest
             session = jcrMetadataRepository.getJcrSession();
 
             // set up namespaces, etc.
-            JcrMetadataRepository.initialize( session );
+            JcrMetadataRepository.initializeNodeTypes( session );
 
             // removing content is faster than deleting and re-copying the files from target/jcr
             session.getRootNode().getNode( "repositories" ).remove();
@@ -166,7 +166,7 @@ public class JcrRepositoryStatisticsGatheringTest
         testedStatistics.setScanStartTime( startTime );
         testedStatistics.setScanEndTime( endTime );
 
-        repository.populateStatistics( repository, TEST_REPO, testedStatistics );
+        repository.populateStatistics( , repository, TEST_REPO, testedStatistics );
 
         DefaultRepositoryStatistics expectedStatistics = new DefaultRepositoryStatistics();
         expectedStatistics.setNewFileCount( NEW_FILE_COUNT );

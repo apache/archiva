@@ -103,11 +103,11 @@ public class RepositoryStatisticsManagerTest
         stats.setTotalFileCount( 56229 );
 
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
+        expect( metadataRepository.getMetadataFacets( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Arrays.asList( FIRST_TEST_SCAN, SECOND_TEST_SCAN ) );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID,
-                                                     SECOND_TEST_SCAN ) ).andReturn( stats );
+        expect( metadataRepository.getMetadataFacet( , TEST_REPO_ID,
+            DefaultRepositoryStatistics.FACET_ID, SECOND_TEST_SCAN ) ).andReturn( stats );
 
         metadataRepositoryControl.replay();
 
@@ -131,7 +131,7 @@ public class RepositoryStatisticsManagerTest
         throws Exception
     {
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
+        expect( metadataRepository.getMetadataFacets( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Collections.<String>emptyList() );
         metadataRepositoryControl.replay();
 
@@ -152,13 +152,13 @@ public class RepositoryStatisticsManagerTest
 
         walkRepository( 1 );
 
-        metadataRepository.addMetadataFacet( TEST_REPO_ID, stats );
+        metadataRepository.addMetadataFacet( , TEST_REPO_ID, stats );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
+        expect( metadataRepository.getMetadataFacets( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Arrays.asList( stats.getName() ) );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID,
-                                                     stats.getName() ) ).andReturn( stats );
+        expect( metadataRepository.getMetadataFacet( , TEST_REPO_ID,
+            DefaultRepositoryStatistics.FACET_ID, stats.getName() ) ).andReturn( stats );
 
         metadataRepositoryControl.replay();
 
@@ -189,21 +189,21 @@ public class RepositoryStatisticsManagerTest
 
         Date startTime1 = new Date( current.getTime() - 12345 );
         DefaultRepositoryStatistics stats1 = createTestStats( startTime1, new Date( current.getTime() - 6000 ) );
-        metadataRepository.addMetadataFacet( TEST_REPO_ID, stats1 );
+        metadataRepository.addMetadataFacet( , TEST_REPO_ID, stats1 );
 
         Date startTime2 = new Date( current.getTime() - 3000 );
         DefaultRepositoryStatistics stats2 = createTestStats( startTime2, current );
-        metadataRepository.addMetadataFacet( TEST_REPO_ID, stats2 );
+        metadataRepository.addMetadataFacet( , TEST_REPO_ID, stats2 );
 
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
+        expect( metadataRepository.getMetadataFacets( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Arrays.asList( stats1.getName(), stats2.getName() ) );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID,
-                                                     stats2.getName() ) ).andReturn( stats2 );
-        metadataRepository.removeMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID );
+        expect( metadataRepository.getMetadataFacet( , TEST_REPO_ID,
+            DefaultRepositoryStatistics.FACET_ID, stats2.getName() ) ).andReturn( stats2 );
+        metadataRepository.removeMetadataFacets( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
+        expect( metadataRepository.getMetadataFacets( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Collections.<String>emptyList() );
 
         metadataRepositoryControl.replay();
@@ -227,9 +227,9 @@ public class RepositoryStatisticsManagerTest
         throws Exception
     {
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
+        expect( metadataRepository.getMetadataFacets( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn(
             Collections.<String>emptyList() ).times( 2 );
-        metadataRepository.removeMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID );
+        metadataRepository.removeMetadataFacets( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID );
 
         metadataRepositoryControl.replay();
 
@@ -256,12 +256,12 @@ public class RepositoryStatisticsManagerTest
 
         ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
+        expect( metadataRepository.getMetadataFacets( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         // only match the middle one
         String key = keys.get( 1 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
 
 
@@ -299,16 +299,16 @@ public class RepositoryStatisticsManagerTest
 
         List<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
+        expect( metadataRepository.getMetadataFacets( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         String key = keys.get( 1 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
 
         key = keys.get( 2 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
 
 
@@ -346,15 +346,15 @@ public class RepositoryStatisticsManagerTest
 
         List<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
+        expect( metadataRepository.getMetadataFacets( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         String key = keys.get( 0 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
         key = keys.get( 1 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
 
         metadataRepositoryControl.replay();
@@ -392,19 +392,19 @@ public class RepositoryStatisticsManagerTest
 
         ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
+        expect( metadataRepository.getMetadataFacets( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         String key = keys.get( 0 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
         key = keys.get( 1 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
         key = keys.get( 2 );
 
-        expect( metadataRepository.getMetadataFacet( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
+        expect( metadataRepository.getMetadataFacet( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID, key ) ).andReturn(
             statsCreated.get( key ) );
 
         metadataRepositoryControl.replay();
@@ -442,7 +442,7 @@ public class RepositoryStatisticsManagerTest
 
         ArrayList<String> keys = new ArrayList<>( statsCreated.keySet() );
 
-        expect( metadataRepository.getMetadataFacets( TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
+        expect( metadataRepository.getMetadataFacets( , TEST_REPO_ID, DefaultRepositoryStatistics.FACET_ID ) ).andReturn( keys );
 
         metadataRepositoryControl.replay();
 
@@ -467,7 +467,7 @@ public class RepositoryStatisticsManagerTest
         throws Exception
     {
         DefaultRepositoryStatistics stats = createTestStats( startTime, endTime );
-        metadataRepository.addMetadataFacet( TEST_REPO_ID, stats );
+        metadataRepository.addMetadataFacet( , TEST_REPO_ID, stats );
         statsCreated.put( stats.getName(), stats );
     }
 
@@ -512,104 +512,104 @@ public class RepositoryStatisticsManagerTest
         for ( int i = 0; i < count; i++ )
         {
 
-            expect( metadataRepository.getRootNamespaces( TEST_REPO_ID ) ).andReturn( Arrays.asList( "com", "org" ) );
+            expect( metadataRepository.getRootNamespaces( , TEST_REPO_ID ) ).andReturn( Arrays.asList( "com", "org" ) );
 
-            expect( metadataRepository.getProjects( TEST_REPO_ID, "com" ) ).andReturn( Arrays.<String>asList() );
+            expect( metadataRepository.getProjects( , TEST_REPO_ID, "com" ) ).andReturn( Arrays.<String>asList() );
 
-            expect( metadataRepository.getNamespaces( TEST_REPO_ID, "com" ) ).andReturn( Arrays.asList( "example" ) );
+            expect( metadataRepository.getNamespaces( , TEST_REPO_ID, "com" ) ).andReturn( Arrays.asList( "example" ) );
 
-            expect( metadataRepository.getNamespaces( TEST_REPO_ID, "com.example" ) ).andReturn(
+            expect( metadataRepository.getNamespaces( , TEST_REPO_ID, "com.example" ) ).andReturn(
                 Arrays.<String>asList() );
 
-            expect( metadataRepository.getProjects( TEST_REPO_ID, "com.example" ) ).andReturn(
+            expect( metadataRepository.getProjects( , TEST_REPO_ID, "com.example" ) ).andReturn(
                 Arrays.asList( "example-project" ) );
 
-            expect( metadataRepository.getProjectVersions( TEST_REPO_ID, "com.example", "example-project" ) ).andReturn(
+            expect( metadataRepository.getProjectVersions( , TEST_REPO_ID, "com.example", "example-project" ) ).andReturn(
                 Arrays.asList( "1.0", "1.1" ) );
 
             expect(
-                metadataRepository.getArtifacts( TEST_REPO_ID, "com.example", "example-project", "1.0" ) ).andReturn(
+                metadataRepository.getArtifacts( , TEST_REPO_ID, "com.example", "example-project", "1.0" ) ).andReturn(
                 Arrays.asList( createArtifact( "com.example", "example-project", "1.0", "jar" ),
                                createArtifact( "com.example", "example-project", "1.0", "pom" ) ) );
 
             expect(
-                metadataRepository.getArtifacts( TEST_REPO_ID, "com.example", "example-project", "1.1" ) ).andReturn(
+                metadataRepository.getArtifacts( , TEST_REPO_ID, "com.example", "example-project", "1.1" ) ).andReturn(
                 Arrays.asList( createArtifact( "com.example", "example-project", "1.1", "jar" ),
                                createArtifact( "com.example", "example-project", "1.1", "pom" ) ) );
 
 
-            expect( metadataRepository.getNamespaces( TEST_REPO_ID, "org" ) ).andReturn( Arrays.asList( "apache", "codehaus" ) );
+            expect( metadataRepository.getNamespaces( , TEST_REPO_ID, "org" ) ).andReturn( Arrays.asList( "apache", "codehaus" ) );
 
-            expect( metadataRepository.getNamespaces( TEST_REPO_ID, "org.apache" ) ).andReturn( Arrays.asList( "archiva", "maven" )  );
+            expect( metadataRepository.getNamespaces( , TEST_REPO_ID, "org.apache" ) ).andReturn( Arrays.asList( "archiva", "maven" )  );
 
 
-            expect( metadataRepository.getProjects( TEST_REPO_ID, "org.apache" ) ).andReturn( Arrays.<String>asList() );
+            expect( metadataRepository.getProjects( , TEST_REPO_ID, "org.apache" ) ).andReturn( Arrays.<String>asList() );
 
-            expect( metadataRepository.getNamespaces( TEST_REPO_ID, "org.apache.archiva" ) ).andReturn( Arrays.<String>asList() );
+            expect( metadataRepository.getNamespaces( , TEST_REPO_ID, "org.apache.archiva" ) ).andReturn( Arrays.<String>asList() );
 
-            expect( metadataRepository.getProjects( TEST_REPO_ID, "org.apache.archiva" ) ).andReturn( Arrays.asList( "metadata-repository-api", "metadata-model" ) );
+            expect( metadataRepository.getProjects( , TEST_REPO_ID, "org.apache.archiva" ) ).andReturn( Arrays.asList( "metadata-repository-api", "metadata-model" ) );
 
-            expect( metadataRepository.getProjectVersions( TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api" ) )
+            expect( metadataRepository.getProjectVersions( , TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api" ) )
                 .andReturn( Arrays.asList( "1.3-SNAPSHOT", "1.3" )  );
 
 
-            expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT" ) )
+            expect( metadataRepository.getArtifacts( , TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT", "jar" ),
                                            createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3-SNAPSHOT",
                                                            "pom" ) )  );
 
-            expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api", "1.3" ) )
+            expect( metadataRepository.getArtifacts( , TEST_REPO_ID, "org.apache.archiva", "metadata-repository-api", "1.3" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3", "jar" ),
                                            createArtifact( "org.apache.archiva", "metadata-repository-api", "1.3", "pom" ) ) );
 
-            expect( metadataRepository.getProjectVersions( TEST_REPO_ID, "org.apache.archiva", "metadata-model" ) )
+            expect( metadataRepository.getProjectVersions( , TEST_REPO_ID, "org.apache.archiva", "metadata-model" ) )
                 .andReturn( Arrays.asList( "1.3-SNAPSHOT", "1.3" )  );
 
-            expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT" ) )
+            expect( metadataRepository.getArtifacts( , TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT", "jar" ),
                                            createArtifact( "org.apache.archiva", "metadata-model", "1.3-SNAPSHOT", "pom" ) ) );
 
-            expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3" ) )
+            expect( metadataRepository.getArtifacts( , TEST_REPO_ID, "org.apache.archiva", "metadata-model", "1.3" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "metadata-model", "1.3", "jar" ),
                                            createArtifact( "org.apache.archiva", "metadata-model", "1.3", "pom" ) ) );
 
-            expect( metadataRepository.getNamespaces( TEST_REPO_ID, "org.apache.maven" ) ).andReturn( Arrays.<String>asList() );
+            expect( metadataRepository.getNamespaces( , TEST_REPO_ID, "org.apache.maven" ) ).andReturn( Arrays.<String>asList() );
 
-            expect( metadataRepository.getProjects( TEST_REPO_ID, "org.apache.maven" ) )
+            expect( metadataRepository.getProjects( , TEST_REPO_ID, "org.apache.maven" ) )
                 .andReturn( Arrays.asList( "maven-model" )  );
 
-            expect( metadataRepository.getProjectVersions( TEST_REPO_ID, "org.apache.maven", "maven-model" ) )
+            expect( metadataRepository.getProjectVersions( , TEST_REPO_ID, "org.apache.maven", "maven-model" ) )
                 .andReturn( Arrays.asList( "2.2.1" ) );
 
-            expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.apache.maven", "maven-model", "2.2.1" ) )
+            expect( metadataRepository.getArtifacts( , TEST_REPO_ID, "org.apache.maven", "maven-model", "2.2.1" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.apache.archiva", "maven-model", "2.2.1", "jar" ),
                                            createArtifact( "org.apache.archiva", "maven-model", "2.2.1", "pom" ) ) );
 
-            expect( metadataRepository.getNamespaces( TEST_REPO_ID, "org.codehaus" ) ).andReturn( Arrays.asList( "plexus" ) );
+            expect( metadataRepository.getNamespaces( , TEST_REPO_ID, "org.codehaus" ) ).andReturn( Arrays.asList( "plexus" ) );
 
-            expect( metadataRepository.getProjects( TEST_REPO_ID, "org" ) ).andReturn( Arrays.<String>asList(  ) );
+            expect( metadataRepository.getProjects( , TEST_REPO_ID, "org" ) ).andReturn( Arrays.<String>asList(  ) );
 
-            expect( metadataRepository.getProjects( TEST_REPO_ID, "org.codehaus" ) )
+            expect( metadataRepository.getProjects( , TEST_REPO_ID, "org.codehaus" ) )
                 .andReturn( Arrays.<String>asList(  ) );
 
-            expect( metadataRepository.getNamespaces( TEST_REPO_ID, "org.codehaus.plexus" ) )
+            expect( metadataRepository.getNamespaces( , TEST_REPO_ID, "org.codehaus.plexus" ) )
                 .andReturn( Arrays.<String>asList(  ) );
 
-            expect( metadataRepository.getProjects( TEST_REPO_ID, "org.codehaus.plexus" ) )
+            expect( metadataRepository.getProjects( , TEST_REPO_ID, "org.codehaus.plexus" ) )
                 .andReturn( Arrays.asList( "plexus-spring" )  );
 
-            expect( metadataRepository.getProjectVersions( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring" ) )
+            expect( metadataRepository.getProjectVersions( , TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring" ) )
                 .andReturn( Arrays.asList( "1.0", "1.1", "1.2" ) );
 
-            expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.0" ) )
+            expect( metadataRepository.getArtifacts( , TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.0" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.0", "jar" ),
                                            createArtifact( "org.codehaus.plexus", "plexus-spring", "1.0", "pom" ) ) );
 
-            expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.1" ) )
+            expect( metadataRepository.getArtifacts( , TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.1" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.1", "jar" ),
                                            createArtifact( "org.codehaus.plexus", "plexus-spring", "1.1", "pom" ) )  );
 
-            expect( metadataRepository.getArtifacts( TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2" ) )
+            expect( metadataRepository.getArtifacts( , TEST_REPO_ID, "org.codehaus.plexus", "plexus-spring", "1.2" ) )
                 .andReturn( Arrays.asList( createArtifact( "org.codehaus.plexus", "plexus-spring", "1.2", "jar" ),
                                            createArtifact( "org.codehaus.plexus", "plexus-spring", "1.2", "pom" ) )  );
         }

@@ -70,7 +70,15 @@ public class DefaultReportRepositoriesService
 
     private List<RepositoryStatistics> getMultipleRepositoriesReport( List<String> repositoriesId, int rowCount )
     {
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
         try
         {
             MetadataRepository metadataRepository = repositorySession.getRepository();
@@ -98,7 +106,15 @@ public class DefaultReportRepositoriesService
     private List<RepositoryStatistics> getUniqueRepositoryReport( String repositoryId, int rowCount, Date startDate,
                                                                   Date endDate )
     {
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
         try
         {
             MetadataRepository metadataRepository = repositorySession.getRepository();
@@ -129,7 +145,15 @@ public class DefaultReportRepositoriesService
     public List<RepositoryProblemFacet> getHealthReport( String repository, String groupId, int rowCount )
         throws ArchivaRestServiceException
     {
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
         try
         {
             List<String> observableRepositories = getObservableRepos();
@@ -149,12 +173,12 @@ public class DefaultReportRepositoriesService
             MetadataRepository metadataRepository = repositorySession.getRepository();
             for ( String repoId : observableRepositories )
             {
-                for ( String name : metadataRepository.getMetadataFacets( repoId, RepositoryProblemFacet.FACET_ID ) )
+                for ( String name : metadataRepository.getMetadataFacets( , repoId, RepositoryProblemFacet.FACET_ID ) )
                 {
                     RepositoryProblemFacet metadataFacet =
-                        (RepositoryProblemFacet) metadataRepository.getMetadataFacet( repoId,
-                                                                                      RepositoryProblemFacet.FACET_ID,
-                                                                                      name );
+                        (RepositoryProblemFacet) metadataRepository.getMetadataFacet( ,
+                            repoId,
+                            RepositoryProblemFacet.FACET_ID, name );
                     if ( StringUtils.isEmpty( groupId ) || groupId.equals( metadataFacet.getNamespace() ) )
                     {
                         problemArtifacts.add( metadataFacet );

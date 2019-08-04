@@ -38,8 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -205,8 +203,8 @@ public abstract class AbstractRepositoryPurge
                 {
                     try
                     {
-                        metaResolved.put( metaBaseId, metadataRepository.getArtifacts( repository.getId( ), reference.getGroupId( ),
-                            reference.getArtifactId( ), baseVersion ) );
+                        metaResolved.put( metaBaseId, metadataRepository.getArtifacts( , repository.getId( ),
+                            reference.getGroupId( ), reference.getArtifactId( ), baseVersion ) );
                     }
                     catch ( MetadataResolutionException e )
                     {
@@ -284,7 +282,14 @@ public abstract class AbstractRepositoryPurge
                 purgeSupportFiles( artifactFile );
             }
             purgeMetadata( metadataRepository, metaRemovalList );
-            repositorySession.save( );
+            try
+            {
+                repositorySession.save( );
+            }
+            catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
+            {
+                e.printStackTrace( );
+            }
 
         }
     }
@@ -316,12 +321,12 @@ public abstract class AbstractRepositoryPurge
         {
             try
             {
-                artifacts = metadataRepository.getArtifacts( repository.getId( ), info.getNamespace( ), info.getName( ),
-                    info.getProjectVersion( ) );
+                artifacts = metadataRepository.getArtifacts( , repository.getId( ), info.getNamespace( ),
+                    info.getName( ), info.getProjectVersion( ) );
                 if ( artifacts.size( ) == 0 )
                 {
-                    metadataRepository.removeProjectVersion( repository.getId( ), info.getNamespace( ),
-                        info.getName( ), info.getProjectVersion( ) );
+                    metadataRepository.removeProjectVersion( , repository.getId( ),
+                        info.getNamespace( ), info.getName( ), info.getProjectVersion( ) );
                     log.debug( "Removed project version from MetadataRepository {}", info );
                 }
             }
@@ -355,14 +360,14 @@ public abstract class AbstractRepositoryPurge
                     version = artifactInfo.getProjectVersion( );
                 MavenArtifactFacet mavenArtifactFacetToCompare = new MavenArtifactFacet( );
                 mavenArtifactFacetToCompare.setClassifier( artifactInfo.getClassifier( ) );
-                metadataRepository.removeArtifact( repository.getId( ), groupId, artifactId,
-                    version, mavenArtifactFacetToCompare );
+                metadataRepository.removeArtifact( , repository.getId( ), groupId,
+                    artifactId, version, mavenArtifactFacetToCompare );
                 metadataRepository.save( );
             }
         }
         else
         {
-            metadataRepository.removeArtifact( artifactMetadata, artifactInfo.getProjectVersion( ) );
+            metadataRepository.removeArtifact( , artifactMetadata, artifactInfo.getProjectVersion( ) );
         }
     }
 

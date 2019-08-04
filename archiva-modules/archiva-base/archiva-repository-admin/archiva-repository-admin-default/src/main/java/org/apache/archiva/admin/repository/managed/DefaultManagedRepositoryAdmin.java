@@ -340,11 +340,19 @@ public class DefaultManagedRepositoryAdmin
 
         if ( !stagedOne )
         {
-            RepositorySession repositorySession = getRepositorySessionFactory().createSession();
+            RepositorySession repositorySession = null;
+            try
+            {
+                repositorySession = getRepositorySessionFactory().createSession();
+            }
+            catch ( MetadataRepositoryException e )
+            {
+                e.printStackTrace( );
+            }
             try
             {
                 MetadataRepository metadataRepository = repositorySession.getRepository();
-                metadataRepository.removeRepository( repository.getId() );
+                metadataRepository.removeRepository( , repository.getId() );
                 //invalidate cache
                 namespacesCache.remove( repository.getId() );
                 log.debug( "call repositoryStatisticsManager.deleteStatistics" );
@@ -359,6 +367,10 @@ public class DefaultManagedRepositoryAdmin
             finally
             {
                 repositorySession.close();
+            }
+            catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
+            {
+                e.printStackTrace( );
             }
         }
 
@@ -492,7 +504,15 @@ public class DefaultManagedRepositoryAdmin
         }
 
         // Save the repository configuration.
-        RepositorySession repositorySession = getRepositorySessionFactory().createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = getRepositorySessionFactory().createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
 
         try
         {
@@ -513,6 +533,10 @@ public class DefaultManagedRepositoryAdmin
         finally
         {
             repositorySession.close();
+        }
+        catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
+        {
+            e.printStackTrace( );
         }
 
         if ( updateIndexContext )

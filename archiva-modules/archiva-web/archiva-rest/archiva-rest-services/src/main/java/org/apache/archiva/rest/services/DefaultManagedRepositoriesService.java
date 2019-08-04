@@ -163,7 +163,15 @@ public class DefaultManagedRepositoriesService
     public ArchivaRepositoryStatistics getManagedRepositoryStatistics( String repositoryId, String lang )
         throws ArchivaRestServiceException
     {
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
         SimpleDateFormat sdf = new SimpleDateFormat( "EEE, d MMM yyyy HH:mm:ss Z", new Locale( lang ) );
         try
         {

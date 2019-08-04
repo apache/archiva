@@ -127,8 +127,8 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
-        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
-            projectName, projectVersion)).thenReturn(ml);
+        when(metadataRepository.getArtifacts( , TEST_REPO_ID,
+            projectNs, projectName, projectVersion )).thenReturn(ml);
 
 
         repoPurge.process( PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
@@ -137,8 +137,8 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         // Verify the metadataRepository invocations
         // complete snapshot version removal for released
-        verify(metadataRepository, times(1)).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
-        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.3"));
+        verify(metadataRepository, times(1)).removeProjectVersion( , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
+        verify(metadataRepository, never()).removeProjectVersion( , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.3") );
 
         // check if the snapshot was removed
         assertDeleted( projectRoot + "/2.3-SNAPSHOT" );
@@ -246,12 +246,12 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
-        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
-            projectName, projectVersion)).thenReturn(ml);
+        when(metadataRepository.getArtifacts( , TEST_REPO_ID,
+            projectNs, projectName, projectVersion )).thenReturn(ml);
 
         List<ArtifactMetadata> ml2 = getArtifactMetadataFromDir(RELEASES_TEST_REPO_ID , projectName, repo.getParent(), releaseDir );
-        when(metadataRepository.getArtifacts(RELEASES_TEST_REPO_ID, projectNs,
-            projectName, releaseVersion)).thenReturn(ml2);
+        when(metadataRepository.getArtifacts( , RELEASES_TEST_REPO_ID,
+            projectNs, projectName, releaseVersion )).thenReturn(ml2);
 
 
         repoPurge.process( PATH_TO_RELEASED_SNAPSHOT_IN_DIFF_REPO );
@@ -260,8 +260,8 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         // Verify the metadataRepository invocations
         // Complete version removal for cleanup
-        verify(metadataRepository, times(1)).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
-        verify(metadataRepository, never()).removeProjectVersion(eq(RELEASES_TEST_REPO_ID), eq(projectNs), eq(projectName), eq(releaseVersion));
+        verify(metadataRepository, times(1)).removeProjectVersion( , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
+        verify(metadataRepository, never()).removeProjectVersion( , eq(RELEASES_TEST_REPO_ID), eq(projectNs), eq(projectName), eq(releaseVersion) );
 
 
         // check if the snapshot was removed
@@ -317,14 +317,14 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
-        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
-            projectName, projectVersion)).thenReturn(ml);
+        when(metadataRepository.getArtifacts( , TEST_REPO_ID,
+            projectNs, projectName, projectVersion )).thenReturn(ml);
         List<ArtifactMetadata> m2 = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir2 );
-        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
-            projectName, "2.0.3-SNAPSHOT")).thenReturn(ml);
+        when(metadataRepository.getArtifacts( , TEST_REPO_ID,
+            projectNs, projectName, "2.0.3-SNAPSHOT" )).thenReturn(ml);
         List<ArtifactMetadata> m3 = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir3 );
-        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
-            projectName, "2.0.4-SNAPSHOT")).thenReturn(ml);
+        when(metadataRepository.getArtifacts( , TEST_REPO_ID,
+            projectNs, projectName, "2.0.4-SNAPSHOT" )).thenReturn(ml);
 
 
         repoPurge.process( CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_HIGHER_SNAPSHOT_EXISTS_IN_SAME_REPO );
@@ -333,11 +333,11 @@ public class CleanupReleasedSnapshotsRepositoryPurgeTest
 
         // Verify the metadataRepository invocations
         // No removal
-        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
-        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.0.3-SNAPSHOT"));
-        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.0.4-SNAPSHOT"));
-        verify(metadataRepository, never()).removeArtifact(any(ArtifactMetadata.class), any(String.class));
-        verify(metadataRepository, never()).removeArtifact(any(String.class), any(String.class), any(String.class), any(String.class), any( MetadataFacet.class));
+        verify(metadataRepository, never()).removeProjectVersion( , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
+        verify(metadataRepository, never()).removeProjectVersion( , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.0.3-SNAPSHOT") );
+        verify(metadataRepository, never()).removeProjectVersion( , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq("2.0.4-SNAPSHOT") );
+        verify(metadataRepository, never()).removeArtifact( , any(ArtifactMetadata.class), any(String.class) );
+        verify(metadataRepository, never()).removeArtifact( , any(String.class), any(String.class), any(String.class), any(String.class), any( MetadataFacet.class) );
 
 
 

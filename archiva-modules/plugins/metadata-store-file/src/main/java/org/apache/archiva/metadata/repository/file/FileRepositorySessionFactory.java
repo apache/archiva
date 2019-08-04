@@ -23,6 +23,7 @@ import org.apache.archiva.configuration.ArchivaConfiguration;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
@@ -76,7 +77,7 @@ public class FileRepositorySessionFactory extends AbstractRepositorySessionFacto
     }
 
     @Override
-    public RepositorySession createSession()
+    public RepositorySession createSession() throws MetadataRepositoryException
     {
         MetadataRepository metadataRepository = new FileMetadataRepository( metadataFacetFactories, configuration );
 

@@ -22,7 +22,9 @@ package org.apache.archiva.mock;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
 import org.apache.archiva.metadata.repository.AbstractRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.MetadataRepository;
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
+import org.apache.archiva.metadata.repository.MetadataSessionException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.springframework.stereotype.Service;
@@ -51,7 +53,7 @@ public class MockRepositorySessionFactory extends AbstractRepositorySessionFacto
     }
 
     @Override
-    public RepositorySession createSession()
+    public RepositorySession createSession() throws MetadataRepositoryException
     {
         return new RepositorySession( repository, resolver )
         {
@@ -62,7 +64,7 @@ public class MockRepositorySessionFactory extends AbstractRepositorySessionFacto
             }
 
             @Override
-            public void save()
+            public void save() throws MetadataSessionException
             {
                 // no op
             }

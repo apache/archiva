@@ -215,7 +215,15 @@ public class DefaultSearchService
             checksumSearch.setRepositories( getObservableRepos() );
         }
 
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
 
         MetadataRepository metadataRepository = repositorySession.getRepository();
 
@@ -226,7 +234,7 @@ public class DefaultSearchService
             for ( String repoId : checksumSearch.getRepositories() )
             {
                 Collection<ArtifactMetadata> artifactMetadatas =
-                    metadataRepository.getArtifactsByChecksum( repoId, checksumSearch.getChecksum() );
+                    metadataRepository.getArtifactsByChecksum( , repoId, checksumSearch.getChecksum() );
                 artifactSet.addAll( buildArtifacts( artifactMetadatas, repoId ) );
             }
 

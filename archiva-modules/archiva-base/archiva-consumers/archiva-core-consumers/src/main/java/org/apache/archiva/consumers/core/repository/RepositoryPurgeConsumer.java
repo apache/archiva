@@ -137,7 +137,14 @@ public class RepositoryPurgeConsumer
         ManagedRepositoryContent repositoryContent;
         repositoryContent = repository.getContent();
 
-        repositorySession = repositorySessionFactory.createSession( );
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession( );
+        }
+        catch ( org.apache.archiva.metadata.repository.MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
 
         if (repository.supportsFeature( ArtifactCleanupFeature.class ))
         {

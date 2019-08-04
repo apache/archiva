@@ -138,7 +138,15 @@ public class ArchivaMetadataCreationConsumer
         throws ConsumerException
     {
 
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
         try
         {
             // note that we do minimal processing including checksums and POM information for performance of
@@ -185,14 +193,14 @@ public class ArchivaMetadataCreationConsumer
 
             // read the metadata and update it if it is newer or doesn't exist
             artifact.setWhenGathered( whenGathered );
-            metadataRepository.updateArtifact( repoId, project.getNamespace(), project.getId(), projectVersion,
-                                               artifact );
+            metadataRepository.updateArtifact( , repoId, project.getNamespace(), project.getId(),
+                projectVersion, artifact );
             if ( createVersionMetadata )
             {
-                metadataRepository.updateProjectVersion( repoId, project.getNamespace(), project.getId(),
-                                                         versionMetadata );
+                metadataRepository.updateProjectVersion( , repoId, project.getNamespace(),
+                    project.getId(), versionMetadata );
             }
-            metadataRepository.updateProject( repoId, project );
+            metadataRepository.updateProject( , repoId, project );
             repositorySession.save();
         }
         catch ( MetadataRepositoryException e )
@@ -212,6 +220,14 @@ public class ArchivaMetadataCreationConsumer
         finally
         {
             repositorySession.close();
+        }
+        catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
+        {
+            e.printStackTrace( );
+        }
+        catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
+        {
+            e.printStackTrace( );
         }
     }
 

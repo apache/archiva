@@ -242,6 +242,10 @@ public class RssFeedServlet
 
             res.sendError( HttpServletResponse.SC_UNAUTHORIZED, USER_NOT_AUTHORIZED );
         }
+        catch ( org.apache.archiva.metadata.repository.MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
     }
 
     /**

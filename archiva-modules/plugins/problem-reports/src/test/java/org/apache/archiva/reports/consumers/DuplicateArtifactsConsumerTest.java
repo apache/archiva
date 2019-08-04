@@ -114,14 +114,14 @@ public class DuplicateArtifactsConsumerTest
     public void testConsumerArtifactNotDuplicated()
         throws Exception
     {
-        when( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
+        when( metadataRepository.getArtifactsByChecksum( , TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
             Arrays.asList( TEST_METADATA ) );
 
         consumer.beginScan( config, new Date() );
         consumer.processFile( TEST_FILE );
         consumer.completeScan();
 
-        verify( metadataRepository, never() ).addMetadataFacet( eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
+        verify( metadataRepository, never() ).addMetadataFacet( , eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
     }
 
     // TODO: Doesn't currently work
@@ -142,7 +142,7 @@ public class DuplicateArtifactsConsumerTest
     public void testConsumerArtifactDuplicated()
         throws Exception
     {
-        when( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
+        when( metadataRepository.getArtifactsByChecksum( , TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
             Arrays.asList( TEST_METADATA, createMetadata( "1.0" ) ) );
 
         consumer.beginScan( config, new Date() );
@@ -150,7 +150,7 @@ public class DuplicateArtifactsConsumerTest
         consumer.completeScan();
 
         ArgumentCaptor<RepositoryProblemFacet> argument = ArgumentCaptor.forClass( RepositoryProblemFacet.class );
-        verify( metadataRepository ).addMetadataFacet( eq( TEST_REPO ), argument.capture() );
+        verify( metadataRepository ).addMetadataFacet( , eq( TEST_REPO ), argument.capture() );
         RepositoryProblemFacet problem = argument.getValue();
         assertProblem( problem );
     }
@@ -159,7 +159,7 @@ public class DuplicateArtifactsConsumerTest
     public void testConsumerArtifactDuplicatedButSelfNotInMetadataRepository()
         throws Exception
     {
-        when( metadataRepository.getArtifactsByChecksum( TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
+        when( metadataRepository.getArtifactsByChecksum( , TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
             Arrays.asList( createMetadata( "1.0" ) ) );
 
         consumer.beginScan( config, new Date() );
@@ -167,7 +167,7 @@ public class DuplicateArtifactsConsumerTest
         consumer.completeScan();
 
         ArgumentCaptor<RepositoryProblemFacet> argument = ArgumentCaptor.forClass( RepositoryProblemFacet.class );
-        verify( metadataRepository ).addMetadataFacet( eq( TEST_REPO ), argument.capture() );
+        verify( metadataRepository ).addMetadataFacet( , eq( TEST_REPO ), argument.capture() );
         RepositoryProblemFacet problem = argument.getValue();
         assertProblem( problem );
     }
@@ -191,7 +191,7 @@ public class DuplicateArtifactsConsumerTest
             consumer.completeScan();
         }
 
-        verify( metadataRepository, never() ).addMetadataFacet( eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
+        verify( metadataRepository, never() ).addMetadataFacet( , eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
     }
 
     @Test
@@ -203,14 +203,14 @@ public class DuplicateArtifactsConsumerTest
         consumer.processFile( "com/example/invalid-artifact.txt" );
         consumer.completeScan();
 
-        verify( metadataRepository, never() ).addMetadataFacet( eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
+        verify( metadataRepository, never() ).addMetadataFacet( , eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
     }
 
     @Test
     public void testConsumerArtifactNotAnArtifactPathResults()
         throws Exception
     {
-        when( metadataRepository.getArtifactsByChecksum( eq( TEST_REPO ), anyString() ) ).thenReturn(
+        when( metadataRepository.getArtifactsByChecksum( , eq( TEST_REPO ), anyString() ) ).thenReturn(
             Arrays.asList( TEST_METADATA, createMetadata( "1.0" ) ) );
 
         // override, this feels a little overspecified though
@@ -222,7 +222,7 @@ public class DuplicateArtifactsConsumerTest
         consumer.processFile( "com/example/invalid-artifact.txt" );
         consumer.completeScan();
 
-        verify( metadataRepository, never() ).addMetadataFacet( eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
+        verify( metadataRepository, never() ).addMetadataFacet( , eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
     }
 
     private static void assertProblem( RepositoryProblemFacet problem )

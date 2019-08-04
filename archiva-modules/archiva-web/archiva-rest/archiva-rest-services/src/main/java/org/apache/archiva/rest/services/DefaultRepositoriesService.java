@@ -659,7 +659,15 @@ public class DefaultRepositoriesService
             throw new ArchivaRestServiceException( "version cannot be null", 400, null );
         }
 
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
 
         try
         {
@@ -695,14 +703,14 @@ public class DefaultRepositoriesService
             }
 
             Collection<ArtifactMetadata> artifacts =
-                metadataRepository.getArtifacts( repositoryId, namespace, projectId, version );
+                metadataRepository.getArtifacts( , repositoryId, namespace, projectId, version );
 
             for ( ArtifactMetadata artifactMetadata : artifacts )
             {
-                metadataRepository.removeArtifact( artifactMetadata, version );
+                metadataRepository.removeArtifact( , artifactMetadata, version );
             }
 
-            metadataRepository.removeProjectVersion( repositoryId, namespace, projectId, version );
+            metadataRepository.removeProjectVersion( , repositoryId, namespace, projectId, version );
         }
         catch ( MetadataRepositoryException e )
         {
@@ -722,6 +730,10 @@ public class DefaultRepositoriesService
             repositorySession.save();
 
             repositorySession.close();
+        }
+        catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
+        {
+            e.printStackTrace( );
         }
 
         return Boolean.TRUE;
@@ -769,7 +781,15 @@ public class DefaultRepositoriesService
         boolean snapshotVersion =
             VersionUtil.isSnapshot( artifact.getVersion() ) | VersionUtil.isGenericSnapshot( artifact.getVersion() );
 
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
         try
         {
             Date lastUpdatedTimestamp = Calendar.getInstance().getTime();
@@ -849,14 +869,14 @@ public class DefaultRepositoriesService
             {
                 String baseVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
                 artifacts =
-                    metadataRepository.getArtifacts( repositoryId, artifact.getGroupId(), artifact.getArtifactId(),
-                                                     baseVersion );
+                    metadataRepository.getArtifacts( , repositoryId, artifact.getGroupId(),
+                        artifact.getArtifactId(), baseVersion );
             }
             else
             {
                 artifacts =
-                    metadataRepository.getArtifacts( repositoryId, artifact.getGroupId(), artifact.getArtifactId(),
-                                                     artifact.getVersion() );
+                    metadataRepository.getArtifacts( , repositoryId, artifact.getGroupId(),
+                        artifact.getArtifactId(), artifact.getVersion() );
             }
 
             log.debug( "artifacts: {}", artifacts );
@@ -867,14 +887,14 @@ public class DefaultRepositoriesService
                 {
                     // verify metata repository doesn't contains anymore the version
                     Collection<String> projectVersions =
-                        metadataRepository.getProjectVersions( repositoryId, artifact.getGroupId(),
-                                                               artifact.getArtifactId() );
+                        metadataRepository.getProjectVersions( , repositoryId,
+                            artifact.getGroupId(), artifact.getArtifactId() );
 
                     if ( projectVersions.contains( artifact.getVersion() ) )
                     {
                         log.warn( "artifact not found when deleted but version still here ! so force cleanup" );
-                        metadataRepository.removeProjectVersion( repositoryId, artifact.getGroupId(),
-                                                                 artifact.getArtifactId(), artifact.getVersion() );
+                        metadataRepository.removeProjectVersion( , repositoryId,
+                            artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );
                     }
 
                 }
@@ -904,8 +924,8 @@ public class DefaultRepositoriesService
                                 artifact.getVersion();
                             MavenArtifactFacet mavenArtifactFacetToCompare = new MavenArtifactFacet();
                             mavenArtifactFacetToCompare.setClassifier( artifact.getClassifier() );
-                            metadataRepository.removeArtifact( repositoryId, groupId, artifactId, version,
-                                                               mavenArtifactFacetToCompare );
+                            metadataRepository.removeArtifact( , repositoryId, groupId, artifactId,
+                                version, mavenArtifactFacetToCompare );
                             metadataRepository.save();
                         }
 
@@ -914,15 +934,15 @@ public class DefaultRepositoriesService
                     {
                         if ( snapshotVersion )
                         {
-                            metadataRepository.removeArtifact( artifactMetadata,
-                                                               VersionUtil.getBaseVersion( artifact.getVersion() ) );
+                            metadataRepository.removeArtifact( ,
+                                artifactMetadata, VersionUtil.getBaseVersion( artifact.getVersion() ) );
                         }
                         else
                         {
-                            metadataRepository.removeArtifact( artifactMetadata.getRepositoryId(),
-                                                               artifactMetadata.getNamespace(),
-                                                               artifactMetadata.getProject(), artifact.getVersion(),
-                                                               artifactMetadata.getId() );
+                            metadataRepository.removeArtifact( ,
+                                artifactMetadata.getRepositoryId(),
+                                artifactMetadata.getNamespace(), artifactMetadata.getProject(),
+                                artifact.getVersion(), artifactMetadata.getId() );
                         }
                     }
                     // TODO: move into the metadata repository proper - need to differentiate attachment of
@@ -965,6 +985,10 @@ public class DefaultRepositoriesService
 
             repositorySession.close();
         }
+        catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
+        {
+            e.printStackTrace( );
+        }
         return Boolean.TRUE;
     }
 
@@ -987,7 +1011,15 @@ public class DefaultRepositoriesService
             throw new ArchivaRestServiceException( "groupId cannot be null", 400, null );
         }
 
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
 
         try
         {
@@ -997,7 +1029,7 @@ public class DefaultRepositoriesService
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
-            metadataRepository.removeNamespace( repositoryId, groupId );
+            metadataRepository.removeNamespace( , repositoryId, groupId );
 
             // just invalidate cache entry
             String cacheKey = repositoryId + "-" + groupId;
@@ -1048,7 +1080,15 @@ public class DefaultRepositoriesService
             throw new ArchivaRestServiceException( "artifactId cannot be null", 400, null );
         }
 
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
 
         try
         {
@@ -1071,7 +1111,7 @@ public class DefaultRepositoriesService
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
-            metadataRepository.removeProject( repositoryId, groupId, projectId );
+            metadataRepository.removeProject( , repositoryId, groupId, projectId );
 
             metadataRepository.save();
         }

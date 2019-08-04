@@ -180,6 +180,10 @@ public class ArchivaRepositoryScanningTaskExecutor
                 {
                     repositorySession.close();
                 }
+                catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
+                {
+                    e.printStackTrace( );
+                }
 
 //                log.info( "Scanning for removed repository content" );
 
@@ -195,6 +199,10 @@ public class ArchivaRepositoryScanningTaskExecutor
         {
             log.error( e.getMessage(), e );
             throw new TaskExecutionException( e.getMessage(), e );
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
         }
     }
 

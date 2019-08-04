@@ -21,6 +21,7 @@ package org.apache.archiva.webtest.memory;
 
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepository;
+import org.apache.archiva.metadata.repository.RepositorySession;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,25 +71,25 @@ public class TestMetadataRepository
     }
 
     @Override
-    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+    public Collection<String> getProjectVersions( RepositorySession session, String repoId, String namespace, String projectId )
     {
         return versions;
     }
 
     @Override
-    public List<String> getMetadataFacets( String repodId, String facetId )
+    public List<String> getMetadataFacets( RepositorySession session, String repodId, String facetId )
     {
         return Collections.emptyList();
     }
 
     @Override
-    public void removeMetadataFacet( String repoId, String facetId, String name )
+    public void removeMetadataFacet( RepositorySession session, String repoId, String facetId, String name )
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
+    public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, String repoId, Date startTime, Date endTime )
     {
         return artifacts;
     }
@@ -100,14 +101,14 @@ public class TestMetadataRepository
     }
 
     @Override
-    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
+    public Collection<ArtifactMetadata> getArtifacts( RepositorySession session, String repoId, String namespace, String projectId,
                                                       String projectVersion )
     {
         return artifacts;
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifacts( String repositoryId )
+    public List<ArtifactMetadata> getArtifacts( RepositorySession session, String repositoryId )
     {
         return artifacts;
     }

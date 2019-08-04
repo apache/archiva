@@ -60,7 +60,15 @@ public class DefaultMergeRepositoriesService
     public List<Artifact> getMergeConflictedArtifacts( String sourceRepositoryId, String targetRepositoryId )
         throws ArchivaRestServiceException
     {
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
         try
         {
             List<ArtifactMetadata> artifactMetadatas =
@@ -106,13 +114,21 @@ public class DefaultMergeRepositoriesService
     protected void doMerge( String sourceRepositoryId, String targetRepositoryId )
         throws RepositoryMergerException, ArchivaRestServiceException
     {
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
 
         try
         {
             org.apache.archiva.repository.ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(targetRepositoryId);
             MetadataRepository metadataRepository = repositorySession.getRepository();
-            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepositoryId );
+            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( , sourceRepositoryId );
 
             if ( managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.RELEASE) && !managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT) )
             {
@@ -143,14 +159,22 @@ public class DefaultMergeRepositoriesService
         throws RepositoryMergerException, ArchivaRestServiceException
     {
 
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
         try
         {
             List<ArtifactMetadata> conflictSourceArtifacts =
                 repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepositoryId,
                                                           targetRepositoryId );
             MetadataRepository metadataRepository = repositorySession.getRepository();
-            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepositoryId );
+            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( , sourceRepositoryId );
             sourceArtifacts.removeAll( conflictSourceArtifacts );
 
             org.apache.archiva.repository.ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(targetRepositoryId);

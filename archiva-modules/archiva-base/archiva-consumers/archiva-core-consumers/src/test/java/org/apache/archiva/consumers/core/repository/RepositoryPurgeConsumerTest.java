@@ -188,8 +188,8 @@ public class RepositoryPurgeConsumerTest
 
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir( TEST_REPO_ID, projectName, repo, vDir );
-        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
-            projectName, projectVersion)).thenReturn(ml);
+        when(metadataRepository.getArtifacts( , TEST_REPO_ID,
+            projectNs, projectName, projectVersion )).thenReturn(ml);
         Set<String> deletedVersions = new HashSet<>();
         deletedVersions.add("1.0RC1-20070504.153317-1");
         deletedVersions.add("1.0RC1-20070504.160758-2");
@@ -197,9 +197,9 @@ public class RepositoryPurgeConsumerTest
         repoPurgeConsumer.processFile( PATH_TO_BY_RETENTION_COUNT_ARTIFACT );
 
         // Verify the metadataRepository invocations
-        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        verify(metadataRepository, never()).removeProjectVersion( , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, times(2)).removeArtifact(metadataArg.capture(), eq(projectVersion));
+        verify(metadataRepository, times(2)).removeArtifact( , metadataArg.capture(), eq(projectVersion) );
         List<ArtifactMetadata> metaL = metadataArg.getAllValues();
         for (ArtifactMetadata meta : metaL) {
             assertTrue(meta.getId().startsWith(projectName));
@@ -291,8 +291,8 @@ public class RepositoryPurgeConsumerTest
 
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir( TEST_REPO_ID, projectName, repo, vDir );
-        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
-                projectName, projectVersion)).thenReturn(ml);
+        when(metadataRepository.getArtifacts( , TEST_REPO_ID,
+            projectNs, projectName, projectVersion )).thenReturn(ml);
         Set<String> deletedVersions = new HashSet<>();
         deletedVersions.add("2.2-SNAPSHOT");
         deletedVersions.add("2.2-20061118.060401-2");
@@ -300,9 +300,9 @@ public class RepositoryPurgeConsumerTest
         repoPurgeConsumer.processFile( PATH_TO_BY_DAYS_OLD_ARTIFACT );
 
         // Verify the metadataRepository invocations
-        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        verify(metadataRepository, never()).removeProjectVersion( , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, times(2)).removeArtifact(metadataArg.capture(), eq(projectVersion));
+        verify(metadataRepository, times(2)).removeArtifact( , metadataArg.capture(), eq(projectVersion) );
         List<ArtifactMetadata> metaL = metadataArg.getAllValues();
         for (ArtifactMetadata meta : metaL) {
             assertTrue(meta.getId().startsWith(projectName));
@@ -373,16 +373,16 @@ public class RepositoryPurgeConsumerTest
 
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir( TEST_REPO_ID, projectName, repo, vDir );
-        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
-            projectName, projectVersion)).thenReturn(ml);
+        when(metadataRepository.getArtifacts( , TEST_REPO_ID,
+            projectNs, projectName, projectVersion )).thenReturn(ml);
 
         repoPurgeConsumer.processFile(
             CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
 
-        verify(metadataRepository, never()).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        verify(metadataRepository, never()).removeProjectVersion( , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, never()).removeArtifact(any(), any());
-        verify(metadataRepository, never()).removeArtifact( any(), any(), any(), any(), any(MetadataFacet.class) );
+        verify(metadataRepository, never()).removeArtifact( , any(), any() );
+        verify(metadataRepository, never()).removeArtifact( , any(), any(), any(), any(), any(MetadataFacet.class) );
 
         // check if the snapshot wasn't removed
 
@@ -436,15 +436,15 @@ public class RepositoryPurgeConsumerTest
 
         // Provide the metadata list
         List<ArtifactMetadata> ml = getArtifactMetadataFromDir(TEST_REPO_ID , projectName, repo.getParent(), vDir );
-        when(metadataRepository.getArtifacts(TEST_REPO_ID, projectNs,
-            projectName, projectVersion)).thenReturn(ml);
+        when(metadataRepository.getArtifacts( , TEST_REPO_ID,
+            projectNs, projectName, projectVersion )).thenReturn(ml);
 
         repoPurgeConsumer.processFile(
             CleanupReleasedSnapshotsRepositoryPurgeTest.PATH_TO_RELEASED_SNAPSHOT_IN_SAME_REPO );
 
-        verify(metadataRepository, times(1)).removeProjectVersion(eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion));
+        verify(metadataRepository, times(1)).removeProjectVersion( , eq(TEST_REPO_ID), eq(projectNs), eq(projectName), eq(projectVersion) );
         ArgumentCaptor<ArtifactMetadata> metadataArg = ArgumentCaptor.forClass(ArtifactMetadata.class);
-        verify(metadataRepository, never()).removeArtifact(any(), any());
+        verify(metadataRepository, never()).removeArtifact( , any(), any() );
 
         // check if the snapshot was removed
         assertDeleted( projectRoot + "/2.3-SNAPSHOT" );

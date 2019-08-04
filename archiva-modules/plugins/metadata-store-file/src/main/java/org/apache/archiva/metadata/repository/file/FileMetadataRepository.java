@@ -37,6 +37,7 @@ import org.apache.archiva.metadata.model.Scm;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,15 +112,15 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void updateProject( String repoId, ProjectMetadata project )
+    public void updateProject( RepositorySession session, String repoId, ProjectMetadata project )
     {
-        updateProject( repoId, project.getNamespace(), project.getId() );
+        updateProject( session, repoId, project.getNamespace(), project.getId() );
     }
 
-    private void updateProject( String repoId, String namespace, String id )
+    private void updateProject( RepositorySession session, String repoId, String namespace, String id )
     {
         // TODO: this is a more braindead implementation than we would normally expect, for prototyping purposes
-        updateNamespace( repoId, namespace );
+        updateNamespace( session, repoId, namespace );
 
         try
         {
@@ -136,13 +137,13 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void updateProjectVersion( String repoId, String namespace, String projectId,
+    public void updateProjectVersion( RepositorySession session, String repoId, String namespace, String projectId,
                                       ProjectVersionMetadata versionMetadata )
     {
 
         try
         {
-            updateProject( repoId, namespace, projectId );
+            updateProject( session, repoId, namespace, projectId );
 
             Path directory =
                 getDirectory( repoId ).resolve( namespace + "/" + projectId + "/" + versionMetadata.getId() );
@@ -298,7 +299,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void updateNamespace( String repoId, String namespace )
+    public void updateNamespace( RepositorySession session, String repoId, String namespace )
     {
         try
         {
@@ -315,7 +316,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public List<String> getMetadataFacets( String repoId, String facetId )
+    public List<String> getMetadataFacets( RepositorySession session, String repoId, String facetId )
         throws MetadataRepositoryException
     {
         try
@@ -339,7 +340,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public boolean hasMetadataFacet( String repositoryId, String facetId )
+    public boolean hasMetadataFacet( RepositorySession session, String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
 
@@ -361,7 +362,7 @@ public class FileMetadataRepository
 
 
     @Override
-    public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
+    public MetadataFacet getMetadataFacet( RepositorySession session, String repositoryId, String facetId, String name )
     {
         Properties properties;
         try
@@ -395,7 +396,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
+    public void addMetadataFacet( RepositorySession session, String repositoryId, MetadataFacet metadataFacet )
     {
         Properties properties = new Properties();
         properties.putAll( metadataFacet.toProperties() );
@@ -414,7 +415,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void removeMetadataFacets( String repositoryId, String facetId )
+    public void removeMetadataFacets( RepositorySession session, String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
         try
@@ -429,7 +430,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void removeMetadataFacet( String repoId, String facetId, String name )
+    public void removeMetadataFacet( RepositorySession session, String repoId, String facetId, String name )
         throws MetadataRepositoryException
     {
         try
@@ -444,7 +445,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByDateRange( String repoId, Date startTime, Date endTime )
+    public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, String repoId, Date startTime, Date endTime )
         throws MetadataRepositoryException
     {
         try
@@ -453,9 +454,9 @@ public class FileMetadataRepository
             //  of this information (eg. in Lucene, as before)
 
             List<ArtifactMetadata> artifacts = new ArrayList<>();
-            for ( String ns : getRootNamespaces( repoId ) )
+            for ( String ns : getRootNamespaces(session , repoId ) )
             {
-                getArtifactsByDateRange( artifacts, repoId, ns, startTime, endTime );
+                getArtifactsByDateRange( session, artifacts, repoId, ns, startTime, endTime );
             }
             artifacts.sort(new ArtifactComparator() );
             return artifacts;
@@ -466,22 +467,22 @@ public class FileMetadataRepository
         }
     }
 
-    private void getArtifactsByDateRange( List<ArtifactMetadata> artifacts, String repoId, String ns, Date startTime,
+    private void getArtifactsByDateRange( RepositorySession session, List<ArtifactMetadata> artifacts, String repoId, String ns, Date startTime,
                                           Date endTime )
         throws MetadataRepositoryException
     {
         try
         {
-            for ( String namespace : getNamespaces( repoId, ns ) )
+            for ( String namespace : getNamespaces( session, repoId, ns ) )
             {
-                getArtifactsByDateRange( artifacts, repoId, ns + "." + namespace, startTime, endTime );
+                getArtifactsByDateRange( session, artifacts, repoId, ns + "." + namespace, startTime, endTime );
             }
 
-            for ( String project : getProjects( repoId, ns ) )
+            for ( String project : getProjects( session, repoId, ns ) )
             {
-                for ( String version : getProjectVersions( repoId, ns, project ) )
+                for ( String version : getProjectVersions( session, repoId, ns, project ) )
                 {
-                    for ( ArtifactMetadata artifact : getArtifacts( repoId, ns, project, version ) )
+                    for ( ArtifactMetadata artifact : getArtifacts( session, repoId, ns, project, version ) )
                     {
                         if ( startTime == null || startTime.before( artifact.getWhenGathered() ) )
                         {
@@ -501,7 +502,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
+    public Collection<ArtifactMetadata> getArtifacts( RepositorySession session, String repoId, String namespace, String projectId,
                                                       String projectVersion )
         throws MetadataResolutionException
     {
@@ -604,11 +605,6 @@ public class FileMetadataRepository
         }
     }
 
-    @Override
-    public void save()
-    {
-        // it's all instantly persisted
-    }
 
     @Override
     public void close()
@@ -616,11 +612,6 @@ public class FileMetadataRepository
         // nothing additional to close
     }
 
-    @Override
-    public void revert()
-    {
-        log.warn( "Attempted to revert a session, but the file-based repository storage doesn't support it" );
-    }
 
     @Override
     public boolean canObtainAccess( Class<?> aClass )
@@ -629,7 +620,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public <T> T obtainAccess( Class<T> aClass )
+    public <T> T obtainAccess( RepositorySession session, Class<T> aClass )
     {
         throw new IllegalArgumentException(
             "Access using " + aClass + " is not supported on the file metadata storage" );
@@ -649,18 +640,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Collection<String> getRepositories()
-    {
-        List<String> repositories = new ArrayList<>();
-        for ( ManagedRepositoryConfiguration managedRepositoryConfiguration : configuration.getConfiguration().getManagedRepositories() )
-        {
-            repositories.add( managedRepositoryConfiguration.getId() );
-        }
-        return repositories;
-    }
-
-    @Override
-    public List<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
+    public List<ArtifactMetadata> getArtifactsByChecksum( RepositorySession session, String repositoryId, String checksum )
         throws MetadataRepositoryException
     {
         try
@@ -671,9 +651,9 @@ public class FileMetadataRepository
             // of depth to avoid being too broad to be useful (eg. /repository/checksums/a/ab/abcdef1234567)
 
             List<ArtifactMetadata> artifacts = new ArrayList<>();
-            for ( String ns : getRootNamespaces( repositoryId ) )
+            for ( String ns : getRootNamespaces( session, repositoryId ) )
             {
-                getArtifactsByChecksum( artifacts, repositoryId, ns, checksum );
+                getArtifactsByChecksum( session, artifacts, repositoryId, ns, checksum );
             }
             return artifacts;
         }
@@ -684,7 +664,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void removeNamespace( String repositoryId, String project )
+    public void removeNamespace( RepositorySession session, String repositoryId, String project )
         throws MetadataRepositoryException
     {
         try
@@ -703,7 +683,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
+    public void removeArtifact( RepositorySession session, ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
 
@@ -745,7 +725,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void removeArtifact( String repoId, String namespace, String project, String version, String id )
+    public void removeArtifact( RepositorySession session, String repoId, String namespace, String project, String version, String id )
         throws MetadataRepositoryException
     {
         try
@@ -784,6 +764,8 @@ public class FileMetadataRepository
     /**
      * FIXME implements this !!!!
      *
+     *
+     * @param session
      * @param repositoryId
      * @param namespace
      * @param project
@@ -792,7 +774,7 @@ public class FileMetadataRepository
      * @throws MetadataRepositoryException
      */
     @Override
-    public void removeArtifact( String repositoryId, String namespace, String project, String projectVersion,
+    public void removeArtifact( RepositorySession session, String repositoryId, String namespace, String project, String projectVersion,
                                 MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
@@ -800,7 +782,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void removeRepository( String repoId )
+    public void removeRepository( RepositorySession session, String repoId )
         throws MetadataRepositoryException
     {
         try
@@ -814,22 +796,22 @@ public class FileMetadataRepository
         }
     }
 
-    private void getArtifactsByChecksum( List<ArtifactMetadata> artifacts, String repositoryId, String ns,
+    private void getArtifactsByChecksum( RepositorySession session, List<ArtifactMetadata> artifacts, String repositoryId, String ns,
                                          String checksum )
         throws MetadataRepositoryException
     {
         try
         {
-            for ( String namespace : getNamespaces( repositoryId, ns ) )
+            for ( String namespace : getNamespaces( session, repositoryId, ns ) )
             {
-                getArtifactsByChecksum( artifacts, repositoryId, ns + "." + namespace, checksum );
+                getArtifactsByChecksum( session, artifacts, repositoryId, ns + "." + namespace, checksum );
             }
 
-            for ( String project : getProjects( repositoryId, ns ) )
+            for ( String project : getProjects( session, repositoryId, ns ) )
             {
-                for ( String version : getProjectVersions( repositoryId, ns, project ) )
+                for ( String version : getProjectVersions( session, repositoryId, ns, project ) )
                 {
-                    for ( ArtifactMetadata artifact : getArtifacts( repositoryId, ns, project, version ) )
+                    for ( ArtifactMetadata artifact : getArtifacts( session, repositoryId, ns, project, version ) )
                     {
                         if ( checksum.equals( artifact.getMd5() ) || checksum.equals( artifact.getSha1() ) )
                         {
@@ -846,21 +828,21 @@ public class FileMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException( "not yet implemented in File backend" );
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByMetadata( String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByMetadata( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException( "not yet implemented in File backend" );
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByProperty( String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByProperty( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException( "getArtifactsByProperty not yet implemented in File backend" );
@@ -896,14 +878,14 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void updateArtifact( String repoId, String namespace, String projectId, String projectVersion,
+    public void updateArtifact( RepositorySession session, String repoId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifact )
     {
         try
         {
             ProjectVersionMetadata metadata = new ProjectVersionMetadata();
             metadata.setId( projectVersion );
-            updateProjectVersion( repoId, namespace, projectId, metadata );
+            updateProjectVersion( session, repoId, namespace, projectId, metadata );
 
             Path directory = getDirectory( repoId ).resolve( namespace + "/" + projectId + "/" + projectVersion );
 
@@ -975,7 +957,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public ProjectMetadata getProject( String repoId, String namespace, String projectId )
+    public ProjectMetadata getProject( RepositorySession session, String repoId, String namespace, String projectId )
         throws MetadataResolutionException
     {
         try
@@ -1003,7 +985,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
+    public ProjectVersionMetadata getProjectVersion( RepositorySession session, String repoId, String namespace, String projectId,
                                                      String projectVersion )
         throws MetadataResolutionException
     {
@@ -1185,7 +1167,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
+    public Collection<String> getArtifactVersions( RepositorySession session, String repoId, String namespace, String projectId,
                                                    String projectVersion )
         throws MetadataResolutionException
     {
@@ -1213,7 +1195,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
+    public Collection<ProjectVersionReference> getProjectReferences( RepositorySession session, String repoId, String namespace, String projectId,
                                                                      String projectVersion )
         throws MetadataResolutionException
     {
@@ -1244,14 +1226,14 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Collection<String> getRootNamespaces( String repoId )
+    public Collection<String> getRootNamespaces( RepositorySession session, String repoId )
         throws MetadataResolutionException
     {
-        return getNamespaces( repoId, null );
+        return getNamespaces( session, repoId, null );
     }
 
     @Override
-    public Collection<String> getNamespaces( String repoId, String baseNamespace )
+    public Collection<String> getNamespaces( RepositorySession session, String repoId, String baseNamespace )
         throws MetadataResolutionException
     {
         try
@@ -1294,7 +1276,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Collection<String> getProjects( String repoId, String namespace )
+    public Collection<String> getProjects( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
         try
@@ -1320,7 +1302,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+    public Collection<String> getProjectVersions( RepositorySession session, String repoId, String namespace, String projectId )
         throws MetadataResolutionException
     {
         try
@@ -1345,7 +1327,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void removeProject( String repositoryId, String namespace, String projectId )
+    public void removeProject( RepositorySession session, String repositoryId, String namespace, String projectId )
         throws MetadataRepositoryException
     {
         try
@@ -1360,7 +1342,7 @@ public class FileMetadataRepository
     }
 
     @Override
-    public void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
+    public void removeProjectVersion( RepositorySession session, String repoId, String namespace, String projectId, String projectVersion )
         throws MetadataRepositoryException
     {
         try
@@ -1408,15 +1390,15 @@ public class FileMetadataRepository
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifacts( String repoId )
+    public List<ArtifactMetadata> getArtifacts( RepositorySession session, String repoId )
         throws MetadataRepositoryException
     {
         try
         {
             List<ArtifactMetadata> artifacts = new ArrayList<>();
-            for ( String ns : getRootNamespaces( repoId ) )
+            for ( String ns : getRootNamespaces( session, repoId ) )
             {
-                getArtifacts( artifacts, repoId, ns );
+                getArtifacts( session, artifacts, repoId, ns );
             }
             return artifacts;
         }
@@ -1426,31 +1408,31 @@ public class FileMetadataRepository
         }
     }
 
-    private void getArtifacts( List<ArtifactMetadata> artifacts, String repoId, String ns )
+    private void getArtifacts( RepositorySession session, List<ArtifactMetadata> artifacts, String repoId, String ns )
         throws MetadataResolutionException
     {
-        for ( String namespace : getNamespaces( repoId, ns ) )
+        for ( String namespace : getNamespaces( session, repoId, ns ) )
         {
-            getArtifacts( artifacts, repoId, ns + "." + namespace );
+            getArtifacts( session, artifacts, repoId, ns + "." + namespace );
         }
 
-        for ( String project : getProjects( repoId, ns ) )
+        for ( String project : getProjects( session, repoId, ns ) )
         {
-            for ( String version : getProjectVersions( repoId, ns, project ) )
+            for ( String version : getProjectVersions( session, repoId, ns, project ) )
             {
-                artifacts.addAll( getArtifacts( repoId, ns, project, version ) );
+                artifacts.addAll( getArtifacts( session, repoId, ns, project, version ) );
             }
         }
     }
 
     @Override
-    public List<ArtifactMetadata> searchArtifacts( String text, String repositoryId, boolean exact )
+    public List<ArtifactMetadata> searchArtifacts( RepositorySession session, String repositoryId, String text, boolean exact )
     {
         throw new UnsupportedOperationException( "searchArtifacts not yet implemented in File backend" );
     }
 
     @Override
-    public List<ArtifactMetadata> searchArtifacts( String key, String text, String repositoryId, boolean exact )
+    public List<ArtifactMetadata> searchArtifacts( RepositorySession session, String repositoryId, String key, String text, boolean exact )
     {
         throw new UnsupportedOperationException( "searchArtifacts not yet implemented in File backend" );
     }

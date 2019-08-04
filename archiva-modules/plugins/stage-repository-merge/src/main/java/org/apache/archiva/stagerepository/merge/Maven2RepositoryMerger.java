@@ -103,7 +103,7 @@ public class Maven2RepositoryMerger
 
         try
         {
-            List<ArtifactMetadata> artifactsInSourceRepo = metadataRepository.getArtifacts( sourceRepoId );
+            List<ArtifactMetadata> artifactsInSourceRepo = metadataRepository.getArtifacts( , sourceRepoId );
             for ( ArtifactMetadata artifactMetadata : artifactsInSourceRepo )
             {
                 artifactMetadata.setRepositoryId( targetRepoId );
@@ -132,7 +132,7 @@ public class Maven2RepositoryMerger
     {
         try
         {
-            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( sourceRepoId );
+            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( , sourceRepoId );
             for ( ArtifactMetadata metadata : sourceArtifacts )
             {
                 if ( filter.accept( metadata ) )
@@ -399,9 +399,9 @@ public class Maven2RepositoryMerger
         try
         {
             TreeSet<ArtifactMetadata> targetArtifacts = new TreeSet<>(META_COMPARATOR);
-            targetArtifacts.addAll(metadataRepository.getArtifacts(targetRepo));
+            targetArtifacts.addAll(metadataRepository.getArtifacts( , targetRepo ));
             TreeSet<ArtifactMetadata> sourceArtifacts = new TreeSet<>(META_COMPARATOR);
-            sourceArtifacts.addAll(metadataRepository.getArtifacts(sourceRepo));
+            sourceArtifacts.addAll(metadataRepository.getArtifacts( , sourceRepo ));
             sourceArtifacts.retainAll(targetArtifacts);
 
             return new ArrayList<>(sourceArtifacts);

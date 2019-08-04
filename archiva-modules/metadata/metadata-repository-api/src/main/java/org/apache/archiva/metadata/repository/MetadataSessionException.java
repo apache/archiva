@@ -19,13 +19,34 @@ package org.apache.archiva.metadata.repository;
  * under the License.
  */
 
-public interface RepositorySessionFactory
+/**
+ * Exception thrown if the session method fails.
+ *
+ * @author Martin Stockhammer <martin_s@apache.org>
+ */
+public class MetadataSessionException extends Exception
 {
-    void open( );
+    public MetadataSessionException( )
+    {
+    }
 
-    boolean isOpen( );
+    public MetadataSessionException( String message )
+    {
+        super( message );
+    }
 
-    RepositorySession createSession() throws MetadataRepositoryException;
+    public MetadataSessionException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
 
-    void close();
+    public MetadataSessionException( Throwable cause )
+    {
+        super( cause );
+    }
+
+    public MetadataSessionException( String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace )
+    {
+        super( message, cause, enableSuppression, writableStackTrace );
+    }
 }

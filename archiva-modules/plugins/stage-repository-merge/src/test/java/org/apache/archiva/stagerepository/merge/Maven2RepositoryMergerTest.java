@@ -120,9 +120,9 @@ public class Maven2RepositoryMergerTest
         c.addManagedRepository( targetRepo );
         configuration.save( c );
 
-        when( metadataRepository.getArtifacts( TEST_REPO_ID ) ).thenReturn( getArtifacts() );
+        when( metadataRepository.getArtifacts( , TEST_REPO_ID ) ).thenReturn( getArtifacts() );
         repositoryMerger.merge( metadataRepository, TEST_REPO_ID, "target-rep" );
-        verify( metadataRepository ).getArtifacts( TEST_REPO_ID );
+        verify( metadataRepository ).getArtifacts( , TEST_REPO_ID );
         assertTrue( Files.exists(mergedArtifact) );
         assertTrue( Files.exists(mavenMetadata) );
         assertTrue( Files.exists(pom) );
@@ -169,12 +169,12 @@ public class Maven2RepositoryMergerTest
             "/target/test-repository/com/example/test/test-artifact/1.0-SNAPSHOT/test-artifact-1.0-20100308.230825-1.jar" );
         targetRepoFile.toFile().setReadOnly();
 
-        when( metadataRepository.getArtifacts( sourceRepoId ) ).thenReturn( sourceRepoArtifactsList );
-        when( metadataRepository.getArtifacts( TEST_REPO_ID ) ).thenReturn( targetRepoArtifactsList );
+        when( metadataRepository.getArtifacts( , sourceRepoId ) ).thenReturn( sourceRepoArtifactsList );
+        when( metadataRepository.getArtifacts( , TEST_REPO_ID ) ).thenReturn( targetRepoArtifactsList );
 
         assertEquals( 1, repositoryMerger.getConflictingArtifacts( metadataRepository, sourceRepoId,
                                                                    TEST_REPO_ID ).size() );
-        verify( metadataRepository ).getArtifacts( TEST_REPO_ID );
+        verify( metadataRepository ).getArtifacts( , TEST_REPO_ID );
     }
 
 }

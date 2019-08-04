@@ -103,7 +103,7 @@ public class DefaultMetadataResolver
         MetadataRepository metadataRepository = session.getRepository();
 
         ProjectVersionMetadata metadata =
-            metadataRepository.getProjectVersion( repoId, namespace, projectId, projectVersion );
+            metadataRepository.getProjectVersion( session, repoId, namespace, projectId, projectVersion );
         // TODO: do we want to detect changes as well by comparing timestamps? isProjectVersionNewerThan(updated)
         //       in such cases we might also remove/update stale metadata, including adjusting plugin-based facets
         //       This would also be better than checking for completeness - we can then refresh only when fixed (though
@@ -136,7 +136,7 @@ public class DefaultMetadataResolver
                     {
                         listener.addArtifact( session, repoId, namespace, projectId, metadata );
                     }
-                    metadataRepository.updateProjectVersion( repoId, namespace, projectId, metadata );
+                    metadataRepository.updateProjectVersion( session, repoId, namespace, projectId, metadata );
                 }
                 catch ( MetadataRepositoryException e )
                 {
@@ -183,7 +183,7 @@ public class DefaultMetadataResolver
         // TODO: is this assumption correct? could a storage mech. actually know all references in a non-Maven scenario?
         // not passed to the storage mechanism as resolving references would require iterating all artifacts
         MetadataRepository metadataRepository = session.getRepository();
-        return metadataRepository.getProjectReferences( repoId, namespace, projectId, projectVersion );
+        return metadataRepository.getProjectReferences( session, repoId, namespace, projectId, projectVersion );
     }
 
     @Override
@@ -200,7 +200,7 @@ public class DefaultMetadataResolver
             }
 
             MetadataRepository metadataRepository = session.getRepository();
-            namespaces = metadataRepository.getRootNamespaces( repoId );
+            namespaces = metadataRepository.getRootNamespaces( session, repoId );
             Collection<String> storageNamespaces =
                 repositoryStorage.listRootNamespaces( repoId, new ExcludesFilter<String>( namespaces ) );
             if ( storageNamespaces != null && !storageNamespaces.isEmpty() )
@@ -212,7 +212,7 @@ public class DefaultMetadataResolver
                 {
                     try
                     {
-                        metadataRepository.updateNamespace( repoId, n );
+                        metadataRepository.updateNamespace( session, repoId, n );
                         // just invalidate cache entry
                         String cacheKey = repoId + "-" + n;
                         namespacesCache.remove( cacheKey );
@@ -249,11 +249,11 @@ public class DefaultMetadataResolver
             Collection<String> namespaces = namespacesCache.get( cacheKey );
             if ( namespaces == null )
             {
-                namespaces = metadataRepository.getNamespaces( repoId, namespace );
+                namespaces = metadataRepository.getNamespaces( session, repoId, namespace );
                 namespacesCache.put( cacheKey, namespaces );
             }
             Collection<String> exclusions = new ArrayList<>( namespaces );
-            exclusions.addAll( metadataRepository.getProjects( repoId, namespace ) );
+            exclusions.addAll( metadataRepository.getProjects( session, repoId, namespace ) );
             Collection<String> storageNamespaces =
                 repositoryStorage.listNamespaces( repoId, namespace, new ExcludesFilter<String>( exclusions ) );
             if ( storageNamespaces != null && !storageNamespaces.isEmpty() )
@@ -265,7 +265,7 @@ public class DefaultMetadataResolver
                 {
                     try
                     {
-                        metadataRepository.updateNamespace( repoId, namespace + "." + n );
+                        metadataRepository.updateNamespace( session, repoId, namespace + "." + n );
                         // just invalidate cache entry
                         cacheKey = repoId + "-" + namespace + "." + n;
                         namespacesCache.remove( cacheKey );
@@ -295,14 +295,14 @@ public class DefaultMetadataResolver
         try
         {
             MetadataRepository metadataRepository = session.getRepository();
-            Collection<String> projects = metadataRepository.getProjects( repoId, namespace );
+            Collection<String> projects = metadataRepository.getProjects( session, repoId, namespace );
             Collection<String> exclusions = new ArrayList<>( projects );
 
             String cacheKey = repoId + "-" + namespace;
             Collection<String> namespaces = namespacesCache.get( cacheKey );
             if ( namespaces == null )
             {
-                namespaces = metadataRepository.getNamespaces( repoId, namespace );
+                namespaces = metadataRepository.getNamespaces( session, repoId, namespace );
                 namespacesCache.put( cacheKey, namespaces );
             }
 
@@ -322,7 +322,7 @@ public class DefaultMetadataResolver
                     {
                         try
                         {
-                            metadataRepository.updateProject( repoId, projectMetadata );
+                            metadataRepository.updateProject( session, repoId, projectMetadata );
                         }
                         catch ( MetadataRepositoryException e )
                         {
@@ -352,7 +352,7 @@ public class DefaultMetadataResolver
         {
             MetadataRepository metadataRepository = session.getRepository();
 
-            Collection<String> projectVersions = metadataRepository.getProjectVersions( repoId, namespace, projectId );
+            Collection<String> projectVersions = metadataRepository.getProjectVersions( session, repoId, namespace, projectId );
             Collection<String> storageProjectVersions =
                 repositoryStorage.listProjectVersions( repoId, namespace, projectId,
                                                        new ExcludesFilter<String>( projectVersions ) );
@@ -374,7 +374,7 @@ public class DefaultMetadataResolver
                             listener.addArtifact( session, repoId, namespace, projectId, versionMetadata );
                         }
 
-                        metadataRepository.updateProjectVersion( repoId, namespace, projectId, versionMetadata );
+                        metadataRepository.updateProjectVersion( session, repoId, namespace, projectId, versionMetadata );
                     }
                     catch ( MetadataRepositoryException e )
                     {
@@ -421,7 +421,7 @@ public class DefaultMetadataResolver
         {
             MetadataRepository metadataRepository = session.getRepository();
             Collection<ArtifactMetadata> artifacts =
-                metadataRepository.getArtifacts( repoId, namespace, projectId, projectVersion );
+                metadataRepository.getArtifacts( session, repoId, namespace, projectId, projectVersion );
             ExcludesFilter<String> filter = new ExcludesFilter<String>( createArtifactIdList( artifacts ) );
 
             ReadMetadataRequest readMetadataRequest =
@@ -439,7 +439,7 @@ public class DefaultMetadataResolver
                 {
                     try
                     {
-                        metadataRepository.updateArtifact( repoId, namespace, projectId, projectVersion, artifact );
+                        metadataRepository.updateArtifact( session, repoId, namespace, projectId, projectVersion, artifact );
                     }
                     catch ( MetadataRepositoryException e )
                     {

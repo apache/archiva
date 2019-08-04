@@ -21,7 +21,6 @@ package org.apache.archiva.metadata.repository.jcr;
 
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractRepositorySessionFactory;
-import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.archiva.metadata.repository.RepositorySession;
@@ -70,19 +69,14 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
 
     private RepositoryFactory repositoryFactory;
 
+    private JcrMetadataRepository jcrMetadataRepository;
+
     @Override
-    public RepositorySession createSession()
+    public RepositorySession createSession() throws MetadataRepositoryException
     {
         try
         {
-            // FIXME: is this the right separation? or should a JCR session object contain the JCR session information?
-            //  such a change might allow us to avoid creating two objects for each request. It would also clear up
-            //  the ambiguities in the API where session & repository are the inverse of JCR; and the resolver is
-            //  retrieved from the session but must have it passed in. These should be reviewed before finalising the
-            //  API.
-            MetadataRepository metadataRepository = new JcrMetadataRepository( metadataFacetFactories, repository );
-
-            return new RepositorySession( metadataRepository, getMetadataResolver() );
+            return new JcrSession( jcrMetadataRepository, getMetadataResolver() );
         }
         catch ( RepositoryException e )
         {
@@ -127,7 +121,6 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
 
         metadataFacetFactories = cleanedMetadataFacetFactories;
 
-        JcrMetadataRepository metadataRepository = null;
         try
         {
 
@@ -141,23 +134,15 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
                 logger.error("Repository creation failed {}", e.getMessage());
                 throw new RuntimeException("Fatal error. Could not create metadata repository.");
             }
-            metadataRepository = new JcrMetadataRepository( metadataFacetFactories, repository );
-            JcrMetadataRepository.initialize( metadataRepository.getJcrSession() );
+            jcrMetadataRepository = new JcrMetadataRepository( metadataFacetFactories, repository );
+            try (JcrSession session = new JcrSession( jcrMetadataRepository, metadataResolver )) {
+                JcrMetadataRepository.initializeNodeTypes( session.getJcrSession() );
+                // Saves automatically with close
+            }
         }
         catch ( RepositoryException e )
         {
             throw new RuntimeException( e.getMessage(), e );
-        }
-        finally
-        {
-            if ( metadataRepository != null )
-            {
-                try {
-                    metadataRepository.close();
-                } catch (MetadataRepositoryException e) {
-                    logger.error("Close of metadata repository failed {}", e.getMessage());
-                }
-            }
         }
 
         stopWatch.stop();

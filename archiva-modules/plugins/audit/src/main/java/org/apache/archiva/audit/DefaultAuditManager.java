@@ -58,7 +58,7 @@ public class DefaultAuditManager
         List<AuditRecord> records = new ArrayList<>();
         for ( String repositoryId : repositoryIds )
         {
-            List<String> names = metadataRepository.getMetadataFacets( repositoryId, AuditEvent.FACET_ID );
+            List<String> names = metadataRepository.getMetadataFacets( , repositoryId, AuditEvent.FACET_ID );
             for ( String name : names )
             {
                 records.add( new AuditRecord( repositoryId, name ) );
@@ -70,9 +70,9 @@ public class DefaultAuditManager
         List<AuditEvent> events = new ArrayList<>( records.size() );
         for ( AuditRecord record : records )
         {
-            AuditEvent auditEvent = (AuditEvent) metadataRepository.getMetadataFacet( record.repositoryId,
-                                                                                      AuditEvent.FACET_ID,
-                                                                                      record.name );
+            AuditEvent auditEvent = (AuditEvent) metadataRepository.getMetadataFacet( ,
+                record.repositoryId,
+                AuditEvent.FACET_ID, record.name );
             events.add( auditEvent );
         }
         return events;
@@ -85,7 +85,7 @@ public class DefaultAuditManager
         // ignore those with no repository - they will still be logged to the textual audit log
         if ( event.getRepositoryId() != null )
         {
-            repository.addMetadataFacet( event.getRepositoryId(), event );
+            repository.addMetadataFacet( , event.getRepositoryId(), event );
         }
     }
 
@@ -93,7 +93,7 @@ public class DefaultAuditManager
     public void deleteAuditEvents( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
-        metadataRepository.removeMetadataFacets( repositoryId, AuditEvent.FACET_ID );
+        metadataRepository.removeMetadataFacets( , repositoryId, AuditEvent.FACET_ID );
     }
 
     @Override
@@ -113,7 +113,7 @@ public class DefaultAuditManager
         List<AuditEvent> results = new ArrayList<>();
         for ( String repositoryId : repositoryIds )
         {
-            List<String> list = metadataRepository.getMetadataFacets( repositoryId, AuditEvent.FACET_ID );
+            List<String> list = metadataRepository.getMetadataFacets( , repositoryId, AuditEvent.FACET_ID );
             for ( String name : list )
             {
                 try
@@ -122,9 +122,9 @@ public class DefaultAuditManager
                     if ( ( startTime == null || !date.before( startTime ) ) && ( endTime == null || !date.after(
                         endTime ) ) )
                     {
-                        AuditEvent event = (AuditEvent) metadataRepository.getMetadataFacet( repositoryId,
-                                                                                             AuditEvent.FACET_ID,
-                                                                                             name );
+                        AuditEvent event = (AuditEvent) metadataRepository.getMetadataFacet( ,
+                            repositoryId,
+                            AuditEvent.FACET_ID, name );
 
                         if ( resource == null || event.getResource().startsWith( resource ) )
                         {

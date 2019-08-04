@@ -90,13 +90,13 @@ public class NewVersionsOfArtifactRssFeedProcessorTest
         reqParams.put( RssFeedProcessor.KEY_ARTIFACT_ID, ARTIFACT_ID );
 
         expect( metadataRepository.getRepositories() ).andReturn( Collections.singletonList( TEST_REPO ) );
-        expect( metadataRepository.getProjectVersions( TEST_REPO, GROUP_ID, ARTIFACT_ID ) ).andReturn(
+        expect( metadataRepository.getProjectVersions( , TEST_REPO, GROUP_ID, ARTIFACT_ID ) ).andReturn(
             Arrays.asList( "1.0.1", "1.0.2", "1.0.3-SNAPSHOT" ) );
-        expect( metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.1" ) ).andReturn(
+        expect( metadataRepository.getArtifacts( , TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.1" ) ).andReturn(
             Collections.singletonList( artifact1 ) );
-        expect( metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.2" ) ).andReturn(
+        expect( metadataRepository.getArtifacts( , TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.2" ) ).andReturn(
             Collections.singletonList( artifact2 ) );
-        expect( metadataRepository.getArtifacts( TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.3-SNAPSHOT" ) ).andReturn(
+        expect( metadataRepository.getArtifacts( , TEST_REPO, GROUP_ID, ARTIFACT_ID, "1.0.3-SNAPSHOT" ) ).andReturn(
             Collections.singletonList( artifact3 ) );
         metadataRepositoryControl.replay();
 

@@ -78,7 +78,7 @@ public class JcrMetadataRepositoryTest
             Session session = jcrMetadataRepository.getJcrSession();
 
             // set up namespaces, etc.
-            JcrMetadataRepository.initialize( session );
+            JcrMetadataRepository.initializeNodeTypes( session );
 
             // removing content is faster than deleting and re-copying the files from target/jcr
             session.getRootNode().getNode( "repositories" ).remove();

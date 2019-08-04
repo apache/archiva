@@ -85,7 +85,7 @@ public class RepositoriesNamespaceTest
         try
         {
 
-            cmr.updateNamespace( "release", "org" );
+            cmr.updateNamespace( , "release", "org" );
 
             r = cmr.getRepository( "release" );
 
@@ -99,14 +99,14 @@ public class RepositoriesNamespaceTest
             assertThat( n ).isNotNull();
             assertThat( n.getRepository() ).isNotNull();
 
-            cmr.updateNamespace( "release", "org.apache" );
+            cmr.updateNamespace( , "release", "org.apache" );
 
             r = cmr.getRepository( "release" );
 
             assertThat( r ).isNotNull();
             assertThat( cmr.getNamespaces( "release" ) ).isNotEmpty().hasSize( 2 );
 
-            cmr.removeNamespace( "release", "org.apache" );
+            cmr.removeNamespace( , "release", "org.apache" );
             assertThat( cmr.getNamespaces( "release" ) ).isNotEmpty().hasSize( 1 );
             assertThat( cmr.getNamespaces( "release" ) ).containsExactly( "org" );
 
@@ -114,16 +114,16 @@ public class RepositoriesNamespaceTest
             projectMetadata.setId( "theproject" );
             projectMetadata.setNamespace( "org" );
 
-            cmr.updateProject( "release", projectMetadata );
+            cmr.updateProject( , "release", projectMetadata );
 
-            assertThat( cmr.getProjects( "release", "org" ) ).isNotEmpty().hasSize( 1 ).containsExactly(
+            assertThat( cmr.getProjects( , "release", "org" ) ).isNotEmpty().hasSize( 1 ).containsExactly(
                 "theproject" );
 
-            cmr.removeProject( "release", "org", "theproject" );
+            cmr.removeProject( , "release", "org", "theproject" );
 
-            assertThat( cmr.getProjects( "release", "org" ) ).isEmpty();
+            assertThat( cmr.getProjects( , "release", "org" ) ).isEmpty();
 
-            cmr.removeRepository( "release" );
+            cmr.removeRepository( , "release" );
 
             r = cmr.getRepository( "release" );
 

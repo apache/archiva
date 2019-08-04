@@ -65,17 +65,22 @@ public class RepositorySession
         return resolver;
     }
 
-    public void save()
-    {
-        repository.save();
-
-        dirty = false;
+    protected boolean isDirty() {
+        return dirty;
     }
 
-    public void revert()
+    protected void setDirty(boolean value) {
+        this.dirty = value;
+    }
+
+    public void save() throws MetadataSessionException
     {
-        repository.revert();
-        dirty = false;
+        setDirty( false );
+    }
+
+    public void revert() throws MetadataSessionException
+    {
+        setDirty( false );
     }
 
     /**
@@ -90,21 +95,14 @@ public class RepositorySession
     {
         try
         {
-            if ( dirty )
+            if ( isDirty() )
             {
                 save();
             }
         }
-        finally
+        catch ( MetadataSessionException e )
         {
-            try
-            {
-                repository.close();
-            }
-            catch ( MetadataRepositoryException e )
-            {
-                throw new RuntimeException( e.getMessage(), e );
-            }
+            throw new RuntimeException( "Could not save the session " + e.getMessage( ), e );
         }
     }
 

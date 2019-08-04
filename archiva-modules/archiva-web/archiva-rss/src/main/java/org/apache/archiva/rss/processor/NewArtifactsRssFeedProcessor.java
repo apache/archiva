@@ -93,7 +93,7 @@ public class NewArtifactsRssFeedProcessor
         List<ArtifactMetadata> artifacts;
         try
         {
-            artifacts = metadataRepository.getArtifactsByDateRange( repoId, greaterThanThisDate.getTime(), null );
+            artifacts = metadataRepository.getArtifactsByDateRange( , repoId, greaterThanThisDate.getTime(), null );
         }
         catch ( MetadataRepositoryException e )
         {

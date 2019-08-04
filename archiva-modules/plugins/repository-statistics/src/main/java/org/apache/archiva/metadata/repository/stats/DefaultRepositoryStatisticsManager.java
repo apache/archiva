@@ -56,7 +56,7 @@ public class DefaultRepositoryStatisticsManager
     public boolean hasStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
-        return metadataRepository.hasMetadataFacet( repositoryId, DefaultRepositoryStatistics.FACET_ID );
+        return metadataRepository.hasMetadataFacet( , repositoryId, DefaultRepositoryStatistics.FACET_ID );
     }
 
     @Override
@@ -66,7 +66,7 @@ public class DefaultRepositoryStatisticsManager
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         // TODO: consider a more efficient implementation that directly gets the last one from the content repository
-        List<String> scans = metadataRepository.getMetadataFacets( repositoryId, DefaultRepositoryStatistics.FACET_ID );
+        List<String> scans = metadataRepository.getMetadataFacets( , repositoryId, DefaultRepositoryStatistics.FACET_ID );
         if ( scans == null )
         {
             return null;
@@ -76,8 +76,8 @@ public class DefaultRepositoryStatisticsManager
         {
             String name = scans.get( scans.size() - 1 );
             RepositoryStatistics repositoryStatistics =
-                RepositoryStatistics.class.cast( metadataRepository.getMetadataFacet( repositoryId, RepositoryStatistics.FACET_ID,
-                                                                            name ));
+                RepositoryStatistics.class.cast( metadataRepository.getMetadataFacet( , repositoryId,
+                    RepositoryStatistics.FACET_ID, name ));
             stopWatch.stop();
             log.debug( "time to find last RepositoryStatistics: {} ms", stopWatch.getTime() );
             return repositoryStatistics;
@@ -111,24 +111,24 @@ public class DefaultRepositoryStatisticsManager
 
         if ( metadataRepository instanceof RepositoryStatisticsProvider)
         {
-            ((RepositoryStatisticsProvider)metadataRepository).populateStatistics( metadataRepository,
-                repositoryId, repositoryStatistics);
+            ((RepositoryStatisticsProvider)metadataRepository).populateStatistics( ,
+                metadataRepository, repositoryId, repositoryStatistics );
         }
         else
         {
-            walkingProvider.populateStatistics( metadataRepository, repositoryId, repositoryStatistics );
+            walkingProvider.populateStatistics( , metadataRepository, repositoryId, repositoryStatistics );
         }
 
         log.info( "Gathering statistics executed in {} ms",  ( System.currentTimeMillis() - startGather ) );
 
-        metadataRepository.addMetadataFacet( repositoryId, repositoryStatistics );
+        metadataRepository.addMetadataFacet( , repositoryId, repositoryStatistics );
     }
 
     @Override
     public void deleteStatistics( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
-        metadataRepository.removeMetadataFacets( repositoryId, DefaultRepositoryStatistics.FACET_ID );
+        metadataRepository.removeMetadataFacets( , repositoryId, DefaultRepositoryStatistics.FACET_ID );
     }
 
     @Override
@@ -137,7 +137,7 @@ public class DefaultRepositoryStatisticsManager
         throws MetadataRepositoryException
     {
         List<RepositoryStatistics> results = new ArrayList<>();
-        List<String> list = metadataRepository.getMetadataFacets( repositoryId, DefaultRepositoryStatistics.FACET_ID );
+        List<String> list = metadataRepository.getMetadataFacets( , repositoryId, DefaultRepositoryStatistics.FACET_ID );
         Collections.sort( list, Collections.reverseOrder() );
         for ( String name : list )
         {
@@ -148,9 +148,9 @@ public class DefaultRepositoryStatisticsManager
                     endTime ) ) )
                 {
                     RepositoryStatistics stats =
-                        (RepositoryStatistics) metadataRepository.getMetadataFacet( repositoryId,
-                                                                                    DefaultRepositoryStatistics.FACET_ID,
-                                                                                    name );
+                        (RepositoryStatistics) metadataRepository.getMetadataFacet( ,
+                            repositoryId,
+                            DefaultRepositoryStatistics.FACET_ID, name );
                     results.add( stats );
                 }
             }

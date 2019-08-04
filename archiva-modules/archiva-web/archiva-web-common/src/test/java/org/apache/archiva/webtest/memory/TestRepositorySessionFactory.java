@@ -19,6 +19,7 @@ package org.apache.archiva.webtest.memory;
  * under the License.
  */
 
+import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
@@ -47,7 +48,7 @@ public class TestRepositorySessionFactory
     }
 
     @Override
-    public RepositorySession createSession()
+    public RepositorySession createSession() throws MetadataRepositoryException
     {
         return repositorySession != null ? repositorySession : new RepositorySession( new TestMetadataRepository(),
                                                                                       new TestMetadataResolver() );

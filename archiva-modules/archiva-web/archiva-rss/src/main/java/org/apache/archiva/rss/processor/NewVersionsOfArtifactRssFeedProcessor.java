@@ -84,10 +84,10 @@ public class NewVersionsOfArtifactRssFeedProcessor
         {
             for ( String repoId : metadataRepository.getRepositories() )
             {
-                Collection<String> versions = metadataRepository.getProjectVersions( repoId, groupId, artifactId );
+                Collection<String> versions = metadataRepository.getProjectVersions( , repoId, groupId, artifactId );
                 for ( String version : versions )
                 {
-                    artifacts.addAll( metadataRepository.getArtifacts( repoId, groupId, artifactId, version ) );
+                    artifacts.addAll( metadataRepository.getArtifacts( , repoId, groupId, artifactId, version ) );
                 }
             }
         }

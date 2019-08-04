@@ -24,6 +24,7 @@ import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.RepositorySession;
 
 import java.util.Collection;
 
@@ -43,19 +44,21 @@ public class RepositoryWalkingStatisticsProvider implements RepositoryStatistics
     /**
      * Walks each namespace of the given repository id and counts the artifacts.
      *
+     *
+     * @param repositorySession
      * @param metadataRepository The repository implementation
      * @param repositoryId The repository Id
      * @param repositoryStatistics The statistics object that must be populated
      * @throws MetadataRepositoryException Throws the repository exception, if an error occurs while accessing the repository.
      */
     @Override
-    public void populateStatistics( MetadataRepository metadataRepository, String repositoryId,
-                                                       RepositoryStatistics repositoryStatistics )
+    public void populateStatistics( RepositorySession repositorySession, MetadataRepository metadataRepository, String repositoryId,
+                                    RepositoryStatistics repositoryStatistics )
         throws MetadataRepositoryException
     {
         try
         {
-            for ( String ns : metadataRepository.getRootNamespaces( repositoryId ) )
+            for ( String ns : metadataRepository.getRootNamespaces( , repositoryId ) )
             {
                 walkRepository( metadataRepository, repositoryStatistics, repositoryId, ns );
             }
@@ -70,12 +73,12 @@ public class RepositoryWalkingStatisticsProvider implements RepositoryStatistics
                                  String ns )
         throws MetadataResolutionException
     {
-        for ( String namespace : metadataRepository.getNamespaces( repositoryId, ns ) )
+        for ( String namespace : metadataRepository.getNamespaces( , repositoryId, ns ) )
         {
             walkRepository( metadataRepository, stats, repositoryId, ns + "." + namespace );
         }
 
-        Collection<String> projects = metadataRepository.getProjects( repositoryId, ns );
+        Collection<String> projects = metadataRepository.getProjects( , repositoryId, ns );
         if ( !projects.isEmpty() )
         {
             stats.setTotalGroupCount( stats.getTotalGroupCount() + 1 );
@@ -83,10 +86,10 @@ public class RepositoryWalkingStatisticsProvider implements RepositoryStatistics
 
             for ( String project : projects )
             {
-                for ( String version : metadataRepository.getProjectVersions( repositoryId, ns, project ) )
+                for ( String version : metadataRepository.getProjectVersions( , repositoryId, ns, project ) )
                 {
-                    for ( ArtifactMetadata artifact : metadataRepository.getArtifacts( repositoryId, ns, project,
-                        version ) )
+                    for ( ArtifactMetadata artifact : metadataRepository.getArtifacts( , repositoryId, ns,
+                        project, version ) )
                     {
                         stats.setTotalArtifactCount( stats.getTotalArtifactCount() + 1 );
                         stats.setTotalArtifactFileSize( stats.getTotalArtifactFileSize() + artifact.getSize() );

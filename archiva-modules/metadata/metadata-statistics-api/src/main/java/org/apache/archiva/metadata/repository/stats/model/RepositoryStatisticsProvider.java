@@ -21,6 +21,7 @@ package org.apache.archiva.metadata.repository.stats.model;
 
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
 
 /**
  *
@@ -37,11 +38,13 @@ public interface RepositoryStatisticsProvider
     /**
      * Populate the statistics object with the statistics data of this repository.
      *
+     *
+     * @param repositorySession
      * @param repository The current metadata repository implementation
      * @param repositoryId The repository Id
      * @param statistics The statistics object that should be filled.
      * @throws MetadataRepositoryException Is thrown, if an error occurs while accessing the repository
      */
-    void populateStatistics( MetadataRepository repository, String repositoryId, RepositoryStatistics statistics)
+    void populateStatistics( RepositorySession repositorySession, MetadataRepository repository, String repositoryId, RepositoryStatistics statistics )
         throws MetadataRepositoryException;
 }

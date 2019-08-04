@@ -59,7 +59,15 @@ public class MetadataAuditListener
         if ( event.getAction().equals( AuditEvent.CREATE_FILE ) || event.getAction().equals( AuditEvent.UPLOAD_FILE ) ||
             event.getAction().equals( AuditEvent.MERGING_REPOSITORIES ) )
         {
-            RepositorySession repositorySession = repositorySessionFactory.createSession();
+            RepositorySession repositorySession = null;
+            try
+            {
+                repositorySession = repositorySessionFactory.createSession();
+            }
+            catch ( MetadataRepositoryException e )
+            {
+                e.printStackTrace( );
+            }
             try
             {
                 auditManager.addAuditEvent( repositorySession.getRepository(), event );
@@ -72,6 +80,10 @@ public class MetadataAuditListener
             finally
             {
                 repositorySession.close();
+            }
+            catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
+            {
+                e.printStackTrace( );
             }
         }
     }

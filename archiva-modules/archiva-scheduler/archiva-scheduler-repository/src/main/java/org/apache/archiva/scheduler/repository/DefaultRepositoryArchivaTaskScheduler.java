@@ -117,7 +117,15 @@ public class DefaultRepositoryArchivaTaskScheduler
         List<ManagedRepositoryConfiguration> repositories =
             archivaConfiguration.getConfiguration().getManagedRepositories();
 
-        RepositorySession repositorySession = repositorySessionFactory.createSession();
+        RepositorySession repositorySession = null;
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
         try
         {
             MetadataRepository metadataRepository = repositorySession.getRepository();

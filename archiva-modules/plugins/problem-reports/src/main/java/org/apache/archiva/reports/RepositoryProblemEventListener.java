@@ -49,7 +49,7 @@ public class RepositoryProblemEventListener
 
         try
         {
-            metadataRepository.removeMetadataFacet( repositoryId, RepositoryProblemFacet.FACET_ID, name );
+            metadataRepository.removeMetadataFacet( , repositoryId, RepositoryProblemFacet.FACET_ID, name );
         }
         catch ( MetadataRepositoryException e )
         {
@@ -67,7 +67,7 @@ public class RepositoryProblemEventListener
         try
         {
             MetadataRepository metadataRepository = session.getRepository();
-            metadataRepository.removeMetadataFacet( repoId, RepositoryProblemFacet.FACET_ID, name );
+            metadataRepository.removeMetadataFacet( , repoId, RepositoryProblemFacet.FACET_ID, name );
             session.markDirty();
         }
         catch ( MetadataRepositoryException e )
@@ -91,7 +91,7 @@ public class RepositoryProblemEventListener
 
         try
         {
-            session.getRepository().addMetadataFacet( repoId, problem );
+            session.getRepository().addMetadataFacet( , repoId, problem );
             session.markDirty();
         }
         catch ( MetadataRepositoryException e )

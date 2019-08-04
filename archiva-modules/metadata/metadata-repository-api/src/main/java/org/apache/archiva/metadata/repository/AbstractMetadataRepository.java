@@ -34,14 +34,14 @@ public abstract class AbstractMetadataRepository
 {
 
     @Override
-    public void updateProject( String repositoryId, ProjectMetadata project )
+    public void updateProject( RepositorySession session, String repositoryId, ProjectMetadata project )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void updateArtifact( String repositoryId, String namespace, String projectId, String projectVersion,
+    public void updateArtifact( RepositorySession session, String repositoryId, String namespace, String projectId, String projectVersion,
                                 ArtifactMetadata artifactMeta )
         throws MetadataRepositoryException
     {
@@ -49,7 +49,7 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public void updateProjectVersion( String repositoryId, String namespace, String projectId,
+    public void updateProjectVersion( RepositorySession session, String repositoryId, String namespace, String projectId,
                                       ProjectVersionMetadata versionMetadata )
         throws MetadataRepositoryException
     {
@@ -57,110 +57,103 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public void updateNamespace( String repositoryId, String namespace )
+    public void updateNamespace( RepositorySession session, String repositoryId, String namespace )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<String> getMetadataFacets( String repositoryId, String facetId )
+    public List<String> getMetadataFacets( RepositorySession session, String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean hasMetadataFacet( String repositoryId, String facetId )
+    public boolean hasMetadataFacet( RepositorySession session, String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
         return false;
     }
 
     @Override
-    public MetadataFacet getMetadataFacet( String repositoryId, String facetId, String name )
+    public MetadataFacet getMetadataFacet( RepositorySession session, String repositoryId, String facetId, String name )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void addMetadataFacet( String repositoryId, MetadataFacet metadataFacet )
+    public void addMetadataFacet( RepositorySession session, String repositoryId, MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
     }
 
     @Override
-    public void removeMetadataFacets( String repositoryId, String facetId )
+    public void removeMetadataFacets( RepositorySession session, String repositoryId, String facetId )
         throws MetadataRepositoryException
     {
     }
 
     @Override
-    public void removeMetadataFacet( String repositoryId, String facetId, String name )
-        throws MetadataRepositoryException
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<ArtifactMetadata> getArtifactsByDateRange( String repositoryId, Date startTime, Date endTime )
+    public void removeMetadataFacet( RepositorySession session, String repositoryId, String facetId, String name )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Collection<String> getRepositories()
+    public List<ArtifactMetadata> getArtifactsByDateRange( RepositorySession session, String repositoryId, Date startTime, Date endTime )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Collection<ArtifactMetadata> getArtifactsByChecksum( String repositoryId, String checksum )
+    public Collection<ArtifactMetadata> getArtifactsByChecksum( RepositorySession session, String repositoryId, String checksum )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( String key , String value , String repositoryId  )
+    public List<ArtifactMetadata> getArtifactsByProjectVersionMetadata( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByMetadata( String key , String value , String repositoryId  )
+    public List<ArtifactMetadata> getArtifactsByMetadata( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<ArtifactMetadata> getArtifactsByProperty( String key, String value, String repositoryId )
+    public List<ArtifactMetadata> getArtifactsByProperty( RepositorySession session, String key, String value, String repositoryId )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void removeArtifact( String repositoryId, String namespace, String project, String version, String id )
+    public void removeArtifact( RepositorySession session, String repositoryId, String namespace, String project, String version, String id )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void removeArtifact( ArtifactMetadata artifactMetadata, String baseVersion )
+    public void removeArtifact( RepositorySession session, ArtifactMetadata artifactMetadata, String baseVersion )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void removeArtifact( String repositoryId, String namespace, String project, String version,
+    public void removeArtifact( RepositorySession session, String repositoryId, String namespace, String project, String version,
                                 MetadataFacet metadataFacet )
         throws MetadataRepositoryException
     {
@@ -168,35 +161,35 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public void removeRepository( String repositoryId )
+    public void removeRepository( RepositorySession session, String repositoryId )
         throws MetadataRepositoryException
     {
     }
 
     @Override
-    public void removeNamespace( String repositoryId, String namespace )
-        throws MetadataRepositoryException
-    {
-        throw new UnsupportedOperationException();
-
-    }
-
-    @Override
-    public List<ArtifactMetadata> getArtifacts( String repositoryId )
+    public void removeNamespace( RepositorySession session, String repositoryId, String namespace )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
+
     }
 
     @Override
-    public ProjectMetadata getProject( String repoId, String namespace, String projectId )
+    public List<ArtifactMetadata> getArtifacts( RepositorySession session, String repositoryId )
+        throws MetadataRepositoryException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ProjectMetadata getProject( RepositorySession session, String repoId, String namespace, String projectId )
         throws MetadataResolutionException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ProjectVersionMetadata getProjectVersion( String repoId, String namespace, String projectId,
+    public ProjectVersionMetadata getProjectVersion( RepositorySession session, String repoId, String namespace, String projectId,
                                                      String projectVersion )
         throws MetadataResolutionException
     {
@@ -204,7 +197,7 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public Collection<String> getArtifactVersions( String repoId, String namespace, String projectId,
+    public Collection<String> getArtifactVersions( RepositorySession session, String repoId, String namespace, String projectId,
                                                    String projectVersion )
         throws MetadataResolutionException
     {
@@ -212,7 +205,7 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public Collection<ProjectVersionReference> getProjectReferences( String repoId, String namespace, String projectId,
+    public Collection<ProjectVersionReference> getProjectReferences( RepositorySession session, String repoId, String namespace, String projectId,
                                                                      String projectVersion )
         throws MetadataResolutionException
     {
@@ -220,42 +213,42 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public Collection<String> getRootNamespaces( String repoId )
+    public Collection<String> getRootNamespaces( RepositorySession session, String repoId )
         throws MetadataResolutionException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Collection<String> getNamespaces( String repoId, String namespace )
+    public Collection<String> getNamespaces( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Collection<String> getProjects( String repoId, String namespace )
+    public Collection<String> getProjects( RepositorySession session, String repoId, String namespace )
         throws MetadataResolutionException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Collection<String> getProjectVersions( String repoId, String namespace, String projectId )
+    public Collection<String> getProjectVersions( RepositorySession session, String repoId, String namespace, String projectId )
         throws MetadataResolutionException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void removeProjectVersion( String repoId, String namespace, String projectId, String projectVersion )
+    public void removeProjectVersion( RepositorySession session, String repoId, String namespace, String projectId, String projectVersion )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Collection<ArtifactMetadata> getArtifacts( String repoId, String namespace, String projectId,
+    public Collection<ArtifactMetadata> getArtifacts( RepositorySession session, String repoId, String namespace, String projectId,
                                                       String projectVersion )
         throws MetadataResolutionException
     {
@@ -263,25 +256,16 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public void removeProject( String repositoryId, String namespace, String projectId )
+    public void removeProject( RepositorySession session, String repositoryId, String namespace, String projectId )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void save()
-    {
-    }
 
     @Override
     public void close()
         throws MetadataRepositoryException
-    {
-    }
-
-    @Override
-    public void revert()
     {
     }
 
@@ -292,21 +276,21 @@ public abstract class AbstractMetadataRepository
     }
 
     @Override
-    public <T> T obtainAccess( Class<T> aClass )
+    public <T> T obtainAccess( RepositorySession session, Class<T> aClass )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<ArtifactMetadata> searchArtifacts( String text, String repositoryId, boolean exact )
+    public List<ArtifactMetadata> searchArtifacts( RepositorySession session, String repositoryId, String text, boolean exact )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<ArtifactMetadata> searchArtifacts( String key, String text, String repositoryId, boolean exact )
+    public List<ArtifactMetadata> searchArtifacts( RepositorySession session, String repositoryId, String key, String text, boolean exact )
         throws MetadataRepositoryException
     {
         throw new UnsupportedOperationException();

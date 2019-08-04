@@ -129,7 +129,14 @@ public class DuplicateArtifactsConsumer
     {
         repoId = repo.getId();
         this.repositoryDir = Paths.get( repo.getLocation() );
-        repositorySession = repositorySessionFactory.createSession();
+        try
+        {
+            repositorySession = repositorySessionFactory.createSession();
+        }
+        catch ( MetadataRepositoryException e )
+        {
+            e.printStackTrace( );
+        }
     }
 
     @Override
@@ -165,7 +172,7 @@ public class DuplicateArtifactsConsumer
         Collection<ArtifactMetadata> results;
         try
         {
-            results = metadataRepository.getArtifactsByChecksum( repoId, checksumSha1 );
+            results = metadataRepository.getArtifactsByChecksum( , repoId, checksumSha1 );
         }
         catch ( MetadataRepositoryException e )
         {
@@ -217,7 +224,7 @@ public class DuplicateArtifactsConsumer
 
                 try
                 {
-                    metadataRepository.addMetadataFacet( repoId, problem );
+                    metadataRepository.addMetadataFacet( , repoId, problem );
                 }
                 catch ( MetadataRepositoryException e )
                 {
