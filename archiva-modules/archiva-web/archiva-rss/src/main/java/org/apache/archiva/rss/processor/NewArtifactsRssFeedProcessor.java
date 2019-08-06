@@ -24,6 +24,8 @@ import com.sun.syndication.io.FeedException;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.rss.RssFeedEntry;
 import org.apache.archiva.rss.RssFeedGenerator;
 import org.slf4j.Logger;
@@ -60,6 +62,10 @@ public class NewArtifactsRssFeedProcessor
     @Inject
     private RssFeedGenerator generator;
 
+    @Inject
+    private RepositorySessionFactory repositorySessionFactory;
+
+
     private Logger log = LoggerFactory.getLogger( NewArtifactsRssFeedProcessor.class );
 
     private static final TimeZone GMT_TIME_ZONE = TimeZone.getTimeZone( "GMT" );
@@ -91,9 +97,9 @@ public class NewArtifactsRssFeedProcessor
         greaterThanThisDate.clear( Calendar.MILLISECOND );
 
         List<ArtifactMetadata> artifacts;
-        try
+        try(RepositorySession session = repositorySessionFactory.createSession())
         {
-            artifacts = metadataRepository.getArtifactsByDateRange( , repoId, greaterThanThisDate.getTime(), null );
+            artifacts = metadataRepository.getArtifactsByDateRange(session , repoId, greaterThanThisDate.getTime(), null );
         }
         catch ( MetadataRepositoryException e )
         {

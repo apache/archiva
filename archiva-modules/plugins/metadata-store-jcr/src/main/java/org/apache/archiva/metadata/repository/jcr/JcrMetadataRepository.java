@@ -1458,7 +1458,7 @@ public class JcrMetadataRepository
     public List<ArtifactMetadata> searchArtifacts( RepositorySession session, String repositoryId, String text, boolean exact )
         throws MetadataRepositoryException
     {
-        return searchArtifacts( null, repositoryId, text, exact );
+        return searchArtifacts( session, repositoryId, null, text, exact );
     }
 
     @Override

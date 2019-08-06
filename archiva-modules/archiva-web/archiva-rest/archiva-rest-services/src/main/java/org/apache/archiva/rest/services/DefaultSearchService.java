@@ -234,7 +234,7 @@ public class DefaultSearchService
             for ( String repoId : checksumSearch.getRepositories() )
             {
                 Collection<ArtifactMetadata> artifactMetadatas =
-                    metadataRepository.getArtifactsByChecksum( , repoId, checksumSearch.getChecksum() );
+                    metadataRepository.getArtifactsByChecksum( repositorySession, repoId, checksumSearch.getChecksum() );
                 artifactSet.addAll( buildArtifacts( artifactMetadatas, repoId ) );
             }
 

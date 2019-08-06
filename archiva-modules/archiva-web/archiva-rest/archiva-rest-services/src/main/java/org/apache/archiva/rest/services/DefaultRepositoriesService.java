@@ -30,11 +30,7 @@ import org.apache.archiva.maven2.model.Artifact;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.MetadataResolutionException;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.*;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.model.VersionedReference;
@@ -703,14 +699,14 @@ public class DefaultRepositoriesService
             }
 
             Collection<ArtifactMetadata> artifacts =
-                metadataRepository.getArtifacts( , repositoryId, namespace, projectId, version );
+                metadataRepository.getArtifacts(repositorySession , repositoryId, namespace, projectId, version );
 
             for ( ArtifactMetadata artifactMetadata : artifacts )
             {
-                metadataRepository.removeArtifact( , artifactMetadata, version );
+                metadataRepository.removeArtifact(repositorySession , artifactMetadata, version );
             }
 
-            metadataRepository.removeProjectVersion( , repositoryId, namespace, projectId, version );
+            metadataRepository.removeProjectVersion(repositorySession , repositoryId, namespace, projectId, version );
         }
         catch ( MetadataRepositoryException e )
         {
@@ -727,13 +723,13 @@ public class DefaultRepositoriesService
         finally
         {
 
-            repositorySession.save();
+            try {
+                repositorySession.save();
+            } catch (MetadataSessionException e) {
+                log.error("Session save failed {}", e.getMessage());
+            }
 
             repositorySession.close();
-        }
-        catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
-        {
-            e.printStackTrace( );
         }
 
         return Boolean.TRUE;
@@ -869,13 +865,13 @@ public class DefaultRepositoriesService
             {
                 String baseVersion = VersionUtil.getBaseVersion( artifact.getVersion() );
                 artifacts =
-                    metadataRepository.getArtifacts( , repositoryId, artifact.getGroupId(),
+                    metadataRepository.getArtifacts(repositorySession , repositoryId, artifact.getGroupId(),
                         artifact.getArtifactId(), baseVersion );
             }
             else
             {
                 artifacts =
-                    metadataRepository.getArtifacts( , repositoryId, artifact.getGroupId(),
+                    metadataRepository.getArtifacts(repositorySession , repositoryId, artifact.getGroupId(),
                         artifact.getArtifactId(), artifact.getVersion() );
             }
 
@@ -887,13 +883,13 @@ public class DefaultRepositoriesService
                 {
                     // verify metata repository doesn't contains anymore the version
                     Collection<String> projectVersions =
-                        metadataRepository.getProjectVersions( , repositoryId,
+                        metadataRepository.getProjectVersions(repositorySession , repositoryId,
                             artifact.getGroupId(), artifact.getArtifactId() );
 
                     if ( projectVersions.contains( artifact.getVersion() ) )
                     {
                         log.warn( "artifact not found when deleted but version still here ! so force cleanup" );
-                        metadataRepository.removeProjectVersion( , repositoryId,
+                        metadataRepository.removeProjectVersion(repositorySession , repositoryId,
                             artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );
                     }
 
@@ -924,9 +920,9 @@ public class DefaultRepositoriesService
                                 artifact.getVersion();
                             MavenArtifactFacet mavenArtifactFacetToCompare = new MavenArtifactFacet();
                             mavenArtifactFacetToCompare.setClassifier( artifact.getClassifier() );
-                            metadataRepository.removeArtifact( , repositoryId, groupId, artifactId,
+                            metadataRepository.removeArtifact(repositorySession , repositoryId, groupId, artifactId,
                                 version, mavenArtifactFacetToCompare );
-                            metadataRepository.save();
+                            repositorySession.save();
                         }
 
                     }
@@ -934,12 +930,12 @@ public class DefaultRepositoriesService
                     {
                         if ( snapshotVersion )
                         {
-                            metadataRepository.removeArtifact( ,
+                            metadataRepository.removeArtifact(repositorySession ,
                                 artifactMetadata, VersionUtil.getBaseVersion( artifact.getVersion() ) );
                         }
                         else
                         {
-                            metadataRepository.removeArtifact( ,
+                            metadataRepository.removeArtifact(repositorySession ,
                                 artifactMetadata.getRepositoryId(),
                                 artifactMetadata.getNamespace(), artifactMetadata.getProject(),
                                 artifact.getVersion(), artifactMetadata.getId() );
@@ -970,7 +966,7 @@ public class DefaultRepositoriesService
         {
             throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
         }
-        catch ( MetadataResolutionException e )
+        catch (MetadataResolutionException | MetadataSessionException e )
         {
             throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
         }
@@ -981,13 +977,13 @@ public class DefaultRepositoriesService
         finally
         {
 
-            repositorySession.save();
+            try {
+                repositorySession.save();
+            } catch (MetadataSessionException e) {
+                log.error("Could not save sesion {}", e.getMessage());
+            }
 
             repositorySession.close();
-        }
-        catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
-        {
-            e.printStackTrace( );
         }
         return Boolean.TRUE;
     }
@@ -1029,16 +1025,16 @@ public class DefaultRepositoriesService
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
-            metadataRepository.removeNamespace( , repositoryId, groupId );
+            metadataRepository.removeNamespace(repositorySession , repositoryId, groupId );
 
             // just invalidate cache entry
             String cacheKey = repositoryId + "-" + groupId;
             namespacesCache.remove( cacheKey );
             namespacesCache.remove( repositoryId );
 
-            metadataRepository.save();
+            repositorySession.save();
         }
-        catch ( MetadataRepositoryException e )
+        catch (MetadataRepositoryException | MetadataSessionException e )
         {
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );
@@ -1111,11 +1107,11 @@ public class DefaultRepositoriesService
 
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
-            metadataRepository.removeProject( , repositoryId, groupId, projectId );
+            metadataRepository.removeProject(repositorySession , repositoryId, groupId, projectId );
 
-            metadataRepository.save();
+            repositorySession.save();
         }
-        catch ( MetadataRepositoryException e )
+        catch (MetadataRepositoryException | MetadataSessionException e )
         {
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( "Repository exception: " + e.getMessage(), 500, e );

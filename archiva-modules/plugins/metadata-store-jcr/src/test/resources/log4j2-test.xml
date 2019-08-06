@@ -30,6 +30,7 @@
   </appenders>
   <loggers>
     <logger name="org.apache.jackrabbit" level="info"/>
+    <logger name="org.apache.jackrabbit.oak" level="debug"/>
     <root level="info" includeLocation="true">
       <appender-ref ref="console"/>
     </root>

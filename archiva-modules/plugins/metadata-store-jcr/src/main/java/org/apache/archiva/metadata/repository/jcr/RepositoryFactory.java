@@ -21,12 +21,10 @@ package org.apache.archiva.metadata.repository.jcr;
 
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.oak.Oak;
 import org.apache.jackrabbit.oak.api.Type;
 import org.apache.jackrabbit.oak.jcr.Jcr;
 import org.apache.jackrabbit.oak.plugins.index.IndexUtils;
-import org.apache.jackrabbit.oak.plugins.index.lucene.ExtractedTextCache;
 import org.apache.jackrabbit.oak.plugins.index.lucene.IndexCopier;
 import org.apache.jackrabbit.oak.plugins.index.lucene.IndexTracker;
 import org.apache.jackrabbit.oak.plugins.index.lucene.LuceneIndexEditorProvider;
@@ -35,6 +33,8 @@ import org.apache.jackrabbit.oak.plugins.index.lucene.hybrid.DocumentQueue;
 import org.apache.jackrabbit.oak.plugins.index.lucene.hybrid.LocalIndexObserver;
 import org.apache.jackrabbit.oak.plugins.index.lucene.hybrid.NRTIndexFactory;
 import org.apache.jackrabbit.oak.plugins.index.lucene.reader.DefaultIndexReaderFactory;
+import org.apache.jackrabbit.oak.plugins.index.search.ExtractedTextCache;
+import org.apache.jackrabbit.oak.plugins.name.Namespaces;
 import org.apache.jackrabbit.oak.segment.SegmentNodeStoreBuilders;
 import org.apache.jackrabbit.oak.segment.file.FileStore;
 import org.apache.jackrabbit.oak.segment.file.FileStoreBuilder;
@@ -43,6 +43,7 @@ import org.apache.jackrabbit.oak.spi.commit.Observer;
 import org.apache.jackrabbit.oak.spi.lifecycle.RepositoryInitializer;
 import org.apache.jackrabbit.oak.spi.mount.MountInfoProvider;
 import org.apache.jackrabbit.oak.spi.mount.Mounts;
+import org.apache.jackrabbit.oak.spi.namespace.NamespaceConstants;
 import org.apache.jackrabbit.oak.spi.query.QueryIndexProvider;
 import org.apache.jackrabbit.oak.spi.state.NodeBuilder;
 import org.apache.jackrabbit.oak.spi.state.NodeStore;
@@ -61,6 +62,9 @@ import java.util.concurrent.Executors;
 
 import static org.apache.archiva.metadata.repository.jcr.RepositoryFactory.StoreType.IN_MEMORY_TYPE;
 import static org.apache.archiva.metadata.repository.jcr.RepositoryFactory.StoreType.SEGMENT_FILE_TYPE;
+import static org.apache.jackrabbit.JcrConstants.JCR_PRIMARYTYPE;
+import static org.apache.jackrabbit.JcrConstants.NT_UNSTRUCTURED;
+import static org.apache.jackrabbit.oak.api.Type.NAME;
 import static org.apache.jackrabbit.oak.plugins.index.lucene.LuceneIndexConstants.INCLUDE_PROPERTY_TYPES;
 
 /**
@@ -117,10 +121,18 @@ public class RepositoryFactory
             @Override
             public void initialize( @Nonnull NodeBuilder root )
             {
-                log.info( "Creating index " );
+                NodeBuilder namespaces;
+                if (!root.hasChildNode(NamespaceConstants.REP_NAMESPACES)) {
+                    namespaces = Namespaces.createStandardMappings(root);
+                    Namespaces.buildIndexNode(namespaces); // index node for faster lookup
+                } else {
+                    namespaces = root.getChildNode(NamespaceConstants.REP_NAMESPACES);
+                }
+                Namespaces.addCustomMapping(namespaces, "http://archiva.apache.org/jcr/", "archiva");
 
+                log.info( "Creating index " );
                 NodeBuilder lucene = IndexUtils.getOrCreateOakIndex( root ).child( "lucene" );
-                lucene.setProperty( JcrConstants.JCR_PRIMARYTYPE, "oak:QueryIndexDefinition", Type.NAME );
+                lucene.setProperty( JCR_PRIMARYTYPE, "oak:QueryIndexDefinition", NAME );
 
                 lucene.setProperty( "compatVersion", 2 );
                 lucene.setProperty( "type", "lucene" );
@@ -129,68 +141,74 @@ public class RepositoryFactory
                 // lucene.setProperty("refresh",true);
                 lucene.setProperty( "async", ImmutableSet.of( "async", "sync" ), Type.STRINGS );
                 NodeBuilder rules = lucene.child( "indexRules" ).
-                    setProperty( JcrConstants.JCR_PRIMARYTYPE, JcrConstants.NT_UNSTRUCTURED, Type.NAME );
+                    setProperty( JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME );
                 rules.setProperty( ":childOrder", ImmutableSet.of( "archiva:projectVersion", //
                                                                    "archiva:artifact", //
                                                                    "archiva:facet", //
                                                                    "archiva:namespace", //
                                                                    "archiva:project" ), //
                                    Type.STRINGS );
-                NodeBuilder allProps = rules.child( "archiva:projectVersion" ) //
+                NodeBuilder allProps = rules.child( "archiva:projectVersion" )
+                        .setProperty(JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME)//
                     .child( "properties" ) //
-                    .setProperty( JcrConstants.JCR_PRIMARYTYPE, "nt:unstructured", Type.NAME ) //
+                    .setProperty( JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME ) //
                     .setProperty( ":childOrder", ImmutableSet.of( "allProps" ), Type.STRINGS ) //
                     .setProperty( "indexNodeName", true ) //
                     .child( "allProps" ) //
-                    .setProperty( JcrConstants.JCR_PRIMARYTYPE, JcrConstants.NT_UNSTRUCTURED, Type.NAME );
+                    .setProperty( JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME );
                 allProps.setProperty( "name", ".*" );
                 allProps.setProperty( "isRegexp", true );
                 allProps.setProperty( "nodeScopeIndex", true );
                 allProps.setProperty( "index", true );
                 allProps.setProperty( "analyzed", true );
                 // allProps.setProperty("propertyIndex",true);
-                allProps = rules.child( "archiva:artifact" ) //
-                    .child( "properties" ) //
-                    .setProperty( JcrConstants.JCR_PRIMARYTYPE, "nt:unstructured", Type.NAME ) //
-                    .setProperty( ":childOrder", ImmutableSet.of( "allProps" ), Type.STRINGS ) //
-                    .setProperty( "indexNodeName", true ).child( "allProps" ) //
-                    .setProperty( JcrConstants.JCR_PRIMARYTYPE, JcrConstants.NT_UNSTRUCTURED, Type.NAME );
+                allProps = rules.child("archiva:artifact") //
+                        .setProperty(JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME)
+                        .child("properties") //
+                        .setProperty(JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME) //
+                        .setProperty(":childOrder", ImmutableSet.of("allProps"), Type.STRINGS) //
+                        .setProperty("indexNodeName", true)
+                        .child("allProps")
+                            .setProperty(JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME);
                 allProps.setProperty( "name", ".*" );
                 allProps.setProperty( "isRegexp", true );
                 allProps.setProperty( "nodeScopeIndex", true );
                 allProps.setProperty( "index", true );
                 allProps.setProperty( "analyzed", true );
                 allProps = rules.child( "archiva:facet" ) //
+                        .setProperty(JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME)
                     .child( "properties" ) //
-                    .setProperty( JcrConstants.JCR_PRIMARYTYPE, "nt:unstructured", Type.NAME ) //
+                    .setProperty( JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME ) //
                     .setProperty( ":childOrder", ImmutableSet.of( "allProps" ), Type.STRINGS ) //
                     .setProperty( "indexNodeName", true ) //
                     .child( "allProps" ) //
-                    .setProperty( JcrConstants.JCR_PRIMARYTYPE, JcrConstants.NT_UNSTRUCTURED, Type.NAME );
+                    .setProperty( JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME );
                 allProps.setProperty( "name", ".*" );
                 allProps.setProperty( "isRegexp", true );
                 allProps.setProperty( "nodeScopeIndex", true );
                 allProps.setProperty( "index", true );
                 allProps.setProperty( "analyzed", true );
                 allProps = rules.child( "archiva:namespace" ) //
+                        .setProperty(JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME)
                     .child( "properties" ) //
-                    .setProperty( JcrConstants.JCR_PRIMARYTYPE, "nt:unstructured", Type.NAME ) //
+                    .setProperty( JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME ) //
                     .setProperty( ":childOrder", ImmutableSet.of( "allProps" ), Type.STRINGS ) //
                     .setProperty( "indexNodeName", true ) //
                     .child( "allProps" ) //
-                    .setProperty( JcrConstants.JCR_PRIMARYTYPE, JcrConstants.NT_UNSTRUCTURED, Type.NAME );
+                    .setProperty( JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME );
                 allProps.setProperty( "name", ".*" );
                 allProps.setProperty( "isRegexp", true );
                 allProps.setProperty( "nodeScopeIndex", true );
                 allProps.setProperty( "index", true );
                 allProps.setProperty( "analyzed", true );
                 allProps = rules.child( "archiva:project" ) //
+                        .setProperty(JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME)
                     .child( "properties" ) //
-                    .setProperty( JcrConstants.JCR_PRIMARYTYPE, "nt:unstructured", Type.NAME ) //
+                    .setProperty( JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME ) //
                     .setProperty( ":childOrder", ImmutableSet.of( "allProps" ), Type.STRINGS ) //
                     .setProperty( "indexNodeName", true ) //
                     .child( "allProps" ) //
-                    .setProperty( JcrConstants.JCR_PRIMARYTYPE, JcrConstants.NT_UNSTRUCTURED, Type.NAME );
+                    .setProperty( JCR_PRIMARYTYPE, NT_UNSTRUCTURED, NAME );
                 allProps.setProperty( "name", ".*" );
                 allProps.setProperty( "isRegexp", true );
                 allProps.setProperty( "nodeScopeIndex", true );

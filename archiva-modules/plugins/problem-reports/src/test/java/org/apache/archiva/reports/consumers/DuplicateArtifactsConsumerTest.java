@@ -85,6 +85,7 @@ public class DuplicateArtifactsConsumerTest
     @Inject
     ApplicationContext applicationContext;
 
+    RepositorySessionFactory repositorySessionFactory;
 
     @Before
     @Override
@@ -99,6 +100,7 @@ public class DuplicateArtifactsConsumerTest
         config.setLocation( Paths.get( "target/test-repository" ).toAbsolutePath().toUri() );
 
         metadataRepository = mock( MetadataRepository.class );
+        repositorySessionFactory = mock(RepositorySessionFactory.class);
 
         RepositorySession session = mock( RepositorySession.class );
         when( session.getRepository() ).thenReturn( metadataRepository );
@@ -114,14 +116,15 @@ public class DuplicateArtifactsConsumerTest
     public void testConsumerArtifactNotDuplicated()
         throws Exception
     {
-        when( metadataRepository.getArtifactsByChecksum( , TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
+        RepositorySession session = repositorySessionFactory.createSession();
+        when( metadataRepository.getArtifactsByChecksum(session , TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
             Arrays.asList( TEST_METADATA ) );
 
         consumer.beginScan( config, new Date() );
         consumer.processFile( TEST_FILE );
         consumer.completeScan();
 
-        verify( metadataRepository, never() ).addMetadataFacet( , eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
+        verify( metadataRepository, never() ).addMetadataFacet(session , eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
     }
 
     // TODO: Doesn't currently work
@@ -142,7 +145,8 @@ public class DuplicateArtifactsConsumerTest
     public void testConsumerArtifactDuplicated()
         throws Exception
     {
-        when( metadataRepository.getArtifactsByChecksum( , TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
+        RepositorySession session = repositorySessionFactory.createSession();
+        when( metadataRepository.getArtifactsByChecksum(session , TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
             Arrays.asList( TEST_METADATA, createMetadata( "1.0" ) ) );
 
         consumer.beginScan( config, new Date() );
@@ -150,7 +154,7 @@ public class DuplicateArtifactsConsumerTest
         consumer.completeScan();
 
         ArgumentCaptor<RepositoryProblemFacet> argument = ArgumentCaptor.forClass( RepositoryProblemFacet.class );
-        verify( metadataRepository ).addMetadataFacet( , eq( TEST_REPO ), argument.capture() );
+        verify( metadataRepository ).addMetadataFacet(session , eq( TEST_REPO ), argument.capture() );
         RepositoryProblemFacet problem = argument.getValue();
         assertProblem( problem );
     }
@@ -159,7 +163,8 @@ public class DuplicateArtifactsConsumerTest
     public void testConsumerArtifactDuplicatedButSelfNotInMetadataRepository()
         throws Exception
     {
-        when( metadataRepository.getArtifactsByChecksum( , TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
+        RepositorySession session = repositorySessionFactory.createSession();
+        when( metadataRepository.getArtifactsByChecksum(session , TEST_REPO, TEST_CHECKSUM ) ).thenReturn(
             Arrays.asList( createMetadata( "1.0" ) ) );
 
         consumer.beginScan( config, new Date() );
@@ -167,7 +172,7 @@ public class DuplicateArtifactsConsumerTest
         consumer.completeScan();
 
         ArgumentCaptor<RepositoryProblemFacet> argument = ArgumentCaptor.forClass( RepositoryProblemFacet.class );
-        verify( metadataRepository ).addMetadataFacet( , eq( TEST_REPO ), argument.capture() );
+        verify( metadataRepository ).addMetadataFacet(session , eq( TEST_REPO ), argument.capture() );
         RepositoryProblemFacet problem = argument.getValue();
         assertProblem( problem );
     }
@@ -190,8 +195,8 @@ public class DuplicateArtifactsConsumerTest
         {
             consumer.completeScan();
         }
-
-        verify( metadataRepository, never() ).addMetadataFacet( , eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
+        RepositorySession session = repositorySessionFactory.createSession();
+        verify( metadataRepository, never() ).addMetadataFacet(session , eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
     }
 
     @Test
@@ -202,15 +207,16 @@ public class DuplicateArtifactsConsumerTest
         // No exception unnecessarily for something we can't report on
         consumer.processFile( "com/example/invalid-artifact.txt" );
         consumer.completeScan();
-
-        verify( metadataRepository, never() ).addMetadataFacet( , eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
+        RepositorySession session = repositorySessionFactory.createSession();
+        verify( metadataRepository, never() ).addMetadataFacet(session , eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
     }
 
     @Test
     public void testConsumerArtifactNotAnArtifactPathResults()
         throws Exception
     {
-        when( metadataRepository.getArtifactsByChecksum( , eq( TEST_REPO ), anyString() ) ).thenReturn(
+        RepositorySession session = repositorySessionFactory.createSession();
+        when( metadataRepository.getArtifactsByChecksum(session , eq( TEST_REPO ), anyString() ) ).thenReturn(
             Arrays.asList( TEST_METADATA, createMetadata( "1.0" ) ) );
 
         // override, this feels a little overspecified though
@@ -222,7 +228,7 @@ public class DuplicateArtifactsConsumerTest
         consumer.processFile( "com/example/invalid-artifact.txt" );
         consumer.completeScan();
 
-        verify( metadataRepository, never() ).addMetadataFacet( , eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
+        verify( metadataRepository, never() ).addMetadataFacet(session , eq( TEST_REPO ), Matchers.<MetadataFacet>anyObject() );
     }
 
     private static void assertProblem( RepositoryProblemFacet problem )

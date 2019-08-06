@@ -22,9 +22,9 @@ package org.apache.archiva.rss.processor;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.MetadataResolutionException;
+import org.apache.archiva.metadata.repository.*;
+import org.apache.archiva.repository.Repository;
+import org.apache.archiva.repository.RepositoryRegistry;
 import org.apache.archiva.rss.RssFeedEntry;
 import org.apache.archiva.rss.RssFeedGenerator;
 import org.slf4j.Logger;
@@ -57,6 +57,12 @@ public class NewVersionsOfArtifactRssFeedProcessor
     @Inject
     private RssFeedGenerator generator;
 
+    @Inject
+    private RepositoryRegistry repositoryRegistry;
+
+    @Inject
+    private RepositorySessionFactory repositorySessionFactory;
+
     /**
      * Process all versions of the artifact which had a rss feed request.
      */
@@ -80,14 +86,15 @@ public class NewVersionsOfArtifactRssFeedProcessor
         throws FeedException
     {
         List<ArtifactMetadata> artifacts = new ArrayList<>();
-        try
+        try(RepositorySession session = repositorySessionFactory.createSession())
         {
-            for ( String repoId : metadataRepository.getRepositories() )
+            for ( Repository repo : repositoryRegistry.getRepositories() )
             {
-                Collection<String> versions = metadataRepository.getProjectVersions( , repoId, groupId, artifactId );
+                final String repoId = repo.getId();
+                Collection<String> versions = metadataRepository.getProjectVersions( session, repoId, groupId, artifactId );
                 for ( String version : versions )
                 {
-                    artifacts.addAll( metadataRepository.getArtifacts( , repoId, groupId, artifactId, version ) );
+                    artifacts.addAll( metadataRepository.getArtifacts(session , repoId, groupId, artifactId, version ) );
                 }
             }
         }

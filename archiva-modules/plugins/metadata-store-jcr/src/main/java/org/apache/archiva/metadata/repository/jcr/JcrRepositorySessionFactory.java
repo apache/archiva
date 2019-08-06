@@ -20,12 +20,7 @@ package org.apache.archiva.metadata.repository.jcr;
  */
 
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
-import org.apache.archiva.metadata.repository.AbstractRepositorySessionFactory;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.MetadataResolver;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
-import org.apache.archiva.metadata.repository.RepositorySessionFactoryBean;
+import org.apache.archiva.metadata.repository.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
@@ -95,7 +90,7 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
         return this.metadataResolver;
     }
 
-    public void initialize()
+    protected void initialize()
     {
 
         // skip initialisation if not jcr
@@ -107,7 +102,9 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        metadataFacetFactories = applicationContext.getBeansOfType( MetadataFacetFactory.class );
+        if (applicationContext!=null) {
+            metadataFacetFactories = applicationContext.getBeansOfType(MetadataFacetFactory.class);
+        }
         // olamy with spring the "id" is now "metadataFacetFactory#hint"
         // whereas was only hint with plexus so let remove  metadataFacetFactory#
         Map<String, MetadataFacetFactory> cleanedMetadataFacetFactories =
@@ -115,8 +112,13 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
 
         for ( Map.Entry<String, MetadataFacetFactory> entry : metadataFacetFactories.entrySet() )
         {
-            cleanedMetadataFacetFactories.put( StringUtils.substringAfterLast( entry.getKey(), "#" ),
-                                               entry.getValue() );
+            if (entry.getKey().contains("#")) {
+                cleanedMetadataFacetFactories.put( StringUtils.substringAfterLast( entry.getKey(), "#" ),
+                        entry.getValue() );
+
+            } else {
+                cleanedMetadataFacetFactories.put(entry.getKey(), entry.getValue());
+            }
         }
 
         metadataFacetFactories = cleanedMetadataFacetFactories;
@@ -159,4 +161,17 @@ public class JcrRepositorySessionFactory extends AbstractRepositorySessionFactor
     {
         super.close();
     }
+
+    public void setMetadataResolver(MetadataResolver metadataResolver) {
+        this.metadataResolver = metadataResolver;
+    }
+
+    public JcrMetadataRepository getMetadataRepository() {
+        return jcrMetadataRepository;
+    }
+
+    public void setMetadataFacetFactories(Map<String, MetadataFacetFactory> metadataFacetFactories) {
+        this.metadataFacetFactories = metadataFacetFactories;
+    }
+
 }

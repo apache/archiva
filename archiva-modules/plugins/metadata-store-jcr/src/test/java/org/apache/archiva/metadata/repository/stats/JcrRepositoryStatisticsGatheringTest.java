@@ -22,8 +22,10 @@ package org.apache.archiva.metadata.repository.stats;
 import junit.framework.TestCase;
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
+import org.apache.archiva.metadata.repository.RepositorySession;
 import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.jcr.JcrMetadataRepository;
+import org.apache.archiva.metadata.repository.jcr.JcrRepositorySessionFactory;
 import org.apache.archiva.metadata.repository.jcr.RepositoryFactory;
 import org.apache.archiva.metadata.repository.stats.model.DefaultRepositoryStatistics;
 import org.apache.archiva.test.utils.ArchivaSpringJUnit4ClassRunner;
@@ -68,6 +70,8 @@ public class JcrRepositoryStatisticsGatheringTest
     private static final String TEST_REPO = "test-repo";
 
     JcrMetadataRepository repository;
+    JcrRepositorySessionFactory sessionFactory;
+
 
     @Inject
     private RepositorySessionFactory repositorySessionFactory;
@@ -75,7 +79,7 @@ public class JcrRepositoryStatisticsGatheringTest
     @Inject
     private ApplicationContext applicationContext;
 
-    Session session;
+    Session jcrSession;
 
     private static Repository jcrRepository;
 
@@ -108,17 +112,17 @@ public class JcrRepositoryStatisticsGatheringTest
         // TODO: probably don't need to use Spring for this
         JcrMetadataRepository jcrMetadataRepository = new JcrMetadataRepository( factories, jcrRepository );
 
-        session = jcrMetadataRepository.getJcrSession();
+        jcrSession = jcrMetadataRepository.login();
 
         try
         {
-            session = jcrMetadataRepository.getJcrSession();
+            jcrSession = jcrMetadataRepository.login();
 
             // set up namespaces, etc.
-            JcrMetadataRepository.initializeNodeTypes( session );
+            JcrMetadataRepository.initializeNodeTypes(jcrSession);
 
             // removing content is faster than deleting and re-copying the files from target/jcr
-            session.getRootNode().getNode( "repositories" ).remove();
+            jcrSession.getRootNode().getNode( "repositories" ).remove();
         }
         catch ( RepositoryException e )
         {
@@ -126,6 +130,7 @@ public class JcrRepositoryStatisticsGatheringTest
         }
 
         this.repository = jcrMetadataRepository;
+        this.sessionFactory = new JcrRepositorySessionFactory();
     }
 
     private static void registerMixinNodeType( NodeTypeManager nodeTypeManager, String type )
@@ -152,73 +157,74 @@ public class JcrRepositoryStatisticsGatheringTest
     public void testJcrStatisticsQuery()
         throws Exception
     {
-        Calendar cal = Calendar.getInstance();
-        Date endTime = cal.getTime();
-        cal.add( Calendar.HOUR, -1 );
-        Date startTime = cal.getTime();
+        try(RepositorySession repSession = sessionFactory.createSession()) {
+            Calendar cal = Calendar.getInstance();
+            Date endTime = cal.getTime();
+            cal.add(Calendar.HOUR, -1);
+            Date startTime = cal.getTime();
 
-        loadContentIntoRepo( TEST_REPO );
-        loadContentIntoRepo( "another-repo" );
+            loadContentIntoRepo(TEST_REPO);
+            loadContentIntoRepo("another-repo");
 
-        DefaultRepositoryStatistics testedStatistics = new DefaultRepositoryStatistics();
-        testedStatistics.setNewFileCount( NEW_FILE_COUNT );
-        testedStatistics.setTotalFileCount( TOTAL_FILE_COUNT );
-        testedStatistics.setScanStartTime( startTime );
-        testedStatistics.setScanEndTime( endTime );
+            DefaultRepositoryStatistics testedStatistics = new DefaultRepositoryStatistics();
+            testedStatistics.setNewFileCount(NEW_FILE_COUNT);
+            testedStatistics.setTotalFileCount(TOTAL_FILE_COUNT);
+            testedStatistics.setScanStartTime(startTime);
+            testedStatistics.setScanEndTime(endTime);
 
-        repository.populateStatistics( , repository, TEST_REPO, testedStatistics );
+            repository.populateStatistics(repSession, repository, TEST_REPO, testedStatistics);
 
-        DefaultRepositoryStatistics expectedStatistics = new DefaultRepositoryStatistics();
-        expectedStatistics.setNewFileCount( NEW_FILE_COUNT );
-        expectedStatistics.setTotalFileCount( TOTAL_FILE_COUNT );
-        expectedStatistics.setScanEndTime( endTime );
-        expectedStatistics.setScanStartTime( startTime );
-        expectedStatistics.setTotalArtifactFileSize( 95954585 );
-        expectedStatistics.setTotalArtifactCount( 269 );
-        expectedStatistics.setTotalGroupCount( 1 );
-        expectedStatistics.setTotalProjectCount( 43 );
-        expectedStatistics.setTotalCountForType( "zip", 1 );
-        expectedStatistics.setTotalCountForType( "gz", 1 ); // FIXME: should be tar.gz
-        expectedStatistics.setTotalCountForType( "java-source", 10 );
-        expectedStatistics.setTotalCountForType( "jar", 108 );
-        expectedStatistics.setTotalCountForType( "xml", 3 );
-        expectedStatistics.setTotalCountForType( "war", 2 );
-        expectedStatistics.setTotalCountForType( "pom", 144 );
-        expectedStatistics.setRepositoryId( TEST_REPO );
+            DefaultRepositoryStatistics expectedStatistics = new DefaultRepositoryStatistics();
+            expectedStatistics.setNewFileCount(NEW_FILE_COUNT);
+            expectedStatistics.setTotalFileCount(TOTAL_FILE_COUNT);
+            expectedStatistics.setScanEndTime(endTime);
+            expectedStatistics.setScanStartTime(startTime);
+            expectedStatistics.setTotalArtifactFileSize(95954585);
+            expectedStatistics.setTotalArtifactCount(269);
+            expectedStatistics.setTotalGroupCount(1);
+            expectedStatistics.setTotalProjectCount(43);
+            expectedStatistics.setTotalCountForType("zip", 1);
+            expectedStatistics.setTotalCountForType("gz", 1); // FIXME: should be tar.gz
+            expectedStatistics.setTotalCountForType("java-source", 10);
+            expectedStatistics.setTotalCountForType("jar", 108);
+            expectedStatistics.setTotalCountForType("xml", 3);
+            expectedStatistics.setTotalCountForType("war", 2);
+            expectedStatistics.setTotalCountForType("pom", 144);
+            expectedStatistics.setRepositoryId(TEST_REPO);
 
-        logger.info("getTotalCountForType: {}", testedStatistics.getTotalCountForType() );
+            logger.info("getTotalCountForType: {}", testedStatistics.getTotalCountForType());
 
-        assertEquals( NEW_FILE_COUNT, testedStatistics.getNewFileCount() );
-        assertEquals( TOTAL_FILE_COUNT, testedStatistics.getTotalFileCount() );
-        assertEquals( endTime, testedStatistics.getScanEndTime() );
-        assertEquals( startTime, testedStatistics.getScanStartTime() );
-        assertEquals( 95954585, testedStatistics.getTotalArtifactFileSize() );
-        assertEquals( 269, testedStatistics.getTotalArtifactCount() );
-        assertEquals( 1, testedStatistics.getTotalGroupCount() );
-        assertEquals( 43, testedStatistics.getTotalProjectCount() );
-        assertEquals( 1, testedStatistics.getTotalCountForType( "zip" ) );
-        assertEquals( 1, testedStatistics.getTotalCountForType( "gz" ) );
-        assertEquals( 10, testedStatistics.getTotalCountForType( "java-source" ) );
-        assertEquals( 108, testedStatistics.getTotalCountForType( "jar" ) );
-        assertEquals( 3, testedStatistics.getTotalCountForType( "xml" ) );
-        assertEquals( 2, testedStatistics.getTotalCountForType( "war" ) );
-        assertEquals( 144, testedStatistics.getTotalCountForType( "pom" ) );
-        assertEquals( 10, testedStatistics.getTotalCountForType( "java-source" ) );
+            assertEquals(NEW_FILE_COUNT, testedStatistics.getNewFileCount());
+            assertEquals(TOTAL_FILE_COUNT, testedStatistics.getTotalFileCount());
+            assertEquals(endTime, testedStatistics.getScanEndTime());
+            assertEquals(startTime, testedStatistics.getScanStartTime());
+            assertEquals(95954585, testedStatistics.getTotalArtifactFileSize());
+            assertEquals(269, testedStatistics.getTotalArtifactCount());
+            assertEquals(1, testedStatistics.getTotalGroupCount());
+            assertEquals(43, testedStatistics.getTotalProjectCount());
+            assertEquals(1, testedStatistics.getTotalCountForType("zip"));
+            assertEquals(1, testedStatistics.getTotalCountForType("gz"));
+            assertEquals(10, testedStatistics.getTotalCountForType("java-source"));
+            assertEquals(108, testedStatistics.getTotalCountForType("jar"));
+            assertEquals(3, testedStatistics.getTotalCountForType("xml"));
+            assertEquals(2, testedStatistics.getTotalCountForType("war"));
+            assertEquals(144, testedStatistics.getTotalCountForType("pom"));
+            assertEquals(10, testedStatistics.getTotalCountForType("java-source"));
 
-
+        }
     }
 
     private void loadContentIntoRepo( String repoId )
         throws RepositoryException, IOException
     {
-        Node n = JcrUtils.getOrAddNode( session.getRootNode(), "repositories" );
+        Node n = JcrUtils.getOrAddNode( jcrSession.getRootNode(), "repositories" );
         n = JcrUtils.getOrAddNode( n, repoId );
         n = JcrUtils.getOrAddNode( n, "content" );
         n = JcrUtils.getOrAddNode( n, "org" );
         n = JcrUtils.getOrAddNode( n, "apache" );
 
         GZIPInputStream inputStream = new GZIPInputStream( getClass().getResourceAsStream( "/artifacts.xml.gz" ) );
-        session.importXML( n.getPath(), inputStream, ImportUUIDBehavior.IMPORT_UUID_CREATE_NEW );
-        session.save();
+        jcrSession.importXML( n.getPath(), inputStream, ImportUUIDBehavior.IMPORT_UUID_CREATE_NEW );
+        jcrSession.save();
     }
 }

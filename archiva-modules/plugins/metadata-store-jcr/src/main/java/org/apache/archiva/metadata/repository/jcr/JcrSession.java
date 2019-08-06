@@ -67,6 +67,9 @@ public class JcrSession extends RepositorySession implements AutoCloseable
     @Override
     protected boolean isDirty( )
     {
+        if (super.isDirty()) {
+            return true;
+        }
         try
         {
             return jcrSession.hasPendingChanges( );
@@ -103,6 +106,24 @@ public class JcrSession extends RepositorySession implements AutoCloseable
         catch ( RepositoryException e )
         {
             throw new MetadataSessionException( e.getMessage( ), e );
+        }
+    }
+
+    @Override
+    public void refresh() throws MetadataSessionException {
+        try {
+            jcrSession.refresh(true);
+        } catch (RepositoryException e) {
+            throw new MetadataSessionException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void refreshAndDiscard() throws MetadataSessionException {
+        try {
+            jcrSession.refresh(false);
+        } catch (RepositoryException e) {
+            throw new MetadataSessionException(e.getMessage(), e);
         }
     }
 }

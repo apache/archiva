@@ -24,11 +24,14 @@ import org.apache.archiva.metadata.model.facets.RepositoryProblemFacet;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataException;
 import org.apache.archiva.repository.events.RepositoryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
 
 /**
  * Process repository management events and respond appropriately.
@@ -40,6 +43,9 @@ public class RepositoryProblemEventListener
 {
     private Logger log = LoggerFactory.getLogger( RepositoryProblemEventListener.class );
 
+    @Inject
+    private RepositorySessionFactory repositorySessionFactory;
+
     // FIXME: move to session
     @Override
     public void deleteArtifact( MetadataRepository metadataRepository, String repositoryId, String namespace,
@@ -47,9 +53,9 @@ public class RepositoryProblemEventListener
     {
         String name = RepositoryProblemFacet.createName( namespace, project, version, id );
 
-        try
+        try(RepositorySession session = repositorySessionFactory.createSession())
         {
-            metadataRepository.removeMetadataFacet( , repositoryId, RepositoryProblemFacet.FACET_ID, name );
+            metadataRepository.removeMetadataFacet(session , repositoryId, RepositoryProblemFacet.FACET_ID, name );
         }
         catch ( MetadataRepositoryException e )
         {
@@ -67,7 +73,7 @@ public class RepositoryProblemEventListener
         try
         {
             MetadataRepository metadataRepository = session.getRepository();
-            metadataRepository.removeMetadataFacet( , repoId, RepositoryProblemFacet.FACET_ID, name );
+            metadataRepository.removeMetadataFacet(session , repoId, RepositoryProblemFacet.FACET_ID, name );
             session.markDirty();
         }
         catch ( MetadataRepositoryException e )
@@ -91,7 +97,7 @@ public class RepositoryProblemEventListener
 
         try
         {
-            session.getRepository().addMetadataFacet( , repoId, problem );
+            session.getRepository().addMetadataFacet(session , repoId, problem );
             session.markDirty();
         }
         catch ( MetadataRepositoryException e )

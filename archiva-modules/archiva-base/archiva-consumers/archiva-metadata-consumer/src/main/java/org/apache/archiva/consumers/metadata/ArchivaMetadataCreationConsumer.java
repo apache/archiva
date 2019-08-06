@@ -29,10 +29,7 @@ import org.apache.archiva.consumers.KnownRepositoryContentConsumer;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.ProjectMetadata;
 import org.apache.archiva.metadata.model.ProjectVersionMetadata;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.*;
 import org.apache.archiva.metadata.repository.storage.ReadMetadataRequest;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorage;
 import org.apache.archiva.metadata.repository.storage.RepositoryStorageMetadataInvalidException;
@@ -193,14 +190,14 @@ public class ArchivaMetadataCreationConsumer
 
             // read the metadata and update it if it is newer or doesn't exist
             artifact.setWhenGathered( whenGathered );
-            metadataRepository.updateArtifact( , repoId, project.getNamespace(), project.getId(),
+            metadataRepository.updateArtifact(repositorySession , repoId, project.getNamespace(), project.getId(),
                 projectVersion, artifact );
             if ( createVersionMetadata )
             {
-                metadataRepository.updateProjectVersion( , repoId, project.getNamespace(),
+                metadataRepository.updateProjectVersion(repositorySession , repoId, project.getNamespace(),
                     project.getId(), versionMetadata );
             }
-            metadataRepository.updateProject( , repoId, project );
+            metadataRepository.updateProject(repositorySession , repoId, project );
             repositorySession.save();
         }
         catch ( MetadataRepositoryException e )
@@ -208,26 +205,27 @@ public class ArchivaMetadataCreationConsumer
             log.warn(
                 "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}" ,
                 path, repoId, e.getMessage(), e );
-            repositorySession.revert();
+            try {
+                repositorySession.revert();
+            } catch (MetadataSessionException ex) {
+                log.error("Reverting failed {}", ex.getMessage());
+            }
         }
         catch ( RepositoryStorageRuntimeException e )
         {
             log.warn(
                 "Error occurred persisting metadata for artifact:{} (repository:{}); message: {}",
                 path, repoId, e.getMessage(), e );
-            repositorySession.revert();
-        }
-        finally
+            try {
+                repositorySession.revert();
+            } catch (MetadataSessionException ex) {
+                log.error("Reverting failed {}", ex.getMessage());
+            }
+        } catch (MetadataSessionException e) {
+            throw new ConsumerException(e.getMessage(), e);
+        } finally
         {
             repositorySession.close();
-        }
-        catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
-        {
-            e.printStackTrace( );
-        }
-        catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
-        {
-            e.printStackTrace( );
         }
     }
 

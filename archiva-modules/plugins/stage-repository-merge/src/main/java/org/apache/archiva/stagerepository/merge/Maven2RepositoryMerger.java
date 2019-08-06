@@ -30,6 +30,8 @@ import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
 import org.apache.archiva.filter.Filter;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.apache.archiva.metadata.repository.storage.RepositoryPathTranslator;
 import org.apache.archiva.model.ArchivaRepositoryMetadata;
 import org.apache.archiva.repository.RepositoryException;
@@ -83,6 +85,9 @@ public class Maven2RepositoryMerger
     private static final String METADATA_FILENAME = "maven-metadata.xml";
 
     @Inject
+    private RepositorySessionFactory repositorySessionFactory;
+
+    @Inject
     public Maven2RepositoryMerger(
         @Named (value = "archivaConfiguration#default") ArchivaConfiguration archivaConfiguration,
         @Named (value = "repositoryPathTranslator#maven2") RepositoryPathTranslator repositoryPathTranslator )
@@ -101,9 +106,9 @@ public class Maven2RepositoryMerger
         throws RepositoryMergerException
     {
 
-        try
+        try(RepositorySession session = repositorySessionFactory.createSession())
         {
-            List<ArtifactMetadata> artifactsInSourceRepo = metadataRepository.getArtifacts( , sourceRepoId );
+            List<ArtifactMetadata> artifactsInSourceRepo = metadataRepository.getArtifacts(session , sourceRepoId );
             for ( ArtifactMetadata artifactMetadata : artifactsInSourceRepo )
             {
                 artifactMetadata.setRepositoryId( targetRepoId );
@@ -130,9 +135,9 @@ public class Maven2RepositoryMerger
                        Filter<ArtifactMetadata> filter )
         throws RepositoryMergerException
     {
-        try
+        try(RepositorySession session = repositorySessionFactory.createSession())
         {
-            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( , sourceRepoId );
+            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts(session , sourceRepoId );
             for ( ArtifactMetadata metadata : sourceArtifacts )
             {
                 if ( filter.accept( metadata ) )
@@ -396,12 +401,12 @@ public class Maven2RepositoryMerger
                                                            String targetRepo )
         throws RepositoryMergerException
     {
-        try
+        try(RepositorySession session = repositorySessionFactory.createSession())
         {
             TreeSet<ArtifactMetadata> targetArtifacts = new TreeSet<>(META_COMPARATOR);
-            targetArtifacts.addAll(metadataRepository.getArtifacts( , targetRepo ));
+            targetArtifacts.addAll(metadataRepository.getArtifacts(session , targetRepo ));
             TreeSet<ArtifactMetadata> sourceArtifacts = new TreeSet<>(META_COMPARATOR);
-            sourceArtifacts.addAll(metadataRepository.getArtifacts( , sourceRepo ));
+            sourceArtifacts.addAll(metadataRepository.getArtifacts(session , sourceRepo ));
             sourceArtifacts.retainAll(targetArtifacts);
 
             return new ArrayList<>(sourceArtifacts);

@@ -77,13 +77,13 @@ public class MetadataAuditListener
             {
                 log.warn( "Unable to write audit event to repository: {}", e.getMessage(), e );
             }
-            finally
-            {
-                repositorySession.close();
-            }
             catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
             {
                 e.printStackTrace( );
+            }
+            finally
+            {
+                repositorySession.close();
             }
         }
     }

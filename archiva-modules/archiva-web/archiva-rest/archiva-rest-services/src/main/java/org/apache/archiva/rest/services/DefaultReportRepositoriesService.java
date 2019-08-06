@@ -173,10 +173,10 @@ public class DefaultReportRepositoriesService
             MetadataRepository metadataRepository = repositorySession.getRepository();
             for ( String repoId : observableRepositories )
             {
-                for ( String name : metadataRepository.getMetadataFacets( , repoId, RepositoryProblemFacet.FACET_ID ) )
+                for ( String name : metadataRepository.getMetadataFacets(repositorySession , repoId, RepositoryProblemFacet.FACET_ID ) )
                 {
                     RepositoryProblemFacet metadataFacet =
-                        (RepositoryProblemFacet) metadataRepository.getMetadataFacet( ,
+                        (RepositoryProblemFacet) metadataRepository.getMetadataFacet(repositorySession ,
                             repoId,
                             RepositoryProblemFacet.FACET_ID, name );
                     if ( StringUtils.isEmpty( groupId ) || groupId.equals( metadataFacet.getNamespace() ) )

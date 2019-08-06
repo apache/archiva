@@ -94,11 +94,6 @@ public class TestMetadataRepository
         return artifacts;
     }
 
-    @Override
-    public Collection<String> getRepositories()
-    {
-        return Collections.singletonList( TEST_REPO );
-    }
 
     @Override
     public Collection<ArtifactMetadata> getArtifacts( RepositorySession session, String repoId, String namespace, String projectId,

@@ -97,6 +97,7 @@ public class DuplicateArtifactsConsumer
     @Named ( value = "repositoryPathTranslator#maven2" )
     private RepositoryPathTranslator pathTranslator;
 
+
     private RepositorySession repositorySession;
 
     @Override
@@ -172,7 +173,7 @@ public class DuplicateArtifactsConsumer
         Collection<ArtifactMetadata> results;
         try
         {
-            results = metadataRepository.getArtifactsByChecksum( , repoId, checksumSha1 );
+            results = metadataRepository.getArtifactsByChecksum(repositorySession , repoId, checksumSha1 );
         }
         catch ( MetadataRepositoryException e )
         {
@@ -224,7 +225,7 @@ public class DuplicateArtifactsConsumer
 
                 try
                 {
-                    metadataRepository.addMetadataFacet( , repoId, problem );
+                    metadataRepository.addMetadataFacet(repositorySession , repoId, problem );
                 }
                 catch ( MetadataRepositoryException e )
                 {

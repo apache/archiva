@@ -32,10 +32,7 @@ import org.apache.archiva.indexer.ArchivaIndexManager;
 import org.apache.archiva.indexer.IndexManagerFactory;
 import org.apache.archiva.indexer.IndexUpdateFailedException;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.RepositorySession;
-import org.apache.archiva.metadata.repository.RepositorySessionFactory;
+import org.apache.archiva.metadata.repository.*;
 import org.apache.archiva.metadata.repository.stats.model.RepositoryStatisticsManager;
 import org.apache.archiva.redback.components.cache.Cache;
 import org.apache.archiva.redback.components.registry.RegistryException;
@@ -352,7 +349,7 @@ public class DefaultManagedRepositoryAdmin
             try
             {
                 MetadataRepository metadataRepository = repositorySession.getRepository();
-                metadataRepository.removeRepository( , repository.getId() );
+                metadataRepository.removeRepository(repositorySession , repository.getId() );
                 //invalidate cache
                 namespacesCache.remove( repository.getId() );
                 log.debug( "call repositoryStatisticsManager.deleteStatistics" );
@@ -363,14 +360,11 @@ public class DefaultManagedRepositoryAdmin
             {
                 //throw new RepositoryAdminException( e.getMessage(), e );
                 log.warn( "skip error during removing repository from MetadataRepository:{}", e.getMessage(), e );
-            }
-            finally
+            } catch (MetadataSessionException e) {
+                log.warn( "skip error during removing repository from MetadataRepository:{}", e.getMessage(), e );
+            } finally
             {
                 repositorySession.close();
-            }
-            catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
-            {
-                e.printStackTrace( );
             }
         }
 
@@ -526,17 +520,13 @@ public class DefaultManagedRepositoryAdmin
             }
 
         }
-        catch ( MetadataRepositoryException e )
+        catch (MetadataRepositoryException | MetadataSessionException e )
         {
             throw new RepositoryAdminException( e.getMessage(), e );
         }
         finally
         {
             repositorySession.close();
-        }
-        catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
-        {
-            e.printStackTrace( );
         }
 
         if ( updateIndexContext )

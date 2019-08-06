@@ -69,18 +69,14 @@ public class RepositorySession
         return dirty;
     }
 
-    protected void setDirty(boolean value) {
-        this.dirty = value;
-    }
-
     public void save() throws MetadataSessionException
     {
-        setDirty( false );
+        this.dirty = false;
     }
 
     public void revert() throws MetadataSessionException
     {
-        setDirty( false );
+        this.dirty = false;
     }
 
     /**
@@ -126,5 +122,13 @@ public class RepositorySession
     public void markDirty()
     {
         this.dirty = true;
+    }
+
+    public void refresh() throws MetadataSessionException {
+
+    }
+
+    public void refreshAndDiscard() throws MetadataSessionException {
+
     }
 }

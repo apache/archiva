@@ -21,6 +21,8 @@ package org.apache.archiva.metadata.repository.jcr;
 
 import org.apache.archiva.metadata.model.MetadataFacetFactory;
 import org.apache.archiva.metadata.repository.AbstractMetadataRepositoryTest;
+import org.apache.archiva.metadata.repository.DefaultMetadataResolver;
+import org.apache.archiva.metadata.repository.MetadataResolver;
 import org.apache.jackrabbit.oak.segment.file.InvalidFileStoreVersionException;
 import org.junit.After;
 import org.junit.Before;
@@ -40,7 +42,6 @@ import java.util.Map;
 public class JcrMetadataRepositoryTest
     extends AbstractMetadataRepositoryTest
 {
-    private JcrMetadataRepository jcrMetadataRepository;
 
     @Inject
     private ApplicationContext applicationContext;
@@ -70,26 +71,34 @@ public class JcrMetadataRepositoryTest
 
         Map<String, MetadataFacetFactory> factories = createTestMetadataFacetFactories();
 
-        // TODO: probably don't need to use Spring for this
-        jcrMetadataRepository = new JcrMetadataRepository( factories, jcrRepository );
+//        // TODO: probably don't need to use Spring for this
+//        jcrMetadataRepository = new JcrMetadataRepository( factories, jcrRepository );
+//
+//        try
+//        {
+//            Session session = jcrMetadataRepository.login();
+//
+//            // set up namespaces, etc.
+//            JcrMetadataRepository.initializeNodeTypes( session );
+//
+//            // removing content is faster than deleting and re-copying the files from target/jcr
+//            session.getRootNode().getNode( "repositories" ).remove();
+//            session.save();
+//        }
+//        catch ( RepositoryException e )
+//        {
+//            // ignore
+//        }
 
-        try
-        {
-            Session session = jcrMetadataRepository.getJcrSession();
+        // this.repository = jcrMetadataRepository;
+        JcrRepositorySessionFactory jcrSessionFactory = new JcrRepositorySessionFactory();
+        jcrSessionFactory.setMetadataResolver(new DefaultMetadataResolver());
+        jcrSessionFactory.setMetadataFacetFactories(factories);
 
-            // set up namespaces, etc.
-            JcrMetadataRepository.initializeNodeTypes( session );
+        jcrSessionFactory.open();
+        this.sessionFactory = jcrSessionFactory;
+        this.repository = jcrSessionFactory.getMetadataRepository();
 
-            // removing content is faster than deleting and re-copying the files from target/jcr
-            session.getRootNode().getNode( "repositories" ).remove();
-            session.save();
-        }
-        catch ( RepositoryException e )
-        {
-            // ignore
-        }
-
-        this.repository = jcrMetadataRepository;
     }
 
 
@@ -98,7 +107,8 @@ public class JcrMetadataRepositoryTest
     public void tearDown()
         throws Exception
     {
-        jcrMetadataRepository.close();
+        repository.close();
+        sessionFactory.close();
 
         super.tearDown();
     }

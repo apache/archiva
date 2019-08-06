@@ -317,17 +317,14 @@ public class DefaultBrowseService
             }
 
             return versionMetadata;
-        }
-        finally
+        } catch (MetadataRepositoryException e) {
+            throw new ArchivaRestServiceException(e.getMessage(), e);
+        } finally
         {
             if ( repositorySession != null )
             {
                 repositorySession.close();
             }
-        }
-        catch ( MetadataRepositoryException e )
-        {
-            e.printStackTrace( );
         }
 
     }
@@ -479,7 +476,7 @@ public class DefaultBrowseService
             }
             return sharedModel;
         }
-        catch ( MetadataResolutionException e )
+        catch (MetadataResolutionException | MetadataRepositoryException e )
         {
             throw new ArchivaRestServiceException( e.getMessage(),
                                                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e );
@@ -490,10 +487,6 @@ public class DefaultBrowseService
             {
                 repositorySession.close();
             }
-        }
-        catch ( MetadataRepositoryException e )
-        {
-            e.printStackTrace( );
         }
     }
 
@@ -662,11 +655,11 @@ public class DefaultBrowseService
         {
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
-            metadataRepository.updateProjectVersion( , repositoryId, groupId, artifactId, projectVersionMetadata );
+            metadataRepository.updateProjectVersion(repositorySession , repositoryId, groupId, artifactId, projectVersionMetadata );
 
             repositorySession.save();
         }
-        catch ( MetadataRepositoryException e )
+        catch (MetadataRepositoryException | MetadataSessionException e )
         {
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(),
@@ -675,10 +668,6 @@ public class DefaultBrowseService
         finally
         {
             repositorySession.close();
-        }
-        catch ( MetadataSessionException e )
-        {
-            e.printStackTrace( );
         }
         return Boolean.TRUE;
     }
@@ -723,11 +712,11 @@ public class DefaultBrowseService
         {
             MetadataRepository metadataRepository = repositorySession.getRepository();
 
-            metadataRepository.updateProjectVersion( , repositoryId, groupId, artifactId, projectVersionMetadata );
+            metadataRepository.updateProjectVersion(repositorySession , repositoryId, groupId, artifactId, projectVersionMetadata );
 
             repositorySession.save();
         }
-        catch ( MetadataRepositoryException e )
+        catch (MetadataRepositoryException | MetadataSessionException e )
         {
             log.error( e.getMessage(), e );
             throw new ArchivaRestServiceException( e.getMessage(),
@@ -736,10 +725,6 @@ public class DefaultBrowseService
         finally
         {
             repositorySession.close();
-        }
-        catch ( MetadataSessionException e )
-        {
-            e.printStackTrace( );
         }
         return Boolean.TRUE;
     }
@@ -1006,7 +991,7 @@ public class DefaultBrowseService
         }
         try
         {
-            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifacts( , repositoryId );
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifacts(repositorySession , repositoryId );
             return buildArtifacts( artifactMetadatas, repositoryId );
         }
         catch ( MetadataRepositoryException e )
@@ -1034,7 +1019,7 @@ public class DefaultBrowseService
         }
         try
         {
-            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByProjectVersionMetadata( , key, value, repositoryId );
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByProjectVersionMetadata(repositorySession , key, value, repositoryId );
             return buildArtifacts( artifactMetadatas, repositoryId );
         }
         catch ( MetadataRepositoryException e )
@@ -1062,7 +1047,7 @@ public class DefaultBrowseService
         }
         try
         {
-            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByMetadata( , key, value, repositoryId );
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByMetadata(repositorySession , key, value, repositoryId );
             return buildArtifacts( artifactMetadatas, repositoryId );
         }
         catch ( MetadataRepositoryException e )
@@ -1090,7 +1075,7 @@ public class DefaultBrowseService
         }
         try
         {
-            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByProperty( , key, value, repositoryId );
+            List<ArtifactMetadata> artifactMetadatas = repositorySession.getRepository().getArtifactsByProperty(repositorySession , key, value, repositoryId );
             return buildArtifacts( artifactMetadatas, repositoryId );
         }
         catch ( MetadataRepositoryException e )
@@ -1137,7 +1122,7 @@ public class DefaultBrowseService
         try
         {
             List<ArtifactMetadata> artifactMetadatas =
-                repositorySession.getRepository().searchArtifacts( , repositoryId, text, exact == null ? false : exact );
+                repositorySession.getRepository().searchArtifacts(repositorySession , repositoryId, text, exact == null ? false : exact );
             return buildArtifacts( artifactMetadatas, repositoryId );
         }
         catch ( MetadataRepositoryException e )
@@ -1166,7 +1151,7 @@ public class DefaultBrowseService
         try
         {
             List<ArtifactMetadata> artifactMetadatas =
-                repositorySession.getRepository().searchArtifacts( , repositoryId, key, text, exact == null ? false : exact );
+                repositorySession.getRepository().searchArtifacts(repositorySession , repositoryId, key, text, exact == null ? false : exact );
             return buildArtifacts( artifactMetadatas, repositoryId );
         }
         catch ( MetadataRepositoryException e )

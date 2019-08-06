@@ -176,13 +176,13 @@ public class ArchivaRepositoryScanningTaskExecutor
                 {
                     throw new TaskExecutionException( "Unable to store updated statistics: " + e.getMessage(), e );
                 }
-                finally
-                {
-                    repositorySession.close();
-                }
                 catch ( org.apache.archiva.metadata.repository.MetadataSessionException e )
                 {
                     e.printStackTrace( );
+                }
+                finally
+                {
+                    repositorySession.close();
                 }
 
 //                log.info( "Scanning for removed repository content" );

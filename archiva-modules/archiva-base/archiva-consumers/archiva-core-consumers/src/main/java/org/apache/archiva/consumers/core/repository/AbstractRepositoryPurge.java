@@ -23,10 +23,7 @@ import org.apache.archiva.common.utils.VersionUtil;
 import org.apache.archiva.metadata.model.ArtifactMetadata;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.model.maven2.MavenArtifactFacet;
-import org.apache.archiva.metadata.repository.MetadataRepository;
-import org.apache.archiva.metadata.repository.MetadataRepositoryException;
-import org.apache.archiva.metadata.repository.MetadataResolutionException;
-import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.*;
 import org.apache.archiva.model.ArtifactReference;
 import org.apache.archiva.repository.ContentNotFoundException;
 import org.apache.archiva.repository.ManagedRepositoryContent;
@@ -203,7 +200,7 @@ public abstract class AbstractRepositoryPurge
                 {
                     try
                     {
-                        metaResolved.put( metaBaseId, metadataRepository.getArtifacts( , repository.getId( ),
+                        metaResolved.put( metaBaseId, metadataRepository.getArtifacts(repositorySession, repository.getId( ),
                             reference.getGroupId( ), reference.getArtifactId( ), baseVersion ) );
                     }
                     catch ( MetadataResolutionException e )
@@ -314,18 +311,22 @@ public abstract class AbstractRepositoryPurge
             }
             projectLevelMetadata.add( info.projectVersionLevel( ) );
         }
-        metadataRepository.save( );
+        try {
+            repositorySession.save( );
+        } catch (MetadataSessionException e) {
+            log.error("Could not save sesion {}", e.getMessage());
+        }
         Collection<ArtifactMetadata> artifacts = null;
         // Get remaining artifacts and remove project if empty
         for ( ArtifactInfo info : projectLevelMetadata )
         {
             try
             {
-                artifacts = metadataRepository.getArtifacts( , repository.getId( ), info.getNamespace( ),
+                artifacts = metadataRepository.getArtifacts(repositorySession , repository.getId( ), info.getNamespace( ),
                     info.getName( ), info.getProjectVersion( ) );
                 if ( artifacts.size( ) == 0 )
                 {
-                    metadataRepository.removeProjectVersion( , repository.getId( ),
+                    metadataRepository.removeProjectVersion(repositorySession , repository.getId( ),
                         info.getNamespace( ), info.getName( ), info.getProjectVersion( ) );
                     log.debug( "Removed project version from MetadataRepository {}", info );
                 }
@@ -335,7 +336,12 @@ public abstract class AbstractRepositoryPurge
                 log.error( "Could not remove project version from MetadataRepository {}: {}", info, e.getMessage( ), e );
             }
         }
-        metadataRepository.save( );
+        try {
+            repositorySession.save( );
+        } catch (MetadataSessionException e) {
+            log.error("Could not save sesion {}", e.getMessage());
+
+        }
 
     }
 
@@ -360,14 +366,18 @@ public abstract class AbstractRepositoryPurge
                     version = artifactInfo.getProjectVersion( );
                 MavenArtifactFacet mavenArtifactFacetToCompare = new MavenArtifactFacet( );
                 mavenArtifactFacetToCompare.setClassifier( artifactInfo.getClassifier( ) );
-                metadataRepository.removeArtifact( , repository.getId( ), groupId,
+                metadataRepository.removeArtifact(repositorySession , repository.getId( ), groupId,
                     artifactId, version, mavenArtifactFacetToCompare );
-                metadataRepository.save( );
+                try {
+                    repositorySession.save( );
+                } catch (MetadataSessionException e) {
+                    log.error("Could not save session {}", e.getMessage());
+                }
             }
         }
         else
         {
-            metadataRepository.removeArtifact( , artifactMetadata, artifactInfo.getProjectVersion( ) );
+            metadataRepository.removeArtifact(repositorySession , artifactMetadata, artifactInfo.getProjectVersion( ) );
         }
     }
 

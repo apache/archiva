@@ -28,4 +28,5 @@ public interface RepositorySessionFactory
     RepositorySession createSession() throws MetadataRepositoryException;
 
     void close();
+
 }

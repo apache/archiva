@@ -22,10 +22,13 @@ package org.apache.archiva.audit;
 import org.apache.archiva.metadata.model.facets.AuditEvent;
 import org.apache.archiva.metadata.repository.MetadataRepository;
 import org.apache.archiva.metadata.repository.MetadataRepositoryException;
+import org.apache.archiva.metadata.repository.RepositorySession;
+import org.apache.archiva.metadata.repository.RepositorySessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -49,43 +52,46 @@ public class DefaultAuditManager
 
     private static final TimeZone UTC_TIME_ZONE = TimeZone.getTimeZone( "UTC" );
 
+    @Inject
+    RepositorySessionFactory repositorySessionFactory;
+
     @Override
     public List<AuditEvent> getMostRecentAuditEvents( MetadataRepository metadataRepository,
                                                       List<String> repositoryIds )
         throws MetadataRepositoryException
     {
-        // TODO: consider a more efficient implementation that directly gets the last ten from the content repository
-        List<AuditRecord> records = new ArrayList<>();
-        for ( String repositoryId : repositoryIds )
-        {
-            List<String> names = metadataRepository.getMetadataFacets( , repositoryId, AuditEvent.FACET_ID );
-            for ( String name : names )
-            {
-                records.add( new AuditRecord( repositoryId, name ) );
+        try(RepositorySession session = repositorySessionFactory.createSession()) {
+            // TODO: consider a more efficient implementation that directly gets the last ten from the content repository
+            List<AuditRecord> records = new ArrayList<>();
+            for (String repositoryId : repositoryIds) {
+                List<String> names = metadataRepository.getMetadataFacets(session, repositoryId, AuditEvent.FACET_ID);
+                for (String name : names) {
+                    records.add(new AuditRecord(repositoryId, name));
+                }
             }
-        }
-        Collections.sort( records );
-        records = records.subList( 0, records.size() < NUM_RECENT_EVENTS ? records.size() : NUM_RECENT_EVENTS );
+            Collections.sort(records);
+            records = records.subList(0, records.size() < NUM_RECENT_EVENTS ? records.size() : NUM_RECENT_EVENTS);
 
-        List<AuditEvent> events = new ArrayList<>( records.size() );
-        for ( AuditRecord record : records )
-        {
-            AuditEvent auditEvent = (AuditEvent) metadataRepository.getMetadataFacet( ,
-                record.repositoryId,
-                AuditEvent.FACET_ID, record.name );
-            events.add( auditEvent );
+            List<AuditEvent> events = new ArrayList<>(records.size());
+            for (AuditRecord record : records) {
+                AuditEvent auditEvent = (AuditEvent) metadataRepository.getMetadataFacet(session,
+                        record.repositoryId,
+                        AuditEvent.FACET_ID, record.name);
+                events.add(auditEvent);
+            }
+            return events;
         }
-        return events;
     }
 
     @Override
     public void addAuditEvent( MetadataRepository repository, AuditEvent event )
         throws MetadataRepositoryException
     {
-        // ignore those with no repository - they will still be logged to the textual audit log
-        if ( event.getRepositoryId() != null )
-        {
-            repository.addMetadataFacet( , event.getRepositoryId(), event );
+        try(RepositorySession session = repositorySessionFactory.createSession()) {
+            // ignore those with no repository - they will still be logged to the textual audit log
+            if (event.getRepositoryId() != null) {
+                repository.addMetadataFacet(session, event.getRepositoryId(), event);
+            }
         }
     }
 
@@ -93,7 +99,9 @@ public class DefaultAuditManager
     public void deleteAuditEvents( MetadataRepository metadataRepository, String repositoryId )
         throws MetadataRepositoryException
     {
-        metadataRepository.removeMetadataFacets( , repositoryId, AuditEvent.FACET_ID );
+        try(RepositorySession session = repositorySessionFactory.createSession()) {
+            metadataRepository.removeMetadataFacets(session, repositoryId, AuditEvent.FACET_ID);
+        }
     }
 
     @Override
@@ -110,44 +118,37 @@ public class DefaultAuditManager
                                                    Date endTime )
         throws MetadataRepositoryException
     {
-        List<AuditEvent> results = new ArrayList<>();
-        for ( String repositoryId : repositoryIds )
-        {
-            List<String> list = metadataRepository.getMetadataFacets( , repositoryId, AuditEvent.FACET_ID );
-            for ( String name : list )
-            {
-                try
-                {
-                    Date date = createNameFormat().parse( name );
-                    if ( ( startTime == null || !date.before( startTime ) ) && ( endTime == null || !date.after(
-                        endTime ) ) )
-                    {
-                        AuditEvent event = (AuditEvent) metadataRepository.getMetadataFacet( ,
-                            repositoryId,
-                            AuditEvent.FACET_ID, name );
+        try(RepositorySession session = repositorySessionFactory.createSession()) {
+            List<AuditEvent> results = new ArrayList<>();
+            for (String repositoryId : repositoryIds) {
+                List<String> list = metadataRepository.getMetadataFacets(session, repositoryId, AuditEvent.FACET_ID);
+                for (String name : list) {
+                    try {
+                        Date date = createNameFormat().parse(name);
+                        if ((startTime == null || !date.before(startTime)) && (endTime == null || !date.after(
+                                endTime))) {
+                            AuditEvent event = (AuditEvent) metadataRepository.getMetadataFacet(session,
+                                    repositoryId,
+                                    AuditEvent.FACET_ID, name);
 
-                        if ( resource == null || event.getResource().startsWith( resource ) )
-                        {
-                            results.add( event );
+                            if (resource == null || event.getResource().startsWith(resource)) {
+                                results.add(event);
+                            }
                         }
+                    } catch (ParseException e) {
+                        log.error("Invalid audit event found in the metadata repository: {}", e.getMessage());
+                        // continue and ignore this one
                     }
                 }
-                catch ( ParseException e )
-                {
-                    log.error( "Invalid audit event found in the metadata repository: {}", e.getMessage() );
-                    // continue and ignore this one
+            }
+            Collections.sort(results, new Comparator<AuditEvent>() {
+                @Override
+                public int compare(AuditEvent o1, AuditEvent o2) {
+                    return o2.getTimestamp().compareTo(o1.getTimestamp());
                 }
-            }
+            });
+            return results;
         }
-        Collections.sort( results, new Comparator<AuditEvent>()
-        {
-            @Override
-            public int compare( AuditEvent o1, AuditEvent o2 )
-            {
-                return o2.getTimestamp().compareTo( o1.getTimestamp() );
-            }
-        } );
-        return results;
     }
 
     private static SimpleDateFormat createNameFormat()

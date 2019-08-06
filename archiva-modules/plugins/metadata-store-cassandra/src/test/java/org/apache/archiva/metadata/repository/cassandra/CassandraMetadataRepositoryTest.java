@@ -87,10 +87,10 @@ public class CassandraMetadataRepositoryTest
             .withId( TEST_PROJECT_VERSION ) //
             .build();
 
-        this.cmr.removeProjectVersion( , TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
+        this.cmr.removeProjectVersion( null, TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION );
 
         assertThat(
-            repository.getProjectVersion( , TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ).isNull();
+            repository.getProjectVersion( null , TEST_REPO_ID, TEST_NAMESPACE, TEST_PROJECT, TEST_PROJECT_VERSION ) ).isNull();
 
         assertThat( cmr.getMailingLists( key ) ).isNotNull().isEmpty();
 

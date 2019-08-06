@@ -158,7 +158,7 @@ public class CleanupReleasedSnapshotsRepositoryPurge
                         artifactRef.getArtifactId( ), artifactRef.getVersion( ),
                         artifactFile.getFileName().toString() );
                 }
-                metadataRepository.removeProjectVersion( , repository.getId( ),
+                metadataRepository.removeProjectVersion( repositorySession, repository.getId( ),
                     artifactRef.getGroupId( ), artifactRef.getArtifactId( ), artifactRef.getVersion( ) );
 
                 needsMetadataUpdate = true;

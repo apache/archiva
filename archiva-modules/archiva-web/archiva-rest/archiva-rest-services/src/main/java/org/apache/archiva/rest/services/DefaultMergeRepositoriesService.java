@@ -128,7 +128,7 @@ public class DefaultMergeRepositoriesService
         {
             org.apache.archiva.repository.ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(targetRepositoryId);
             MetadataRepository metadataRepository = repositorySession.getRepository();
-            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( , sourceRepositoryId );
+            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts(repositorySession , sourceRepositoryId );
 
             if ( managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.RELEASE) && !managedRepo.getActiveReleaseSchemes().contains(ReleaseScheme.SNAPSHOT) )
             {
@@ -174,7 +174,7 @@ public class DefaultMergeRepositoriesService
                 repositoryMerger.getConflictingArtifacts( repositorySession.getRepository(), sourceRepositoryId,
                                                           targetRepositoryId );
             MetadataRepository metadataRepository = repositorySession.getRepository();
-            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts( , sourceRepositoryId );
+            List<ArtifactMetadata> sourceArtifacts = metadataRepository.getArtifacts(repositorySession , sourceRepositoryId );
             sourceArtifacts.removeAll( conflictSourceArtifacts );
 
             org.apache.archiva.repository.ManagedRepository managedRepo = repositoryRegistry.getManagedRepository(targetRepositoryId);

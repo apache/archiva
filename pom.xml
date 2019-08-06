@@ -81,7 +81,7 @@
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <lucene.version>4.10.4</lucene.version>
 
-    <jcr-oak.version>1.7.11</jcr-oak.version>
+    <jcr-oak.version>1.14.0</jcr-oak.version>
     <jackrabbit.version>2.15.4</jackrabbit.version>
     <felix.scr.version>1.12.0</felix.scr.version>
     <metrics-core.version>3.1.0</metrics-core.version>
@@ -357,6 +357,7 @@
         <artifactId>jackrabbit-webdav</artifactId>
         <version>${jackrabbit.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-jcr-commons</artifactId>

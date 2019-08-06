@@ -58,9 +58,9 @@ public class RepositoryWalkingStatisticsProvider implements RepositoryStatistics
     {
         try
         {
-            for ( String ns : metadataRepository.getRootNamespaces( , repositoryId ) )
+            for ( String ns : metadataRepository.getRootNamespaces( repositorySession, repositoryId ) )
             {
-                walkRepository( metadataRepository, repositoryStatistics, repositoryId, ns );
+                walkRepository( repositorySession, metadataRepository, repositoryStatistics, repositoryId, ns );
             }
         }
         catch ( MetadataResolutionException e )
@@ -69,16 +69,16 @@ public class RepositoryWalkingStatisticsProvider implements RepositoryStatistics
         }
     }
 
-    private void walkRepository( MetadataRepository metadataRepository, RepositoryStatistics stats, String repositoryId,
+    private void walkRepository( RepositorySession repositorySession, MetadataRepository metadataRepository, RepositoryStatistics stats, String repositoryId,
                                  String ns )
         throws MetadataResolutionException
     {
-        for ( String namespace : metadataRepository.getNamespaces( , repositoryId, ns ) )
+        for ( String namespace : metadataRepository.getNamespaces( repositorySession , repositoryId, ns ) )
         {
-            walkRepository( metadataRepository, stats, repositoryId, ns + "." + namespace );
+            walkRepository( repositorySession, metadataRepository, stats, repositoryId, ns + "." + namespace );
         }
 
-        Collection<String> projects = metadataRepository.getProjects( , repositoryId, ns );
+        Collection<String> projects = metadataRepository.getProjects( repositorySession , repositoryId, ns );
         if ( !projects.isEmpty() )
         {
             stats.setTotalGroupCount( stats.getTotalGroupCount() + 1 );
@@ -86,9 +86,9 @@ public class RepositoryWalkingStatisticsProvider implements RepositoryStatistics
 
             for ( String project : projects )
             {
-                for ( String version : metadataRepository.getProjectVersions( , repositoryId, ns, project ) )
+                for ( String version : metadataRepository.getProjectVersions( repositorySession , repositoryId, ns, project ) )
                 {
-                    for ( ArtifactMetadata artifact : metadataRepository.getArtifacts( , repositoryId, ns,
+                    for ( ArtifactMetadata artifact : metadataRepository.getArtifacts( repositorySession , repositoryId, ns,
                         project, version ) )
                     {
                         stats.setTotalArtifactCount( stats.getTotalArtifactCount() + 1 );

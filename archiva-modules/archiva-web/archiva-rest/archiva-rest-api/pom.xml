@@ -71,6 +71,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.archiva</groupId>
+      <artifactId>metadata-statistics-api</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.archiva.redback</groupId>
       <artifactId>redback-authorization-api</artifactId>
       <exclusions>
